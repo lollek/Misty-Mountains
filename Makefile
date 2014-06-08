@@ -65,6 +65,7 @@ clean:
 	$(RM) core a.exe a.out a.exe.stackdump $(PROGRAM) $(PROGRAM).exe $(PROGRAM).lck
 	$(RM) $(PROGRAM).tar $(PROGRAM).tar.gz $(PROGRAM).zip 
 	$(RM) $(DISTNAME)/*
+	$(RM) $(DOCS)
     
 dist.src:
 	$(MAKE) $(MAKEFILE) clean
