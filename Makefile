@@ -9,18 +9,12 @@
 # See the file LICENSE.TXT for full copyright and licensing information.
 #
 
+
 DISTNAME = rogue5.4.4
 PROGRAM  = rogue54
 O        = o
-HDRS     = rogue.h extern.h score.h
-OBJS1    = vers.$(O) extern.$(O) armor.$(O) chase.$(O) command.$(O) \
-           daemon.$(O) daemons.$(O) fight.$(O) init.$(O) io.$(O) list.$(O) \
-	   mach_dep.$(O) main.$(O) mdport.$(O) misc.$(O) monsters.$(O) \
-	   move.$(O) new_level.$(O)
-OBJS2    = options.$(O) pack.$(O) passages.$(O) potions.$(O) rings.$(O) \
-           rip.$(O) rooms.$(O) save.$(O) scrolls.$(O) state.$(O) sticks.$(O) \
-	   things.$(O) weapons.$(O) wizard.$(O) xcrypt.$(O)
-OBJS     = $(OBJS1) $(OBJS2)
+HDRS	 = $(wildcard src/*.h)
+OBJS     = $(addsuffix .o, $(basename $(wildcard src/*.c)))
 CFILES   = vers.c extern.c armor.c chase.c command.c daemon.c \
 	   daemons.c fight.c init.c io.c list.c mach_dep.c \
 	   main.c  mdport.c misc.c monsters.c move.c new_level.c \
@@ -51,17 +45,16 @@ EXE      =
 .SUFFIXES: .obj
 
 .c.obj:
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(FEATURES) /c $*.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(FEATURES) /c /o $*.o $*.c
     
 .c.o:
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(FEATURES) -c $*.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(FEATURES) -c -o $*.o $*.c
     
 $(PROGRAM): $(HDRS) $(OBJS) fixdocs
 	$(CC) $(LDFLAGS) $(OBJS) $(LIBS) $(OUTFLAG)$@$(EXE)
  
 clean:
-	$(RM) $(OBJS1)
-	$(RM) $(OBJS2)
+	$(RM) $(OBJS)
 	$(RM) core a.exe a.out a.exe.stackdump $(PROGRAM) $(PROGRAM).exe $(PROGRAM).lck
 	$(RM) $(PROGRAM).tar $(PROGRAM).tar.gz $(PROGRAM).zip 
 	$(RM) $(DISTNAME)/*
