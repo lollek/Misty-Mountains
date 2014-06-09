@@ -114,21 +114,16 @@ md_shellescape()
 char *
 md_getrealname(int uid)
 {
-    static char uidstr[20];
-#if !defined(_WIN32) && !defined(DJGPP)
-    struct passwd *pp;
+  static char uidstr[20];
+  struct passwd *pp = getpwuid(uid);
 
-	if ((pp = getpwuid(uid)) == NULL)
-    {
-        sprintf(uidstr,"%d", uid);
-        return(uidstr);
-    }
-	else
-	    return(pp->pw_name);
-#else
-   sprintf(uidstr,"%d", uid);
-   return(uidstr);
-#endif
+  if (pp == NULL)
+  {
+    sprintf(uidstr,"%d", uid);
+    return uidstr;
+  }
+  else
+    return pp->pw_name;
 }
 
 extern char *xcrypt(char *key, char *salt);
