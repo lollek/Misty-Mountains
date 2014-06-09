@@ -192,7 +192,6 @@ tstp(int ignored)
   md_tstpsignal();
 
   /* start back up again */
-  md_tstpresume();
   raw();
   noecho();
   keypad(stdscr,1);

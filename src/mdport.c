@@ -317,14 +317,6 @@ md_readchar()
 }
 
 void
-md_tstpresume()
-{
-#ifdef SIGTSTP
-    signal(SIGTSTP, tstp);
-#endif
-}
-
-void
 md_tstpsignal()
 {
 #ifdef SIGTSTP

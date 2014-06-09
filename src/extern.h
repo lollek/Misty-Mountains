@@ -168,6 +168,5 @@ int	md_readchar();
 int	md_shellescape();
 int	md_hasclreol();
 void md_tstpsignal();
-void md_tstpresume();
 int md_issymlink(char *sp);
 

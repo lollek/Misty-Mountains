@@ -258,8 +258,6 @@ restore(char *file, char **envp)
 	return FALSE;
     }
 
-	md_tstpresume();
-
     environ = envp;
     strcpy(file_name, file);
     clearok(curscr, TRUE);
