@@ -169,7 +169,6 @@ char	*md_gethomedir();
 char	*md_getusername();
 int	md_getuid();
 char	*md_getpass(char *prompt);
-int	md_getpid();
 char	*md_getrealname(int uid);
 void	md_init();
 int	md_killchar();

@@ -261,7 +261,7 @@ restore(char *file, char **envp)
     environ = envp;
     strcpy(file_name, file);
     clearok(curscr, TRUE);
-    srand(md_getpid());
+    srand(getpid());
     msg("file name: %s", file);
     playit();
     /*NOTREACHED*/

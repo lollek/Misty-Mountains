@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <unistd.h>
 #include <time.h>
 #include <curses.h>
 #include "rogue.h"
@@ -54,7 +55,7 @@ main(int argc, char **argv, char **envp)
     dnum = atoi(getenv("SEED"));
   else
 #endif
-    dnum = lowtime + md_getpid();
+    dnum = lowtime + getpid();
   seed = dnum;
 
   open_score();

@@ -248,12 +248,6 @@ md_getuid()
 #endif
 }
 
-int
-md_getpid()
-{
-    return( getpid() );
-}
-
 char *
 md_getusername()
 {
