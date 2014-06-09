@@ -104,74 +104,11 @@ md_gethomedir()
   return homedir;
 }
 
-char *
-md_getshell()
-{
-    static char shell[PATH_MAX];
-    char *s = NULL;
-    char *def = "/bin/sh";
-    struct passwd *pw;
-    pw = getpwuid(getuid());
-    s = pw->pw_shell;
-    if ((s == NULL) || (*s == '\0'))
-        if ( (s = getenv("COMSPEC")) == NULL)
-            if ( (s = getenv("SHELL")) == NULL)
-                if ( (s = getenv("SystemRoot")) == NULL)
-                    s = def;
-
-    strncpy(shell,s,PATH_MAX);
-    shell[PATH_MAX-1] = 0;
-
-    return(shell);
-}
-
 int
 md_shellescape()
 {
-#if defined(HAVE_WORKING_FORK)
-    int ret_status;
-    int pid;
-    void (*myquit)(int);
-    void (*myend)(int);
-    char *sh;
-
-    sh = md_getshell();
-
-    while((pid = fork()) < 0)
-        sleep(1);
-
-    if (pid == 0) /* Shell Process */
-    {
-        /*
-         * Set back to original user, just in case
-         */
-        md_normaluser();
-        execl(sh == NULL ? "/bin/sh" : sh, "shell", "-i", NULL);
-        perror("No shelly");
-        _exit(-1);
-    }
-    else /* Application */
-    {
-    	myend = signal(SIGINT, SIG_IGN);
-#ifdef SIGQUIT
-        myquit = signal(SIGQUIT, SIG_IGN);
-#endif  
-        while (wait(&ret_status) != pid)
-            continue;
-	    
-        signal(SIGINT, myquit);
-#ifdef SIGQUIT
-        signal(SIGQUIT, myend);
-#endif
-    }
-    return(ret_status);
-#elif defined(HAVE__SPAWNL) 
-    return((int)_spawnl(_P_WAIT,md_getshell(),"shell",NULL,0));
-#elif defined(HAVE_SPAWNL)
-    return ( spawnl(P_WAIT,md_getshell(),"shell",NULL,0) );
-#else
-	return(0);
-#endif
+  puts("Shell escape has been removed, use ^Z instead");
+  return(0);
 }
 
 int
