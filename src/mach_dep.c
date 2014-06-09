@@ -142,6 +142,17 @@ setup()
 #endif
 
 #ifdef DUMP
+    signal(SIGHUP, auto_save);
+    signal(SIGQUIT, endit);
+    signal(SIGILL, auto_save);
+    signal(SIGTRAP, auto_save);
+    signal(SIGIOT, auto_save);
+    signal(SIGFPE, auto_save);
+    signal(SIGBUS, auto_save);
+    signal(SIGSEGV, auto_save);
+    signal(SIGSYS, auto_save);
+    signal(SIGTERM, auto_save);
+    signal(SIGINT, quit);
     md_onsignal_autosave();
 #else
     signal(SIGHUP, SIG_DFL);

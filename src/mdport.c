@@ -58,47 +58,6 @@ md_onsignal_exit()
     signal(SIGTERM, exit);
 }
 
-void
-md_onsignal_autosave()
-{
-#ifdef SIGHUP
-    signal(SIGHUP, auto_save);
-#endif
-#ifdef SIGQUIT
-	signal(SIGQUIT, endit);
-#endif
-#ifdef SIGILL
-    signal(SIGILL, auto_save);
-#endif
-#ifdef SIGTRAP
-    signal(SIGTRAP, auto_save);
-#endif
-#ifdef SIGIOT
-    signal(SIGIOT, auto_save);
-#endif
-#ifdef SIGEMT
-    signal(SIGEMT, auto_save);
-#endif
-#ifdef SIGFPE
-    signal(SIGFPE, auto_save);
-#endif
-#ifdef SIGBUS
-    signal(SIGBUS, auto_save);
-#endif
-#ifdef SIGSEGV
-    signal(SIGSEGV, auto_save);
-#endif
-#ifdef SIGSYS
-    signal(SIGSYS, auto_save);
-#endif
-#ifdef SIGTERM
-    signal(SIGTERM, auto_save);
-#endif
-#ifdef SIGINT
-    signal(SIGINT, quit);
-#endif
-}
-
 int
 md_hasclreol()
 {

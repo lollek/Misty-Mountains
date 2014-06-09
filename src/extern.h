@@ -184,7 +184,6 @@ void md_tstpsignal();
 void md_tstphold();
 void md_tstpresume();
 void md_ignoreallsignals();
-void md_onsignal_autosave();
 void md_onsignal_exit();
 int md_issymlink(char *sp);
 
