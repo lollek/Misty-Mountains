@@ -145,7 +145,6 @@ save_file(FILE *savef)
     mvcur(0, COLS - 1, LINES - 1, 0); 
     putchar('\n');
     endwin();
-    resetltchars();
     chmod(file_name, 0400);
     encwrite(version, strlen(version)+1, savef);
     sprintf(buf,"%d x %d\n", LINES, COLS);

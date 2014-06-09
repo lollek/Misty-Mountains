@@ -135,25 +135,6 @@ md_crypt(char *key, char *salt)
 }
 
 int
-md_setdsuspchar(int c)
-{
-#if defined(VDSUSP)			/* POSIX has priority */
-    struct termios attr;
-    tcgetattr(STDIN_FILENO, &attr);
-    attr.c_cc[VDSUSP] = c;
-    tcgetattr(STDIN_FILENO, &attr);
-#elif defined(TIOCSLTC)
-    struct ltchars ltc;
-    ioctl(1, TIOCGLTC, &ltc);
-    ltc.t_dsuspc = c;
-    ioctl(1, TIOCSLTC, &ltc);
-#else
-    NOOP(c);
-#endif
-    return(0);
-}
-
-int
 md_suspchar()
 {
 #if defined(VSUSP)			/* POSIX has priority */

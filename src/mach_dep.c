@@ -174,45 +174,7 @@ setup()
     raw();				/* Raw mode */
     noecho();				/* Echo off */
     keypad(stdscr,1);
-    getltchars();			/* get the local tty chars */
 }
-
-/*
- * getltchars:
- *	Get the local tty chars for later use
- */
-
-void
-getltchars()
-{
-    got_ltc = TRUE;
-    orig_dsusp = _POSIX_VDISABLE;
-    md_setdsuspchar( md_suspchar() );
-}
-
-/* 
- * resetltchars: 
- *      Reset the local tty chars to original values. 
- */ 
-void 
-resetltchars(void) 
-{ 
-    if (got_ltc) {
-        md_setdsuspchar(orig_dsusp);
-    } 
-} 
-  
-/* 
- * playltchars: 
- *      Set local tty chars to the values we use when playing. 
- */ 
-void 
-playltchars(void) 
-{ 
-    if (got_ltc) { 
-        md_setdsuspchar( md_suspchar() );
-    } 
-} 
 
 /*
  * start_score:

@@ -188,7 +188,6 @@ tstp(int ignored)
   getyx(curscr, oy, ox);
   mvcur(0, COLS - 1, LINES - 1, 0);
   endwin();
-  resetltchars();
   fflush(stdout);
   md_tstpsignal();
 
@@ -197,7 +196,6 @@ tstp(int ignored)
   raw();
   noecho();
   keypad(stdscr,1);
-  playltchars();
   clearok(curscr, TRUE);
   wrefresh(curscr);
   getyx(curscr, y, x);
@@ -310,7 +308,6 @@ shell()
   move(LINES-1, 0);
   refresh();
   endwin();
-  resetltchars();
   putchar('\n');
   in_shell = TRUE;
   after = FALSE;
@@ -324,7 +321,6 @@ shell()
   noecho();
   raw();
   keypad(stdscr,1);
-  playltchars();
   in_shell = FALSE;
   wait_for('\n');
   clearok(stdscr, TRUE);
@@ -336,7 +332,6 @@ shell()
 void
 my_exit(int st)
 {
-  resetltchars();
   exit(st);
 }
 

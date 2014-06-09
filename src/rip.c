@@ -79,7 +79,6 @@ score(int amount, int flags, char monst)
         wgetnstr(stdscr,prbuf,80);
  	endwin();
         printf("\n");
-        resetltchars();
 	/*
 	 * free up space to "guarantee" there is space for the top_ten
 	 */
