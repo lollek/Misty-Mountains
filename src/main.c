@@ -65,12 +65,7 @@ main(int argc, char **argv)
   if (env == NULL || whoami[0] == '\0')
     strucpy(whoami, md_getusername(), (int) strlen(md_getusername()));
   lowtime = (int) time(NULL);
-#ifdef MASTER
-  if (wizard && getenv("SEED") != NULL)
-    dnum = atoi(getenv("SEED"));
-  else
-#endif
-    dnum = lowtime + getpid();
+  dnum = lowtime + getpid();
   seed = dnum;
 
   open_score();
@@ -333,16 +328,17 @@ parse_args(int argc, char **argv)
   const char *version_string = "Rogue14 mod1 - Based on Rogue5.4.4";
   int option_index = 0;
   struct option long_options[] = {
-    {"restore",   no_argument, 0, 'r'},
-    {"score",     no_argument, 0, 's'},
-    {"help",      no_argument, 0, '0'},
-    {"version",   no_argument, 0, '1'},
-    {0,           0,           0,  0 }
+    {"restore",   no_argument,       0, 'r'},
+    {"score",     no_argument,       0, 's'},
+    {"seed",      required_argument, 0, 'S'},
+    {"help",      no_argument,       0, '0'},
+    {"version",   no_argument,       0, '1'},
+    {0,           0,                 0,  0 }
   };
 
   for (;;)
   {
-    int c = getopt_long(argc, argv, "rs", long_options, &option_index);
+    int c = getopt_long(argc, argv, "rsS:", long_options, &option_index);
     if (c == -1)
       break;
 
@@ -355,11 +351,15 @@ parse_args(int argc, char **argv)
         noscore = TRUE;
         score(0, -1, 0);
         exit(0);
+      case 'S':
+        seed = dnum = atoi(optarg);
+        break;
       case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
                "Run Rogue14 with selected options or a savefile\n\n"
                "  -r, --restore        restore game to default\n"
                "  -s, --score          display the highscore and exit\n"
+               "  -S, --seed=NUMBER    set map seed to NUMBER\n"
                "      --help           display this help and exit\n"
                "      --version        display game version and exit\n\n"
                "%s\n", argv[0], version_string);
