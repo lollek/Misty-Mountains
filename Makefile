@@ -10,8 +10,8 @@
 #
 
 
-DISTNAME = rogue5.4.4
-PROGRAM  = rogue54
+DISTNAME = rogue14 mod1
+PROGRAM  = rogue14
 O        = o
 HDRS	 = $(wildcard src/*.h)
 OBJS     = $(addsuffix .o, $(basename $(wildcard src/*.c)))
