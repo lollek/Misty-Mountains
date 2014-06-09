@@ -46,11 +46,10 @@
 int
 md_hasclreol()
 {
-    if (cur_term == NULL)
-	return(0);
-    if (cur_term->type.Strings == NULL)
-	return(0);
-    return((clr_eol != NULL) && (*clr_eol != 0));
+  return cur_term != NULL &&
+         cur_term->type.Strings != NULL &&
+         clr_eol != NULL &&
+         *clr_eol != 0;
 }
 
 void
