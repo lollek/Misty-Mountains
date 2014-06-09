@@ -1,6 +1,12 @@
 TODO:
   Add colors
-  Remove -d as it doesn't work
+  Use getopt to make option parsing nicer
+  Remove ESC delay - maybe set it as an option
+  Change to GNU/Linux only
+
+Bugfix:
+  Fix so you can ID rings on your hand (also check armor/wp/etc)
 
 Rogue 5.4.4 - Mod 1
   Removed -d flag as it didn't make any sense to me
+
