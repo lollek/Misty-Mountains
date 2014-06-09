@@ -153,7 +153,6 @@ setup()
     signal(SIGSYS, auto_save);
     signal(SIGTERM, auto_save);
     signal(SIGINT, quit);
-    md_onsignal_autosave();
 #else
     signal(SIGHUP, SIG_DFL);
     signal(SIGQUIT, SIG_DFL);

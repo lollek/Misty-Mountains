@@ -43,21 +43,6 @@
 
 #define NOOP(x) (x += 0)
 
-void
-md_onsignal_exit()
-{
-    signal(SIGHUP, SIG_DFL);
-    signal(SIGQUIT, exit);
-    signal(SIGILL, exit);
-    signal(SIGTRAP, exit);
-    signal(SIGIOT, exit);
-    signal(SIGFPE, exit);
-    signal(SIGBUS, exit);
-    signal(SIGSEGV, exit);
-    signal(SIGSYS, exit);
-    signal(SIGTERM, exit);
-}
-
 int
 md_hasclreol()
 {

@@ -27,7 +27,16 @@ main(int argc, char **argv, char **envp)
 
   /* from md_init - try to remove these */
   ESCDELAY=64;
-  md_onsignal_exit();
+  signal(SIGHUP, SIG_DFL);
+  signal(SIGQUIT, exit);
+  signal(SIGILL, exit);
+  signal(SIGTRAP, exit);
+  signal(SIGIOT, exit);
+  signal(SIGFPE, exit);
+  signal(SIGBUS, exit);
+  signal(SIGSEGV, exit);
+  signal(SIGSYS, exit);
+  signal(SIGTERM, exit);
 
 #ifdef MASTER
   /* Check to see if he is a wizard */
