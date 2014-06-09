@@ -291,9 +291,6 @@ over:
 		    after = FALSE;
 		    clearok(curscr,TRUE);
 		    wrefresh(curscr);
-		when 'v':
-		    after = FALSE;
-		    msg("version %s. (mctesq was here)", release);
 		when 'S': 
 		    after = FALSE;
 		    save_game();
