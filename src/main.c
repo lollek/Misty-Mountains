@@ -27,7 +27,6 @@ int
 main(int argc, char **argv)
 {
   char *env;
-  int lowtime;
 
   /* from md_init - try to remove these */
   ESCDELAY = 0; /* Set the delay before ESC cancels */
@@ -64,8 +63,7 @@ main(int argc, char **argv)
     parse_opts(env);
   if (env == NULL || whoami[0] == '\0')
     strucpy(whoami, md_getusername(), (int) strlen(md_getusername()));
-  lowtime = (int) time(NULL);
-  dnum = lowtime + getpid();
+  dnum = time(NULL) + getpid();
   seed = dnum;
 
   open_score();
