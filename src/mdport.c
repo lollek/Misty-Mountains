@@ -316,66 +316,13 @@ md_readchar()
   return(ch & 0x7F);
 }
 
-#if defined(LOADAV) && defined(HAVE_NLIST_H) && defined(HAVE_NLIST)
-/*
- * loadav:
- *	Looking up load average in core (for system where the loadav()
- *	system call isn't defined
- */
-
-#include <nlist.h>
-
-struct nlist avenrun = {
-    "_avenrun"
-};
-
-void
-md_loadav(double *avg)
-{
-    int kmem;
-
-    if ((kmem = open("/dev/kmem", 0)) < 0)
-	goto bad;
-    nlist(NAMELIST, &avenrun);
-    if (avenrun.n_type == 0)
-    {
-	close(kmem);
-bad:
-	avg[0] = 0.0;
-	avg[1] = 0.0;
-	avg[2] = 0.0;
-	return;
-    }
-
-    lseek(kmem, avenrun.n_value, 0);
-    read(kmem, (char *) avg, 3 * sizeof (double));
-    close(kmem);
-}
-#else
-void
-md_loadav(double *avg)
-{
-#if defined(HAVE_LOADAV)
-	loadav(avg);
-#elif defined(HAVE_GETLOADAVG)
-	getloadavg(avg,3);
-#else
-	avg[0] = avg[1] = avg[2] = 0;
-#endif
-}
-#endif
-
-#ifndef NSIG
-#define NSIG 32
-#endif
-
 void
 md_ignoreallsignals()
 {
-	int i;
+  int i;
 
-	for (i = 0; i < NSIG; i++)
-		signal(i, SIG_IGN);
+  for (i = 0; i < NSIG; i++)
+    signal(i, SIG_IGN);
 }
 
 void

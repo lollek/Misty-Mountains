@@ -224,7 +224,7 @@ too_much()
 #endif
 
 #ifdef MAXLOAD
-    md_loadav(avec);
+    getloadav(avec, 3);
     if (avec[1] > (MAXLOAD / 10.0))
 	return TRUE;
 #endif
