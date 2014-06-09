@@ -254,7 +254,7 @@ death(char monst)
     printf("[Press return to continue]");
     fflush(stdout);
     (void) fgets(prbuf,10,stdin);
-    my_exit(0);
+    exit(0);
 }
 
 /*
@@ -365,7 +365,7 @@ total_winner()
     printw("   %5d  Gold Pieces          ", oldpurse);
     refresh();
     score(purse, 2, ' ');
-    my_exit(0);
+    exit(0);
 }
 
 /*

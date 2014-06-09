@@ -50,7 +50,6 @@ void endit(int sig);
 void fatal();
 void land();
 void leave(int);
-void my_exit();
 void nohaste();
 void playit();
 void print_disc(char);

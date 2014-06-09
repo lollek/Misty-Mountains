@@ -96,7 +96,7 @@ main(int argc, char **argv)
   {
     printf("\nSorry, the screen must be at least %dx%d\n", NUMLINES, NUMCOLS);
     endwin();
-    my_exit(1);
+    exit(1);
   }
 
   /* Set up windows */
@@ -137,7 +137,7 @@ fatal(char *s)
   mvaddstr(LINES - 2, 0, s);
   refresh();
   endwin();
-  my_exit(0);
+  exit(0);
 }
 
 /** rnd:
@@ -248,7 +248,7 @@ quit(int sig)
     move(LINES - 1, 0);
     refresh();
     score(purse, 1, 0);
-    my_exit(0);
+    exit(0);
   }
   else
   {
@@ -282,7 +282,7 @@ leave(int sig)
   }
 
   putchar('\n');
-  my_exit(0);
+  exit(0);
 }
 
 /* shell:
@@ -311,15 +311,6 @@ shell()
   clearok(stdscr, TRUE);
 }
 
-/* my_exit:
- * Leave the process properly
- */
-void
-my_exit(int st)
-{
-  exit(st);
-}
-
 void
 parse_args(int argc, char **argv)
 {
@@ -344,7 +335,7 @@ parse_args(int argc, char **argv)
     {
       case 'r':
         if (!restore("-r"))  /* Note: restore will never return */
-          my_exit(1);
+          exit(1);
       case 's':
         noscore = TRUE;
         score(0, -1, 0);
@@ -375,7 +366,7 @@ parse_args(int argc, char **argv)
   if (optind < argc)
   {
     if (!restore(argv[optind]))  /* Note: restore will never return */
-      my_exit(1);
+      exit(1);
   }
 }
 
