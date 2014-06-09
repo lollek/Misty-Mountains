@@ -30,7 +30,7 @@ AFILES   = configure Makefile.in configure.ac config.h.in config.sub config.gues
 MISC     = Makefile.std LICENSE.TXT rogue54.sln rogue54.vcproj rogue.spec \
            rogue.png rogue.desktop
 CC       = gcc
-FEATURES = -DALLSCORES -DSCOREFILE=\"$(SCOREFILE)\" -DLOCKFILE=\"$(LOCKFILE)\"
+FEATURES = -DSCOREFILE=\"$(SCOREFILE)\" -DLOCKFILE=\"$(LOCKFILE)\"
 CPPFLAGS =
 CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic
 LDFLAGS  =

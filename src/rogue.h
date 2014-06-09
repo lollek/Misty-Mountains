@@ -461,7 +461,7 @@ struct monster {
  * External variables
  */
 
-extern bool	after, again, allscore, amulet, door_stop, fight_flush,
+extern bool	after, again, amulet, door_stop, fight_flush,
 		firstmove, has_hit, inv_describe, jump, kamikaze,
 		lower_msg, move_on, msg_esc, pack_used[],
 		passgo, playing, q_comm, running, save_msg, see_floor,

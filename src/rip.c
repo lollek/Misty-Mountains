@@ -121,23 +121,9 @@ score(int amount, int flags, char monst)
 	for (scp = top_ten; scp < endp; scp++)
 	    if (amount > scp->sc_score)
 		break;
-	    else if (!allscore &&	/* only one score per nowin uid */
-		flags != 2 && scp->sc_uid == uid && scp->sc_flags != 2)
-		    scp = endp;
 	if (scp < endp)
 	{
-	    if (flags != 2 && !allscore)
-	    {
-		for (sc2 = scp; sc2 < endp; sc2++)
-		{
-		    if (sc2->sc_uid == uid && sc2->sc_flags != 2)
-			break;
-		}
-		if (sc2 >= endp)
-		    sc2 = endp - 1;
-	    }
-	    else
-		sc2 = endp - 1;
+	    sc2 = endp - 1;
 	    while (sc2 > scp)
 	    {
 		*sc2 = sc2[-1];
@@ -160,7 +146,7 @@ score(int amount, int flags, char monst)
      */
     if (flags != -1)
 	putchar('\n');
-    printf("Top %s %s:\n", Numname, allscore ? "Scores" : "Rogueists");
+    printf("Top %s %s:\n", Numname, "Scores");
     printf("   Score Name\n");
     for (scp = top_ten; scp < endp; scp++)
     {

@@ -14,10 +14,6 @@
  * The various tuneable defines are:
  *
  *	SCOREFILE	Where/if the score file should live.
- *	ALLSCORES	Score file is top ten scores, not top ten
- *			players.  This is only useful when only a few
- *			people will be playing; otherwise the score file
- *			gets hogged by just a few people.
  *	NUMSCORES	Number of scores in the score file (default 10).
  *	NUMNAME		String version of NUMSCORES (first character
  *			should be capitalized) (default "Ten").
@@ -59,12 +55,6 @@
 
 unsigned int numscores = NUMSCORES;
 char *Numname = NUMNAME;
-
-# ifdef ALLSCORES
-bool allscore = TRUE;
-# else  /* ALLSCORES */
-bool allscore = FALSE;
-# endif /* ALLSCORES */
 
 #ifdef CHECKTIME
 static int num_checks;		/* times we've gone over in checkout() */
