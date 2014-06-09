@@ -166,11 +166,10 @@ save_file(FILE *savef)
  *	integrity from cheaters
  */
 bool
-restore(char *file, char **envp)
+restore(char *file)
 {
     FILE *inf;
     int syml;
-    extern char **environ;
     auto char buf[MAXSTR];
     auto STAT sbuf2;
     int lines, cols;
@@ -258,7 +257,6 @@ restore(char *file, char **envp)
 	return FALSE;
     }
 
-    environ = envp;
     strcpy(file_name, file);
     clearok(curscr, TRUE);
     srand(getpid());

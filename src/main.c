@@ -20,7 +20,7 @@
  * The main program, of course
  */
 int
-main(int argc, char **argv, char **envp)
+main(int argc, char **argv)
 {
   char *env;
   int lowtime;
@@ -83,7 +83,7 @@ main(int argc, char **argv, char **envp)
 
   init_check();   /* check for legal startup */
   if (argc == 2)
-    if (!restore(argv[1], envp))  /* Note: restore will never return */
+    if (!restore(argv[1]))  /* Note: restore will never return */
       my_exit(1);
 #ifdef MASTER
   if (wizard)
