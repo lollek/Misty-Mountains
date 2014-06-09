@@ -123,9 +123,14 @@ void
 auto_save(int sig)
 {
     FILE *savef;
+    int i;
+
+    /* Ignore all signals */
+    for (i = 0; i < NSIG; i++)
+      signal(i, SIG_IGN);
+
     NOOP(sig);
 
-    md_ignoreallsignals();
     if (file_name[0] != '\0' && ((savef = fopen(file_name, "w")) != NULL ||
 	(unlink(file_name) >= 0 && 
          (savef = fopen(file_name, "w")) != NULL)))

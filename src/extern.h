@@ -170,6 +170,5 @@ int	md_hasclreol();
 void md_tstpsignal();
 void md_tstphold();
 void md_tstpresume();
-void md_ignoreallsignals();
 int md_issymlink(char *sp);
 

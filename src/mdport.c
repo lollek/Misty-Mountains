@@ -317,15 +317,6 @@ md_readchar()
 }
 
 void
-md_ignoreallsignals()
-{
-  int i;
-
-  for (i = 0; i < NSIG; i++)
-    signal(i, SIG_IGN);
-}
-
-void
 md_tstphold()
 {
 #ifdef SIGTSTP
