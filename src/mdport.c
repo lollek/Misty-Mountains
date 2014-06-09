@@ -68,16 +68,6 @@ md_normaluser()
   }
 }
 
-int
-md_getuid()
-{
-#ifdef HAVE_GETUID
-    return( getuid() );
-#else
-    return(42);
-#endif
-}
-
 char *
 md_getusername()
 {

@@ -284,7 +284,7 @@ author()
     if (wizard)
 	return TRUE;
 #endif
-    switch (md_getuid())
+    switch (getuid())
     {
 	case -1:
 	    return TRUE;

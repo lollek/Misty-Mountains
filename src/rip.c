@@ -19,6 +19,8 @@
 #include <ctype.h>
 #include <fcntl.h>
 #include <curses.h>
+#include <unistd.h>
+
 #include "rogue.h"
 #include "score.h"
 
@@ -116,7 +118,7 @@ score(int amount, int flags, char monst)
     sc2 = NULL;
     if (!noscore)
     {
-	uid = md_getuid();
+	uid = getuid();
 	for (scp = top_ten; scp < endp; scp++)
 	    if (amount > scp->sc_score)
 		break;
