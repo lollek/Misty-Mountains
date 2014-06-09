@@ -607,7 +607,8 @@ xcrypt(const char *key, const char *setting)
 	 * and padding with zeros.
 	 */
 	q = (unsigned char *) keybuf;
-	while ((q - (unsigned char *) keybuf) < sizeof(keybuf)) {
+        /* FIXME: Make sure the (signed) doesn't cause any bugs */
+	while ((q - (unsigned char *) keybuf) < (signed) sizeof(keybuf)) {
 		if ((*q++ = *key << 1))
 			key++;
 	}
@@ -636,7 +637,8 @@ xcrypt(const char *key, const char *setting)
 			 * And XOR with the next 8 characters of the key.
 			 */
 			q = (unsigned char *) keybuf;
-			while (((q - (unsigned char *) keybuf) < sizeof(keybuf)) &&
+                        /* FIXME: Make sure the (signed) doesn't cause any bugs */
+			while (((q - (unsigned char *) keybuf) < (signed) sizeof(keybuf)) &&
 					*key)
 				*q++ ^= *key++ << 1;
 
