@@ -167,6 +167,5 @@ void	md_normaluser();
 int	md_readchar();
 int	md_shellescape();
 int	md_hasclreol();
-void md_tstpsignal();
 int md_issymlink(char *sp);
 

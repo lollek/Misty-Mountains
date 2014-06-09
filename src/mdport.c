@@ -316,14 +316,6 @@ md_readchar()
   return(ch & 0x7F);
 }
 
-void
-md_tstpsignal()
-{
-#ifdef SIGTSTP
-    kill(0, SIGTSTP);		/* send actual signal and suspend process */
-#endif
-}
-
 #if defined(CHECKTIME)
 void
 md_start_checkout_timer(int time)

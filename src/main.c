@@ -189,7 +189,6 @@ tstp(int ignored)
   mvcur(0, COLS - 1, LINES - 1, 0);
   endwin();
   fflush(stdout);
-  md_tstpsignal();
 
   /* start back up again */
   raw();
