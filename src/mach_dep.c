@@ -186,7 +186,7 @@ void
 getltchars()
 {
     got_ltc = TRUE;
-    orig_dsusp = md_dsuspchar();
+    orig_dsusp = _POSIX_VDISABLE;
     md_setdsuspchar( md_suspchar() );
 }
 
