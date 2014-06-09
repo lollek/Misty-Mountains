@@ -311,16 +311,14 @@ shell()
   after = FALSE;
   fflush(stdout);
 
-  /* Fork and do a shell */
-  md_shellescape();
+  /* Return to shell */
+  kill(getpid(), SIGSTOP);
 
-  printf("\n[Press return to continue]");
   fflush(stdout);
   noecho();
   raw();
   keypad(stdscr,1);
   in_shell = FALSE;
-  wait_for('\n');
   clearok(stdscr, TRUE);
 }
 

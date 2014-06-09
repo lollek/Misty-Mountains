@@ -78,7 +78,6 @@ char *md_getusername();
 char *md_getrealname(int uid);
 void md_normaluser();
 int md_readchar();
-int md_shellescape();
 int md_hasclreol();
 int md_issymlink(char *sp);
 

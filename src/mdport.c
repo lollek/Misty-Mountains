@@ -104,13 +104,6 @@ md_gethomedir()
   return homedir;
 }
 
-int
-md_shellescape()
-{
-  puts("Shell escape has been removed, use ^Z instead");
-  return(0);
-}
-
 char *
 md_getrealname(int uid)
 {

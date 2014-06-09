@@ -177,7 +177,9 @@ over:
                         endmsg();
 		    }
 		}
-		when '!': shell();
+		when CTRL('Z'): shell();
+		when '!': addmsg("Shell has been removed, use ^Z instead");
+		          endmsg();
 		when 'h': do_move(0, -1);
 		when 'j': do_move(1, 0);
 		when 'k': do_move(-1, 0);
