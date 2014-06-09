@@ -186,16 +186,10 @@ md_hasclreol()
 }
 
 void
-md_putchar(int c)
-{
-    putchar(c);
-}
-
-void
 md_raw_standout()
 {
 #if defined(SO)
-    tputs(SO,0,md_putchar);
+    tputs(SO,0,putchar);
     fflush(stdout);
 #endif
 }
@@ -204,15 +198,9 @@ void
 md_raw_standend()
 {
 #if defined(SE)
-    tputs(SE,0,md_putchar);
+    tputs(SE,0,putchar);
     fflush(stdout);
 #endif
-}
-
-int
-md_unlink_open_file(char *file)
-{
-    return(unlink(file));
 }
 
 int

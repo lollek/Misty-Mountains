@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
+#include <unistd.h>
 #include <curses.h>
 #include "rogue.h"
 #include "score.h"
@@ -126,7 +127,7 @@ auto_save(int sig)
 
     md_ignoreallsignals();
     if (file_name[0] != '\0' && ((savef = fopen(file_name, "w")) != NULL ||
-	(md_unlink_open_file(file_name) >= 0 && 
+	(unlink(file_name) >= 0 && 
          (savef = fopen(file_name, "w")) != NULL)))
 	    save_file(savef);
     exit(0);
@@ -224,7 +225,7 @@ restore(char *file, char **envp)
 #ifdef MASTER
 	!wizard &&
 #endif
-        md_unlink_open_file(file) < 0)
+        unlink(file) < 0)
     {
 	printf("Cannot unlink file\n");
 	return FALSE;
