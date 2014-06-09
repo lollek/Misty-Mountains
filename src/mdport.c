@@ -72,25 +72,11 @@ char *
 md_getusername()
 {
     static char login[80];
-    char *l = NULL;
-#if defined(HAVE_GETPWUID)&& !defined(__DJGPP__)
-    struct passwd *pw;
+    struct passwd *pw = getpwuid(getuid());
 
-    pw = getpwuid(getuid());
-
-    l = pw->pw_name;
-#endif
-
-    if ((l == NULL) || (*l == '\0'))
-        if ( (l = getenv("USERNAME")) == NULL )
-            if ( (l = getenv("LOGNAME")) == NULL )
-                if ( (l = getenv("USER")) == NULL )
-                    l = "nobody";
-
-    strncpy(login,l,80);
+    strncpy(login, pw == NULL ? "nobody" : pw->pw_name, 80);
     login[79] = 0;
-
-    return(login);
+    return login;
 }
 
 char *
