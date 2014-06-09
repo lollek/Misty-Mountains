@@ -170,7 +170,6 @@ char	*md_getusername();
 int	md_getuid();
 char	*md_getpass(char *prompt);
 char	*md_getrealname(int uid);
-void	md_init();
 int	md_killchar();
 void	md_normaluser();
 void	md_raw_standout();

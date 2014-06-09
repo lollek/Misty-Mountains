@@ -44,11 +44,6 @@
 #define NOOP(x) (x += 0)
 
 void
-md_init()
-{
-ESCDELAY=64;
-md_onsignal_exit();
-}
 
 void
 md_onsignal_default()

@@ -25,7 +25,9 @@ main(int argc, char **argv, char **envp)
   char *env;
   int lowtime;
 
-  md_init();
+  /* from md_init - try to remove these */
+  ESCDELAY=64;
+  md_onsignal_exit();
 
 #ifdef MASTER
   /* Check to see if he is a wizard */
