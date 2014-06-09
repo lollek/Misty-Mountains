@@ -41,7 +41,7 @@ main(int argc, char **argv, char **envp)
 #ifdef MASTER
   /* Check to see if he is a wizard */
   if (argc >= 2 && argv[1][0] == '\0' &&
-      strcmp(PASSWD, md_crypt(md_getpass("wizard's password: "), "mT")) == 0)
+      strcmp(PASSWD, md_crypt(getpass("wizard's password: "), "mT")) == 0)
   {
     wizard = TRUE;
     player.t_flags |= SEEMONST;
