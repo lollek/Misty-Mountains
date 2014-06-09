@@ -162,7 +162,6 @@ char	*type_name(int type);
 int	checkout();
 #endif
 
-int	md_chmod(char *filename, int mode);
 char	*md_crypt(char *key, char *salt);
 int	md_dsuspchar();
 int	md_erasechar();

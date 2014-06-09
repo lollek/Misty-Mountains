@@ -203,12 +203,6 @@ md_raw_standend()
 #endif
 }
 
-int
-md_chmod(char *filename, int mode)
-{
-    return( chmod(filename, mode) );
-}
-
 void
 md_normaluser()
 {

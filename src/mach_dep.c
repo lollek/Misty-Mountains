@@ -117,7 +117,7 @@ open_score()
     if ((scoreboard == NULL) && (errno == ENOENT))
     {
     	scoreboard = fopen(scorefile, "w+");
-        md_chmod(scorefile,0664);
+        chmod(scorefile,0664);
     }
 
     if (scoreboard == NULL) { 

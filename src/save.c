@@ -146,7 +146,7 @@ save_file(FILE *savef)
     putchar('\n');
     endwin();
     resetltchars();
-    md_chmod(file_name, 0400);
+    chmod(file_name, 0400);
     encwrite(version, strlen(version)+1, savef);
     sprintf(buf,"%d x %d\n", LINES, COLS);
     encwrite(buf,80,savef);
