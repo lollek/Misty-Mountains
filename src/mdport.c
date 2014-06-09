@@ -135,18 +135,6 @@ md_crypt(char *key, char *salt)
 }
 
 int
-md_erasechar()
-{
-#ifdef HAVE_ERASECHAR
-    return( erasechar() ); /* process erase character */
-#elif defined(VERASE)
-    return(_tty.c_cc[VERASE]); /* process erase character */
-#else
-    return(_tty.sg_erase); /* process erase character */
-#endif
-}
-
-int
 md_killchar()
 {
 #ifdef HAVE_KILLCHAR

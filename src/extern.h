@@ -164,7 +164,6 @@ int	checkout();
 
 char	*md_crypt(char *key, char *salt);
 int	md_dsuspchar();
-int	md_erasechar();
 char	*md_gethomedir();
 char	*md_getusername();
 char	*md_getrealname(int uid);
