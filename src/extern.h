@@ -50,7 +50,6 @@
 #define HAVE_UNISTD_H 1
 #define HAVE_TERMIOS_H 1
 #define HAVE_NCURSES_TERM_H 1
-#define HAVE_ESCDELAY
 #define HAVE_SETGID 1
 #define HAVE_GETGID 1
 #define HAVE_SETUID 1
@@ -185,7 +184,7 @@ void	md_sleep(int s);
 int	md_suspchar();
 int	md_hasclreol();
 int	md_unlink(char *file);
-int	md_unlink_open_file(char *file, FILE *inf);
+int	md_unlink_open_file(char *file);
 void md_tstpsignal();
 void md_tstphold();
 void md_tstpresume();

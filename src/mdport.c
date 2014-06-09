@@ -29,112 +29,25 @@
     SUCH DAMAGE.
 */
 
-#include <stdlib.h>
 #include <string.h>
-
-#if defined(_WIN32)
-#include <Windows.h>
-#include <Lmcons.h>
-#include <io.h>
-#include <conio.h>
-#pragma warning( disable: 4201 ) 
-#include <shlobj.h>
-#pragma warning( default: 4201 ) 
-#include <Shlwapi.h>
-#undef MOUSE_MOVED
-#endif
-
-#include <curses.h>
-#include "extern.h"
-
-#if defined(HAVE_SYS_TYPES)
-#include <sys/types.h>
-#endif
-
-#if defined(HAVE_PROCESS_H)
-#include <process.h>
-#endif
-
-#if defined(HAVE_PWD_H)
+#include <unistd.h>
 #include <pwd.h>
-#endif
-
-#if defined(HAVE_SYS_UTSNAME)
-#include <sys/utsname.h>
-#endif
-
-#if defined(HAVE_ARPA_INET_H)
-#include <arpa/inet.h> /* Solaris 2.8 required this for htonl() and ntohl() */
-#endif
-
-#if defined(HAVE_TERMIOS_H)
-#include <termios.h>
-#endif
-
-#if defined(HAVE_UNISTD_H)
-#ifndef __USE_GNU
-#define __USE_GNU
-#include <unistd.h>
-#undef __USE_GNU
-#else
-#include <unistd.h>
-#endif
-#endif
-
-#include <curses.h> /* AIX requires curses.h be included before term.h */
-
-#if defined(HAVE_TERM_H)
+#include <curses.h>
 #include <term.h>
-#elif defined(HAVE_NCURSES_TERM_H)
-#include <ncurses/term.h>
-#endif
-
-#if defined(HAVE_WORKING_FORK)
 #include <sys/wait.h>
-#endif
-
 #include <ctype.h>
-#include <fcntl.h>
 #include <limits.h>
 #include <sys/stat.h>
-#include <signal.h>
+
 #include "extern.h"
-
-#if !defined(PATH_MAX) && defined(_MAX_PATH)
-#define PATH_MAX _MAX_PATH
-#endif
-
-#if !defined(PATH_MAX) && defined(_PATH_MAX)
-#define PATH_MAX _PATH_MAX
-#endif
 
 #define NOOP(x) (x += 0)
 
 void
 md_init()
 {
-#if defined(__INTERIX)
-    char *term;
-
-    term = getenv("TERM");
-
-    if (term == NULL)
-        setenv("TERM","interix");
-#elif defined(__DJGPP__)
-    _fmode = _O_BINARY;
-#elif defined(_WIN32)
-    _fmode = _O_BINARY;
-#endif
-
-#if defined(HAVE_ESCDELAY) || defined(NCURSES_VERSION)
-    ESCDELAY=64;
-#endif
-
-#if defined(DUMP)
-	md_onsignal_default();
-#else
-	md_onsignal_exit();
-#endif
+ESCDELAY=64;
+md_onsignal_exit();
 }
 
 void
@@ -278,28 +191,10 @@ md_putchar(int c)
     putchar(c);
 }
 
-#ifdef _WIN32
-static int md_standout_mode = 0;
-#endif
-
 void
 md_raw_standout()
 {
-#ifdef _WIN32
-    CONSOLE_SCREEN_BUFFER_INFO csbiInfo; 
-    HANDLE hStdout;
-    WORD fgattr,bgattr;
-
-    if (md_standout_mode == 0)
-    {
-        hStdout = GetStdHandle(STD_OUTPUT_HANDLE); 
-        GetConsoleScreenBufferInfo(hStdout, &csbiInfo);
-        fgattr = (csbiInfo.wAttributes & 0xF);
-        bgattr = (csbiInfo.wAttributes & 0xF0);
-        SetConsoleTextAttribute(hStdout,(fgattr << 4) | (bgattr >> 4));
-        md_standout_mode = 1;
-    }
-#elif defined(SO)
+#if defined(SO)
     tputs(SO,0,md_putchar);
     fflush(stdout);
 #endif
@@ -308,57 +203,28 @@ md_raw_standout()
 void
 md_raw_standend()
 {
-#ifdef _WIN32
-    CONSOLE_SCREEN_BUFFER_INFO csbiInfo; 
-    HANDLE hStdout;
-    WORD fgattr,bgattr;
-
-    if (md_standout_mode == 1)
-    {
-        hStdout = GetStdHandle(STD_OUTPUT_HANDLE); 
-        GetConsoleScreenBufferInfo(hStdout, &csbiInfo);
-        fgattr = (csbiInfo.wAttributes & 0xF);
-        bgattr = (csbiInfo.wAttributes & 0xF0);
-        SetConsoleTextAttribute(hStdout,(fgattr << 4) | (bgattr >> 4));
-        md_standout_mode = 0;
-    }
-#elif defined(SE)
+#if defined(SE)
     tputs(SE,0,md_putchar);
     fflush(stdout);
 #endif
 }
 
 int
-md_unlink_open_file(char *file, FILE *inf)
+md_unlink_open_file(char *file)
 {
-#ifdef _WIN32
-    fclose(inf);
-    _chmod(file, 0600);
-    return( _unlink(file) );
-#else
     return(unlink(file));
-#endif
 }
 
 int
 md_unlink(char *file)
 {
-#ifdef _WIN32
-    _chmod(file, 0600);
-    return( _unlink(file) );
-#else
     return(unlink(file));
-#endif
 }
 
 int
 md_chmod(char *filename, int mode)
 {
-#ifdef _WIN32
-    return( _chmod(filename, mode) );
-#else
     return( chmod(filename, mode) );
-#endif
 }
 
 void
@@ -409,11 +275,7 @@ md_getuid()
 int
 md_getpid()
 {
-#ifdef _WIN32
-    return( _getpid() );
-#else
     return( getpid() );
-#endif
 }
 
 char *
@@ -421,15 +283,7 @@ md_getusername()
 {
     static char login[80];
     char *l = NULL;
-#ifdef _WIN32
-    LPSTR mybuffer;
-    DWORD size = UNLEN + 1;
-    TCHAR buffer[UNLEN + 1];
-
-    mybuffer = buffer;
-    GetUserName(mybuffer,&size);
-    l = mybuffer;
-#elif defined(HAVE_GETPWUID)&& !defined(__DJGPP__)
+#if defined(HAVE_GETPWUID)&& !defined(__DJGPP__)
     struct passwd *pw;
 
     pw = getpwuid(getuid());
@@ -455,12 +309,6 @@ md_gethomedir()
     static char homedir[PATH_MAX];
     char *h = NULL;
     size_t len;
-#if defined(_WIN32)
-    TCHAR szPath[PATH_MAX];
-#endif
-#if defined(_WIN32) || defined(DJGPP)
-        char slash = '\\';
-#else
     char slash = '/';
     struct passwd *pw;
     pw = getpwuid(getuid());
@@ -469,12 +317,7 @@ md_gethomedir()
 
     if (strcmp(h,"/") == 0)
         h = NULL;
-#endif
     homedir[0] = 0;
-#ifdef _WIN32
-    if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, szPath)))
-        h = szPath;
-#endif
 
     if ( (h == NULL) || (*h == '\0') )
     {
@@ -509,11 +352,7 @@ md_gethomedir()
 void
 md_sleep(int s)
 {
-#ifdef _WIN32
-    Sleep(s);
-#else
     sleep(s);
-#endif
 }
 
 char *
@@ -521,16 +360,10 @@ md_getshell()
 {
     static char shell[PATH_MAX];
     char *s = NULL;
-#ifdef _WIN32
-    char *def = "C:\\WINDOWS\\SYSTEM32\\CMD.EXE";
-#elif defined(__DJGPP__)
-    char *def = "C:\\COMMAND.COM";
-#else
     char *def = "/bin/sh";
     struct passwd *pw;
     pw = getpwuid(getuid());
     s = pw->pw_shell;
-#endif
     if ((s == NULL) || (*s == '\0'))
         if ( (s = getenv("COMSPEC")) == NULL)
             if ( (s = getenv("SHELL")) == NULL)
