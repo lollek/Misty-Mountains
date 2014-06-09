@@ -71,58 +71,37 @@ md_normaluser()
 char *
 md_getusername()
 {
-    static char login[80];
-    struct passwd *pw = getpwuid(getuid());
+  static char login[80];
+  struct passwd *pw = getpwuid(getuid());
 
-    strncpy(login, pw == NULL ? "nobody" : pw->pw_name, 80);
-    login[79] = 0;
-    return login;
+  strncpy(login, pw == NULL ? "nobody" : pw->pw_name, 80);
+  login[79] = 0;
+  return login;
 }
 
 char *
 md_gethomedir()
 {
-    static char homedir[PATH_MAX];
-    char *h = NULL;
-    size_t len;
-    char slash = '/';
-    struct passwd *pw;
-    pw = getpwuid(getuid());
+  static char homedir[PATH_MAX];
+  size_t len;
+  struct passwd *pw = getpwuid(getuid());
+  char *h = pw == NULL ? NULL : pw->pw_dir;
 
-    h = pw->pw_dir;
+  if (h == NULL || *h == '\0' || !strcmp(h, "/"))
+    h = getenv("HOME");
+  if (h == NULL || !strcmp(h, "/"))
+    h = "";
 
-    if (strcmp(h,"/") == 0)
-        h = NULL;
-    homedir[0] = 0;
+  strncpy(homedir, h, PATH_MAX);
+  homedir[PATH_MAX -1] = '\0';
 
-    if ( (h == NULL) || (*h == '\0') )
-    {
-        if ( (h = getenv("HOME")) == NULL )
-	{
-            if ( (h = getenv("HOMEDRIVE")) == NULL)
-                h = "";
-            else
-            {
-                strncpy(homedir,h,PATH_MAX-1);
-                homedir[PATH_MAX-1] = 0;
+  if ((len = strlen(homedir)) > 0 && homedir[len -1] != '/')
+  {
+    homedir[len] = '/';
+    homedir[len +1] = '\0';
+  }
 
-                if ( (h = getenv("HOMEPATH")) == NULL)
-                    h = "";
-            }
-	}
-    }
-
-
-    len = strlen(homedir);
-    strncat(homedir,h,PATH_MAX-len-1);
-    len = strlen(homedir);
-
-    if ((len > 0) && (homedir[len-1] != slash)) {
-        homedir[len] = slash;
-        homedir[len+1] = 0;
-    }
-
-    return(homedir);
+  return homedir;
 }
 
 void
