@@ -239,7 +239,7 @@ static bool used[MAX3(NCOLORS, NSTONES, NWOOD)];
 void
 init_colors()
 {
-    register int i, j;
+    register size_t i, j;
 
     for (i = 0; i < NCOLORS; i++)
 	used[i] = FALSE;
@@ -296,7 +296,7 @@ init_names()
 void
 init_stones()
 {
-    register int i, j;
+    register size_t i, j;
 
     for (i = 0; i < NSTONES; i++)
 	used[i] = FALSE;
@@ -318,7 +318,7 @@ init_stones()
 void
 init_materials()
 {
-    register int i, j;
+    register size_t i, j;
     register char *str;
     static bool metused[NMETAL];
 
