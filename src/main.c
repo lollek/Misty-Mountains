@@ -71,13 +71,8 @@ main(int argc, char **argv, char **envp)
 
   open_score();
 
-  /* FIXME: Should we really drop privileges twice? */
-
-  /* Drop setuid/setgid after opening the scoreboard file.  */ 
+  /* Drop setuid/setgid after opening the scoreboard file.  */
   md_normaluser();
-
-  /* check for print-score option */
-  md_normaluser(); /* we drop any setgid/setuid priveldges here */
 
   if (argc == 2 && strcmp(argv[1], "-s") == 0)
   {
