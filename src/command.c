@@ -178,8 +178,8 @@ over:
 		    }
 		}
 		when CTRL('Z'): shell();
-		when '!': addmsg("Shell has been removed, use ^Z instead");
-		          endmsg();
+		when '!': after = FALSE;
+		          msg("Shell has been removed, use ^Z instead");
 		when 'h': do_move(0, -1);
 		when 'j': do_move(1, 0);
 		when 'k': do_move(-1, 0);
