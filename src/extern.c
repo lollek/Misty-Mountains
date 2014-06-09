@@ -187,47 +187,49 @@ struct room passages[MAXPASS] =		/* One for each passage */
 #define XX 10
 struct monster monsters[26] =
     {
-/* Name		 CARRY	FLAG    str, exp, lvl, amr, hpt, dmg */
-{ "aquator",	   0,	ISMEAN,	{ XX, 20,   5,   2, ___, "0x0/0x0" } },
-{ "bat",	   0,	ISFLY,	{ XX,  1,   1,   3, ___, "1x2" } },
-{ "centaur",	  15,	0,	{ XX, 17,   4,   4, ___, "1x2/1x5/1x5" } },
-{ "dragon",	 100,	ISMEAN,	{ XX,5000, 10,  -1, ___, "1x8/1x8/3x10" } },
-{ "emu",	   0,	ISMEAN,	{ XX,  2,   1,   7, ___, "1x2" } },
-{ "venus flytrap", 0,	ISMEAN,	{ XX, 80,   8,   3, ___, "%%%x0" } },
+/* Name		 CARRY	FLAG    str, exp, lvl, amr, hpt, dmg,      ,maxhp */
+{ "aquator",	   0,	ISMEAN,	{ XX, 20,   5,   2, ___, "0x0/0x0", 0 } },
+{ "bat",	   0,	ISFLY,	{ XX,  1,   1,   3, ___, "1x2", 0 } },
+{ "centaur",	  15,	0,	{ XX, 17,   4,   4, ___, "1x2/1x5/1x5", 0 } },
+{ "dragon",	 100,	ISMEAN,	{ XX,5000, 10,  -1, ___, "1x8/1x8/3x10", 0 } },
+{ "emu",	   0,	ISMEAN,	{ XX,  2,   1,   7, ___, "1x2", 0 } },
+{ "venus flytrap", 0,	ISMEAN,	{ XX, 80,   8,   3, ___, "%%%x0", 0 } },
 	/* NOTE: the damage is %%% so that xstr won't merge this */
 	/* string with others, since it is written on in the program */
-{ "griffin",	  20,	ISMEAN|ISFLY|ISREGEN, { XX,2000, 13,   2, ___, "4x3/3x5" } },
-{ "hobgoblin",	   0,	ISMEAN,	{ XX,  3,   1,   5, ___, "1x8" } },
-{ "ice monster",   0,	0,	{ XX,  5,   1,   9, ___, "0x0" } },
-{ "jabberwock",   70,	0,	{ XX,3000, 15,   6, ___, "2x12/2x4" } },
-{ "kestrel",	   0,	ISMEAN|ISFLY,	{ XX,  1,   1,   7, ___, "1x4" } },
-{ "leprechaun",	   0,	0,	{ XX, 10,   3,   8, ___, "1x1" } },
-{ "medusa",	  40,	ISMEAN,	{ XX,200,   8,   2, ___, "3x4/3x4/2x5" } },
-{ "nymph",	 100,	0,	{ XX, 37,   3,   9, ___, "0x0" } },
-{ "orc",	  15,	ISGREED,{ XX,  5,   1,   6, ___, "1x8" } },
-{ "phantom",	   0,	ISINVIS,{ XX,120,   8,   3, ___, "4x4" } },
-{ "quagga",	   0,	ISMEAN,	{ XX, 15,   3,   3, ___, "1x5/1x5" } },
-{ "rattlesnake",   0,	ISMEAN,	{ XX,  9,   2,   3, ___, "1x6" } },
-{ "snake",	   0,	ISMEAN,	{ XX,  2,   1,   5, ___, "1x3" } },
-{ "troll",	  50,	ISREGEN|ISMEAN,{ XX, 120, 6, 4, ___, "1x8/1x8/2x6" } },
-{ "black unicorn", 0,	ISMEAN,	{ XX,190,   7,  -2, ___, "1x9/1x9/2x9" } },
-{ "vampire",	  20,	ISREGEN|ISMEAN,{ XX,350,   8,   1, ___, "1x10" } },
-{ "wraith",	   0,	0,	{ XX, 55,   5,   4, ___, "1x6" } },
-{ "xeroc",	  30,	0,	{ XX,100,   7,   7, ___, "4x4" } },
-{ "yeti",	  30,	0,	{ XX, 50,   4,   6, ___, "1x6/1x6" } },
-{ "zombie",	   0,	ISMEAN,	{ XX,  6,   2,   8, ___, "1x8" } }
+{ "griffin",	  20,	ISMEAN|ISFLY|ISREGEN, { XX,2000, 13,   2, ___, "4x3/3x5", 0 } },
+{ "hobgoblin",	   0,	ISMEAN,	{ XX,  3,   1,   5, ___, "1x8", 0 } },
+{ "ice monster",   0,	0,	{ XX,  5,   1,   9, ___, "0x0", 0 } },
+{ "jabberwock",   70,	0,	{ XX,3000, 15,   6, ___, "2x12/2x4", 0 } },
+{ "kestrel",	   0,	ISMEAN|ISFLY,	{ XX,  1,   1,   7, ___, "1x4", 0 } },
+{ "leprechaun",	   0,	0,	{ XX, 10,   3,   8, ___, "1x1", 0 } },
+{ "medusa",	  40,	ISMEAN,	{ XX,200,   8,   2, ___, "3x4/3x4/2x5", 0 } },
+{ "nymph",	 100,	0,	{ XX, 37,   3,   9, ___, "0x0", 0 } },
+{ "orc",	  15,	ISGREED,{ XX,  5,   1,   6, ___, "1x8", 0 } },
+{ "phantom",	   0,	ISINVIS,{ XX,120,   8,   3, ___, "4x4", 0 } },
+{ "quagga",	   0,	ISMEAN,	{ XX, 15,   3,   3, ___, "1x5/1x5", 0 } },
+{ "rattlesnake",   0,	ISMEAN,	{ XX,  9,   2,   3, ___, "1x6", 0 } },
+{ "snake",	   0,	ISMEAN,	{ XX,  2,   1,   5, ___, "1x3", 0 } },
+{ "troll",	  50,	ISREGEN|ISMEAN,{ XX, 120, 6, 4, ___, "1x8/1x8/2x6", 0 } },
+{ "black unicorn", 0,	ISMEAN,	{ XX,190,   7,  -2, ___, "1x9/1x9/2x9", 0 } },
+{ "vampire",	  20,	ISREGEN|ISMEAN,{ XX,350,   8,   1, ___, "1x10", 0 } },
+{ "wraith",	   0,	0,	{ XX, 55,   5,   4, ___, "1x6", 0 } },
+{ "xeroc",	  30,	0,	{ XX,100,   7,   7, ___, "4x4", 0 } },
+{ "yeti",	  30,	0,	{ XX, 50,   4,   6, ___, "1x6/1x6", 0 } },
+{ "zombie",	   0,	ISMEAN,	{ XX,  6,   2,   8, ___, "1x8", 0 } }
     };
 #undef ___
 #undef XX
 
+    /* Dev info: Only the first two vales are used in this table,
+     *           the others need not be initialized */
 struct obj_info things[NUMTHINGS] = {
-    { 0,			26 },	/* potion */
-    { 0,			36 },	/* scroll */
-    { 0,			16 },	/* food */
-    { 0,			 7 },	/* weapon */
-    { 0,			 7 },	/* armor */
-    { 0,			 4 },	/* ring */
-    { 0,			 4 },	/* stick */
+    { 0,	26,	0,	NULL,	FALSE },	/* potion */
+    { 0,	36,	0,	NULL,	FALSE },	/* scroll */
+    { 0,	16,	0,	NULL,	FALSE },	/* food */
+    { 0,	 7,	0,	NULL,	FALSE },	/* weapon */
+    { 0,	 7,	0,	NULL,	FALSE },	/* armor */
+    { 0,	 4,	0,	NULL,	FALSE },	/* ring */
+    { 0,	 4,	0,	NULL,	FALSE },	/* stick */
 };
 
 struct obj_info arm_info[MAXARMORS] = {
@@ -302,7 +304,8 @@ struct obj_info weap_info[MAXWEAPONS + 1] = {
     { "dart",				12,   2, NULL, FALSE },
     { "shuriken",			12,   5, NULL, FALSE },
     { "spear",				12,   5, NULL, FALSE },
-    { NULL, 0 },	/* DO NOT REMOVE: fake entry for dragon's breath */
+    /* DO NOT REMOVE: fake entry for dragon's breath */
+    { NULL,				0,    0, NULL, FALSE },	
 };
 struct obj_info ws_info[MAXSTICKS] = {
     { "light",			12, 250, NULL, FALSE },
@@ -387,5 +390,5 @@ struct h_list helpstr[] = {
     {'!',	"	shell escape",				TRUE},
     {'F',	"<dir>	fight till either of you dies",		TRUE},
     {'v',	"	print version number",			TRUE},
-    {0,		NULL }
+    { 0 ,		NULL,					FALSE}
 };
