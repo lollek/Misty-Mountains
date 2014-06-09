@@ -403,7 +403,7 @@ over:
 	return TRUE;
     for (cnt = 0; cnt < 5; cnt++)
     {
-	md_sleep(1);
+	sleep(1);
 	if ((lfd=fopen(lockfile, "w+")) != NULL)
 	    return TRUE;
     }
@@ -439,7 +439,7 @@ over:
 		    if (unlink(lockfile) < 0)
 			return FALSE;
 		}
-		md_sleep(1);
+		sleep(1);
 	    }
 	else
 	    return FALSE;

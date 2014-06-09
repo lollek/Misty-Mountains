@@ -174,7 +174,6 @@ void	md_normaluser();
 int	md_readchar();
 int	md_setdsuspchar(int c);
 int	md_shellescape();
-void	md_sleep(int s);
 int	md_suspchar();
 int	md_hasclreol();
 void md_tstpsignal();

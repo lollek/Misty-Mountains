@@ -104,12 +104,6 @@ md_gethomedir()
   return homedir;
 }
 
-void
-md_sleep(int s)
-{
-    sleep(s);
-}
-
 char *
 md_getshell()
 {
