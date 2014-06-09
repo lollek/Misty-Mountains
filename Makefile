@@ -32,7 +32,7 @@ MISC     = Makefile.std LICENSE.TXT rogue54.sln rogue54.vcproj rogue.spec \
 CC       = gcc
 FEATURES = -DALLSCORES -DSCOREFILE=\"$(SCOREFILE)\" -DLOCKFILE=\"$(LOCKFILE)\"
 CPPFLAGS =
-CFLAGS   = -O3
+CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic
 LDFLAGS  =
 LIBS     = -lcurses
 RM       = rm -f
