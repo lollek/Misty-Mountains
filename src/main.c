@@ -26,7 +26,7 @@ main(int argc, char **argv, char **envp)
   int lowtime;
 
   /* from md_init - try to remove these */
-  ESCDELAY=64;
+  ESCDELAY = 0; /* Set the delay before ESC cancels */
   signal(SIGHUP, SIG_DFL);
   signal(SIGQUIT, exit);
   signal(SIGILL, exit);
