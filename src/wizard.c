@@ -245,7 +245,7 @@ passwd()
     mpos = 0;
     sp = buf;
     while ((c = readchar()) != '\n' && c != '\r' && c != ESCAPE)
-	if (c == md_killchar())
+	if (c == killchar())
 	    sp = buf;
 	else if (c == erasechar() && sp > buf)
 	    sp--;

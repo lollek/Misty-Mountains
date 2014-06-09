@@ -135,18 +135,6 @@ md_crypt(char *key, char *salt)
 }
 
 int
-md_killchar()
-{
-#ifdef HAVE_KILLCHAR
-    return( killchar() );
-#elif defined(VKILL)
-    return(_tty.c_cc[VKILL]);
-#else
-    return(_tty.sg_kill);
-#endif
-}
-
-int
 md_dsuspchar()
 {
 #if defined(VDSUSP)			/* POSIX has priority */

@@ -167,7 +167,6 @@ int	md_dsuspchar();
 char	*md_gethomedir();
 char	*md_getusername();
 char	*md_getrealname(int uid);
-int	md_killchar();
 void	md_normaluser();
 int	md_readchar();
 int	md_setdsuspchar(int c);
