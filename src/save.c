@@ -178,8 +178,6 @@ restore(char *file, char **envp)
     if (strcmp(file, "-r") == 0)
 	file = file_name;
 
-	md_tstphold();
-
 	if ((inf = fopen(file,"r")) == NULL)
     {
 	perror(file);

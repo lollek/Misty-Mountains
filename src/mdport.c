@@ -317,21 +317,6 @@ md_readchar()
 }
 
 void
-md_tstphold()
-{
-#ifdef SIGTSTP
-    /*
-     * If a process can be suspended, this code wouldn't work
-     */
-# ifdef SIG_HOLD
-    signal(SIGTSTP, SIG_HOLD);
-# else
-    signal(SIGTSTP, SIG_IGN);
-# endif
-#endif
-}
-
-void
 md_tstpresume()
 {
 #ifdef SIGTSTP
