@@ -164,8 +164,6 @@ score(int amount, int flags, char monst)
     for (scp = top_ten; scp < endp; scp++)
     {
 	if (scp->sc_score) {
-	    if (sc2 == scp)
-            md_raw_standout();
 	    printf("%2d %5d %s: %s on level %d", (int) (scp - top_ten + 1),
 		scp->sc_score, scp->sc_name, reason[scp->sc_flags],
 		scp->sc_level);
@@ -197,8 +195,6 @@ score(int amount, int flags, char monst)
 	    else
 #endif /* MASTER */
                 printf(".");
-	    if (sc2 == scp)
-		    md_raw_standend();
             putchar('\n');
 	}
 	else

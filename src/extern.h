@@ -172,8 +172,6 @@ char	*md_getpass(char *prompt);
 char	*md_getrealname(int uid);
 int	md_killchar();
 void	md_normaluser();
-void	md_raw_standout();
-void	md_raw_standend();
 int	md_readchar();
 int	md_setdsuspchar(int c);
 int	md_shellescape();

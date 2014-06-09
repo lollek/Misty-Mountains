@@ -62,24 +62,6 @@ md_hasclreol()
 }
 
 void
-md_raw_standout()
-{
-#if defined(SO)
-    tputs(SO,0,putchar);
-    fflush(stdout);
-#endif
-}
-
-void
-md_raw_standend()
-{
-#if defined(SE)
-    tputs(SE,0,putchar);
-    fflush(stdout);
-#endif
-}
-
-void
 md_normaluser()
 {
 #if defined(HAVE_GETGID) && defined(HAVE_GETUID)
