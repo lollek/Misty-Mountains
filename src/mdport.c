@@ -315,25 +315,3 @@ md_readchar()
 
   return(ch & 0x7F);
 }
-
-#if defined(CHECKTIME)
-void
-md_start_checkout_timer(int time)
-{
-    int  checkout();
-
-#if defined(HAVE_ALARM) && defined(SIGALRM)
-    signal(SIGALRM, checkout);
-	alarm(time);
-#endif
-}
-
-void
-md_stop_checkout_timer()
-{
-#if defined(SIGALRM)
-    signal(SIGALRM, SIG_IGN);
-#endif
-}
-
-#endif
