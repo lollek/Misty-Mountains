@@ -10,7 +10,7 @@
 #
 
 
-DISTNAME = rogue14 mod1
+DISTNAME = rogue14-mod1
 PROGRAM  = rogue14
 O        = o
 HDRS	 = $(wildcard src/*.h)
