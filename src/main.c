@@ -14,7 +14,11 @@
 #include <unistd.h>
 #include <time.h>
 #include <curses.h>
+#include <getopt.h>
+
 #include "rogue.h"
+
+void parse_args(int argc, char **argv);
 
 /** main:
  * The main program, of course
@@ -74,17 +78,9 @@ main(int argc, char **argv)
   /* Drop setuid/setgid after opening the scoreboard file.  */
   md_normaluser();
 
-  if (argc == 2 && strcmp(argv[1], "-s") == 0)
-  {
-    noscore = TRUE;
-    score(0, -1, 0);
-    exit(0);
-  }
-
   init_check();   /* check for legal startup */
-  if (argc == 2)
-    if (!restore(argv[1]))  /* Note: restore will never return */
-      my_exit(1);
+  parse_args(argc, argv);
+
 #ifdef MASTER
   if (wizard)
     printf("Hello %s, welcome to dungeon #%d", whoami, dnum);
@@ -329,5 +325,59 @@ void
 my_exit(int st)
 {
   exit(st);
+}
+
+void
+parse_args(int argc, char **argv)
+{
+  const char *version_string = "Rogue14 mod1 - Based on Rogue5.4.4";
+  int option_index = 0;
+  struct option long_options[] = {
+    {"restore",   no_argument, 0, 'r'},
+    {"score",     no_argument, 0, 's'},
+    {"help",      no_argument, 0, '0'},
+    {"version",   no_argument, 0, '1'},
+    {0,           0,           0,  0 }
+  };
+
+  for (;;)
+  {
+    int c = getopt_long(argc, argv, "rs", long_options, &option_index);
+    if (c == -1)
+      break;
+
+    switch (c)
+    {
+      case 'r':
+        if (!restore("-r"))  /* Note: restore will never return */
+          my_exit(1);
+      case 's':
+        noscore = TRUE;
+        score(0, -1, 0);
+        exit(0);
+      case '0':
+        printf("Usage: %s [OPTIONS] [FILE]\n"
+               "Run Rogue14 with selected options or a savefile\n\n"
+               "  -r, --restore        restore game to default\n"
+               "  -s, --score          display the highscore and exit\n"
+               "      --help           display this help and exit\n"
+               "      --version        display game version and exit\n\n"
+               "%s\n", argv[0], version_string);
+        exit(0);
+      case '1':
+        puts(version_string);
+        exit(0);
+      default:
+        fprintf(stderr, "Try '%s --help' for more information\n",
+                argv[0]);
+        exit(1);
+    }
+  }
+
+  if (optind < argc)
+  {
+    if (!restore(argv[optind]))  /* Note: restore will never return */
+      my_exit(1);
+  }
 }
 
