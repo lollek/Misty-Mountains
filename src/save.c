@@ -102,7 +102,7 @@ gotfile:
 		    msg("Please answer Y or N");
 	    }
 	    msg("file name: %s", buf);
-	    md_unlink(file_name);
+	    unlink(file_name);
 	}
 	strcpy(file_name, buf);
 	if ((savef = fopen(file_name, "w")) == NULL)

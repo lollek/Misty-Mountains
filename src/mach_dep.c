@@ -41,6 +41,7 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <limits.h>
 #include <string.h>
 #include <fcntl.h>
@@ -394,7 +395,7 @@ over:
     }
     if (time(NULL) - sbuf.st_mtime > 10)
     {
-	if (md_unlink(lockfile) < 0)
+	if (unlink(lockfile) < 0)
 	    return FALSE;
 	goto over;
     }
@@ -416,7 +417,7 @@ over:
 		}
 		if (time(NULL) - sbuf.st_mtime > 10)
 		{
-		    if (md_unlink(lockfile) < 0)
+		    if (unlink(lockfile) < 0)
 			return FALSE;
 		}
 		md_sleep(1);
@@ -441,7 +442,7 @@ unlock_sc()
     if (lfd != NULL)
         fclose(lfd);
     lfd = NULL;
-    md_unlink(LOCKFILE);
+    unlink(LOCKFILE);
 #endif
 }
 

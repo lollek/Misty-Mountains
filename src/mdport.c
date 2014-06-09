@@ -204,12 +204,6 @@ md_raw_standend()
 }
 
 int
-md_unlink(char *file)
-{
-    return(unlink(file));
-}
-
-int
 md_chmod(char *filename, int mode)
 {
     return( chmod(filename, mode) );
