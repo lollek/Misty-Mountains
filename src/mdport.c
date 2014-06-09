@@ -111,17 +111,6 @@ md_shellescape()
   return(0);
 }
 
-int
-directory_exists(char *dirname)
-{
-    struct stat sb;
-
-    if (stat(dirname, &sb) == 0) /* path exists */
-        return (sb.st_mode & S_IFDIR);
-
-    return(0);
-}
-
 char *
 md_getrealname(int uid)
 {
