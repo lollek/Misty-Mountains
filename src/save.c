@@ -313,7 +313,7 @@ encread(char *start, size_t size, FILE *inf)
 
     fb = 0;
 
-    if ((read_size = fread(start,1,size,inf)) == 0 || read_size == -1)
+    if ((read_size = fread(start,1,size,inf)) == 0)
 	return(read_size);
 
     e1 = encstr;
