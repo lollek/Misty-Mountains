@@ -144,7 +144,16 @@ setup()
 #ifdef DUMP
     md_onsignal_autosave();
 #else
-    md_onsignal_default();
+    signal(SIGHUP, SIG_DFL);
+    signal(SIGQUIT, SIG_DFL);
+    signal(SIGILL, SIG_DFL);
+    signal(SIGTRAP, SIG_DFL);
+    signal(SIGIOT, SIG_DFL);
+    signal(SIGFPE, SIG_DFL);
+    signal(SIGBUS, SIG_DFL);
+    signal(SIGSEGV, SIG_DFL);
+    signal(SIGSYS, SIG_DFL);
+    signal(SIGTERM, SIG_DFL);
 #endif
 
 #ifdef CHECKTIME

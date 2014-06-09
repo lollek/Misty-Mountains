@@ -44,81 +44,18 @@
 #define NOOP(x) (x += 0)
 
 void
-
-void
-md_onsignal_default()
-{
-#ifdef SIGHUP
-    signal(SIGHUP, SIG_DFL);
-#endif
-#ifdef SIGQUIT
-    signal(SIGQUIT, SIG_DFL);
-#endif
-#ifdef SIGILL
-    signal(SIGILL, SIG_DFL);
-#endif
-#ifdef SIGTRAP
-    signal(SIGTRAP, SIG_DFL);
-#endif
-#ifdef SIGIOT
-    signal(SIGIOT, SIG_DFL);
-#endif
-#ifdef SIGEMT
-    signal(SIGEMT, SIG_DFL);
-#endif
-#ifdef SIGFPE
-    signal(SIGFPE, SIG_DFL);
-#endif
-#ifdef SIGBUS
-    signal(SIGBUS, SIG_DFL);
-#endif
-#ifdef SIGSEGV
-    signal(SIGSEGV, SIG_DFL);
-#endif
-#ifdef SIGSYS
-    signal(SIGSYS, SIG_DFL);
-#endif
-#ifdef SIGTERM
-    signal(SIGTERM, SIG_DFL);
-#endif
-}
-
-void
 md_onsignal_exit()
 {
-#ifdef SIGHUP
     signal(SIGHUP, SIG_DFL);
-#endif
-#ifdef SIGQUIT
     signal(SIGQUIT, exit);
-#endif
-#ifdef SIGILL
     signal(SIGILL, exit);
-#endif
-#ifdef SIGTRAP
     signal(SIGTRAP, exit);
-#endif
-#ifdef SIGIOT
     signal(SIGIOT, exit);
-#endif
-#ifdef SIGEMT
-    signal(SIGEMT, exit);
-#endif
-#ifdef SIGFPE
     signal(SIGFPE, exit);
-#endif
-#ifdef SIGBUS
     signal(SIGBUS, exit);
-#endif
-#ifdef SIGSEGV
     signal(SIGSEGV, exit);
-#endif
-#ifdef SIGSYS
     signal(SIGSYS, exit);
-#endif
-#ifdef SIGTERM
     signal(SIGTERM, exit);
-#endif
 }
 
 void
