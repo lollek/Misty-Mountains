@@ -166,7 +166,6 @@ char	*md_getrealname(int uid);
 void	md_normaluser();
 int	md_readchar();
 int	md_shellescape();
-int	md_suspchar();
 int	md_hasclreol();
 void md_tstpsignal();
 void md_tstphold();
