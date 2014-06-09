@@ -30,18 +30,18 @@ static PACT p_actions[] =
 	{ ISHALU,	come_down,	SEEDURATION,	/* P_LSD */
 		"Oh, wow!  Everything seems so cosmic!",
 		"Oh, wow!  Everything seems so cosmic!" },
-	{ 0,		NULL,	0 },			/* P_POISON */
-	{ 0,		NULL,	0 },			/* P_STRENGTH */
+	{ 0,		NULL,	0,	NULL,	NULL },	/* P_POISON */
+	{ 0,		NULL,	0,	NULL,	NULL },	/* P_STRENGTH */
 	{ CANSEE,	unsee,	SEEDURATION,		/* P_SEEINVIS */
 		prbuf,
 		prbuf },
-	{ 0,		NULL,	0 },			/* P_HEALING */
-	{ 0,		NULL,	0 },			/* P_MFIND */
-	{ 0,		NULL,	0 },			/* P_TFIND  */
-	{ 0,		NULL,	0 },			/* P_RAISE */
-	{ 0,		NULL,	0 },			/* P_XHEAL */
-	{ 0,		NULL,	0 },			/* P_HASTE */
-	{ 0,		NULL,	0 },			/* P_RESTORE */
+	{ 0,		NULL,	0,	NULL,	NULL },	/* P_HEALING */
+	{ 0,		NULL,	0,	NULL,	NULL },	/* P_MFIND */
+	{ 0,		NULL,	0,	NULL,	NULL },	/* P_TFIND  */
+	{ 0,		NULL,	0,	NULL,	NULL },	/* P_RAISE */
+	{ 0,		NULL,	0,	NULL,	NULL },	/* P_XHEAL */
+	{ 0,		NULL,	0,	NULL,	NULL },	/* P_HASTE */
+	{ 0,		NULL,	0,	NULL,	NULL },	/* P_RESTORE */
 	{ ISBLIND,	sight,	SEEDURATION,		/* P_BLIND */
 		"oh, bummer!  Everything is dark!  Help!",
 		"a cloak of darkness falls around you" },
