@@ -55,36 +55,17 @@ md_hasclreol()
 void
 md_normaluser()
 {
-#if defined(HAVE_GETGID) && defined(HAVE_GETUID)
-	gid_t realgid = getgid();
-	uid_t realuid = getuid();
+  gid_t realgid = getgid();
+  uid_t realuid = getuid();
 
-#if defined(HAVE_SETRESGID)
-    if (setresgid(-1, realgid, realgid) != 0) {
-#elif defined (HAVE_SETREGID) 
-    if (setregid(realgid, realgid) != 0) {
-#elif defined (HAVE_SETGID)
-	if (setgid(realgid) != 0) {
-#else
-	if (0) {
-#endif
-		perror("Could not drop setgid privileges.  Aborting.");
-		exit(1);
-    }
-
-#if defined(HAVE_SETRESUID)
-    if (setresuid(-1, realuid, realuid) != 0) {
-#elif defined(HAVE_SETREUID)
-    if (setreuid(realuid, realuid) != 0) {
-#elif defined(HAVE_SETUID)
-	if (setuid(realuid) != 0) {
-#else
-	if (0) {
-#endif
-	perror("Could not drop setuid privileges.  Aborting.");
-	exit(1);
-    }
-#endif
+  if (setregid(realgid, realgid) != 0) {
+    perror("Could not drop setgid privileges.  Aborting.");
+    exit(1);
+  }
+  if (setreuid(realuid, realuid) != 0) {
+    perror("Could not drop setuid privileges.  Aborting.");
+    exit(1);
+  }
 }
 
 int
