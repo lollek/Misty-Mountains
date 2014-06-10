@@ -57,19 +57,11 @@ main(int argc, char **argv)
     printf("Hello %s, just a moment while I dig the dungeon...", whoami);
   fflush(stdout);
 
+  /* Init Graphics */
   initscr();				/* Start up cursor package */
-  init_probs();			/* Set up prob tables for objects */
-  init_player();			/* Set up initial player stats */
-  init_names();			/* Set up names of scrolls */
-  init_colors();			/* Set up colors of potions */
-  init_stones();			/* Set up stone settings of rings */
-  init_materials();			/* Set up materials of wands */
-
-  /*					GRAPHICS         */
   raw();				/* Raw mode      */
   noecho();				/* Echo off      */
 
-  /* The screen must be at least NUMLINES x NUMCOLS */
   if (LINES < NUMLINES || COLS < NUMCOLS)
   {
     printf("\nSorry, the screen must be at least %dx%d\n", NUMLINES, NUMCOLS);
@@ -77,11 +69,17 @@ main(int argc, char **argv)
     exit(1);
   }
 
+  init_probs();				/* Set up prob tables for objects */
+  init_player();			/* Set up initial player stats */
+  init_names();				/* Set up names of scrolls */
+  init_colors();			/* Set up colors of potions */
+  init_stones();			/* Set up stone settings of rings */
+  init_materials();			/* Set up materials of wands */
+
   /* Set up windows */
   hw = newwin(LINES, COLS, 0, 0);
   idlok(stdscr, TRUE);
   idlok(hw, TRUE);
-  noscore = wizard;
   new_level();  /* Draw current level */
 
   /* Start up daemons and fuses */
@@ -278,7 +276,7 @@ parse_args(int argc, char **argv)
       case 'r': restore("-r"); exit(1);
       case 's': noscore = TRUE; score(0, -1, 0); exit(0);
       case 'S': seed = dnum = atoi(optarg); break;
-      case 'W': potential_wizard = wizard = TRUE;
+      case 'W': potential_wizard = wizard = noscore = TRUE;
                 player.t_flags |= SEEMONST; break;
       case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
