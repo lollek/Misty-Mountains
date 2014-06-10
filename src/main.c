@@ -303,6 +303,7 @@ shell()
   /* Return to shell */
   kill(getpid(), SIGSTOP);
 
+  /* Set the terminal to gaming mode */
   fflush(stdout);
   noecho();
   raw();
