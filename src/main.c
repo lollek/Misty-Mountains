@@ -314,7 +314,7 @@ shell()
 void
 parse_args(int argc, char **argv)
 {
-  const char *version_string = "Rogue14 Mod 1 - Based on Rogue5.4.4";
+  const char *version_string = "Rogue14 Mod 2 - Based on Rogue5.4.4";
   int option_index = 0;
   struct option long_options[] = {
     {"escdelay",  optional_argument, 0, 'E'},
