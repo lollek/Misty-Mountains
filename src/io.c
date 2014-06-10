@@ -152,7 +152,7 @@ readchar()
 {
     char ch;
 
-    ch = (char) md_readchar();
+    ch = (char) getch();
 
     if (ch == 3)
     {

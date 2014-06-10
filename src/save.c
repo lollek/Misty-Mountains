@@ -196,7 +196,6 @@ restore(char *file)
     sscanf(buf,"%d x %d\n", &lines, &cols);
 
     initscr();                          /* Start up cursor package */
-    keypad(stdscr, 1);
 
     if (lines > LINES)
     {
@@ -216,7 +215,6 @@ restore(char *file)
     hw = newwin(LINES, COLS, 0, 0);
     raw();				/* Raw mode      */
     noecho();				/* Echo off      */
-    keypad(stdscr,1);			/* Active Keypad */
 
     rs_restore_file(inf);
     /*

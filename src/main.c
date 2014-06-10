@@ -82,7 +82,6 @@ main(int argc, char **argv)
   /*					GRAPHICS         */
   raw();				/* Raw mode      */
   noecho();				/* Echo off      */
-  keypad(stdscr,1);			/* Active Keypad */
 
   /* The screen must be at least NUMLINES x NUMCOLS */
   if (LINES < NUMLINES || COLS < NUMCOLS)
@@ -224,7 +223,7 @@ quit(int sig)
     mpos = 0;
   getyx(curscr, oy, ox);
   msg("really quit?");
-  if (readchar() == 'y')
+  if (getch() == 'y')
   {
     signal(SIGINT, leave);
     clear();
@@ -291,7 +290,6 @@ shell()
   fflush(stdout);
   noecho();
   raw();
-  keypad(stdscr,1);
   in_shell = FALSE;
   clearok(stdscr, TRUE);
 }
