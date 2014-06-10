@@ -92,61 +92,8 @@ fixdocs:
 	sed -e 's/@PROGRAM@/$(PROGRAM)/' -e 's/@SCOREFILE@/$(SCOREFILE)/' rogue.doc.in > $(PROGRAM).doc
 	sed -e 's/@PROGRAM@/$(PROGRAM)/' -e 's/@SCOREFILE@/$(SCOREFILE)/' rogue.cat.in > $(PROGRAM).cat
 
-dist.irix:
-	$(MAKE) $(MAKEFILE) clean
-	$(MAKE) $(MAKEFILE)  CC=cc $(PROGRAM)
-	tar cf $(DISTNAME)-irix.tar $(PROGRAM) LICENSE.TXT $(DOCS)
-	gzip -f $(DISTNAME)-irix.tar
-
-dist.aix:
-	$(MAKE) $(MAKEFILE) clean
-	$(MAKE) $(MAKEFILE) CC=xlc CFLAGS="-qmaxmem=16768 -O3 -qstrict" $(PROGRAM)
-	tar cf $(DISTNAME)-aix.tar $(PROGRAM) LICENSE.TXT $(DOCS)
-	gzip -f $(DISTNAME)-aix.tar
-
 dist.linux:
 	$(MAKE) $(MAKEFILE) clean
 	$(MAKE) $(MAKEFILE) $(PROGRAM)
 	tar cf $(DISTNAME)-linux.tar $(PROGRAM) LICENSE.TXT $(DOCS)
 	gzip -f $(DISTNAME)-linux.tar
-	
-dist.interix:
-	@$(MAKE) $(MAKEFILE) clean
-	@$(MAKE) $(MAKEFILE) CFLAGS="-ansi" $(PROGRAM)
-	tar cf $(DISTNAME)-interix.tar $(PROGRAM) LICENSE.TXT $(DOCS)
-	gzip -f $(DISTNAME)-interix.tar
-	
-dist.cygwin:
-	@$(MAKE) $(MAKEFILE) --no-print-directory clean
-	@$(MAKE) $(MAKEFILE) CPPFLAGS="-I/usr/include/ncurses" --no-print-directory $(PROGRAM)
-	tar cf $(DISTNAME)-cygwin.tar $(PROGRAM).exe LICENSE.TXT $(DOCS)
-	gzip -f $(DISTNAME)-cygwin.tar
-
-#
-# Use MINGW32-MAKE to build this target
-#
-dist.mingw32:
-	@$(MAKE) $(MAKEFILE) --no-print-directory RM="cmd /c del" clean
-	@$(MAKE) $(MAKEFILE) --no-print-directory CPPFLAGS="-I../pdcurses" LIBS="../pdcurses/pdcurses.a" $(PROGRAM)
-	cmd /c del $(DISTNAME)-mingw32.zip
-	zip $(DISTNAME)-mingw32.zip $(PROGRAM).exe LICENSE.TXT $(DOCS)
-	
-dist.djgpp:
-	@$(MAKE) $(MAKEFILE) --no-print-directory clean
-	@$(MAKE) $(MAKEFILE) --no-print-directory LDFLAGS="-L$(DJDIR)/LIB" \
-	LIBS="-lpdcurses" $(PROGRAM)
-	rm -f $(DISTNAME)-djgpp.zip
-	zip $(DISTNAME)-djgpp.zip $(PROGRAM) LICENSE.TXT $(DOCS)
-
-#
-# Use NMAKE to build this targer
-#
-
-dist.win32:
-	@$(MAKE) $(MAKEFILE) /NOLOGO O="obj" RM="-del" clean
-	@$(MAKE) $(MAKEFILE) /NOLOGO O="obj" CC="CL" \
-	    LIBS="..\pdcurses\pdcurses.lib shell32.lib user32.lib Advapi32.lib" \
-	    EXE=".exe" OUTFLAG="/Fe" CPPFLAGS="-I..\pdcurses" \
-	    CFLAGS="-nologo -Ox -wd4033 -wd4716" $(PROGRAM)
-	-del $(DISTNAME)-win32.zip
-	zip $(DISTNAME)-win32.zip $(PROGRAM).exe LICENSE.TXT $(DOCS)
