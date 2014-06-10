@@ -66,8 +66,6 @@ score(int amount, int flags, char monst)
 	"killed with Amulet"
     };
 
-    start_score();
-
  if (flags >= 0
 #ifdef MASTER
             || wizard

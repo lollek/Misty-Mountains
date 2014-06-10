@@ -56,10 +56,6 @@
 unsigned int numscores = NUMSCORES;
 char *Numname = NUMNAME;
 
-#ifdef CHECKTIME
-static int num_checks;		/* times we've gone over in checkout() */
-#endif /* CHECKTIME */
-
 /*
  * init_check:
  *	Check out too see if it is proper to play the game now
@@ -116,19 +112,6 @@ open_score()
     } 
 #else
     scoreboard = NULL;
-#endif
-}
-
-/*
- * start_score:
- *	Start the scoring sequence
- */
-
-void
-start_score()
-{
-#ifdef CHECKTIME
-    md_stop_checkout_timer();
 #endif
 }
 
@@ -195,66 +178,6 @@ author()
 	    return TRUE;
 	default:
 	    return FALSE;
-    }
-}
-#endif
-
-#ifdef CHECKTIME
-/*
- * checkout:
- *	Check each CHECKTIME seconds to see if the load is too high
- */
-
-checkout(int sig)
-{
-    static char *msgs[] = {
-	"The load is too high to be playing.  Please leave in %0.1f minutes",
-	"Please save your game.  You have %0.1f minutes",
-	"Last warning.  You have %0.1f minutes to leave",
-    };
-    int checktime;
-
-    if (too_much())
-    {
-	if (author())
-	{
-	    num_checks = 1;
-	    chmsg("The load is rather high, O exaulted one");
-	}
-	else if (num_checks++ == 3)
-	    fatal("Sorry.  You took too long.  You are dead\n");
-	checktime = (CHECKTIME * 60) / num_checks;
-	chmsg(msgs[num_checks - 1], ((double) checktime / 60.0));
-    }
-    else
-    {
-	if (num_checks)
-	{
-	    num_checks = 0;
-	    chmsg("The load has dropped back down.  You have a reprieve");
-	}
-	checktime = (CHECKTIME * 60);
-    }
-
-	md_start_checkout_timer(checktime);
-}
-
-/*
- * chmsg:
- *	checkout()'s version of msg.  If we are in the middle of a
- *	shell, do a printf instead of a msg to a the refresh.
- */
-/* VARARGS1 */
-
-chmsg(char *fmt, int arg)
-{
-    if (!in_shell)
-	msg(fmt, arg);
-    else
-    {
-	printf(fmt, arg);
-	putchar('\n');
-	fflush(stdout);
     }
 }
 #endif

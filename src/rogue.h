@@ -651,7 +651,6 @@ void	show_win(char *message);
 int	sign(int nm);
 int	spread(int nm);
 void	start_daemon(void (*func)(), int arg, int type);
-void	start_score();
 void	status();
 int	step_ok(int ch);
 void	strucpy(char *s1, char *s2, int len);
