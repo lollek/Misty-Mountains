@@ -453,12 +453,18 @@ struct monster {
 /*
  * External variables
  */
+bool terse;       /* Terse output */
+bool fight_flush; /* Flush typeahead during battle */
+bool jump;        /* Show running as a series of jumps */
+bool see_floor;   /* Show the lamp-illuminated floor */
+bool passgo;      /* Follow the turnings in passageways */
+bool tombstone;   /* Print out tombstone when killed */
 
-extern bool	after, again, amulet, door_stop, fight_flush,
-		firstmove, has_hit, inv_describe, jump, kamikaze,
+extern bool	after, again, amulet, door_stop,
+		firstmove, has_hit, inv_describe, kamikaze,
 		lower_msg, move_on, msg_esc, pack_used[],
-		passgo, playing, q_comm, running, save_msg, see_floor,
-		seenstairs, stat_msg, terse, to_death, tombstone;
+		playing, q_comm, running, save_msg,
+		seenstairs, stat_msg, to_death;
 
 extern char	dir_ch, file_name[], home[], huh[], *inv_t_name[],
 		l_last_comm, l_last_dir, last_comm, last_dir, *Numname,

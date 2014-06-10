@@ -30,7 +30,6 @@ int
 main(int argc, char **argv)
 {
   char *saved_game = NULL;
-  char *env;
 
   /* get home and options from environment */
   strncpy(home, md_gethomedir(), MAXSTR);
@@ -38,9 +37,8 @@ main(int argc, char **argv)
   strcpy(file_name, home);
   strcat(file_name, "rogue.save");
 
-  if ((env = getenv("ROGUEOPTS")) != NULL)
-    parse_opts(env);
-  if (env == NULL || whoami[0] == '\0')
+  parse_opts(getenv("ROGUEOPTS"));
+  if (whoami[0] == '\0')
     strucpy(whoami, md_getusername(), (int) strlen(md_getusername()));
   seed = dnum = time(NULL) + getpid();
 
@@ -49,6 +47,7 @@ main(int argc, char **argv)
   /* Drop setuid/setgid after opening the scoreboard file.  */
   md_normaluser();
 
+  /* Play game! */
   saved_game = parse_args(argc, argv);
   return saved_game == NULL ? new_game() : restore(saved_game);
 }
@@ -84,7 +83,6 @@ fatal(char *s)
 bool
 playit()
 {
-  char *opts;
 
   /* Try to crash cleanly, and autosave if possible */
   signal(SIGHUP, auto_save);
@@ -110,9 +108,8 @@ playit()
   if (md_hasclreol())
     inv_type = INV_CLEAR;
 
-  /* parse environment declaration of options */
-  if ((opts = getenv("ROGUEOPTS")) != NULL)
-    parse_opts(opts);
+  /* parse environment declaration of options 
+  parse_opts(getenv("ROGUEOPTS")); */
 
 
   oldpos = hero;
@@ -256,29 +253,49 @@ parse_args(int argc, char **argv)
   int option_index = 0;
   struct option long_options[] = {
     {"escdelay",  optional_argument, 0, 'E'},
+    {"flush",     no_argument,       0, 'f'},
+    {"hide-floor",no_argument,       0, 'F'},
+    {"jump",      no_argument,       0, 'j'},
+    {"passgo",    no_argument,       0, 'p'},
     {"restore",   no_argument,       0, 'r'},
     {"score",     no_argument,       0, 's'},
     {"seed",      required_argument, 0, 'S'},
+    {"terse",     no_argument,       0, 't'},
+    {"hide-tomb", no_argument,       0, 'T'},
     {"wizard",    no_argument,       0, 'W'},
     {"help",      no_argument,       0, '0'},
     {"version",   no_argument,       0, '1'},
     {0,           0,                 0,  0 }
   };
 
-  ESCDELAY = 0; /* Set the delay before ESC cancels */
+  /* Global options */
+  ESCDELAY = 0;                 /* Set the delay before ESC cancels */
+  terse = FALSE;                /* Terse output */
+  fight_flush = FALSE;          /* Flush typeahead during battle */
+  jump = FALSE;                 /* Show running as a series of jumps */
+  see_floor = TRUE;             /* Show the lamp-illuminated floor */
+  passgo = FALSE;               /* Follow the turnings in passageways */
+  tombstone = TRUE;             /* Print out tombstone when killed */
 
   for (;;)
   {
-    int c = getopt_long(argc, argv, "E::rsS:W", long_options, &option_index);
+    int c = getopt_long(argc, argv, "E::fFjprsS:tTW",
+                        long_options, &option_index);
     if (c == -1)
       break;
 
     switch (c)
     {
       case 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg); break;
+      case 'f': fight_flush = TRUE; break;
+      case 'F': see_floor = FALSE; break;
+      case 'j': jump = TRUE; break;
+      case 'p': passgo = TRUE; break;
       case 'r': saved_game = "-r"; break;
       case 's': noscore = TRUE; score(0, -1, 0); exit(0);
       case 'S': seed = dnum = atoi(optarg); break;
+      case 't': terse = TRUE; break;
+      case 'T': tombstone = FALSE; break;
       case 'W': potential_wizard = wizard = noscore = TRUE;
                 player.t_flags |= SEEMONST; break;
       case '0':
@@ -287,12 +304,19 @@ parse_args(int argc, char **argv)
                "  -E, --escdelay=[NUM] set escdelay in ms. Not settings this\n"
                "                       defaults to 0. If you do not give a NUM\n"
                "                       argument, it's set to 64 (old standard)\n"
+               "  -f, --flush          flush typeahead during battle\n"
+               "  -F, --hide-floor     hide the lamp-illuminated floor\n"
+               "  -j, --jump           show running as a series of jumps\n"
+               "  -p, --passgo         Follow the turnings in passageways\n"
+               ,argv[0]);
+        printf(
                "  -r, --restore        restore game to default\n"
                "  -s, --score          display the highscore and exit\n"
                "  -S, --seed=NUMBER    set map seed to NUMBER\n"
+               "  -t, --terse          terse output\n"
+               "  -T, --hide-tomb      don't print out tombstone when killed\n"
                "  -W, --wizard         run the game in debug-mode\n"
-               ,argv[0]);
-        printf("      --help           display this help and exit\n"
+               "      --help           display this help and exit\n"
                "      --version        display game version and exit\n\n"
                "%s\n"
                , version_string);

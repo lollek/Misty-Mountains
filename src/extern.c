@@ -19,27 +19,21 @@ int  noscore;				/* Was a wizard sometime */
 bool seenstairs;			/* Have seen the stairs (for lsd) */
 bool amulet = FALSE;			/* He found the amulet */
 bool door_stop = FALSE;			/* Stop running when we pass a door */
-bool fight_flush = FALSE;		/* True if toilet input */
 bool firstmove = FALSE;			/* First move after setting door_stop */
 bool got_ltc = FALSE;			/* We have gotten the local tty chars */
 bool has_hit = FALSE;			/* Has a "hit" message pending in msg */
 bool in_shell = FALSE;			/* True if executing a shell */
 bool inv_describe = TRUE;		/* Say which way items are being used */
-bool jump = FALSE;			/* Show running as series of jumps */
 bool kamikaze = FALSE;			/* to_death really to DEATH */
 bool lower_msg = FALSE;			/* Messages should start w/lower case */
 bool move_on = FALSE;			/* Next move shouldn't pick up items */
 bool msg_esc = FALSE;			/* Check for ESC from msg's --More-- */
-bool passgo = FALSE;			/* Follow passages */
 bool playing = TRUE;			/* True until he quits */
 bool q_comm = FALSE;			/* Are we executing a 'Q' command? */
 bool running = FALSE;			/* True if player is running */
 bool save_msg = TRUE;			/* Remember last msg */
-bool see_floor = TRUE;			/* Show the lamp illuminated floor */
 bool stat_msg = FALSE;			/* Should status() print as a msg() */
-bool terse = FALSE;			/* True if we should be short */
 bool to_death = FALSE;			/* Fighting is to the death! */
-bool tombstone = TRUE;			/* Print out tombstone at end */
 int wizard = FALSE;			/* True if allows wizard commands */
 int potential_wizard = FALSE;		/* True if allows to become a wizard */
 bool pack_used[26] = {			/* Is the character used in the pack? */

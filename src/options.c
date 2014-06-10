@@ -404,6 +404,9 @@ parse_opts(char *str)
     char **i;
     char *start;
 
+    if (str == NULL)
+      return;
+
     while (*str)
     {
 	/*

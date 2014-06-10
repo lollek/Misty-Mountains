@@ -2002,6 +2002,7 @@ int
 rs_restore_file(FILE *inf)
 {
     int dummyint;
+    bool dummybool;
 
     if (read_error || format_error)
         return(READSTAT);
@@ -2012,27 +2013,27 @@ rs_restore_file(FILE *inf)
     rs_read_boolean(inf, &seenstairs);          /* 4  */
     rs_read_boolean(inf, &amulet);              /* 5  */
     rs_read_boolean(inf, &door_stop);           /* 6  */
-    rs_read_boolean(inf, &fight_flush);         /* 7  */
+    rs_read_boolean(inf, &dummybool);           /* 7 &fight_flush */
     rs_read_boolean(inf, &firstmove);           /* 8  */
     rs_read_boolean(inf, &got_ltc);             /* 9  */
     rs_read_boolean(inf, &has_hit);             /* 10 */
     rs_read_boolean(inf, &in_shell);            /* 11 */
     rs_read_boolean(inf, &inv_describe);        /* 12 */
-    rs_read_boolean(inf, &jump);                /* 13 */
+    rs_read_boolean(inf, &dummybool);           /* 13 &jump */
     rs_read_boolean(inf, &kamikaze);            /* 14 */
     rs_read_boolean(inf, &lower_msg);           /* 15 */
     rs_read_boolean(inf, &move_on);             /* 16 */
     rs_read_boolean(inf, &msg_esc);             /* 17 */
-    rs_read_boolean(inf, &passgo);              /* 18 */
+    rs_read_boolean(inf, &dummybool);           /* 18 &passgo */
     rs_read_boolean(inf, &playing);             /* 19 */
     rs_read_boolean(inf, &q_comm);              /* 20 */
     rs_read_boolean(inf, &running);             /* 21 */
     rs_read_boolean(inf, &save_msg);            /* 22 */
-    rs_read_boolean(inf, &see_floor);           /* 23 */
+    rs_read_boolean(inf, &dummybool);           /* 23 &see_floor */
     rs_read_boolean(inf, &stat_msg);            /* 24 */
-    rs_read_boolean(inf, &terse);               /* 25 */
+    rs_read_boolean(inf, &dummybool);           /* 25 &terse */
     rs_read_boolean(inf, &to_death);            /* 26 */
-    rs_read_boolean(inf, &tombstone);           /* 27 */
+    rs_read_boolean(inf, &dummybool);           /* 27 &tombstone */
     rs_read_int(inf, &wizard);                  /* 28 */
     rs_read_booleans(inf, pack_used, 26);       /* 29 */
     rs_read_char(inf, &dir_ch);
