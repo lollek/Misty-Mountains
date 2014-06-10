@@ -29,7 +29,6 @@ main(int argc, char **argv)
   char *env;
 
   /* from md_init - try to remove these */
-  ESCDELAY = 0; /* Set the delay before ESC cancels */
   signal(SIGHUP, SIG_DFL);
   signal(SIGQUIT, exit);
   signal(SIGILL, exit);
@@ -318,6 +317,7 @@ parse_args(int argc, char **argv)
   const char *version_string = "Rogue14 mod1 - Based on Rogue5.4.4";
   int option_index = 0;
   struct option long_options[] = {
+    {"escdelay",  optional_argument, 0, 'E'},
     {"restore",   no_argument,       0, 'r'},
     {"score",     no_argument,       0, 's'},
     {"seed",      required_argument, 0, 'S'},
@@ -326,14 +326,17 @@ parse_args(int argc, char **argv)
     {0,           0,                 0,  0 }
   };
 
+  ESCDELAY = 0; /* Set the delay before ESC cancels */
+
   for (;;)
   {
-    int c = getopt_long(argc, argv, "rsS:", long_options, &option_index);
+    int c = getopt_long(argc, argv, "E::rsS:", long_options, &option_index);
     if (c == -1)
       break;
 
     switch (c)
     {
+      case 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg); break;
       case 'r':
         if (!restore("-r"))  /* Note: restore will never return */
           exit(1);
@@ -347,12 +350,17 @@ parse_args(int argc, char **argv)
       case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
                "Run Rogue14 with selected options or a savefile\n\n"
+               "  -E, --escdelay=NUM   set escdelay in ms. Not settings this\n"
+               "                       defaults to 0. If you do not give a NUM\n"
+               "                       argument, it's set to 64 (old standard)\n"
                "  -r, --restore        restore game to default\n"
                "  -s, --score          display the highscore and exit\n"
                "  -S, --seed=NUMBER    set map seed to NUMBER\n"
-               "      --help           display this help and exit\n"
+               ,argv[0]);
+        printf("      --help           display this help and exit\n"
                "      --version        display game version and exit\n\n"
-               "%s\n", argv[0], version_string);
+               "%s\n"
+               , version_string);
         exit(0);
       case '1':
         puts(version_string);
