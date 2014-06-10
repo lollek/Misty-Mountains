@@ -50,7 +50,7 @@ EXE      =
 .c.o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(FEATURES) -c -o $*.o $*.c
     
-$(PROGRAM): $(HDRS) $(OBJS) fixdocs
+$(PROGRAM): $(HDRS) $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) $(LIBS) $(OUTFLAG)$@$(EXE)
  
 clean:
