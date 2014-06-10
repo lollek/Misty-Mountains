@@ -46,7 +46,6 @@ void auto_save(int);
 void come_down();
 void doctor();
 void end_line();
-void endit(int sig);
 void fatal();
 void land();
 void leave(int);

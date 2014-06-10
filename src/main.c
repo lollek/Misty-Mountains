@@ -18,7 +18,8 @@
 
 #include "rogue.h"
 
-void parse_args(int argc, char **argv);
+static void parse_args(int argc, char **argv);
+static void endit(int sig);
 
 /** main:
  * The main program, of course
