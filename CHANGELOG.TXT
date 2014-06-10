@@ -10,6 +10,7 @@ Rogue14 - Mod 1
     Added --score flag, which does the same as -s
     Added -S/--seed=NUMBER, which sets the map seed
     Added -E/--escdelay=NUM, which set the ESCDELAY
+    Added -W/--wizard for debugging
 
   Controls:
     Shortened the ESC delay as much as possible
