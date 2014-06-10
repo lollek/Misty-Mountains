@@ -314,7 +314,7 @@ shell()
 void
 parse_args(int argc, char **argv)
 {
-  const char *version_string = "Rogue14 mod1 - Based on Rogue5.4.4";
+  const char *version_string = "Rogue14 Mod 1 - Based on Rogue5.4.4";
   int option_index = 0;
   struct option long_options[] = {
     {"escdelay",  optional_argument, 0, 'E'},
@@ -337,20 +337,13 @@ parse_args(int argc, char **argv)
     switch (c)
     {
       case 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg); break;
-      case 'r':
-        if (!restore("-r"))  /* Note: restore will never return */
-          exit(1);
-      case 's':
-        noscore = TRUE;
-        score(0, -1, 0);
-        exit(0);
-      case 'S':
-        seed = dnum = atoi(optarg);
-        break;
+      case 'r': restore("-r"); exit(1);
+      case 's': noscore = TRUE; score(0, -1, 0); exit(0);
+      case 'S': seed = dnum = atoi(optarg); break;
       case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
                "Run Rogue14 with selected options or a savefile\n\n"
-               "  -E, --escdelay=NUM   set escdelay in ms. Not settings this\n"
+               "  -E, --escdelay=[NUM] set escdelay in ms. Not settings this\n"
                "                       defaults to 0. If you do not give a NUM\n"
                "                       argument, it's set to 64 (old standard)\n"
                "  -r, --restore        restore game to default\n"
@@ -362,9 +355,7 @@ parse_args(int argc, char **argv)
                "%s\n"
                , version_string);
         exit(0);
-      case '1':
-        puts(version_string);
-        exit(0);
+      case '1': puts(version_string); exit(0);
       default:
         fprintf(stderr, "Try '%s --help' for more information\n",
                 argv[0]);
@@ -374,8 +365,8 @@ parse_args(int argc, char **argv)
 
   if (optind < argc)
   {
-    if (!restore(argv[optind]))  /* Note: restore will never return */
-      exit(1);
+    restore(argv[optind]); /* Note: restore will never return */
+    exit(1);
   }
 }
 
