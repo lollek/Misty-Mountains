@@ -20,6 +20,7 @@
 
 static void parse_args(int argc, char **argv);
 static void endit(int sig);
+static void fatal();
 
 /** main:
  * The main program, of course
