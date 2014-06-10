@@ -211,7 +211,7 @@ leave(int sig)
   exit(0);
 }
 
-/* shell:
+/** shell:
  * Let them escape for a while
  */
 void
@@ -237,6 +237,9 @@ shell()
   clearok(stdscr, TRUE);
 }
 
+/** parse_args
+ * Parse command-line arguments
+ */
 char *
 parse_args(int argc, char **argv)
 {
