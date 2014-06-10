@@ -41,15 +41,13 @@ main(int argc, char **argv)
     parse_opts(env);
   if (env == NULL || whoami[0] == '\0')
     strucpy(whoami, md_getusername(), (int) strlen(md_getusername()));
-  dnum = time(NULL) + getpid();
-  seed = dnum;
+  seed = dnum = time(NULL) + getpid();
 
   open_score();
 
   /* Drop setuid/setgid after opening the scoreboard file.  */
   md_normaluser();
 
-  init_check();   /* check for legal startup */
   if ((saved_game = parse_args(argc, argv)) != NULL)
     return restore(saved_game);
 
