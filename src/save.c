@@ -177,7 +177,7 @@ restore(char *file)
     if (strcmp(file, "-r") == 0)
 	file = file_name;
 
-	if ((inf = fopen(file,"r")) == NULL)
+    if ((inf = fopen(file,"r")) == NULL)
     {
 	perror(file);
 	return FALSE;
@@ -193,28 +193,12 @@ restore(char *file)
 	return FALSE;
     }
     encread(buf,80,inf);
+
+    /* lines and cols were used in Rogue5.4.4 but we can ignore them */
     sscanf(buf,"%d x %d\n", &lines, &cols);
 
-    initscr();                          /* Start up cursor package */
-
-    if (lines > LINES)
-    {
-        endwin();
-        printf("Sorry, original game was played on a screen with %d lines.\n",lines);
-        printf("Current screen only has %d lines. Unable to restore game\n",LINES);
-        return(FALSE);
-    }
-    if (cols > COLS)
-    {
-        endwin();
-        printf("Sorry, original game was played on a screen with %d columns.\n",cols);
-        printf("Current screen only has %d columns. Unable to restore game\n",COLS);
-        return(FALSE);
-    }
-
-    hw = newwin(LINES, COLS, 0, 0);
-    raw();				/* Raw mode      */
-    noecho();				/* Echo off      */
+    if (init_graphics() != 0)
+      return FALSE;
 
     rs_restore_file(inf);
     /*

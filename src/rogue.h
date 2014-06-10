@@ -573,6 +573,7 @@ void	look(bool wakeup);
 int	hit_monster(int y, int x, THING *obj);
 void	identify();
 void	illcom(int ch);
+int	init_graphics();
 void	init_colors();
 void	init_materials();
 void	init_names();

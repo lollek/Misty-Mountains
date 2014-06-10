@@ -17,6 +17,29 @@
 #include "rogue.h"
 
 /*
+ * init_graphics:
+ * 	get curses running
+ */
+int
+init_graphics()
+{
+  initscr();  /* Start up cursor package */
+
+  if (LINES < NUMLINES || COLS < NUMCOLS)
+  {
+    printf("\nSorry, the screen must be at least %dx%d\n", NUMLINES, NUMCOLS);
+    endwin();
+    return 1;
+  }
+
+  raw();     /* Raw mode */
+  noecho();  /* Echo off */
+  hw = newwin(LINES, COLS, 0, 0);
+
+  return 0;
+}
+
+/*
  * init_player:
  *	Roll her up
  */

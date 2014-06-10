@@ -58,29 +58,20 @@ main(int argc, char **argv)
   fflush(stdout);
 
   /* Init Graphics */
-  initscr();				/* Start up cursor package */
-  raw();				/* Raw mode      */
-  noecho();				/* Echo off      */
-
-  if (LINES < NUMLINES || COLS < NUMCOLS)
-  {
-    printf("\nSorry, the screen must be at least %dx%d\n", NUMLINES, NUMCOLS);
-    endwin();
-    exit(1);
-  }
-
-  init_probs();				/* Set up prob tables for objects */
-  init_player();			/* Set up initial player stats */
-  init_names();				/* Set up names of scrolls */
-  init_colors();			/* Set up colors of potions */
-  init_stones();			/* Set up stone settings of rings */
-  init_materials();			/* Set up materials of wands */
-
-  /* Set up windows */
-  hw = newwin(LINES, COLS, 0, 0);
+  if (init_graphics() != 0)
+    return FALSE;
   idlok(stdscr, TRUE);
   idlok(hw, TRUE);
-  new_level();  /* Draw current level */
+
+  /* Init stuff */
+  init_probs();                         /* Set up prob tables for objects */
+  init_player();                        /* Set up initial player stats */
+  init_names();                         /* Set up names of scrolls */
+  init_colors();                        /* Set up colors of potions */
+  init_stones();                        /* Set up stone settings of rings */
+  init_materials();                     /* Set up materials of wands */
+
+  new_level();                          /* Draw current level */
 
   /* Start up daemons and fuses */
   start_daemon(runners, 0, AFTER);
