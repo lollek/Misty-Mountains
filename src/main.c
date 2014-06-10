@@ -132,36 +132,6 @@ fatal(char *s)
   exit(0);
 }
 
-/** tstp:
- * Handle stop and start signals
- */
-void
-tstp(int ignored)
-{
-  int y, x;
-  int oy, ox;
-
-  NOOP(ignored);
-
-  /* leave nicely */
-  getyx(curscr, oy, ox);
-  mvcur(0, COLS - 1, LINES - 1, 0);
-  endwin();
-  fflush(stdout);
-
-  /* start back up again */
-  raw();
-  noecho();
-  keypad(stdscr,1);
-  clearok(curscr, TRUE);
-  wrefresh(curscr);
-  getyx(curscr, y, x);
-  mvcur(y, x, oy, ox);
-  fflush(stdout);
-  curscr->_cury = oy;
-  curscr->_curx = ox;
-}
-
 /** playit:
  * The main loop of the program.  Loop until the game is over,
  * refreshing things and looking at the proper times.

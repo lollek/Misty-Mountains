@@ -58,7 +58,6 @@ void set_order();
 void sight();
 void stomach();
 void swander();
-void tstp(int ignored);
 void unconfuse();
 void unsee();
 void visuals();
