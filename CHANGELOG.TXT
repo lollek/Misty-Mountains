@@ -1,0 +1,23 @@
+Rogue14 - Mod 1
+  Changed to GNU/Linux-compability only
+  Made the highscore always sort by scores, and not players
+
+  Startup/Flags:
+    Removed -d flag as it didn't make any sense to me
+    Added --help flag
+    Added --version flag
+    Added --restore flags, which does the same as -r
+    Added --score flag, which does the same as -s
+    Added -S/--seed=NUMBER, which sets the map seed
+    Added -E/--escdelay=NUM, which set the ESCDELAY
+
+  Controls:
+    Shortened the ESC delay as much as possible
+    Removed the '!' command for shell escape
+    Removed the 'v' command to check version
+    Added '^Z' command, which has the same idea as the '!' command had,
+      but instead of forking a new shell, we just pause the game.
+      Basically, we send a SIGSTOP to the program.
+      After doing your shelly stuff, you can continue with the fg command.
+
+
