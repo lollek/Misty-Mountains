@@ -175,13 +175,14 @@ restore(char *file)
     int lines, cols;
 
     if (strcmp(file, "-r") == 0)
-	file = file_name;
+        file = file_name;
 
     if ((inf = fopen(file,"r")) == NULL)
     {
-	perror(file);
-	return FALSE;
+        perror(file);
+        return FALSE;
     }
+
     stat(file, &sbuf2);
     syml = is_symlink(file);
 
@@ -189,8 +190,8 @@ restore(char *file)
     encread(buf, (unsigned) strlen(version) + 1, inf);
     if (strcmp(buf, version) != 0)
     {
-	printf("Sorry, saved game is out of date.\n");
-	return FALSE;
+        printf("Sorry, saved game is out of date.\n");
+        return FALSE;
     }
     encread(buf,80,inf);
 
@@ -208,18 +209,14 @@ restore(char *file)
 
     if (!wizard && unlink(file) < 0)
     {
-	printf("Cannot unlink file\n");
-	return FALSE;
+        endwin();
+        printf("Cannot unlink file\n");
+        return FALSE;
     }
     mpos = 0;
-/*    printw(0, 0, "%s: %s", file, ctime(&sbuf2.st_mtime)); */
-/*
-    printw("%s: %s", file, ctime(&sbuf2.st_mtime));
-*/
     clearok(stdscr,TRUE);
-    /*
-     * defeat multiple restarting from the same place
-     */
+
+    /* defeat multiple restarting from the same place */
     if (!wizard && (sbuf2.st_nlink != 1 || syml))
     {
         endwin();
@@ -238,9 +235,7 @@ restore(char *file)
     clearok(curscr, TRUE);
     srand(getpid());
     msg("file name: %s", file);
-    playit();
-    /*NOTREACHED*/
-    return(0);
+    return playit();
 }
 
 /*

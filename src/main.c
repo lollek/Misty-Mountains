@@ -18,6 +18,7 @@
 
 #include "rogue.h"
 
+static bool new_game();
 static char *parse_args(int argc, char **argv);
 static void endit(int sig);
 static void fatal();
@@ -48,38 +49,8 @@ main(int argc, char **argv)
   /* Drop setuid/setgid after opening the scoreboard file.  */
   md_normaluser();
 
-  if ((saved_game = parse_args(argc, argv)) != NULL)
-    return restore(saved_game);
-
-  if (wizard)
-    printf("Hello %s, welcome to dungeon #%d", whoami, dnum);
-  else
-    printf("Hello %s, just a moment while I dig the dungeon...", whoami);
-  fflush(stdout);
-
-  /* Init Graphics */
-  if (init_graphics() != 0)
-    return FALSE;
-  idlok(stdscr, TRUE);
-  idlok(hw, TRUE);
-
-  /* Init stuff */
-  init_probs();                         /* Set up prob tables for objects */
-  init_player();                        /* Set up initial player stats */
-  init_names();                         /* Set up names of scrolls */
-  init_colors();                        /* Set up colors of potions */
-  init_stones();                        /* Set up stone settings of rings */
-  init_materials();                     /* Set up materials of wands */
-
-  new_level();                          /* Draw current level */
-
-  /* Start up daemons and fuses */
-  start_daemon(runners, 0, AFTER);
-  start_daemon(doctor, 0, AFTER);
-  fuse(swander, 0, WANDERTIME, AFTER);
-  start_daemon(stomach, 0, AFTER);
-  playit();
-  return(0);
+  saved_game = parse_args(argc, argv);
+  return saved_game == NULL ? new_game() : restore(saved_game);
 }
 
 /** endit:
@@ -110,7 +81,7 @@ fatal(char *s)
  * refreshing things and looking at the proper times.
  */
 
-void
+bool
 playit()
 {
   char *opts;
@@ -149,6 +120,7 @@ playit()
   while (playing)
     command();   /* Command execution */
   endit(0);
+  return 0;
 }
 
 /** quit:
@@ -235,6 +207,42 @@ shell()
   raw();
   in_shell = FALSE;
   clearok(stdscr, TRUE);
+}
+
+bool
+new_game()
+{
+  if (wizard)
+    printf("Hello %s, welcome to dungeon #%d", whoami, dnum);
+  else
+    printf("Hello %s, just a moment while I dig the dungeon...", whoami);
+  fflush(stdout);
+
+  /* Init Graphics */
+  if (init_graphics() != 0)
+    return FALSE;
+  idlok(stdscr, TRUE);
+  idlok(hw, TRUE);
+
+  /* Init stuff */
+  init_probs();                         /* Set up prob tables for objects */
+  init_player();                        /* Set up initial player stats */
+  init_names();                         /* Set up names of scrolls */
+  init_colors();                        /* Set up colors of potions */
+  init_stones();                        /* Set up stone settings of rings */
+  init_materials();                     /* Set up materials of wands */
+
+  new_level();                          /* Draw current level */
+
+  /* Start up daemons and fuses */
+  start_daemon(runners, 0, AFTER);
+  start_daemon(doctor, 0, AFTER);
+  fuse(swander, 0, WANDERTIME, AFTER);
+  start_daemon(stomach, 0, AFTER);
+
+  playit();
+
+  return TRUE;
 }
 
 /** parse_args

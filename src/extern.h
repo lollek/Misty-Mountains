@@ -50,7 +50,7 @@ void end_line();
 void land();
 void leave(int);
 void nohaste();
-void playit();
+bool playit();
 void print_disc(char);
 void quit(int);
 void rollwand();
