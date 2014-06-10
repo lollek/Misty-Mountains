@@ -118,7 +118,6 @@ type_name(int type)
     return(0);
 }
 
-#ifdef MASTER
 /*
  * create_obj:
  *	wizard command for getting anything he wants
@@ -189,7 +188,6 @@ create_obj()
     }
     add_pack(obj, FALSE);
 }
-#endif
 
 /*
  * telport:
@@ -230,33 +228,6 @@ teleport()
     flush_type();
 }
 
-#ifdef MASTER
-/*
- * passwd:
- *	See if user knows password
- */
-int
-passwd()
-{
-    char *sp, c;
-    static char buf[MAXSTR];
-
-    msg("wizard's Password:");
-    mpos = 0;
-    sp = buf;
-    while ((c = readchar()) != '\n' && c != '\r' && c != ESCAPE)
-	if (c == killchar())
-	    sp = buf;
-	else if (c == erasechar() && sp > buf)
-	    sp--;
-	else
-	    *sp++ = c;
-    if (sp == buf)
-	return FALSE;
-    *sp = '\0';
-    return (strcmp(PASSWD, md_crypt(buf, "mT")) == 0);
-}
-
 /*
  * show_map:
  *	Print out the map for the wizard
@@ -281,4 +252,3 @@ show_map()
 	}
     show_win("---More (level map)---");
 }
-#endif

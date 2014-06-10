@@ -355,7 +355,6 @@ init_materials()
     }
 }
 
-#ifdef MASTER
 # define	NT	NUMTHINGS, "things"
 # define	MP	MAXPOTIONS, "potions"
 # define	MS	MAXSCROLLS, "scrolls"
@@ -363,38 +362,22 @@ init_materials()
 # define	MWS	MAXSTICKS, "sticks"
 # define	MW	MAXWEAPONS, "weapons"
 # define	MA	MAXARMORS, "armor"
-#else
-# define	NT	NUMTHINGS
-# define	MP	MAXPOTIONS
-# define	MS	MAXSCROLLS
-# define	MR	MAXRINGS
-# define	MWS	MAXSTICKS
-# define	MW	MAXWEAPONS
-# define	MA	MAXARMORS
-#endif
 
 /*
  * sumprobs:
  *	Sum up the probabilities for items appearing
  */
 void
-sumprobs(struct obj_info *info, int bound
-#ifdef MASTER
-	, char *name
-#endif
-)
+sumprobs(struct obj_info *info, int bound , char *name)
 {
-#ifdef MASTER
-	struct obj_info *start = info;
-#endif
-    struct obj_info *endp;
+  struct obj_info *start = info;
+  struct obj_info *endp;
 
-    endp = info + bound;
-    while (++info < endp)
-	info->oi_prob += (info - 1)->oi_prob;
-#ifdef MASTER
-    badcheck(name, start, bound);
-#endif
+  endp = info + bound;
+  while (++info < endp)
+    info->oi_prob += (info - 1)->oi_prob;
+    if (wizard)
+      badcheck(name, start, bound);
 }
 
 /*
@@ -413,7 +396,6 @@ init_probs()
     sumprobs(arm_info, MA);
 }
 
-#ifdef MASTER
 /*
  * badcheck:
  *	Check to see if a series of probabilities sums to 100
@@ -433,7 +415,6 @@ badcheck(char *name, struct obj_info *info, int bound)
     while (getchar() != '\n')
 	continue;
 }
-#endif
 
 /*
  * pick_color:

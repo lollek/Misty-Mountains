@@ -1911,11 +1911,7 @@ rs_save_file(FILE *savef)
     rs_write_boolean(savef, terse);                 /* 25 */
     rs_write_boolean(savef, to_death);              /* 26 */
     rs_write_boolean(savef, tombstone);             /* 27 */
-#ifdef MASTER
     rs_write_int(savef, wizard);                    /* 28 */
-#else
-    rs_write_int(savef, 0);                         /* 28 */
-#endif
     rs_write_booleans(savef, pack_used, 26);        /* 29 */
     rs_write_char(savef, dir_ch);
     rs_write_chars(savef, file_name, MAXSTR);
@@ -1992,11 +1988,7 @@ rs_save_file(FILE *savef)
     
     
     rs_write_daemons(savef, &d_list[0], 20);            /* 5.4-daemon.c */
-#ifdef MASTER
     rs_write_int(savef,total);                          /* 5.4-list.c   */
-#else
-    rs_write_int(savef, 0);
-#endif
     rs_write_int(savef,between);                        /* 5.4-daemons.c*/
     rs_write_coord(savef, nh);                          /* 5.4-move.c    */
     rs_write_int(savef, group);                         /* 5.4-weapons.c */
@@ -2041,11 +2033,7 @@ rs_restore_file(FILE *inf)
     rs_read_boolean(inf, &terse);               /* 25 */
     rs_read_boolean(inf, &to_death);            /* 26 */
     rs_read_boolean(inf, &tombstone);           /* 27 */
-#ifdef MASTER
     rs_read_int(inf, &wizard);                  /* 28 */
-#else
-    rs_read_int(inf, &dummyint);                /* 28 */
-#endif
     rs_read_booleans(inf, pack_used, 26);       /* 29 */
     rs_read_char(inf, &dir_ch);
     rs_read_chars(inf, file_name, MAXSTR);

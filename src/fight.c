@@ -63,19 +63,13 @@ static int add_dam[] = {
 int
 fight(coord *mp, THING *weap, bool thrown)
 {
-    register THING *tp;
+    register THING *tp = moat(mp->y, mp->x);
     register bool did_hit = TRUE;
     register char *mname, ch;
 
-    /*
-     * Find the monster we want to fight
-     */
-#ifdef MASTER
-    if ((tp = moat(mp->y, mp->x)) == NULL)
+    /* Find the monster we want to fight */
+    if (wizard && tp == NULL)
 	debug("Fight what @ %d,%d", mp->y, mp->x);
-#else
-    tp = moat(mp->y, mp->x);
-#endif
     /*
      * Since we are fighting, things are not quiet so no healing takes
      * place.
@@ -462,10 +456,8 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 	    int proll;
 
 	    proll = roll(ndice, nsides);
-#ifdef MASTER
-	    if (ndice + nsides > 0 && proll <= 0)
+	    if (wizard && ndice + nsides > 0 && proll <= 0)
 		debug("Damage for %dx%d came out %d, dplus = %d, add_dam = %d, def_arm = %d", ndice, nsides, proll, dplus, add_dam[att->s_str], def_arm);
-#endif
 	    damage = dplus + proll + add_dam[att->s_str];
 	    def->s_hpt -= max(0, damage);
 	    did_hit = TRUE;

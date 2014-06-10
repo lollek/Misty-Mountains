@@ -232,10 +232,8 @@ do_zap()
 	    ws_info[obj->o_which].oi_know = TRUE;
 	when WS_NOP:
 	    break;
-#ifdef MASTER
 	otherwise:
 	    msg("what a bizarre schtick!");
-#endif
     }
     obj->o_charges--;
 }

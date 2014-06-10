@@ -300,11 +300,12 @@ def:
 	    }
 	    else
 		msg("you feel a strange sense of loss");
-#ifdef MASTER
 	otherwise:
-	    msg("what a puzzling scroll!");
-	    return;
-#endif
+            if (wizard)
+            {
+              msg("what a puzzling scroll!");
+              return;
+            }
     }
     obj = orig_obj;
     look(TRUE);	/* put the result of the scroll on the screen */

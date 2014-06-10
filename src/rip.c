@@ -54,9 +54,7 @@ score(int amount, int flags, char monst)
     int i;
     SCORE *sc2;
     SCORE *top_ten, *endp;
-# ifdef MASTER
     int prflags = 0;
-# endif
     void (*fp)(int);
     unsigned int uid;
     static char *reason[] = {
@@ -66,11 +64,7 @@ score(int amount, int flags, char monst)
 	"killed with Amulet"
     };
 
- if (flags >= 0
-#ifdef MASTER
-            || wizard
-#endif
-        )
+ if (flags >= 0 || wizard)
     {
 	mvaddstr(LINES - 1, 0 , "[Press return to continue]");
         refresh();
@@ -101,13 +95,13 @@ score(int amount, int flags, char monst)
 
     signal(SIGINT, SIG_DFL);
 
-#ifdef MASTER
     if (wizard)
+    {
 	if (strcmp(prbuf, "names") == 0)
 	    prflags = 1;
 	else if (strcmp(prbuf, "edit") == 0)
 	    prflags = 2;
-#endif
+    }
     rd_score(top_ten);
     /*
      * Insert her in list if need be
@@ -154,7 +148,6 @@ score(int amount, int flags, char monst)
 		scp->sc_level);
 	    if (scp->sc_flags == 0 || scp->sc_flags == 3)
 		printf(" by %s", killname((char) scp->sc_monster, TRUE));
-#ifdef MASTER
 	    if (prflags == 1)
 	    {
 	    printf(" (%s)", md_getrealname(scp->sc_uid));
@@ -178,7 +171,6 @@ score(int amount, int flags, char monst)
 		}
 	    }
 	    else
-#endif /* MASTER */
                 printf(".");
             putchar('\n');
 	}

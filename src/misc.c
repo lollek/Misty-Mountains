@@ -284,14 +284,12 @@ find_obj(int y, int x)
 	if (obj->o_pos.y == y && obj->o_pos.x == x)
 		return obj;
     }
-#ifdef MASTER
-    sprintf(prbuf, "Non-object %d,%d", y, x);
-    msg(prbuf);
+    if (wizard)
+    {
+      sprintf(prbuf, "Non-object %d,%d", y, x);
+      msg(prbuf);
+    }
     return NULL;
-#else
-    /* NOTREACHED */
-    return NULL;
-#endif
 }
 
 /*

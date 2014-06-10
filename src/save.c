@@ -222,11 +222,7 @@ restore(char *file)
      * inode for as long as possible
      */
 
-    if (
-#ifdef MASTER
-	!wizard &&
-#endif
-        unlink(file) < 0)
+    if (!wizard && unlink(file) < 0)
     {
 	printf("Cannot unlink file\n");
 	return FALSE;
@@ -240,15 +236,12 @@ restore(char *file)
     /*
      * defeat multiple restarting from the same place
      */
-#ifdef MASTER
-    if (!wizard)
-#endif
-	if (sbuf2.st_nlink != 1 || syml)
-	{
-	    endwin();
-	    printf("\nCannot restore from a linked file\n");
-	    return FALSE;
-	}
+    if (!wizard && (sbuf2.st_nlink != 1 || syml))
+    {
+        endwin();
+        printf("\nCannot restore from a linked file\n");
+        return FALSE;
+    }
 
     if (pstats.s_hpt <= 0)
     {

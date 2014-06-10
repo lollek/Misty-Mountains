@@ -64,10 +64,8 @@ command()
 	/*
 	 * Read command or continue run
 	 */
-#ifdef MASTER
 	if (wizard)
 	    noscore = TRUE;
-#endif
 	if (!no_command)
 	{
 	    if (running || to_death)
@@ -125,9 +123,7 @@ command()
 		    case 'z': case 'B': case 'C': case 'H': case 'I':
 		    case 'J': case 'K': case 'L': case 'N': case 'U':
 		    case 'Y':
-#ifdef MASTER
 		    case CTRL('D'): case CTRL('A'):
-#endif
 			break;
 		    default:
 			count = 0;
@@ -313,28 +309,18 @@ over:
 			    *fp |= F_SEEN;
 			}
 		    }
-#ifdef MASTER
 		when '+':
 		    after = FALSE;
-		    if (wizard)
+		    if (potential_wizard)
 		    {
-			wizard = FALSE;
-			turn_see(TRUE);
+                      wizard = !wizard;
+                      turn_see(!wizard);
+                      noscore = TRUE;
+                      if (wizard)
+			msg("you are suddenly as smart as Ken Arnold in dungeon #%d", dnum);
+                      else
 			msg("not wizard any more");
-		    }
-		    else
-		    {
-			wizard = passwd();
-			if (wizard) 
-			{
-			    noscore = TRUE;
-			    turn_see(FALSE);
-			    msg("you are suddenly as smart as Ken Arnold in dungeon #%d", dnum);
-			}
-			else
-			    msg("sorry");
-		    }
-#endif
+                    }
 		when ESCAPE:	/* Escape */
 		    door_stop = FALSE;
 		    count = 0;
@@ -364,7 +350,6 @@ over:
 		    after = FALSE;
 		otherwise:
 		    after = FALSE;
-#ifdef MASTER
 		    if (wizard) switch (ch)
 		    {
 			case '|': msg("@ %d,%d", hero.y, hero.x);
@@ -421,7 +406,6 @@ over:
 			    illcom(ch);
 		    }
 		    else
-#endif
 			illcom(ch);
 	    }
 	    /*

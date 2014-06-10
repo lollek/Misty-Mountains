@@ -168,10 +168,8 @@ too_much()
 bool
 author()
 {
-#ifdef MASTER
     if (wizard)
 	return TRUE;
-#endif
     switch (getuid())
     {
 	case -1:

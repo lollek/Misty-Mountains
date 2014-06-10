@@ -212,10 +212,8 @@ conn(int r1, int r2)
 	turn_delta.x = 0;
 	turn_distance = abs(spos.y - epos.y);
     }
-#ifdef MASTER
-    else
+    else if (wizard)
 	debug("error in connection tables");
-#endif
 
     turn_spot = rnd(distance - 1) + 1;		/* where turn starts */
 
@@ -312,7 +310,6 @@ door(struct room *rm, coord *cp)
 	pp->p_ch = DOOR;
 }
 
-#ifdef MASTER
 /*
  * add_pass:
  *	Add the passages to the current window (wizard command)
@@ -350,7 +347,6 @@ add_pass()
 	    }
 	}
 }
-#endif
 
 /*
  * passnum:

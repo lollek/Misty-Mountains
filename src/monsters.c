@@ -137,10 +137,8 @@ wanderer()
 	standend();
     }
     runto(&tp->t_pos);
-#ifdef MASTER
     if (wizard)
 	msg("started a wandering %s", monsters[tp->t_type-'A'].m_name);
-#endif
 }
 
 /*
@@ -150,18 +148,17 @@ wanderer()
 THING *
 wake_monster(int y, int x)
 {
-    THING *tp;
+    THING *tp = moat(y, x);
     struct room *rp;
     char ch, *mname;
 
-#ifdef MASTER
-    if ((tp = moat(y, x)) == NULL)
-	msg("can't find monster in wake_monster");
-#else
-    tp = moat(y, x);
-    if (tp == NULL) 	 	 
-	endwin(), abort(); 
-#endif
+    if (tp == NULL)
+    {
+      if (wizard)
+        msg("can't find monster in wake_monster");
+      else
+        endwin(), abort();
+    }
     ch = tp->t_type;
     /*
      * Every time he sees mean monster, it might start chasing him

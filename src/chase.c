@@ -285,20 +285,13 @@ see_monst(THING *mp)
 void
 runto(coord *runner)
 {
-    register THING *tp;
+    register THING *tp = moat(runner->y, runner->x);
 
-    /*
-     * If we couldn't find him, something is funny
-     */
-#ifdef MASTER
-    if ((tp = moat(runner->y, runner->x)) == NULL)
-	msg("couldn't find monster in runto at (%d,%d)", runner->y, runner->x);
-#else
-    tp = moat(runner->y, runner->x);
-#endif
-    /*
-     * Start the beastie running
-     */
+    /* If we couldn't find him, something is funny */
+    if (wizard && tp == NULL)
+      msg("couldn't find monster in runto at (%d,%d)", runner->y, runner->x);
+
+    /* Start the beastie running */
     tp->t_flags |= ISRUN;
     tp->t_flags &= ~ISHELD;
     tp->t_dest = find_dest(tp);

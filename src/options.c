@@ -370,7 +370,6 @@ get_inv_t(void *vp, WINDOW *win)
 }
 	
 
-#ifdef MASTER
 /*
  * get_num:
  *	Get a numeric option
@@ -386,7 +385,6 @@ get_num(void *vp, WINDOW *win)
 	*opt = (short) atoi(buf);
     return i;
 }
-#endif
 
 /*
  * parse_opts:

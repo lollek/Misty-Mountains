@@ -108,11 +108,9 @@ inv_name(THING *obj, bool drop)
 	    strcpy(pb, "The Amulet of Yendor");
 	when GOLD:
 	    sprintf(prbuf, "%d Gold pieces", obj->o_goldval);
-#ifdef MASTER
 	otherwise:
 	    debug("Picked up something funny %s", unctrl(obj->o_type));
 	    sprintf(pb, "Something bizarre %s", unctrl(obj->o_type));
-#endif
     }
     if (inv_describe)
     {
@@ -289,11 +287,9 @@ new_thing()
 	    cur->o_type = STICK;
 	    cur->o_which = pick_one(ws_info, MAXSTICKS);
 	    fix_stick(cur);
-#ifdef MASTER
 	otherwise:
 	    debug("Picked a bad kind of object");
 	    wait_for(' ');
-#endif
     }
     return cur;
 }
@@ -315,14 +311,12 @@ pick_one(struct obj_info *info, int nitems)
 	    break;
     if (info == end)
     {
-#ifdef MASTER
 	if (wizard)
 	{
 	    msg("bad pick_one: %d from %d items", i, nitems);
 	    for (info = start; info < end; info++)
 		msg("%s: %d%%", info->oi_name, info->oi_prob);
 	}
-#endif
 	info = start;
     }
     return (int)(info - start);
@@ -649,7 +643,6 @@ nullstr(THING *ignored)
     return "";
 }
 
-# ifdef	MASTER
 /*
  * pr_list:
  *	List possible potions, scrolls, etc. for wizard.
@@ -710,4 +703,3 @@ pr_spec(struct obj_info *info, int nitems)
     }
     end_line();
 }
-# endif	/* MASTER */

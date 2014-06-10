@@ -30,18 +30,6 @@ main(int argc, char **argv)
 {
   char *env;
 
-#ifdef MASTER
-  /* Check to see if he is a wizard */
-  if (argc >= 2 && argv[1][0] == '\0' &&
-      strcmp(PASSWD, md_crypt(getpass("wizard's password: "), "mT")) == 0)
-  {
-    wizard = TRUE;
-    player.t_flags |= SEEMONST;
-    argv++;
-    argc--;
-  }
-#endif
-
   /* get home and options from environment */
   strncpy(home, md_gethomedir(), MAXSTR);
 
@@ -63,11 +51,9 @@ main(int argc, char **argv)
   init_check();   /* check for legal startup */
   parse_args(argc, argv);
 
-#ifdef MASTER
   if (wizard)
     printf("Hello %s, welcome to dungeon #%d", whoami, dnum);
   else
-#endif
     printf("Hello %s, just a moment while I dig the dungeon...", whoami);
   fflush(stdout);
 
@@ -95,9 +81,7 @@ main(int argc, char **argv)
   hw = newwin(LINES, COLS, 0, 0);
   idlok(stdscr, TRUE);
   idlok(hw, TRUE);
-#ifdef MASTER
   noscore = wizard;
-#endif
   new_level();  /* Draw current level */
 
   /* Start up daemons and fuses */
@@ -274,6 +258,7 @@ parse_args(int argc, char **argv)
     {"restore",   no_argument,       0, 'r'},
     {"score",     no_argument,       0, 's'},
     {"seed",      required_argument, 0, 'S'},
+    {"wizard",    no_argument,       0, 'W'},
     {"help",      no_argument,       0, '0'},
     {"version",   no_argument,       0, '1'},
     {0,           0,                 0,  0 }
@@ -283,7 +268,7 @@ parse_args(int argc, char **argv)
 
   for (;;)
   {
-    int c = getopt_long(argc, argv, "E::rsS:", long_options, &option_index);
+    int c = getopt_long(argc, argv, "E::rsS:W", long_options, &option_index);
     if (c == -1)
       break;
 
@@ -293,6 +278,8 @@ parse_args(int argc, char **argv)
       case 'r': restore("-r"); exit(1);
       case 's': noscore = TRUE; score(0, -1, 0); exit(0);
       case 'S': seed = dnum = atoi(optarg); break;
+      case 'W': potential_wizard = wizard = TRUE;
+                player.t_flags |= SEEMONST; break;
       case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
                "Run Rogue14 with selected options or a savefile\n\n"
@@ -302,6 +289,7 @@ parse_args(int argc, char **argv)
                "  -r, --restore        restore game to default\n"
                "  -s, --score          display the highscore and exit\n"
                "  -S, --seed=NUMBER    set map seed to NUMBER\n"
+               "  -W, --wizard         run the game in debug-mode\n"
                ,argv[0]);
         printf("      --help           display this help and exit\n"
                "      --version        display game version and exit\n\n"
