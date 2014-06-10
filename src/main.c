@@ -18,7 +18,7 @@
 
 #include "rogue.h"
 
-static void parse_args(int argc, char **argv);
+static char *parse_args(int argc, char **argv);
 static void endit(int sig);
 static void fatal();
 
@@ -28,6 +28,7 @@ static void fatal();
 int
 main(int argc, char **argv)
 {
+  char *saved_game = NULL;
   char *env;
 
   /* get home and options from environment */
@@ -49,7 +50,8 @@ main(int argc, char **argv)
   md_normaluser();
 
   init_check();   /* check for legal startup */
-  parse_args(argc, argv);
+  if ((saved_game = parse_args(argc, argv)) != NULL)
+    return restore(saved_game);
 
   if (wizard)
     printf("Hello %s, welcome to dungeon #%d", whoami, dnum);
@@ -246,10 +248,11 @@ shell()
   clearok(stdscr, TRUE);
 }
 
-void
+char *
 parse_args(int argc, char **argv)
 {
   const char *version_string = "Rogue14 Mod 1 - Based on Rogue5.4.4";
+  char *saved_game = NULL;
   int option_index = 0;
   struct option long_options[] = {
     {"escdelay",  optional_argument, 0, 'E'},
@@ -273,7 +276,7 @@ parse_args(int argc, char **argv)
     switch (c)
     {
       case 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg); break;
-      case 'r': restore("-r"); exit(1);
+      case 'r': saved_game = "-r"; break;
       case 's': noscore = TRUE; score(0, -1, 0); exit(0);
       case 'S': seed = dnum = atoi(optarg); break;
       case 'W': potential_wizard = wizard = noscore = TRUE;
@@ -303,9 +306,8 @@ parse_args(int argc, char **argv)
   }
 
   if (optind < argc)
-  {
-    restore(argv[optind]); /* Note: restore will never return */
-    exit(1);
-  }
+    saved_game = argv[optind];
+
+  return saved_game;
 }
 
