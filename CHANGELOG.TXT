@@ -4,13 +4,19 @@ Rogue14 - Mod 1
 
   Startup/Flags:
     Removed -d flag as it didn't make any sense to me
-    Added --help flag
-    Added --version flag
+    Added -E/--escdelay=NUM, which set the ESCDELAY
+    Added -f/--flush, which is used instead of the ROGUEOPT
+    Added -F/--hide-floor, which is used instead of the ROGUEOPT
+    Added -j/--jump, which is used instead of the ROGUEOPT
+    Added -p/--passgo, which is used instead of the ROGUEOPT
     Added --restore flags, which does the same as -r
     Added --score flag, which does the same as -s
     Added -S/--seed=NUMBER, which sets the map seed
-    Added -E/--escdelay=NUM, which set the ESCDELAY
+    Added -t/--terse, which is used instead of the ROGUEOPT
+    Added -T/--hide-tomb, which is used instead of the ROGUEOPT
     Added -W/--wizard for debugging
+    Added --help flag
+    Added --version flag
 
   Controls:
     Shortened the ESC delay as much as possible
