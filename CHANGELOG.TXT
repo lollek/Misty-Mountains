@@ -19,5 +19,6 @@ Rogue14 - Mod 1
       but instead of forking a new shell, we just pause the game.
       Basically, we send a SIGSTOP to the program.
       After doing your shelly stuff, you can continue with the fg command.
+    Removed keypad support and character support for many strange systems
 
 
