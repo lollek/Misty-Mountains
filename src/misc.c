@@ -16,12 +16,33 @@
 #include <ctype.h>
 #include "rogue.h"
 
+/** rnd:
+ * Pick a very random number.
+ */
+int
+rnd(int range)
+{
+  return range == 0 ? 0 : abs((int) RN) % range;
+}
+
+/** roll:
+ * Roll a number of dice
+ */
+int
+roll(int number, int sides)
+{
+  int dtotal = 0;
+
+  while (number--)
+    dtotal += rnd(sides)+1;
+  return dtotal;
+}
+
 /*
  * look:
  *	A quick glance all around the player
  */
 #undef DEBUG
-
 
 void
 look(bool wakeup)

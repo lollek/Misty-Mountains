@@ -133,28 +133,6 @@ fatal(char *s)
   exit(0);
 }
 
-/** rnd:
- * Pick a very random number.
- */
-int
-rnd(int range)
-{
-  return range == 0 ? 0 : abs((int) RN) % range;
-}
-
-/** roll:
- * Roll a number of dice
- */
-int
-roll(int number, int sides)
-{
-  int dtotal = 0;
-
-  while (number--)
-    dtotal += rnd(sides)+1;
-  return dtotal;
-}
-
 /** tstp:
  * Handle stop and start signals
  */
