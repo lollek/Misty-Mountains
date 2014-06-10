@@ -214,7 +214,9 @@ restore(char *file)
     }
 
     hw = newwin(LINES, COLS, 0, 0);
-    setup();
+    raw();				/* Raw mode      */
+    noecho();				/* Echo off      */
+    keypad(stdscr,1);			/* Active Keypad */
 
     rs_restore_file(inf);
     /*

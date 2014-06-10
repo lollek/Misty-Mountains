@@ -28,18 +28,6 @@ main(int argc, char **argv)
 {
   char *env;
 
-  /* from md_init - try to remove these */
-  signal(SIGHUP, SIG_DFL);
-  signal(SIGQUIT, exit);
-  signal(SIGILL, exit);
-  signal(SIGTRAP, exit);
-  signal(SIGIOT, exit);
-  signal(SIGFPE, exit);
-  signal(SIGBUS, exit);
-  signal(SIGSEGV, exit);
-  signal(SIGSYS, exit);
-  signal(SIGTERM, exit);
-
 #ifdef MASTER
   /* Check to see if he is a wizard */
   if (argc >= 2 && argv[1][0] == '\0' &&
@@ -88,7 +76,11 @@ main(int argc, char **argv)
   init_colors();			/* Set up colors of potions */
   init_stones();			/* Set up stone settings of rings */
   init_materials();			/* Set up materials of wands */
-  setup();
+
+  /*					GRAPHICS         */
+  raw();				/* Raw mode      */
+  noecho();				/* Echo off      */
+  keypad(stdscr,1);			/* Active Keypad */
 
   /* The screen must be at least NUMLINES x NUMCOLS */
   if (LINES < NUMLINES || COLS < NUMCOLS)
@@ -200,6 +192,19 @@ void
 playit()
 {
   char *opts;
+
+  /* Try to crash cleanly, and autosave if possible */
+  signal(SIGHUP, auto_save);
+  signal(SIGQUIT, endit);
+  signal(SIGILL, auto_save);
+  signal(SIGTRAP, auto_save);
+  signal(SIGIOT, auto_save);
+  signal(SIGFPE, auto_save);
+  signal(SIGBUS, auto_save);
+  signal(SIGSEGV, auto_save);
+  signal(SIGSYS, auto_save);
+  signal(SIGTERM, auto_save);
+  signal(SIGINT, quit);
 
   /* set up defaults for slow terminals */
   if (baudrate() <= 1200)

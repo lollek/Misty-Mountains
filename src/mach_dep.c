@@ -120,53 +120,6 @@ open_score()
 }
 
 /*
- * setup:
- *	Get starting setup for all games
- */
-
-void
-setup()
-{
-#ifdef CHECKTIME
-    int  checkout();
-#endif
-
-#ifdef DUMP
-    signal(SIGHUP, auto_save);
-    signal(SIGQUIT, endit);
-    signal(SIGILL, auto_save);
-    signal(SIGTRAP, auto_save);
-    signal(SIGIOT, auto_save);
-    signal(SIGFPE, auto_save);
-    signal(SIGBUS, auto_save);
-    signal(SIGSEGV, auto_save);
-    signal(SIGSYS, auto_save);
-    signal(SIGTERM, auto_save);
-    signal(SIGINT, quit);
-#else
-    signal(SIGHUP, SIG_DFL);
-    signal(SIGQUIT, SIG_DFL);
-    signal(SIGILL, SIG_DFL);
-    signal(SIGTRAP, SIG_DFL);
-    signal(SIGIOT, SIG_DFL);
-    signal(SIGFPE, SIG_DFL);
-    signal(SIGBUS, SIG_DFL);
-    signal(SIGSEGV, SIG_DFL);
-    signal(SIGSYS, SIG_DFL);
-    signal(SIGTERM, SIG_DFL);
-#endif
-
-#ifdef CHECKTIME
-    md_start_checkout_timer(CHECKTIME*60);
-    num_checks = 0;
-#endif
-
-    raw();				/* Raw mode */
-    noecho();				/* Echo off */
-    keypad(stdscr,1);
-}
-
-/*
  * start_score:
  *	Start the scoring sequence
  */
