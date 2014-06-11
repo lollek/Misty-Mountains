@@ -171,7 +171,6 @@ restore(char *file)
     FILE *inf;
     char buf[MAXSTR];
     struct stat sbuf2;
-    int lines, cols;
 
     if (strcmp(file, "-r") == 0)
         file = file_name;
@@ -210,9 +209,6 @@ restore(char *file)
         return FALSE;
     }
     encread(buf,80,inf);
-
-    /* lines and cols were used in Rogue5.4.4 but we can ignore them */
-    sscanf(buf,"%d x %d\n", &lines, &cols);
 
     if (init_graphics() != 0)
       return FALSE;
