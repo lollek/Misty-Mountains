@@ -606,7 +606,6 @@ void	new_level();
 void	new_monster(THING *tp, char type, coord *cp);
 void	numpass(int y, int x);
 void	option();
-void	open_score();
 void	parse_opts(char *str);
 void 	passnum();
 char	*pick_color(char *col);

@@ -23,6 +23,8 @@ static char *parse_args(int argc, char **argv);
 static void endit(int sig);
 static void fatal();
 
+void open_score_and_drop_setuid_setgid(); /* src/mach_dep.c */
+
 /** main:
  * The main program, of course
  */
@@ -46,10 +48,9 @@ main(int argc, char **argv)
 
   seed = dnum = time(NULL) + getpid();
 
-  open_score();
+  /* Open scoreboard and drop setuid/getgid, so we can modify the score later */
+  open_score_and_drop_setuid_setgid();
 
-  /* Drop setuid/setgid after opening the scoreboard file.  */
-  md_normaluser();
 
   /* Play game! */
   saved_game = parse_args(argc, argv);

@@ -62,19 +62,18 @@ char *Numname = NUMNAME;
  */
 
 void
-open_score()
+open_score_and_drop_setuid_setgid()
 {
-#ifdef SCOREFILE
     char *scorefile = SCOREFILE;
-     /* 
-      * We drop setgid privileges after opening the score file, so subsequent 
-      * open()'s will fail.  Just reuse the earlier filehandle. 
-      */
 
-    if (scoreboard != NULL) { 
-        rewind(scoreboard); 
-        return; 
-    } 
+     /* We drop setgid privileges after opening the score file, so subsequent
+      * open()'s will fail.  Just reuse the earlier filehandle. */
+
+    if (scoreboard != NULL) {
+        rewind(scoreboard);
+        md_normaluser();
+        return;
+    }
 
     scoreboard = fopen(scorefile, "r+");
 
@@ -84,13 +83,13 @@ open_score()
         chmod(scorefile,0664);
     }
 
-    if (scoreboard == NULL) { 
-         fprintf(stderr, "Could not open %s for writing: %s\n", scorefile, strerror(errno)); 
-         fflush(stderr); 
-    } 
-#else
-    scoreboard = NULL;
-#endif
+    if (scoreboard == NULL) {
+         fprintf(stderr, "Could not open %s for writing: %s\n", scorefile, strerror(errno));
+         fflush(stderr);
+    }
+
+  /* Drop setuid/setgid after opening the scoreboard file.  */
+  md_normaluser();
 }
 
 /* 	 	 
