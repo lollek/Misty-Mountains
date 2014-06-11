@@ -71,12 +71,18 @@ md_normaluser()
 char *
 md_getusername()
 {
-  static char login[80];
-  struct passwd *pw = getpwuid(getuid());
+#define USERNAME_MAXLEN 80
+  static char login[USERNAME_MAXLEN] = { '\0' };
 
-  strncpy(login, pw == NULL ? "nobody" : pw->pw_name, 80);
-  login[79] = 0;
+  if (*login == '\0')
+  {
+    struct passwd *pw = getpwuid(getuid());
+
+    strncpy(login, pw == NULL ? "nobody" : pw->pw_name, USERNAME_MAXLEN);
+    login[USERNAME_MAXLEN -1] = '\0';
+  }
   return login;
+#undef USERNAME_MAXLEN
 }
 
 char *
