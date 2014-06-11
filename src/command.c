@@ -317,7 +317,7 @@ over:
                       turn_see(!wizard);
                       noscore = TRUE;
                       if (wizard)
-			msg("you are suddenly as smart as Ken Arnold in dungeon #%d", dnum);
+			msg("you are suddenly as smart as Ken Arnold in dungeon #%d", seed);
                       else
 			msg("not wizard any more");
                     }

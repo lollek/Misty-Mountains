@@ -189,7 +189,7 @@ new_game()
     strucpy(whoami, md_getusername(), (int) strlen(md_getusername()));
 
   if (wizard)
-    printf("Hello %s, welcome to dungeon #%d", whoami, dnum);
+    printf("Hello %s, welcome to dungeon #%d", whoami, seed);
   else
     printf("Hello %s, just a moment while I dig the dungeon...", whoami);
   fflush(stdout);
@@ -264,7 +264,7 @@ parse_args(int argc, char **argv)
   strncat(file_name, ".rogue14_save", MAXSTR - strlen(md_gethomedir()) -1);
 
   /* Set seed and dungeon number */
-  seed = dnum = time(NULL) + getpid();
+  seed = time(NULL) + getpid();
 
   /* Not sure what this does */
   if (md_hasclreol())
@@ -292,7 +292,7 @@ parse_args(int argc, char **argv)
       case 'p': passgo = TRUE; break;
       case 'r': saved_game = "-r"; break;
       case 's': noscore = TRUE; score(0, -1, 0); exit(0);
-      case 'S': seed = dnum = atoi(optarg); break;
+      case 'S': seed = atoi(optarg); break;
       case 't': terse = TRUE; break;
       case 'T': tombstone = FALSE; break;
       case 'W': potential_wizard = wizard = noscore = TRUE;

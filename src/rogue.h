@@ -481,7 +481,7 @@ extern int	a_class[], count, food_left, hungry_state, inpack,
 
 extern unsigned int	numscores;
 
-extern int	dnum, e_levels[], seed;
+extern int	e_levels[], seed;
 
 extern WINDOW	*hw;
 
