@@ -44,11 +44,10 @@ main(int argc, char **argv)
 /** endit:
  * Exit the program abnormally.
  */
-
 void
 endit(int sig)
 {
-  NOOP(sig);
+  (void)sig;
   fatal("Okay, bye bye!\n");
 }
 
@@ -68,11 +67,9 @@ fatal(char *s)
  * The main loop of the program.  Loop until the game is over,
  * refreshing things and looking at the proper times.
  */
-
 bool
 playit()
 {
-
   /* Try to crash cleanly, and autosave if possible */
   signal(SIGHUP, auto_save);
   signal(SIGQUIT, endit);
@@ -101,8 +98,7 @@ void
 quit(int sig)
 {
   int oy, ox;
-
-  NOOP(sig);
+  (void)sig;
 
   /* Reset the signal in case we got here via an interrupt */
   if (!q_comm)
@@ -139,8 +135,7 @@ void
 leave(int sig)
 {
   static char buf[BUFSIZ];
-
-  NOOP(sig);
+  (void)sig;
 
   setbuf(stdout, buf);	/* throw away pending output */
 

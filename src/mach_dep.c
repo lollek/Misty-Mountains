@@ -16,17 +16,6 @@
  *	NUMSCORES	Number of scores in the score file (default 10).
  *	NUMNAME		String version of NUMSCORES (first character
  *			should be capitalized) (default "Ten").
- *	MAXLOAD		What (if any) the maximum load average should be
- *			when people are playing.  Since it is divided
- *			by 10, to specify a load limit of 4.0, MAXLOAD
- *			should be "40".	 If defined, then
- *      NAMELIST	If so, where does the system namelist
- *		        hide?
- *	MAXUSERS	What (if any) the maximum user count should be
- *	                when people are playing.  If defined, then
- *      UCOUNT		Should it use it's own routine to count
- *		        users?
- *      UTMP		If so, where does the user list hide?
  */
 
 #include <signal.h>
@@ -40,8 +29,6 @@
 #include <time.h>
 #include <curses.h>
 #include "extern.h"
-
-#define NOOP(x) (x += 0)
 
 #define SCOREFILE ".rogue14_highscore"
 #define LOCKFILE ".rogue14_lockfile"
@@ -63,128 +50,49 @@ void
 open_score_and_drop_setuid_setgid()
 {
   /* FIXME: highscore should NOT be in the local folder */
-    char *scorefile = SCOREFILE;
+  char *scorefile = SCOREFILE;
 
-     /* We drop setgid privileges after opening the score file, so subsequent
-      * open()'s will fail.  Just reuse the earlier filehandle. */
+  /* We drop setgid privileges after opening the score file, so subsequent
+   * open()'s will fail.  Just reuse the earlier filehandle. */
 
-    if (scoreboard != NULL) {
-        rewind(scoreboard);
-        md_normaluser();
-        return;
-    }
+  if (scoreboard != NULL) {
+    rewind(scoreboard);
+    md_normaluser();
+    return;
+  }
 
-    scoreboard = fopen(scorefile, "r+");
+  scoreboard = fopen(scorefile, "r+");
 
-    if ((scoreboard == NULL) && (errno == ENOENT))
-    {
-    	scoreboard = fopen(scorefile, "w+");
-        chmod(scorefile,0664);
-    }
+  if ((scoreboard == NULL) && (errno == ENOENT))
+  {
+    scoreboard = fopen(scorefile, "w+");
+    chmod(scorefile,0664);
+  }
 
-    if (scoreboard == NULL) {
-         fprintf(stderr, "Could not open %s for writing: %s\n", scorefile, strerror(errno));
-         fflush(stderr);
-    }
+  if (scoreboard == NULL) {
+    fprintf(stderr, "Could not open %s for writing: %s\n",
+            scorefile, strerror(errno));
+    fflush(stderr);
+  }
 
   /* Drop setuid/setgid after opening the scoreboard file.  */
   md_normaluser();
 }
 
-/* 	 	 
- * is_symlink: 	 	 
- *      See if the file has a symbolic link 	 	 
-  */ 	 	 
-bool 	 	 
-is_symlink(char *sp) 	 	 
-{ 	 	 
-#ifdef S_IFLNK 	 	 
-    struct stat sbuf2; 	 	 
- 	 	 
-    if (lstat(sp, &sbuf2) < 0) 	 	 
-        return FALSE; 	 	 
-    else 	 	 
-        return ((sbuf2.st_mode & S_IFMT) != S_IFREG); 	 	 
-#else
-	NOOP(sp);
-    return FALSE; 	 	 
-#endif 
-} 
-
-#if defined(MAXLOAD) || defined(MAXUSERS)
 /*
- * too_much:
- *	See if the system is being used too much for this game
- */
+ * is_symlink:
+ *      See if the file has a symbolic link
+  */
 bool
-too_much()
+is_symlink(char *sp)
 {
-#ifdef MAXLOAD
-    double avec[3];
-#else
-    int cnt;
-#endif
+    struct stat sbuf2;
 
-#ifdef MAXLOAD
-    getloadav(avec, 3);
-    if (avec[1] > (MAXLOAD / 10.0))
-	return TRUE;
-#endif
-#ifdef MAXUSERS
-    if (ucount() > MAXUSERS)
-	return TRUE;
-#endif
-    return FALSE;
+    if (lstat(sp, &sbuf2) < 0)
+        return FALSE;
+    else
+        return ((sbuf2.st_mode & S_IFMT) != S_IFREG);
 }
-
-/*
- * author:
- *	See if a user is an author of the program
- */
-bool
-author()
-{
-    if (wizard)
-	return TRUE;
-    switch (getuid())
-    {
-	case -1:
-	    return TRUE;
-	default:
-	    return FALSE;
-    }
-}
-#endif
-
-#ifdef UCOUNT
-/*
- * ucount:
- *	count number of users on the system
- */
-#include <utmp.h>
-
-struct utmp buf;
-
-int
-ucount()
-{
-    struct utmp *up;
-    FILE *utmp;
-    int count;
-
-    if ((utmp = fopen(UTMP, "r")) == NULL)
-	return 0;
-
-    up = &buf;
-    count = 0;
-
-    while (fread(up, 1, sizeof (*up), utmp) > 0)
-	if (buf.ut_name[0] != '\0')
-	    count++;
-    fclose(utmp);
-    return count;
-}
-#endif
 
 /*
  * lock_sc:
