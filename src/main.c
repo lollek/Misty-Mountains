@@ -313,7 +313,7 @@ parse_args(int argc, char **argv)
                "  -j, --jump           show running as a series of jumps\n"
                "  -n, --name=NAME      set highscore name\n"
                "  -p, --passgo         Follow the turnings in passageways\n"
-               "  -r, --restore        restore game to default\n"
+               "  -r, --restore        restore game instead of creating a new\n"
                "  -s, --score          display the highscore and exit\n"
                "  -S, --seed=NUMBER    set map seed to NUMBER\n"
                "  -t, --terse          terse output\n"
@@ -333,8 +333,18 @@ parse_args(int argc, char **argv)
     }
   }
 
+  /* If we run ./game -r ~/saved_game we should restore it
+   * otherwise, we should create a new game with ~/saved_game as file_name */
   if (optind < argc)
-    saved_game = argv[optind];
+  {
+    if (saved_game != NULL)
+      saved_game = argv[optind];
+    else
+    {
+      strncpy(file_name, argv[optind], MAXSTR);
+      file_name[MAXSTR -1] = '\0';
+    }
+  }
 
   return saved_game;
 }
