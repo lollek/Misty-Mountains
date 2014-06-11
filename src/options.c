@@ -28,7 +28,7 @@ typedef struct optstruct {
 				/* function to print value */
     void 	(*o_putfunc)(void *opt);
 				/* function to get value interactively */
-    int		(*o_getfunc)(void *opt, WINDOW *win);
+    enum option_return	(*o_getfunc)(void *opt, WINDOW *win);
 } OPTION;
 
 void	pr_optname(OPTION *op);
@@ -65,7 +65,7 @@ void
 option()
 {
     OPTION	*op;
-    int		retval;
+    enum option_return	retval;
 
     wclear(hw);
     /*
@@ -161,7 +161,7 @@ put_inv_t(void *ip)
  * get_bool:
  *	Allow changing a boolean option and print it out
  */
-int
+enum option_return
 get_bool(void *vp, WINDOW *win)
 {
     bool *bp = (bool *) vp;
@@ -203,7 +203,7 @@ get_bool(void *vp, WINDOW *win)
     wmove(win, oy, ox);
     waddstr(win, *bp ? "True" : "False");
     waddch(win, '\n');
-    return NORM;
+    return NORMAL;
 }
 
 /*
@@ -211,12 +211,12 @@ get_bool(void *vp, WINDOW *win)
  *	Change value and handle transition problems from see_floor to
  *	!see_floor.
  */
-int
+enum option_return
 get_sf(void *vp, WINDOW *win)
 {
     bool	*bp = (bool *) vp;
     bool	was_sf;
-    int		retval;
+    enum option_return	retval;
 
     was_sf = see_floor;
     retval = get_bool(bp, win);
@@ -231,7 +231,7 @@ get_sf(void *vp, WINDOW *win)
 	else
 	    look(FALSE);
     }
-    return(NORM);
+    return NORMAL;
 }
 
 /*
@@ -240,7 +240,7 @@ get_sf(void *vp, WINDOW *win)
  */
 #define MAXINP	50	/* max string to read from terminal or environment */
 
-int
+enum option_return
 get_str(void *vopt, WINDOW *win)
 {
     char *opt = (char *) vopt;
@@ -308,14 +308,14 @@ get_str(void *vopt, WINDOW *win)
     else if (c == ESCAPE)
 	return QUIT;
     else
-	return NORM;
+	return NORMAL;
 }
 
 /*
  * get_inv_t
  *	Get an inventory type name
  */
-int
+enum option_return
 get_inv_t(void *vp, WINDOW *win)
 {
     int *ip = (int *) vp;
@@ -360,7 +360,7 @@ get_inv_t(void *vp, WINDOW *win)
 	}
     }
     mvwprintw(win, oy, ox, "%s\n", inv_t_name[*ip]);
-    return NORM;
+    return NORMAL;
 }
 	
 
@@ -368,14 +368,14 @@ get_inv_t(void *vp, WINDOW *win)
  * get_num:
  *	Get a numeric option
  */
-int
+enum option_return
 get_num(void *vp, WINDOW *win)
 {
     short *opt = (short *) vp;
-    int i;
+    enum option_return i;
     static char buf[MAXSTR];
 
-    if ((i = get_str(buf, win)) == NORM)
+    if ((i = get_str(buf, win)) == NORMAL)
 	*opt = (short) atoi(buf);
     return i;
 }

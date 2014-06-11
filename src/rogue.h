@@ -12,13 +12,12 @@
 
 #include "extern.h"
 
-#undef lines 
+#undef lines
 
 #define NOOP(x) (x += 0)
 #define CCHAR(x) ( (char) (x & A_CHARTEXT) )
-/*
- * Maximum number of different things
- */
+
+/* Maximum number of different things */
 #define MAXROOMS	9
 #define MAXTHINGS	9
 #define MAXOBJ		9
@@ -29,22 +28,24 @@
 #define MAXPASS		13	/* upper limit on number of passages */
 #define	NUMLINES	24
 #define	NUMCOLS		80
-#define STATLINE		(NUMLINES - 1)
+#define STATLINE	(NUMLINES - 1)
 #define BORE_LEVEL	50
 
-/*
- * return values for get functions
- */
-#define	NORM	0	/* normal exit */
-#define	QUIT	1	/* quit option setting */
-#define	MINUS	2	/* back up one option */
+/* return values for get functions */
+enum option_return
+{
+  NORMAL = 0,         /* normal exit */
+  QUIT = 1,           /* quit option setting */
+  MINUS               /* back up one option */
+};
 
-/*
- * inventory types
- */
-#define	INV_OVER	0
-#define	INV_SLOW	1
-#define	INV_CLEAR	2
+/* inventory types */
+typedef enum INV_TYPE
+{
+  INV_OVER = 0,
+  INV_SLOW = 1,
+  INV_CLEAR = 2
+} INV_TYPE;
 
 /*
  * All the fun defines
@@ -705,11 +706,12 @@ char	*ring_num(THING *obj);
 char	*set_mname(THING *tp);
 char	*vowelstr(char *str);
 
-int	get_bool(void *vp, WINDOW *win);
-int	get_inv_t(void *vp, WINDOW *win);
-int	get_num(void *vp, WINDOW *win);
-int	get_sf(void *vp, WINDOW *win);
-int	get_str(void *vopt, WINDOW *win);
+enum option_return	get_bool(void *vp, WINDOW *win);
+enum option_return	get_inv_t(void *vp, WINDOW *win);
+enum option_return	get_num(void *vp, WINDOW *win);
+enum option_return	get_sf(void *vp, WINDOW *win);
+enum option_return	get_str(void *vopt, WINDOW *win);
+
 int	trip_ch(int y, int x, int ch);
 
 coord	*find_dest(THING *tp);

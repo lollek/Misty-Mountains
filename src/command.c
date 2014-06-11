@@ -763,7 +763,7 @@ norm:
 	strcpy(prbuf, "");
     else
 	strcpy(prbuf, elsewise);
-    if (get_str(prbuf, stdscr) == NORM)
+    if (get_str(prbuf, stdscr) == NORMAL)
     {
 	if (*guess != NULL)
 	    free(*guess);

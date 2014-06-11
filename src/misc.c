@@ -575,7 +575,7 @@ call_it(struct obj_info *info)
     else if (!info->oi_guess)
     {
 	msg(terse ? "call it: " : "what do you want to call it? ");
-	if (get_str(prbuf, stdscr) == NORM)
+	if (get_str(prbuf, stdscr) == NORMAL)
 	{
 	    if (info->oi_guess != NULL)
 		free(info->oi_guess);
