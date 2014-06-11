@@ -43,6 +43,9 @@
 
 #define NOOP(x) (x += 0)
 
+#define SCOREFILE ".rogue14_highscore"
+#define LOCKFILE ".rogue14_lockfile"
+
 # ifndef NUMSCORES
 #	define	NUMSCORES	10
 #	define	NUMNAME		"Ten"
@@ -60,7 +63,7 @@ void
 open_score_and_drop_setuid_setgid()
 {
   /* FIXME: highscore should NOT be in the local folder */
-    char *scorefile = ".rogue14_highscore";
+    char *scorefile = SCOREFILE;
 
      /* We drop setgid privileges after opening the score file, so subsequent
       * open()'s will fail.  Just reuse the earlier filehandle. */

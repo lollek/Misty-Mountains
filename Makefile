@@ -30,24 +30,22 @@ AFILES   = configure Makefile.in configure.ac config.h.in config.sub config.gues
 MISC     = Makefile.std LICENSE.TXT rogue54.sln rogue54.vcproj rogue.spec \
            rogue.png rogue.desktop
 CC       = gcc
-FEATURES = -DLOCKFILE=\"$(LOCKFILE)\"
 CPPFLAGS =
 CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic
 LDFLAGS  =
 LIBS     = -lcurses
 RM       = rm -f
 MAKEFILE = -f Makefile.std
-LOCKFILE = $(PROGRAM).lck
 OUTFLAG  = -o
 EXE      =
 
 .SUFFIXES: .obj
 
 .c.obj:
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(FEATURES) /c /o $*.o $*.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) /c /o $*.o $*.c
     
 .c.o:
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(FEATURES) -c -o $*.o $*.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $*.o $*.c
     
 $(PROGRAM): $(HDRS) $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) $(LIBS) $(OUTFLAG)$@$(EXE)
