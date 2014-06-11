@@ -18,14 +18,12 @@
 #include <string.h>
 #include "rogue.h"
 
-#define	EQSTR(a, b, c)	(strncmp(a, b, c) == 0)
-
 #define	NUM_OPTS	(sizeof optlist / sizeof (OPTION))
 
 /*
  * description of an option and what to do with it
  */
-struct optstruct {
+typedef struct optstruct {
     char	*o_name;	/* option name */
     char	*o_prompt;	/* prompt for interactive entry */
     void 	*o_opt;		/* pointer to thing to set */
@@ -33,9 +31,7 @@ struct optstruct {
     void 	(*o_putfunc)(void *opt);
 				/* function to get value interactively */
     int		(*o_getfunc)(void *opt, WINDOW *win);
-};
-
-typedef struct optstruct	OPTION;
+} OPTION;
 
 void	pr_optname(OPTION *op);
 
@@ -419,7 +415,7 @@ parse_opts(char *str)
 	 * Look it up and deal with it
 	 */
 	for (op = optlist; op <= &optlist[NUM_OPTS-1]; op++)
-	    if (EQSTR(str, op->o_name, len))
+	    if (!strncmp(str, op->o_name, len))
 	    {
 		if (op->o_putfunc == put_bool)	/* if option is a boolean */
 		    *(bool *)op->o_opt = TRUE;	/* NOSTRICT */
@@ -466,8 +462,9 @@ parse_opts(char *str)
 	    /*
 	     * check for "noname" for booleans
 	     */
-	    else if (op->o_putfunc == put_bool
-	      && EQSTR(str, "no", 2) && EQSTR(str + 2, op->o_name, len - 2))
+	    else if (op->o_putfunc == put_bool &&
+                     !strncmp(str, "no", 2) &&
+                     !strncmp(str + 2, op->o_name, len - 2))
 	    {
 		*(bool *)op->o_opt = FALSE;	/* NOSTRICT */
 		break;
