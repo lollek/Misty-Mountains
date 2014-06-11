@@ -169,9 +169,8 @@ bool
 restore(char *file)
 {
     FILE *inf;
-    int syml;
-    auto char buf[MAXSTR];
-    auto STAT sbuf2;
+    char buf[MAXSTR];
+    struct stat sbuf2;
     int lines, cols;
 
     if (strcmp(file, "-r") == 0)
@@ -183,8 +182,25 @@ restore(char *file)
         return FALSE;
     }
 
-    stat(file, &sbuf2);
-    syml = is_symlink(file);
+    /* defeat multiple restarting from the same place */
+    if (!wizard)
+    {
+      if (lstat(file, &sbuf2) == -1)
+      {
+        perror(file);
+        return FALSE;
+      }
+      if ((sbuf2.st_mode & S_IFMT) != S_IFREG)
+      {
+        printf("Only normal files allowed (no symlinks, FIFOs, etc)\n");
+        return FALSE;
+      }
+      if (sbuf2.st_nlink != 1)
+      {
+        printf("The savegame cannot be hardlinked, since that's cheating\n");
+        return FALSE;
+      }
+    }
 
     fflush(stdout);
     encread(buf, (unsigned) strlen(version) + 1, inf);
@@ -215,14 +231,6 @@ restore(char *file)
     }
     mpos = 0;
     clearok(stdscr,TRUE);
-
-    /* defeat multiple restarting from the same place */
-    if (!wizard && (sbuf2.st_nlink != 1 || syml))
-    {
-        endwin();
-        printf("\nCannot restore from a linked file\n");
-        return FALSE;
-    }
 
     if (pstats.s_hpt <= 0)
     {

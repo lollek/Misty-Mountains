@@ -76,21 +76,6 @@ open_score_and_drop_setuid_setgid()
 }
 
 /*
- * is_symlink:
- *      See if the file has a symbolic link
-  */
-bool
-is_symlink(char *sp)
-{
-    struct stat sbuf2;
-
-    if (lstat(sp, &sbuf2) < 0)
-        return FALSE;
-    else
-        return ((sbuf2.st_mode & S_IFMT) != S_IFREG);
-}
-
-/*
  * lock_sc:
  *	lock the score file.  If it takes too long, ask the user if
  *	they care to wait.  Return TRUE if the lock is successful.
