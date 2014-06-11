@@ -38,19 +38,10 @@ main(int argc, char **argv)
   strcpy(file_name, home);
   strcat(file_name, "rogue.save");
 
-  /* Parse environment opts */
-  parse_opts(getenv("ROGUEOPTS"));
-
-
-  if (whoami[0] == '\0')
-    strucpy(whoami, md_getusername(), (int) strlen(md_getusername()));
-
-
   seed = dnum = time(NULL) + getpid();
 
   /* Open scoreboard and drop setuid/getgid, so we can modify the score later */
   open_score_and_drop_setuid_setgid();
-
 
   /* Play game! */
   saved_game = parse_args(argc, argv);
@@ -199,6 +190,11 @@ shell()
 bool
 new_game()
 {
+  /* Parse environment opts */
+  parse_opts(getenv("ROGUEOPTS"));
+  if (whoami[0] == '\0')
+    strucpy(whoami, md_getusername(), (int) strlen(md_getusername()));
+
   if (wizard)
     printf("Hello %s, welcome to dungeon #%d", whoami, dnum);
   else
@@ -269,14 +265,6 @@ parse_args(int argc, char **argv)
   passgo = FALSE;               /* Follow the turnings in passageways */
   tombstone = TRUE;             /* Print out tombstone when killed */
   inv_type = INV_OVER;          /* Inventory style */
-
-  /* Special settings for slow terminals */
-  if (baudrate() <= 1200)
-  {
-    terse = TRUE;
-    jump = TRUE;
-    see_floor = FALSE;
-  }
 
   /* Not sure what this does */
   if (md_hasclreol())
