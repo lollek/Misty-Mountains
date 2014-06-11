@@ -450,15 +450,18 @@ struct monster {
     struct stats m_stats;		/* Initial stats */
 };
 
-/*
- * External variables
- */
+/* Game Options - These are set in main.c */
 bool terse;       /* Terse output */
 bool fight_flush; /* Flush typeahead during battle */
 bool jump;        /* Show running as a series of jumps */
 bool see_floor;   /* Show the lamp-illuminated floor */
 bool passgo;      /* Follow the turnings in passageways */
 bool tombstone;   /* Print out tombstone when killed */
+int inv_type;     /* Inventory style */
+
+/*
+ * External variables
+ */
 
 extern bool	after, again, amulet, door_stop,
 		firstmove, has_hit, inv_describe, kamikaze,
@@ -472,7 +475,7 @@ extern char	dir_ch, file_name[], home[], huh[], *inv_t_name[],
 		*s_names[], take, *tr_name[], *ws_made[], *ws_type[];
 
 extern int	a_class[], count, food_left, hungry_state, inpack,
-		inv_type, lastscore, level, max_hit, max_level, mpos,
+		lastscore, level, max_hit, max_level, mpos,
 		n_objs, no_command, no_food, no_move, noscore, ntraps, purse,
 		quiet, vf_hit;
 

@@ -2061,7 +2061,7 @@ rs_restore_file(FILE *inf)
     rs_read_int(inf, &ntraps);
     rs_read_int(inf, &hungry_state);
     rs_read_int(inf, &inpack);
-    rs_read_int(inf, &inv_type);
+    rs_read_int(inf, &dummyint);                 /* inv_type */
     rs_read_int(inf, &level);
     rs_read_int(inf, &max_level);
     rs_read_int(inf, &mpos);

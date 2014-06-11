@@ -255,7 +255,9 @@ parse_args(int argc, char **argv)
     {"escdelay",  optional_argument, 0, 'E'},
     {"flush",     no_argument,       0, 'f'},
     {"hide-floor",no_argument,       0, 'F'},
+    {"inv-type",  required_argument, 0, 'i'},
     {"jump",      no_argument,       0, 'j'},
+    {"name",      required_argument, 0, 'n'},
     {"passgo",    no_argument,       0, 'p'},
     {"restore",   no_argument,       0, 'r'},
     {"score",     no_argument,       0, 's'},
@@ -276,10 +278,11 @@ parse_args(int argc, char **argv)
   see_floor = TRUE;             /* Show the lamp-illuminated floor */
   passgo = FALSE;               /* Follow the turnings in passageways */
   tombstone = TRUE;             /* Print out tombstone when killed */
+  inv_type = 0;                 /* Inventory style */
 
   for (;;)
   {
-    int c = getopt_long(argc, argv, "E::fFjprsS:tTW",
+    int c = getopt_long(argc, argv, "E::fFi:jn:prsS:tTW",
                         long_options, &option_index);
     if (c == -1)
       break;
@@ -289,7 +292,13 @@ parse_args(int argc, char **argv)
       case 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg); break;
       case 'f': fight_flush = TRUE; break;
       case 'F': see_floor = FALSE; break;
+      case 'i': if (atoi(optarg) >= 0 && atoi(optarg) <= 2)
+                  inv_type = atoi(optarg);
+                break;
       case 'j': jump = TRUE; break;
+      case 'n': if (strlen(optarg))
+                  strucpy(whoami, optarg, strlen(optarg));
+                break;
       case 'p': passgo = TRUE; break;
       case 'r': saved_game = "-r"; break;
       case 's': noscore = TRUE; score(0, -1, 0); exit(0);
@@ -306,16 +315,21 @@ parse_args(int argc, char **argv)
                "                       argument, it's set to 64 (old standard)\n"
                "  -f, --flush          flush typeahead during battle\n"
                "  -F, --hide-floor     hide the lamp-illuminated floor\n"
+               "  -i, --inv-type=0-2   change inventory style\n"
+               "                       0 - Inventory over\n"
+               "                       1 - Inventory slow\n"
+               , argv[0]); printf(
+               "                       2 - Inventory clear\n"
                "  -j, --jump           show running as a series of jumps\n"
+               "  -n, --name=NAME      set highscore name\n"
                "  -p, --passgo         Follow the turnings in passageways\n"
-               ,argv[0]);
-        printf(
                "  -r, --restore        restore game to default\n"
                "  -s, --score          display the highscore and exit\n"
                "  -S, --seed=NUMBER    set map seed to NUMBER\n"
                "  -t, --terse          terse output\n"
                "  -T, --hide-tomb      don't print out tombstone when killed\n"
                "  -W, --wizard         run the game in debug-mode\n"
+               ); printf(
                "      --help           display this help and exit\n"
                "      --version        display game version and exit\n\n"
                "%s\n"
