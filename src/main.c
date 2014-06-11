@@ -49,7 +49,7 @@ main(int argc, char **argv)
 
   /* Play game! */
   saved_game = parse_args(argc, argv);
-  return saved_game == NULL ? new_game() : restore(saved_game);
+  return saved_game ? restore(saved_game) : new_game();
 }
 
 /** endit:
@@ -107,10 +107,6 @@ playit()
 
   if (md_hasclreol())
     inv_type = INV_CLEAR;
-
-  /* parse environment declaration of options 
-  parse_opts(getenv("ROGUEOPTS")); */
-
 
   oldpos = hero;
   oldrp = roomin(&hero);

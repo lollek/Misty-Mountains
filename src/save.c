@@ -231,6 +231,9 @@ restore(char *file)
 	return FALSE;
     }
 
+    /* parse environment declaration of options */
+    parse_opts(getenv("ROGUEOPTS"));
+
     strcpy(file_name, file);
     clearok(curscr, TRUE);
     srand(getpid());
