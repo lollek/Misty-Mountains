@@ -82,10 +82,14 @@ md_getusername()
 char *
 md_gethomedir()
 {
-  static char homedir[PATH_MAX];
+  static char homedir[PATH_MAX] = { '\0' };
   size_t len;
   struct passwd *pw = getpwuid(getuid());
   char *h = pw == NULL ? NULL : pw->pw_dir;
+
+  /* If we've already checked for homedir, we should know it by now */
+  if (*homedir != '\0')
+    return homedir;
 
   if (h == NULL || *h == '\0' || !strcmp(h, "/"))
     h = getenv("HOME");
@@ -95,7 +99,9 @@ md_gethomedir()
   strncpy(homedir, h, PATH_MAX);
   homedir[PATH_MAX -1] = '\0';
 
-  if ((len = strlen(homedir)) > 0 && homedir[len -1] != '/')
+  len = strlen(homedir);
+  if (len > 0 && len < PATH_MAX -1 &&
+      homedir[len -1] != '/')
   {
     homedir[len] = '/';
     homedir[len +1] = '\0';
