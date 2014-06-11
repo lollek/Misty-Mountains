@@ -18,11 +18,9 @@
 #include <string.h>
 #include "rogue.h"
 
-#define	NUM_OPTS	(sizeof optlist / sizeof (OPTION))
+#define NUM_OPTS (sizeof optlist / sizeof (OPTION))
 
-/*
- * description of an option and what to do with it
- */
+/* description of an option and what to do with it */
 typedef struct optstruct {
     char	*o_name;	/* option name */
     char	*o_prompt;	/* prompt for interactive entry */
@@ -284,9 +282,9 @@ get_str(void *vopt, WINDOW *win)
 		break;
 	    else if (c == '~')
 	    {
-		strcpy(buf, home);
-		waddstr(win, home);
-		sp += strlen(home);
+		strcpy(buf, md_gethomedir());
+		waddstr(win, md_gethomedir());
+		sp += strlen(md_gethomedir());
 		continue;
 	    }
 	}
@@ -428,8 +426,8 @@ parse_opts(char *str)
 			continue;
 		    if (*str == '~')
 		    {
-			strcpy((char *) op->o_opt, home);	  /* NOSTRICT */
-			start = (char *) op->o_opt + strlen(home);/* NOSTRICT */
+			strcpy((char *) op->o_opt, md_gethomedir()); /* NOSTRICT */
+			start = (char *) op->o_opt + strlen(md_gethomedir());/* NOSTRICT */
 			while (*++str == '/')
 			    continue;
 		    }

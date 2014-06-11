@@ -31,11 +31,10 @@ void open_score_and_drop_setuid_setgid(); /* src/mach_dep.c */
 int
 main(int argc, char **argv)
 {
-  char *saved_game = NULL;
+  char *saved_game;
 
   /* get $HOME rom environment */
-  strncpy(home, md_gethomedir(), MAXSTR);
-  strcpy(file_name, home);
+  strcpy(file_name, md_gethomedir());
   strcat(file_name, "rogue.save");
 
   /* Open scoreboard and drop setuid/getgid, so we can modify the score later */

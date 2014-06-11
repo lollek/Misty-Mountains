@@ -469,7 +469,7 @@ extern bool	after, again, amulet, door_stop,
 		playing, q_comm, running, save_msg,
 		seenstairs, stat_msg, to_death;
 
-extern char	dir_ch, file_name[], home[], huh[], *inv_t_name[],
+extern char	dir_ch, file_name[], huh[], *inv_t_name[],
 		l_last_comm, l_last_dir, last_comm, last_dir, *Numname,
 		outbuf[], *p_colors[], *r_stones[], *release, runch,
 		*s_names[], take, *tr_name[], *ws_made[], *ws_type[];
