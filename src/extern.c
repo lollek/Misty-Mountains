@@ -108,7 +108,7 @@ int purse = 0;				/* How much gold he has */
 int quiet = 0;				/* Number of quiet turns */
 int vf_hit = 0;				/* Number of time flytrap has hit */
 
-int seed;				/* Random number seed */
+unsigned seed;				/* Random number seed */
 int e_levels[] = {
         10L,
 	20L,

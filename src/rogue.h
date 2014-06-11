@@ -479,9 +479,9 @@ extern int	a_class[], count, food_left, hungry_state, inpack,
 		n_objs, no_command, no_food, no_move, noscore, ntraps, purse,
 		quiet, vf_hit;
 
-extern unsigned int	numscores;
+extern unsigned int	numscores, seed;
 
-extern int	e_levels[], seed;
+extern int	e_levels[];
 
 extern WINDOW	*hw;
 

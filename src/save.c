@@ -236,7 +236,6 @@ restore(char *file)
 
     strcpy(file_name, file);
     clearok(curscr, TRUE);
-    srand(getpid());
     msg("file name: %s", file);
     return playit();
 }

@@ -22,7 +22,7 @@
 int
 rnd(int range)
 {
-  return range == 0 ? 0 : abs((int) RN) % range;
+  return range == 0 ? 0 : rand_r(&seed) % range;
 }
 
 /** roll:
