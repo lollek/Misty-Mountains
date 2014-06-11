@@ -30,14 +30,13 @@ AFILES   = configure Makefile.in configure.ac config.h.in config.sub config.gues
 MISC     = Makefile.std LICENSE.TXT rogue54.sln rogue54.vcproj rogue.spec \
            rogue.png rogue.desktop
 CC       = gcc
-FEATURES = -DSCOREFILE=\"$(SCOREFILE)\" -DLOCKFILE=\"$(LOCKFILE)\"
+FEATURES = -DLOCKFILE=\"$(LOCKFILE)\"
 CPPFLAGS =
 CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic
 LDFLAGS  =
 LIBS     = -lcurses
 RM       = rm -f
 MAKEFILE = -f Makefile.std
-SCOREFILE= $(PROGRAM).scr
 LOCKFILE = $(PROGRAM).lck
 OUTFLAG  = -o
 EXE      =

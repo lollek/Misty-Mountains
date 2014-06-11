@@ -13,7 +13,6 @@
 /*
  * The various tuneable defines are:
  *
- *	SCOREFILE	Where/if the score file should live.
  *	NUMSCORES	Number of scores in the score file (default 10).
  *	NUMNAME		String version of NUMSCORES (first character
  *			should be capitalized) (default "Ten").
@@ -21,8 +20,6 @@
  *			when people are playing.  Since it is divided
  *			by 10, to specify a load limit of 4.0, MAXLOAD
  *			should be "40".	 If defined, then
- *      LOADAV		Should it use it's own routine to get
- *		        the load average?
  *      NAMELIST	If so, where does the system namelist
  *		        hide?
  *	MAXUSERS	What (if any) the maximum user count should be
@@ -30,8 +27,6 @@
  *      UCOUNT		Should it use it's own routine to count
  *		        users?
  *      UTMP		If so, where does the user list hide?
- *	CHECKTIME	How often/if it should check during the game
- *			for high load average.
  */
 
 #include <signal.h>
@@ -64,7 +59,8 @@ char *Numname = NUMNAME;
 void
 open_score_and_drop_setuid_setgid()
 {
-    char *scorefile = SCOREFILE;
+  /* FIXME: highscore should NOT be in the local folder */
+    char *scorefile = ".rogue14_highscore";
 
      /* We drop setgid privileges after opening the score file, so subsequent
       * open()'s will fail.  Just reuse the earlier filehandle. */
@@ -196,7 +192,6 @@ static FILE *lfd = NULL;
 bool
 lock_sc()
 {
-#if defined(SCOREFILE) && defined(LOCKFILE)
     int cnt;
     static struct stat sbuf;
     char *lockfile = LOCKFILE;
@@ -247,9 +242,6 @@ over:
 	else
 	    return FALSE;
     }
-#else
-    return TRUE;
-#endif
 }
 
 /*
@@ -260,12 +252,10 @@ over:
 void
 unlock_sc()
 {
-#if defined(SCOREFILE) && defined(LOCKFILE)
     if (lfd != NULL)
         fclose(lfd);
     lfd = NULL;
     unlink(LOCKFILE);
-#endif
 }
 
 /*
