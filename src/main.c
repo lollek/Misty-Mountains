@@ -38,8 +38,6 @@ main(int argc, char **argv)
   strcpy(file_name, home);
   strcat(file_name, "rogue.save");
 
-  seed = dnum = time(NULL) + getpid();
-
   /* Open scoreboard and drop setuid/getgid, so we can modify the score later */
   open_score_and_drop_setuid_setgid();
 
@@ -265,6 +263,9 @@ parse_args(int argc, char **argv)
   passgo = FALSE;               /* Follow the turnings in passageways */
   tombstone = TRUE;             /* Print out tombstone when killed */
   inv_type = INV_OVER;          /* Inventory style */
+
+  /* Set seed and dungeon number */
+  seed = dnum = time(NULL) + getpid();
 
   /* Not sure what this does */
   if (md_hasclreol())
