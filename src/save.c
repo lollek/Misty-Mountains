@@ -170,7 +170,6 @@ restore(char *file)
 {
     FILE *inf;
     char buf[MAXSTR];
-    struct stat sbuf2;
 
     if (strcmp(file, "-r") == 0)
         file = file_name;
@@ -181,9 +180,11 @@ restore(char *file)
         return FALSE;
     }
 
-    /* defeat multiple restarting from the same place */
+    /* defeat multiple restarting from the same place
+     * TODO: should these be removed? not hard to circumvent anyways */
     if (!wizard)
     {
+      struct stat sbuf2;
       if (lstat(file, &sbuf2) == -1)
       {
         perror(file);

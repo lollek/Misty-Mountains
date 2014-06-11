@@ -57,9 +57,8 @@ endit(int sig)
 void
 fatal(char *s)
 {
-  mvaddstr(LINES - 2, 0, s);
-  refresh();
   endwin();
+  puts(s);
   exit(0);
 }
 
