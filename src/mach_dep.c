@@ -20,10 +20,8 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
-#include <string.h>
-#include <errno.h>
 #include <time.h>
-#include <curses.h>
+
 #include "rogue.h"
 
 #define LOCKFILE ".rogue14_lockfile"

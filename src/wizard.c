@@ -12,7 +12,6 @@
  */
 
 #include <stdlib.h>
-#include <curses.h>
 #include <string.h>
 #include <ctype.h>
 

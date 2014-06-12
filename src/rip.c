@@ -15,10 +15,7 @@
 #include <string.h>
 #include <time.h>
 #include <signal.h>
-#include <sys/types.h>
 #include <ctype.h>
-#include <fcntl.h>
-#include <curses.h>
 #include <unistd.h>
 
 #include "rogue.h"

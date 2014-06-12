@@ -12,8 +12,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <curses.h>
 
 #include "status_effects.h"
 #include "rogue.h"

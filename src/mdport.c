@@ -33,12 +33,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <pwd.h>
-#include <curses.h>
 #include <term.h>
-#include <sys/wait.h>
-#include <ctype.h>
 #include <limits.h>
-#include <sys/stat.h>
 
 #include "rogue.h"
 

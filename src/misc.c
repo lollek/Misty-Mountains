@@ -11,9 +11,9 @@
  */
 
 #include <stdlib.h>
-#include <curses.h>
 #include <string.h>
 #include <ctype.h>
+
 #include "rogue.h"
 
 /** get_color_for_chtype

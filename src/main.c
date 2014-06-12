@@ -13,7 +13,6 @@
 #include <signal.h>
 #include <unistd.h>
 #include <time.h>
-#include <curses.h>
 #include <getopt.h>
 
 #include "rogue.h"

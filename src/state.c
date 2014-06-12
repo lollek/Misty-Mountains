@@ -29,9 +29,7 @@
     SUCH DAMAGE.
 */
 
-#include <stdlib.h>
 #include <string.h>
-#include <curses.h>
 
 #include "rogue.h"
 #include "potions.h"

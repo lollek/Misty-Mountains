@@ -13,8 +13,6 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <curses.h>
-#include <ctype.h>
 #include <string.h>
 
 #include "rogue.h"
