@@ -42,7 +42,6 @@ void print_disc(char);
 void quit(int);
 void rollwand();
 void runners();
-void set_order();
 void sight();
 void stomach();
 void swander();

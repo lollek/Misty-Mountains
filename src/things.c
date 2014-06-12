@@ -16,6 +16,8 @@
 #include <ctype.h>
 #include "rogue.h"
 
+static void set_order(int *order, int numthings);
+
 /*
  * inv_name:
  *	Return the name of something as it would appear in an
