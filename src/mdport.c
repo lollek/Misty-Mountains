@@ -52,21 +52,6 @@ md_hasclreol()
          *clr_eol != 0;
 }
 
-void
-md_normaluser()
-{
-  gid_t realgid = getgid();
-  uid_t realuid = getuid();
-
-  if (setregid(realgid, realgid) != 0) {
-    perror("Could not drop setgid privileges.  Aborting.");
-    exit(1);
-  }
-  if (setreuid(realuid, realuid) != 0) {
-    perror("Could not drop setuid privileges.  Aborting.");
-    exit(1);
-  }
-}
 
 char *
 md_getusername()
