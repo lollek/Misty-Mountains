@@ -1892,7 +1892,7 @@ rs_save_file(FILE *savef)
     rs_write_boolean(savef, door_stop);             /* 6  */
     rs_write_boolean(savef, fight_flush);           /* 7  */
     rs_write_boolean(savef, firstmove);             /* 8  */
-    rs_write_boolean(savef, got_ltc);               /* 9  */
+    rs_write_boolean(savef, 0);                     /* 9  */
     rs_write_boolean(savef, has_hit);               /* 10 */
     rs_write_boolean(savef, 0);                     /* 11 */
     rs_write_boolean(savef, inv_describe);          /* 12 */
@@ -2016,7 +2016,7 @@ rs_restore_file(FILE *inf)
     rs_read_boolean(inf, &door_stop);           /* 6  */
     rs_read_boolean(inf, &dummybool);           /* 7 &fight_flush */
     rs_read_boolean(inf, &firstmove);           /* 8  */
-    rs_read_boolean(inf, &got_ltc);             /* 9  */
+    rs_read_boolean(inf, &dummybool);           /* 9 &got_ltc */
     rs_read_boolean(inf, &has_hit);             /* 10 */
     rs_read_boolean(inf, &dummybool);           /* 11 &in_shell */
     rs_read_boolean(inf, &inv_describe);        /* 12 */

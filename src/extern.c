@@ -20,7 +20,6 @@ bool seenstairs;			/* Have seen the stairs (for lsd) */
 bool amulet = FALSE;			/* He found the amulet */
 bool door_stop = FALSE;			/* Stop running when we pass a door */
 bool firstmove = FALSE;			/* First move after setting door_stop */
-bool got_ltc = FALSE;			/* We have gotten the local tty chars */
 bool has_hit = FALSE;			/* Has a "hit" message pending in msg */
 bool inv_describe = TRUE;		/* Say which way items are being used */
 bool kamikaze = FALSE;			/* to_death really to DEATH */
