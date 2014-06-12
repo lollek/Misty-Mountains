@@ -26,11 +26,7 @@
 
 static FILE *scoreboard = NULL; /* File descriptor for score file */
 
-typedef struct stat STAT;
-
 extern char version[], encstr[];
-
-static STAT sbuf;
 
 
 /** open_score_and_drop_setuid_setgid:
@@ -81,8 +77,9 @@ void
 save_game()
 {
     FILE *savef;
+    struct stat sbuf;
     int c;
-    auto char buf[MAXSTR];
+    char buf[MAXSTR];
 
     /*
      * get file name
