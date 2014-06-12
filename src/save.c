@@ -21,11 +21,43 @@
 #include "rogue.h"
 #include "score.h"
 
+/* FIXME: highscore should NOT be in the local folder */
+#define SCOREFILE ".rogue14_highscore"
+
+static FILE *scoreboard = NULL; /* File descriptor for score file */
+
 typedef struct stat STAT;
 
 extern char version[], encstr[];
 
 static STAT sbuf;
+
+
+/** open_score_and_drop_setuid_setgid:
+ * Open up the score file for future use */
+void
+open_score_and_drop_setuid_setgid()
+{
+  /* We drop setgid privileges after opening the score file, so subsequent
+   * open()'s will fail.  Just reuse the earlier filehandle. */
+
+  scoreboard = fopen(SCOREFILE, "r+");
+
+  if (scoreboard == NULL && errno == ENOENT)
+  {
+    scoreboard = fopen(SCOREFILE, "w+");
+    chmod(SCOREFILE, 0664);
+  }
+
+  if (scoreboard == NULL) {
+    fprintf(stderr, "Could not open %s for writing: %s\n",
+            SCOREFILE, strerror(errno));
+    fflush(stderr);
+  }
+
+  md_normaluser(); /* Drop setuid/setgid */
+}
+
 
 /*
  * save_game:

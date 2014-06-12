@@ -96,7 +96,6 @@ int a_class[MAXARMORS] = {		/* Armor class for each armor type */
 };
 
 int count = 0;				/* Number of times to repeat command */
-FILE *scoreboard = NULL;	/* File descriptor for score file */
 int food_left;				/* Amount of food in hero's stomach */
 int lastscore = -1;			/* Score before this turn */
 int no_command = 0;			/* Number of turns asleep */
@@ -104,7 +103,6 @@ int no_move = 0;			/* Number of turns held in place */
 int purse = 0;				/* How much gold he has */
 int quiet = 0;				/* Number of quiet turns */
 int vf_hit = 0;				/* Number of time flytrap has hit */
-
 unsigned seed;				/* Random number seed */
 int e_levels[] = {
         10L,

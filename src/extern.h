@@ -34,7 +34,6 @@ extern bool got_ltc, in_shell;
 extern int potential_wizard;
 extern int wizard;
 extern char prbuf[], whoami[];
-extern FILE *scoreboard;
 
 /*
  * Function types

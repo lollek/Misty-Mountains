@@ -26,7 +26,6 @@
 #include <curses.h>
 #include "extern.h"
 
-#define SCOREFILE ".rogue14_highscore"
 #define LOCKFILE ".rogue14_lockfile"
 
 # ifndef NUMSCORES
@@ -36,44 +35,6 @@
 
 unsigned int numscores = NUMSCORES;
 char *Numname = NUMNAME;
-
-/*
- * open_score:
- *	Open up the score file for future use
- */
-
-void
-open_score_and_drop_setuid_setgid()
-{
-  /* FIXME: highscore should NOT be in the local folder */
-  char *scorefile = SCOREFILE;
-
-  /* We drop setgid privileges after opening the score file, so subsequent
-   * open()'s will fail.  Just reuse the earlier filehandle. */
-
-  if (scoreboard != NULL) {
-    rewind(scoreboard);
-    md_normaluser();
-    return;
-  }
-
-  scoreboard = fopen(scorefile, "r+");
-
-  if ((scoreboard == NULL) && (errno == ENOENT))
-  {
-    scoreboard = fopen(scorefile, "w+");
-    chmod(scorefile,0664);
-  }
-
-  if (scoreboard == NULL) {
-    fprintf(stderr, "Could not open %s for writing: %s\n",
-            scorefile, strerror(errno));
-    fflush(stderr);
-  }
-
-  /* Drop setuid/setgid after opening the scoreboard file.  */
-  md_normaluser();
-}
 
 /*
  * lock_sc:
