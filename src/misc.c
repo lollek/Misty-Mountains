@@ -99,7 +99,7 @@ look(bool wakeup)
 # endif /* DEBUG */
     passcount = 0;
     rp = proom;
-    if (!ce(oldpos, hero))
+    if (!same_coords(oldpos, hero))
     {
 	erase_lamp(&oldpos, oldrp);
 	oldpos = hero;

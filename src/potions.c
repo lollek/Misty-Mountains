@@ -316,9 +316,9 @@ seen_stairs()
     THING	*tp;
 
     move(stairs.y, stairs.x);
-    if (inch() == STAIRS)			/* it's on the map */
+    if (inch() == STAIRS)		/* it's on the map */
 	return TRUE;
-    if (ce(hero, stairs))			/* It's under him */
+    if (same_coords(hero, stairs))	/* It's under him */
 	return TRUE;
 
     /*

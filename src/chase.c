@@ -42,7 +42,7 @@ runners()
                 continue;
 	    if (on(*tp, ISFLY) && dist_cp(&hero, &tp->t_pos) >= 3)
 		move_monst(tp);
-	    if (wastarget && !ce(orig_pos, tp->t_pos))
+	    if (wastarget && !same_coords(orig_pos, tp->t_pos))
 	    {
 		tp->t_flags &= ~ISTARGET;
 		to_death = FALSE;
@@ -83,7 +83,7 @@ relocate(THING *th, coord *new_loc)
 {
     struct room *oroom;
 
-    if (!ce(*new_loc, th->t_pos))
+    if (!same_coords(*new_loc, th->t_pos))
     {
 	mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
 	th->t_room = roomin(new_loc);
@@ -189,11 +189,9 @@ over:
      */
     if (!chase(th, &this))
     {
-	if (ce(this, hero))
-	{
+	if (same_coords(this, hero))
 	    return( attack(th) );
-	}
-	else if (ce(this, *th->t_dest))
+	else if (same_coords(this, *th->t_dest))
 	{
 	    for (obj = lvl_obj; obj != NULL; obj = next(obj))
 		if (th->t_dest == &obj->o_pos)
@@ -215,25 +213,22 @@ over:
 	    return(0);
     }
     relocate(th, &ch_ret);
-    /*
-     * And stop running if need be
-     */
-    if (stoprun && ce(th->t_pos, *(th->t_dest)))
-	th->t_flags &= ~ISRUN;
+
+    /* And stop running if need be */
+    if (stoprun && same_coords(th->t_pos, *(th->t_dest)))
+      th->t_flags &= ~ISRUN;
     return(0);
 }
 
-/*
- * set_oldch:
- *	Set the oldch character for the monster
- */
+/* set_oldch:
+ *	Set the oldch character for the monster */
 void
 set_oldch(THING *tp, coord *cp)
 {
     char sch;
 
-    if (ce(tp->t_pos, *cp))
-        return;
+    if (same_coords(tp->t_pos, *cp))
+      return;
 
     sch = tp->t_oldch;
     tp->t_oldch = mvinch(cp->y,cp->x) & A_CHARTEXT;
@@ -402,7 +397,7 @@ chase(THING *tp, coord *ee)
 	    }
 	}
     }
-    return (bool)(curdist != 0 && !ce(ch_ret, hero));
+    return (bool)(curdist != 0 && !same_coords(ch_ret, hero));
 }
 
 /*

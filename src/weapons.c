@@ -84,7 +84,8 @@ do_motion(THING *obj, int ydelta, int xdelta)
 	/*
 	 * Erase the old one
 	 */
-	if (!ce(obj->o_pos, hero) && cansee(unc(obj->o_pos)) && !terse)
+	if (!same_coords(obj->o_pos, hero) &&
+            cansee(unc(obj->o_pos)) && !terse)
 	{
 	    ch = chat(obj->o_pos.y, obj->o_pos.x);
 	    if (ch == FLOOR && !show_floor())

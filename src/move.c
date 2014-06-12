@@ -51,13 +51,12 @@ do_move(int dy, int dx)
 	msg("you are still stuck in the bear trap");
 	return;
     }
-    /*
-     * Do a confused move (maybe)
-     */
+
+    /* Do a confused move (maybe) */
     if (on(player, ISHUH) && rnd(5) != 0)
     {
 	nh = *rndmove(&player);
-	if (ce(nh, hero))
+	if (same_coords(nh, hero))
 	{
 	    after = FALSE;
 	    running = FALSE;
@@ -72,10 +71,8 @@ over:
 	nh.x = hero.x + dx;
     }
 
-    /*
-     * Check if he tried to move off the screen or make an illegal
-     * diagonal move, and stop him if he did.
-     */
+    /* Check if he tried to move off the screen or make an illegal
+     * diagonal move, and stop him if he did. */
     if (nh.x < 0 || nh.x >= NUMCOLS || nh.y <= 0 || nh.y >= NUMLINES - 1)
 	goto hit_bound;
     if (!diag_ok(&hero, &nh))
@@ -84,7 +81,7 @@ over:
 	running = FALSE;
 	return;
     }
-    if (running && ce(hero, nh))
+    if (running && same_coords(hero, nh))
 	after = running = FALSE;
     fl = flat(nh.y, nh.x);
     ch = winat(nh.y, nh.x);

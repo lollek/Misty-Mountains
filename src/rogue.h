@@ -58,7 +58,7 @@ typedef enum INV_TYPE
 #define next(ptr)	(*ptr).l_next
 #define prev(ptr)	(*ptr).l_prev
 #define winat(y,x)	(moat(y,x) != NULL ? moat(y,x)->t_disguise : chat(y,x))
-#define ce(a,b)		((a).x == (b).x && (a).y == (b).y)
+#define same_coords(a,b)	((a).x == (b).x && (a).y == (b).y)
 #define hero		player.t_pos
 #define pstats		player.t_stats
 #define pack		player.t_pack
@@ -80,9 +80,7 @@ typedef enum INV_TYPE
 #define moat(y,x)	(places[((x) << 5) + (y)].p_monst)
 #define unc(cp)		(cp).y, (cp).x
 
-/*
- * things that appear on the screens
- */
+/* things that appear on the screens */
 #define PASSAGE		'#'
 #define DOOR		'+'
 #define FLOOR		'.'

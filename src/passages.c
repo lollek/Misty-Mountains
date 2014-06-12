@@ -259,8 +259,8 @@ conn(int r1, int r2)
     }
     curr.x += del.x;
     curr.y += del.y;
-    if (!ce(curr, epos))
-	msg("warning, connectivity problem on this level");
+    if (!same_coords(curr, epos))
+      msg("warning, connectivity problem on this level");
 }
 
 /*
