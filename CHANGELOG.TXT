@@ -2,9 +2,11 @@ Rogue14 - Mod 1
   Changed to GNU/Linux-compability only
   Made the highscore always sort by scores, and not players
   Game now tries to autosaves when killed or crashing
+  Added some colors to the game
 
   Startup/Flags:
     Removed -d flag as it didn't make any sense to me
+    Added -c/--colors for enabling colors
     Added -E/--escdelay=NUM, which set the ESCDELAY
     Added -f/--flush, which is used instead of the ROGUEOPT
     Added -F/--hide-floor, which is used instead of the ROGUEOPT
