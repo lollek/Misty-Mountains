@@ -18,7 +18,7 @@
 
 #include "rogue.h"
 
-#define VERSION "1"
+#define VERSION "2"
 
 static bool new_game();
 static char *parse_args(int argc, char **argv);
