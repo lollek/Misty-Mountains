@@ -374,6 +374,5 @@ struct h_list helpstr[] = {
     {'Q',	"	quit",					TRUE},
     {'!',	"	shell escape",				TRUE},
     {'F',	"<dir>	fight till either of you dies",		TRUE},
-    {'v',	"	print version number",			TRUE},
     { 0 ,		NULL,					FALSE}
 };
