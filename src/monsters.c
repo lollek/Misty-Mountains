@@ -15,6 +15,7 @@
 #include <ctype.h>
 #include <curses.h>
 
+#include "status_effects.h"
 #include "rogue.h"
 
 /*
@@ -179,16 +180,12 @@ wake_monster(int y, int x)
 	    tp->t_flags |= ISFOUND;
 	    if (!save(VS_MAGIC))
 	    {
-		if (on(player, ISHUH))
-		    lengthen(unconfuse, spread(HUHDURATION));
-		else
-		    fuse(unconfuse, 0, spread(HUHDURATION), AFTER);
-		player.t_flags |= ISHUH;
 		mname = set_mname(tp);
 		addmsg("%s", mname);
 		if (strcmp(mname, "it") != 0)
 		    addmsg("'");
-		msg("s gaze has confused you");
+		msg("s gaze has confused you. ");
+		become_confused(false);
 	    }
 	}
     }

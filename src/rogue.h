@@ -12,6 +12,9 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#include <stdbool.h>
+#include <ncurses.h>
+
 /* Don't change the constants, since they are used for sizes in many
  * places in the program.  */
 #define MAXSTR 1024 /* maximum length of strings */
@@ -115,7 +118,6 @@ typedef enum INV_TYPE
 #define BEFORE		spread(1)
 #define AFTER		spread(2)
 #define HEALTIME	30
-#define HUHDURATION	20
 #define SEEDURATION	850
 #define HUNGERTIME	1300
 #define MORETIME	150
@@ -495,7 +497,6 @@ extern struct obj_info	arm_info[], ring_info[],
 
 bool is_magic(THING *obj);   /* Returns true if an object radiates magic */
 bool seen_stairs();          /* Return TRUE if the player has seen the stairs */
-void raise_level();          /* The guy just magically went up a level. */
 bool turn_see(bool turn_off);/* Put on or off seeing monsters on this level */
 void invis_on();             /* Turn on the ability to see invisible */
 
@@ -503,7 +504,6 @@ void	_attach(THING **list, THING *item);
 void	_detach(THING **list, THING *item);
 void	_free_list(THING **ptr);
 void	addmsg(char *fmt, ...);
-bool	add_haste(bool potion);
 void	add_pack(THING *obj, bool silent);
 void	add_pass();
 void	add_str(str_t *sp, int amt);

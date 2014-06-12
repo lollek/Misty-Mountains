@@ -400,28 +400,6 @@ add_str(str_t *sp, int amt)
     *sp = 31;
 }
 
-/** add_haste:
- * Add a haste to the player */
-bool
-add_haste(bool potion)
-{
-  if (on(player, ISHASTE))
-  {
-    no_command += rnd(8);
-    player.t_flags &= ~(ISRUN|ISHASTE);
-    extinguish(nohaste);
-    msg("you faint from exhaustion");
-    return FALSE;
-  }
-  else
-  {
-    player.t_flags |= ISHASTE;
-    if (potion)
-      fuse(nohaste, 0, rnd(4)+4, AFTER);
-    return TRUE;
-  }
-}
-
 /** aggravate:
  * Aggravate all the monsters on this level */
 void
@@ -645,12 +623,6 @@ seen_stairs()
     return FALSE;
 }
 
-void
-raise_level()
-{
-    pstats.s_exp = e_levels[pstats.s_lvl-1] + 1L;
-    check_level();
-}
 
 bool
 turn_see(bool turn_off)

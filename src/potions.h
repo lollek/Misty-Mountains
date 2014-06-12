@@ -23,19 +23,14 @@ enum potion_t
   NPOTIONS
 };
 
-typedef struct
-{
-  int pa_flags;
-  void (*pa_daemon)();
-  int pa_time;
-  char *pa_high, *pa_straight;
-} PACT;
-
+/* Variables */
 char *p_colors[NPOTIONS];           /* Colors of the potions */
 struct obj_info pot_info[NPOTIONS]; /* A list of potions and info */
 
+/* Functions */
+bool is_quaffable(THING *thing);    /* Check if we can drink something */
 void quaff();                       /* Quaff a potion from the pack */
-void do_pot(int type, bool knowit); /* Do a potion with standard setup, this
-                                       means it uses a fuse and sets a flag */
+void learn_potion(enum potion_t potion); /* Learn what a potion does */
+bool knows_potion(enum potion_t potion); /* True if she knows what potion does */
 
 #endif /* _ROGUE14_POTIONS_H_ */

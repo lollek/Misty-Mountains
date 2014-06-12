@@ -15,8 +15,9 @@
 #include <curses.h>
 #include <ctype.h>
 
-#include "rogue.h"
 #include "potions.h"
+#include "status_effects.h"
+#include "rogue.h"
 
 /*
  * command:
