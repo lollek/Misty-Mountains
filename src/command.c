@@ -291,7 +291,7 @@ over:
 		    after = FALSE;
 		    save_game();
 		when '.': ;			/* Rest command */
-		when ' ': after = FALSE;	/* "Legal" illegal command */
+		when KEY_SPACE: after = FALSE;	/* "Legal" illegal command */
 		when '^':
 		    after = FALSE;
 		    if (get_dir()) {
@@ -477,8 +477,7 @@ search()
 	    if (!(*fp & F_REAL))
 		switch (chat(y, x))
 		{
-		    case '|':
-		    case '-':
+		    case VWALL: case HWALL:
 			if (rnd(5 + probinc) != 0)
 			    break;
 			chat(y, x) = DOOR;
@@ -503,7 +502,7 @@ foundone:
 			}
 			goto foundone;
 			break;
-		    case ' ':
+		    case SHADOW:
 			if (rnd(3 + probinc) != 0)
 			    break;
 			chat(y, x) = PASSAGE;
@@ -574,7 +573,7 @@ help()
     wmove(hw, LINES - 1, 0);
     waddstr(hw, "--Press space to continue--");
     wrefresh(hw);
-    wait_for(' ');
+    wait_for(KEY_SPACE);
     clearok(stdscr, TRUE);
 /*
     refresh();
@@ -595,8 +594,8 @@ identify()
     register struct h_list *hp;
     register char *str;
     static struct h_list ident_list[] = {
-	{'|',		"wall of a room",		FALSE},
-	{'-',		"wall of a room",		FALSE},
+	{VWALL,		"wall of a room",		FALSE},
+	{HWALL,		"wall of a room",		FALSE},
 	{GOLD,		"gold",				FALSE},
 	{STAIRS,	"a staircase",			FALSE},
 	{DOOR,		"door",				FALSE},
@@ -608,7 +607,7 @@ identify()
 	{SCROLL,	"scroll",			FALSE},
 	{FOOD,		"food",				FALSE},
 	{WEAPON,	"weapon",			FALSE},
-	{' ',		"solid rock",			FALSE},
+	{SHADOW,	"solid rock",			FALSE},
 	{ARMOR,		"armor",			FALSE},
 	{AMULET,	"the Amulet of Yendor",		FALSE},
 	{RING,		"ring",				FALSE},

@@ -77,10 +77,10 @@ endmsg()
 	mvaddstr(0, mpos, "--More--");
 	refresh();
 	if (!msg_esc)
-	    wait_for(' ');
+	    wait_for(KEY_SPACE);
 	else
 	{
-	    while ((ch = readchar()) != ' ')
+	    while ((ch = readchar()) != KEY_SPACE)
 		if (ch == ESCAPE)
 		{
 		    msgbuf[0] = '\0';
@@ -132,15 +132,9 @@ doadd(char *fmt, va_list args)
 int
 step_ok(int ch)
 {
-    switch (ch)
-    {
-	case ' ':
-	case '|':
-	case '-':
-	    return FALSE;
-	default:
-	    return (!isalpha(ch));
-    }
+  if (ch == SHADOW || ch == HWALL || ch == VWALL)
+    return FALSE;
+  return !isalpha(ch);
 }
 
 /*
@@ -271,7 +265,7 @@ show_win(char *message)
     touchwin(win);
     wmove(win, hero.y, hero.x);
     wrefresh(win);
-    wait_for(' ');
+    wait_for(KEY_SPACE);
     clearok(curscr, TRUE);
     touchwin(stdscr);
 }

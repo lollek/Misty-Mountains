@@ -183,7 +183,7 @@ vert(struct room *rp, int startx)
     int y;
 
     for (y = rp->r_pos.y + 1; y <= rp->r_max.y + rp->r_pos.y - 1; y++)
-	chat(y, startx) = '|';
+	chat(y, startx) = VWALL;
 }
 
 /*
@@ -427,7 +427,7 @@ leave_room(coord *cp)
     else if (!(rp->r_flags & ISDARK) || on(player, ISBLIND))
 	floor = FLOOR;
     else
-	floor = ' ';
+	floor = SHADOW;
 
     proom = &passages[flat(cp->y, cp->x) & F_PNUM];
     for (y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++)
@@ -438,8 +438,8 @@ leave_room(coord *cp)
 	    switch (ch = inch() & A_CHARTEXT)
 	    {
 		case FLOOR:
-		    if (floor == ' ' && ch != ' ')
-			addcch(' ');
+		    if (floor == SHADOW && ch != SHADOW)
+			addcch(SHADOW);
 		    break;
 		default:
 		    /*

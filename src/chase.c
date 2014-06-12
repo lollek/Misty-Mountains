@@ -236,7 +236,7 @@ set_oldch(THING *tp, coord *cp)
     {
 	    if ((sch == FLOOR || tp->t_oldch == FLOOR) &&
 		(tp->t_room->r_flags & ISDARK))
-		    tp->t_oldch = ' ';
+		    tp->t_oldch = SHADOW;
 	    else if (dist_cp(cp, &hero) <= LAMPDIST && see_floor)
 		tp->t_oldch = chat(cp->y, cp->x);
     }

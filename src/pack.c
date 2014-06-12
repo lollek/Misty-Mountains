@@ -467,7 +467,7 @@ floor_ch()
 {
     if (proom->r_flags & ISGONE)
 	return PASSAGE;
-    return (show_floor() ? FLOOR : ' ');
+    return (show_floor() ? FLOOR : SHADOW);
 }
 
 /*

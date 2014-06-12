@@ -105,7 +105,7 @@ option()
     wmove(hw, LINES - 1, 0);
     waddstr(hw, "--Press space to continue--");
     wrefresh(hw);
-    wait_for(' ');
+    wait_for(KEY_SPACE);
     clearok(curscr, TRUE);
     touchwin(stdscr);
     after = FALSE;

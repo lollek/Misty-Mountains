@@ -131,7 +131,7 @@ look(bool wakeup)
 
 	    pp = INDEX(y, x);
 	    ch = pp->p_ch;
-	    if (ch == ' ')		/* nothing need be done with a ' ' */
+	    if (ch == SHADOW)		/* nothing need be done with a ' ' */
 		    continue;
 	    fp = &pp->p_flags;
 	    if (pch != DOOR && ch != DOOR)
@@ -172,7 +172,7 @@ look(bool wakeup)
 	    move(y, x);
 
 	    if ((proom->r_flags & ISDARK) && !see_floor && ch == FLOOR)
-		ch = ' ';
+		ch = SHADOW;
 
 	    if (tp != NULL || ch != (char)(inch() & A_CHARTEXT ))
 		addcch(ch);
@@ -216,10 +216,7 @@ look(bool wakeup)
 			if (x == hero.x || y == hero.y)
 			    passcount++;
 			break;
-		    case FLOOR:
-		    case '|':
-		    case '-':
-		    case ' ':
+		    case FLOOR: case VWALL: case HWALL: case SHADOW:
 			break;
 		    default:
 			running = FALSE;
@@ -245,7 +242,7 @@ trip_ch(int y, int x, int ch)
   if (on(player, ISHALU) && after)
     switch (ch)
     {
-      case FLOOR: case ' ': case PASSAGE: case '-': case '|': case DOOR:
+      case FLOOR: case SHADOW: case PASSAGE: case HWALL: case VWALL: case DOOR:
       case TRAP:
         break;
       default:
@@ -275,7 +272,7 @@ erase_lamp(coord *pos, struct room *rp)
 
       move(y, x);
       if (inch() == (unsigned)(FLOOR | get_color_for_chtype(FLOOR)))
-        addcch(' ');
+        addcch(SHADOW);
     }
 }
 

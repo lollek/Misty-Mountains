@@ -79,7 +79,13 @@ typedef enum INV_TYPE
 #define flat(y,x)	(places[((x) << 5) + (y)].p_flags)
 #define moat(y,x)	(places[((x) << 5) + (y)].p_monst)
 
+/* for curses */
+#define KEY_SPACE	' '
+
 /* things that appear on the screens */
+#define SHADOW		' '
+#define VWALL		'|'
+#define HWALL		'-'
 #define PASSAGE		'#'
 #define DOOR		'+'
 #define FLOOR		'.'
@@ -99,9 +105,7 @@ typedef enum INV_TYPE
 #define CALLABLE	-1
 #define R_OR_S		-2
 
-/*
- * Various constants
- */
+/* Various constants */
 #define BEARTIME	spread(3)
 #define SLEEPTIME	spread(5)
 #define HOLDTIME	spread(2)
@@ -121,9 +125,7 @@ typedef enum INV_TYPE
 #define BOLT_LENGTH	6
 #define LAMPDIST	3
 
-/*
- * Save against things
- */
+/* Save against things */
 #define VS_POISON	00
 #define VS_PARALYZATION	00
 #define VS_DEATH	00

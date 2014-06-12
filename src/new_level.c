@@ -35,7 +35,7 @@ new_level()
      */
     for (pp = places; pp < &places[MAXCOLS*MAXLINES]; pp++)
     {
-	pp->p_ch = ' ';
+	pp->p_ch = SHADOW;
 	pp->p_flags = F_REAL;
 	pp->p_monst = NULL;
     }

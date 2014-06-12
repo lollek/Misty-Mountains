@@ -89,7 +89,7 @@ do_motion(THING *obj, int ydelta, int xdelta)
 	{
 	    ch = chat(obj->o_pos.y, obj->o_pos.x);
 	    if (ch == FLOOR && !show_floor())
-		ch = ' ';
+		ch = SHADOW;
 	    mvaddcch(obj->o_pos.y, obj->o_pos.x, ch);
 	}
 	/*

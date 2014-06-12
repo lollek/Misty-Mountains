@@ -177,8 +177,8 @@ read_scroll()
 			case STAIRS:
 			    break;
 
-			case '-':
-			case '|':
+			case HWALL:
+			case VWALL:
 			    if (!(pp->p_flags & F_REAL))
 			    {
 				ch = pp->p_ch = DOOR;
@@ -186,7 +186,7 @@ read_scroll()
 			    }
 			    break;
 
-			case ' ':
+			case SHADOW:
 			    if (pp->p_flags & F_REAL)
 				goto def;
 			    pp->p_flags |= F_REAL;
@@ -203,7 +203,7 @@ pass:
 
 			case FLOOR:
 			    if (pp->p_flags & F_REAL)
-				ch = ' ';
+				ch = SHADOW;
 			    else
 			    {
 				ch = TRAP;
@@ -216,10 +216,10 @@ pass:
 def:
 			    if (pp->p_flags & F_PASS)
 				goto pass;
-			    ch = ' ';
+			    ch = SHADOW;
 			    break;
 		    }
-		    if (ch != ' ')
+		    if (ch != SHADOW)
 		    {
 			if ((obj = pp->p_monst) != NULL)
 			    obj->t_oldch = ch;

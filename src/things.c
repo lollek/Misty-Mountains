@@ -294,7 +294,7 @@ new_thing()
 	otherwise:
 	    if (wizard)
 		msg("Picked a bad kind of object");
-	    wait_for(' ');
+	    wait_for(KEY_SPACE);
     }
     return cur;
 }
@@ -521,7 +521,7 @@ add_line(char *fmt, char *arg)
 		}
 		touchwin(tw);
 		wrefresh(tw);
-		wait_for(' ');
+		wait_for(KEY_SPACE);
                 if (md_hasclreol())
 		{
 		    werase(tw);
@@ -536,7 +536,7 @@ add_line(char *fmt, char *arg)
 		wmove(hw, LINES - 1, 0);
 		waddstr(hw, prompt);
 		wrefresh(hw);
-		wait_for(' ');
+		wait_for(KEY_SPACE);
 		clearok(curscr, TRUE);
 		wclear(hw);
 		touchwin(stdscr);
