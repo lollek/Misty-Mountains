@@ -60,7 +60,7 @@ missile(int ydelta, int xdelta)
      * or if it misses (combat) the monster, put it on the floor
      */
     if (moat(obj->o_pos.y, obj->o_pos.x) == NULL ||
-	!hit_monster(unc(obj->o_pos), obj))
+	!hit_monster(obj->o_pos.y, obj->o_pos.x, obj))
 	    fall(obj, TRUE);
 }
 
@@ -85,7 +85,7 @@ do_motion(THING *obj, int ydelta, int xdelta)
 	 * Erase the old one
 	 */
 	if (!same_coords(obj->o_pos, hero) &&
-            cansee(unc(obj->o_pos)) && !terse)
+            cansee(obj->o_pos.y, obj->o_pos.x) && !terse)
 	{
 	    ch = chat(obj->o_pos.y, obj->o_pos.x);
 	    if (ch == FLOOR && !show_floor())
@@ -103,7 +103,7 @@ do_motion(THING *obj, int ydelta, int xdelta)
 	     * It hasn't hit anything yet, so display it
 	     * If it alright.
 	     */
-	    if (cansee(unc(obj->o_pos)) && !terse)
+	    if (cansee(obj->o_pos.y, obj->o_pos.x) && !terse)
 	    {
 		mvaddcch(obj->o_pos.y, obj->o_pos.x, obj->o_type);
 		refresh();

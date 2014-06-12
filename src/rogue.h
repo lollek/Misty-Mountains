@@ -78,7 +78,6 @@ typedef enum INV_TYPE
 #define chat(y,x)	(places[((x) << 5) + (y)].p_ch)
 #define flat(y,x)	(places[((x) << 5) + (y)].p_flags)
 #define moat(y,x)	(places[((x) << 5) + (y)].p_monst)
-#define unc(cp)		(cp).y, (cp).x
 
 /* things that appear on the screens */
 #define PASSAGE		'#'

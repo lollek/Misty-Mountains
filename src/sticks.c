@@ -159,7 +159,7 @@ do_zap()
 			    do
 			    {
 				find_floor(NULL, &new_pos, FALSE, TRUE);
-			    } while (ce(new_pos, hero));
+			    } while (same_coords(new_pos, hero));
 			}
 			else
 			{
@@ -184,7 +184,7 @@ do_zap()
 	    do_motion(&bolt, delta.y, delta.x);
 	    if ((tp = moat(bolt.o_pos.y, bolt.o_pos.x)) != NULL
 		&& !save_throw(VS_MAGIC, tp))
-		    hit_monster(unc(bolt.o_pos), &bolt);
+		    hit_monster(bolt.o_pos.y, bolt.o_pos.x, &bolt);
 	    else if (terse)
 		msg("missle vanishes");
 	    else
@@ -335,7 +335,7 @@ fire_bolt(coord *start, coord *dir, char *name)
 		 * and he fires at the wall the door is in, it would
 		 * otherwise loop infinitely
 		 */
-		if (ce(hero, pos))
+		if (same_coords(hero, pos))
 		    goto def;
 		/* FALLTHROUGH */
 	    case '|':
@@ -368,7 +368,7 @@ def:
 			    endmsg();
 			}
 			else
-			    hit_monster(unc(pos), &bolt);
+			    hit_monster(pos.y, pos.x, &bolt);
 		    }
 		    else if (ch != 'M' || tp->t_disguise == 'M')
 		    {
@@ -380,7 +380,7 @@ def:
 			    msg("the %s whizzes past %s", name, set_mname(tp));
 		    }
 		}
-		else if (hit_hero && ce(pos, hero))
+		else if (hit_hero && same_coords(pos, hero))
 		{
 		    hit_hero = FALSE;
 		    changed = !changed;
