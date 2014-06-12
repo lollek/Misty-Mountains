@@ -27,7 +27,7 @@ get_color_for_chtype(const chtype ch)
   {
     case PASSAGE: case FLOOR: return COLOR_YELLOW;
     case TRAP: return COLOR_RED;
-    default: return COLOR_WHITE;
+    default: return 0;
   }
 }
 
@@ -47,11 +47,7 @@ int
 waddcch(WINDOW *window, const chtype ch)
 {
   if (use_colors)
-  {
-    short color = get_color_for_chtype(ch);
-    if (color != COLOR_WHITE)
-      return waddch(window, ch | COLOR_PAIR(color));
-  }
+    return waddch(window, ch | COLOR_PAIR(get_color_for_chtype(ch)));
   return waddch(window, ch);
 }
 
