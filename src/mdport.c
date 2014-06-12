@@ -42,8 +42,6 @@
 
 #include "rogue.h"
 
-#define NOOP(x) (x += 0)
-
 int
 md_hasclreol()
 {

@@ -170,7 +170,7 @@ auto_save(int sig)
     for (i = 0; i < NSIG; i++)
       signal(i, SIG_IGN);
 
-    NOOP(sig);
+    (void)sig;
 
     if (file_name[0] != '\0' && ((savef = fopen(file_name, "w")) != NULL ||
 	(unlink(file_name) >= 0 && 

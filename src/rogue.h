@@ -19,7 +19,6 @@
 #undef CTRL
 #define CTRL(c) (c & 037)
 
-#define NOOP(x) (x += 0)
 #define CCHAR(x) ( (char) (x & A_CHARTEXT) )
 
 /* Maximum number of different things */
