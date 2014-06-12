@@ -180,19 +180,17 @@ typedef enum INV_TYPE
 #define F_PNUM		0x0f		/* passage number mask */
 #define F_TMASK		0x07		/* trap number mask */
 
-/*
- * Trap types
- */
+/* Trap types */
 enum trap_t
 {
-  T_DOOR = 0,
+  T_DOOR  = 0,
   T_ARROW = 1,
   T_SLEEP = 2,
-  T_BEAR = 3,
+  T_BEAR  = 3,
   T_TELEP = 4,
-  T_DART = 5,
-  T_RUST = 6,
-  T_MYST = 7,
+  T_DART  = 5,
+  T_RUST  = 6,
+  T_MYST  = 7,
   NTRAPS
 };
 
