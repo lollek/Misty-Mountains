@@ -51,10 +51,6 @@ void visuals();
 
 char add_line(char *fmt, char *arg);
 
-char *killname(char monst, bool doart);
-char *nothing(char type);
-char *type_name(int type);
-
 char *md_crypt(char *key, char *salt);
 char *md_gethomedir();
 char *md_getusername();

@@ -24,6 +24,8 @@
 #include "rogue.h"
 #include "score.h"
 
+static char *killname(char monst, bool doart);
+
 static char *rip[] = {
 "                       __________\n",
 "                      /          \\\n",

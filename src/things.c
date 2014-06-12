@@ -17,6 +17,7 @@
 #include "rogue.h"
 
 static void set_order(int *order, int numthings);
+static char *nothing(char type);
 
 /*
  * inv_name:

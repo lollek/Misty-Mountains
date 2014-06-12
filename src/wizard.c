@@ -17,6 +17,8 @@
 #include <ctype.h>
 #include "rogue.h"
 
+static char *type_name(int type);
+
 /*
  * whatis:
  *	What a certin object is
