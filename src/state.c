@@ -1886,7 +1886,7 @@ rs_save_file(FILE *savef)
 
     rs_write_boolean(savef, after);                 /* 1  */    /* extern.c */
     rs_write_boolean(savef, again);                 /* 2  */
-    rs_write_int(savef, noscore);	                /* 3  */
+    rs_write_int(savef, noscore);                   /* 3  */
     rs_write_boolean(savef, seenstairs);            /* 4  */
     rs_write_boolean(savef, amulet);                /* 5  */
     rs_write_boolean(savef, door_stop);             /* 6  */
@@ -1894,7 +1894,7 @@ rs_save_file(FILE *savef)
     rs_write_boolean(savef, firstmove);             /* 8  */
     rs_write_boolean(savef, got_ltc);               /* 9  */
     rs_write_boolean(savef, has_hit);               /* 10 */
-    rs_write_boolean(savef, in_shell);              /* 11 */
+    rs_write_boolean(savef, 0);                     /* 11 */
     rs_write_boolean(savef, inv_describe);          /* 12 */
     rs_write_boolean(savef, jump);                  /* 13 */
     rs_write_boolean(savef, kamikaze);              /* 14 */
@@ -2018,7 +2018,7 @@ rs_restore_file(FILE *inf)
     rs_read_boolean(inf, &firstmove);           /* 8  */
     rs_read_boolean(inf, &got_ltc);             /* 9  */
     rs_read_boolean(inf, &has_hit);             /* 10 */
-    rs_read_boolean(inf, &in_shell);            /* 11 */
+    rs_read_boolean(inf, &dummybool);           /* 11 &in_shell */
     rs_read_boolean(inf, &inv_describe);        /* 12 */
     rs_read_boolean(inf, &dummybool);           /* 13 &jump */
     rs_read_boolean(inf, &kamikaze);            /* 14 */

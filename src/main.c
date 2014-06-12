@@ -161,7 +161,6 @@ shell()
   refresh();
   endwin();
   putchar('\n');
-  in_shell = TRUE;
   after = FALSE;
   fflush(stdout);
 
@@ -172,7 +171,6 @@ shell()
   fflush(stdout);
   noecho();
   raw();
-  in_shell = FALSE;
   clearok(stdscr, TRUE);
 }
 

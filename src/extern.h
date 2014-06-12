@@ -30,7 +30,7 @@
  * Now all the global variables
  */
 
-extern bool got_ltc, in_shell;
+extern bool got_ltc;
 extern int potential_wizard;
 extern int wizard;
 extern char prbuf[], whoami[];
