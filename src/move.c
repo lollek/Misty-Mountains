@@ -252,102 +252,104 @@ door_open(struct room *rp)
 		    wake_monster(y, x);
 }
 
-/*
- * be_trapped:
- *	The guy stepped on a trap.... Make him pay.
- */
-char
+/** be_trapped:
+ * The guy stepped on a trap.... Make him pay */
+enum trap_t
 be_trapped(coord *tc)
 {
-    PLACE *pp;
-    THING *arrow;
-    char tr;
+  THING *arrow;
 
-    if (on(player, ISLEVIT))
-	return T_RUST;	/* anything that's not a door or teleport */
+    /* anything that's not a door or teleport */
+    /* FIXME: Wow, this is just unfair: */
+  if (on(player, ISLEVIT))
+    return T_RUST;
+  else
+  {
+    PLACE *pp = INDEX(tc->y, tc->x);
+    char tr = pp->p_flags & F_TMASK;
+    pp->p_ch = TRAP;
+    pp->p_flags |= F_SEEN;
     running = FALSE;
     count = FALSE;
-    pp = INDEX(tc->y, tc->x);
-    pp->p_ch = TRAP;
-    tr = pp->p_flags & F_TMASK;
-    pp->p_flags |= F_SEEN;
     switch (tr)
     {
-	case T_DOOR:
-	    level++;
-	    new_level();
-	    msg("you fell into a trap!");
-	when T_BEAR:
-	    no_move += BEARTIME;
-	    msg("you are caught in a bear trap");
-        when T_MYST:
-            switch(rnd(11))
-            {
-                case 0: msg("you are suddenly in a parallel dimension");
-                when 1: msg("the light in here suddenly seems %s", rainbow[rnd(cNCOLORS)]);
-                when 2: msg("you feel a sting in the side of your neck");
-                when 3: msg("multi-colored lines swirl around you, then fade");
-                when 4: msg("a %s light flashes in your eyes", rainbow[rnd(cNCOLORS)]);
-                when 5: msg("a spike shoots past your ear!");
-                when 6: msg("%s sparks dance across your armor", rainbow[rnd(cNCOLORS)]);
-                when 7: msg("you suddenly feel very thirsty");
-                when 8: msg("you feel time speed up suddenly");
-                when 9: msg("time now seems to be going slower");
-                when 10: msg("you pack turns %s!", rainbow[rnd(cNCOLORS)]);
-            }
-	when T_SLEEP:
-	    no_command += SLEEPTIME;
-	    player.t_flags &= ~ISRUN;
-	    msg("a strange white mist envelops you and you fall asleep");
-	when T_ARROW:
-	    if (swing(pstats.s_lvl - 1, pstats.s_arm, 1))
-	    {
-		pstats.s_hpt -= roll(1, 6);
-		if (pstats.s_hpt <= 0)
-		{
-		    msg("an arrow killed you");
-		    death('a');
-		}
-		else
-		    msg("oh no! An arrow shot you");
-	    }
-	    else
-	    {
-		arrow = new_item();
-		init_weapon(arrow, ARROW);
-		arrow->o_count = 1;
-		arrow->o_pos = hero;
-		fall(arrow, FALSE);
-		msg("an arrow shoots past you");
-	    }
-	when T_TELEP:
-	    /*
-	     * since the hero's leaving, look() won't put a TRAP
-	     * down for us, so we have to do it ourself
-	     */
-	    teleport();
-	    mvaddcch(tc->y, tc->x, TRAP);
-	when T_DART:
-	    if (!swing(pstats.s_lvl+1, pstats.s_arm, 1))
-		msg("a small dart whizzes by your ear and vanishes");
-	    else
-	    {
-		pstats.s_hpt -= roll(1, 4);
-		if (pstats.s_hpt <= 0)
-		{
-		    msg("a poisoned dart killed you");
-		    death('d');
-		}
-		if (!ISWEARING(R_SUSTSTR) && !save(VS_POISON))
-		    chg_str(-1);
-		msg("a small dart just hit you in the shoulder");
-	    }
-	when T_RUST:
-	    msg("a gush of water hits you on the head");
-	    rust_armor(cur_armor);
+      case T_DOOR:
+        level++;
+        new_level();
+        msg("you fell into a trap!");
+      when T_BEAR:
+        no_move += BEARTIME;
+        msg("you are caught in a bear trap");
+      when T_MYST:
+        switch(rnd(11))
+        {
+          case 0: msg("you are suddenly in a parallel dimension");
+          when 1: msg("the light in here suddenly seems %s", 
+                      rainbow[rnd(cNCOLORS)]);
+          when 2: msg("you feel a sting in the side of your neck");
+          when 3: msg("multi-colored lines swirl around you, then fade");
+          when 4: msg("a %s light flashes in your eyes",
+                      rainbow[rnd(cNCOLORS)]);
+          when 5: msg("a spike shoots past your ear!");
+          when 6: msg("%s sparks dance across your armor",
+                      rainbow[rnd(cNCOLORS)]);
+          when 7: msg("you suddenly feel very thirsty");
+          when 8: msg("you feel time speed up suddenly");
+          when 9: msg("time now seems to be going slower");
+          when 10: msg("you pack turns %s!", rainbow[rnd(cNCOLORS)]);
+        }
+      when T_SLEEP:
+        no_command += SLEEPTIME;
+        player.t_flags &= ~ISRUN;
+        msg("a strange white mist envelops you and you fall asleep");
+      when T_ARROW:
+        if (swing(pstats.s_lvl - 1, pstats.s_arm, 1))
+        {
+          pstats.s_hpt -= roll(1, 6);
+          if (pstats.s_hpt <= 0)
+          {
+            msg("an arrow killed you");
+            death('a');
+          }
+          else
+            msg("oh no! An arrow shot you");
+        }
+        else
+        {
+          arrow = new_item();
+          init_weapon(arrow, ARROW);
+          arrow->o_count = 1;
+          arrow->o_pos = hero;
+          fall(arrow, FALSE);
+          msg("an arrow shoots past you");
+        }
+      when T_TELEP:
+        /* since the hero's leaving, look() won't put a TRAP
+         * down for us, so we have to do it ourself */
+        teleport();
+        mvaddcch(tc->y, tc->x, TRAP);
+      when T_DART:
+        if (!swing(pstats.s_lvl+1, pstats.s_arm, 1))
+          msg("a small dart whizzes by your ear and vanishes");
+        else
+        {
+          pstats.s_hpt -= roll(1, 4);
+          if (pstats.s_hpt <= 0)
+          {
+            msg("a poisoned dart killed you");
+            death('d');
+          }
+          if (!ISWEARING(R_SUSTSTR) && !save(VS_POISON))
+            chg_str(-1);
+          msg("a small dart just hit you in the shoulder");
+        }
+      when T_RUST:
+        msg("a gush of water hits you on the head");
+        rust_armor(cur_armor);
     }
     flush_type();
     return tr;
+  }
 }
 
 /*

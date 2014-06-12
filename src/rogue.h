@@ -26,10 +26,10 @@
 #define MAXPACK		23
 #define MAXTRAPS	10
 #define AMULETLEVEL	26
-#define	NUMTHINGS	7	/* number of types of things */
+#define NUMTHINGS	7	/* number of types of things */
 #define MAXPASS		13	/* upper limit on number of passages */
-#define	NUMLINES	24
-#define	NUMCOLS		80
+#define NUMLINES	24
+#define NUMCOLS		80
 #define STATLINE	(NUMLINES - 1)
 #define BORE_LEVEL	50
 
@@ -183,15 +183,18 @@ typedef enum INV_TYPE
 /*
  * Trap types
  */
-#define T_DOOR	00
-#define T_ARROW	01
-#define T_SLEEP	02
-#define T_BEAR	03
-#define T_TELEP	04
-#define T_DART	05
-#define T_RUST	06
-#define T_MYST  07
-#define NTRAPS	8
+enum trap_t
+{
+  T_DOOR = 0,
+  T_ARROW = 1,
+  T_SLEEP = 2,
+  T_BEAR = 3,
+  T_TELEP = 4,
+  T_DART = 5,
+  T_RUST = 6,
+  T_MYST = 7,
+  NTRAPS
+};
 
 /*
  * Potion types
@@ -690,7 +693,7 @@ bool	turn_ok(int y, int x);
 bool	turn_see(bool turn_off);
 bool	is_current(THING *obj);
 
-char	be_trapped(coord *tc);
+enum trap_t	be_trapped(coord *tc);
 char	floor_ch();
 char	pack_char();
 char	readchar();
