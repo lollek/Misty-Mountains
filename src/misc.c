@@ -16,6 +16,41 @@
 #include <ctype.h>
 #include "rogue.h"
 
+static short get_color_for_chtype(const chtype ch);
+
+/** get_color_for_chtype
+ * Returns the color which is mapped for the ch */
+short
+get_color_for_chtype(const chtype ch)
+{
+  switch (ch)
+  {
+    case PASSAGE: case FLOOR: return COLOR_YELLOW;
+    case TRAP: return COLOR_RED;
+    default: return COLOR_WHITE;
+  }
+}
+
+/** wmvaddcch (Window Move Add Colored Character)
+ * Does a move(y,x) then addcch(ch) */
+int
+wmvaddcch(WINDOW *window, int y, int x, const chtype ch)
+{
+  if (wmove(window, y,x) == ERR)
+    return ERR;
+  return waddcch(stdscr, ch);
+}
+
+/** waddcch (Window Add Colored Character
+ * Prints a character color if enabled */
+int
+waddcch(WINDOW *window, const chtype ch)
+{
+  if (use_colors)
+    return waddch(window, ch | COLOR_PAIR(get_color_for_chtype(ch)));
+  return waddch(window, ch);
+}
+
 /** rnd:
  * Pick a very random number.
  */
