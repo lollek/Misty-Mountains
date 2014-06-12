@@ -337,7 +337,7 @@ eat()
     if (obj == cur_weapon)
       cur_weapon = NULL;
     if (obj->o_which == 1)
-      msg("my, that was a yummy %s", fruit); /* FIXME: Rename to fruit */
+      msg("my, that was a yummy fruit");
     else
       if (rnd(100) > 70)
       {

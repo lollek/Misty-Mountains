@@ -164,7 +164,7 @@ quaff()
 	    }
 	    do_pot(P_LSD, TRUE);
 	when P_SEEINVIS:
-	    sprintf(prbuf, "this potion tastes like %s juice", fruit);
+	    sprintf(prbuf, "this potion tastes like fruit juice");
 	    show = on(player, CANSEE);
 	    do_pot(P_SEEINVIS, FALSE);
 	    if (!show)

@@ -55,8 +55,6 @@ char whoami[MAXSTR];			/* Name of player */
 char *ws_made[MAXSTICKS];		/* What sticks are made of */
 char *ws_type[MAXSTICKS];		/* Is it a wand or a staff */
 int  orig_dsusp;			/* Original dsusp char */
-char fruit[MAXSTR] =			/* Favorite fruit */
-		{ 's', 'l', 'i', 'm', 'e', '-', 'm', 'o', 'l', 'd', '\0' };
 char *inv_t_name[] = {
 	"Overwrite",
 	"Slow",

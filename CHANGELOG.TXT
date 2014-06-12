@@ -1,4 +1,8 @@
-Rogue14 - Mod 1
+Rogue14 - r2
+  Changed name of the slime-mold to fruit (and no, you can't rename it anymore)
+
+
+Rogue14 - r1
   Changed to GNU/Linux-compability only
   Made the highscore always sort by scores, and not players
   Game now tries to autosaves when killed or crashing

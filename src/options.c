@@ -50,8 +50,6 @@ OPTION	optlist[] = {
 		 &inv_type,	put_inv_t,	get_inv_t	},
     {"name",	 "Name",
 		 whoami,	put_str,	get_str		},
-    {"fruit",	 "Fruit",
-		 fruit,		put_str,	get_str		},
     {"file",	 "Save file",
 		 file_name,	put_str,	get_str		}
 };

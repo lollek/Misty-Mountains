@@ -1926,7 +1926,7 @@ rs_save_file(FILE *savef)
     rs_write_chars(savef, whoami, MAXSTR);
     rs_write_sticks(savef);
     rs_write_int(savef,orig_dsusp);
-    rs_write_chars(savef, fruit, MAXSTR);
+    rs_write_chars(savef, "fruit", MAXSTR);
     rs_write_chars(savef, md_gethomedir(), MAXSTR);
     rs_write_strings(savef,inv_t_name,3);
     rs_write_char(savef,l_last_comm);
@@ -2050,7 +2050,7 @@ rs_restore_file(FILE *inf)
     rs_read_chars(inf, whoami, MAXSTR);
     rs_read_sticks(inf);
     rs_read_int(inf,&orig_dsusp);
-    rs_read_chars(inf, fruit, MAXSTR);
+    rs_read_chars(inf, dummystring, MAXSTR);     /* fruit */
     rs_read_chars(inf, dummystring, MAXSTR);     /* home */
     rs_read_new_strings(inf,inv_t_name,3);
     rs_read_char(inf, &l_last_comm);

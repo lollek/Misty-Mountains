@@ -60,9 +60,9 @@ inv_name(THING *obj, bool drop)
 	when FOOD:
 	    if (which == 1)
 		if (obj->o_count == 1)
-		    sprintf(pb, "A%s %s", vowelstr(fruit), fruit);
+		    sprintf(pb, "A fruit");
 		else
-		    sprintf(pb, "%d %ss", obj->o_count, fruit);
+		    sprintf(pb, "%d fruits", obj->o_count);
 	    else
 		if (obj->o_count == 1)
 		    strcpy(pb, "Some food");
