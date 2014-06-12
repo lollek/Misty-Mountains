@@ -459,6 +459,7 @@ bool see_floor;   /* Show the lamp-illuminated floor */
 bool passgo;      /* Follow the turnings in passageways */
 bool tombstone;   /* Print out tombstone when killed */
 int inv_type;     /* Inventory style */
+bool use_colors;  /* Use ncurses colors */
 
 /*
  * External variables

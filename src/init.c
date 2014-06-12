@@ -11,6 +11,7 @@
  */
 
 #include <stdlib.h>
+#include <unistd.h>
 #include <curses.h>
 #include <ctype.h>
 #include <string.h>
@@ -25,10 +26,31 @@ init_graphics()
 {
   initscr();  /* Start up cursor package */
 
+  /* Ncurses colors */
+  if (use_colors)
+  {
+    if (start_color() == ERR)
+    {
+      endwin();
+      fprintf(stderr, "Error: Failed to start colors. "
+                      "Try restarting without colors enabled\n");
+      return 1;
+    }
+
+    assume_default_colors(0, -1); /* Default is white text and any background */
+    init_pair(COLOR_RED, COLOR_RED, -1);
+    init_pair(COLOR_GREEN, COLOR_GREEN, -1);
+    init_pair(COLOR_YELLOW, COLOR_YELLOW, -1);
+    init_pair(COLOR_BLUE, COLOR_BLUE, -1);
+    init_pair(COLOR_MAGENTA, COLOR_MAGENTA, -1);
+    init_pair(COLOR_CYAN, COLOR_CYAN, -1);
+    init_pair(COLOR_WHITE, COLOR_WHITE, -1);
+  }
+
   if (LINES < NUMLINES || COLS < NUMCOLS)
   {
-    printf("\nSorry, the screen must be at least %dx%d\n", NUMLINES, NUMCOLS);
     endwin();
+    printf("\nSorry, the screen must be at least %dx%d\n", NUMLINES, NUMCOLS);
     return 1;
   }
 

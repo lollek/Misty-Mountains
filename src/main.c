@@ -252,6 +252,7 @@ parse_args(int argc, char **argv)
   passgo = FALSE;               /* Follow the turnings in passageways */
   tombstone = TRUE;             /* Print out tombstone when killed */
   inv_type = INV_OVER;          /* Inventory style */
+  use_colors = TRUE;            /* Use ncurses colors */
 
   /* Default file name for save file */
   strcpy(file_name, md_gethomedir());
