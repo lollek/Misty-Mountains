@@ -55,7 +55,20 @@ open_score_and_drop_setuid_setgid()
     fflush(stderr);
   }
 
-  md_normaluser(); /* Drop setuid/setgid */
+  /* Drop setuid/setgid */
+  {
+    gid_t realgid = getgid();
+    uid_t realuid = getuid();
+
+    if (setregid(realgid, realgid) != 0) {
+      perror("Could not drop setgid privileges.  Aborting.");
+      exit(1);
+    }
+    if (setreuid(realuid, realuid) != 0) {
+      perror("Could not drop setuid privileges.  Aborting.");
+      exit(1);
+    }
+  }
 }
 
 
