@@ -174,7 +174,7 @@ look(bool wakeup)
 	    if ((proom->r_flags & ISDARK) && !see_floor && ch == FLOOR)
 		ch = ' ';
 
-	    if (tp != NULL || ch != CCHAR( inch() ))
+	    if (tp != NULL || ch != (char)(inch() & A_CHARTEXT ))
 		addcch(ch);
 
 	    if (door_stop && !firstmove && running)

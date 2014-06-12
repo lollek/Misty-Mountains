@@ -387,7 +387,7 @@ enter_room(coord *cp)
 		THING *tp = moat(y, x);
 		char ch = chat(y, x);
 		if (tp == NULL)
-		    if (CCHAR(inch()) != ch)
+		    if (ch != (inch() & A_CHARTEXT))
 			addcch(ch);
 		    else
 			move(y, x + 1);
@@ -435,7 +435,7 @@ leave_room(coord *cp)
 	{
 	    char ch;
 	    move(y, x);
-	    switch ( ch = CCHAR(inch()) )
+	    switch (ch = inch() & A_CHARTEXT)
 	    {
 		case FLOOR:
 		    if (floor == ' ' && ch != ' ')

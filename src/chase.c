@@ -236,7 +236,7 @@ set_oldch(THING *tp, coord *cp)
         return;
 
     sch = tp->t_oldch;
-    tp->t_oldch = CCHAR( mvinch(cp->y,cp->x) );
+    tp->t_oldch = mvinch(cp->y,cp->x) & A_CHARTEXT;
     if (!on(player, ISBLIND))
     {
 	    if ((sch == FLOOR || tp->t_oldch == FLOOR) &&
