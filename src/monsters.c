@@ -10,10 +10,12 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
-#include <curses.h>
+#include <stdlib.h>
 #include <string.h>
-#include "rogue.h"
 #include <ctype.h>
+#include <curses.h>
+
+#include "rogue.h"
 
 /*
  * List of monsters in rough order of vorpalness

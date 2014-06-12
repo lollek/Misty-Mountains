@@ -10,9 +10,14 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
-#include "extern.h"
+/* Don't change the constants, since they are used for sizes in many
+ * places in the program.  */
+#define MAXSTR 1024 /* maximum length of strings */
+#define MAXLINES 32 /* maximum number of screen lines used */
+#define MAXCOLS  80 /* maximum number of screen columns used */
 
-#undef lines
+#undef CTRL
+#define CTRL(c) (c & 037)
 
 #define NOOP(x) (x += 0)
 #define CCHAR(x) ( (char) (x & A_CHARTEXT) )
@@ -471,7 +476,7 @@ extern bool	after, again, amulet, door_stop,
 		playing, q_comm, running, save_msg,
 		seenstairs, stat_msg, to_death;
 
-extern char	dir_ch, file_name[], huh[], *inv_t_name[],
+extern char	dir_ch, file_name[], huh[], *inv_t_name[], prbuf[], whoami[],
 		l_last_comm, l_last_dir, last_comm, last_dir, *Numname,
 		outbuf[], *p_colors[], *r_stones[], *release, runch,
 		*s_names[], take, *tr_name[], *ws_made[], *ws_type[];
@@ -479,7 +484,7 @@ extern char	dir_ch, file_name[], huh[], *inv_t_name[],
 extern int	a_class[], count, food_left, hungry_state, inpack,
 		lastscore, level, max_hit, max_level, mpos,
 		n_objs, no_command, no_food, no_move, noscore, ntraps, purse,
-		quiet, vf_hit;
+		quiet, vf_hit, potential_wizard, wizard;
 
 extern unsigned int	numscores, seed;
 
@@ -704,6 +709,29 @@ char	*num(int n1, int n2, char type);
 char	*ring_num(THING *obj);
 char	*set_mname(THING *tp);
 char	*vowelstr(char *str);
+
+void come_down();
+void doctor();
+void end_line();
+void land();
+void leave(int);
+void nohaste();
+void print_disc(char);
+void quit(int);
+void rollwand();
+void runners();
+void sight();
+void stomach();
+void swander();
+void unconfuse();
+void unsee();
+void visuals();
+
+char add_line(char *fmt, char *arg);
+
+char *md_getusername();
+char *md_gethomedir();
+int md_hasclreol();
 
 enum option_return	get_bool(void *vp, WINDOW *win);
 enum option_return	get_inv_t(void *vp, WINDOW *win);

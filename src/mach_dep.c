@@ -24,7 +24,7 @@
 #include <errno.h>
 #include <time.h>
 #include <curses.h>
-#include "extern.h"
+#include "rogue.h"
 
 #define LOCKFILE ".rogue14_lockfile"
 

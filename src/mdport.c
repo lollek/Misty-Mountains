@@ -29,6 +29,7 @@
     SUCH DAMAGE.
 */
 
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <pwd.h>
@@ -39,7 +40,7 @@
 #include <limits.h>
 #include <sys/stat.h>
 
-#include "extern.h"
+#include "rogue.h"
 
 #define NOOP(x) (x += 0)
 
