@@ -1814,34 +1814,6 @@ rs_read_thing_reference(FILE *inf, THING *list, THING **item)
     return(READSTAT);
 }
 
-int
-rs_write_thing_references(FILE *savef, THING *list, THING *items[], int count)
-{
-    int i;
-
-    if (write_error)
-        return(WRITESTAT);
-
-    for(i = 0; i < count; i++)
-        rs_write_thing_reference(savef,list,items[i]);
-
-    return(WRITESTAT);
-}
-
-int
-rs_read_thing_references(FILE *inf, THING *list, THING *items[], int count)
-{
-    int i;
-
-    if (read_error || format_error)
-        return(READSTAT);
-
-    for(i = 0; i < count; i++)
-        rs_read_thing_reference(inf,list,&items[i]);
-
-    return(WRITESTAT);
-}
-
 int 
 rs_write_places(FILE *savef, PLACE *places, int count)
 {
