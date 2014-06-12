@@ -14,7 +14,9 @@
 #include <string.h>
 #include <curses.h>
 #include <ctype.h>
+
 #include "rogue.h"
+#include "potions.h"
 
 /*
  * command:

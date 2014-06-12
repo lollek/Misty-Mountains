@@ -16,7 +16,9 @@
 #include <curses.h>
 #include <ctype.h>
 #include <string.h>
+
 #include "rogue.h"
+#include "potions.h"
 
 /* FIXME: I should customize this */
 extern char version[];
@@ -412,7 +414,7 @@ init_colors()
 
     for (i = 0; i < NCOLORS; i++)
 	used[i] = FALSE;
-    for (i = 0; i < MAXPOTIONS; i++)
+    for (i = 0; i < NPOTIONS; i++)
     {
 	do
 	    j = rnd(NCOLORS);
@@ -525,7 +527,7 @@ init_materials()
 }
 
 # define	NT	NUMTHINGS, "things"
-# define	MP	MAXPOTIONS, "potions"
+# define	MP	NPOTIONS, "potions"
 # define	MS	MAXSCROLLS, "scrolls"
 # define	MR	MAXRINGS, "rings"
 # define	MWS	MAXSTICKS, "sticks"

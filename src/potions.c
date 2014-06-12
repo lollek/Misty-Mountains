@@ -12,15 +12,27 @@
 
 #include <curses.h>
 #include <ctype.h>
+
+#include "potions.h"
 #include "rogue.h"
 
-typedef struct
-{
-    int pa_flags;
-    void (*pa_daemon)();
-    int pa_time;
-    char *pa_high, *pa_straight;
-} PACT;
+struct obj_info pot_info[NPOTIONS] = {
+  /* io_name,      oi_prob, oi_worth, oi_guess, oi_know */
+  { "confusion",         7,        5,     NULL, FALSE },
+  { "hallucination",     8,        5,     NULL, FALSE },
+  { "poison",            8,        5,     NULL, FALSE },
+  { "gain strength",    13,      150,     NULL, FALSE },
+  { "see invisible",     3,      100,     NULL, FALSE },
+  { "healing",          13,      130,     NULL, FALSE },
+  { "monster detection", 6,      130,     NULL, FALSE },
+  { "magic detection",   6,      105,     NULL, FALSE },
+  { "raise level",       2,      250,     NULL, FALSE },
+  { "extra healing",     5,      200,     NULL, FALSE },
+  { "haste self",        5,      190,     NULL, FALSE },
+  { "restore strength", 13,      130,     NULL, FALSE },
+  { "blindness",         5,        5,     NULL, FALSE },
+  { "levitation",        6,       75,     NULL, FALSE },
+};
 
 static PACT p_actions[] =
 {
@@ -49,11 +61,6 @@ static PACT p_actions[] =
 		"oh, wow!  You're floating in the air!",
 		"you start to float in the air" }
 };
-
-/*
- * quaff:
- *	Quaff a potion from the pack
- */
 
 void
 quaff()
@@ -225,134 +232,6 @@ quaff()
     return;
 }
 
-/*
- * is_magic:
- *	Returns true if an object radiates magic
- */
-bool
-is_magic(THING *obj)
-{
-    switch (obj->o_type)
-    {
-	case ARMOR:
-	    return (bool)((obj->o_flags&ISPROT) || obj->o_arm != a_class[obj->o_which]);
-	case WEAPON:
-	    return (bool)(obj->o_hplus != 0 || obj->o_dplus != 0);
-	case POTION:
-	case SCROLL:
-	case STICK:
-	case RING:
-	case AMULET:
-	    return TRUE;
-    }
-    return FALSE;
-}
-
-/*
- * invis_on:
- *	Turn on the ability to see invisible
- */
-
-void
-invis_on()
-{
-    THING *mp;
-
-    player.t_flags |= CANSEE;
-    for (mp = mlist; mp != NULL; mp = next(mp))
-	if (on(*mp, ISINVIS) && see_monst(mp) && !on(player, ISHALU))
-	    mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
-}
-
-/*
- * turn_see:
- *	Put on or off seeing monsters on this level
- */
-bool
-turn_see(bool turn_off)
-{
-    THING *mp;
-    bool can_see, add_new;
-
-    add_new = FALSE;
-    for (mp = mlist; mp != NULL; mp = next(mp))
-    {
-	move(mp->t_pos.y, mp->t_pos.x);
-	can_see = see_monst(mp);
-	if (turn_off)
-	{
-	    if (!can_see)
-		addcch(mp->t_oldch);
-	}
-	else
-	{
-	    if (!can_see)
-		standout();
-	    if (!on(player, ISHALU))
-		addcch(mp->t_type);
-	    else
-		addcch(rnd(26) + 'A');
-	    if (!can_see)
-	    {
-		standend();
-		add_new++;
-	    }
-	}
-    }
-    if (turn_off)
-	player.t_flags &= ~SEEMONST;
-    else
-	player.t_flags |= SEEMONST;
-    return add_new;
-}
-
-/*
- * seen_stairs:
- *	Return TRUE if the player has seen the stairs
- */
-bool
-seen_stairs()
-{
-    THING	*tp;
-
-    move(stairs.y, stairs.x);
-    if (inch() == STAIRS)		/* it's on the map */
-	return TRUE;
-    if (same_coords(hero, stairs))	/* It's under him */
-	return TRUE;
-
-    /*
-     * if a monster is on the stairs, this gets hairy
-     */
-    if ((tp = moat(stairs.y, stairs.x)) != NULL)
-    {
-	if (see_monst(tp) && on(*tp, ISRUN))	/* if it's visible and awake */
-	    return TRUE;			/* it must have moved there */
-
-	if (on(player, SEEMONST)		/* if she can detect monster */
-	    && tp->t_oldch == STAIRS)		/* and there once were stairs */
-		return TRUE;			/* it must have moved there */
-    }
-    return FALSE;
-}
-
-/*
- * raise_level:
- *	The guy just magically went up a level.
- */
-
-void
-raise_level()
-{
-    pstats.s_exp = e_levels[pstats.s_lvl-1] + 1L;
-    check_level();
-}
-
-/*
- * do_pot:
- *	Do a potion with standard setup.  This means it uses a fuse and
- *	turns on a flag
- */
 
 void
 do_pot(int type, bool knowit)

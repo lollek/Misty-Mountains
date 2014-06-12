@@ -1,3 +1,5 @@
+#ifndef _ROGUE14_ROGUE_H_
+#define _ROGUE14_ROGUE_H_
 /*
  * Rogue definitions and variable declarations
  *
@@ -193,25 +195,6 @@ enum trap_t
   T_MYST  = 7,
   NTRAPS
 };
-
-/*
- * Potion types
- */
-#define P_CONFUSE	0
-#define P_LSD		1
-#define P_POISON	2
-#define P_STRENGTH	3
-#define P_SEEINVIS	4
-#define P_HEALING	5
-#define P_MFIND		6
-#define	P_TFIND 	7
-#define	P_RAISE		8
-#define P_XHEAL		9
-#define P_HASTE		10
-#define P_RESTORE	11
-#define P_BLIND		12
-#define P_LEVIT		13
-#define MAXPOTIONS	14
 
 /*
  * Scroll types
@@ -474,7 +457,7 @@ extern bool	after, again, amulet, door_stop,
 
 extern char	dir_ch, file_name[], huh[], *inv_t_name[], prbuf[], whoami[],
 		l_last_comm, l_last_dir, last_comm, last_dir, *Numname,
-		outbuf[], *p_colors[], *r_stones[], *release, runch,
+		outbuf[], *r_stones[], *release, runch,
 		*s_names[], take, *tr_name[], *ws_made[], *ws_type[];
 
 extern int	a_class[], count, food_left, hungry_state, inpack,
@@ -503,12 +486,19 @@ extern struct stats	max_stats;
 
 extern struct monster	monsters[];
 
-extern struct obj_info	arm_info[], pot_info[], ring_info[],
+extern struct obj_info	arm_info[], ring_info[],
 			scr_info[], things[], ws_info[], weap_info[];
 
 /*
  * Function types
  */
+
+bool is_magic(THING *obj);   /* Returns true if an object radiates magic */
+bool seen_stairs();          /* Return TRUE if the player has seen the stairs */
+void raise_level();          /* The guy just magically went up a level. */
+bool turn_see(bool turn_off);/* Put on or off seeing monsters on this level */
+void invis_on();             /* Turn on the ability to see invisible */
+
 void	_attach(THING **list, THING *item);
 void	_detach(THING **list, THING *item);
 void	_free_list(THING **ptr);
@@ -548,7 +538,6 @@ void	do_maze(struct room *rp);
 void	do_motion(THING *obj, int ydelta, int xdelta);
 void	do_move(int dy, int dx);
 void	do_passages();
-void	do_pot(int type, bool knowit);
 void	do_rooms();
 void	do_run(char ch);
 void	do_zap();
@@ -594,7 +583,6 @@ void	init_probs();
 void	init_stones();
 void	init_weapon(THING *weap, int which);
 bool	inventory(THING *list, int type);
-void	invis_on();
 void	killed(THING *tp, bool pr);
 void	kill_daemon(void (*func)());
 bool	lock_sc();
@@ -622,8 +610,6 @@ void	put_inv_t(void *ip);
 void	put_str(void *str);
 void	put_things();
 void	putpass(coord *cp);
-void	quaff();
-void	raise_level();
 char	randmonster(bool wander);
 void	read_scroll();
 void    relocate(THING *th, coord *new_loc);
@@ -681,14 +667,11 @@ bool	diag_ok(coord *sp, coord *ep);
 bool	dropcheck(THING *obj);
 bool	fallpos(coord *pos, coord *newpos);
 bool	find_floor(struct room *rp, coord *cp, int limit, bool monst);
-bool	is_magic(THING *obj);
 bool	levit_check();
 bool	pack_room(bool from_floor, THING *obj);
 bool	roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl);
 bool	see_monst(THING *mp);
-bool	seen_stairs();
 bool	turn_ok(int y, int x);
-bool	turn_see(bool turn_off);
 bool	is_current(THING *obj);
 
 enum trap_t	be_trapped(coord *tc);
@@ -779,3 +762,5 @@ extern char     *wood[];
 extern int      cNWOOD;
 extern char     *metal[];
 extern int      cNMETAL;
+
+#endif /* _ROGUE14_ROGUE_H_ */

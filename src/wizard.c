@@ -15,7 +15,9 @@
 #include <curses.h>
 #include <string.h>
 #include <ctype.h>
+
 #include "rogue.h"
+#include "potions.h"
 
 static char *type_name(int type);
 

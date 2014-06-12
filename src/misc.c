@@ -601,3 +601,104 @@ choose_str(char *ts, char *ns)
 {
   return (on(player, ISHALU) ? ts : ns);
 }
+
+bool
+is_magic(THING *obj)
+{
+    switch (obj->o_type)
+    {
+	case ARMOR:
+	    return (bool)((obj->o_flags&ISPROT) || obj->o_arm != a_class[obj->o_which]);
+	case WEAPON:
+	    return (bool)(obj->o_hplus != 0 || obj->o_dplus != 0);
+	case POTION:
+	case SCROLL:
+	case STICK:
+	case RING:
+	case AMULET:
+	    return TRUE;
+    }
+    return FALSE;
+}
+
+bool
+seen_stairs()
+{
+    THING	*tp;
+
+    move(stairs.y, stairs.x);
+    if (inch() == STAIRS)		/* it's on the map */
+	return TRUE;
+    if (same_coords(hero, stairs))	/* It's under him */
+	return TRUE;
+
+    /* if a monster is on the stairs, this gets hairy */
+    if ((tp = moat(stairs.y, stairs.x)) != NULL)
+    {
+	if (see_monst(tp) && on(*tp, ISRUN))	/* if it's visible and awake */
+	    return TRUE;			/* it must have moved there */
+
+	if (on(player, SEEMONST)		/* if she can detect monster */
+	    && tp->t_oldch == STAIRS)		/* and there once were stairs */
+		return TRUE;			/* it must have moved there */
+    }
+    return FALSE;
+}
+
+void
+raise_level()
+{
+    pstats.s_exp = e_levels[pstats.s_lvl-1] + 1L;
+    check_level();
+}
+
+bool
+turn_see(bool turn_off)
+{
+    THING *mp;
+    bool can_see, add_new;
+
+    add_new = FALSE;
+    for (mp = mlist; mp != NULL; mp = next(mp))
+    {
+	move(mp->t_pos.y, mp->t_pos.x);
+	can_see = see_monst(mp);
+	if (turn_off)
+	{
+	    if (!can_see)
+		addcch(mp->t_oldch);
+	}
+	else
+	{
+	    if (!can_see)
+		standout();
+	    if (!on(player, ISHALU))
+		addcch(mp->t_type);
+	    else
+		addcch(rnd(26) + 'A');
+	    if (!can_see)
+	    {
+		standend();
+		add_new++;
+	    }
+	}
+    }
+    if (turn_off)
+	player.t_flags &= ~SEEMONST;
+    else
+	player.t_flags |= SEEMONST;
+    return add_new;
+}
+
+void
+invis_on()
+{
+    THING *mp;
+
+    player.t_flags |= CANSEE;
+    for (mp = mlist; mp != NULL; mp = next(mp))
+	if (on(*mp, ISINVIS) && see_monst(mp) && !on(player, ISHALU))
+	    mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
+}
+
+

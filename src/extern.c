@@ -43,7 +43,6 @@ bool pack_used[26] = {			/* Is the character used in the pack? */
 char dir_ch;				/* Direction from last get_dir() call */
 char file_name[MAXSTR];			/* Save file name */
 char huh[MAXSTR];			/* The last message printed */
-char *p_colors[MAXPOTIONS];		/* Colors of the potions */
 char prbuf[2*MAXSTR];			/* buffer for sprintfs */
 char *r_stones[MAXRINGS];		/* Stone settings of the rings */
 char runch;				/* Direction player is running */
@@ -224,22 +223,6 @@ struct obj_info arm_info[MAXARMORS] = {
     { "splint mail",		 10,	 80, NULL, FALSE },
     { "banded mail",		 10,	 90, NULL, FALSE },
     { "plate mail",		  5,	150, NULL, FALSE },
-};
-struct obj_info pot_info[MAXPOTIONS] = {
-    { "confusion",		 7,   5, NULL, FALSE },
-    { "hallucination",		 8,   5, NULL, FALSE },
-    { "poison",			 8,   5, NULL, FALSE },
-    { "gain strength",		13, 150, NULL, FALSE },
-    { "see invisible",		 3, 100, NULL, FALSE },
-    { "healing",		13, 130, NULL, FALSE },
-    { "monster detection",	 6, 130, NULL, FALSE },
-    { "magic detection",	 6, 105, NULL, FALSE },
-    { "raise level",		 2, 250, NULL, FALSE },
-    { "extra healing",		 5, 200, NULL, FALSE },
-    { "haste self",		 5, 190, NULL, FALSE },
-    { "restore strength",	13, 130, NULL, FALSE },
-    { "blindness",		 5,   5, NULL, FALSE },
-    { "levitation",		 6,  75, NULL, FALSE },
 };
 struct obj_info ring_info[MAXRINGS] = {
     { "protection",		 9, 400, NULL, FALSE },

@@ -32,7 +32,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curses.h>
+
 #include "rogue.h"
+#include "potions.h"
 
 /************************************************************************/
 /* Save State Code                                                      */
@@ -918,7 +920,7 @@ rs_write_potions(FILE *savef)
     if (write_error)
         return(WRITESTAT);
 
-    for(i = 0; i < MAXPOTIONS; i++)
+    for(i = 0; i < NPOTIONS; i++)
         rs_write_string_index(savef, rainbow, cNCOLORS, p_colors[i]);
 
     return(WRITESTAT);
@@ -932,7 +934,7 @@ rs_read_potions(FILE *inf)
     if (read_error || format_error)
         return(READSTAT);
 
-    for(i = 0; i < MAXPOTIONS; i++)
+    for(i = 0; i < NPOTIONS; i++)
         rs_read_string_index(inf, rainbow, cNCOLORS, &p_colors[i]);
 
     return(READSTAT);
@@ -1980,7 +1982,7 @@ rs_save_file(FILE *savef)
     rs_write_monsters(savef,monsters,26);               
     rs_write_obj_info(savef, things,   NUMTHINGS);   
     rs_write_obj_info(savef, arm_info,  MAXARMORS);  
-    rs_write_obj_info(savef, pot_info,  MAXPOTIONS);  
+    rs_write_obj_info(savef, pot_info,  NPOTIONS);  
     rs_write_obj_info(savef, ring_info,  MAXRINGS);    
     rs_write_obj_info(savef, scr_info,  MAXSCROLLS);  
     rs_write_obj_info(savef, weap_info,  MAXWEAPONS+1);  
@@ -2106,7 +2108,7 @@ rs_restore_file(FILE *inf)
     rs_read_monsters(inf,monsters,26);                  
     rs_read_obj_info(inf, things,   NUMTHINGS);         
     rs_read_obj_info(inf, arm_info,   MAXARMORS);         
-    rs_read_obj_info(inf, pot_info,  MAXPOTIONS);       
+    rs_read_obj_info(inf, pot_info,  NPOTIONS);       
     rs_read_obj_info(inf, ring_info,  MAXRINGS);         
     rs_read_obj_info(inf, scr_info,  MAXSCROLLS);       
     rs_read_obj_info(inf, weap_info, MAXWEAPONS+1);       

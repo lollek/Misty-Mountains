@@ -14,7 +14,9 @@
 #include <curses.h>
 #include <string.h>
 #include <ctype.h>
+
 #include "rogue.h"
+#include "potions.h"
 
 static void set_order(int *order, int numthings);
 static char *nothing(char type);
@@ -238,7 +240,7 @@ new_thing()
     {
 	case 0:
 	    cur->o_type = POTION;
-	    cur->o_which = pick_one(pot_info, MAXPOTIONS);
+	    cur->o_which = pick_one(pot_info, NPOTIONS);
 	when 1:
 	    cur->o_type = SCROLL;
 	    cur->o_which = pick_one(scr_info, MAXSCROLLS);
@@ -404,7 +406,7 @@ print_disc(char type)
     struct obj_info *info = NULL;
     int i, maxnum = 0, num_found;
     static THING obj;
-    static int order[MAX4(MAXSCROLLS, MAXPOTIONS, MAXRINGS, MAXSTICKS)];
+    static int order[MAX4(MAXSCROLLS, NPOTIONS, MAXRINGS, MAXSTICKS)];
 
     switch (type)
     {
@@ -413,7 +415,7 @@ print_disc(char type)
 	    info = scr_info;
 	    break;
 	case POTION:
-	    maxnum = MAXPOTIONS;
+	    maxnum = NPOTIONS;
 	    info = pot_info;
 	    break;
 	case RING:
@@ -668,7 +670,7 @@ pr_list()
     switch (ch)
     {
 	case POTION:
-	    pr_spec(pot_info, MAXPOTIONS);
+	    pr_spec(pot_info, NPOTIONS);
 	when SCROLL:
 	    pr_spec(scr_info, MAXSCROLLS);
 	when RING:
