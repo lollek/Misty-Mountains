@@ -53,5 +53,4 @@ char add_line(char *fmt, char *arg);
 
 char *md_getusername();
 int md_hasclreol();
-int md_issymlink(char *sp);
 
