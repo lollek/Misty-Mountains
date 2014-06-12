@@ -25,7 +25,7 @@ static char *parse_args(int argc, char **argv);
 static void endit(int sig);
 static void fatal();
 
-void open_score_and_drop_setuid_setgid(); /* src/mach_dep.c */
+void open_score_and_drop_setuid_setgid(); /* src/save.c */
 
 /** main:
  * The main program, of course
