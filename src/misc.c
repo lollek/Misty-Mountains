@@ -42,7 +42,7 @@ wmvaddcch(WINDOW *window, int y, int x, const chtype ch)
   return waddcch(window, ch);
 }
 
-/** waddcch (Window Add Colored Character
+/** waddcch (Window Add Colored Character)
  * Prints a character color if enabled */
 int
 waddcch(WINDOW *window, const chtype ch)
@@ -236,31 +236,24 @@ look(bool wakeup)
 # endif /* DEBUG */
 }
 
-/*
- * trip_ch:
- *	Return the character appropriate for this space, taking into
- *	account whether or not the player is tripping.
- */
+/** trip_ch:
+ * Return the character appropriate for this space, taking into
+ * account whether or not the player is tripping */
 int
 trip_ch(int y, int x, int ch)
 {
-    if (on(player, ISHALU) && after)
-	switch (ch)
-	{
-	    case FLOOR:
-	    case ' ':
-	    case PASSAGE:
-	    case '-':
-	    case '|':
-	    case DOOR:
-	    case TRAP:
-		break;
-	    default:
-		if (y != stairs.y || x != stairs.x || !seenstairs)
-		    ch = rnd_thing();
-		break;
-	}
-    return ch;
+  if (on(player, ISHALU) && after)
+    switch (ch)
+    {
+      case FLOOR: case ' ': case PASSAGE: case '-': case '|': case DOOR:
+      case TRAP:
+        break;
+      default:
+        if (y != stairs.y || x != stairs.x || !seenstairs)
+          return rnd_thing();
+        break;
+    }
+  return ch;
 }
 
 /*
@@ -271,17 +264,14 @@ trip_ch(int y, int x, int ch)
 void
 erase_lamp(coord *pos, struct room *rp)
 {
-    int y, x, ey, sy, ex;
+    int y, x;
 
     if (!(see_floor && (rp->r_flags & (ISGONE|ISDARK)) == ISDARK
 	&& !on(player,ISBLIND)))
 	    return;
 
-    ey = pos->y + 1;
-    ex = pos->x + 1;
-    sy = pos->y - 1;
-    for (x = pos->x - 1; x <= ex; x++)
-	for (y = sy; y <= ey; y++)
+    for (x = pos->x -1; x <= pos->x +1; x++)
+	for (y = pos->y -1; y <= pos->y +1; y++)
 	{
 	    if (y == hero.y && x == hero.x)
 		continue;
