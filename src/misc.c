@@ -21,6 +21,9 @@
 int
 get_color_for_chtype(const chtype ch)
 {
+  if (!use_colors)
+    return 0;
+
   switch (ch)
   {
     case PASSAGE: case FLOOR: return COLOR_PAIR(COLOR_YELLOW);
@@ -285,8 +288,8 @@ erase_lamp(coord *pos, struct room *rp)
 	    if (y == hero.y && x == hero.x)
 		continue;
 	    move(y, x);
-	    if (inch() == FLOOR)
-		addch(' ');
+	    if (inch() == (unsigned)(FLOOR | get_color_for_chtype(FLOOR)))
+		addcch(' ');
 	}
 }
 
