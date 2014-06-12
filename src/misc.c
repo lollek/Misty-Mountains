@@ -36,9 +36,9 @@ get_color_for_chtype(const chtype ch)
 int
 wmvaddcch(WINDOW *window, int y, int x, const chtype ch)
 {
-  if (wmove(window, y,x) == ERR)
+  if (wmove(window, y, x) == ERR)
     return ERR;
-  return waddcch(stdscr, ch);
+  return waddcch(window, ch);
 }
 
 /** waddcch (Window Add Colored Character
@@ -47,7 +47,11 @@ int
 waddcch(WINDOW *window, const chtype ch)
 {
   if (use_colors)
-    return waddch(window, ch | COLOR_PAIR(get_color_for_chtype(ch)));
+  {
+    short color = get_color_for_chtype(ch);
+    if (color != COLOR_WHITE)
+      return waddch(window, ch | COLOR_PAIR(color));
+  }
   return waddch(window, ch);
 }
 
