@@ -18,6 +18,8 @@
 
 #include "rogue.h"
 
+#define VERSION "1"
+
 static bool new_game();
 static char *parse_args(int argc, char **argv);
 static void endit(int sig);
@@ -221,7 +223,7 @@ new_game()
 char *
 parse_args(int argc, char **argv)
 {
-  const char *version_string = "Rogue14 Mod 1 - Based on Rogue5.4.4";
+  const char *version_string = "Rogue14 r" VERSION " - Based on Rogue5.4.4";
   char *saved_game = NULL;
   int option_index = 0;
   struct option long_options[] = {
