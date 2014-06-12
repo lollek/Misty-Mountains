@@ -129,12 +129,10 @@ wanderer()
     new_monster(tp, randmonster(TRUE), &cp);
     if (on(player, SEEMONST))
     {
-	standout();
 	if (!on(player, ISHALU))
-	    addch(tp->t_type);
+	    addcch(tp->t_type | A_STANDOUT);
 	else
-	    addch(rnd(26) + 'A');
-	standend();
+	    addcch((rnd(26) + 'A') | A_STANDOUT);
     }
     runto(&tp->t_pos);
     if (wizard)

@@ -92,7 +92,7 @@ new_level()
 
     find_floor((struct room *) NULL, &hero, FALSE, TRUE);
     enter_room(&hero);
-    mvaddch(hero.y, hero.x, PLAYER);
+    mvaddcch(hero.y, hero.x, PLAYER);
     if (on(player, SEEMONST))
 	turn_see(FALSE);
     if (on(player, ISHALU))

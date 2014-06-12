@@ -85,7 +85,7 @@ relocate(THING *th, coord *new_loc)
 
     if (!ce(*new_loc, th->t_pos))
     {
-	mvaddch(th->t_pos.y, th->t_pos.x, th->t_oldch);
+	mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
 	th->t_room = roomin(new_loc);
 	set_oldch(th, new_loc);
 	oroom = th->t_room;
@@ -98,13 +98,9 @@ relocate(THING *th, coord *new_loc)
     }
     move(new_loc->y, new_loc->x);
     if (see_monst(th))
-	addch(th->t_disguise);
+	addcch(th->t_disguise);
     else if (on(player, SEEMONST))
-    {
-	standout();
-	addch(th->t_type);
-	standend();
-    }
+	addcch(th->t_type | A_STANDOUT);
 }
 
 /*

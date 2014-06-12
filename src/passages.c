@@ -337,11 +337,11 @@ add_pass()
 		if (pp->p_monst != NULL)
 		    pp->p_monst->t_oldch = pp->p_ch;
 		else if (pp->p_flags & F_REAL)
-		    addch(ch);
+		    addcch(ch);
 		else
 		{
 		    standout();
-		    addch((pp->p_flags & F_PASS) ? PASSAGE : DOOR);
+		    addcch((pp->p_flags & F_PASS) ? PASSAGE : DOOR);
 		    standend();
 		}
 	    }

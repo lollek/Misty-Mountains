@@ -373,24 +373,22 @@ find_floor(struct room *rp, coord *cp, int limit, bool monst)
 void
 enter_room(coord *cp)
 {
-    struct room *rp;
-    THING *tp;
-    int y, x;
-    char ch;
+    struct room *rp = proom = roomin(cp);
 
-    rp = proom = roomin(cp);
     door_open(rp);
     if (!(rp->r_flags & ISDARK) && !on(player, ISBLIND))
+    {
+	int y, x;
 	for (y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++)
 	{
 	    move(y, rp->r_pos.x);
 	    for (x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
 	    {
-		tp = moat(y, x);
-		ch = chat(y, x);
+		THING *tp = moat(y, x);
+		char ch = chat(y, x);
 		if (tp == NULL)
 		    if (CCHAR(inch()) != ch)
-			addch(ch);
+			addcch(ch);
 		    else
 			move(y, x + 1);
 		else
@@ -398,18 +396,15 @@ enter_room(coord *cp)
 		    tp->t_oldch = ch;
 		    if (!see_monst(tp))
 			if (on(player, SEEMONST))
-			{
-			    standout();
-			    addch(tp->t_disguise);
-			    standend();
-			}
+			    addcch(tp->t_disguise | A_STANDOUT);
 			else
-			    addch(ch);
+			    addcch(ch);
 		    else
-			addch(tp->t_disguise);
+		        addcch(tp->t_disguise);
 		}
 	    }
 	}
+    }
 }
 
 /*
@@ -420,13 +415,9 @@ enter_room(coord *cp)
 void
 leave_room(coord *cp)
 {
-    PLACE *pp;
-    struct room *rp;
+    struct room *rp = proom;
     int y, x;
     char floor;
-    char ch;
-
-    rp = proom;
 
     if (rp->r_flags & ISMAZE)
 	return;
@@ -442,12 +433,13 @@ leave_room(coord *cp)
     for (y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++)
 	for (x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
 	{
+	    char ch;
 	    move(y, x);
 	    switch ( ch = CCHAR(inch()) )
 	    {
 		case FLOOR:
 		    if (floor == ' ' && ch != ' ')
-			addch(' ');
+			addcch(' ');
 		    break;
 		default:
 		    /*
@@ -456,15 +448,13 @@ leave_room(coord *cp)
 		     */
 		    if (isupper(toascii(ch)))
 		    {
+                      PLACE *pp = INDEX(y,x);
 			if (on(player, SEEMONST))
 			{
-			    standout();
-			    addch(ch);
-			    standend();
+			    addcch(ch | A_STANDOUT);
 			    break;
 			}
-                        pp = INDEX(y,x);
-			addch(pp->p_ch == DOOR ? DOOR : floor);
+			addcch(pp->p_ch == DOOR ? DOOR : floor);
 		    }
 	    }
 	}

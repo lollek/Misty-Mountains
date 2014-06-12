@@ -129,7 +129,7 @@ quaff()
 		    {
 			show = TRUE;
 			wmove(hw, tp->o_pos.y, tp->o_pos.x);
-			waddch(hw, MAGIC);
+			waddcch(hw, MAGIC);
 			pot_info[P_TFIND].oi_know = TRUE;
 		    }
 		}
@@ -141,7 +141,7 @@ quaff()
 			{
 			    show = TRUE;
 			    wmove(hw, mp->t_pos.y, mp->t_pos.x);
-			    waddch(hw, MAGIC);
+			    waddcch(hw, MAGIC);
 			}
 		    }
 		}
@@ -261,7 +261,7 @@ invis_on()
     player.t_flags |= CANSEE;
     for (mp = mlist; mp != NULL; mp = next(mp))
 	if (on(*mp, ISINVIS) && see_monst(mp) && !on(player, ISHALU))
-	    mvaddch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
+	    mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
 }
 
 /*
@@ -282,16 +282,16 @@ turn_see(bool turn_off)
 	if (turn_off)
 	{
 	    if (!can_see)
-		addch(mp->t_oldch);
+		addcch(mp->t_oldch);
 	}
 	else
 	{
 	    if (!can_see)
 		standout();
 	    if (!on(player, ISHALU))
-		addch(mp->t_type);
+		addcch(mp->t_type);
 	    else
-		addch(rnd(26) + 'A');
+		addcch(rnd(26) + 'A');
 	    if (!can_see)
 	    {
 		standend();

@@ -86,7 +86,7 @@ fight(coord *mp, THING *weap, bool thrown)
 	tp->t_disguise = 'X';
 	if (on(player, ISHALU)) {
 	    ch = (char)(rnd(26) + 'A');
-	    mvaddch(tp->t_pos.y, tp->t_pos.x, ch);
+	    mvaddcch(tp->t_pos.y, tp->t_pos.x, ch);
 	}
 	msg(choose_str("heavy!  That's a nasty critter!",
 		       "wait!  That's a xeroc!"));
@@ -152,7 +152,7 @@ attack(THING *mp)
     {
 	mp->t_disguise = 'X';
 	if (on(player, ISHALU))
-	    mvaddch(mp->t_pos.y, mp->t_pos.x, rnd(26) + 'A');
+	    mvaddcch(mp->t_pos.y, mp->t_pos.x, rnd(26) + 'A');
     }
     mname = set_mname(mp);
     oldhp = pstats.s_hpt;
@@ -601,7 +601,7 @@ remove_mon(coord *mp, THING *tp, bool waskill)
 	    discard(obj);
     }
     moat(mp->y, mp->x) = NULL;
-    mvaddch(mp->y, mp->x, tp->t_oldch);
+    mvaddcch(mp->y, mp->x, tp->t_oldch);
     detach(mlist, tp);
     if (on(*tp, ISTARGET))
     {

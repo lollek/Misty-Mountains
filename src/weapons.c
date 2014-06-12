@@ -89,7 +89,7 @@ do_motion(THING *obj, int ydelta, int xdelta)
 	    ch = chat(obj->o_pos.y, obj->o_pos.x);
 	    if (ch == FLOOR && !show_floor())
 		ch = ' ';
-	    mvaddch(obj->o_pos.y, obj->o_pos.x, ch);
+	    mvaddcch(obj->o_pos.y, obj->o_pos.x, ch);
 	}
 	/*
 	 * Get the new position
@@ -104,7 +104,7 @@ do_motion(THING *obj, int ydelta, int xdelta)
 	     */
 	    if (cansee(unc(obj->o_pos)) && !terse)
 	    {
-		mvaddch(obj->o_pos.y, obj->o_pos.x, obj->o_type);
+		mvaddcch(obj->o_pos.y, obj->o_pos.x, obj->o_type);
 		refresh();
 	    }
 	    continue;
@@ -134,7 +134,7 @@ fall(THING *obj, bool pr)
 	    if (pp->p_monst != NULL)
 		pp->p_monst->t_oldch = (char) obj->o_type;
 	    else
-		mvaddch(fpos.y, fpos.x, obj->o_type);
+		mvaddcch(fpos.y, fpos.x, obj->o_type);
 	}
 	attach(lvl_obj, obj);
 	return;

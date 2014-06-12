@@ -177,7 +177,7 @@ look(bool wakeup)
 		ch = ' ';
 
 	    if (tp != NULL || ch != CCHAR( inch() ))
-		addch(ch);
+		addcch(ch);
 
 	    if (door_stop && !firstmove && running)
 	    {
@@ -232,7 +232,7 @@ look(bool wakeup)
     if (door_stop && !firstmove && passcount > 1)
 	running = FALSE;
     if (!running || !jump)
-	mvaddch(hero.y, hero.x, PLAYER);
+	mvaddcch(hero.y, hero.x, PLAYER);
 # ifdef DEBUG
     done = FALSE;
 # endif /* DEBUG */

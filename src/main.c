@@ -225,6 +225,7 @@ parse_args(int argc, char **argv)
   char *saved_game = NULL;
   int option_index = 0;
   struct option long_options[] = {
+    {"colors",    no_argument,       0, 'c'},
     {"escdelay",  optional_argument, 0, 'E'},
     {"flush",     no_argument,       0, 'f'},
     {"hide-floor",no_argument,       0, 'F'},
@@ -252,7 +253,7 @@ parse_args(int argc, char **argv)
   passgo = FALSE;               /* Follow the turnings in passageways */
   tombstone = TRUE;             /* Print out tombstone when killed */
   inv_type = INV_OVER;          /* Inventory style */
-  use_colors = TRUE;            /* Use ncurses colors */
+  use_colors = FALSE;           /* Use ncurses colors */
 
   /* Default file name for save file */
   strcpy(file_name, md_gethomedir());
@@ -267,13 +268,14 @@ parse_args(int argc, char **argv)
 
   for (;;)
   {
-    int c = getopt_long(argc, argv, "E::fFi:jn:prsS:tTW",
+    int c = getopt_long(argc, argv, "cE::fFi:jn:prsS:tTW",
                         long_options, &option_index);
     if (c == -1)
       break;
 
     switch (c)
     {
+      case 'c': use_colors = TRUE; break;
       case 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg); break;
       case 'f': fight_flush = TRUE; break;
       case 'F': see_floor = FALSE; break;
@@ -295,6 +297,7 @@ parse_args(int argc, char **argv)
       case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
                "Run Rogue14 with selected options or a savefile\n\n"
+               "  -c, --colors         colorize the game\n"
                "  -E, --escdelay=[NUM] set escdelay in ms. Not settings this\n"
                "                       defaults to 0. If you do not give a NUM\n"
                "                       argument, it's set to 64 (old standard)\n"
@@ -302,8 +305,8 @@ parse_args(int argc, char **argv)
                "  -F, --hide-floor     hide the lamp-illuminated floor\n"
                "  -i, --inv-type=0-2   change inventory style\n"
                "                       0 - Inventory over\n"
-               "                       1 - Inventory slow\n"
                , argv[0]); printf(
+               "                       1 - Inventory slow\n"
                "                       2 - Inventory clear\n"
                "  -j, --jump           show running as a series of jumps\n"
                "  -n, --name=NAME      set highscore name\n"
@@ -313,8 +316,8 @@ parse_args(int argc, char **argv)
                "  -S, --seed=NUMBER    set map seed to NUMBER\n"
                "  -t, --terse          terse output\n"
                "  -T, --hide-tomb      don't print out tombstone when killed\n"
-               "  -W, --wizard         run the game in debug-mode\n"
                ); printf(
+               "  -W, --wizard         run the game in debug-mode\n"
                "      --help           display this help and exit\n"
                "      --version        display game version and exit\n\n"
                "%s\n"
