@@ -28,7 +28,6 @@ static FILE *scoreboard = NULL; /* File descriptor for score file */
 
 extern char version[], encstr[];
 
-
 /** open_score_and_drop_setuid_setgid:
  * Open up the score file for future use */
 void
@@ -202,90 +201,6 @@ save_file(FILE *savef)
     exit(0);
 }
 
-/*
- * restore:
- *	Restore a saved game from a file with elaborate checks for file
- *	integrity from cheaters
- */
-bool
-restore(char *file)
-{
-    FILE *inf;
-    char buf[MAXSTR];
-
-    if (strcmp(file, "-r") == 0)
-        file = file_name;
-
-    if ((inf = fopen(file,"r")) == NULL)
-    {
-        perror(file);
-        return FALSE;
-    }
-
-    /* defeat multiple restarting from the same place
-     * TODO: should these be removed? not hard to circumvent anyways */
-    if (!wizard)
-    {
-      struct stat sbuf2;
-      if (lstat(file, &sbuf2) == -1)
-      {
-        perror(file);
-        return FALSE;
-      }
-      if ((sbuf2.st_mode & S_IFMT) != S_IFREG)
-      {
-        printf("Only normal files allowed (no symlinks, FIFOs, etc)\n");
-        return FALSE;
-      }
-      if (sbuf2.st_nlink != 1)
-      {
-        printf("The savegame cannot be hardlinked, since that's cheating\n");
-        return FALSE;
-      }
-    }
-
-    fflush(stdout);
-    encread(buf, (unsigned) strlen(version) + 1, inf);
-    if (strcmp(buf, version) != 0)
-    {
-        printf("Sorry, saved game is out of date.\n");
-        return FALSE;
-    }
-    encread(buf,80,inf);
-
-    if (init_graphics() != 0)
-      return FALSE;
-
-    rs_restore_file(inf);
-    /*
-     * we do not close the file so that we will have a hold of the
-     * inode for as long as possible
-     */
-
-    if (!wizard && unlink(file) < 0)
-    {
-        endwin();
-        printf("Cannot unlink file\n");
-        return FALSE;
-    }
-    mpos = 0;
-    clearok(stdscr,TRUE);
-
-    if (pstats.s_hpt <= 0)
-    {
-	endwin();
-	printf("\n\"He's dead, Jim\"\n");
-	return FALSE;
-    }
-
-    /* parse environment declaration of options */
-    parse_opts(getenv("ROGUEOPTS"));
-
-    strcpy(file_name, file);
-    clearok(curscr, TRUE);
-    msg("file name: %s", file);
-    return playit();
-}
 
 /*
  * encwrite:

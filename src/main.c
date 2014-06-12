@@ -20,12 +20,22 @@
 
 #define VERSION "2"
 
-static bool new_game();
-static char *parse_args(int argc, char **argv);
+enum game_mode_t
+{
+  LOAD_GAME = 0,
+  NEW_GAME = 1
+};
+
+static bool playit();
+static enum game_mode_t parse_args(int argc, char **argv);
 static void endit(int sig);
 static void fatal();
 
 void open_score_and_drop_setuid_setgid(); /* src/save.c */
+void auto_save(int);                      /* src/save.c */
+
+bool init_new_game();                     /* src/init.c */
+bool init_old_game();                     /* src/init.c */
 
 /** main:
  * The main program, of course
@@ -33,14 +43,26 @@ void open_score_and_drop_setuid_setgid(); /* src/save.c */
 int
 main(int argc, char **argv)
 {
-  char *saved_game;
+  bool retval = FALSE;
 
   /* Open scoreboard and drop setuid/getgid, so we can modify the score later */
   open_score_and_drop_setuid_setgid();
 
+  /* Parse args and then init new (or old) game */
+  switch (parse_args(argc, argv))
+  {
+    case LOAD_GAME: retval = init_old_game();
+    when NEW_GAME:  retval = init_new_game();
+    otherwise:
+      printf("Error: Failed while parsing arguments\n");
+      return 1;
+  }
+
+  if (retval == FALSE)
+    return 1;
+
   /* Play game! */
-  saved_game = parse_args(argc, argv);
-  return saved_game ? restore(saved_game) : new_game();
+  return playit();
 }
 
 /** endit:
@@ -174,55 +196,14 @@ shell()
   clearok(stdscr, TRUE);
 }
 
-bool
-new_game()
-{
-  /* Parse environment opts */
-  parse_opts(getenv("ROGUEOPTS"));
-  if (whoami[0] == '\0')
-    strucpy(whoami, md_getusername(), (int) strlen(md_getusername()));
-
-  if (wizard)
-    printf("Hello %s, welcome to dungeon #%d", whoami, seed);
-  else
-    printf("Hello %s, just a moment while I dig the dungeon...", whoami);
-  fflush(stdout);
-
-  /* Init Graphics */
-  if (init_graphics() != 0)
-    return FALSE;
-  idlok(stdscr, TRUE);
-  idlok(hw, TRUE);
-
-  /* Init stuff */
-  init_probs();                         /* Set up prob tables for objects */
-  init_player();                        /* Set up initial player stats */
-  init_names();                         /* Set up names of scrolls */
-  init_colors();                        /* Set up colors of potions */
-  init_stones();                        /* Set up stone settings of rings */
-  init_materials();                     /* Set up materials of wands */
-
-  new_level();                          /* Draw current level */
-
-  /* Start up daemons and fuses */
-  start_daemon(runners, 0, AFTER);
-  start_daemon(doctor, 0, AFTER);
-  fuse(swander, 0, WANDERTIME, AFTER);
-  start_daemon(stomach, 0, AFTER);
-
-  playit();
-
-  return TRUE;
-}
-
 /** parse_args
  * Parse command-line arguments
  */
-char *
+enum game_mode_t
 parse_args(int argc, char **argv)
 {
   const char *version_string = "Rogue14 r" VERSION " - Based on Rogue5.4.4";
-  char *saved_game = NULL;
+  enum game_mode_t game_mode = NEW_GAME;
   int option_index = 0;
   struct option long_options[] = {
     {"colors",    no_argument,       0, 'c'},
@@ -275,26 +256,24 @@ parse_args(int argc, char **argv)
 
     switch (c)
     {
-      case 'c': use_colors = TRUE; break;
-      case 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg); break;
-      case 'f': fight_flush = TRUE; break;
-      case 'F': see_floor = FALSE; break;
-      case 'i': if (atoi(optarg) >= 0 && atoi(optarg) <= 2)
+      case 'c': use_colors = TRUE;
+      when 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg);
+      when 'f': fight_flush = TRUE;
+      when 'F': see_floor = FALSE;
+      when 'i': if (atoi(optarg) >= 0 && atoi(optarg) <= 2)
                   inv_type = atoi(optarg);
-                break;
-      case 'j': jump = TRUE; break;
-      case 'n': if (strlen(optarg))
+      when 'j': jump = TRUE;
+      when 'n': if (strlen(optarg))
                   strucpy(whoami, optarg, strlen(optarg));
-                break;
-      case 'p': passgo = TRUE; break;
-      case 'r': saved_game = "-r"; break;
-      case 's': noscore = TRUE; score(0, -1, 0); exit(0);
-      case 'S': seed = atoi(optarg); break;
-      case 't': terse = TRUE; break;
-      case 'T': tombstone = FALSE; break;
-      case 'W': potential_wizard = wizard = noscore = TRUE;
-                player.t_flags |= SEEMONST; break;
-      case '0':
+      when 'p': passgo = TRUE;
+      when 'r': game_mode = LOAD_GAME;
+      when 's': noscore = TRUE; score(0, -1, 0); exit(0);
+      when 'S': seed = atoi(optarg);
+      when 't': terse = TRUE;
+      when 'T': tombstone = FALSE;
+      when 'W': potential_wizard = wizard = noscore = TRUE;
+                player.t_flags |= SEEMONST;
+      when '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
                "Run Rogue14 with selected options or a savefile\n\n"
                "  -c, --colors         colorize the game\n"
@@ -323,8 +302,8 @@ parse_args(int argc, char **argv)
                "%s\n"
                , version_string);
         exit(0);
-      case '1': puts(version_string); exit(0);
-      default:
+      when '1': puts(version_string); exit(0);
+      otherwise:
         fprintf(stderr, "Try '%s --help' for more information\n",
                 argv[0]);
         exit(1);
@@ -335,15 +314,10 @@ parse_args(int argc, char **argv)
    * otherwise, we should create a new game with ~/saved_game as file_name */
   if (optind < argc)
   {
-    if (saved_game != NULL)
-      saved_game = argv[optind];
-    else
-    {
-      strncpy(file_name, argv[optind], MAXSTR);
-      file_name[MAXSTR -1] = '\0';
-    }
+    strncpy(file_name, argv[optind], MAXSTR);
+    file_name[MAXSTR -1] = '\0';
   }
 
-  return saved_game;
+  return game_mode;
 }
 

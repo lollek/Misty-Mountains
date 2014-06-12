@@ -628,7 +628,6 @@ void	read_scroll();
 void    relocate(THING *th, coord *new_loc);
 void	remove_mon(coord *mp, THING *tp, bool waskill);
 void	reset_last();
-bool	restore(char *file);
 int	ring_eat(int hand);
 void	ring_on();
 void	ring_off();

@@ -32,14 +32,12 @@ extern char prbuf[], whoami[];
 
 /* Function types */
 
-void auto_save(int);
 void come_down();
 void doctor();
 void end_line();
 void land();
 void leave(int);
 void nohaste();
-bool playit();
 void print_disc(char);
 void quit(int);
 void rollwand();
