@@ -311,6 +311,7 @@ over:
 		    }
 		when '+':
 		    after = FALSE;
+                    /* TODO: Add a query here, so you always can become a wiz */
 		    if (potential_wizard)
 		    {
                       wizard = !wizard;

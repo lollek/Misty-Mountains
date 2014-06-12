@@ -17,8 +17,6 @@
 
 #include <stdlib.h>
 
-#undef SIGTSTP
-
 #define MAXSTR 1024 /* maximum length of strings */
 #define MAXLINES 32 /* maximum number of screen lines used */
 #define MAXCOLS  80 /* maximum number of screen columns used */
@@ -26,17 +24,13 @@
 #undef CTRL
 #define CTRL(c) (c & 037)
 
-/*
- * Now all the global variables
- */
+/* Now all the global variables */
 
 extern int potential_wizard;
 extern int wizard;
 extern char prbuf[], whoami[];
 
-/*
- * Function types
- */
+/* Function types */
 
 void auto_save(int);
 void come_down();
