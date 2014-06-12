@@ -116,11 +116,3 @@ md_getrealname(int uid)
   else
     return pp->pw_name;
 }
-
-extern char *xcrypt(char *key, char *salt);
-
-char *
-md_crypt(char *key, char *salt)
-{
-  return( xcrypt(key,salt) );
-}
