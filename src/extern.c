@@ -54,7 +54,6 @@ char take;				/* Thing she is taking */
 char whoami[MAXSTR];			/* Name of player */
 char *ws_made[MAXSTICKS];		/* What sticks are made of */
 char *ws_type[MAXSTICKS];		/* Is it a wand or a staff */
-int  orig_dsusp;			/* Original dsusp char */
 char *inv_t_name[] = {
 	"Overwrite",
 	"Slow",
