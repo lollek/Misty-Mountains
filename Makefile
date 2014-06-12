@@ -41,9 +41,6 @@ EXE      =
 
 .SUFFIXES: .obj
 
-.c.obj:
-	$(CC) $(CFLAGS) $(CPPFLAGS) /c /o $*.o $*.c
-    
 .c.o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $*.o $*.c
     
