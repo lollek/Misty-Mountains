@@ -47,9 +47,7 @@ wmvaddcch(WINDOW *window, int y, int x, const chtype ch)
 int
 waddcch(WINDOW *window, const chtype ch)
 {
-  if (use_colors)
-    return waddch(window, ch | get_color_for_chtype(ch));
-  return waddch(window, ch);
+  return waddch(window, ch | get_color_for_chtype(ch));
 }
 
 /** rnd:
