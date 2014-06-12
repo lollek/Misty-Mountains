@@ -312,8 +312,8 @@ pick_up(char ch)
 		proom->r_goldval = 0;
 		break;
 	    default:
-            if (wizard)
-		debug("Where did you pick a '%s' up???", unctrl(ch));
+	    if (wizard)
+		msg("Where did you pick a '%s' up???", unctrl(ch));
 	    case ARMOR:
 	    case POTION:
 	    case FOOD:

@@ -38,7 +38,7 @@ d_slot()
 	if (dev->d_type == EMPTY)
 	    return dev;
     if (wizard)
-      debug("Ran out of fuse slots");
+      msg("Ran out of fuse slots");
     return NULL;
 }
 

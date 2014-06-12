@@ -112,7 +112,8 @@ inv_name(THING *obj, bool drop)
 	when GOLD:
 	    sprintf(prbuf, "%d Gold pieces", obj->o_goldval);
 	otherwise:
-	    debug("Picked up something funny %s", unctrl(obj->o_type));
+	    if (wizard)
+		msg("Picked up something funny %s", unctrl(obj->o_type));
 	    sprintf(pb, "Something bizarre %s", unctrl(obj->o_type));
     }
     if (inv_describe)
@@ -291,7 +292,8 @@ new_thing()
 	    cur->o_which = pick_one(ws_info, MAXSTICKS);
 	    fix_stick(cur);
 	otherwise:
-	    debug("Picked a bad kind of object");
+	    if (wizard)
+		msg("Picked a bad kind of object");
 	    wait_for(' ');
     }
     return cur;

@@ -69,7 +69,7 @@ fight(coord *mp, THING *weap, bool thrown)
 
     /* Find the monster we want to fight */
     if (wizard && tp == NULL)
-	debug("Fight what @ %d,%d", mp->y, mp->x);
+	msg("Fight what @ %d,%d", mp->y, mp->x);
     /*
      * Since we are fighting, things are not quiet so no healing takes
      * place.
@@ -457,7 +457,7 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 
 	    proll = roll(ndice, nsides);
 	    if (wizard && ndice + nsides > 0 && proll <= 0)
-		debug("Damage for %dx%d came out %d, dplus = %d, add_dam = %d, def_arm = %d", ndice, nsides, proll, dplus, add_dam[att->s_str], def_arm);
+		msg("Damage for %dx%d came out %d, dplus = %d, add_dam = %d, def_arm = %d", ndice, nsides, proll, dplus, add_dam[att->s_str], def_arm);
 	    damage = dplus + proll + add_dam[att->s_str];
 	    def->s_hpt -= max(0, damage);
 	    did_hit = TRUE;

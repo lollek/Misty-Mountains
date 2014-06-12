@@ -213,7 +213,7 @@ conn(int r1, int r2)
 	turn_distance = abs(spos.y - epos.y);
     }
     else if (wizard)
-	debug("error in connection tables");
+	msg("error in connection tables");
 
     turn_spot = rnd(distance - 1) + 1;		/* where turn starts */
 
