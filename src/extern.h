@@ -51,9 +51,7 @@ void visuals();
 
 char add_line(char *fmt, char *arg);
 
-char *md_gethomedir();
 char *md_getusername();
-char *md_getrealname(int uid);
 int md_hasclreol();
 int md_issymlink(char *sp);
 

@@ -101,18 +101,3 @@ md_gethomedir()
 
   return homedir;
 }
-
-char *
-md_getrealname(int uid)
-{
-  static char uidstr[20];
-  struct passwd *pp = getpwuid(uid);
-
-  if (pp == NULL)
-  {
-    sprintf(uidstr,"%d", uid);
-    return uidstr;
-  }
-  else
-    return pp->pw_name;
-}

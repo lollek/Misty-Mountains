@@ -18,6 +18,8 @@
 #include <string.h>
 #include "rogue.h"
 
+char *md_gethomedir(); /* src/mdport.c */
+
 /* FIXME: I should customize this */
 extern char version[];
 

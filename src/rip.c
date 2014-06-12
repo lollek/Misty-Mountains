@@ -97,13 +97,9 @@ score(int amount, int flags, char monst)
 
     signal(SIGINT, SIG_DFL);
 
-    if (wizard)
-    {
-	if (strcmp(prbuf, "names") == 0)
-	    prflags = 1;
-	else if (strcmp(prbuf, "edit") == 0)
-	    prflags = 2;
-    }
+    if (wizard && strcmp(prbuf, "edit") == 0)
+      prflags = 2;
+
     rd_score(top_ten);
     /*
      * Insert her in list if need be
@@ -150,10 +146,6 @@ score(int amount, int flags, char monst)
 		scp->sc_level);
 	    if (scp->sc_flags == 0 || scp->sc_flags == 3)
 		printf(" by %s", killname((char) scp->sc_monster, TRUE));
-	    if (prflags == 1)
-	    {
-	    printf(" (%s)", md_getrealname(scp->sc_uid));
-	    }
 	    else if (prflags == 2)
 	    {
 		fflush(stdout);
