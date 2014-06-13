@@ -54,7 +54,7 @@ do_move(int dy, int dx)
     }
 
     /* Do a confused move (maybe) */
-    if (on(player, ISHUH) && rnd(5) != 0)
+    if (is_confused(player) && rnd(5) != 0)
     {
 	nh = *rndmove(&player);
 	if (same_coords(nh, hero))

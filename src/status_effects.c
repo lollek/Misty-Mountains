@@ -34,7 +34,7 @@ become_poisoned()
 void
 become_confused(bool permanent)
 {
-  if (on(player, ISHUH))
+  if (is_confused(player))
     lengthen(unconfuse, HUHDURATION);
   else
   {

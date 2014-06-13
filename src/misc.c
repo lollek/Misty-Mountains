@@ -498,7 +498,7 @@ get_dir()
     last_delt.y = delta.y;
     last_delt.x = delta.x;
   }
-  if (on(player, ISHUH) && rnd(5) == 0)
+  if (is_confused(player) && rnd(5) == 0)
     do
     {
       delta.y = rnd(3) - 1;

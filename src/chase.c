@@ -311,7 +311,7 @@ chase(THING *tp, coord *ee)
      * Stalkers are slightly confused all of the time, and bats are
      * quite confused all the time
      */
-    if ((on(*tp, ISHUH) && rnd(5) != 0) || (tp->t_type == 'P' && rnd(5) == 0)
+    if ((is_confused(*tp) && rnd(5) != 0) || (tp->t_type == 'P' && rnd(5) == 0)
 	|| (tp->t_type == 'B' && rnd(2) == 0))
     {
 	/*
