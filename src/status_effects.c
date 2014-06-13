@@ -59,7 +59,7 @@ become_healed()
 {
   if ((pstats.s_hpt += roll(pstats.s_lvl, 4)) > max_hp)
     pstats.s_hpt = ++max_hp;
-  sight();
+  cure_blindness();
   msg("you begin to feel better");
 }
 
@@ -72,7 +72,7 @@ become_extra_healed()
       ++max_hp;
     pstats.s_hpt = ++max_hp;
   }
-  sight();
+  cure_blindness();
   come_down();
   msg("you begin to feel much better");
 }
@@ -128,7 +128,7 @@ become_true_seeing(bool permanent)
     look(FALSE);
   }
   msg("everything suddenly looks sharper");
-  sight();
+  cure_blindness();
 }
 
 void
@@ -165,17 +165,32 @@ become_hasted(bool permanent)
 void become_blind(bool permanent)
 {
   if (is_blind(player))
-    lengthen(sight, SEEDURATION);
+    lengthen(cure_blindness, SEEDURATION);
   else
   {
     player.t_flags |= ISBLIND;
     if (!permanent)
-      fuse(sight, 0, SEEDURATION, AFTER);
+      fuse(cure_blindness, 0, SEEDURATION, AFTER);
     look(FALSE);
   }
   msg(is_hallucinating(player)
     ? "oh, bummer!  Everything is dark!  Help!"
     : "a cloak of darkness falls around you");
+}
+
+void
+cure_blindness()
+{
+  if (is_blind(player))
+  {
+    extinguish(cure_blindness);
+    player.t_flags &= ~ISBLIND;
+    if (!(proom->r_flags & ISGONE))
+      enter_room(&hero);
+    msg(is_hallucinating(player)
+      ? "far out!  Everything is all cosmic again"
+      : "the veil of darkness lifts");
+  }
 }
 
 void become_levitating(bool permanent)

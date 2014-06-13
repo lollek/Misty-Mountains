@@ -1049,7 +1049,7 @@ rs_write_daemons(FILE *savef, struct delayed_action *d_list, int count)
             func = 7;
         else if (d_list[i].d_func == remove_true_seeing)
             func = 8;
-        else if (d_list[i].d_func == sight)
+        else if (d_list[i].d_func == cure_blindness)
             func = 9;
         else if (d_list[i].d_func == NULL)
             func = 0;
@@ -1107,7 +1107,7 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
                     break;
             case 8: d_list[i].d_func = remove_true_seeing;
                     break;
-            case 9: d_list[i].d_func = sight;
+            case 9: d_list[i].d_func = cure_blindness;
                     break;
             default:d_list[i].d_func = NULL;
                     break;

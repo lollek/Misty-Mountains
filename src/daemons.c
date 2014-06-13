@@ -77,24 +77,6 @@ rollwand()
 }
 
 /*
- * sight:
- *	He gets his sight back
- */
-void
-sight()
-{
-    if (is_blind(player))
-    {
-	extinguish(sight);
-	player.t_flags &= ~ISBLIND;
-	if (!(proom->r_flags & ISGONE))
-	    enter_room(&hero);
-	msg(choose_str("far out!  Everything is all cosmic again",
-		       "the veil of darkness lifts"));
-    }
-}
-
-/*
  * nohaste:
  *	End the hasting
  */

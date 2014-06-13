@@ -29,6 +29,7 @@ void become_true_seeing(bool permanent);    /* Add see-invisiable effect */
 void remove_true_seeing();
 void become_hasted(bool permanent);         /* Become quicker */
 void become_blind(bool permanent);
+void cure_blindness();
 void become_levitating(bool permanent);
 void raise_level();                         /* Level up */
 
