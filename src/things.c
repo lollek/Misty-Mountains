@@ -16,6 +16,7 @@
 
 #include "rogue.h"
 #include "potions.h"
+#include "status_effects.h"
 
 static void set_order(int *order, int numthings);
 static char *nothing(char type);
@@ -204,8 +205,8 @@ dropcheck(THING *obj)
 		chg_str(-obj->o_arm);
 		break;
 	    case R_SEEINVIS:
-		unsee();
-		extinguish(unsee);
+		remove_true_seeing();
+		extinguish(remove_true_seeing);
 		break;
 	}
     }

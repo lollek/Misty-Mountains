@@ -77,21 +77,6 @@ rollwand()
 }
 
 /*
- * unsee:
- *	Turn off the ability to see invisible
- */
-void
-unsee()
-{
-    register THING *th;
-
-    for (th = mlist; th != NULL; th = next(th))
-	if (is_invisible(*th) && see_monst(th))
-	    mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
-    player.t_flags &= ~CANSEE;
-}
-
-/*
  * sight:
  *	He gets his sight back
  */

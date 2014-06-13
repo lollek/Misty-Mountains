@@ -702,7 +702,6 @@ void runners();
 void sight();
 void stomach();
 void swander();
-void unsee();
 void visuals();
 
 char add_line(char *fmt, char *arg);

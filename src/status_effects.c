@@ -119,16 +119,26 @@ void
 become_true_seeing(bool permanent)
 {
   if (on(player, CANSEE))
-    lengthen(unsee, SEEDURATION);
+    lengthen(remove_true_seeing, SEEDURATION);
   else
   {
     player.t_flags |= CANSEE;
     if (!permanent)
-      fuse(unsee, 0, SEEDURATION, AFTER);
+      fuse(remove_true_seeing, 0, SEEDURATION, AFTER);
     look(FALSE);
   }
   msg("everything suddenly looks sharper");
   sight();
+}
+
+void
+remove_true_seeing()
+{
+  register THING *th;
+  for (th = mlist; th != NULL; th = next(th))
+    if (is_invisible(*th) && see_monst(th))
+      mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
+  player.t_flags &= ~CANSEE;
 }
 
 void
