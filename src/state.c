@@ -1043,7 +1043,7 @@ rs_write_daemons(FILE *savef, struct delayed_action *d_list, int count)
             func = 4;
         else if (d_list[i].d_func == swander)
             func = 5;
-        else if (d_list[i].d_func == nohaste)
+        else if (d_list[i].d_func == remove_hasted)
             func = 6;
         else if (d_list[i].d_func == remove_confusion)
             func = 7;
@@ -1101,7 +1101,7 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
                     break;
             case 5: d_list[i].d_func = swander;
                     break;
-            case 6: d_list[i].d_func = nohaste;
+            case 6: d_list[i].d_func = remove_hasted;
                     break;
             case 7: d_list[i].d_func = remove_confusion;
                     break;

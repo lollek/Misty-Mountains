@@ -149,7 +149,7 @@ become_hasted(bool permanent)
   {
     no_command += rnd(8);
     player.t_flags &= ~(ISRUN|ISHASTE);
-    extinguish(nohaste);
+    extinguish(remove_hasted);
     msg("you faint from exhaustion");
     return;
   }
@@ -157,9 +157,16 @@ become_hasted(bool permanent)
   {
     player.t_flags |= ISHASTE;
     if (!permanent)
-      fuse(nohaste, 0, HASTEDURATION, AFTER);
+      fuse(remove_hasted, 0, HASTEDURATION, AFTER);
     msg("you feel yourself moving much faster");
   }
+}
+
+void
+remove_hasted()
+{
+  player.t_flags &= ~ISHASTE;
+  msg("you feel yourself slowing down");
 }
 
 void become_blind(bool permanent)

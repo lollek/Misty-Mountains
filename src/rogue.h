@@ -694,7 +694,6 @@ void doctor();
 void end_line();
 void land();
 void leave(int);
-void nohaste();
 void print_disc(char);
 void quit(int);
 void rollwand();

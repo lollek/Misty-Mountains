@@ -77,17 +77,6 @@ rollwand()
 }
 
 /*
- * nohaste:
- *	End the hasting
- */
-void
-nohaste()
-{
-    player.t_flags &= ~ISHASTE;
-    msg("you feel yourself slowing down");
-}
-
-/*
  * stomach:
  *	Digest the hero's food
  */
