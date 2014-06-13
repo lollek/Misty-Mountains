@@ -14,6 +14,7 @@
 
 #include "rogue.h"
 #include "status_effects.h"
+#include "scrolls.h"
 
 /*
  * used to hold the new hero position

@@ -107,6 +107,8 @@ typedef enum INV_TYPE
 #define AMULET		','
 #define RING		'='
 #define STICK		'/'
+/* Combination or something of the above:
+ * TODO: Make sure they don't bug as chars are usually unsigned */
 #define CALLABLE	-1
 #define R_OR_S		-2
 
@@ -195,28 +197,6 @@ enum trap_t
   NTRAPS
 };
 
-/*
- * Scroll types
- */
-#define S_CONFUSE	0
-#define S_MAP		1
-#define S_HOLD		2
-#define S_SLEEP		3
-#define S_ARMOR		4
-#define S_ID_POTION	5
-#define S_ID_SCROLL	6
-#define S_ID_WEAPON	7
-#define S_ID_ARMOR	8
-#define S_ID_R_OR_S	9
-#define S_SCARE		10
-#define S_FDET		11
-#define S_TELEP		12
-#define S_ENCH		13
-#define S_CREATE	14
-#define S_REMOVE	15
-#define S_AGGR		16
-#define S_PROTECT	17
-#define MAXSCROLLS	18
 
 /*
  * Weapon types
@@ -608,7 +588,6 @@ void	put_str(void *str);
 void	put_things();
 void	putpass(coord *cp);
 char	randmonster(bool wander);
-void	read_scroll();
 void    relocate(THING *th, coord *new_loc);
 void	remove_mon(coord *mp, THING *tp, bool waskill);
 void	reset_last();
@@ -648,7 +627,6 @@ void	thunk(THING *weap, char *mname, bool noend);
 void	treas_room();
 void	turnref();
 void	u_level();
-void	uncurse(THING *obj);
 void	unlock_sc();
 void	vert(struct room *rp, int startx);
 void	wait_for(int ch);

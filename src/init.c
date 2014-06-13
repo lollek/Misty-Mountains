@@ -18,6 +18,7 @@
 #include "rogue.h"
 #include "potions.h"
 #include "status_effects.h"
+#include "scrolls.h"
 
 /* FIXME: I should customize this */
 extern char version[];

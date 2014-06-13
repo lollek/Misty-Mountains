@@ -14,6 +14,7 @@
 
 #include "rogue.h"
 #include "status_effects.h"
+#include "scrolls.h"
 
 /*
  * add_pack:

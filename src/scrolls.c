@@ -11,11 +11,29 @@
  */
 
 #include "rogue.h"
+#include "scrolls.h"
 
-/*
- * read_scroll:
- *	Read a scroll from the pack and do the appropriate thing
- */
+
+struct obj_info scr_info[MAXSCROLLS] = {
+    { "monster confusion",		 7, 140, NULL, FALSE },
+    { "magic mapping",			 4, 150, NULL, FALSE },
+    { "hold monster",			 2, 180, NULL, FALSE },
+    { "sleep",				 3,   5, NULL, FALSE },
+    { "enchant armor",			 7, 160, NULL, FALSE },
+    { "identify potion",		10,  80, NULL, FALSE },
+    { "identify scroll",		10,  80, NULL, FALSE },
+    { "identify weapon",		 6,  80, NULL, FALSE },
+    { "identify armor",		 	 7, 100, NULL, FALSE },
+    { "identify ring, wand or staff",	10, 115, NULL, FALSE },
+    { "scare monster",			 3, 200, NULL, FALSE },
+    { "food detection",			 2,  60, NULL, FALSE },
+    { "teleportation",			 5, 165, NULL, FALSE },
+    { "enchant weapon",			 8, 150, NULL, FALSE },
+    { "create monster",			 4,  75, NULL, FALSE },
+    { "remove curse",			 7, 105, NULL, FALSE },
+    { "aggravate monsters",		 3,  20, NULL, FALSE },
+    { "protect armor",			 2, 250, NULL, FALSE },
+};
 
 void
 read_scroll()
@@ -314,11 +332,6 @@ def:
     if (discardit)
 	discard(obj);
 }
-
-/*
- * uncurse:
- *	Uncurse an item
- */
 
 void
 uncurse(THING *obj)

@@ -34,6 +34,7 @@
 #include "rogue.h"
 #include "potions.h"
 #include "status_effects.h"
+#include "scrolls.h"
 
 /************************************************************************/
 /* Save State Code                                                      */

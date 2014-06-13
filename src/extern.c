@@ -45,7 +45,6 @@ char huh[MAXSTR];			/* The last message printed */
 char prbuf[2*MAXSTR];			/* buffer for sprintfs */
 char *r_stones[MAXRINGS];		/* Stone settings of the rings */
 char runch;				/* Direction player is running */
-char *s_names[MAXSCROLLS];		/* Names of the scrolls */
 char take;				/* Thing she is taking */
 char whoami[MAXSTR];			/* Name of player */
 char *ws_made[MAXSTICKS];		/* What sticks are made of */
@@ -238,26 +237,6 @@ struct obj_info ring_info[MAXRINGS] = {
     { "teleportation",		 5,  30, NULL, FALSE },
     { "stealth",		 7, 470, NULL, FALSE },
     { "maintain armor",		 5, 380, NULL, FALSE },
-};
-struct obj_info scr_info[MAXSCROLLS] = {
-    { "monster confusion",		 7, 140, NULL, FALSE },
-    { "magic mapping",			 4, 150, NULL, FALSE },
-    { "hold monster",			 2, 180, NULL, FALSE },
-    { "sleep",				 3,   5, NULL, FALSE },
-    { "enchant armor",			 7, 160, NULL, FALSE },
-    { "identify potion",		10,  80, NULL, FALSE },
-    { "identify scroll",		10,  80, NULL, FALSE },
-    { "identify weapon",		 6,  80, NULL, FALSE },
-    { "identify armor",		 	 7, 100, NULL, FALSE },
-    { "identify ring, wand or staff",	10, 115, NULL, FALSE },
-    { "scare monster",			 3, 200, NULL, FALSE },
-    { "food detection",			 2,  60, NULL, FALSE },
-    { "teleportation",			 5, 165, NULL, FALSE },
-    { "enchant weapon",			 8, 150, NULL, FALSE },
-    { "create monster",			 4,  75, NULL, FALSE },
-    { "remove curse",			 7, 105, NULL, FALSE },
-    { "aggravate monsters",		 3,  20, NULL, FALSE },
-    { "protect armor",			 2, 250, NULL, FALSE },
 };
 struct obj_info weap_info[MAXWEAPONS + 1] = {
     { "mace",				11,   8, NULL, FALSE },

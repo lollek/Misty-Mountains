@@ -17,6 +17,7 @@
 #include "rogue.h"
 #include "potions.h"
 #include "status_effects.h"
+#include "scrolls.h"
 
 static void set_order(int *order, int numthings);
 static char *nothing(char type);
@@ -406,7 +407,8 @@ print_disc(char type)
     struct obj_info *info = NULL;
     int i, maxnum = 0, num_found;
     static THING obj;
-    static int order[MAX4(MAXSCROLLS, NPOTIONS, MAXRINGS, MAXSTICKS)];
+    static int order[MAX4((unsigned)MAXSCROLLS, (unsigned)NPOTIONS,
+                          (unsigned)MAXRINGS,   (unsigned)MAXSTICKS)];
 
     switch (type)
     {
