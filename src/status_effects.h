@@ -1,6 +1,7 @@
 #ifndef _ROGUE14_STATUS_EFFECTS_H_
 #define _ROGUE14_STATUS_EFFECTS_H_
 
+#include "rogue.h" /* THING */
 #include <stdbool.h>
 
 /* Duration of effects */
@@ -9,15 +10,17 @@
 #define HASTEDURATION	rnd(4)+4
 #define SEEDURATION	spread(850)
 #define HEALTIME	spread(30)
+#define SLEEPTIME	spread(7)
 
 /* Status macros */
-#define is_hallucinating(thing) ((bool)(((thing).t_flags & ISHALU) != 0))
-#define is_blind(thing)         ((bool)(((thing).t_flags & ISBLIND) != 0))
-#define is_levitating(thing)    ((bool)(((thing).t_flags & ISLEVIT) != 0))
-#define is_confused(thing)      ((bool)(((thing).t_flags & ISHUH) != 0))
-#define is_invisible(thing)     ((bool)(((thing).t_flags & ISINVIS) != 0))
+inline bool is_hallucinating(THING thing);
+inline bool is_blind(THING thing);
+inline bool is_levitating(THING thing);
+inline bool is_confused(THING thing);
+inline bool is_invisible(THING thing);
 
 /* Functions */
+void fall_asleep();                         /* Take a unwilling powernap */
 void become_restored();                     /* Remove bad status effects */
 void become_poisoned();                     /* Add poisoned status effect */
 void become_confused(bool permanent);       /* Add confused status effect */

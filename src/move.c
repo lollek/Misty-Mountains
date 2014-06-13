@@ -301,9 +301,8 @@ be_trapped(coord *tc)
           when 10: msg("you pack turns %s!", rainbow[rnd(cNCOLORS)]);
         }
       when T_SLEEP:
-        no_command += SLEEPTIME;
-        player.t_flags &= ~ISRUN;
-        msg("a strange white mist envelops you and you fall asleep");
+        fall_asleep();
+        addmsg("a strange white mist envelops you and ");
       when T_ARROW:
         if (swing(pstats.s_lvl - 1, pstats.s_arm, 1))
         {

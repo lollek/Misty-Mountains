@@ -114,7 +114,6 @@ typedef enum INV_TYPE
 
 /* Various constants */
 #define BEARTIME	spread(3)
-#define SLEEPTIME	spread(5)
 #define WANDERTIME	spread(70)
 #define BEFORE		spread(1)
 #define AFTER		spread(2)

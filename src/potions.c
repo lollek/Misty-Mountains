@@ -163,13 +163,13 @@ quaff()
   return;
 }
 
-void
+inline void
 learn_potion(enum potion_t potion)
 {
   pot_info[potion].oi_know = TRUE;
 }
 
-bool
+inline bool
 knows_potion(enum potion_t potion)
 {
   return pot_info[potion].oi_know;

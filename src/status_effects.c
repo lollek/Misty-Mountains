@@ -2,6 +2,44 @@
 #include "status_effects.h"
 #include "rogue.h"
 
+inline bool
+is_hallucinating(THING thing)
+{
+  return (thing.t_flags & ISHALU) != false;
+}
+
+inline bool
+is_blind(THING thing)
+{
+  return (thing.t_flags & ISBLIND) != false;
+}
+
+inline bool
+is_levitating(THING thing)
+{
+  return (thing.t_flags & ISLEVIT) != false;
+}
+
+inline bool
+is_confused(THING thing)
+{
+  return (thing.t_flags & ISHUH) != false;
+}
+
+inline bool
+is_invisible(THING thing)
+{
+  return (thing.t_flags & ISINVIS) != false;
+}
+
+void
+fall_asleep()
+{
+  no_command += SLEEPTIME;
+  player.t_flags &= ~ISRUN;
+  msg("you fall asleep");
+}
+
 void
 become_restored()
 {
