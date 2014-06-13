@@ -13,6 +13,7 @@
 #include <ctype.h>
 
 #include "rogue.h"
+#include "status_effects.h"
 
 /*
  * used to hold the new hero position
@@ -105,7 +106,7 @@ over:
 	case HWALL:
 hit_bound:
 	    if (passgo && running && (proom->r_flags & ISGONE)
-		&& !on(player, ISBLIND))
+		&& !is_blind(player))
 	    {
 		bool	b1, b2;
 

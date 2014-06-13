@@ -148,7 +148,7 @@ become_hasted(bool permanent)
 
 void become_blind(bool permanent)
 {
-  if (on(player, ISBLIND))
+  if (is_blind(player))
     lengthen(sight, SEEDURATION);
   else
   {

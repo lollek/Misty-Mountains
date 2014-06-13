@@ -168,7 +168,7 @@ wake_monster(int y, int x)
 	tp->t_dest = &hero;
 	tp->t_flags |= ISRUN;
     }
-    if (ch == 'M' && !on(player, ISBLIND) && !is_hallucinating(player)
+    if (ch == 'M' && !is_blind(player) && !is_hallucinating(player)
 	&& !on(*tp, ISFOUND) && !on(*tp, ISCANC) && on(*tp, ISRUN))
     {
         rp = proom;

@@ -124,7 +124,7 @@ look(bool wakeup)
 	{
 	    if (x < 0 || x >= NUMCOLS)
 		continue;
-	    if (!on(player, ISBLIND))
+	    if (!is_blind(player))
 	    {
 		if (y == hero.y && x == hero.x)
 		    continue;
@@ -167,7 +167,7 @@ look(bool wakeup)
 			    ch = tp->t_disguise;
 		    }
 		}
-	    if (on(player, ISBLIND) && (y != hero.y || x != hero.x))
+	    if (is_blind(player) && (y != hero.y || x != hero.x))
 		continue;
 
 	    move(y, x);
@@ -262,7 +262,7 @@ erase_lamp(coord *pos, struct room *rp)
   int y, x;
 
   if (!(see_floor && (rp->r_flags & (ISGONE|ISDARK)) == ISDARK
-        && !on(player,ISBLIND)))
+        && !is_blind(player)))
     return;
 
   for (x = pos->x -1; x <= pos->x +1; x++)
@@ -282,7 +282,7 @@ erase_lamp(coord *pos, struct room *rp)
 bool
 show_floor()
 {
-  if ((proom->r_flags & (ISGONE|ISDARK)) == ISDARK && !on(player, ISBLIND))
+  if ((proom->r_flags & (ISGONE|ISDARK)) == ISDARK && !is_blind(player))
     return see_floor;
   else
     return TRUE;

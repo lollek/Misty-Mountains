@@ -109,7 +109,7 @@ unsee()
 void
 sight()
 {
-    if (on(player, ISBLIND))
+    if (is_blind(player))
     {
 	extinguish(sight);
 	player.t_flags &= ~ISBLIND;
@@ -202,7 +202,7 @@ come_down()
     kill_daemon(visuals);
     player.t_flags &= ~ISHALU;
 
-    if (on(player, ISBLIND))
+    if (is_blind(player))
 	return;
 
     /*

@@ -13,6 +13,7 @@
 #include <ctype.h>
 
 #include "rogue.h"
+#include "status_effects.h"
 
 typedef struct spot {		/* position matrix for maze positions */
 	int	nexits;
@@ -376,7 +377,7 @@ enter_room(coord *cp)
     struct room *rp = proom = roomin(cp);
 
     door_open(rp);
-    if (!(rp->r_flags & ISDARK) && !on(player, ISBLIND))
+    if (!(rp->r_flags & ISDARK) && !is_blind(player))
     {
 	int y, x;
 	for (y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++)
@@ -424,7 +425,7 @@ leave_room(coord *cp)
 
     if (rp->r_flags & ISGONE)
 	floor = PASSAGE;
-    else if (!(rp->r_flags & ISDARK) || on(player, ISBLIND))
+    else if (!(rp->r_flags & ISDARK) || is_blind(player))
 	floor = FLOOR;
     else
 	floor = SHADOW;

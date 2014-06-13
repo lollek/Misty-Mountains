@@ -11,7 +11,9 @@
  */
 
 #include <stdlib.h>
+
 #include "rogue.h"
+#include "status_effects.h"
 
 #define DRAGONSHOT  5	/* one chance in DRAGONSHOT that a dragon will flame */
 
@@ -231,7 +233,7 @@ set_oldch(THING *tp, coord *cp)
 
     sch = tp->t_oldch;
     tp->t_oldch = mvinch(cp->y,cp->x) & A_CHARTEXT;
-    if (!on(player, ISBLIND))
+    if (!is_blind(player))
     {
 	    if ((sch == FLOOR || tp->t_oldch == FLOOR) &&
 		(tp->t_room->r_flags & ISDARK))
@@ -250,7 +252,7 @@ see_monst(THING *mp)
 {
     int y, x;
 
-    if (on(player, ISBLIND))
+    if (is_blind(player))
 	return FALSE;
     if (on(*mp, ISINVIS) && !on(player, CANSEE))
 	return FALSE;
@@ -453,7 +455,7 @@ cansee(int y, int x)
     register struct room *rer;
     static coord tp;
 
-    if (on(player, ISBLIND))
+    if (is_blind(player))
 	return FALSE;
     if (dist(y, x, hero.y, hero.x) < LAMPDIST)
     {

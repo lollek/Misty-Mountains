@@ -197,7 +197,7 @@ over:
 		when CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
 		case CTRL('Y'): case CTRL('U'): case CTRL('B'): case CTRL('N'):
 		{
-		    if (!on(player, ISBLIND))
+		    if (!is_blind(player))
 		    {
 			door_stop = TRUE;
 			firstmove = TRUE;
@@ -468,7 +468,7 @@ search()
     ey = hero.y + 1;
     ex = hero.x + 1;
     probinc = (is_hallucinating(player) ? 3 : 0);
-    probinc += (on(player, ISBLIND) ? 2 : 0);
+    probinc += (is_blind(player) ? 2 : 0);
     found = FALSE;
     for (y = hero.y - 1; y <= ey; y++) 
 	for (x = hero.x - 1; x <= ex; x++)

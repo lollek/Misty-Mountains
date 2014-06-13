@@ -82,7 +82,7 @@ fight(coord *mp, THING *weap, bool thrown)
      * Let him know it was really a xeroc (if it was one).
      */
     ch = '\0';
-    if (tp->t_type == 'X' && tp->t_disguise != 'X' && !on(player, ISBLIND))
+    if (tp->t_type == 'X' && tp->t_disguise != 'X' && !is_blind(player))
     {
 	tp->t_disguise = 'X';
 	if (is_hallucinating(player)) {
@@ -115,7 +115,7 @@ fight(coord *mp, THING *weap, bool thrown)
 	}
 	if (tp->t_stats.s_hpt <= 0)
 	    killed(tp, TRUE);
-	else if (did_hit && !on(player, ISBLIND))
+	else if (did_hit && !is_blind(player))
 	    msg("%s appears confused", mname);
 	did_hit = TRUE;
     }
@@ -149,7 +149,7 @@ attack(THING *mp)
 	to_death = FALSE;
 	kamikaze = FALSE;
     }
-    if (mp->t_type == 'X' && mp->t_disguise != 'X' && !on(player, ISBLIND))
+    if (mp->t_type == 'X' && mp->t_disguise != 'X' && !is_blind(player))
     {
 	mp->t_disguise = 'X';
 	if (is_hallucinating(player))
