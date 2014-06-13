@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include "rogue.h"
+#include "status_effects.h"
 
 /*
  * add_pack:
@@ -293,7 +294,7 @@ pick_up(char ch)
 {
     THING *obj;
 
-    if (on(player, ISLEVIT))
+    if (is_levitating(player))
 	return;
 
     obj = find_obj(hero.y, hero.x);

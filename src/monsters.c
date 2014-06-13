@@ -163,7 +163,7 @@ wake_monster(int y, int x)
      * Every time he sees mean monster, it might start chasing him
      */
     if (!on(*tp, ISRUN) && rnd(3) != 0 && on(*tp, ISMEAN) && !on(*tp, ISHELD)
-	&& !ISWEARING(R_STEALTH) && !on(player, ISLEVIT))
+	&& !ISWEARING(R_STEALTH) && !is_levitating(player))
     {
 	tp->t_dest = &hero;
 	tp->t_flags |= ISRUN;

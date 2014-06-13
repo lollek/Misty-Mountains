@@ -88,7 +88,7 @@ over:
     ch = winat(nh.y, nh.x);
     if (!(fl & F_REAL) && ch == FLOOR)
     {
-	if (!on(player, ISLEVIT))
+	if (!is_levitating(player))
 	{
 	    chat(nh.y, nh.x) = ch = TRAP;
 	    flat(nh.y, nh.x) |= F_REAL;
@@ -262,7 +262,7 @@ be_trapped(coord *tc)
 
     /* anything that's not a door or teleport */
     /* FIXME: Wow, this is just unfair: */
-  if (on(player, ISLEVIT))
+  if (is_levitating(player))
     return T_RUST;
   else
   {

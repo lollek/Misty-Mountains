@@ -11,6 +11,7 @@
 /* Status macros */
 #define is_hallucinating(thing) ((bool)(((thing).t_flags & ISHALU) != 0))
 #define is_blind(thing)         ((bool)(((thing).t_flags & ISBLIND) != 0))
+#define is_levitating(thing)    ((bool)(((thing).t_flags & ISLEVIT) != 0))
 
 /* Functions */
 void become_restored();                     /* Remove bad status effects */

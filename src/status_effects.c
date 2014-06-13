@@ -164,7 +164,7 @@ void become_blind(bool permanent)
 
 void become_levitating(bool permanent)
 {
-  if (on(player, ISLEVIT))
+  if (is_levitating(player))
     lengthen(land, HEALTIME);
   else
   {

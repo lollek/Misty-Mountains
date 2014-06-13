@@ -691,7 +691,7 @@ u_level()
 bool
 levit_check()
 {
-    if (!on(player, ISLEVIT))
+    if (!is_levitating(player))
 	return FALSE;
     msg("You can't.  You're floating off the ground!");
     return TRUE;
