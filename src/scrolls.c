@@ -150,7 +150,7 @@ read_scroll()
       /* Identify, let him figure something out */
       learn_scroll(obj->o_which);
       msg("this scroll is an %s scroll", scr_info[obj->o_which].oi_name);
-      whatis(TRUE, id_type[obj->o_which]);
+      whatis(true, id_type[obj->o_which]);
     }
     when S_MAP:
       /* Scroll of magic mapping. */
@@ -229,7 +229,7 @@ def:
       for (obj = lvl_obj; obj != NULL; obj = next(obj))
         if (obj->o_type == FOOD)
         {
-          ch = TRUE;
+          ch = true;
           wmove(hw, obj->o_pos.y, obj->o_pos.x);
           waddcch(hw, FOOD);
         }
@@ -294,7 +294,7 @@ def:
       }
   }
   obj = orig_obj;
-  look(TRUE);	/* put the result of the scroll on the screen */
+  look(true);	/* put the result of the scroll on the screen */
   status();
 
   call_it(&scr_info[obj->o_which]);
@@ -313,7 +313,7 @@ uncurse(THING *obj)
 inline void
 learn_scroll(enum scroll_t scroll)
 {
-  scr_info[scroll].oi_know = TRUE;
+  scr_info[scroll].oi_know = true;
 }
 
 inline bool

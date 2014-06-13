@@ -58,7 +58,7 @@ do_passages()
      */
     roomcount = 1;
     r1 = &rdes[rnd(MAXROOMS)];
-    r1->ingraph = TRUE;
+    r1->ingraph = true;
     do
     {
 	/*
@@ -84,12 +84,12 @@ do_passages()
 	 */
 	else
 	{
-	    r2->ingraph = TRUE;
+	    r2->ingraph = true;
 	    i = (int)(r1 - rdes);
 	    j = (int)(r2 - rdes);
 	    conn(i, j);
-	    r1->isconn[j] = TRUE;
-	    r2->isconn[i] = TRUE;
+	    r1->isconn[j] = true;
+	    r2->isconn[i] = true;
 	    roomcount++;
 	}
     } while (roomcount < MAXROOMS);
@@ -117,8 +117,8 @@ do_passages()
 	    i = (int)(r1 - rdes);
 	    j = (int)(r2 - rdes);
 	    conn(i, j);
-	    r1->isconn[j] = TRUE;
-	    r2->isconn[i] = TRUE;
+	    r1->isconn[j] = true;
+	    r2->isconn[i] = true;
 	}
     }
     passnum();

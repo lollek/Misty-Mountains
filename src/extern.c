@@ -20,15 +20,15 @@ bool amulet = false;			/* He found the amulet */
 bool door_stop = false;			/* Stop running when we pass a door */
 bool firstmove = false;			/* First move after setting door_stop */
 bool has_hit = false;			/* Has a "hit" message pending in msg */
-bool inv_describe = TRUE;		/* Say which way items are being used */
+bool inv_describe = true;		/* Say which way items are being used */
 bool kamikaze = false;			/* to_death really to DEATH */
 bool lower_msg = false;			/* Messages should start w/lower case */
 bool move_on = false;			/* Next move shouldn't pick up items */
 bool msg_esc = false;			/* Check for ESC from msg's --More-- */
-bool playing = TRUE;			/* True until he quits */
+bool playing = true;			/* True until he quits */
 bool q_comm = false;			/* Are we executing a 'Q' command? */
 bool running = false;			/* True if player is running */
-bool save_msg = TRUE;			/* Remember last msg */
+bool save_msg = true;			/* Remember last msg */
 bool stat_msg = false;			/* Should status() print as a msg() */
 bool to_death = false;			/* Fighting is to the death! */
 int wizard = false;			/* True if allows wizard commands */
@@ -269,16 +269,16 @@ struct obj_info ws_info[MAXSTICKS] = {
 };
 
 struct h_list helpstr[] = {
-    {'?',	"	prints help",				TRUE},
-    {'/',	"	identify object",			TRUE},
-    {'h',	"	left",					TRUE},
-    {'j',	"	down",					TRUE},
-    {'k',	"	up",					TRUE},
-    {'l',	"	right",					TRUE},
-    {'y',	"	up & left",				TRUE},
-    {'u',	"	up & right",				TRUE},
-    {'b',	"	down & left",				TRUE},
-    {'n',	"	down & right",				TRUE},
+    {'?',	"	prints help",				true},
+    {'/',	"	identify object",			true},
+    {'h',	"	left",					true},
+    {'j',	"	down",					true},
+    {'k',	"	up",					true},
+    {'l',	"	right",					true},
+    {'y',	"	up & left",				true},
+    {'u',	"	up & right",				true},
+    {'b',	"	down & left",				true},
+    {'n',	"	down & right",				true},
     {'H',	"	run left",				false},
     {'J',	"	run down",				false},
     {'K',	"	run up",				false},
@@ -295,43 +295,43 @@ struct h_list helpstr[] = {
     {CTRL('U'),	"	run up & right until adjacent",		false},
     {CTRL('B'),	"	run down & left until adjacent",	false},
     {CTRL('N'),	"	run down & right until adjacent",	false},
-    {'\0',	"	<SHIFT><dir>: run that way",		TRUE},
-    {'\0',	"	<CTRL><dir>: run till adjacent",	TRUE},
-    {'f',	"<dir>	fight till death or near death",	TRUE},
-    {'t',	"<dir>	throw something",			TRUE},
-    {'m',	"<dir>	move onto without picking up",		TRUE},
-    {'z',	"<dir>	zap a wand in a direction",		TRUE},
-    {'^',	"<dir>	identify trap type",			TRUE},
-    {'s',	"	search for trap/secret door",		TRUE},
-    {'>',	"	go down a staircase",			TRUE},
-    {'<',	"	go up a staircase",			TRUE},
-    {'.',	"	rest for a turn",			TRUE},
-    {',',	"	pick something up",			TRUE},
-    {'i',	"	inventory",				TRUE},
-    {'I',	"	inventory single item",			TRUE},
-    {'q',	"	quaff potion",				TRUE},
-    {'r',	"	read scroll",				TRUE},
-    {'e',	"	eat food",				TRUE},
-    {'w',	"	wield a weapon",			TRUE},
-    {'W',	"	wear armor",				TRUE},
-    {'T',	"	take armor off",			TRUE},
-    {'P',	"	put on ring",				TRUE},
-    {'R',	"	remove ring",				TRUE},
-    {'d',	"	drop object",				TRUE},
-    {'c',	"	call object",				TRUE},
-    {'a',	"	repeat last command",			TRUE},
-    {')',	"	print current weapon",			TRUE},
-    {']',	"	print current armor",			TRUE},
-    {'=',	"	print current rings",			TRUE},
-    {'@',	"	print current stats",			TRUE},
-    {'D',	"	recall what's been discovered",		TRUE},
-    {'o',	"	examine/set options",			TRUE},
-    {CTRL('R'),	"	redraw screen",				TRUE},
-    {CTRL('P'),	"	repeat last message",			TRUE},
-    {ESCAPE,	"	cancel command",			TRUE},
-    {'S',	"	save game",				TRUE},
-    {'Q',	"	quit",					TRUE},
-    {'!',	"	shell escape",				TRUE},
-    {'F',	"<dir>	fight till either of you dies",		TRUE},
+    {'\0',	"	<SHIFT><dir>: run that way",		true},
+    {'\0',	"	<CTRL><dir>: run till adjacent",	true},
+    {'f',	"<dir>	fight till death or near death",	true},
+    {'t',	"<dir>	throw something",			true},
+    {'m',	"<dir>	move onto without picking up",		true},
+    {'z',	"<dir>	zap a wand in a direction",		true},
+    {'^',	"<dir>	identify trap type",			true},
+    {'s',	"	search for trap/secret door",		true},
+    {'>',	"	go down a staircase",			true},
+    {'<',	"	go up a staircase",			true},
+    {'.',	"	rest for a turn",			true},
+    {',',	"	pick something up",			true},
+    {'i',	"	inventory",				true},
+    {'I',	"	inventory single item",			true},
+    {'q',	"	quaff potion",				true},
+    {'r',	"	read scroll",				true},
+    {'e',	"	eat food",				true},
+    {'w',	"	wield a weapon",			true},
+    {'W',	"	wear armor",				true},
+    {'T',	"	take armor off",			true},
+    {'P',	"	put on ring",				true},
+    {'R',	"	remove ring",				true},
+    {'d',	"	drop object",				true},
+    {'c',	"	call object",				true},
+    {'a',	"	repeat last command",			true},
+    {')',	"	print current weapon",			true},
+    {']',	"	print current armor",			true},
+    {'=',	"	print current rings",			true},
+    {'@',	"	print current stats",			true},
+    {'D',	"	recall what's been discovered",		true},
+    {'o',	"	examine/set options",			true},
+    {CTRL('R'),	"	redraw screen",				true},
+    {CTRL('P'),	"	repeat last message",			true},
+    {ESCAPE,	"	cancel command",			true},
+    {'S',	"	save game",				true},
+    {'Q',	"	quit",					true},
+    {'!',	"	shell escape",				true},
+    {'F',	"<dir>	fight till either of you dies",		true},
     { 0 ,		NULL,					false}
 };

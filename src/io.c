@@ -265,6 +265,6 @@ show_win(char *message)
     wmove(win, hero.y, hero.x);
     wrefresh(win);
     wait_for(KEY_SPACE);
-    clearok(curscr, TRUE);
+    clearok(curscr, true);
     touchwin(stdscr);
 }

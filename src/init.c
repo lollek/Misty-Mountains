@@ -42,8 +42,8 @@ init_new_game()
   /* Init Graphics */
   if (init_graphics() != 0)
     return false;
-  idlok(stdscr, TRUE);
-  idlok(hw, TRUE);
+  idlok(stdscr, true);
+  idlok(hw, true);
 
   /* Init stuff */
   init_probs();                         /* Set up prob tables for objects */
@@ -61,7 +61,7 @@ init_new_game()
   fuse(swander, 0, WANDERTIME, AFTER);
   start_daemon(stomach, 0, AFTER);
 
-  return TRUE;
+  return true;
 }
 
 /** init_old_game:
@@ -126,7 +126,7 @@ init_old_game()
         return false;
     }
     mpos = 0;
-    clearok(stdscr,TRUE);
+    clearok(stdscr,true);
 
     if (pstats.s_hpt <= 0)
     {
@@ -138,9 +138,9 @@ init_old_game()
     /* parse environment declaration of options */
     parse_opts(getenv("ROGUEOPTS"));
 
-    clearok(curscr, TRUE);
+    clearok(curscr, true);
     msg("file name: %s", file_name);
-    return TRUE;
+    return true;
 }
 
 /*
@@ -204,7 +204,7 @@ init_player()
     obj = new_item();
     obj->o_type = FOOD;
     obj->o_count = 1;
-    add_pack(obj, TRUE);
+    add_pack(obj, true);
     /*
      * And his suit of armor
      */
@@ -215,7 +215,7 @@ init_player()
     obj->o_flags |= ISKNOW;
     obj->o_count = 1;
     cur_armor = obj;
-    add_pack(obj, TRUE);
+    add_pack(obj, true);
     /*
      * Give him his weaponry.  First a mace.
      */
@@ -224,7 +224,7 @@ init_player()
     obj->o_hplus = 1;
     obj->o_dplus = 1;
     obj->o_flags |= ISKNOW;
-    add_pack(obj, TRUE);
+    add_pack(obj, true);
     cur_weapon = obj;
     /*
      * Now a +1 bow
@@ -233,7 +233,7 @@ init_player()
     init_weapon(obj, BOW);
     obj->o_hplus = 1;
     obj->o_flags |= ISKNOW;
-    add_pack(obj, TRUE);
+    add_pack(obj, true);
     /*
      * Now some arrows
      */
@@ -241,7 +241,7 @@ init_player()
     init_weapon(obj, ARROW);
     obj->o_count = rnd(15) + 25;
     obj->o_flags |= ISKNOW;
-    add_pack(obj, TRUE);
+    add_pack(obj, true);
 }
 
 /*
@@ -419,7 +419,7 @@ init_colors()
 	do
 	    j = rnd(NCOLORS);
 	until (!used[j]);
-	used[j] = TRUE;
+	used[j] = true;
 	p_colors[i] = rainbow[j];
     }
 }
@@ -476,7 +476,7 @@ init_stones()
 	do
 	    j = rnd(NSTONES);
 	until (!used[j]);
-	used[j] = TRUE;
+	used[j] = true;
 	r_stones[i] = stones[j].st_name;
 	ring_info[i].oi_worth += stones[j].st_value;
     }
@@ -507,7 +507,7 @@ init_materials()
 		{
 		    ws_type[i] = "wand";
 		    str = metal[j];
-		    metused[j] = TRUE;
+		    metused[j] = true;
 		    break;
 		}
 	    }
@@ -518,7 +518,7 @@ init_materials()
 		{
 		    ws_type[i] = "staff";
 		    str = wood[j];
-		    used[j] = TRUE;
+		    used[j] = true;
 		    break;
 		}
 	    }

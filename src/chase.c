@@ -71,7 +71,7 @@ move_monst(THING *tp)
     if (on(*tp, ISHASTE))
 	if (do_chase(tp) == -1)
             return(-1);
-    tp->t_turn ^= TRUE;
+    tp->t_turn ^= true;
     return(0);
 }
 
@@ -115,7 +115,7 @@ do_chase(THING *th)
     register coord *cp;
     register struct room *rer, *ree;	/* room of chaser, room of chasee */
     register int mindist = 32767, curdist;
-    register bool stoprun = false;	/* TRUE means we are there */
+    register bool stoprun = false;	/* true means we are there */
     register bool door;
     register THING *obj;
     static coord this;			/* Temporary destination for chaser */
@@ -206,7 +206,7 @@ over:
 		    break;
 		}
 	    if (th->t_type != 'F')
-		stoprun = TRUE;
+		stoprun = true;
 	}
     }
     else
@@ -246,7 +246,7 @@ set_oldch(THING *tp, coord *cp)
 
 /*
  * see_monst:
- *	Return TRUE if the hero can see the monster
+ *	Return true if the hero can see the monster
  */
 bool
 see_monst(THING *mp)
@@ -264,7 +264,7 @@ see_monst(THING *mp)
 	if (y != hero.y && x != hero.x &&
 	    !step_ok(chat(y, hero.x)) && !step_ok(chat(hero.y, x)))
 		return false;
-	return TRUE;
+	return true;
     }
     if (mp->t_room != proom)
 	return false;
@@ -293,7 +293,7 @@ runto(coord *runner)
 /*
  * chase:
  *	Find the spot for the chaser(er) to move closer to the
- *	chasee(ee).  Returns TRUE if we want to keep on chasing later
+ *	chasee(ee).  Returns true if we want to keep on chasing later
  *	false if we reach the goal.
  */
 bool
@@ -442,7 +442,7 @@ diag_ok(coord *sp, coord *ep)
     if (ep->x < 0 || ep->x >= NUMCOLS || ep->y <= 0 || ep->y >= NUMLINES - 1)
 	return false;
     if (ep->x == sp->x || ep->y == sp->y)
-	return TRUE;
+	return true;
     return (bool)(step_ok(chat(ep->y, sp->x)) && step_ok(chat(sp->y, ep->x)));
 }
 
@@ -464,7 +464,7 @@ cansee(int y, int x)
 	    if (y != hero.y && x != hero.x &&
 		!step_ok(chat(y, hero.x)) && !step_ok(chat(hero.y, x)))
 		    return false;
-	return TRUE;
+	return true;
     }
     /*
      * We can only see if the hero in the same room as

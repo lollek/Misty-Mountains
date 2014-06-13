@@ -96,7 +96,7 @@ look(bool wakeup)
 
     if (done)
 	return;
-    done = TRUE;
+    done = true;
 # endif /* DEBUG */
     passcount = 0;
     rp = proom;
@@ -285,7 +285,7 @@ show_floor()
   if ((proom->r_flags & (ISGONE|ISDARK)) == ISDARK && !is_blind(player))
     return see_floor;
   else
-    return TRUE;
+    return true;
 }
 
 /** find_obj:
@@ -443,7 +443,7 @@ is_current(THING *obj)
     if (!terse)
       addmsg("That's already ");
     msg("in use");
-    return TRUE;
+    return true;
   }
   return false;
 }
@@ -472,7 +472,7 @@ get_dir()
 
     do
     {
-      gotit = TRUE;
+      gotit = true;
       switch (dir_ch = readchar())
       {
         case 'h': case'H': delta.y =  0; delta.x = -1;
@@ -506,7 +506,7 @@ get_dir()
     } while (delta.y == 0 && delta.x == 0);
 
   mpos = 0;
-  return TRUE;
+  return true;
 }
 
 /** sign:
@@ -595,7 +595,7 @@ is_magic(THING *obj)
 	case STICK:
 	case RING:
 	case AMULET:
-	    return TRUE;
+	    return true;
     }
     return false;
 }
@@ -607,19 +607,19 @@ seen_stairs()
 
     move(stairs.y, stairs.x);
     if (inch() == STAIRS)		/* it's on the map */
-	return TRUE;
+	return true;
     if (same_coords(hero, stairs))	/* It's under him */
-	return TRUE;
+	return true;
 
     /* if a monster is on the stairs, this gets hairy */
     if ((tp = moat(stairs.y, stairs.x)) != NULL)
     {
 	if (see_monst(tp) && on(*tp, ISRUN))	/* if it's visible and awake */
-	    return TRUE;			/* it must have moved there */
+	    return true;			/* it must have moved there */
 
 	if (on(player, SEEMONST)		/* if she can detect monster */
 	    && tp->t_oldch == STAIRS)		/* and there once were stairs */
-		return TRUE;			/* it must have moved there */
+		return true;			/* it must have moved there */
     }
     return false;
 }

@@ -106,7 +106,7 @@ option()
     waddstr(hw, "--Press space to continue--");
     wrefresh(hw);
     wait_for(KEY_SPACE);
-    clearok(curscr, TRUE);
+    clearok(curscr, true);
     touchwin(stdscr);
     after = false;
 }
@@ -166,7 +166,7 @@ get_bool(void *vp, WINDOW *win)
     int oy, ox;
     bool op_bad;
 
-    op_bad = TRUE;
+    op_bad = true;
     getyx(win, oy, ox);
     waddstr(win, *bp ? "True" : "False");
     while (op_bad)	
@@ -177,7 +177,7 @@ get_bool(void *vp, WINDOW *win)
 	{
 	    case 't':
 	    case 'T':
-		*bp = TRUE;
+		*bp = true;
 		op_bad = false;
 		break;
 	    case 'f':
@@ -222,7 +222,7 @@ get_sf(void *vp, WINDOW *win)
     if (was_sf != see_floor)
     {
 	if (!see_floor) {
-	    see_floor = TRUE;
+	    see_floor = true;
 	    erase_lamp(&hero, proom);
 	    see_floor = false;
 	}
@@ -320,7 +320,7 @@ get_inv_t(void *vp, WINDOW *win)
     int oy, ox;
     bool op_bad;
 
-    op_bad = TRUE;
+    op_bad = true;
     getyx(win, oy, ox);
     waddstr(win, inv_t_name[*ip]);
     while (op_bad)	
@@ -414,7 +414,7 @@ parse_opts(char *str)
 	    if (!strncmp(str, op->o_name, len))
 	    {
 		if (op->o_putfunc == put_bool)	/* if option is a boolean */
-		    *(bool *)op->o_opt = TRUE;	/* NOSTRICT */
+		    *(bool *)op->o_opt = true;	/* NOSTRICT */
 		else				/* string option */
 		{
 		    /*

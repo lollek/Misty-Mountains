@@ -30,7 +30,7 @@ coord nh;
 void
 do_run(char ch)
 {
-    running = TRUE;
+    running = true;
     after = false;
     runch = ch;
 }
@@ -180,7 +180,7 @@ hit_bound:
 		be_trapped(&hero);
 	    goto move_stuff;
 	case STAIRS:
-	    seenstairs = TRUE;
+	    seenstairs = true;
 	    /* FALLTHROUGH */
 	default:
 	    running = false;
@@ -228,7 +228,7 @@ turnref()
     {
 	if (jump)
 	{
-	    leaveok(stdscr, TRUE);
+	    leaveok(stdscr, true);
 	    refresh();
 	    leaveok(stdscr, false);
 	}

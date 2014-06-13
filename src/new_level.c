@@ -91,7 +91,7 @@ new_level()
     for (tp = mlist; tp != NULL; tp = next(tp))
 	tp->t_room = roomin(&tp->t_pos);
 
-    find_floor((struct room *) NULL, &hero, false, TRUE);
+    find_floor((struct room *) NULL, &hero, false, true);
     enter_room(&hero);
     mvaddcch(hero.y, hero.x, PLAYER);
     if (on(player, SEEMONST))
@@ -220,7 +220,7 @@ treas_room()
     while (nm--)
     {
 	spots = 0;
-	if (find_floor(rp, &mp, MAXTRIES, TRUE))
+	if (find_floor(rp, &mp, MAXTRIES, true))
 	{
 	    tp = new_item();
 	    new_monster(tp, randmonster(false), &mp);

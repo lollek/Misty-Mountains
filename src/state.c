@@ -192,7 +192,7 @@ rs_read_chars(FILE *inf, char *i, int count)
     rs_read_int(inf, &value);
     
     if (value != count)
-        format_error = TRUE;
+        format_error = true;
 
     rs_read(inf, i, count);
     
@@ -227,7 +227,7 @@ rs_read_ints(FILE *inf, int *i, int count)
     rs_read_int(inf,&value);
 
     if (value != count)
-        format_error = TRUE;
+        format_error = true;
 
     for(n = 0; n < count; n++)
         if (rs_read_int(inf, &i[n]) != 0)
@@ -292,7 +292,7 @@ rs_read_booleans(FILE *inf, bool *i, int count)
     rs_read_int(inf,&value);
 
     if (value != count)
-        format_error = TRUE;
+        format_error = true;
 
     for(n = 0; n < count; n++)
         if (rs_read_boolean(inf, &i[n]) != 0)
@@ -374,7 +374,7 @@ rs_read_shorts(FILE *inf, short *i, int count)
     rs_read_int(inf,&value);
 
     if (value != count)
-        format_error = TRUE;
+        format_error = true;
 
     for(n = 0; n < value; n++)
         if (rs_read_short(inf, &i[n]) != 0)
@@ -534,7 +534,7 @@ rs_read_string(FILE *inf, char *s, int max)
     rs_read_int(inf, &len);
 
     if (len > max)
-        format_error = TRUE;
+        format_error = true;
 
     rs_read_chars(inf, s, len);
     
@@ -559,7 +559,7 @@ rs_read_new_string(FILE *inf, char **s)
         buf = malloc(len);
 
         if (buf == NULL)            
-            read_error = TRUE;
+            read_error = true;
     }
 
     rs_read_chars(inf, buf, len);
@@ -598,7 +598,7 @@ rs_read_strings(FILE *inf, char **s, int count, int max)
     rs_read_int(inf, &value);
 
     if (value != count)
-        format_error = TRUE;
+        format_error = true;
 
     for(n = 0; n < count; n++)
         if (rs_read_string(inf, s[n], max) != 0)
@@ -619,7 +619,7 @@ rs_read_new_strings(FILE *inf, char **s, int count)
     rs_read_int(inf, &value);
 
     if (value != count)
-        format_error = TRUE;
+        format_error = true;
 
     for(n = 0; n < count; n++)
         if (rs_read_new_string(inf, &s[n]) != 0)
@@ -654,7 +654,7 @@ rs_read_string_index(FILE *inf, char *master[], int maxindex, char **str)
     rs_read_int(inf, &i);
 
     if (i > maxindex)
-        format_error = TRUE;
+        format_error = true;
     else if (i >= 0)
         *str = master[i];
     else
@@ -875,7 +875,7 @@ rs_read_stone_index(FILE *inf, STONE master[], int maxindex, char **str)
     rs_read_int(inf,&i);
 
     if (i > maxindex)
-        format_error = TRUE;
+        format_error = true;
     else if (i >= 0)
         *str = master[i].st_name;
     else
@@ -1080,7 +1080,7 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
     rs_read_int(inf, &value);
 
     if (value > count)
-        format_error = TRUE;
+        format_error = true;
 
     for(i=0; i < count; i++)
     {
@@ -1162,7 +1162,7 @@ rs_read_obj_info(FILE *inf, struct obj_info *mi, int count)
     rs_read_int(inf, &value);
 
     if (value > count)
-        format_error = TRUE;
+        format_error = true;
 
     for(n = 0; n < value; n++)
     {
@@ -1259,7 +1259,7 @@ rs_read_rooms(FILE *inf, struct room *r, int count)
     rs_read_int(inf,&value);
 
     if (value > count)
-        format_error = TRUE;
+        format_error = true;
 
     for(n = 0; n < value; n++)
         rs_read_room(inf,&r[n]);
@@ -1329,7 +1329,7 @@ rs_read_monsters(FILE *inf, struct monster *m, int count)
     rs_read_int(inf, &value);
 
     if (value != count)
-        format_error = TRUE;
+        format_error = true;
 
     for(n = 0; n < count; n++)
         rs_read_stats(inf, &m[n].m_stats);

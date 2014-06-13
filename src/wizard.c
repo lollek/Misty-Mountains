@@ -86,7 +86,7 @@ set_know(THING *obj, struct obj_info *info)
 {
     char **guess;
 
-    info[obj->o_which].oi_know = TRUE;
+    info[obj->o_which].oi_know = true;
     obj->o_flags |= ISKNOW;
     guess = &info[obj->o_which].oi_guess;
     if (*guess)
@@ -204,7 +204,7 @@ teleport()
     static coord c;
 
     mvaddcch(hero.y, hero.x, floor_at());
-    find_floor((struct room *) NULL, &c, false, TRUE);
+    find_floor((struct room *) NULL, &c, false, true);
     if (roomin(&c) != proom)
     {
 	leave_room(&hero);
@@ -214,7 +214,7 @@ teleport()
     else
     {
 	hero = c;
-	look(TRUE);
+	look(true);
     }
     mvaddcch(hero.y, hero.x, PLAYER);
     /*

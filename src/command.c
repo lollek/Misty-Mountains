@@ -54,7 +54,7 @@ command()
 	if (on(player, ISSLOW|ISGREED|ISINVIS|ISREGEN|ISTARGET))
 	    exit(1);
 
-	look(TRUE);
+	look(true);
 	if (!running)
 	    door_stop = false;
 	status();
@@ -63,12 +63,12 @@ command()
 	if (!((running || count) && jump))
 	    refresh();			/* Draw screen */
 	take = 0;
-	after = TRUE;
+	after = true;
 	/*
 	 * Read command or continue run
 	 */
 	if (wizard)
-	    noscore = TRUE;
+	    noscore = true;
 	if (!no_command)
 	{
 	    if (running || to_death)
@@ -102,7 +102,7 @@ command()
 	    if (isdigit(ch))
 	    {
 		count = 0;
-		newcount = TRUE;
+		newcount = true;
 		while (isdigit(ch))
 		{
 		    count = count * 10 + (ch - '0');
@@ -200,8 +200,8 @@ over:
 		{
 		    if (!is_blind(player))
 		    {
-			door_stop = TRUE;
-			firstmove = TRUE;
+			door_stop = true;
+			firstmove = true;
 		    }
 		    if (count && !newcount)
 			ch = direction;
@@ -213,7 +213,7 @@ over:
 		    goto over;
 		}
 		when 'F':
-		    kamikaze = TRUE;
+		    kamikaze = true;
 		    /* FALLTHROUGH */
 		case 'f':
 		    if (!get_dir())
@@ -233,7 +233,7 @@ over:
 		    }
 		    else if (diag_ok(&hero, &delta))
 		    {
-			to_death = TRUE;
+			to_death = true;
 			max_hit = 0;
 			mp->t_flags |= ISTARGET;
 			runch = ch = dir_ch;
@@ -253,13 +253,13 @@ over:
 		    else
 		    {
 			ch = last_comm;
-			again = TRUE;
+			again = true;
 			goto over;
 		    }
 		when 'q': quaff();
 		when 'Q':
 		    after = false;
-		    q_comm = TRUE;
+		    q_comm = true;
 		    quit(0);
 		    q_comm = false;
 		when 'i': after = false; inventory(pack, 0);
@@ -288,7 +288,7 @@ over:
 		when CTRL('P'): after = false; msg(huh);
 		when CTRL('R'):
 		    after = false;
-		    clearok(curscr,TRUE);
+		    clearok(curscr,true);
 		    wrefresh(curscr);
 		when 'S': 
 		    after = false;
@@ -319,7 +319,7 @@ over:
 		    {
                       wizard = !wizard;
                       turn_see(!wizard);
-                      noscore = TRUE;
+                      noscore = true;
                       if (wizard)
 			msg("you are suddenly as smart as Ken Arnold in dungeon #%d", seed);
                       else
@@ -331,7 +331,7 @@ over:
 		    after = false;
 		    again = false;
 		when 'm':
-		    move_on = TRUE;
+		    move_on = true;
 		    if (!get_dir())
 			after = false;
 		    else
@@ -348,7 +348,7 @@ over:
 		    current(cur_ring[RIGHT], "wearing",
 					    terse ? "(R)" : "on right hand");
 		when '@':
-		    stat_msg = TRUE;
+		    stat_msg = true;
 		    status();
 		    stat_msg = false;
 		    after = false;
@@ -389,7 +389,7 @@ over:
 			    init_weapon(obj, TWOSWORD);
 			    obj->o_hplus = 1;
 			    obj->o_dplus = 1;
-			    add_pack(obj, TRUE);
+			    add_pack(obj, true);
 			    cur_weapon = obj;
 			    /*
 			     * And his suit of armor
@@ -402,7 +402,7 @@ over:
 			    obj->o_count = 1;
 			    obj->o_group = 0;
 			    cur_armor = obj;
-			    add_pack(obj, TRUE);
+			    add_pack(obj, true);
 			}
 			when '*' :
 			    pr_list();
@@ -450,7 +450,7 @@ illcom(int ch)
     save_msg = false;
     count = 0;
     msg("illegal command '%s'", unctrl(ch));
-    save_msg = TRUE;
+    save_msg = true;
 }
 
 /*
@@ -486,7 +486,7 @@ search()
 			chat(y, x) = DOOR;
                         msg("a secret door");
 foundone:
-			found = TRUE;
+			found = true;
 			*fp |= F_REAL;
 			count = false;
 			running = false;
@@ -539,7 +539,7 @@ help()
 	for (strp = helpstr; strp->h_desc != NULL; strp++)
 	    if (strp->h_ch == helpch)
 	    {
-		lower_msg = TRUE;
+		lower_msg = true;
 		msg("%s%s", unctrl(strp->h_ch), strp->h_desc);
 		lower_msg = false;
 		return;
@@ -577,7 +577,7 @@ help()
     waddstr(hw, "--Press space to continue--");
     wrefresh(hw);
     wait_for(KEY_SPACE);
-    clearok(stdscr, TRUE);
+    clearok(stdscr, true);
 /*
     refresh();
 */
@@ -695,7 +695,7 @@ levit_check()
     if (!is_levitating(player))
 	return false;
     msg("You can't.  You're floating off the ground!");
-    return TRUE;
+    return true;
 }
 
 /*
@@ -788,8 +788,8 @@ current(THING *cur, char *how, char *where)
 	if (!terse)
 	    addmsg("you are %s (", how);
 	inv_describe = false;
-	addmsg("%c) %s", cur->o_packch, inv_name(cur, TRUE));
-	inv_describe = TRUE;
+	addmsg("%c) %s", cur->o_packch, inv_name(cur, true));
+	inv_describe = true;
 	if (where)
 	    addmsg(" %s", where);
 	endmsg();

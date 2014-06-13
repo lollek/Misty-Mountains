@@ -34,7 +34,7 @@ add_pack(THING *obj, bool silent)
     {
 	if ((obj = find_obj(hero.y, hero.x)) == NULL)
 	    return;
-	from_floor = TRUE;
+	from_floor = true;
     }
 
     /*
@@ -146,7 +146,7 @@ out:
 	    op->t_dest = &hero;
 
     if (obj->o_type == AMULET)
-	amulet = TRUE;
+	amulet = true;
     /*
      * Notify the user
      */
@@ -187,7 +187,7 @@ pack_room(bool from_floor, THING *obj)
 	chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
     }
 
-    return TRUE;
+    return true;
 }
 
 /*
@@ -236,13 +236,13 @@ pack_char()
 
     for (bp = pack_used; *bp; bp++)
 	continue;
-    *bp = TRUE;
+    *bp = true;
     return (char)((int)(bp - pack_used) + 'a');
 }
 
 /*
  * inventory:
- *	List what is in the pack.  Return TRUE if there is something of
+ *	List what is in the pack.  Return true if there is something of
  *	the given type.
  */
 bool
@@ -262,12 +262,12 @@ inventory(THING *list, int type)
 	    strcpy(inv_temp, "%s");
 	else
 	    sprintf(inv_temp, "%c) %%s", list->o_packch);
-	msg_esc = TRUE;
+	msg_esc = true;
 	if (add_line(inv_temp, inv_name(list, false)) == ESCAPE)
 	{
 	    msg_esc = false;
 	    msg("");
-	    return TRUE;
+	    return true;
 	}
 	msg_esc = false;
     }
@@ -282,7 +282,7 @@ inventory(THING *list, int type)
 	return false;
     }
     end_line();
-    return TRUE;
+    return true;
 }
 
 /*
@@ -338,7 +338,7 @@ move_msg(THING *obj)
 {
     if (!terse)
 	addmsg("you ");
-    msg("moved onto %s", inv_name(obj, TRUE));
+    msg("moved onto %s", inv_name(obj, true));
 }
 
 /*

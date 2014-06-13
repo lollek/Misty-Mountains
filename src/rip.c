@@ -144,7 +144,7 @@ score(int amount, int flags, char monst)
                 (int) (scp - top_ten + 1), scp->sc_score, scp->sc_name,
                 md_getusername(), reason[scp->sc_flags], scp->sc_level);
 	    if (scp->sc_flags == 0 || scp->sc_flags == 3)
-		printf(" by %s", killname((char) scp->sc_monster, TRUE));
+		printf(" by %s", killname((char) scp->sc_monster, true));
 	    if (prflags == 2)
 	    {
 		fflush(stdout);
@@ -306,14 +306,14 @@ total_winner()
 		op = &scr_info[obj->o_which];
 		if (!op->oi_know)
 		    worth /= 2;
-		op->oi_know = TRUE;
+		op->oi_know = true;
 	    when POTION:
 		worth = pot_info[obj->o_which].oi_worth;
 		worth *= obj->o_count;
 		op = &pot_info[obj->o_which];
 		if (!op->oi_know)
 		    worth /= 2;
-		op->oi_know = TRUE;
+		op->oi_know = true;
 	    when RING:
 		op = &ring_info[obj->o_which];
 		worth = op->oi_worth;
@@ -328,7 +328,7 @@ total_winner()
 		if (!(obj->o_flags & ISKNOW))
 		    worth /= 2;
 		obj->o_flags |= ISKNOW;
-		op->oi_know = TRUE;
+		op->oi_know = true;
 	    when STICK:
 		op = &ws_info[obj->o_which];
 		worth = op->oi_worth;
@@ -336,7 +336,7 @@ total_winner()
 		if (!(obj->o_flags & ISKNOW))
 		    worth /= 2;
 		obj->o_flags |= ISKNOW;
-		op->oi_know = TRUE;
+		op->oi_know = true;
 	    when AMULET:
 		worth = 1000;
 	}
@@ -362,9 +362,9 @@ killname(char monst, bool doart)
     char *sp;
     bool article;
     static struct h_list nlist[] = {
-	{'a',	"arrow",		TRUE},
-	{'b',	"bolt",			TRUE},
-	{'d',	"dart",			TRUE},
+	{'a',	"arrow",		true},
+	{'b',	"bolt",			true},
+	{'d',	"dart",			true},
 	{'h',	"hypothermia",		false},
 	{'s',	"starvation",		false},
 	{'\0'}
@@ -373,7 +373,7 @@ killname(char monst, bool doart)
     if (isupper(monst))
     {
 	sp = monsters[monst-'A'].m_name;
-	article = TRUE;
+	article = true;
     }
     else
     {

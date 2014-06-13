@@ -127,7 +127,7 @@ become_monster_seeing(bool permanent)
 {
   player.t_flags |= SEEMONST;
   if (!permanent)
-    fuse((void(*)())turn_see, TRUE, MFINDDURATION, AFTER);
+    fuse((void(*)())turn_see, true, MFINDDURATION, AFTER);
   /* FIXME: Make sure that this work */
   if (!turn_see(false))
     msg("you have a %s feeling for a moment, then it passes",

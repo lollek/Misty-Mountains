@@ -192,7 +192,7 @@ shell()
   fflush(stdout);
   noecho();
   raw();
-  clearok(stdscr, TRUE);
+  clearok(stdscr, true);
 }
 
 /** parse_args
@@ -229,9 +229,9 @@ parse_args(int argc, char **argv)
   terse = false;                /* Terse output */
   fight_flush = false;          /* Flush typeahead during battle */
   jump = false;                 /* Show running as a series of jumps */
-  see_floor = TRUE;             /* Show the lamp-illuminated floor */
+  see_floor = true;             /* Show the lamp-illuminated floor */
   passgo = false;               /* Follow the turnings in passageways */
-  tombstone = TRUE;             /* Print out tombstone when killed */
+  tombstone = true;             /* Print out tombstone when killed */
   inv_type = INV_OVER;          /* Inventory style */
   use_colors = false;           /* Use ncurses colors */
 
@@ -255,22 +255,22 @@ parse_args(int argc, char **argv)
 
     switch (c)
     {
-      case 'c': use_colors = TRUE;
+      case 'c': use_colors = true;
       when 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg);
-      when 'f': fight_flush = TRUE;
+      when 'f': fight_flush = true;
       when 'F': see_floor = false;
       when 'i': if (atoi(optarg) >= 0 && atoi(optarg) <= 2)
                   inv_type = atoi(optarg);
-      when 'j': jump = TRUE;
+      when 'j': jump = true;
       when 'n': if (strlen(optarg))
                   strucpy(whoami, optarg, strlen(optarg));
-      when 'p': passgo = TRUE;
+      when 'p': passgo = true;
       when 'r': game_mode = LOAD_GAME;
-      when 's': noscore = TRUE; score(0, -1, 0); exit(0);
+      when 's': noscore = true; score(0, -1, 0); exit(0);
       when 'S': seed = atoi(optarg);
-      when 't': terse = TRUE;
+      when 't': terse = true;
       when 'T': tombstone = false;
-      when 'W': potential_wizard = wizard = noscore = TRUE;
+      when 'W': potential_wizard = wizard = noscore = true;
                 player.t_flags |= SEEMONST;
       when '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"

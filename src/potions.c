@@ -45,7 +45,7 @@ is_quaffable(THING *thing)
     return false;
   }
   else
-    return TRUE;
+    return true;
 }
 
 void
@@ -94,7 +94,7 @@ quaff()
         {
           if (is_magic(tp))
           {
-            show = TRUE;
+            show = true;
             wmove(hw, tp->o_pos.y, tp->o_pos.x);
             waddcch(hw, MAGIC);
             learn_potion(obj->o_which);
@@ -106,7 +106,7 @@ quaff()
           {
             if (is_magic(tp))
             {
-              show = TRUE;
+              show = true;
               wmove(hw, mp->t_pos.y, mp->t_pos.x);
               waddcch(hw, MAGIC);
             }
@@ -166,7 +166,7 @@ quaff()
 inline void
 learn_potion(enum potion_t potion)
 {
-  pot_info[potion].oi_know = TRUE;
+  pot_info[potion].oi_know = true;
 }
 
 inline bool

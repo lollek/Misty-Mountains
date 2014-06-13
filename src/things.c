@@ -160,7 +160,7 @@ drop()
 	return;
     if (!dropcheck(obj))
 	return;
-    obj = leave_pack(obj, TRUE, (bool)!ISMULT(obj->o_type));
+    obj = leave_pack(obj, true, (bool)!ISMULT(obj->o_type));
     /*
      * Link it into the level object list
      */
@@ -170,7 +170,7 @@ drop()
     obj->o_pos = hero;
     if (obj->o_type == AMULET)
 	amulet = false;
-    msg("dropped %s", inv_name(obj, TRUE));
+    msg("dropped %s", inv_name(obj, true));
 }
 
 /*
@@ -181,10 +181,10 @@ bool
 dropcheck(THING *obj)
 {
     if (obj == NULL)
-	return TRUE;
+	return true;
     if (obj != cur_armor && obj != cur_weapon
 	&& obj != cur_ring[LEFT] && obj != cur_ring[RIGHT])
-	    return TRUE;
+	    return true;
     if (obj->o_flags & ISCURSED)
     {
 	msg("you can't.  It appears to be cursed");
@@ -211,7 +211,7 @@ dropcheck(THING *obj)
 		break;
 	}
     }
-    return TRUE;
+    return true;
 }
 
 /*
@@ -366,7 +366,7 @@ discovered()
 	    case RING:
 	    case STICK:
 	    case '*':
-		disc_list = TRUE;
+		disc_list = true;
 		break;
 	    default:
 		if (terse)
@@ -529,7 +529,7 @@ add_line(char *fmt, char *arg)
                 if (md_hasclreol())
 		{
 		    werase(tw);
-		    leaveok(tw, TRUE);
+		    leaveok(tw, true);
 		    wrefresh(tw);
 		}
 		delwin(tw);
@@ -541,11 +541,11 @@ add_line(char *fmt, char *arg)
 		waddstr(hw, prompt);
 		wrefresh(hw);
 		wait_for(KEY_SPACE);
-		clearok(curscr, TRUE);
+		clearok(curscr, true);
 		wclear(hw);
 		touchwin(stdscr);
 	    }
-	    newpage = TRUE;
+	    newpage = true;
 	    line_cnt = 0;
 	    maxlen = (int) strlen(prompt);
 	}

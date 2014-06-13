@@ -472,7 +472,7 @@ extern struct obj_info	arm_info[], ring_info[],
  */
 
 bool is_magic(THING *obj);   /* Returns true if an object radiates magic */
-bool seen_stairs();          /* Return TRUE if the player has seen the stairs */
+bool seen_stairs();          /* Return true if the player has seen the stairs */
 bool turn_see(bool turn_off);/* Put on or off seeing monsters on this level */
 void invis_on();             /* Turn on the ability to see invisible */
 

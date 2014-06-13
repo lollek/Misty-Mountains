@@ -37,7 +37,7 @@ char *Numname = NUMNAME;
 /*
  * lock_sc:
  *	lock the score file.  If it takes too long, ask the user if
- *	they care to wait.  Return TRUE if the lock is successful.
+ *	they care to wait.  Return true if the lock is successful.
  */
 static FILE *lfd = NULL;
 bool
@@ -49,17 +49,17 @@ lock_sc()
 
 over:
     if ((lfd=fopen(lockfile, "w+")) != NULL)
-	return TRUE;
+	return true;
     for (cnt = 0; cnt < 5; cnt++)
     {
 	sleep(1);
 	if ((lfd=fopen(lockfile, "w+")) != NULL)
-	    return TRUE;
+	    return true;
     }
     if (stat(lockfile, &sbuf) < 0)
     {
 	lfd=fopen(lockfile, "w+");
-	return TRUE;
+	return true;
     }
     if (time(NULL) - sbuf.st_mtime > 10)
     {
@@ -77,11 +77,11 @@ over:
 	    for (;;)
 	    {
 		if ((lfd=fopen(lockfile, "w+")) != 0)
-		    return TRUE;
+		    return true;
 		if (stat(lockfile, &sbuf) < 0)
 		{
 		    lfd=fopen(lockfile, "w+");
-		    return TRUE;
+		    return true;
 		}
 		if (time(NULL) - sbuf.st_mtime > 10)
 		{

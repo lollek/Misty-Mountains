@@ -65,7 +65,7 @@ int
 fight(coord *mp, THING *weap, bool thrown)
 {
     register THING *tp = moat(mp->y, mp->x);
-    register bool did_hit = TRUE;
+    register bool did_hit = true;
     register char *mname, ch;
 
     /* Find the monster we want to fight */
@@ -106,7 +106,7 @@ fight(coord *mp, THING *weap, bool thrown)
 	    hit((char *) NULL, mname, terse);
 	if (on(player, CANHUH))
 	{
-	    did_hit = TRUE;
+	    did_hit = true;
 	    tp->t_flags |= ISHUH;
 	    player.t_flags &= ~CANHUH;
 	    endmsg();
@@ -114,10 +114,10 @@ fight(coord *mp, THING *weap, bool thrown)
 	    msg("your hands stop glowing %s", pick_color("red"));
 	}
 	if (tp->t_stats.s_hpt <= 0)
-	    killed(tp, TRUE);
+	    killed(tp, true);
 	else if (did_hit && !is_blind(player))
 	    msg("%s appears confused", mname);
-	did_hit = TRUE;
+	did_hit = true;
     }
     else
 	if (thrown)
@@ -303,7 +303,7 @@ attack(THING *mp)
 			remove_mon(&mp->t_pos, moat(mp->t_pos.y, mp->t_pos.x), false);
                         mp=NULL;
 			leave_pack(steal, false, false);
-			msg("she stole %s!", inv_name(steal, TRUE));
+			msg("she stole %s!", inv_name(steal, true));
 			discard(steal);
 		    }
 		}
@@ -461,7 +461,7 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 		msg("Damage for %dx%d came out %d, dplus = %d, add_dam = %d, def_arm = %d", ndice, nsides, proll, dplus, add_dam[att->s_str], def_arm);
 	    damage = dplus + proll + add_dam[att->s_str];
 	    def->s_hpt -= max(0, damage);
-	    did_hit = TRUE;
+	    did_hit = true;
 	}
 	if ((cp = strchr(cp, '/')) == NULL)
 	    break;
@@ -521,7 +521,7 @@ hit(char *er, char *ee, bool noend)
 
     if (to_death)
 	return;
-    addmsg(prname(er, TRUE));
+    addmsg(prname(er, true));
     if (terse)
 	s = " hit";
     else
@@ -550,7 +550,7 @@ miss(char *er, char *ee, bool noend)
 
     if (to_death)
 	return;
-    addmsg(prname(er, TRUE));
+    addmsg(prname(er, true));
     if (terse)
 	i = 0;
     else
@@ -654,7 +654,7 @@ killed(THING *tp, bool pr)
      * Get rid of the monster.
      */
     mname = set_mname(tp);
-    remove_mon(&tp->t_pos, tp, TRUE);
+    remove_mon(&tp->t_pos, tp, true);
     if (pr)
     {
 	if (has_hit)
