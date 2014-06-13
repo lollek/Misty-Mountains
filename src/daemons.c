@@ -11,6 +11,7 @@
  */
 
 #include "rogue.h"
+#include "status_effects.h"
 
 /*
  * doctor:
@@ -195,7 +196,7 @@ come_down()
     register THING *tp;
     register bool seemonst;
 
-    if (!on(player, ISHALU))
+    if (!is_hallucinating(player))
 	return;
 
     kill_daemon(visuals);

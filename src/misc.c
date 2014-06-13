@@ -15,6 +15,7 @@
 #include <ctype.h>
 
 #include "rogue.h"
+#include "status_effects.h"
 
 /** get_color_for_chtype
  * Returns the color which is mapped for the ch */
@@ -160,7 +161,7 @@ look(bool wakeup)
 			wake_monster(y, x);
 		    if (see_monst(tp))
 		    {
-			if (on(player, ISHALU))
+			if (is_hallucinating(player))
 			    ch = rnd(26) + 'A';
 			else
 			    ch = tp->t_disguise;
@@ -239,7 +240,7 @@ look(bool wakeup)
 int
 trip_ch(int y, int x, int ch)
 {
-  if (on(player, ISHALU) && after)
+  if (is_hallucinating(player) && after)
     switch (ch)
     {
       case FLOOR: case SHADOW: case PASSAGE: case HWALL: case VWALL: case DOOR:
@@ -577,7 +578,7 @@ rnd_thing()
 char *
 choose_str(char *ts, char *ns)
 {
-  return (on(player, ISHALU) ? ts : ns);
+  return (is_hallucinating(player) ? ts : ns);
 }
 
 bool
@@ -644,10 +645,10 @@ turn_see(bool turn_off)
 	{
 	    if (!can_see)
 		standout();
-	    if (!on(player, ISHALU))
-		addcch(mp->t_type);
-	    else
+	    if (is_hallucinating(player))
 		addcch(rnd(26) + 'A');
+	    else
+		addcch(mp->t_type);
 	    if (!can_see)
 	    {
 		standend();
@@ -669,7 +670,7 @@ invis_on()
 
     player.t_flags |= CANSEE;
     for (mp = mlist; mp != NULL; mp = next(mp))
-	if (on(*mp, ISINVIS) && see_monst(mp) && !on(player, ISHALU))
+	if (on(*mp, ISINVIS) && see_monst(mp) && !is_hallucinating(player))
 	    mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
 }
 

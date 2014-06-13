@@ -13,7 +13,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
 #include "rogue.h"
+#include "status_effects.h"
 
 #define	EQSTR(a, b)	(strcmp(a, b) == 0)
 
@@ -83,7 +85,7 @@ fight(coord *mp, THING *weap, bool thrown)
     if (tp->t_type == 'X' && tp->t_disguise != 'X' && !on(player, ISBLIND))
     {
 	tp->t_disguise = 'X';
-	if (on(player, ISHALU)) {
+	if (is_hallucinating(player)) {
 	    ch = (char)(rnd(26) + 'A');
 	    mvaddcch(tp->t_pos.y, tp->t_pos.x, ch);
 	}
@@ -150,7 +152,7 @@ attack(THING *mp)
     if (mp->t_type == 'X' && mp->t_disguise != 'X' && !on(player, ISBLIND))
     {
 	mp->t_disguise = 'X';
-	if (on(player, ISHALU))
+	if (is_hallucinating(player))
 	    mvaddcch(mp->t_pos.y, mp->t_pos.x, rnd(26) + 'A');
     }
     mname = set_mname(mp);
@@ -347,7 +349,7 @@ set_mname(THING *tp)
 
     if (!see_monst(tp) && !on(player, SEEMONST))
 	return (terse ? "it" : "something");
-    else if (on(player, ISHALU))
+    else if (is_hallucinating(player))
     {
 	move(tp->t_pos.y, tp->t_pos.x);
 	ch = toascii(inch());

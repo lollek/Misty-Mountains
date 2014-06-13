@@ -12,7 +12,9 @@
  */
 
 #include <string.h>
+
 #include "rogue.h"
+#include "status_effects.h"
 
 #define TREAS_ROOM 20	/* one chance in TREAS_ROOM for a treasure room */
 #define MAXTREAS 10	/* maximum number of treasures in a treasure room */
@@ -94,7 +96,7 @@ new_level()
     mvaddcch(hero.y, hero.x, PLAYER);
     if (on(player, SEEMONST))
 	turn_see(FALSE);
-    if (on(player, ISHALU))
+    if (is_hallucinating(player))
 	visuals();
 }
 

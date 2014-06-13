@@ -304,7 +304,7 @@ over:
                             addmsg("You have found ");
 			if (chat(delta.y, delta.x) != TRAP)
 			    msg("no trap there");
-			else if (on(player, ISHALU))
+			else if (is_hallucinating(player))
 			    msg(tr_name[rnd(NTRAPS)]);
 			else {
 			    msg(tr_name[*fp & F_TMASK]);
@@ -467,7 +467,7 @@ search()
 
     ey = hero.y + 1;
     ex = hero.x + 1;
-    probinc = (on(player, ISHALU) ? 3 : 0);
+    probinc = (is_hallucinating(player) ? 3 : 0);
     probinc += (on(player, ISBLIND) ? 2 : 0);
     found = FALSE;
     for (y = hero.y - 1; y <= ey; y++) 
@@ -496,7 +496,7 @@ foundone:
 			chat(y, x) = TRAP;
 			if (!terse)
 			    addmsg("you found ");
-			if (on(player, ISHALU))
+			if (is_hallucinating(player))
 			    msg(tr_name[rnd(NTRAPS)]);
 			else {
 			    msg(tr_name[*fp & F_TMASK]);
