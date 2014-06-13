@@ -702,7 +702,6 @@ void runners();
 void sight();
 void stomach();
 void swander();
-void unconfuse();
 void unsee();
 void visuals();
 

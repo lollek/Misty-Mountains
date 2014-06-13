@@ -33,6 +33,7 @@
 
 #include "rogue.h"
 #include "potions.h"
+#include "status_effects.h"
 
 /************************************************************************/
 /* Save State Code                                                      */
@@ -1044,7 +1045,7 @@ rs_write_daemons(FILE *savef, struct delayed_action *d_list, int count)
             func = 5;
         else if (d_list[i].d_func == nohaste)
             func = 6;
-        else if (d_list[i].d_func == unconfuse)
+        else if (d_list[i].d_func == remove_confusion)
             func = 7;
         else if (d_list[i].d_func == unsee)
             func = 8;
@@ -1102,7 +1103,7 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
                     break;
             case 6: d_list[i].d_func = nohaste;
                     break;
-            case 7: d_list[i].d_func = unconfuse;
+            case 7: d_list[i].d_func = remove_confusion;
                     break;
             case 8: d_list[i].d_func = unsee;
                     break;

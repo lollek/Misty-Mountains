@@ -19,6 +19,7 @@
 void become_restored();                     /* Remove bad status effects */
 void become_poisoned();                     /* Add poisoned status effect */
 void become_confused(bool permanent);       /* Add confused status effect */
+void remove_confusion();                    /* Restore player's mental health */
 void become_healed();                       /* Add healed status effect */
 void become_extra_healed();                 /* Better healing */
 void become_stronger();                     /* Add strength */

@@ -35,18 +35,24 @@ void
 become_confused(bool permanent)
 {
   if (is_confused(player))
-    lengthen(unconfuse, HUHDURATION);
+    lengthen(remove_confusion, HUHDURATION);
   else
   {
     player.t_flags |= ISHUH;
     if (!permanent)
-      fuse(unconfuse, 0, HUHDURATION, AFTER);
+      fuse(remove_confusion, 0, HUHDURATION, AFTER);
     look(FALSE);
   }
   msg(is_hallucinating(player)
     ? "what a trippy feeling!"
     : "wait, what's going on here. Huh? What? Who?");
 }
+
+void
+remove_confusion()
+{
+  player.t_flags &= ~ISHUH;
+  msg("you feel less %s now", is_hallucinating(player) ? "trippy" : "confused"); }
 
 void
 become_healed()

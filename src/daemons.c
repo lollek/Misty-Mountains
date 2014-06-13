@@ -77,17 +77,6 @@ rollwand()
 }
 
 /*
- * unconfuse:
- *	Release the poor player from his confusion
- */
-void
-unconfuse()
-{
-    player.t_flags &= ~ISHUH;
-    msg("you feel less %s now", choose_str("trippy", "confused"));
-}
-
-/*
  * unsee:
  *	Turn off the ability to see invisible
  */
