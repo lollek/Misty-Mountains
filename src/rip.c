@@ -21,6 +21,7 @@
 #include "rogue.h"
 #include "score.h"
 #include "potions.h"
+#include "scrolls.h"
 
 static char *killname(char monst, bool doart);
 

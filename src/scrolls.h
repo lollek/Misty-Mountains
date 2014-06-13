@@ -26,7 +26,8 @@ enum scroll_t
 };
 
 /* Variables */
-char *s_names[MAXSCROLLS];  /* Names of the scrolls */
+char *s_names[MAXSCROLLS];         /* Names of the scrolls */
+extern struct obj_info scr_info[]; /* Scroll info */
 
 /* Functions */
 void read_scroll();         /* Read a scroll from the pack and do the needful */

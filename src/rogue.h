@@ -466,7 +466,7 @@ extern struct stats	max_stats;
 extern struct monster	monsters[];
 
 extern struct obj_info	arm_info[], ring_info[],
-			scr_info[], things[], ws_info[], weap_info[];
+			things[], ws_info[], weap_info[];
 
 /*
  * Function types

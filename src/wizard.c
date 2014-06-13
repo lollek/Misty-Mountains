@@ -17,6 +17,7 @@
 
 #include "rogue.h"
 #include "potions.h"
+#include "scrolls.h"
 
 static char *type_name(int type);
 
