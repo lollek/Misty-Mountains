@@ -202,11 +202,11 @@ death(char monst)
     purse -= purse / 10;
     signal(SIGINT, leave);
     clear();
-    killer = killname(monst, FALSE);
+    killer = killname(monst, false);
     if (!tombstone)
     {
 	mvprintw(LINES - 2, 0, "Killed by ");
-	killer = killname(monst, FALSE);
+	killer = killname(monst, false);
 	if (monst != 's' && monst != 'h')
 	    printw("a%s ", vowelstr(killer));
 	printw("%s with %d gold", killer, purse);
@@ -342,7 +342,7 @@ total_winner()
 	}
 	if (worth < 0)
 	    worth = 0;
-	printw("%c) %5d  %s\n", obj->o_packch, worth, inv_name(obj, FALSE));
+	printw("%c) %5d  %s\n", obj->o_packch, worth, inv_name(obj, false));
 	purse += worth;
     }
     printw("   %5d  Gold Pieces          ", oldpurse);
@@ -365,8 +365,8 @@ killname(char monst, bool doart)
 	{'a',	"arrow",		TRUE},
 	{'b',	"bolt",			TRUE},
 	{'d',	"dart",			TRUE},
-	{'h',	"hypothermia",		FALSE},
-	{'s',	"starvation",		FALSE},
+	{'h',	"hypothermia",		false},
+	{'s',	"starvation",		false},
 	{'\0'}
     };
 
@@ -378,7 +378,7 @@ killname(char monst, bool doart)
     else
     {
 	sp = "Wally the Wonder Badger";
-	article = FALSE;
+	article = false;
 	for (hp = nlist; hp->h_ch; hp++)
 	    if (hp->h_ch == monst)
 	    {

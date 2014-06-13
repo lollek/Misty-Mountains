@@ -41,7 +41,7 @@ init_new_game()
 
   /* Init Graphics */
   if (init_graphics() != 0)
-    return FALSE;
+    return false;
   idlok(stdscr, TRUE);
   idlok(hw, TRUE);
 
@@ -76,7 +76,7 @@ init_old_game()
     if (inf == NULL)
     {
         perror(file_name);
-        return FALSE;
+        return false;
     }
 
     /* defeat multiple restarting from the same place
@@ -87,17 +87,17 @@ init_old_game()
       if (lstat(file_name, &sbuf2) == -1)
       {
         perror(file_name);
-        return FALSE;
+        return false;
       }
       if ((sbuf2.st_mode & S_IFMT) != S_IFREG)
       {
         printf("Only normal files allowed (no symlinks, FIFOs, etc)\n");
-        return FALSE;
+        return false;
       }
       if (sbuf2.st_nlink != 1)
       {
         printf("The savegame cannot be hardlinked, since that's cheating\n");
-        return FALSE;
+        return false;
       }
     }
 
@@ -106,12 +106,12 @@ init_old_game()
     if (strcmp(buf, version) != 0)
     {
         printf("Sorry, saved game is out of date.\n");
-        return FALSE;
+        return false;
     }
     encread(buf, 80, inf);
 
     if (init_graphics() != 0)
-      return FALSE;
+      return false;
 
     rs_restore_file(inf);
     /*
@@ -123,7 +123,7 @@ init_old_game()
     {
         endwin();
         printf("Cannot unlink file\n");
-        return FALSE;
+        return false;
     }
     mpos = 0;
     clearok(stdscr,TRUE);
@@ -132,7 +132,7 @@ init_old_game()
     {
         endwin();
         printf("\n\"He's dead, Jim\"\n");
-        return FALSE;
+        return false;
     }
 
     /* parse environment declaration of options */
@@ -413,7 +413,7 @@ init_colors()
     register size_t i, j;
 
     for (i = 0; i < NCOLORS; i++)
-	used[i] = FALSE;
+	used[i] = false;
     for (i = 0; i < NPOTIONS; i++)
     {
 	do
@@ -470,7 +470,7 @@ init_stones()
     register size_t i, j;
 
     for (i = 0; i < NSTONES; i++)
-	used[i] = FALSE;
+	used[i] = false;
     for (i = 0; i < MAXRINGS; i++)
     {
 	do
@@ -494,9 +494,9 @@ init_materials()
     static bool metused[NMETAL];
 
     for (i = 0; i < NWOOD; i++)
-	used[i] = FALSE;
+	used[i] = false;
     for (i = 0; i < NMETAL; i++)
-	metused[i] = FALSE;
+	metused[i] = false;
     for (i = 0; i < MAXSTICKS; i++)
     {
 	for (;;)

@@ -125,8 +125,8 @@ stomach()
     }
     if (hungry_state != orig_hungry) { 
         player.t_flags &= ~ISRUN; 
-        running = FALSE; 
-        to_death = FALSE; 
+        running = false; 
+        to_death = false; 
         count = 0; 
     } 
 }

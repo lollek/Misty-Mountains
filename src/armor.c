@@ -29,7 +29,7 @@ wear()
 	if (!terse)
 	    addmsg(".  You'll have to take it off first");
 	endmsg();
-	after = FALSE;
+	after = false;
 	return;
     }
     if (obj->o_type != ARMOR)
@@ -57,7 +57,7 @@ take_off()
 
     if ((obj = cur_armor) == NULL)
     {
-	after = FALSE;
+	after = false;
 	if (terse)
 		msg("not wearing armor");
 	else

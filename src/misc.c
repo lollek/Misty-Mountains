@@ -92,7 +92,7 @@ look(bool wakeup)
     char pfl, *fp, pch;
     int sy, sx, sumhero = 0, diffhero = 0;
 # ifdef DEBUG
-    static bool done = FALSE;
+    static bool done = false;
 
     if (done)
 	return;
@@ -152,7 +152,7 @@ look(bool wakeup)
 		if (on(player, SEEMONST) && is_invisible(*tp))
 		{
 		    if (door_stop && !firstmove)
-			running = FALSE;
+			running = false;
 		    continue;
 		}
 		else
@@ -211,7 +211,7 @@ look(bool wakeup)
 		{
 		    case DOOR:
 			if (x == hero.x || y == hero.y)
-			    running = FALSE;
+			    running = false;
 			break;
 		    case PASSAGE:
 			if (x == hero.x || y == hero.y)
@@ -220,17 +220,17 @@ look(bool wakeup)
 		    case FLOOR: case VWALL: case HWALL: case SHADOW:
 			break;
 		    default:
-			running = FALSE;
+			running = false;
 			break;
 		}
 	    }
 	}
     if (door_stop && !firstmove && passcount > 1)
-	running = FALSE;
+	running = false;
     if (!running || !jump)
 	mvaddcch(hero.y, hero.x, PLAYER);
 # ifdef DEBUG
-    done = FALSE;
+    done = false;
 # endif /* DEBUG */
 }
 
@@ -345,7 +345,7 @@ eat()
       }
       else
         msg("%s, that tasted good", choose_str("oh, wow", "yum"));
-    leave_pack(obj, FALSE, FALSE);
+    leave_pack(obj, false, false);
 }
 
 /** check_level:
@@ -436,7 +436,7 @@ bool
 is_current(THING *obj)
 {
   if (obj == NULL)
-    return FALSE;
+    return false;
   if (obj == cur_armor || obj == cur_weapon || obj == cur_ring[LEFT]
       || obj == cur_ring[RIGHT])
   {
@@ -445,7 +445,7 @@ is_current(THING *obj)
     msg("in use");
     return TRUE;
   }
-  return FALSE;
+  return false;
 }
 
 /** get_dir:
@@ -483,11 +483,11 @@ get_dir()
         when 'u': case'U': delta.y = -1; delta.x =  1;
         when 'b': case'B': delta.y =  1; delta.x = -1;
         when 'n': case'N': delta.y =  1; delta.x =  1;
-        when ESCAPE: last_dir = '\0'; reset_last(); return FALSE;
+        when ESCAPE: last_dir = '\0'; reset_last(); return false;
         otherwise:
           mpos = 0;
           msg(prompt);
-          gotit = FALSE;
+          gotit = false;
       }
     } until (gotit);
 
@@ -597,7 +597,7 @@ is_magic(THING *obj)
 	case AMULET:
 	    return TRUE;
     }
-    return FALSE;
+    return false;
 }
 
 bool
@@ -621,7 +621,7 @@ seen_stairs()
 	    && tp->t_oldch == STAIRS)		/* and there once were stairs */
 		return TRUE;			/* it must have moved there */
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -631,7 +631,7 @@ turn_see(bool turn_off)
     THING *mp;
     bool can_see, add_new;
 
-    add_new = FALSE;
+    add_new = false;
     for (mp = mlist; mp != NULL; mp = next(mp))
     {
 	move(mp->t_pos.y, mp->t_pos.x);

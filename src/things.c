@@ -152,7 +152,7 @@ drop()
     ch = chat(hero.y, hero.x);
     if (ch != FLOOR && ch != PASSAGE)
     {
-	after = FALSE;
+	after = false;
 	msg("there is something there already");
 	return;
     }
@@ -169,7 +169,7 @@ drop()
     flat(hero.y, hero.x) |= F_DROPPED;
     obj->o_pos = hero;
     if (obj->o_type == AMULET)
-	amulet = FALSE;
+	amulet = false;
     msg("dropped %s", inv_name(obj, TRUE));
 }
 
@@ -188,7 +188,7 @@ dropcheck(THING *obj)
     if (obj->o_flags & ISCURSED)
     {
 	msg("you can't.  It appears to be cursed");
-	return FALSE;
+	return false;
     }
     if (obj == cur_weapon)
 	cur_weapon = NULL;
@@ -336,7 +336,7 @@ pick_one(struct obj_info *info, int nitems)
  */
 static int line_cnt = 0;
 
-static bool newpage = FALSE;
+static bool newpage = false;
 
 static char *lastfmt, *lastarg;
 
@@ -348,7 +348,7 @@ discovered()
     bool disc_list;
 
     do {
-	disc_list = FALSE;
+	disc_list = false;
 	if (!terse)
 	    addmsg("for ");
 	addmsg("what type");
@@ -438,7 +438,7 @@ print_disc(char type)
 	{
 	    obj.o_type = type;
 	    obj.o_which = order[i];
-	    add_line("%s", inv_name(&obj, FALSE));
+	    add_line("%s", inv_name(&obj, false));
 	    num_found++;
 	}
     if (num_found == 0)
@@ -581,7 +581,7 @@ end_line()
 	    add_line((char *) NULL, NULL);
     }
     line_cnt = 0;
-    newpage = FALSE;
+    newpage = false;
 }
 
 /*

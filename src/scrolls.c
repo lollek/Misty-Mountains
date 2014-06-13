@@ -16,24 +16,24 @@
 
 
 struct obj_info scr_info[MAXSCROLLS] = {
-    { "monster confusion",		 7, 140, NULL, FALSE },
-    { "magic mapping",			 4, 150, NULL, FALSE },
-    { "hold monster",			 2, 180, NULL, FALSE },
-    { "sleep",				 3,   5, NULL, FALSE },
-    { "enchant armor",			 7, 160, NULL, FALSE },
-    { "identify potion",		10,  80, NULL, FALSE },
-    { "identify scroll",		10,  80, NULL, FALSE },
-    { "identify weapon",		 6,  80, NULL, FALSE },
-    { "identify armor",		 	 7, 100, NULL, FALSE },
-    { "identify ring, wand or staff",	10, 115, NULL, FALSE },
-    { "scare monster",			 3, 200, NULL, FALSE },
-    { "food detection",			 2,  60, NULL, FALSE },
-    { "teleportation",			 5, 165, NULL, FALSE },
-    { "enchant weapon",			 8, 150, NULL, FALSE },
-    { "create monster",			 4,  75, NULL, FALSE },
-    { "remove curse",			 7, 105, NULL, FALSE },
-    { "aggravate monsters",		 3,  20, NULL, FALSE },
-    { "protect armor",			 2, 250, NULL, FALSE },
+    { "monster confusion",		 7, 140, NULL, false },
+    { "magic mapping",			 4, 150, NULL, false },
+    { "hold monster",			 2, 180, NULL, false },
+    { "sleep",				 3,   5, NULL, false },
+    { "enchant armor",			 7, 160, NULL, false },
+    { "identify potion",		10,  80, NULL, false },
+    { "identify scroll",		10,  80, NULL, false },
+    { "identify weapon",		 6,  80, NULL, false },
+    { "identify armor",		 	 7, 100, NULL, false },
+    { "identify ring, wand or staff",	10, 115, NULL, false },
+    { "scare monster",			 3, 200, NULL, false },
+    { "food detection",			 2,  60, NULL, false },
+    { "teleportation",			 5, 165, NULL, false },
+    { "enchant weapon",			 8, 150, NULL, false },
+    { "create monster",			 4,  75, NULL, false },
+    { "remove curse",			 7, 105, NULL, false },
+    { "aggravate monsters",		 3,  20, NULL, false },
+    { "protect armor",			 2, 250, NULL, false },
 };
 
 void
@@ -41,7 +41,7 @@ read_scroll()
 {
   THING *obj = get_item("read", SCROLL);
   THING *orig_obj;
-  bool discardit = FALSE;
+  bool discardit = false;
 
   if (obj == NULL)
     return;
@@ -60,7 +60,7 @@ read_scroll()
 
   /* Get rid of the thing */
   discardit = (bool)(obj->o_count == 1);
-  leave_pack(obj, FALSE, FALSE);
+  leave_pack(obj, false, false);
   orig_obj = obj;
 
   switch (obj->o_which)
@@ -139,7 +139,7 @@ read_scroll()
       else
       {
         obj = new_item();
-        new_monster(obj, randmonster(FALSE), &mp);
+        new_monster(obj, randmonster(false), &mp);
       }
     }
     when S_ID_POTION: case S_ID_SCROLL: case S_ID_WEAPON: case S_ID_ARMOR:
@@ -224,7 +224,7 @@ def:
     when S_FDET:
         /* Potion of gold detection */
     {
-      char ch = FALSE;
+      char ch = false;
       wclear(hw);
       for (obj = lvl_obj; obj != NULL; obj = next(obj))
         if (obj->o_type == FOOD)

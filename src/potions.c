@@ -16,33 +16,33 @@
 
 struct obj_info pot_info[NPOTIONS] = {
   /* io_name,      oi_prob, oi_worth, oi_guess, oi_know */
-  { "confusion",         7,        5,     NULL, FALSE },
-  { "hallucination",     8,        5,     NULL, FALSE },
-  { "poison",            8,        5,     NULL, FALSE },
-  { "gain strength",    13,      150,     NULL, FALSE },
-  { "see invisible",     3,      100,     NULL, FALSE },
-  { "healing",          13,      130,     NULL, FALSE },
-  { "monster detection", 6,      130,     NULL, FALSE },
-  { "magic detection",   6,      105,     NULL, FALSE },
-  { "raise level",       2,      250,     NULL, FALSE },
-  { "extra healing",     5,      200,     NULL, FALSE },
-  { "haste self",        5,      190,     NULL, FALSE },
-  { "restore strength", 13,      130,     NULL, FALSE },
-  { "blindness",         5,        5,     NULL, FALSE },
-  { "levitation",        6,       75,     NULL, FALSE },
+  { "confusion",         7,        5,     NULL, false },
+  { "hallucination",     8,        5,     NULL, false },
+  { "poison",            8,        5,     NULL, false },
+  { "gain strength",    13,      150,     NULL, false },
+  { "see invisible",     3,      100,     NULL, false },
+  { "healing",          13,      130,     NULL, false },
+  { "monster detection", 6,      130,     NULL, false },
+  { "magic detection",   6,      105,     NULL, false },
+  { "raise level",       2,      250,     NULL, false },
+  { "extra healing",     5,      200,     NULL, false },
+  { "haste self",        5,      190,     NULL, false },
+  { "restore strength", 13,      130,     NULL, false },
+  { "blindness",         5,        5,     NULL, false },
+  { "levitation",        6,       75,     NULL, false },
 };
 
 bool
 is_quaffable(THING *thing)
 {
   if (thing == NULL)
-    return FALSE;
+    return false;
   else if (thing->o_type != POTION)
   {
     msg(terse
         ? "that's undrinkable"
         : "yuk! Why would you want to drink that?");
-    return FALSE;
+    return false;
   }
   else
     return TRUE;
@@ -53,7 +53,7 @@ quaff()
 {
   THING *obj = get_item("quaff", POTION);
   THING *tp, *mp;
-  bool discardit = FALSE;
+  bool discardit = false;
 
   /* Make certain that it is somethings that we want to drink */
   if (!is_quaffable(obj))
@@ -64,7 +64,7 @@ quaff()
 
   /* Calculate the effect it has on the poor guy. */
   discardit = (bool)(obj->o_count == 1);
-  leave_pack(obj, FALSE, FALSE);
+  leave_pack(obj, false, false);
   switch (obj->o_which)
   {
     case P_CONFUSE:
@@ -86,7 +86,7 @@ quaff()
     when P_TFIND:
     {
       /* Potion of magic detection.  Show the potions and scrolls */
-      bool show = FALSE;
+      bool show = false;
       if (lvl_obj != NULL)
       {
         wclear(hw);

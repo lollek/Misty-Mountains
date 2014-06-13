@@ -108,7 +108,7 @@ option()
     wait_for(KEY_SPACE);
     clearok(curscr, TRUE);
     touchwin(stdscr);
-    after = FALSE;
+    after = false;
 }
 
 /*
@@ -178,16 +178,16 @@ get_bool(void *vp, WINDOW *win)
 	    case 't':
 	    case 'T':
 		*bp = TRUE;
-		op_bad = FALSE;
+		op_bad = false;
 		break;
 	    case 'f':
 	    case 'F':
-		*bp = FALSE;
-		op_bad = FALSE;
+		*bp = false;
+		op_bad = false;
 		break;
 	    case '\n':
 	    case '\r':
-		op_bad = FALSE;
+		op_bad = false;
 		break;
 	    case ESCAPE:
 		return QUIT;
@@ -224,10 +224,10 @@ get_sf(void *vp, WINDOW *win)
 	if (!see_floor) {
 	    see_floor = TRUE;
 	    erase_lamp(&hero, proom);
-	    see_floor = FALSE;
+	    see_floor = false;
 	}
 	else
-	    look(FALSE);
+	    look(false);
     }
     return NORMAL;
 }
@@ -332,21 +332,21 @@ get_inv_t(void *vp, WINDOW *win)
 	    case 'o':
 	    case 'O':
 		*ip = INV_OVER;
-		op_bad = FALSE;
+		op_bad = false;
 		break;
 	    case 's':
 	    case 'S':
 		*ip = INV_SLOW;
-		op_bad = FALSE;
+		op_bad = false;
 		break;
 	    case 'c':
 	    case 'C':
 		*ip = INV_CLEAR;
-		op_bad = FALSE;
+		op_bad = false;
 		break;
 	    case '\n':
 	    case '\r':
-		op_bad = FALSE;
+		op_bad = false;
 		break;
 	    case ESCAPE:
 		return QUIT;
@@ -462,7 +462,7 @@ parse_opts(char *str)
                      !strncmp(str, "no", 2) &&
                      !strncmp(str + 2, op->o_name, len - 2))
 	    {
-		*(bool *)op->o_opt = FALSE;	/* NOSTRICT */
+		*(bool *)op->o_opt = false;	/* NOSTRICT */
 		break;
 	    }
 

@@ -48,8 +48,8 @@ do_passages()
     for (r1 = rdes; r1 <= &rdes[MAXROOMS-1]; r1++)
     {
 	for (j = 0; j < MAXROOMS; j++)
-	    r1->isconn[j] = FALSE;
-	r1->ingraph = FALSE;
+	    r1->isconn[j] = false;
+	r1->ingraph = false;
     }
 
     /*
@@ -364,7 +364,7 @@ passnum()
     int i;
 
     pnum = 0;
-    newpnum = FALSE;
+    newpnum = false;
     for (rp = passages; rp < &passages[MAXPASS]; rp++)
 	rp->r_nexits = 0;
     for (rp = rooms; rp < &rooms[MAXROOMS]; rp++)
@@ -395,7 +395,7 @@ numpass(int y, int x)
     if (newpnum)
     {
 	pnum++;
-	newpnum = FALSE;
+	newpnum = false;
     }
     /*
      * check to see if it is a door or secret door, i.e., a new exit,

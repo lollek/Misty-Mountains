@@ -16,27 +16,27 @@ bool after;				/* True if we want after daemons */
 bool again;				/* Repeating the last command */
 int  noscore;				/* Was a wizard sometime */
 bool seenstairs;			/* Have seen the stairs (for lsd) */
-bool amulet = FALSE;			/* He found the amulet */
-bool door_stop = FALSE;			/* Stop running when we pass a door */
-bool firstmove = FALSE;			/* First move after setting door_stop */
-bool has_hit = FALSE;			/* Has a "hit" message pending in msg */
+bool amulet = false;			/* He found the amulet */
+bool door_stop = false;			/* Stop running when we pass a door */
+bool firstmove = false;			/* First move after setting door_stop */
+bool has_hit = false;			/* Has a "hit" message pending in msg */
 bool inv_describe = TRUE;		/* Say which way items are being used */
-bool kamikaze = FALSE;			/* to_death really to DEATH */
-bool lower_msg = FALSE;			/* Messages should start w/lower case */
-bool move_on = FALSE;			/* Next move shouldn't pick up items */
-bool msg_esc = FALSE;			/* Check for ESC from msg's --More-- */
+bool kamikaze = false;			/* to_death really to DEATH */
+bool lower_msg = false;			/* Messages should start w/lower case */
+bool move_on = false;			/* Next move shouldn't pick up items */
+bool msg_esc = false;			/* Check for ESC from msg's --More-- */
 bool playing = TRUE;			/* True until he quits */
-bool q_comm = FALSE;			/* Are we executing a 'Q' command? */
-bool running = FALSE;			/* True if player is running */
+bool q_comm = false;			/* Are we executing a 'Q' command? */
+bool running = false;			/* True if player is running */
 bool save_msg = TRUE;			/* Remember last msg */
-bool stat_msg = FALSE;			/* Should status() print as a msg() */
-bool to_death = FALSE;			/* Fighting is to the death! */
-int wizard = FALSE;			/* True if allows wizard commands */
-int potential_wizard = FALSE;		/* True if allows to become a wizard */
+bool stat_msg = false;			/* Should status() print as a msg() */
+bool to_death = false;			/* Fighting is to the death! */
+int wizard = false;			/* True if allows wizard commands */
+int potential_wizard = false;		/* True if allows to become a wizard */
 bool pack_used[26] = {			/* Is the character used in the pack? */
-    FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
-    FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
-    FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE
+    false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false
 };
 
 char dir_ch;				/* Direction from last get_dir() call */
@@ -203,69 +203,69 @@ struct monster monsters[26] =
     /* Dev info: Only the first two vales are used in this table,
      *           the others need not be initialized */
 struct obj_info things[NUMTHINGS] = {
-    { 0,	26,	0,	NULL,	FALSE },	/* potion */
-    { 0,	36,	0,	NULL,	FALSE },	/* scroll */
-    { 0,	16,	0,	NULL,	FALSE },	/* food */
-    { 0,	 7,	0,	NULL,	FALSE },	/* weapon */
-    { 0,	 7,	0,	NULL,	FALSE },	/* armor */
-    { 0,	 4,	0,	NULL,	FALSE },	/* ring */
-    { 0,	 4,	0,	NULL,	FALSE },	/* stick */
+    { 0,	26,	0,	NULL,	false },	/* potion */
+    { 0,	36,	0,	NULL,	false },	/* scroll */
+    { 0,	16,	0,	NULL,	false },	/* food */
+    { 0,	 7,	0,	NULL,	false },	/* weapon */
+    { 0,	 7,	0,	NULL,	false },	/* armor */
+    { 0,	 4,	0,	NULL,	false },	/* ring */
+    { 0,	 4,	0,	NULL,	false },	/* stick */
 };
 
 struct obj_info arm_info[MAXARMORS] = {
-    { "leather armor",		 20,	 20, NULL, FALSE },
-    { "ring mail",		 15,	 25, NULL, FALSE },
-    { "studded leather armor",	 15,	 20, NULL, FALSE },
-    { "scale mail",		 13,	 30, NULL, FALSE },
-    { "chain mail",		 12,	 75, NULL, FALSE },
-    { "splint mail",		 10,	 80, NULL, FALSE },
-    { "banded mail",		 10,	 90, NULL, FALSE },
-    { "plate mail",		  5,	150, NULL, FALSE },
+    { "leather armor",		 20,	 20, NULL, false },
+    { "ring mail",		 15,	 25, NULL, false },
+    { "studded leather armor",	 15,	 20, NULL, false },
+    { "scale mail",		 13,	 30, NULL, false },
+    { "chain mail",		 12,	 75, NULL, false },
+    { "splint mail",		 10,	 80, NULL, false },
+    { "banded mail",		 10,	 90, NULL, false },
+    { "plate mail",		  5,	150, NULL, false },
 };
 struct obj_info ring_info[MAXRINGS] = {
-    { "protection",		 9, 400, NULL, FALSE },
-    { "add strength",		 9, 400, NULL, FALSE },
-    { "sustain strength",	 5, 280, NULL, FALSE },
-    { "searching",		10, 420, NULL, FALSE },
-    { "see invisible",		10, 310, NULL, FALSE },
-    { "adornment",		 1,  10, NULL, FALSE },
-    { "aggravate monster",	10,  10, NULL, FALSE },
-    { "dexterity",		 8, 440, NULL, FALSE },
-    { "increase damage",	 8, 400, NULL, FALSE },
-    { "regeneration",		 4, 460, NULL, FALSE },
-    { "slow digestion",		 9, 240, NULL, FALSE },
-    { "teleportation",		 5,  30, NULL, FALSE },
-    { "stealth",		 7, 470, NULL, FALSE },
-    { "maintain armor",		 5, 380, NULL, FALSE },
+    { "protection",		 9, 400, NULL, false },
+    { "add strength",		 9, 400, NULL, false },
+    { "sustain strength",	 5, 280, NULL, false },
+    { "searching",		10, 420, NULL, false },
+    { "see invisible",		10, 310, NULL, false },
+    { "adornment",		 1,  10, NULL, false },
+    { "aggravate monster",	10,  10, NULL, false },
+    { "dexterity",		 8, 440, NULL, false },
+    { "increase damage",	 8, 400, NULL, false },
+    { "regeneration",		 4, 460, NULL, false },
+    { "slow digestion",		 9, 240, NULL, false },
+    { "teleportation",		 5,  30, NULL, false },
+    { "stealth",		 7, 470, NULL, false },
+    { "maintain armor",		 5, 380, NULL, false },
 };
 struct obj_info weap_info[MAXWEAPONS + 1] = {
-    { "mace",				11,   8, NULL, FALSE },
-    { "long sword",			11,  15, NULL, FALSE },
-    { "short bow",			12,  15, NULL, FALSE },
-    { "arrow",				12,   1, NULL, FALSE },
-    { "dagger",				 8,   3, NULL, FALSE },
-    { "two handed sword",		10,  75, NULL, FALSE },
-    { "dart",				12,   2, NULL, FALSE },
-    { "shuriken",			12,   5, NULL, FALSE },
-    { "spear",				12,   5, NULL, FALSE },
+    { "mace",				11,   8, NULL, false },
+    { "long sword",			11,  15, NULL, false },
+    { "short bow",			12,  15, NULL, false },
+    { "arrow",				12,   1, NULL, false },
+    { "dagger",				 8,   3, NULL, false },
+    { "two handed sword",		10,  75, NULL, false },
+    { "dart",				12,   2, NULL, false },
+    { "shuriken",			12,   5, NULL, false },
+    { "spear",				12,   5, NULL, false },
     /* DO NOT REMOVE: fake entry for dragon's breath */
-    { NULL,				0,    0, NULL, FALSE },	
+    { NULL,				0,    0, NULL, false },	
 };
 struct obj_info ws_info[MAXSTICKS] = {
-    { "light",			12, 250, NULL, FALSE },
-    { "invisibility",		 6,   5, NULL, FALSE },
-    { "lightning",		 3, 330, NULL, FALSE },
-    { "fire",			 3, 330, NULL, FALSE },
-    { "cold",			 3, 330, NULL, FALSE },
-    { "polymorph",		15, 310, NULL, FALSE },
-    { "magic missile",		10, 170, NULL, FALSE },
-    { "haste monster",		10,   5, NULL, FALSE },
-    { "slow monster",		11, 350, NULL, FALSE },
-    { "drain life",		 9, 300, NULL, FALSE },
-    { "nothing",		 1,   5, NULL, FALSE },
-    { "teleport away",		 6, 340, NULL, FALSE },
-    { "teleport to",		 6,  50, NULL, FALSE },
-    { "cancellation",		 5, 280, NULL, FALSE },
+    { "light",			12, 250, NULL, false },
+    { "invisibility",		 6,   5, NULL, false },
+    { "lightning",		 3, 330, NULL, false },
+    { "fire",			 3, 330, NULL, false },
+    { "cold",			 3, 330, NULL, false },
+    { "polymorph",		15, 310, NULL, false },
+    { "magic missile",		10, 170, NULL, false },
+    { "haste monster",		10,   5, NULL, false },
+    { "slow monster",		11, 350, NULL, false },
+    { "drain life",		 9, 300, NULL, false },
+    { "nothing",		 1,   5, NULL, false },
+    { "teleport away",		 6, 340, NULL, false },
+    { "teleport to",		 6,  50, NULL, false },
+    { "cancellation",		 5, 280, NULL, false },
 };
 
 struct h_list helpstr[] = {
@@ -279,22 +279,22 @@ struct h_list helpstr[] = {
     {'u',	"	up & right",				TRUE},
     {'b',	"	down & left",				TRUE},
     {'n',	"	down & right",				TRUE},
-    {'H',	"	run left",				FALSE},
-    {'J',	"	run down",				FALSE},
-    {'K',	"	run up",				FALSE},
-    {'L',	"	run right",				FALSE},
-    {'Y',	"	run up & left",				FALSE},
-    {'U',	"	run up & right",			FALSE},
-    {'B',	"	run down & left",			FALSE},
-    {'N',	"	run down & right",			FALSE},
-    {CTRL('H'),	"	run left until adjacent",		FALSE},
-    {CTRL('J'),	"	run down until adjacent",		FALSE},
-    {CTRL('K'),	"	run up until adjacent",			FALSE},
-    {CTRL('L'),	"	run right until adjacent",		FALSE},
-    {CTRL('Y'),	"	run up & left until adjacent",		FALSE},
-    {CTRL('U'),	"	run up & right until adjacent",		FALSE},
-    {CTRL('B'),	"	run down & left until adjacent",	FALSE},
-    {CTRL('N'),	"	run down & right until adjacent",	FALSE},
+    {'H',	"	run left",				false},
+    {'J',	"	run down",				false},
+    {'K',	"	run up",				false},
+    {'L',	"	run right",				false},
+    {'Y',	"	run up & left",				false},
+    {'U',	"	run up & right",			false},
+    {'B',	"	run down & left",			false},
+    {'N',	"	run down & right",			false},
+    {CTRL('H'),	"	run left until adjacent",		false},
+    {CTRL('J'),	"	run down until adjacent",		false},
+    {CTRL('K'),	"	run up until adjacent",			false},
+    {CTRL('L'),	"	run right until adjacent",		false},
+    {CTRL('Y'),	"	run up & left until adjacent",		false},
+    {CTRL('U'),	"	run up & right until adjacent",		false},
+    {CTRL('B'),	"	run down & left until adjacent",	false},
+    {CTRL('N'),	"	run down & right until adjacent",	false},
     {'\0',	"	<SHIFT><dir>: run that way",		TRUE},
     {'\0',	"	<CTRL><dir>: run till adjacent",	TRUE},
     {'f',	"<dir>	fight till death or near death",	TRUE},
@@ -333,5 +333,5 @@ struct h_list helpstr[] = {
     {'Q',	"	quit",					TRUE},
     {'!',	"	shell escape",				TRUE},
     {'F',	"<dir>	fight till either of you dies",		TRUE},
-    { 0 ,		NULL,					FALSE}
+    { 0 ,		NULL,					false}
 };

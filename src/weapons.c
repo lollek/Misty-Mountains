@@ -52,7 +52,7 @@ missile(int ydelta, int xdelta)
 	return;
     if (!dropcheck(obj) || is_current(obj))
 	return;
-    obj = leave_pack(obj, TRUE, FALSE);
+    obj = leave_pack(obj, TRUE, false);
     do_motion(obj, ydelta, xdelta);
     /*
      * AHA! Here it has hit something.  If it is a wall or a door,
@@ -144,7 +144,7 @@ fall(THING *obj, bool pr)
 	if (has_hit)
 	{
 	    endmsg();
-	    has_hit = FALSE;
+	    has_hit = false;
 	}
 	msg("the %s vanishes as it hits the ground",
 	    weap_info[obj->o_which].oi_name);
@@ -238,7 +238,7 @@ wield()
     if ((obj = get_item("wield", WEAPON)) == NULL)
     {
 bad:
-	after = FALSE;
+	after = false;
 	return;
     }
 

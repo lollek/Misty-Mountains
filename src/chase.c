@@ -47,14 +47,14 @@ runners()
 	    if (wastarget && !same_coords(orig_pos, tp->t_pos))
 	    {
 		tp->t_flags &= ~ISTARGET;
-		to_death = FALSE;
+		to_death = false;
 	    }
 	}
     }
     if (has_hit)
     {
 	endmsg();
-	has_hit = FALSE;
+	has_hit = false;
     }
 }
 
@@ -115,7 +115,7 @@ do_chase(THING *th)
     register coord *cp;
     register struct room *rer, *ree;	/* room of chaser, room of chasee */
     register int mindist = 32767, curdist;
-    register bool stoprun = FALSE;	/* TRUE means we are there */
+    register bool stoprun = false;	/* TRUE means we are there */
     register bool door;
     register THING *obj;
     static coord this;			/* Temporary destination for chaser */
@@ -151,7 +151,7 @@ over:
 	if (door)
 	{
 	    rer = &passages[flat(th->t_pos.y, th->t_pos.x) & F_PNUM];
-	    door = FALSE;
+	    door = false;
 	    goto over;
 	}
     }
@@ -173,13 +173,13 @@ over:
 	    if (has_hit)
 		endmsg();
 	    fire_bolt(&th->t_pos, &delta, "flame");
-	    running = FALSE;
+	    running = false;
 	    count = 0;
 	    quiet = 0;
 	    if (to_death && !on(*th, ISTARGET))
 	    {
-		to_death = FALSE;
-		kamikaze = FALSE;
+		to_death = false;
+		kamikaze = false;
 	    }
 	    return(0);
 	}
@@ -254,20 +254,20 @@ see_monst(THING *mp)
     int y, x;
 
     if (is_blind(player))
-	return FALSE;
+	return false;
     if (is_invisible(*mp) && !on(player, CANSEE))
-	return FALSE;
+	return false;
     y = mp->t_pos.y;
     x = mp->t_pos.x;
     if (dist(y, x, hero.y, hero.x) < LAMPDIST)
     {
 	if (y != hero.y && x != hero.x &&
 	    !step_ok(chat(y, hero.x)) && !step_ok(chat(hero.y, x)))
-		return FALSE;
+		return false;
 	return TRUE;
     }
     if (mp->t_room != proom)
-	return FALSE;
+	return false;
     return ((bool)!(mp->t_room->r_flags & ISDARK));
 }
 
@@ -294,7 +294,7 @@ runto(coord *runner)
  * chase:
  *	Find the spot for the chaser(er) to move closer to the
  *	chasee(ee).  Returns TRUE if we want to keep on chasing later
- *	FALSE if we reach the goal.
+ *	false if we reach the goal.
  */
 bool
 chase(THING *tp, coord *ee)
@@ -440,7 +440,7 @@ bool
 diag_ok(coord *sp, coord *ep)
 {
     if (ep->x < 0 || ep->x >= NUMCOLS || ep->y <= 0 || ep->y >= NUMLINES - 1)
-	return FALSE;
+	return false;
     if (ep->x == sp->x || ep->y == sp->y)
 	return TRUE;
     return (bool)(step_ok(chat(ep->y, sp->x)) && step_ok(chat(sp->y, ep->x)));
@@ -457,13 +457,13 @@ cansee(int y, int x)
     static coord tp;
 
     if (is_blind(player))
-	return FALSE;
+	return false;
     if (dist(y, x, hero.y, hero.x) < LAMPDIST)
     {
 	if (flat(y, x) & F_PASS)
 	    if (y != hero.y && x != hero.x &&
 		!step_ok(chat(y, hero.x)) && !step_ok(chat(hero.y, x)))
-		    return FALSE;
+		    return false;
 	return TRUE;
     }
     /*

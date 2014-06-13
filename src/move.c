@@ -31,7 +31,7 @@ void
 do_run(char ch)
 {
     running = TRUE;
-    after = FALSE;
+    after = false;
     runch = ch;
 }
 
@@ -46,7 +46,7 @@ do_move(int dy, int dx)
 {
     char ch, fl;
 
-    firstmove = FALSE;
+    firstmove = false;
     if (no_move)
     {
 	no_move--;
@@ -60,9 +60,9 @@ do_move(int dy, int dx)
 	nh = *rndmove(&player);
 	if (same_coords(nh, hero))
 	{
-	    after = FALSE;
-	    running = FALSE;
-	    to_death = FALSE;
+	    after = false;
+	    running = false;
+	    to_death = false;
 	    return;
 	}
     }
@@ -79,12 +79,12 @@ over:
 	goto hit_bound;
     if (!diag_ok(&hero, &nh))
     {
-	after = FALSE;
-	running = FALSE;
+	after = false;
+	running = false;
 	return;
     }
     if (running && same_coords(hero, nh))
-	after = running = FALSE;
+	after = running = false;
     fl = flat(nh.y, nh.x);
     ch = winat(nh.y, nh.x);
     if (!(fl & F_REAL) && ch == FLOOR)
@@ -153,11 +153,11 @@ hit_bound:
 			goto over;
 		}
 	    }
-	    running = FALSE;
-	    after = FALSE;
+	    running = false;
+	    after = false;
 	    break;
 	case DOOR:
-	    running = FALSE;
+	    running = false;
 	    if (flat(hero.y, hero.x) & F_PASS)
 		enter_room(&nh);
 	    goto move_stuff;
@@ -183,9 +183,9 @@ hit_bound:
 	    seenstairs = TRUE;
 	    /* FALLTHROUGH */
 	default:
-	    running = FALSE;
+	    running = false;
 	    if (isupper(ch) || moat(nh.y, nh.x))
-		fight(&nh, cur_weapon, FALSE);
+		fight(&nh, cur_weapon, false);
 	    else
 	    {
 		if (ch != STAIRS)
@@ -230,7 +230,7 @@ turnref()
 	{
 	    leaveok(stdscr, TRUE);
 	    refresh();
-	    leaveok(stdscr, FALSE);
+	    leaveok(stdscr, false);
 	}
 	pp->p_flags |= F_SEEN;
     }
@@ -271,8 +271,8 @@ be_trapped(coord *tc)
     char tr = pp->p_flags & F_TMASK;
     pp->p_ch = TRAP;
     pp->p_flags |= F_SEEN;
-    running = FALSE;
-    count = FALSE;
+    running = false;
+    count = false;
     switch (tr)
     {
       case T_DOOR:
@@ -321,7 +321,7 @@ be_trapped(coord *tc)
           init_weapon(arrow, ARROW);
           arrow->o_count = 1;
           arrow->o_pos = hero;
-          fall(arrow, FALSE);
+          fall(arrow, false);
           msg("an arrow shoots past you");
         }
       when T_TELEP:

@@ -56,7 +56,7 @@ do_zap()
 	return;
     if (obj->o_type != STICK)
     {
-	after = FALSE;
+	after = false;
 	msg("you can't zap with that!");
 	return;
     }
@@ -157,7 +157,7 @@ do_zap()
 			{
 			    do
 			    {
-				find_floor(NULL, &new_pos, FALSE, TRUE);
+				find_floor(NULL, &new_pos, false, TRUE);
 			    } while (same_coords(new_pos, hero));
 			}
 			else
@@ -318,8 +318,8 @@ fire_bolt(coord *start, coord *dir, char *name)
     }
     pos = *start;
     hit_hero = (bool)(start != &hero);
-    used = FALSE;
-    changed = FALSE;
+    used = false;
+    changed = false;
     for (c1 = spotpos; c1 <= &spotpos[BOLT_LENGTH-1] && !used; c1++)
     {
 	pos.y += dir->y;
@@ -340,7 +340,7 @@ fire_bolt(coord *start, coord *dir, char *name)
 	    case VWALL: case HWALL: case SHADOW:
 		if (!changed)
 		    hit_hero = !hit_hero;
-		changed = FALSE;
+		changed = false;
 		dir->y = -dir->y;
 		dir->x = -dir->x;
 		c1--;
@@ -379,7 +379,7 @@ def:
 		}
 		else if (hit_hero && same_coords(pos, hero))
 		{
-		    hit_hero = FALSE;
+		    hit_hero = false;
 		    changed = !changed;
 		    if (!save(VS_MAGIC))
 		    {

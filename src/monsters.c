@@ -125,7 +125,7 @@ wanderer()
     tp = new_item();
     do
     {
-	find_floor((struct room *) NULL, &cp, FALSE, TRUE);
+	find_floor((struct room *) NULL, &cp, false, TRUE);
     } while (roomin(&cp) == proom);
     new_monster(tp, randmonster(TRUE), &cp);
     if (on(player, SEEMONST))

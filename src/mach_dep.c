@@ -64,7 +64,7 @@ over:
     if (time(NULL) - sbuf.st_mtime > 10)
     {
 	if (unlink(lockfile) < 0)
-	    return FALSE;
+	    return false;
 	goto over;
     }
     else
@@ -86,12 +86,12 @@ over:
 		if (time(NULL) - sbuf.st_mtime > 10)
 		{
 		    if (unlink(lockfile) < 0)
-			return FALSE;
+			return false;
 		}
 		sleep(1);
 	    }
 	else
-	    return FALSE;
+	    return false;
     }
 }
 

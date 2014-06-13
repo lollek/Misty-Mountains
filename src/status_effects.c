@@ -79,7 +79,7 @@ become_confused(bool permanent)
     player.t_flags |= ISHUH;
     if (!permanent)
       fuse(remove_confusion, 0, HUHDURATION, AFTER);
-    look(FALSE);
+    look(false);
   }
   msg(is_hallucinating(player)
     ? "what a trippy feeling!"
@@ -129,7 +129,7 @@ become_monster_seeing(bool permanent)
   if (!permanent)
     fuse((void(*)())turn_see, TRUE, MFINDDURATION, AFTER);
   /* FIXME: Make sure that this work */
-  if (!turn_see(FALSE))
+  if (!turn_see(false))
     msg("you have a %s feeling for a moment, then it passes",
         is_hallucinating(player) ? "normal" : "strange");
 }
@@ -142,13 +142,13 @@ become_tripping(bool permanent)
   else
   {
     if (on(player, SEEMONST))
-      turn_see(FALSE);
+      turn_see(false);
     start_daemon(visuals, 0, BEFORE);
     seenstairs = seen_stairs();
     player.t_flags |= ISHALU;
     if (!permanent)
       fuse(remove_tripping, 0, SEEDURATION, AFTER);
-    look(FALSE);
+    look(false);
   }
   msg("Oh, wow!  Everything seems so cosmic!");
 }
@@ -197,7 +197,7 @@ become_true_seeing(bool permanent)
     player.t_flags |= CANSEE;
     if (!permanent)
       fuse(remove_true_seeing, 0, SEEDURATION, AFTER);
-    look(FALSE);
+    look(false);
   }
   msg("everything suddenly looks sharper");
   cure_blindness();
@@ -216,7 +216,7 @@ remove_true_seeing()
 void
 become_hasted(bool permanent)
 {
-  after = FALSE;
+  after = false;
   if (on(player, ISHASTE))
   {
     no_command += rnd(8);
@@ -250,7 +250,7 @@ void become_blind(bool permanent)
     player.t_flags |= ISBLIND;
     if (!permanent)
       fuse(cure_blindness, 0, SEEDURATION, AFTER);
-    look(FALSE);
+    look(false);
   }
   msg(is_hallucinating(player)
     ? "oh, bummer!  Everything is dark!  Help!"
@@ -282,7 +282,7 @@ become_levitating(bool permanent)
     player.t_flags |= ISLEVIT;
     if (!permanent)
       fuse(remove_levitating, 0, HEALTIME, AFTER);
-    look(FALSE);
+    look(false);
   }
   msg(is_hallucinating(player)
     ? "oh, wow!  You're floating in the air!"

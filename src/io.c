@@ -72,7 +72,7 @@ endmsg()
 	strcpy(huh, msgbuf);
     if (mpos)
     {
-	look(FALSE);
+	look(false);
 	mvaddstr(0, mpos, "--More--");
 	refresh();
 	if (!msg_esc)
@@ -132,7 +132,7 @@ int
 step_ok(int ch)
 {
   if (ch == SHADOW || ch == HWALL || ch == VWALL)
-    return FALSE;
+    return false;
   return !isalpha(ch);
 }
 

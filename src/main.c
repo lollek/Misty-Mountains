@@ -42,7 +42,7 @@ bool init_old_game();                     /* src/init.c */
 int
 main(int argc, char **argv)
 {
-  bool retval = FALSE;
+  bool retval = false;
 
   /* Open scoreboard and drop setuid/getgid, so we can modify the score later */
   open_score_and_drop_setuid_setgid();
@@ -57,7 +57,7 @@ main(int argc, char **argv)
       return 1;
   }
 
-  if (retval == FALSE)
+  if (retval == false)
     return 1;
 
   /* Play game! */
@@ -146,7 +146,7 @@ quit(int sig)
     refresh();
     mpos = 0;
     count = 0;
-    to_death = FALSE;
+    to_death = false;
   }
 }
 
@@ -182,7 +182,7 @@ shell()
   refresh();
   endwin();
   putchar('\n');
-  after = FALSE;
+  after = false;
   fflush(stdout);
 
   /* Return to shell */
@@ -226,14 +226,14 @@ parse_args(int argc, char **argv)
 
   /* Global default options */
   ESCDELAY = 0;                 /* Set the delay before ESC cancels */
-  terse = FALSE;                /* Terse output */
-  fight_flush = FALSE;          /* Flush typeahead during battle */
-  jump = FALSE;                 /* Show running as a series of jumps */
+  terse = false;                /* Terse output */
+  fight_flush = false;          /* Flush typeahead during battle */
+  jump = false;                 /* Show running as a series of jumps */
   see_floor = TRUE;             /* Show the lamp-illuminated floor */
-  passgo = FALSE;               /* Follow the turnings in passageways */
+  passgo = false;               /* Follow the turnings in passageways */
   tombstone = TRUE;             /* Print out tombstone when killed */
   inv_type = INV_OVER;          /* Inventory style */
-  use_colors = FALSE;           /* Use ncurses colors */
+  use_colors = false;           /* Use ncurses colors */
 
   /* Default file name for save file */
   strcpy(file_name, md_gethomedir());
@@ -258,7 +258,7 @@ parse_args(int argc, char **argv)
       case 'c': use_colors = TRUE;
       when 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg);
       when 'f': fight_flush = TRUE;
-      when 'F': see_floor = FALSE;
+      when 'F': see_floor = false;
       when 'i': if (atoi(optarg) >= 0 && atoi(optarg) <= 2)
                   inv_type = atoi(optarg);
       when 'j': jump = TRUE;
@@ -269,7 +269,7 @@ parse_args(int argc, char **argv)
       when 's': noscore = TRUE; score(0, -1, 0); exit(0);
       when 'S': seed = atoi(optarg);
       when 't': terse = TRUE;
-      when 'T': tombstone = FALSE;
+      when 'T': tombstone = false;
       when 'W': potential_wizard = wizard = noscore = TRUE;
                 player.t_flags |= SEEMONST;
       when '0':
