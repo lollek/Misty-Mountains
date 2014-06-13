@@ -174,15 +174,3 @@ visuals()
 	    addcch((rnd(26) + 'A') | A_STANDOUT);
     }
 }
-
-/*
- * land:
- *	Land from a levitation potion
- */
-void
-land()
-{
-    player.t_flags &= ~ISLEVIT;
-    msg(choose_str("bummer!  You've hit the ground",
-		   "you float gently to the ground"));
-}

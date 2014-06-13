@@ -691,7 +691,6 @@ char	*vowelstr(char *str);
 
 void doctor();
 void end_line();
-void land();
 void leave(int);
 void print_disc(char);
 void quit(int);

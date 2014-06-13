@@ -33,6 +33,7 @@ void remove_hasted();
 void become_blind(bool permanent);
 void cure_blindness();
 void become_levitating(bool permanent);
+void remove_levitating();
 void raise_level();                         /* Level up */
 
 #endif /* _ROGUE14_STATUS_EFFECTS_H_ */

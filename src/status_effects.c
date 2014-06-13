@@ -115,7 +115,8 @@ become_tripping(bool permanent)
   msg("Oh, wow!  Everything seems so cosmic!");
 }
 
-void remove_tripping()
+void
+remove_tripping()
 {
   register THING *tp;
 
@@ -233,20 +234,30 @@ cure_blindness()
   }
 }
 
-void become_levitating(bool permanent)
+void
+become_levitating(bool permanent)
 {
   if (is_levitating(player))
-    lengthen(land, HEALTIME);
+    lengthen(remove_levitating, HEALTIME);
   else
   {
     player.t_flags |= ISLEVIT;
     if (!permanent)
-      fuse(land, 0, HEALTIME, AFTER);
+      fuse(remove_levitating, 0, HEALTIME, AFTER);
     look(FALSE);
   }
   msg(is_hallucinating(player)
     ? "oh, wow!  You're floating in the air!"
     : "you start to float in the air");
+}
+
+void
+remove_levitating()
+{
+  player.t_flags &= ~ISLEVIT;
+  msg(is_hallucinating(player) 
+    ? "bummer!  You've hit the ground"
+    : "you float gently to the ground");
 }
 
 void
