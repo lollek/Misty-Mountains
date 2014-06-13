@@ -7,6 +7,8 @@
 #define HUHDURATION	spread(20)
 #define MFINDDURATION	spread(20)
 #define HASTEDURATION	rnd(4)+4
+#define SEEDURATION	spread(850)
+#define HEALTIME	spread(30)
 
 /* Status macros */
 #define is_hallucinating(thing) ((bool)(((thing).t_flags & ISHALU) != 0))

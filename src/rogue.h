@@ -113,12 +113,9 @@ typedef enum INV_TYPE
 /* Various constants */
 #define BEARTIME	spread(3)
 #define SLEEPTIME	spread(5)
-#define HOLDTIME	spread(2)
 #define WANDERTIME	spread(70)
 #define BEFORE		spread(1)
 #define AFTER		spread(2)
-#define HEALTIME	30
-#define SEEDURATION	850
 #define HUNGERTIME	1300
 #define MORETIME	150
 #define STOMACHSIZE	2000
