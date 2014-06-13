@@ -25,6 +25,7 @@ void become_extra_healed();                 /* Better healing */
 void become_stronger();                     /* Add strength */
 void become_monster_seeing(bool permanent); /* Add see-monster effect */
 void become_tripping(bool permanent);       /* Add tripping effect */
+void remove_tripping();
 void become_true_seeing(bool permanent);    /* Add see-invisiable effect */
 void remove_true_seeing();
 void become_hasted(bool permanent);         /* Become quicker */

@@ -689,7 +689,6 @@ char	*ring_num(THING *obj);
 char	*set_mname(THING *tp);
 char	*vowelstr(char *str);
 
-void come_down();
 void doctor();
 void end_line();
 void land();

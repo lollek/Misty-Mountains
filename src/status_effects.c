@@ -27,7 +27,7 @@ become_poisoned()
   {
     chg_str(-(rnd(3) + 1));
     msg("you feel very sick now");
-    come_down();
+    remove_tripping();
   }
 }
 
@@ -73,7 +73,7 @@ become_extra_healed()
     pstats.s_hpt = ++max_hp;
   }
   cure_blindness();
-  come_down();
+  remove_tripping();
   msg("you begin to feel much better");
 }
 
@@ -100,7 +100,7 @@ void
 become_tripping(bool permanent)
 {
   if (is_hallucinating(player))
-    lengthen(come_down, SEEDURATION);
+    lengthen(remove_tripping, SEEDURATION);
   else
   {
     if (on(player, SEEMONST))
@@ -109,10 +109,43 @@ become_tripping(bool permanent)
     seenstairs = seen_stairs();
     player.t_flags |= ISHALU;
     if (!permanent)
-      fuse(come_down, 0, SEEDURATION, AFTER);
+      fuse(remove_tripping, 0, SEEDURATION, AFTER);
     look(FALSE);
   }
   msg("Oh, wow!  Everything seems so cosmic!");
+}
+
+void remove_tripping()
+{
+  register THING *tp;
+
+  if (!is_hallucinating(player))
+    return;
+
+  kill_daemon(visuals);
+  player.t_flags &= ~ISHALU;
+
+  if (is_blind(player))
+    return;
+
+  /* undo the things */
+  for (tp = lvl_obj; tp != NULL; tp = next(tp))
+    if (cansee(tp->o_pos.y, tp->o_pos.x))
+      mvaddcch(tp->o_pos.y, tp->o_pos.x, tp->o_type);
+
+  /* undo the monsters */
+  for (tp = mlist; tp != NULL; tp = next(tp))
+  {
+    move(tp->t_pos.y, tp->t_pos.x);
+    if (cansee(tp->t_pos.y, tp->t_pos.x))
+      if (!is_invisible(*tp) || on(player, CANSEE))
+        addcch(tp->t_disguise);
+      else
+        addcch(chat(tp->t_pos.y, tp->t_pos.x));
+    else if (on(player, SEEMONST))
+      addcch(tp->t_type | A_STANDOUT);
+  }
+  msg("Everything looks SO boring now.");
 }
 
 void

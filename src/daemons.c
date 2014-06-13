@@ -132,54 +132,6 @@ stomach()
 }
 
 /*
- * come_down:
- *	Take the hero down off her acid trip.
- */
-void
-come_down()
-{
-    register THING *tp;
-    register bool seemonst;
-
-    if (!is_hallucinating(player))
-	return;
-
-    kill_daemon(visuals);
-    player.t_flags &= ~ISHALU;
-
-    if (is_blind(player))
-	return;
-
-    /*
-     * undo the things
-     */
-    for (tp = lvl_obj; tp != NULL; tp = next(tp))
-	if (cansee(tp->o_pos.y, tp->o_pos.x))
-	    mvaddcch(tp->o_pos.y, tp->o_pos.x, tp->o_type);
-
-    /*
-     * undo the monsters
-     */
-    seemonst = on(player, SEEMONST);
-    for (tp = mlist; tp != NULL; tp = next(tp))
-    {
-	move(tp->t_pos.y, tp->t_pos.x);
-	if (cansee(tp->t_pos.y, tp->t_pos.x))
-	    if (!is_invisible(*tp) || on(player, CANSEE))
-		addcch(tp->t_disguise);
-	    else
-		addcch(chat(tp->t_pos.y, tp->t_pos.x));
-	else if (seemonst)
-	{
-	    standout();
-	    addcch(tp->t_type);
-	    standend();
-	}
-    }
-    msg("Everything looks SO boring now.");
-}
-
-/*
  * visuals:
  *	change the characters for the player
  */
