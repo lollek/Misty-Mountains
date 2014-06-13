@@ -149,7 +149,7 @@ look(bool wakeup)
 	    if ((tp = pp->p_monst) == NULL)
 		ch = trip_ch(y, x, ch);
 	    else
-		if (on(player, SEEMONST) && on(*tp, ISINVIS))
+		if (on(player, SEEMONST) && is_invisible(*tp))
 		{
 		    if (door_stop && !firstmove)
 			running = FALSE;
@@ -670,7 +670,7 @@ invis_on()
 
     player.t_flags |= CANSEE;
     for (mp = mlist; mp != NULL; mp = next(mp))
-	if (on(*mp, ISINVIS) && see_monst(mp) && !is_hallucinating(player))
+	if (is_invisible(*mp) && see_monst(mp) && !is_hallucinating(player))
 	    mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
 }
 

@@ -13,6 +13,7 @@
 #define is_blind(thing)         ((bool)(((thing).t_flags & ISBLIND) != 0))
 #define is_levitating(thing)    ((bool)(((thing).t_flags & ISLEVIT) != 0))
 #define is_confused(thing)      ((bool)(((thing).t_flags & ISHUH) != 0))
+#define is_invisible(thing)     ((bool)(((thing).t_flags & ISINVIS) != 0))
 
 /* Functions */
 void become_restored();                     /* Remove bad status effects */

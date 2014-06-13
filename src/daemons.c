@@ -97,7 +97,7 @@ unsee()
     register THING *th;
 
     for (th = mlist; th != NULL; th = next(th))
-	if (on(*th, ISINVIS) && see_monst(th))
+	if (is_invisible(*th) && see_monst(th))
 	    mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
     player.t_flags &= ~CANSEE;
 }
@@ -220,7 +220,7 @@ come_down()
     {
 	move(tp->t_pos.y, tp->t_pos.x);
 	if (cansee(tp->t_pos.y, tp->t_pos.x))
-	    if (!on(*tp, ISINVIS) || on(player, CANSEE))
+	    if (!is_invisible(*tp) || on(player, CANSEE))
 		addcch(tp->t_disguise);
 	    else
 		addcch(chat(tp->t_pos.y, tp->t_pos.x));
