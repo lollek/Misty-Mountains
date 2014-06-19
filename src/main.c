@@ -17,8 +17,6 @@
 
 #include "rogue.h"
 
-#define VERSION "2"
-
 enum game_mode_t
 {
   LOAD_GAME = 0,
