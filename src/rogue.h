@@ -107,10 +107,10 @@ typedef enum INV_TYPE
 #define AMULET		','
 #define RING		'='
 #define STICK		'/'
-/* Combination or something of the above:
- * TODO: Make sure they don't bug as chars are usually unsigned */
-#define CALLABLE	-1
-#define R_OR_S		-2
+
+/* TODO: Make sure these don't bug as chars are usually unsigned */
+#define CALLABLE	-1 /* This means that we can rename it ?? */
+#define R_OR_S		-2 /* This means ring, wand of staff */
 
 /* Various constants */
 #define BEARTIME	spread(3)
