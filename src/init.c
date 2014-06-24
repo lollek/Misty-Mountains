@@ -436,10 +436,11 @@ init_names()
     register int nsyl;
     register char *cp, *sp;
     register int i, nwords;
+    char tmpbuf[MAXSTR*2];
 
     for (i = 0; i < MAXSCROLLS; i++)
     {
-	cp = prbuf;
+	cp = tmpbuf;
 	nwords = rnd(3) + 2;
 	while (nwords--)
 	{
@@ -447,7 +448,7 @@ init_names()
 	    while (nsyl--)
 	    {
 		sp = sylls[rnd((sizeof sylls) / (sizeof (char *)))];
-		if (&cp[strlen(sp)] > &prbuf[MAXNAME])
+		if (&cp[strlen(sp)] > &tmpbuf[MAXNAME])
 			break;
 		while (*sp)
 		    *cp++ = *sp++;
@@ -455,8 +456,8 @@ init_names()
 	    *cp++ = ' ';
 	}
 	*--cp = '\0';
-	s_names[i] = (char *) malloc((unsigned) strlen(prbuf)+1);
-	strcpy(s_names[i], prbuf);
+	s_names[i] = (char *) malloc((unsigned) strlen(tmpbuf)+1);
+	strcpy(s_names[i], tmpbuf);
     }
 }
 
