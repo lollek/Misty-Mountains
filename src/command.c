@@ -448,67 +448,68 @@ illcom(int ch)
     save_msg = true;
 }
 
-/*
- * search:
- *	player gropes about him to find hidden things.
- */
+/** search:
+ * player gropes about him to find hidden things. */
 void
 search()
 {
-    register int y, x;
-    register char *fp;
-    register int ey, ex;
-    int probinc;
-    bool found;
+  int y, x;
+  int probinc = (is_hallucinating(player) ? 3:0) + is_blind(player) ? 2:0;
+  bool found = false;
 
-    ey = hero.y + 1;
-    ex = hero.x + 1;
-    probinc = (is_hallucinating(player) ? 3 : 0);
-    probinc += (is_blind(player) ? 2 : 0);
-    found = false;
-    for (y = hero.y - 1; y <= ey; y++) 
-	for (x = hero.x - 1; x <= ex; x++)
-	{
-	    if (y == hero.y && x == hero.x)
-		continue;
-	    fp = &flat(y, x);
-	    if (!(*fp & F_REAL))
-		switch (chat(y, x))
-		{
-		    case VWALL: case HWALL:
-			if (rnd(5 + probinc) != 0)
-			    break;
-			chat(y, x) = DOOR;
-                        msg("a secret door");
-foundone:
-			found = true;
-			*fp |= F_REAL;
-			count = false;
-			running = false;
-			break;
-		    case FLOOR:
-			if (rnd(2 + probinc) != 0)
-			    break;
-			chat(y, x) = TRAP;
-			if (!terse)
-			    addmsg("you found ");
-			if (is_hallucinating(player))
-			    msg(tr_name[rnd(NTRAPS)]);
-			else {
-			    msg(tr_name[*fp & F_TMASK]);
-			    *fp |= F_SEEN;
-			}
-			goto foundone;
-			break;
-		    case SHADOW:
-			if (rnd(3 + probinc) != 0)
-			    break;
-			chat(y, x) = PASSAGE;
-			goto foundone;
-		}
-	}
-    if (found)
-	look(false);
+  for (y = hero.y - 1; y <= hero.y + 1; y++)
+    for (x = hero.x - 1; x <= hero.x + 1; x++)
+    {
+      char fp = flat(y, x);
+      char chatyx = chat(y, x);
+
+      /* Real wall/floor/shadow */
+      if (fp & F_REAL)
+        continue;
+
+      /* Wall */
+      if ((chatyx == VWALL || chatyx == HWALL) &&
+          rnd(5 + probinc) == 0)
+      {
+        chat(y, x) = DOOR;
+        msg("a secret door");
+        found = true;
+        fp |= F_REAL;
+      }
+
+      /* Floor */
+      if (chatyx == FLOOR && rnd(2 + probinc) == 0)
+      {
+        chat(y, x) = TRAP;
+
+        if (!terse)
+          addmsg("you found ");
+
+        if (is_hallucinating(player))
+          msg(tr_name[rnd(NTRAPS)]);
+        else {
+          msg(tr_name[fp & F_TMASK]);
+          fp |= F_SEEN;
+        }
+
+        found = true;
+        fp |= F_REAL;
+      }
+
+      /* Shadow */
+      if (chatyx == SHADOW && rnd(3 + probinc) == 0)
+      {
+        chat(y, x) = PASSAGE;
+        found = true;
+        fp |= F_REAL;
+      }
+    }
+  if (found)
+  {
+    look(false);
+    count = false;
+    running = false;
+  }
 }
 
 /*
