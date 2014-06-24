@@ -126,6 +126,7 @@ typedef enum INV_TYPE
 #define RIGHT		1
 #define BOLT_LENGTH	6
 #define LAMPDIST	3
+#define CONCURRENT_RINGS	2	/* How many rings we can wield */
 
 /* Save against things */
 #define VS_POISON	00
@@ -498,7 +499,6 @@ void	conn(int r1, int r2);
 void	command();
 void	create_obj();
 
-void	current(THING *cur, char *how, char *where);
 void	d_level();
 void	death(char monst);
 char	death_monst();

@@ -19,6 +19,8 @@
 #include "status_effects.h"
 #include "scrolls.h"
 
+void print_currently_wearing(char thing);
+
 /*
  * command:
  *	Process the user commands
@@ -63,9 +65,8 @@ command()
 	    refresh();			/* Draw screen */
 	take = 0;
 	after = true;
-	/*
-	 * Read command or continue run
-	 */
+
+	/* Read command or continue run */
 	if (!no_command)
 	{
 	    if (running || to_death)
@@ -336,13 +337,9 @@ over:
 			countch = dir_ch;
 			goto over;
 		    }
-		when ')': current(cur_weapon, "wielding", NULL);
-		when ']': current(cur_armor, "wearing", NULL);
-		when '=':
-		    current(cur_ring[LEFT], "wearing",
-					    terse ? "(L)" : "on left hand");
-		    current(cur_ring[RIGHT], "wearing",
-					    terse ? "(R)" : "on right hand");
+		when ')': print_currently_wearing(WEAPON); after = false;
+		when ']': print_currently_wearing(ARMOR);  after = false;
+		when '=': print_currently_wearing(RING);  after = false;
 		when '@':
 		    stat_msg = true;
 		    status();
@@ -770,32 +767,36 @@ norm:
     }
 }
 
-/*
- * current:
- *	Print the current weapon/armor
- */
+/** current:
+ * Print the current weapon/armor */
 void
-current(THING *cur, char *how, char *where)
+print_currently_wearing(char thing)
 {
-    after = false;
-    if (cur != NULL)
-    {
-	if (!terse)
-	    addmsg("you are %s (", how);
-	inv_describe = false;
-	addmsg("%c) %s", cur->o_packch, inv_name(cur, true));
-	inv_describe = true;
-	if (where)
-	    addmsg(" %s", where);
-	endmsg();
+  bool item_found = false;
+
+  inv_describe = false;
+  if (!terse)
+    addmsg("You are %s ", thing == WEAPON ? "wielding" : "wearing");
+
+  if (thing == RING) {
+    unsigned i;
+    for (i = 0; i < CONCURRENT_RINGS; ++i)
+      if (cur_ring[i]) {
+        addmsg("%c) %s ", cur_ring[i]->o_packch, inv_name(cur_ring[i], true));
+        item_found = true;
+      }
+    if (item_found)
+      endmsg();
+
+  } else {
+    THING *current_thing = thing == WEAPON ? cur_weapon : cur_armor;
+    if (current_thing) {
+      msg("%c) %s", current_thing->o_packch, inv_name(current_thing, true));
+      item_found = true;
     }
-    else
-    {
-	if (!terse)
-	    addmsg("you are ");
-	addmsg("%s nothing", how);
-	if (where)
-	    addmsg(" %s", where);
-	endmsg();
-    }
+  }
+
+  if (!item_found)
+    msg("no %s", thing == WEAPON ? "weapon": thing == RING ? "rings":"armor");
+  inv_describe = true;
 }
