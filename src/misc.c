@@ -301,10 +301,7 @@ find_obj(int y, int x)
 
   /* It should have returned by now */
   if (wizard)
-  {
-    sprintf(prbuf, "Non-object %d,%d", y, x);
-    msg(prbuf);
-  }
+    msg("Non-object %d,%d", y, x);
   return NULL;
 }
 
@@ -544,13 +541,14 @@ call_it(struct obj_info *info)
   }
   else if (!info->oi_guess)
   {
+    char tmpbuf[MAXSTR];
     msg(terse ? "call it: " : "what do you want to call it? ");
-    if (get_str(prbuf, stdscr) == NORMAL)
+    if (get_str(tmpbuf, stdscr) == NORMAL)
     {
       if (info->oi_guess != NULL)
         free(info->oi_guess);
-      info->oi_guess = malloc((unsigned int) strlen(prbuf) + 1);
-      strcpy(info->oi_guess, prbuf);
+      info->oi_guess = malloc((unsigned int) strlen(tmpbuf) + 1);
+      strcpy(info->oi_guess, tmpbuf);
     }
   }
 }
