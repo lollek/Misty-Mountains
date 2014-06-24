@@ -22,11 +22,25 @@ if [[ $name == "install" ]]; then
   for filetype in 6 cat doc html me; do
     cp -v "$srcdir/rogue14.$filetype" "$PREFIX/share/rogue14"
   done
-  info "[ Done ]"
+  touch "$PREFIX/share/rogue14/rogue14.highscore"
+
+  # Set permissions
+  echo -n "Attempting to set group to games and add sgid ..."
+  if chgrp games "$PREFIX/bin/rogue14" "$PREFIX/share/rogue14/rogue14.highscore"
+     chmod 2755 "$PREFIX/bin/rogue14" &&
+     chmod 0664 "$PREFIX/share/rogue14/rogue14.highscore"; then
+    echo "Success!"
+    echo "All players need to be added to games group for access to highscore"
+  else
+    echo "Failed!"
+    echo -n "You may want to create a $PREFIX/share/rogue14.highscore with full"
+    echo " access granted in order for everyone to be able to play"
+  fi
+  info "[ Installation complete ]"
 
 elif [[ $name == "remove" ]]; then
-  info "[ Removing rogue14 from $PREFIX ]"
+  info "[ Uninstalling rogue14 from $PREFIX ]"
   rm -fv "$PREFIX/bin/rogue14"
   rm -frv "$PREFIX/share/rogue14"
-  info "[ Done ]"
+  info "[ Uninstallation complete ]"
 fi
