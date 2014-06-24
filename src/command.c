@@ -21,6 +21,7 @@
 
 void print_currently_wearing(char thing);
 bool levit_check();
+void identify();
 
 /*
  * command:
@@ -580,102 +581,98 @@ help()
     wrefresh(stdscr);
 }
 
-/*
- * identify:
- *	Tell the player what a certain thing is.
- */
+/** identify:
+ * Tell the player what a certain thing is. */
 void
 identify()
 {
-    register int ch;
-    register struct h_list *hp;
-    register char *str;
-    static struct h_list ident_list[] = {
-	{VWALL,		"wall of a room",		false},
-	{HWALL,		"wall of a room",		false},
-	{GOLD,		"gold",				false},
-	{STAIRS,	"a staircase",			false},
-	{DOOR,		"door",				false},
-	{FLOOR,		"room floor",			false},
-	{PLAYER,	"you",				false},
-	{PASSAGE,	"passage",			false},
-	{TRAP,		"trap",				false},
-	{POTION,	"potion",			false},
-	{SCROLL,	"scroll",			false},
-	{FOOD,		"food",				false},
-	{WEAPON,	"weapon",			false},
-	{SHADOW,	"solid rock",			false},
-	{ARMOR,		"armor",			false},
-	{AMULET,	"the Amulet of Yendor",		false},
-	{RING,		"ring",				false},
-	{STICK,		"wand or staff",		false},
-	{'\0'}
-    };
+  int ch;
+  char *str;
+  static struct h_list ident_list[] = {
+    {VWALL,	"wall of a room",	false},
+    {HWALL,	"wall of a room",	false},
+    {GOLD,	"gold",			false},
+    {STAIRS,	"a staircase",		false},
+    {DOOR,	"door",			false},
+    {FLOOR,	"room floor",		false},
+    {PLAYER,	"you",			false},
+    {PASSAGE,	"passage",		false},
+    {TRAP,	"trap",			false},
+    {POTION,	"potion",		false},
+    {SCROLL,	"scroll",		false},
+    {FOOD,	"food",			false},
+    {WEAPON,	"weapon",		false},
+    {SHADOW,	"solid rock",		false},
+    {ARMOR,	"armor",		false},
+    {AMULET,	"the Amulet of Yendor",	false},
+    {RING,	"ring",			false},
+    {STICK,	"wand or staff",	false},
+    {'\0'}
+  };
 
-    msg("what do you want identified? ");
-    ch = readchar();
-    mpos = 0;
-    if (ch == ESCAPE)
-    {
-	msg("");
-	return;
-    }
-    if (isupper(ch))
-	str = monsters[ch-'A'].m_name;
-    else
-    {
-	str = "unknown character";
-	for (hp = ident_list; hp->h_ch != '\0'; hp++)
-	    if (hp->h_ch == ch)
-	    {
-		str = hp->h_desc;
-		break;
-	    }
-    }
-    msg("'%s': %s", unctrl(ch), str);
+  msg("what do you want identified? ");
+  ch = readchar();
+  mpos = 0;
+  if (ch == ESCAPE)
+  {
+    msg("");
+    return;
+  }
+  if (islower(ch))
+    ch = toupper(ch);
+  if (isupper(ch))
+    str = monsters[ch-'A'].m_name;
+  else
+  {
+    struct h_list *hp;
+    str = "unknown character";
+    for (hp = ident_list; hp->h_ch != '\0'; hp++)
+      if (hp->h_ch == ch)
+      {
+        str = hp->h_desc;
+        break;
+      }
+  }
+  msg("'%s': %s", unctrl(ch), str);
 }
 
-/*
- * d_level:
- *	He wants to go down a level
- */
+/** d_level:
+ * He wants to go down a level */
 void
 d_level()
 {
-    if (levit_check())
-	return;
-    if (chat(hero.y, hero.x) != STAIRS)
-	msg("I see no way down");
-    else
-    {
-	level++;
-	seenstairs = false;
-	new_level();
-    }
+  if (levit_check())
+    return;
+  if (chat(hero.y, hero.x) != STAIRS)
+    msg("I see no way down");
+  else
+  {
+    level++;
+    seenstairs = false;
+    new_level();
+  }
 }
 
-/*
- * u_level:
- *	He wants to go up a level
- */
-void
+/** u_level:
+ * He wants to go up a level */
+  void
 u_level()
 {
-    if (levit_check())
-	return;
-    if (chat(hero.y, hero.x) == STAIRS)
-	if (amulet)
-	{
-	    level--;
-	    if (level == 0)
-		total_winner();
-	    new_level();
-	    msg("you feel a wrenching sensation in your gut");
-	}
-	else
-	    msg("your way is magically blocked");
+  if (levit_check())
+    return;
+  if (chat(hero.y, hero.x) == STAIRS)
+    if (amulet)
+    {
+      level--;
+      if (level == 0)
+        total_winner();
+      new_level();
+      msg("you feel a wrenching sensation in your gut");
+    }
     else
-	msg("I see no way up");
+      msg("your way is magically blocked");
+  else
+    msg("I see no way up");
 }
 
 /** levit_check:
@@ -684,7 +681,8 @@ u_level()
 bool
 levit_check()
 {
-  if (is_levitating(player)) {
+  if (is_levitating(player))
+  {
     msg("You can't. You're floating off the ground!");
     return true;
   }
@@ -706,7 +704,8 @@ call()
   if (obj == NULL)
     return;
 
-  switch (obj->o_type) {
+  switch (obj->o_type)
+  {
     struct obj_info *op = NULL;
 
     case FOOD: msg("you can't call that anything"); return;
@@ -740,7 +739,8 @@ call()
       elsewise = obj->o_label;
   }
 
-  if (already_known) {
+  if (already_known)
+  {
     msg("that has already been identified");
     return;
   }
@@ -758,7 +758,8 @@ call()
       free(*guess);
       *guess = NULL;
     }
-    if (strlen(tmpbuf) > 0) {
+    if (strlen(tmpbuf) > 0)
+    {
       *guess = malloc((unsigned int) strlen(tmpbuf) + 1);
       strcpy(*guess, tmpbuf);
     }
@@ -776,7 +777,8 @@ print_currently_wearing(char thing)
   if (!terse)
     addmsg("You are %s ", thing == WEAPON ? "wielding" : "wearing");
 
-  if (thing == RING) {
+  if (thing == RING)
+  {
     unsigned i;
     for (i = 0; i < CONCURRENT_RINGS; ++i)
       if (cur_ring[i]) {
@@ -786,7 +788,9 @@ print_currently_wearing(char thing)
     if (item_found)
       endmsg();
 
-  } else {
+  }
+  else
+  {
     THING *current_thing = thing == WEAPON ? cur_weapon : cur_armor;
     if (current_thing) {
       msg("%c) %s", current_thing->o_packch, inv_name(current_thing, true));
