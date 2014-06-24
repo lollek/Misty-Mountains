@@ -20,33 +20,36 @@
 #include "rogue.h"
 #include "score.h"
 
-/* FIXME: highscore should NOT be in the local folder */
-#define SCOREFILE ".rogue14_highscore"
-
 static FILE *scoreboard = NULL; /* File descriptor for score file */
 
 extern char version[], encstr[];
 
 /** open_score_and_drop_setuid_setgid:
- * Open up the score file for future use */
-void
+ * Open up the score file for future use
+ * We drop setgid privileges after opening the score file, so subsequent
+ * open()'s will fail.  Just reuse the earlier filehandle. */
+int
 open_score_and_drop_setuid_setgid()
 {
-  /* We drop setgid privileges after opening the score file, so subsequent
-   * open()'s will fail.  Just reuse the earlier filehandle. */
+  /* NB: SCOREDIR comes from Makefile */
+  const char *scorefile = SCOREDIR "rogue14.highscore";
 
-  scoreboard = fopen(SCOREFILE, "r+");
+  /* Open file */
+  scoreboard = fopen(scorefile, "r+");
 
-  if (scoreboard == NULL && errno == ENOENT)
-  {
-    scoreboard = fopen(SCOREFILE, "w+");
-    chmod(SCOREFILE, 0664);
+  if (scoreboard == NULL && errno == ENOENT) {
+    scoreboard = fopen(scorefile, "w+");
+    if (scoreboard != NULL) {
+      chmod(scorefile, 0664);
+      chown(scorefile, geteuid(), getegid());
+    }
   }
 
   if (scoreboard == NULL) {
     fprintf(stderr, "Could not open %s for writing: %s\n",
-            SCOREFILE, strerror(errno));
+            scorefile, strerror(errno));
     fflush(stderr);
+    return 1;
   }
 
   /* Drop setuid/setgid */
@@ -56,13 +59,14 @@ open_score_and_drop_setuid_setgid()
 
     if (setregid(realgid, realgid) != 0) {
       perror("Could not drop setgid privileges.  Aborting.");
-      exit(1);
+      return 1;
     }
     if (setreuid(realuid, realuid) != 0) {
       perror("Could not drop setuid privileges.  Aborting.");
-      exit(1);
+      return 1;
     }
   }
+  return 0;
 }
 
 

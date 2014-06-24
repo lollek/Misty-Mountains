@@ -28,7 +28,7 @@ static enum game_mode_t parse_args(int argc, char **argv);
 static void endit(int sig);
 static void fatal();
 
-void open_score_and_drop_setuid_setgid(); /* src/save.c */
+int open_score_and_drop_setuid_setgid(); /* src/save.c */
 void auto_save(int);                      /* src/save.c */
 
 bool init_new_game();                     /* src/init.c */
@@ -43,7 +43,8 @@ main(int argc, char **argv)
   bool retval = false;
 
   /* Open scoreboard and drop setuid/getgid, so we can modify the score later */
-  open_score_and_drop_setuid_setgid();
+  if (open_score_and_drop_setuid_setgid() != 0)
+    return 1;
 
   /* Parse args and then init new (or old) game */
   switch (parse_args(argc, argv))

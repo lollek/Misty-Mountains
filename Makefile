@@ -13,11 +13,11 @@
 PROGRAM  = rogue14
 VERSION  = 2
 PREFIX   = /usr/local
-SCOREFILE= .rogue14_highscore
+SCOREDIR = $(PREFIX)/share/$(PROGRAM)/
 
 CC       = gcc
 CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic
-DFLAGS   = -DVERSION=\"$(VERSION)\"
+DFLAGS   = -DVERSION=\"$(VERSION)\" -DSCOREDIR=\"$(SCOREDIR)\"
 LDFLAGS  = -lcurses
 
 CFILES   = $(wildcard src/*.c)
@@ -47,7 +47,7 @@ doc.groff:
 
 docs:
 	$(foreach doc, $(wildcard docsrc/*), \
-	  sed -e 's/@PROGRAM@/$(PROGRAM)/' -e 's/@SCOREFILE@/$(SCOREFILE)/' \
+	  sed -e 's/@PROGRAM@/$(PROGRAM)/' -e 's/@SCOREFILE@/.rogue14_highscore/' \
 	  $(doc) > $(notdir $(doc));)
 
 install: $(PROGRAM) docs
