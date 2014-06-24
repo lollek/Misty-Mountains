@@ -24,7 +24,6 @@ CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic
 DFLAGS   = -DVERSION=\"$(VERSION)\"
 LDFLAGS  = -lcurses
 RM       = rm -f
-OUTFLAG  = -o
 
 .c.o:
 	$(CC) $(CFLAGS) $(DFLAGS) -c -o $*.o $*.c
