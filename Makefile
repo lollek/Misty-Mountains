@@ -12,23 +12,24 @@
 
 PROGRAM  = rogue14
 VERSION  = 2
+PREFIX   = /usr/local
 SCOREFILE= .rogue14_highscore
-HDRS     = $(wildcard src/*.h)
+
+CC       = gcc
+CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic
+DFLAGS   = -DVERSION=\"$(VERSION)\"
+LDFLAGS  = -lcurses
+
 CFILES   = $(wildcard src/*.c)
 OBJS     = $(addsuffix .o, $(basename $(CFILES)))
 DOCSRC   = $(wildcard docsrc/*)
 DOCS     = $(notdir $(DOCSRC))
 MISC     = install CHANGELOG.TXT LICENSE.TXT rogue.png rogue.desktop
-CC       = gcc
-CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic
-DFLAGS   = -DVERSION=\"$(VERSION)\"
-LDFLAGS  = -lcurses
-RM       = rm -f
 
-.c.o:
+%.o:
 	$(CC) $(CFLAGS) $(DFLAGS) -c -o $*.o $*.c
 
-$(PROGRAM): $(HDRS) $(OBJS)
+$(PROGRAM): $(OBJS)
 	$(CC) -o $@ $(LDFLAGS) $(OBJS)
 
 clean:
@@ -49,5 +50,13 @@ docs:
 	  sed -e 's/@PROGRAM@/$(PROGRAM)/' -e 's/@SCOREFILE@/$(SCOREFILE)/' \
 	  $(doc) > $(notdir $(doc));)
 
+install: final docs
+	@PREFIX=$(PREFIX) ./install
+
+remove:
+	@PREFIX=$(PREFIX) ./remove
+
 dist: final docs
 	tar czf $(PROGRAM)-$(VERSION)-linux.tar.gz $(PROGRAM) $(DOCS) $(MISC)
+
+.PHONY: clean final doc.nroff doc.groff install remove dist
