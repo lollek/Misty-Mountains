@@ -691,80 +691,78 @@ levit_check()
     return true;
 }
 
-/*
- * call:
- *	Allow a user to call a potion, scroll, or ring something
- */
+/** call:
+ * Allow a user to call a potion, scroll, or ring something */
 void
 call()
 {
-    register THING *obj;
-    register struct obj_info *op = NULL;
-    register char **guess, *elsewise = NULL;
-    register bool *know;
+  THING *obj = get_item("call", CALLABLE);
+  char **guess;
+  char *elsewise = NULL;
+  bool already_known = false;
+  char tmpbuf[MAXSTR] = { '\0' };
 
-    obj = get_item("call", CALLABLE);
+  /* Make certain that it is somethings that we want to wear */
+  if (obj == NULL)
+    return;
 
-    /* Make certain that it is somethings that we want to wear */
-    if (obj == NULL)
-	return;
-    switch (obj->o_type)
-    {
-	case RING:
-	    op = &ring_info[obj->o_which];
-	    elsewise = r_stones[obj->o_which];
-	    goto norm;
-	when POTION:
-	    op = &pot_info[obj->o_which];
-	    elsewise = p_colors[obj->o_which];
-	    goto norm;
-	when SCROLL:
-	    op = &scr_info[obj->o_which];
-	    elsewise = s_names[obj->o_which];
-	    goto norm;
-	when STICK:
-	    op = &ws_info[obj->o_which];
-	    elsewise = ws_made[obj->o_which];
-norm:
-	    know = &op->oi_know;
-	    guess = &op->oi_guess;
-	    if (*guess != NULL)
-		elsewise = *guess;
-	when FOOD:
-	    msg("you can't call that anything");
-	    return;
-	otherwise:
-	    guess = &obj->o_label;
-	    know = NULL;
-	    elsewise = obj->o_label;
-    }
-    if (know != NULL && *know)
-    {
-	msg("that has already been identified");
-	return;
-    }
-    if (elsewise != NULL && elsewise == *guess)
-    {
-	if (!terse)
-	    addmsg("Was ");
-	msg("called \"%s\"", elsewise);
-    }
-    if (terse)
-	msg("call it: ");
-    else
-	msg("what do you want to call it? ");
+  switch (obj->o_type) {
+    struct obj_info *op = NULL;
 
-    if (elsewise == NULL)
-	strcpy(prbuf, "");
-    else
-	strcpy(prbuf, elsewise);
-    if (get_str(prbuf, stdscr) == NORMAL)
-    {
-	if (*guess != NULL)
-	    free(*guess);
-	*guess = malloc((unsigned int) strlen(prbuf) + 1);
-	strcpy(*guess, prbuf);
+    case FOOD: msg("you can't call that anything"); return;
+
+    case RING:
+      op = &ring_info[obj->o_which];
+      already_known = op->oi_know;
+      guess = &op->oi_guess;
+      elsewise = *guess ? *guess : r_stones[obj->o_which];
+
+    when POTION:
+      op = &pot_info[obj->o_which];
+      already_known = op->oi_know;
+      guess = &op->oi_guess;
+      elsewise = *guess ? *guess : p_colors[obj->o_which];
+
+    when SCROLL:
+      op = &scr_info[obj->o_which];
+      already_known = op->oi_know;
+      guess = &op->oi_guess;
+      elsewise = *guess ? *guess : s_names[obj->o_which];
+
+    when STICK:
+      op = &ws_info[obj->o_which];
+      already_known = op->oi_know;
+      guess = &op->oi_guess;
+      elsewise = *guess ? *guess : ws_made[obj->o_which];
+
+    otherwise:
+      guess = &obj->o_label;
+      elsewise = obj->o_label;
+  }
+
+  if (already_known) {
+    msg("that has already been identified");
+    return;
+  }
+
+  if (elsewise != NULL && elsewise == *guess)
+    msg("Was called \"%s\"", elsewise);
+
+  if (!terse)
+    addmsg("What do you want to ");
+  msg("call it? ");
+
+  if (get_str(tmpbuf, stdscr) == NORMAL)
+  {
+    if (*guess != NULL) {
+      free(*guess);
+      *guess = NULL;
     }
+    if (strlen(tmpbuf) > 0) {
+      *guess = malloc((unsigned int) strlen(tmpbuf) + 1);
+      strcpy(*guess, tmpbuf);
+    }
+  }
 }
 
 /** current:
