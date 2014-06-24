@@ -26,7 +26,7 @@ DOCSRC   = $(wildcard docsrc/*)
 DOCS     = $(notdir $(DOCSRC))
 MISC     = install CHANGELOG.TXT LICENSE.TXT rogue.png rogue.desktop
 
-%.o:
+.c.o:
 	$(CC) $(CFLAGS) $(DFLAGS) -c -o $*.o $*.c
 
 $(PROGRAM): $(OBJS)
