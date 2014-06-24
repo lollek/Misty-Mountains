@@ -20,6 +20,7 @@
 #include "scrolls.h"
 
 void print_currently_wearing(char thing);
+bool levit_check();
 
 /*
  * command:
@@ -677,18 +678,17 @@ u_level()
 	msg("I see no way up");
 }
 
-/*
- * levit_check:
- *	Check to see if she's levitating, and if she is, print an
- *	appropriate message.
- */
+/** levit_check:
+ * Check to see if she's levitating, and if she is, print an
+ * appropriate message. */
 bool
 levit_check()
 {
-    if (!is_levitating(player))
-	return false;
-    msg("You can't.  You're floating off the ground!");
+  if (is_levitating(player)) {
+    msg("You can't. You're floating off the ground!");
     return true;
+  }
+  return false;
 }
 
 /** call:
