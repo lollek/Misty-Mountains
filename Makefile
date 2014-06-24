@@ -50,7 +50,7 @@ docs:
 	  sed -e 's/@PROGRAM@/$(PROGRAM)/' -e 's/@SCOREFILE@/$(SCOREFILE)/' \
 	  $(doc) > $(notdir $(doc));)
 
-install: final docs
+install: $(PROGRAM) docs
 	@PREFIX=$(PREFIX) ./install
 
 remove:
