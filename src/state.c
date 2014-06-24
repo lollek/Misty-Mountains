@@ -1860,7 +1860,7 @@ rs_save_file(FILE *savef)
 
     rs_write_boolean(savef, after);                 /* 1  */    /* extern.c */
     rs_write_boolean(savef, again);                 /* 2  */
-    rs_write_int(savef, noscore);                   /* 3  */
+    rs_write_int(savef, potential_wizard);          /* 3  */
     rs_write_boolean(savef, seenstairs);            /* 4  */
     rs_write_boolean(savef, amulet);                /* 5  */
     rs_write_boolean(savef, door_stop);             /* 6  */
@@ -1984,7 +1984,7 @@ rs_restore_file(FILE *inf)
 
     rs_read_boolean(inf, &after);               /* 1  */    /* extern.c */
     rs_read_boolean(inf, &again);               /* 2  */
-    rs_read_int(inf, &noscore);                 /* 3  */
+    rs_read_int(inf, &potential_wizard);        /* 3  */
     rs_read_boolean(inf, &seenstairs);          /* 4  */
     rs_read_boolean(inf, &amulet);              /* 5  */
     rs_read_boolean(inf, &door_stop);           /* 6  */

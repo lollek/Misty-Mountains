@@ -34,9 +34,8 @@ command()
 
     if (on(player, ISHASTE))
 	ntimes++;
-    /*
-     * Let the daemons start up
-     */
+
+    /* Let the daemons start up */
     do_daemons(BEFORE);
     do_fuses(BEFORE);
     while (ntimes--)
@@ -67,8 +66,6 @@ command()
 	/*
 	 * Read command or continue run
 	 */
-	if (wizard)
-	    noscore = true;
 	if (!no_command)
 	{
 	    if (running || to_death)
@@ -319,7 +316,6 @@ over:
 		    {
                       wizard = !wizard;
                       turn_see(!wizard);
-                      noscore = true;
                       if (wizard)
 			msg("you are suddenly as smart as Ken Arnold in dungeon #%d", seed);
                       else
@@ -711,9 +707,8 @@ call()
     register bool *know;
 
     obj = get_item("call", CALLABLE);
-    /*
-     * Make certain that it is somethings that we want to wear
-     */
+
+    /* Make certain that it is somethings that we want to wear */
     if (obj == NULL)
 	return;
     switch (obj->o_type)

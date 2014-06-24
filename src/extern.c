@@ -14,7 +14,6 @@
 
 bool after;				/* True if we want after daemons */
 bool again;				/* Repeating the last command */
-int  noscore;				/* Was a wizard sometime */
 bool seenstairs;			/* Have seen the stairs (for lsd) */
 bool amulet = false;			/* He found the amulet */
 bool door_stop = false;			/* Stop running when we pass a door */

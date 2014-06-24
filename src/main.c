@@ -265,11 +265,11 @@ parse_args(int argc, char **argv)
                   strucpy(whoami, optarg, strlen(optarg));
       when 'p': passgo = true;
       when 'r': game_mode = LOAD_GAME;
-      when 's': noscore = true; score(0, -1, 0); exit(0);
+      when 's': potential_wizard = true; score(0, -1, 0); exit(0);
       when 'S': seed = atoi(optarg);
       when 't': terse = true;
       when 'T': tombstone = false;
-      when 'W': potential_wizard = wizard = noscore = true;
+      when 'W': potential_wizard = wizard = true;
                 player.t_flags |= SEEMONST;
       when '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
