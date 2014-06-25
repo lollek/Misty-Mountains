@@ -487,9 +487,7 @@ print_help()
     for (strp = helpstr; strp->h_desc != NULL; strp++)
       if (strp->h_ch == helpch)
       {
-        lower_msg = true;
-        msg("%s%s", unctrl(strp->h_ch), strp->h_desc);
-        lower_msg = false;
+        msg("%s)%s", unctrl(strp->h_ch), strp->h_desc);
         return;
       }
     msg("unknown character '%s'", unctrl(helpch));

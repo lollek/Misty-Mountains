@@ -21,7 +21,6 @@ bool firstmove = false;			/* First move after setting door_stop */
 bool has_hit = false;			/* Has a "hit" message pending in msg */
 bool inv_describe = true;		/* Say which way items are being used */
 bool kamikaze = false;			/* to_death really to DEATH */
-bool lower_msg = false;			/* Messages should start w/lower case */
 bool move_on = false;			/* Next move shouldn't pick up items */
 bool msg_esc = false;			/* Check for ESC from msg's --More-- */
 bool playing = true;			/* True until he quits */

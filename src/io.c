@@ -94,7 +94,7 @@ endmsg()
      * All messages should start with uppercase, except ones that
      * start with a pack addressing character
      */
-    if (islower(msgbuf[0]) && !lower_msg && msgbuf[1] != ')')
+    if (islower(msgbuf[0]) && msgbuf[1] != ')')
 	msgbuf[0] = (char) toupper(msgbuf[0]);
     mvaddstr(0, 0, msgbuf);
     clrtoeol();
