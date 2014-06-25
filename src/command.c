@@ -33,6 +33,7 @@ static bool levit_check();                /* Check to see if she's levitating */
 static void give_item_nickname();         /* Call an item something           */
 static bool print_currently_wearing(char thing); /* Print weapon / armor info */
 static bool fight_monster(bool fight_to_death); /* Attack and fight something */
+static bool toggle_wizard();
 
 /* command:
  * Process the user commands */
@@ -241,18 +242,6 @@ do_command(char ch)
       }
       return false;
 
-    case '+':
-      /* TODO: Add a query here, so you always can become a wiz */
-      if (potential_wizard)
-      {
-        wizard = !wizard;
-        turn_see(!wizard);
-        if (wizard)
-          msg("You are one with the force (seed: #%d)", seed);
-        else
-          msg("not wizard any more");
-      }
-      return false;
 
     /* Funny symbols */
     case KEY_SPACE: return false;
@@ -267,6 +256,7 @@ do_command(char ch)
     case '@': status(true); return false;
     case ')': return print_currently_wearing(WEAPON);
     case ']': return print_currently_wearing(ARMOR);
+    case '+': return toggle_wizard();
     case '=': return print_currently_wearing(RING);
 
     /* Lower case */
@@ -832,4 +822,20 @@ fight_monster(bool fight_to_death)
   }
   else
     return true;
+}
+
+static bool
+toggle_wizard()
+{
+  /* TODO: Add a query here, so you always can become a wiz */
+  if (potential_wizard)
+  {
+    wizard = !wizard;
+    turn_see(!wizard);
+    if (wizard)
+      msg("You are one with the force (seed: #%d)", seed);
+    else
+      msg("not wizard any more");
+  }
+  return false;
 }
