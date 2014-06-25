@@ -31,7 +31,6 @@
 
 /* Maximum number of different things */
 #define MAXROOMS	9
-#define MAXPACK		23
 #define MAXTRAPS	10
 #define AMULETLEVEL	26
 #define NUMTHINGS	7	/* number of types of things */

@@ -167,7 +167,8 @@ out:
 bool
 pack_room(bool from_floor, THING *obj)
 {
-    if (++inpack > MAXPACK)
+    int max_items = 23;
+    if (++inpack > max_items)
     {
 	if (!terse)
 	    addmsg("there's ");
@@ -177,7 +178,7 @@ pack_room(bool from_floor, THING *obj)
 	endmsg();
 	if (from_floor)
 	    move_msg(obj);
-	inpack = MAXPACK;
+	inpack = max_items;
 	return false;
     }
 
