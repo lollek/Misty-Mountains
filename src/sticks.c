@@ -142,7 +142,7 @@ do_zap()
 			break;
 		    }
 		    case WS_CANCEL:
-			tp->t_flags |= ISCANC;
+			set_cancelled(tp, true);
 			set_invisible(tp, false);
 			set_confusing(tp, false);
 			tp->t_disguise = tp->t_type;

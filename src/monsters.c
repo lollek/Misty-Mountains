@@ -169,7 +169,7 @@ wake_monster(int y, int x)
 	tp->t_flags |= ISRUN;
     }
     if (ch == 'M' && !is_blind(&player) && !is_hallucinating(&player)
-	&& !on(*tp, ISFOUND) && !on(*tp, ISCANC) && on(*tp, ISRUN))
+	&& !on(*tp, ISFOUND) && !is_cancelled(tp) && on(*tp, ISRUN))
     {
         rp = proom;
 	if ((rp != NULL && !(rp->r_flags & ISDARK))

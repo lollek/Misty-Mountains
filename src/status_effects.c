@@ -9,11 +9,12 @@ is_status(THING *thing, short flag)
 }
 inline bool is_confusing(THING *thing)     { return is_status(thing, CANHUH);  }
 inline bool is_true_seeing(THING *thing)   { return is_status(thing, CANSEE);  }
-inline bool is_hallucinating(THING *thing) { return is_status(thing, ISHALU);  }
 inline bool is_blind(THING *thing)         { return is_status(thing, ISBLIND); }
+inline bool is_cancelled(THING *thing)     { return is_status(thing, ISCANC);  }
 inline bool is_levitating(THING *thing)    { return is_status(thing, ISLEVIT); }
 inline bool is_confused(THING *thing)      { return is_status(thing, ISHUH);   }
 inline bool is_invisible(THING *thing)     { return is_status(thing, ISINVIS); }
+inline bool is_hallucinating(THING *thing) { return is_status(thing, ISHALU);  }
 
 inline void
 set_status(THING *thing, bool status, short flag)
@@ -23,11 +24,12 @@ set_status(THING *thing, bool status, short flag)
     : thing->t_flags & ~flag;
 }
 inline void set_confusing(THING *t, bool b)       { set_status(t, b, CANHUH);  }
-inline void set_hallucinating(THING *t, bool b)   { set_status(t, b, ISHALU);  }
 inline void set_blind(THING *t, bool b)           { set_status(t, b, ISBLIND); }
+inline void set_cancelled(THING *t, bool b)       { set_status(t, b, ISCANC);  }
 inline void set_levitating(THING *t, bool b)      { set_status(t, b, ISLEVIT); }
 inline void set_confused(THING *t, bool b)        { set_status(t, b, ISHUH);   }
 inline void set_invisible(THING *t, bool b)       { set_status(t, b, ISINVIS); }
+inline void set_hallucinating(THING *t, bool b)   { set_status(t, b, ISHALU);  }
 
 void
 set_true_seeing(THING *thing, bool status, bool permanent)

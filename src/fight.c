@@ -179,7 +179,7 @@ attack(THING *mp)
 	    if (pstats.s_hpt <= max_hit)
 		to_death = false;
 	}
-	if (!on(*mp, ISCANC))
+	if (!is_cancelled(mp))
 	    switch (mp->t_type)
 	    {
 		case 'A':

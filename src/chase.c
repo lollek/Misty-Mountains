@@ -166,7 +166,7 @@ over:
 	if (th->t_type == 'D' && (th->t_pos.y == hero.y || th->t_pos.x == hero.x
 	    || abs(th->t_pos.y - hero.y) == abs(th->t_pos.x - hero.x))
 	    && dist_cp(&th->t_pos, &hero) <= BOLT_LENGTH * BOLT_LENGTH
-	    && !on(*th, ISCANC) && rnd(DRAGONSHOT) == 0)
+	    && !is_cancelled(th) && rnd(DRAGONSHOT) == 0)
 	{
 	    delta.y = sign(hero.y - th->t_pos.y);
 	    delta.x = sign(hero.x - th->t_pos.x);
