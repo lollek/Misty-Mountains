@@ -556,7 +556,7 @@ void	killed(THING *tp, bool pr);
 void	kill_daemon(void (*func)());
 bool	lock_sc();
 void	miss(char *er, char *ee, bool noend);
-void	missile(int ydelta, int xdelta);
+bool	missile(int ydelta, int xdelta);
 void	money(int value);
 int	move_monst(THING *tp);
 void	move_msg(THING *obj);

@@ -40,27 +40,25 @@ static struct init_weaps {
  *	Fire a missile in a given direction
  */
 
-void
+bool
 missile(int ydelta, int xdelta)
 {
     THING *obj;
 
-    /*
-     * Get which thing we are hurling
-     */
+    /* Get which thing we are hurling */
     if ((obj = get_item("throw", WEAPON)) == NULL)
-	return;
+	return true;
     if (!dropcheck(obj) || is_current(obj))
-	return;
+	return true;
     obj = leave_pack(obj, true, false);
     do_motion(obj, ydelta, xdelta);
-    /*
-     * AHA! Here it has hit something.  If it is a wall or a door,
-     * or if it misses (combat) the monster, put it on the floor
-     */
+
+    /* AHA! Here it has hit something.  If it is a wall or a door,
+     * or if it misses (combat) the monster, put it on the floor */
     if (moat(obj->o_pos.y, obj->o_pos.x) == NULL ||
 	!hit_monster(obj->o_pos.y, obj->o_pos.x, obj))
 	    fall(obj, true);
+    return true;
 }
 
 /*
