@@ -457,8 +457,6 @@ extern PLACE	places[];
 extern THING	*cur_armor, *cur_ring[], *cur_weapon, *l_last_pick,
 		*last_pick, *lvl_obj, *mlist, player;
 
-extern struct h_list	helpstr[];
-
 extern struct room	*oldrp, passages[], rooms[];
 
 extern struct stats	max_stats;
@@ -489,7 +487,6 @@ void	aggravate();
 int	attack(THING *mp);
 void	badcheck(char *name, struct obj_info *info, int bound);
 void	bounce(THING *weap, char *mname, bool noend);
-void	call();
 void	call_it(struct obj_info *info);
 bool	cansee(int y, int x);
 int	center(char *str);
@@ -499,7 +496,6 @@ void	conn(int r1, int r2);
 void	command();
 void	create_obj();
 
-void	d_level();
 void	death(char monst);
 char	death_monst();
 void	dig(int y, int x);
@@ -541,14 +537,12 @@ void	fuse(void (*func)(), int arg, int time, int type);
 bool	get_dir();
 int	gethand();
 void	give_pack(THING *tp);
-void	help();
 void	hit(char *er, char *ee, bool noend);
 void	horiz(struct room *rp, int starty);
 void	leave_room(coord *cp);
 void	lengthen(void (*func)(), int xtime);
 void	look(bool wakeup);
 int	hit_monster(int y, int x, THING *obj);
-void	illcom(int ch);
 int	init_graphics();
 void	init_colors();
 void	init_materials();
@@ -604,7 +598,6 @@ void	save_file(FILE *savef);
 void	save_game();
 int	save_throw(int which, THING *tp);
 void	score(int amount, int flags, char monst);
-void	search();
 void	set_know(THING *obj, struct obj_info *info);
 void	set_oldch(THING *tp, coord *cp);
 void	shell();
@@ -624,7 +617,6 @@ void	total_winner();
 void	thunk(THING *weap, char *mname, bool noend);
 void	treas_room();
 void	turnref();
-void	u_level();
 void	unlock_sc();
 void	vert(struct room *rp, int startx);
 void	wait_for(int ch);

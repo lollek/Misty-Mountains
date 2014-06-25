@@ -19,9 +19,16 @@
 #include "status_effects.h"
 #include "scrolls.h"
 
-void print_currently_wearing(char thing);
-bool levit_check();
-void identify();
+/* Local functions */
+static void illcom(int ch);
+static void search();
+static void help();
+static void identify();
+static void d_level();
+static void u_level();
+static bool levit_check();
+static void call();
+static void print_currently_wearing(char thing);
 
 /*
  * command:
@@ -435,11 +442,9 @@ over:
 	teleport();
 }
 
-/*
- * illcom:
- *	What to do with an illegal command
- */
-void
+/** illcom:
+ * What to do with an illegal command */
+static void
 illcom(int ch)
 {
     save_msg = false;
@@ -450,7 +455,7 @@ illcom(int ch)
 
 /** search:
  * player gropes about him to find hidden things. */
-void
+static void
 search()
 {
   int y, x;
@@ -512,79 +517,143 @@ search()
   }
 }
 
-/*
- * help:
- *	Give single character help, or the whole mess if he wants it
- */
-void
+/** help:
+ * Give single character help, or the whole mess if he wants it */
+static void
 help()
 {
-    register struct h_list *strp;
-    register char helpch;
-    register int numprint, cnt;
-    msg("character you want help for (* for all): ");
-    helpch = readchar();
-    mpos = 0;
-    /*
-     * If its not a *, print the right help string
-     * or an error if he typed a funny character.
-     */
-    if (helpch != '*')
-    {
-	move(0, 0);
-	for (strp = helpstr; strp->h_desc != NULL; strp++)
-	    if (strp->h_ch == helpch)
-	    {
-		lower_msg = true;
-		msg("%s%s", unctrl(strp->h_ch), strp->h_desc);
-		lower_msg = false;
-		return;
-	    }
-	msg("unknown character '%s'", unctrl(helpch));
-	return;
-    }
-    /*
-     * Here we print help for everything.
-     * Then wait before we return to command mode
-     */
-    numprint = 0;
-    for (strp = helpstr; strp->h_desc != NULL; strp++)
-	if (strp->h_print)
-	    numprint++;
-    if (numprint & 01)		/* round odd numbers up */
-	numprint++;
-    numprint /= 2;
-    if (numprint > LINES - 1)
-	numprint = LINES - 1;
+  struct h_list helpstr[] = {
+    {'?',	"	prints help",				true},
+    {'/',	"	identify object",			true},
+    {'h',	"	left",					true},
+    {'j',	"	down",					true},
+    {'k',	"	up",					true},
+    {'l',	"	right",					true},
+    {'y',	"	up & left",				true},
+    {'u',	"	up & right",				true},
+    {'b',	"	down & left",				true},
+    {'n',	"	down & right",				true},
+    {'H',	"	run left",				false},
+    {'J',	"	run down",				false},
+    {'K',	"	run up",				false},
+    {'L',	"	run right",				false},
+    {'Y',	"	run up & left",				false},
+    {'U',	"	run up & right",			false},
+    {'B',	"	run down & left",			false},
+    {'N',	"	run down & right",			false},
+    {CTRL('H'),	"	run left until adjacent",		false},
+    {CTRL('J'),	"	run down until adjacent",		false},
+    {CTRL('K'),	"	run up until adjacent",			false},
+    {CTRL('L'),	"	run right until adjacent",		false},
+    {CTRL('Y'),	"	run up & left until adjacent",		false},
+    {CTRL('U'),	"	run up & right until adjacent",		false},
+    {CTRL('B'),	"	run down & left until adjacent",	false},
+    {CTRL('N'),	"	run down & right until adjacent",	false},
+    {'\0',	"	<SHIFT><dir>: run that way",		true},
+    {'\0',	"	<CTRL><dir>: run till adjacent",	true},
+    {'f',	"<dir>	fight till death or near death",	true},
+    {'t',	"<dir>	throw something",			true},
+    {'m',	"<dir>	move onto without picking up",		true},
+    {'z',	"<dir>	zap a wand in a direction",		true},
+    {'^',	"<dir>	identify trap type",			true},
+    {'s',	"	search for trap/secret door",		true},
+    {'>',	"	go down a staircase",			true},
+    {'<',	"	go up a staircase",			true},
+    {'.',	"	rest for a turn",			true},
+    {',',	"	pick something up",			true},
+    {'i',	"	inventory",				true},
+    {'I',	"	inventory single item",			true},
+    {'q',	"	quaff potion",				true},
+    {'r',	"	read scroll",				true},
+    {'e',	"	eat food",				true},
+    {'w',	"	wield a weapon",			true},
+    {'W',	"	wear armor",				true},
+    {'T',	"	take armor off",			true},
+    {'P',	"	put on ring",				true},
+    {'R',	"	remove ring",				true},
+    {'d',	"	drop object",				true},
+    {'c',	"	call object",				true},
+    {'a',	"	repeat last command",			true},
+    {')',	"	print current weapon",			true},
+    {']',	"	print current armor",			true},
+    {'=',	"	print current rings",			true},
+    {'@',	"	print current stats",			true},
+    {'D',	"	recall what's been discovered",		true},
+    {'o',	"	examine/set options",			true},
+    {CTRL('R'),	"	redraw screen",				true},
+    {CTRL('P'),	"	repeat last message",			true},
+    {ESCAPE,	"	cancel command",			true},
+    {'S',	"	save game",				true},
+    {'Q',	"	quit",					true},
+    {'!',	"	shell escape",				true},
+    {'F',	"<dir>	fight till either of you dies",		true},
+    { 0 ,		NULL,					false}
+  };
+  struct h_list *strp;
+  char helpch;
+  int numprint;
+  int cnt;
 
-    wclear(hw);
-    cnt = 0;
+  msg("character you want help for (* for all): ");
+  helpch = readchar();
+  mpos = 0;
+
+  /* If its not a *, print the right help string
+   * or an error if he typed a funny character. */
+  if (helpch != '*')
+  {
+    move(0, 0);
     for (strp = helpstr; strp->h_desc != NULL; strp++)
-	if (strp->h_print)
-	{
-	    wmove(hw, cnt % numprint, cnt >= numprint ? COLS / 2 : 0);
-	    if (strp->h_ch)
-		waddstr(hw, unctrl(strp->h_ch));
-	    waddstr(hw, strp->h_desc);
-	    if (++cnt >= numprint * 2)
-		break;
-	}
-    wmove(hw, LINES - 1, 0);
-    waddstr(hw, "--Press space to continue--");
-    wrefresh(hw);
-    wait_for(KEY_SPACE);
-    clearok(stdscr, true);
-/*
-    refresh();
-*/
-    msg("");
-    touchwin(stdscr);
-    wrefresh(stdscr);
+      if (strp->h_ch == helpch)
+      {
+        lower_msg = true;
+        msg("%s%s", unctrl(strp->h_ch), strp->h_desc);
+        lower_msg = false;
+        return;
+      }
+    msg("unknown character '%s'", unctrl(helpch));
+    return;
+  }
+
+  /* Here we print help for everything.
+   * Then wait before we return to command mode */
+
+  numprint = 0;
+  for (strp = helpstr; strp->h_desc != NULL; strp++)
+    if (strp->h_print)
+      numprint++;
+  if (numprint & 01)		/* round odd numbers up */
+    numprint++;
+  numprint /= 2;
+  if (numprint > LINES - 1)
+    numprint = LINES - 1;
+
+  wclear(hw);
+  cnt = 0;
+  for (strp = helpstr; strp->h_desc != NULL; strp++)
+    if (strp->h_print)
+    {
+      wmove(hw, cnt % numprint, cnt >= numprint ? COLS / 2 : 0);
+      if (strp->h_ch)
+        waddstr(hw, unctrl(strp->h_ch));
+      waddstr(hw, strp->h_desc);
+      if (++cnt >= numprint * 2)
+        break;
+    }
+  wmove(hw, LINES - 1, 0);
+  waddstr(hw, "--Press space to continue--");
+  wrefresh(hw);
+  wait_for(KEY_SPACE);
+  clearok(stdscr, true);
+
+  msg("");
+  touchwin(stdscr);
+  wrefresh(stdscr);
 }
 
 /** identify:
  * Tell the player what a certain thing is. */
-void
+static void
 identify()
 {
   int ch;
@@ -639,7 +708,7 @@ identify()
 
 /** d_level:
  * He wants to go down a level */
-void
+static void
 d_level()
 {
   if (levit_check())
@@ -656,7 +725,7 @@ d_level()
 
 /** u_level:
  * He wants to go up a level */
-  void
+static void
 u_level()
 {
   if (levit_check())
@@ -679,7 +748,7 @@ u_level()
 /** levit_check:
  * Check to see if she's levitating, and if she is, print an
  * appropriate message. */
-bool
+static bool
 levit_check()
 {
   if (is_levitating(player))
@@ -692,7 +761,7 @@ levit_check()
 
 /** call:
  * Allow a user to call a potion, scroll, or ring something */
-void
+static void
 call()
 {
   THING *obj = get_item("call", CALLABLE);
@@ -769,7 +838,7 @@ call()
 
 /** current:
  * Print the current weapon/armor */
-void
+static void
 print_currently_wearing(char thing)
 {
   bool item_found = false;
