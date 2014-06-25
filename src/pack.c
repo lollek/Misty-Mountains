@@ -76,7 +76,8 @@ add_pack(THING *obj, bool silent)
 		}
 		if (op->o_type == obj->o_type && op->o_which == obj->o_which)
 		{
-		    if (ISMULT(op->o_type))
+		    if (op->o_type == POTION || op->o_type == SCROLL ||
+                        obj->o_type == FOOD)
 		    {
 			if (!pack_room(from_floor, obj))
 			    return;

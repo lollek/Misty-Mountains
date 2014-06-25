@@ -53,9 +53,7 @@ typedef enum INV_TYPE
   INV_CLEAR = 2
 } INV_TYPE;
 
-/*
- * All the fun defines
- */
+/* All the fun defines */
 #define when		break;case
 #define otherwise	break;default
 #define until(expr)	while(!(expr))
@@ -71,13 +69,11 @@ typedef enum INV_TYPE
 #define attach(a,b)	_attach(&a,b)
 #define detach(a,b)	_detach(&a,b)
 #define free_list(a)	_free_list(&a)
-#undef max
 #define max(a,b)	((a) > (b) ? (a) : (b))
 #define on(thing,flag)	((bool)(((thing).t_flags & (flag)) != 0))
 #define GOLDCALC	(rnd(50 + 10 * level) + 2)
 #define ISRING(h,r)	(cur_ring[h] != NULL && cur_ring[h]->o_which == r)
 #define ISWEARING(r)	(ISRING(LEFT, r) || ISRING(RIGHT, r))
-#define ISMULT(type) 	(type == POTION || type == SCROLL || type == FOOD)
 #define INDEX(y,x)	(&places[((x) << 5) + (y)])
 #define chat(y,x)	(places[((x) << 5) + (y)].p_ch)
 #define flat(y,x)	(places[((x) << 5) + (y)].p_flags)

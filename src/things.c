@@ -159,7 +159,8 @@ drop()
 	return;
     if (!dropcheck(obj))
 	return;
-    obj = leave_pack(obj, true, (bool)!ISMULT(obj->o_type));
+    obj = leave_pack(obj, true, !(obj->o_type == POTION ||
+          obj->o_type == SCROLL || obj->o_type == FOOD));
     /*
      * Link it into the level object list
      */
