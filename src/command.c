@@ -287,43 +287,46 @@ do_command(char ch)
       again = false;
       return false;
 
-    case 'm':
-      move_on = true;
-      return get_dir() ? do_command(dir_ch) : false;
-
-
+    /* Funny symbols */
     case KEY_SPACE: return false;
     case '.': return true;
     case ',': return pick_up_item_from_ground();
-    case '!': msg("Shell has been removed, use ^Z instead"); return false;
-    case 'q': return quaff();
-    case 'i': inventory(pack, 0); return false;
-    case 'I': picky_inven(); return false;
-    case 'd': drop(); return true;
-    case 'D': discovered(); return false;
-    case 'r': read_scroll(); return true;
-    case 't': return get_dir() ? missile(delta.y, delta.x) : false;
-    case 'e': eat(); return true;
-    case 'w': return wield();
-    case 'W': return wear();
-    case 'T': return take_off();
-    case 'P': return ring_on();
-    case 'R': return ring_off();
-    case 'o': option(); return false;
-    case 'c': give_item_nickname(); return false;
-    case 's': search(); return true;
-    case 'S': after = false; save_game(); return false;
-    case 'z': return get_dir() ? do_zap() : false;
+    case '/': identify_a_character(); return false;
     case '>': go_down_a_level(); return false;
     case '<': go_up_a_level(); return false;
     case '?': print_help(); return false;
+    case '!': msg("Shell has been removed, use ^Z instead"); return false;
     case '@': status(true); return false;
-    case '/': identify_a_character(); return false;
     case ')': return print_currently_wearing(WEAPON);
     case ']': return print_currently_wearing(ARMOR);
     case '=': return print_currently_wearing(RING);
-    case CTRL('Z'): shell(); return false;
+
+    /* Lower case */
+    case 'c': give_item_nickname(); return false;
+    case 'd': drop(); return true;
+    case 'e': eat(); return true;
+    case 'i': inventory(pack, 0); return false;
+    case 'm': move_on = true; return get_dir() ? do_command(dir_ch) : false;
+    case 'o': option(); return false;
+    case 'q': return quaff();
+    case 'r': read_scroll(); return true;
+    case 's': search(); return true;
+    case 't': return get_dir() ? missile(delta.y, delta.x) : false;
+    case 'w': return wield();
+    case 'z': return get_dir() ? do_zap() : false;
+
+    /* Upper case */
+    case 'D': discovered(); return false;
+    case 'I': picky_inven(); return false;
+    case 'P': return ring_on();
+    case 'R': return ring_off();
+    case 'S': after = false; save_game(); return false;
+    case 'T': return take_off();
+    case 'W': return wear();
+
+    /* Ctrl case */
     case CTRL('P'): msg(huh); return false;
+    case CTRL('Z'): shell(); return false;
 
     default:
       return do_wizard_command(ch);
