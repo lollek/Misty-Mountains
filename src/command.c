@@ -27,13 +27,11 @@ static void identify();
 static void d_level();
 static void u_level();
 static bool levit_check();
-static void call();
+static void give_item_nickname();
 static void print_currently_wearing(char thing);
 
-/*
- * command:
- *	Process the user commands
- */
+/* command:
+ * Process the user commands */
 void
 command()
 {
@@ -280,7 +278,7 @@ over:
 		when 'P': ring_on();
 		when 'R': ring_off();
 		when 'o': option(); after = false;
-		when 'c': call(); after = false;
+		when 'c': give_item_nickname(); after = false;
 		when '>': after = false; d_level();
 		when '<': after = false; u_level();
 		when '?': after = false; help();
@@ -762,7 +760,7 @@ levit_check()
 /** call:
  * Allow a user to call a potion, scroll, or ring something */
 static void
-call()
+give_item_nickname()
 {
   THING *obj = get_item("call", CALLABLE);
   char **guess;
