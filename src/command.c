@@ -35,6 +35,9 @@ static bool print_currently_wearing(char thing); /* Print weapon / armor info */
 static bool fight_monster(bool fight_to_death); /* Attack and fight something */
 static bool toggle_wizard();
 static bool identify_trap();
+static bool maybe_quit();
+static bool repeat_last_command();
+static bool festina_lente(char ch);
 
 /* command:
  * Process the user commands */
@@ -178,51 +181,6 @@ do_command(char ch)
 {
   switch (ch)
   {
-
-    /*TODO: change do_move to take a char instead of x,y */
-    case 'h': case 'j': case 'k': case 'l':
-    case 'y': case 'u': case 'b': case 'n':
-      return do_move(ch);
-
-    case 'H': case 'J': case 'K': case 'L':
-    case 'Y': case 'U': case 'B': case 'N':
-      return do_run(tolower(ch));
-
-    case CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
-    case CTRL('Y'): case CTRL('U'): case CTRL('B'): case CTRL('N'):
-      if (!is_blind(player))
-      {
-        door_stop = true;
-        firstmove = true;
-      }
-      return do_command(ch + ('A' - CTRL('A')));
-
-
-    case 'a':
-      if (last_comm == '\0')
-      {
-        msg("you haven't typed a command yet");
-        return false;
-      }
-      else
-      {
-        again = true;
-        return do_command(last_comm);
-      }
-
-    case 'Q':
-      /* TODO: remove q_comm */
-      q_comm = true;
-      quit(0);
-      q_comm = false;
-      return false;
-
-    case CTRL('R'):
-      clearok(curscr,true);
-      wrefresh(curscr);
-      return false;
-
-
     /* Funny symbols */
     case KEY_SPACE: return false;
     case ESCAPE: door_stop = again = false; count = 0; return false;
@@ -241,6 +199,10 @@ do_command(char ch)
     case '=': return print_currently_wearing(RING);
 
     /* Lower case */
+    case 'h': case 'j': case 'k': case 'l':
+    case 'y': case 'u': case 'b': case 'n':
+      return do_move(ch);
+    case 'a': return repeat_last_command();
     case 'c': give_item_nickname(); return false;
     case 'd': drop(); return true;
     case 'e': eat(); return true;
@@ -256,6 +218,9 @@ do_command(char ch)
     case 'z': return get_dir() ? do_zap() : false;
 
     /* Upper case */
+    case 'H': case 'J': case 'K': case 'L':
+    case 'Y': case 'U': case 'B': case 'N':
+      return do_run(tolower(ch));
     case 'D': discovered(); return false;
     case 'F': return fight_monster(true);
     case 'I': picky_inven(); return false;
@@ -264,9 +229,14 @@ do_command(char ch)
     case 'S': after = false; save_game(); return false;
     case 'T': return take_off();
     case 'W': return wear();
+    case 'Q': return maybe_quit();
 
     /* Ctrl case */
+    case CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
+    case CTRL('Y'): case CTRL('U'): case CTRL('B'): case CTRL('N'):
+      return festina_lente(ch);
     case CTRL('P'): msg(huh); return false;
+    case CTRL('R'): clearok(curscr, true); wrefresh(curscr); return false;
     case CTRL('Z'): shell(); return false;
 
     default:
@@ -843,4 +813,40 @@ identify_trap()
     }
   }
   return false;
+}
+
+static bool
+maybe_quit()
+{
+  /* TODO: remove q_comm */
+  q_comm = true;
+  quit(0);
+  q_comm = false;
+  return false;
+}
+
+static bool
+repeat_last_command()
+{
+  if (last_comm == '\0')
+  {
+    msg("you haven't typed a command yet");
+    return false;
+  }
+  else
+  {
+    again = true;
+    return do_command(last_comm);
+  }
+}
+
+static bool
+festina_lente(char ch)
+{
+  if (!is_blind(player))
+  {
+    door_stop = true;
+    firstmove = true;
+  }
+  return do_command(ch + ('A' - CTRL('A')));
 }
