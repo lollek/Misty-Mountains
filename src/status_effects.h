@@ -5,12 +5,12 @@
 #include <stdbool.h>
 
 /* Duration of effects */
-#define HUHDURATION	spread(20)
-#define MFINDDURATION	spread(20)
-#define HASTEDURATION	rnd(4)+4
-#define SEEDURATION	spread(850)
-#define HEALTIME	spread(30)
-#define SLEEPTIME	spread(7)
+#define HUHDURATION	spread(20)  /* Confusion */
+#define MFINDDURATION	spread(20)  /* Monster find */
+#define HASTEDURATION	rnd(4)+4    /* Haste */
+#define SEEDURATION	spread(850) /* See invisible / blind / hallucinating */
+#define LEVITDUR	spread(30)  /* Levitation */
+#define SLEEPTIME	spread(7)   /* Sleep */
 
 /* Status macros */
 inline bool is_hallucinating(THING thing);

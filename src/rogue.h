@@ -19,12 +19,16 @@
 #define NUMSCORES 10    /* Number of highscore entries */
 #define NUMNAME "Ten"   /* The same number in letters  */
 #define MAXOBJ 9        /* How many attempts to put items in dungeon */
+#define AMULETLEVEL 26  /* Level where we can find the amulet */
 
 
 /* Try not to change these */
 #define MAXSTR 1024 /* maximum length of strings */
 #define MAXLINES 32 /* maximum number of screen lines used */
 #define MAXCOLS  80 /* maximum number of screen columns used */
+#define NUMLINES 24
+#define NUMCOLS  80
+#define STATLINE (NUMLINES - 1)
 
 #undef CTRL
 #define CTRL(c) (c & 037)
@@ -32,12 +36,8 @@
 /* Maximum number of different things */
 #define MAXROOMS	9
 #define MAXTRAPS	10
-#define AMULETLEVEL	26
 #define NUMTHINGS	7	/* number of types of things */
 #define MAXPASS		13	/* upper limit on number of passages */
-#define NUMLINES	24
-#define NUMCOLS		80
-#define STATLINE	(NUMLINES - 1)
 
 /* return values for get functions */
 enum option_return

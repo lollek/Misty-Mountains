@@ -197,7 +197,7 @@ struct monster monsters[26] =
 
     /* Dev info: Only the first two vales are used in this table,
      *           the others need not be initialized */
-struct obj_info things[NUMTHINGS] = {
+struct obj_info things[] = {
     { 0,	26,	0,	NULL,	false },	/* potion */
     { 0,	36,	0,	NULL,	false },	/* scroll */
     { 0,	16,	0,	NULL,	false },	/* food */

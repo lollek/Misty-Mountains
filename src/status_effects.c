@@ -276,12 +276,12 @@ void
 become_levitating(bool permanent)
 {
   if (is_levitating(player))
-    lengthen(remove_levitating, HEALTIME);
+    lengthen(remove_levitating, LEVITDUR);
   else
   {
     player.t_flags |= ISLEVIT;
     if (!permanent)
-      fuse(remove_levitating, 0, HEALTIME, AFTER);
+      fuse(remove_levitating, 0, LEVITDUR, AFTER);
     look(false);
   }
   msg(is_hallucinating(player)
