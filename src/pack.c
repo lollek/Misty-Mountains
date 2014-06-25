@@ -297,7 +297,7 @@ pick_up(char ch)
 {
     THING *obj;
 
-    if (is_levitating(player))
+    if (is_levitating(&player))
 	return;
 
     obj = find_obj(hero.y, hero.x);

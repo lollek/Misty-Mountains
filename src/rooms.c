@@ -377,7 +377,7 @@ enter_room(coord *cp)
     struct room *rp = proom = roomin(cp);
 
     door_open(rp);
-    if (!(rp->r_flags & ISDARK) && !is_blind(player))
+    if (!(rp->r_flags & ISDARK) && !is_blind(&player))
     {
 	int y, x;
 	for (y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++)
@@ -425,7 +425,7 @@ leave_room(coord *cp)
 
     if (rp->r_flags & ISGONE)
 	floor = PASSAGE;
-    else if (!(rp->r_flags & ISDARK) || is_blind(player))
+    else if (!(rp->r_flags & ISDARK) || is_blind(&player))
 	floor = FLOOR;
     else
 	floor = SHADOW;

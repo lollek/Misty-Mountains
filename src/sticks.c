@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "rogue.h"
+#include "status_effects.h"
 
 /*
  * fix_stick:
@@ -117,7 +118,7 @@ do_zap()
 		    player.t_flags &= ~ISHELD;
 		switch (obj->o_which) {
 		    case WS_INVIS:
-			tp->t_flags |= ISINVIS;
+			set_invisible(tp, true);
 			if (cansee(y, x))
 			    mvaddcch(y, x, tp->t_oldch);
 			break;
@@ -142,7 +143,8 @@ do_zap()
 		    }
 		    case WS_CANCEL:
 			tp->t_flags |= ISCANC;
-			tp->t_flags &= ~(ISINVIS|CANHUH);
+			set_invisible(tp, false);
+			tp->t_flags &= ~CANHUH;
 			tp->t_disguise = tp->t_type;
 			if (see_monst(tp))
 			    mvaddcch(y, x, tp->t_disguise);

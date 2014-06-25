@@ -96,7 +96,7 @@ new_level()
     mvaddcch(hero.y, hero.x, PLAYER);
     if (on(player, SEEMONST))
 	turn_see(false);
-    if (is_hallucinating(player))
+    if (is_hallucinating(&player))
 	visuals();
 }
 

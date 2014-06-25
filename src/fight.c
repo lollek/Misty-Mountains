@@ -82,10 +82,10 @@ fight(coord *mp, THING *weap, bool thrown)
      * Let him know it was really a xeroc (if it was one).
      */
     ch = '\0';
-    if (tp->t_type == 'X' && tp->t_disguise != 'X' && !is_blind(player))
+    if (tp->t_type == 'X' && tp->t_disguise != 'X' && !is_blind(&player))
     {
 	tp->t_disguise = 'X';
-	if (is_hallucinating(player)) {
+	if (is_hallucinating(&player)) {
 	    ch = (char)(rnd(26) + 'A');
 	    mvaddcch(tp->t_pos.y, tp->t_pos.x, ch);
 	}
@@ -107,7 +107,7 @@ fight(coord *mp, THING *weap, bool thrown)
 	if (on(player, CANHUH))
 	{
 	    did_hit = true;
-	    tp->t_flags |= ISHUH;
+            set_confused(tp, true);
 	    player.t_flags &= ~CANHUH;
 	    endmsg();
 	    has_hit = false;
@@ -115,7 +115,7 @@ fight(coord *mp, THING *weap, bool thrown)
 	}
 	if (tp->t_stats.s_hpt <= 0)
 	    killed(tp, true);
-	else if (did_hit && !is_blind(player))
+	else if (did_hit && !is_blind(&player))
 	    msg("%s appears confused", mname);
 	did_hit = true;
     }
@@ -149,10 +149,10 @@ attack(THING *mp)
 	to_death = false;
 	kamikaze = false;
     }
-    if (mp->t_type == 'X' && mp->t_disguise != 'X' && !is_blind(player))
+    if (mp->t_type == 'X' && mp->t_disguise != 'X' && !is_blind(&player))
     {
 	mp->t_disguise = 'X';
-	if (is_hallucinating(player))
+	if (is_hallucinating(&player))
 	    mvaddcch(mp->t_pos.y, mp->t_pos.x, rnd(26) + 'A');
     }
     mname = set_mname(mp);
@@ -349,7 +349,7 @@ set_mname(THING *tp)
 
     if (!see_monst(tp) && !on(player, SEEMONST))
 	return (terse ? "it" : "something");
-    else if (is_hallucinating(player))
+    else if (is_hallucinating(&player))
     {
 	move(tp->t_pos.y, tp->t_pos.x);
 	ch = toascii(inch());

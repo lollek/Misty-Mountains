@@ -592,5 +592,5 @@ badcheck(char *name, struct obj_info *info, int bound)
 char *
 pick_color(char *col)
 {
-    return (is_hallucinating(player) ? rainbow[rnd(NCOLORS)] : col);
+    return (is_hallucinating(&player) ? rainbow[rnd(NCOLORS)] : col);
 }

@@ -130,7 +130,7 @@ wanderer()
     new_monster(tp, randmonster(true), &cp);
     if (on(player, SEEMONST))
     {
-	if (is_hallucinating(player))
+	if (is_hallucinating(&player))
 	    addcch((rnd(26) + 'A') | A_STANDOUT);
 	else
 	    addcch(tp->t_type | A_STANDOUT);
@@ -163,12 +163,12 @@ wake_monster(int y, int x)
      * Every time he sees mean monster, it might start chasing him
      */
     if (!on(*tp, ISRUN) && rnd(3) != 0 && on(*tp, ISMEAN) && !on(*tp, ISHELD)
-	&& !ISWEARING(R_STEALTH) && !is_levitating(player))
+	&& !ISWEARING(R_STEALTH) && !is_levitating(&player))
     {
 	tp->t_dest = &hero;
 	tp->t_flags |= ISRUN;
     }
-    if (ch == 'M' && !is_blind(player) && !is_hallucinating(player)
+    if (ch == 'M' && !is_blind(&player) && !is_hallucinating(&player)
 	&& !on(*tp, ISFOUND) && !on(*tp, ISCANC) && on(*tp, ISRUN))
     {
         rp = proom;

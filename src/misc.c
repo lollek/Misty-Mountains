@@ -124,7 +124,7 @@ look(bool wakeup)
 	{
 	    if (x < 0 || x >= NUMCOLS)
 		continue;
-	    if (!is_blind(player))
+	    if (!is_blind(&player))
 	    {
 		if (y == hero.y && x == hero.x)
 		    continue;
@@ -149,7 +149,7 @@ look(bool wakeup)
 	    if ((tp = pp->p_monst) == NULL)
 		ch = trip_ch(y, x, ch);
 	    else
-		if (on(player, SEEMONST) && is_invisible(*tp))
+		if (on(player, SEEMONST) && is_invisible(tp))
 		{
 		    if (door_stop && !firstmove)
 			running = false;
@@ -161,13 +161,13 @@ look(bool wakeup)
 			wake_monster(y, x);
 		    if (see_monst(tp))
 		    {
-			if (is_hallucinating(player))
+			if (is_hallucinating(&player))
 			    ch = rnd(26) + 'A';
 			else
 			    ch = tp->t_disguise;
 		    }
 		}
-	    if (is_blind(player) && (y != hero.y || x != hero.x))
+	    if (is_blind(&player) && (y != hero.y || x != hero.x))
 		continue;
 
 	    move(y, x);
@@ -240,7 +240,7 @@ look(bool wakeup)
 int
 trip_ch(int y, int x, int ch)
 {
-  if (is_hallucinating(player) && after)
+  if (is_hallucinating(&player) && after)
     switch (ch)
     {
       case FLOOR: case SHADOW: case PASSAGE: case HWALL: case VWALL: case DOOR:
@@ -262,7 +262,7 @@ erase_lamp(coord *pos, struct room *rp)
   int y, x;
 
   if (!(see_floor && (rp->r_flags & (ISGONE|ISDARK)) == ISDARK
-        && !is_blind(player)))
+        && !is_blind(&player)))
     return;
 
   for (x = pos->x -1; x <= pos->x +1; x++)
@@ -282,7 +282,7 @@ erase_lamp(coord *pos, struct room *rp)
 bool
 show_floor()
 {
-  if ((proom->r_flags & (ISGONE|ISDARK)) == ISDARK && !is_blind(player))
+  if ((proom->r_flags & (ISGONE|ISDARK)) == ISDARK && !is_blind(&player))
     return see_floor;
   else
     return true;
@@ -495,7 +495,7 @@ get_dir()
     last_delt.y = delta.y;
     last_delt.x = delta.x;
   }
-  if (is_confused(player) && rnd(5) == 0)
+  if (is_confused(&player) && rnd(5) == 0)
     do
     {
       delta.y = rnd(3) - 1;
@@ -576,7 +576,7 @@ rnd_thing()
 char *
 choose_str(char *ts, char *ns)
 {
-  return (is_hallucinating(player) ? ts : ns);
+  return (is_hallucinating(&player) ? ts : ns);
 }
 
 bool
@@ -643,7 +643,7 @@ turn_see(bool turn_off)
 	{
 	    if (!can_see)
 		standout();
-	    if (is_hallucinating(player))
+	    if (is_hallucinating(&player))
 		addcch(rnd(26) + 'A');
 	    else
 		addcch(mp->t_type);
@@ -668,7 +668,7 @@ invis_on()
 
     player.t_flags |= CANSEE;
     for (mp = mlist; mp != NULL; mp = next(mp))
-	if (is_invisible(*mp) && see_monst(mp) && !is_hallucinating(player))
+	if (is_invisible(mp) && see_monst(mp) && !is_hallucinating(&player))
 	    mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
 }
 

@@ -68,7 +68,7 @@ quaff()
   switch (obj->o_which)
   {
     case P_CONFUSE:
-      if (!knows_potion(obj->o_which) && !is_hallucinating(player))
+      if (!knows_potion(obj->o_which) && !is_hallucinating(&player))
         learn_potion(obj->o_which);
       become_confused(false);
     when P_POISON:

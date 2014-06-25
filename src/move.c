@@ -68,7 +68,7 @@ do_move(char ch)
     }
 
     /* Do a confused move (maybe) */
-    if (is_confused(player) && rnd(5) != 0)
+    if (is_confused(&player) && rnd(5) != 0)
     {
 	nh = *rndmove(&player);
 	if (same_coords(nh, hero))
@@ -100,7 +100,7 @@ over:
     ch = winat(nh.y, nh.x);
     if (!(fl & F_REAL) && ch == FLOOR)
     {
-	if (!is_levitating(player))
+	if (!is_levitating(&player))
 	{
 	    chat(nh.y, nh.x) = ch = TRAP;
 	    flat(nh.y, nh.x) |= F_REAL;
@@ -118,7 +118,7 @@ over:
 	case HWALL:
 hit_bound:
 	    if (passgo && running && (proom->r_flags & ISGONE)
-		&& !is_blind(player))
+		&& !is_blind(&player))
 	    {
 		bool	b1, b2;
 
@@ -275,7 +275,7 @@ be_trapped(coord *tc)
 
     /* anything that's not a door or teleport */
     /* FIXME: Wow, this is just unfair: */
-  if (is_levitating(player))
+  if (is_levitating(&player))
     return T_RUST;
   else
   {

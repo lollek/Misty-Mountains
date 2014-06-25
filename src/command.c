@@ -344,7 +344,7 @@ static void
 search()
 {
   int y, x;
-  int probinc = (is_hallucinating(player) ? 3:0) + is_blind(player) ? 2:0;
+  int probinc = (is_hallucinating(&player) ? 3:0) + is_blind(&player) ? 2:0;
   bool found = false;
 
   for (y = hero.y - 1; y <= hero.y + 1; y++)
@@ -375,7 +375,7 @@ search()
         if (!terse)
           addmsg("you found ");
 
-        if (is_hallucinating(player))
+        if (is_hallucinating(&player))
           msg(tr_name[rnd(NTRAPS)]);
         else {
           msg(tr_name[*fp & F_TMASK]);
@@ -623,7 +623,7 @@ go_up_a_level()
 static bool
 levit_check()
 {
-  if (is_levitating(player))
+  if (is_levitating(&player))
   {
     msg("You can't. You're floating off the ground!");
     return true;
@@ -803,7 +803,7 @@ identify_trap()
       addmsg("You have found ");
     if (chat(delta.y, delta.x) != TRAP)
       msg("no trap there");
-    else if (is_hallucinating(player))
+    else if (is_hallucinating(&player))
       msg(tr_name[rnd(NTRAPS)]);
     else
     {
@@ -839,7 +839,7 @@ repeat_last_command()
 static bool
 festina_lente(char ch)
 {
-  if (!is_blind(player))
+  if (!is_blind(&player))
   {
     door_stop = true;
     firstmove = true;

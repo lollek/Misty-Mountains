@@ -3,34 +3,28 @@
 #include "rogue.h"
 
 inline bool
-is_hallucinating(THING thing)
+is_status(THING *thing, short flag)
 {
-  return (thing.t_flags & ISHALU) != false;
+  return (thing->t_flags & flag) != false;
 }
+inline bool is_hallucinating(THING *thing) { return is_status(thing, ISHALU);  }
+inline bool is_blind(THING *thing)         { return is_status(thing, ISBLIND); }
+inline bool is_levitating(THING *thing)    { return is_status(thing, ISLEVIT); }
+inline bool is_confused(THING *thing)      { return is_status(thing, ISHUH);   }
+inline bool is_invisible(THING *thing)     { return is_status(thing, ISINVIS); }
 
-inline bool
-is_blind(THING thing)
+inline void
+set_status(THING *thing, bool status, short flag)
 {
-  return (thing.t_flags & ISBLIND) != false;
+  thing->t_flags = status
+    ? thing->t_flags | flag
+    : thing->t_flags & ~flag;
 }
-
-inline bool
-is_levitating(THING thing)
-{
-  return (thing.t_flags & ISLEVIT) != false;
-}
-
-inline bool
-is_confused(THING thing)
-{
-  return (thing.t_flags & ISHUH) != false;
-}
-
-inline bool
-is_invisible(THING thing)
-{
-  return (thing.t_flags & ISINVIS) != false;
-}
+inline void set_hallucinating(THING *t, bool b)   { set_status(t, b, ISHALU);  }
+inline void set_blind(THING *t, bool b)           { set_status(t, b, ISBLIND); }
+inline void set_levitating(THING *t, bool b)      { set_status(t, b, ISLEVIT); }
+inline void set_confused(THING *t, bool b)        { set_status(t, b, ISHUH);   }
+inline void set_invisible(THING *t, bool b)       { set_status(t, b, ISINVIS); }
 
 void
 fall_asleep()
@@ -72,16 +66,16 @@ become_poisoned()
 void
 become_confused(bool permanent)
 {
-  if (is_confused(player))
+  if (is_confused(&player))
     lengthen(remove_confusion, HUHDURATION);
   else
   {
-    player.t_flags |= ISHUH;
+    set_confused(&player, true);
     if (!permanent)
       fuse(remove_confusion, 0, HUHDURATION, AFTER);
     look(false);
   }
-  msg(is_hallucinating(player)
+  msg(is_hallucinating(&player)
     ? "what a trippy feeling!"
     : "wait, what's going on here. Huh? What? Who?");
 }
@@ -89,8 +83,10 @@ become_confused(bool permanent)
 void
 remove_confusion()
 {
-  player.t_flags &= ~ISHUH;
-  msg("you feel less %s now", is_hallucinating(player) ? "trippy" : "confused"); }
+  set_confused(&player, false);
+  msg("you feel less %s now",
+    is_hallucinating(&player) ? "trippy" : "confused");
+}
 
 void
 become_healed()
@@ -131,13 +127,13 @@ become_monster_seeing(bool permanent)
   /* FIXME: Make sure that this work */
   if (!turn_see(false))
     msg("you have a %s feeling for a moment, then it passes",
-        is_hallucinating(player) ? "normal" : "strange");
+        is_hallucinating(&player) ? "normal" : "strange");
 }
 
 void
 become_tripping(bool permanent)
 {
-  if (is_hallucinating(player))
+  if (is_hallucinating(&player))
     lengthen(remove_tripping, SEEDURATION);
   else
   {
@@ -145,7 +141,7 @@ become_tripping(bool permanent)
       turn_see(false);
     start_daemon(visuals, 0, BEFORE);
     seenstairs = seen_stairs();
-    player.t_flags |= ISHALU;
+    set_hallucinating(&player, true);
     if (!permanent)
       fuse(remove_tripping, 0, SEEDURATION, AFTER);
     look(false);
@@ -158,13 +154,13 @@ remove_tripping()
 {
   register THING *tp;
 
-  if (!is_hallucinating(player))
+  if (!is_hallucinating(&player))
     return;
 
   kill_daemon(visuals);
-  player.t_flags &= ~ISHALU;
+  set_hallucinating(&player, false);
 
-  if (is_blind(player))
+  if (is_blind(&player))
     return;
 
   /* undo the things */
@@ -177,7 +173,7 @@ remove_tripping()
   {
     move(tp->t_pos.y, tp->t_pos.x);
     if (cansee(tp->t_pos.y, tp->t_pos.x))
-      if (!is_invisible(*tp) || on(player, CANSEE))
+      if (!is_invisible(tp) || on(player, CANSEE))
         addcch(tp->t_disguise);
       else
         addcch(chat(tp->t_pos.y, tp->t_pos.x));
@@ -208,7 +204,7 @@ remove_true_seeing()
 {
   register THING *th;
   for (th = mlist; th != NULL; th = next(th))
-    if (is_invisible(*th) && see_monst(th))
+    if (is_invisible(th) && see_monst(th))
       mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
   player.t_flags &= ~CANSEE;
 }
@@ -243,16 +239,16 @@ remove_hasted()
 
 void become_blind(bool permanent)
 {
-  if (is_blind(player))
+  if (is_blind(&player))
     lengthen(cure_blindness, SEEDURATION);
   else
   {
-    player.t_flags |= ISBLIND;
+    set_blind(&player, true);
     if (!permanent)
       fuse(cure_blindness, 0, SEEDURATION, AFTER);
     look(false);
   }
-  msg(is_hallucinating(player)
+  msg(is_hallucinating(&player)
     ? "oh, bummer!  Everything is dark!  Help!"
     : "a cloak of darkness falls around you");
 }
@@ -260,13 +256,13 @@ void become_blind(bool permanent)
 void
 cure_blindness()
 {
-  if (is_blind(player))
+  if (is_blind(&player))
   {
     extinguish(cure_blindness);
-    player.t_flags &= ~ISBLIND;
+    set_blind(&player, false);
     if (!(proom->r_flags & ISGONE))
       enter_room(&hero);
-    msg(is_hallucinating(player)
+    msg(is_hallucinating(&player)
       ? "far out!  Everything is all cosmic again"
       : "the veil of darkness lifts");
   }
@@ -275,16 +271,16 @@ cure_blindness()
 void
 become_levitating(bool permanent)
 {
-  if (is_levitating(player))
+  if (is_levitating(&player))
     lengthen(remove_levitating, LEVITDUR);
   else
   {
-    player.t_flags |= ISLEVIT;
+    set_levitating(&player, true);
     if (!permanent)
       fuse(remove_levitating, 0, LEVITDUR, AFTER);
     look(false);
   }
-  msg(is_hallucinating(player)
+  msg(is_hallucinating(&player)
     ? "oh, wow!  You're floating in the air!"
     : "you start to float in the air");
 }
@@ -292,8 +288,8 @@ become_levitating(bool permanent)
 void
 remove_levitating()
 {
-  player.t_flags &= ~ISLEVIT;
-  msg(is_hallucinating(player) 
+  set_levitating(&player, false);
+  msg(is_hallucinating(&player)
     ? "bummer!  You've hit the ground"
     : "you float gently to the ground");
 }

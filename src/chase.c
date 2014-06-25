@@ -234,7 +234,7 @@ set_oldch(THING *tp, coord *cp)
 
     sch = tp->t_oldch;
     tp->t_oldch = mvinch(cp->y,cp->x) & A_CHARTEXT;
-    if (!is_blind(player))
+    if (!is_blind(&player))
     {
 	    if ((sch == FLOOR || tp->t_oldch == FLOOR) &&
 		(tp->t_room->r_flags & ISDARK))
@@ -253,9 +253,9 @@ see_monst(THING *mp)
 {
     int y, x;
 
-    if (is_blind(player))
+    if (is_blind(&player))
 	return false;
-    if (is_invisible(*mp) && !on(player, CANSEE))
+    if (is_invisible(mp) && !on(player, CANSEE))
 	return false;
     y = mp->t_pos.y;
     x = mp->t_pos.x;
@@ -312,7 +312,7 @@ chase(THING *tp, coord *ee)
      * Stalkers are slightly confused all of the time, and bats are
      * quite confused all the time
      */
-    if ((is_confused(*tp) && rnd(5) != 0) || (tp->t_type == 'P' && rnd(5) == 0)
+    if ((is_confused(tp) && rnd(5) != 0) || (tp->t_type == 'P' && rnd(5) == 0)
 	|| (tp->t_type == 'B' && rnd(2) == 0))
     {
 	/*
@@ -324,7 +324,7 @@ chase(THING *tp, coord *ee)
 	 * Small chance that it will become un-confused 
 	 */
 	if (rnd(20) == 0)
-	    tp->t_flags &= ~ISHUH;
+	    set_confused(tp, false);
     }
     /*
      * Otherwise, find the empty spot next to the chaser that is
@@ -456,7 +456,7 @@ cansee(int y, int x)
     register struct room *rer;
     static coord tp;
 
-    if (is_blind(player))
+    if (is_blind(&player))
 	return false;
     if (dist(y, x, hero.y, hero.x) < LAMPDIST)
     {
