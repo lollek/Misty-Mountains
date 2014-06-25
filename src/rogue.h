@@ -36,7 +36,6 @@
 #define NUMLINES	24
 #define NUMCOLS		80
 #define STATLINE	(NUMLINES - 1)
-#define BORE_LEVEL	50
 
 /* return values for get functions */
 enum option_return

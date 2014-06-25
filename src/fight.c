@@ -200,7 +200,7 @@ attack(THING *mp)
 			endmsg();
 		    }
 		    no_command += rnd(2) + 2;
-		    if (no_command > BORE_LEVEL)
+		    if (no_command > 50)
 			death('h');
 		when 'R':
 		    /*
