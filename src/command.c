@@ -337,7 +337,6 @@ do_command(char ch)
     otherwise:
       return do_wizard_command(ch);
   }
-  return true;
 }
 
 static bool
