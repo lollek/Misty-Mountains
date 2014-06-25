@@ -33,11 +33,11 @@ static bool levit_check();                /* Check to see if she's levitating */
 static void give_item_nickname();         /* Call an item something           */
 static bool print_currently_wearing(char thing); /* Print weapon / armor info */
 static bool fight_monster(bool fight_to_death); /* Attack and fight something */
-static bool toggle_wizard();
-static bool identify_trap();
-static bool maybe_quit();
+static bool toggle_wizard();              /* Toggle wizard-mode on or off     */
+static bool identify_trap();              /* Give the name of a trap          */
+static bool maybe_quit();                 /* Ask player if she wants to quit  */
 static bool repeat_last_command();
-static bool festina_lente(char ch);
+static bool festina_lente(char ch);       /* Run cautiously                   */
 
 /* command:
  * Process the user commands */
