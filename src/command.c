@@ -32,6 +32,7 @@ static void go_up_a_level();              /* Go up a dungeon_level            */
 static bool levit_check();                /* Check to see if she's levitating */
 static void give_item_nickname();         /* Call an item something           */
 static bool print_currently_wearing(char thing); /* Print weapon / armor info */
+static bool fight_monster(bool fight_to_death); /* Attack and fight something */
 
 /* command:
  * Process the user commands */
@@ -194,34 +195,6 @@ do_command(char ch)
       }
       return do_command(ch + ('A' - CTRL('A')));
 
-    case 'F':
-      kamikaze = true;
-    /* FALLTHROUGH */
-    case 'f':
-    {
-      THING *mp;
-      if (!get_dir())
-        return false;
-      delta.y += hero.y;
-      delta.x += hero.x;
-      if ((mp = moat(delta.y, delta.x)) == NULL ||
-          (!see_monst(mp) && !on(player, SEEMONST)))
-      {
-        if (!terse)
-          addmsg("I see ");
-        msg("no monster there");
-        return false;
-      }
-      else if (diag_ok(&hero, &delta))
-      {
-        to_death = true;
-        max_hit = 0;
-        mp->t_flags |= ISTARGET;
-        runch = ch = dir_ch;
-        return do_command(ch);
-      }
-    }
-    return true;
 
     case 'a':
       if (last_comm == '\0')
@@ -281,14 +254,9 @@ do_command(char ch)
       }
       return false;
 
-    case ESCAPE:
-      door_stop = false;
-      count = 0;
-      again = false;
-      return false;
-
     /* Funny symbols */
     case KEY_SPACE: return false;
+    case ESCAPE: door_stop = again = false; count = 0; return false;
     case '.': return true;
     case ',': return pick_up_item_from_ground();
     case '/': identify_a_character(); return false;
@@ -305,6 +273,7 @@ do_command(char ch)
     case 'c': give_item_nickname(); return false;
     case 'd': drop(); return true;
     case 'e': eat(); return true;
+    case 'f': return fight_monster(false);
     case 'i': inventory(pack, 0); return false;
     case 'm': move_on = true; return get_dir() ? do_command(dir_ch) : false;
     case 'o': option(); return false;
@@ -317,6 +286,7 @@ do_command(char ch)
 
     /* Upper case */
     case 'D': discovered(); return false;
+    case 'F': return fight_monster(true);
     case 'I': picky_inven(); return false;
     case 'P': return ring_on();
     case 'R': return ring_off();
@@ -831,4 +801,35 @@ print_currently_wearing(char thing)
   inv_describe = true;
 
   return false;
+}
+
+static bool
+fight_monster(bool fight_to_death)
+{
+  THING *mp;
+
+  kamikaze = fight_to_death;
+  if (!get_dir())
+    return false;
+  delta.y += hero.y;
+  delta.x += hero.x;
+
+  mp = moat(delta.y, delta.x);
+  if (mp == NULL || (!see_monst(mp) && !on(player, SEEMONST)))
+  {
+    if (!terse)
+      addmsg("I see ");
+    msg("no monster there");
+    return false;
+  }
+  else if (diag_ok(&hero, &delta))
+  {
+    to_death = true;
+    max_hit = 0;
+    mp->t_flags |= ISTARGET;
+    runch = dir_ch;
+    return do_command(dir_ch);
+  }
+  else
+    return true;
 }
