@@ -67,7 +67,6 @@ char *tr_name[] = {			/* Names of the traps */
 
 
 int n_objs;				/* # items listed in inventory() call */
-int ntraps;				/* Number of traps on this level */
 int hungry_state = 0;			/* How hungry is he */
 int inpack = 0;				/* Number of things in pack */
 int level = 1;				/* What level she is on */

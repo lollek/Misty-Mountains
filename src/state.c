@@ -1912,7 +1912,7 @@ rs_save_file(FILE *savef)
     rs_write_char(savef,last_dir);
     rs_write_strings(savef,tr_name,8);
     rs_write_int(savef,n_objs);
-    rs_write_int(savef, ntraps);
+    rs_write_int(savef, 0);                        /* ntraps */
     rs_write_int(savef, hungry_state);
     rs_write_int(savef, inpack);
     rs_write_int(savef, inv_type);
@@ -2036,7 +2036,7 @@ rs_restore_file(FILE *inf)
     rs_read_char(inf, &last_dir);
     rs_read_new_strings(inf,tr_name,8);
     rs_read_int(inf, &n_objs);
-    rs_read_int(inf, &ntraps);
+    rs_read_int(inf, &dummyint);                 /* &ntraps */
     rs_read_int(inf, &hungry_state);
     rs_read_int(inf, &inpack);
     rs_read_int(inf, &dummyint);                 /* inv_type */

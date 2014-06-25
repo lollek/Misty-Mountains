@@ -26,7 +26,6 @@ new_level()
     THING *tp;
     PLACE *pp;
     char *sp;
-    int i;
 
     player.t_flags &= ~ISHELD;	/* unhold when you go down just in case */
     if (level > max_level)
@@ -60,11 +59,10 @@ new_level()
      */
     if (rnd(10) < level)
     {
-	ntraps = rnd(level / 4) + 1;
+	int ntraps = rnd(level / 4) + 1;
 	if (ntraps > MAXTRAPS)
 	    ntraps = MAXTRAPS;
-	i = ntraps;
-	while (i--)
+	while (ntraps--)
 	{
 	    /*
 	     * not only wouldn't it be NICE to have traps in mazes

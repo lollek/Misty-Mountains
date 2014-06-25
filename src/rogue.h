@@ -443,7 +443,7 @@ extern char	dir_ch, file_name[], huh[], *inv_t_name[], prbuf[], whoami[],
 
 extern int	a_class[], count, food_left, hungry_state, inpack,
 		lastscore, level, max_hit, max_level, mpos,
-		n_objs, no_command, no_food, no_move, ntraps, purse,
+		n_objs, no_command, no_food, no_move, purse,
 		quiet, vf_hit, potential_wizard, wizard;
 
 extern unsigned int	seed;
