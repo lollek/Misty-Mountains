@@ -144,7 +144,7 @@ do_zap()
 		    case WS_CANCEL:
 			tp->t_flags |= ISCANC;
 			set_invisible(tp, false);
-			tp->t_flags &= ~CANHUH;
+			set_confusing(tp, false);
 			tp->t_disguise = tp->t_type;
 			if (see_monst(tp))
 			    mvaddcch(y, x, tp->t_disguise);

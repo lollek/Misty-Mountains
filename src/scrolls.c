@@ -67,7 +67,7 @@ read_scroll()
   {
     case S_CONFUSE:
       /* Scroll of monster confusion.  Give him that power. */
-      player.t_flags |= CANHUH;
+      set_confusing(&player, true);
       msg("your hands begin to glow %s", pick_color("red"));
     when S_ARMOR:
       if (cur_armor != NULL)

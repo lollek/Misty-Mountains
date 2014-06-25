@@ -104,11 +104,11 @@ fight(coord *mp, THING *weap, bool thrown)
 	    thunk(weap, mname, terse);
 	else
 	    hit((char *) NULL, mname, terse);
-	if (on(player, CANHUH))
+	if (is_confusing(&player))
 	{
 	    did_hit = true;
-            set_confused(tp, true);
-	    player.t_flags &= ~CANHUH;
+	    set_confused(tp, true);
+	    set_confusing(&player, false);
 	    endmsg();
 	    has_hit = false;
 	    msg("your hands stop glowing %s", pick_color("red"));

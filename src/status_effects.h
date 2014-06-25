@@ -13,6 +13,7 @@
 #define SLEEPTIME	spread(7)   /* Sleep */
 
 /* Status getters */
+inline bool is_confusing(THING *thing);
 inline bool is_hallucinating(THING *thing);
 inline bool is_blind(THING *thing);
 inline bool is_levitating(THING *thing);
@@ -20,6 +21,7 @@ inline bool is_confused(THING *thing);
 inline bool is_invisible(THING *thing);
 
 /* Status setters */
+inline void set_confusing(THING *thing, bool status);
 inline void set_hallucinating(THING *thing, bool status);
 inline void set_blind(THING *thing, bool status);
 inline void set_levitating(THING *thing, bool status);
