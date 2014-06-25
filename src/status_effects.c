@@ -323,5 +323,6 @@ raise_level()
 {
   pstats.s_exp = e_levels[pstats.s_lvl-1] + 1L;
   check_level();
-  msg("you suddenly feel much more skillful");
+  if (game_type != QUICK)
+    msg("you suddenly feel much more skillful");
 }
