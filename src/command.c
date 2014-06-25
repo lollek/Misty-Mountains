@@ -20,15 +20,15 @@
 #include "scrolls.h"
 
 /* Local functions */
-static void illcom(int ch);
-static void search();
-static void help();
-static void identify();
-static void d_level();
-static void u_level();
-static bool levit_check();
-static void give_item_nickname();
-static void print_currently_wearing(char thing);
+static void bad_command(int ch);      /* Tell player she's pressed wrong keys */
+static void search();                /* Find traps, hidden doors and passages */
+static void print_help();                 /* Give command help                */
+static void identify_a_character();       /* Identify monster and items       */
+static void go_down_a_level();            /* Go down a dungeon level          */
+static void go_up_a_level();              /* Go up a dungeon_level            */
+static bool levit_check();                /* Check to see if she's levitating */
+static void give_item_nickname();         /* Call an item something           */
+static void print_currently_wearing(char thing); /* Print weapon / armor info */
 
 /* command:
  * Process the user commands */
@@ -279,10 +279,10 @@ over:
 		when 'R': ring_off();
 		when 'o': option(); after = false;
 		when 'c': give_item_nickname(); after = false;
-		when '>': after = false; d_level();
-		when '<': after = false; u_level();
-		when '?': after = false; help();
-		when '/': after = false; identify();
+		when '>': after = false; go_down_a_level();
+		when '<': after = false; go_up_a_level();
+		when '?': after = false; print_help();
+		when '/': after = false; identify_a_character();
 		when 's': search();
 		when 'z':
 		    if (get_dir())
@@ -407,10 +407,10 @@ over:
 			when '*' :
 			    pr_list();
 			otherwise:
-			    illcom(ch);
+			    bad_command(ch);
 		    }
 		    else
-			illcom(ch);
+			bad_command(ch);
 	    }
 	    /*
 	     * turn off flags if no longer needed
@@ -440,10 +440,8 @@ over:
 	teleport();
 }
 
-/** illcom:
- * What to do with an illegal command */
 static void
-illcom(int ch)
+bad_command(int ch)
 {
     save_msg = false;
     count = 0;
@@ -451,8 +449,6 @@ illcom(int ch)
     save_msg = true;
 }
 
-/** search:
- * player gropes about him to find hidden things. */
 static void
 search()
 {
@@ -515,10 +511,8 @@ search()
   }
 }
 
-/** help:
- * Give single character help, or the whole mess if he wants it */
 static void
-help()
+print_help()
 {
   struct h_list helpstr[] = {
     {'?',	"	prints help",				true},
@@ -649,14 +643,12 @@ help()
   wrefresh(stdscr);
 }
 
-/** identify:
- * Tell the player what a certain thing is. */
 static void
-identify()
+identify_a_character()
 {
   int ch;
   char *str;
-  static struct h_list ident_list[] = {
+  struct h_list ident_list[] = {
     {VWALL,	"wall of a room",	false},
     {HWALL,	"wall of a room",	false},
     {GOLD,	"gold",			false},
@@ -704,10 +696,8 @@ identify()
   msg("'%s': %s", unctrl(ch), str);
 }
 
-/** d_level:
- * He wants to go down a level */
 static void
-d_level()
+go_down_a_level()
 {
   if (levit_check())
     return;
@@ -721,10 +711,8 @@ d_level()
   }
 }
 
-/** u_level:
- * He wants to go up a level */
 static void
-u_level()
+go_up_a_level()
 {
   if (levit_check())
     return;
@@ -743,9 +731,6 @@ u_level()
     msg("I see no way up");
 }
 
-/** levit_check:
- * Check to see if she's levitating, and if she is, print an
- * appropriate message. */
 static bool
 levit_check()
 {
@@ -757,8 +742,6 @@ levit_check()
   return false;
 }
 
-/** call:
- * Allow a user to call a potion, scroll, or ring something */
 static void
 give_item_nickname()
 {
@@ -834,8 +817,6 @@ give_item_nickname()
   }
 }
 
-/** current:
- * Print the current weapon/armor */
 static void
 print_currently_wearing(char thing)
 {
