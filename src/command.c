@@ -73,7 +73,7 @@ command()
     lastscore = purse;
     move(hero.y, hero.x);
     if (!((running || count) && jump))
-      refresh();			/* Draw screen */
+      refresh();
     take = 0;
     after = true;
 
@@ -115,8 +115,7 @@ command()
         }
         countch = ch;
 
-        /* turn off count for commands which don't make sense
-         * to repeat */
+        /* turn off count for commands which don't make sense to repeat */
         switch (ch)
         {
           case CTRL('B'): case CTRL('H'): case CTRL('J'):

@@ -436,7 +436,7 @@ extern bool	after, again, amulet, door_stop,
 
 extern char	dir_ch, file_name[], huh[], *inv_t_name[], prbuf[], whoami[],
 		l_last_comm, l_last_dir, last_comm, last_dir, *Numname,
-		outbuf[], *r_stones[], *release, runch,
+		outbuf[], *r_stones[], runch,
 		*s_names[], take, *tr_name[], *ws_made[], *ws_type[];
 
 extern int	a_class[], count, food_left, hungry_state, inpack,
@@ -522,6 +522,7 @@ void	drop();
 void	eat();
 size_t  encread(char *start, size_t size, FILE *inf);
 size_t	encwrite(char *start, size_t size, FILE *outf);
+bool	encread_and_check_version(char *buf, FILE *infile);
 int	endmsg();
 void	enter_room(coord *cp);
 void	erase_lamp(coord *pos, struct room *rp);

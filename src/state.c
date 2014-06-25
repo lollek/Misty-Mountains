@@ -36,6 +36,9 @@
 #include "status_effects.h"
 #include "scrolls.h"
 
+/* Change this if saves become uncompatible with rogue5.4.4 */
+static char *release = "5.4.4";
+
 /************************************************************************/
 /* Save State Code                                                      */
 /************************************************************************/

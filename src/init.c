@@ -20,9 +20,6 @@
 #include "status_effects.h"
 #include "scrolls.h"
 
-/* FIXME: I should customize this */
-extern char version[];
-
 /* init_new_game
  * Set up everything so we can start playing already */
 bool
@@ -101,13 +98,12 @@ init_old_game()
       }
     }
 
-    fflush(stdout);
-    encread(buf, (unsigned) strlen(version) + 1, inf);
-    if (strcmp(buf, version) != 0)
+    if (encread_and_check_version(buf, inf) == false)
     {
-        printf("Sorry, saved game is out of date.\n");
-        return false;
+      printf("Sorry, saved game is out of date.\n");
+      return false;
     }
+
     encread(buf, 80, inf);
 
     if (init_graphics() != 0)
