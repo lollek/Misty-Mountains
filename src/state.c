@@ -1879,7 +1879,7 @@ rs_save_file(FILE *savef)
     rs_write_boolean(savef, move_on);               /* 16 */
     rs_write_boolean(savef, msg_esc);               /* 17 */
     rs_write_boolean(savef, passgo);                /* 18 */
-    rs_write_boolean(savef, playing);               /* 19 */
+    rs_write_boolean(savef, 1);                     /* 19 */
     rs_write_boolean(savef, 0);                     /* 20 */
     rs_write_boolean(savef, running);               /* 21 */
     rs_write_boolean(savef, 0);                     /* 22 */
@@ -2003,7 +2003,7 @@ rs_restore_file(FILE *inf)
     rs_read_boolean(inf, &move_on);             /* 16 */
     rs_read_boolean(inf, &msg_esc);             /* 17 */
     rs_read_boolean(inf, &dummybool);           /* 18 &passgo */
-    rs_read_boolean(inf, &playing);             /* 19 */
+    rs_read_boolean(inf, &dummybool);           /* 19 &playing */
     rs_read_boolean(inf, &dummybool);           /* 20 &q_comm */
     rs_read_boolean(inf, &running);             /* 21 */
     rs_read_boolean(inf, &dummybool);           /* 22 &save_msg */

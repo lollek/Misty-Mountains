@@ -434,7 +434,7 @@ bool use_colors;  /* Use ncurses colors */
 extern bool	after, again, amulet, door_stop,
 		firstmove, has_hit, inv_describe, kamikaze,
 		move_on, msg_esc, pack_used[],
-		playing, running, seenstairs, to_death;
+		running, seenstairs, to_death;
 
 extern char	dir_ch, file_name[], huh[], *inv_t_name[], prbuf[], whoami[],
 		l_last_comm, l_last_dir, last_comm, last_dir,
