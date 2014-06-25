@@ -25,7 +25,6 @@ bool lower_msg = false;			/* Messages should start w/lower case */
 bool move_on = false;			/* Next move shouldn't pick up items */
 bool msg_esc = false;			/* Check for ESC from msg's --More-- */
 bool playing = true;			/* True until he quits */
-bool q_comm = false;			/* Are we executing a 'Q' command? */
 bool running = false;			/* True if player is running */
 bool save_msg = true;			/* Remember last msg */
 bool to_death = false;			/* Fighting is to the death! */

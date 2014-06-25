@@ -122,8 +122,7 @@ quit(int sig)
   (void)sig;
 
   /* Reset the signal in case we got here via an interrupt */
-  if (!q_comm)
-    mpos = 0;
+  mpos = 0;
   getyx(curscr, oy, ox);
   msg("really quit?");
   if (getch() == 'y')

@@ -818,10 +818,7 @@ identify_trap()
 static bool
 maybe_quit()
 {
-  /* TODO: remove q_comm */
-  q_comm = true;
   quit(0);
-  q_comm = false;
   return false;
 }
 
