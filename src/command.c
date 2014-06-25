@@ -20,6 +20,7 @@
 #include "scrolls.h"
 
 /* Local functions */
+static void pick_up_item_from_ground();
 static void bad_command(int ch);      /* Tell player she's pressed wrong keys */
 static void search();                /* Find traps, hidden doors and passages */
 static void print_help();                 /* Give command help                */
@@ -70,7 +71,17 @@ command()
     take = 0;
     after = true;
 
-    /* Read command or continue run */
+
+    if (no_command)
+    {
+      ch = '.';
+      if (--no_command == 0)
+      {
+        player.t_flags |= ISRUN;
+        msg("you can move again");
+      }
+    }
+
     if (!no_command)
     {
       if (running || to_death)
@@ -81,26 +92,11 @@ command()
       {
         ch = readchar();
         move_on = false;
-        if (mpos != 0)		/* Erase message if its there */
+        if (mpos != 0)
           msg("");
       }
-    }
-    else
-      ch = '.';
 
-    if (no_command)
-    {
-      if (--no_command == 0)
-      {
-        player.t_flags |= ISRUN;
-        msg("you can move again");
-      }
-    }
-    else
-    {
-      /*
-       * check for prefixes
-       */
+      /* check for prefixes */
       newcount = false;
       if (isdigit(ch))
       {
@@ -114,10 +110,9 @@ command()
           ch = readchar();
         }
         countch = ch;
-        /*
-         * turn off count for commands which don't make sense
-         * to repeat
-         */
+
+        /* turn off count for commands which don't make sense
+         * to repeat */
         switch (ch)
         {
           case CTRL('B'): case CTRL('H'): case CTRL('J'):
@@ -135,9 +130,8 @@ command()
             count = 0;
         }
       }
-      /*
-       * execute a command
-       */
+
+      /* execute a command */
       if (count && !running)
         count--;
       if (ch != 'a' && ch != ESCAPE && !(running || count || to_death))
@@ -152,34 +146,7 @@ command()
 over:
       switch (ch)
       {
-        case ',':
-          {
-            THING *obj = NULL;
-            int found = 0;
-            for (obj = lvl_obj; obj != NULL; obj = next(obj))
-            {
-              if (obj->o_pos.y == hero.y && obj->o_pos.x == hero.x)
-              {
-                found=1;
-                break;
-              }
-            }
-
-            if (found) {
-              if (levit_check())
-                ;
-              else
-                pick_up((char)obj->o_type);
-            }
-            else {
-              if (!terse)
-                addmsg("there is ");
-              addmsg("nothing here");
-              if (!terse)
-                addmsg(" to pick up");
-              endmsg();
-            }
-          }
+        case ',': pick_up_item_from_ground();
         when CTRL('Z'): shell();
         when '!': after = false; msg("Shell has been removed, use ^Z instead");
         when 'h': do_move(0, -1);
@@ -436,6 +403,26 @@ over:
     search();
   else if (ISRING(RIGHT, R_TELEPORT) && rnd(50) == 0)
     teleport();
+}
+
+static void
+pick_up_item_from_ground()
+{
+  THING *obj = NULL;
+  for (obj = lvl_obj; obj != NULL; obj = next(obj))
+    if (obj->o_pos.y == hero.y && obj->o_pos.x == hero.x)
+    {
+      if (!levit_check())
+        pick_up((char)obj->o_type);
+      return;
+    }
+
+  if (!terse)
+    addmsg("there is ");
+  addmsg("nothing here");
+  if (!terse)
+    addmsg(" to pick up");
+  endmsg();
 }
 
 static void
