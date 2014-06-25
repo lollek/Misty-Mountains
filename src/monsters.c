@@ -169,13 +169,13 @@ wake_monster(int y, int x)
 	tp->t_flags |= ISRUN;
     }
     if (ch == 'M' && !is_blind(&player) && !is_hallucinating(&player)
-	&& !on(*tp, ISFOUND) && !is_cancelled(tp) && on(*tp, ISRUN))
+	&& !is_found(tp) && !is_cancelled(tp) && on(*tp, ISRUN))
     {
         rp = proom;
 	if ((rp != NULL && !(rp->r_flags & ISDARK))
 	    || dist(y, x, hero.y, hero.x) < LAMPDIST)
 	{
-	    tp->t_flags |= ISFOUND;
+	    set_found(tp, true);
 	    if (!save(VS_MAGIC))
 	    {
 		mname = set_mname(tp);

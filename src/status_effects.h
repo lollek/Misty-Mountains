@@ -18,6 +18,7 @@ inline bool is_true_seeing(THING *thing);  /* Can see invisible creatures */
 inline bool is_blind(THING *thing);        /* Creature is blind */
 inline bool is_cancelled(THING *thing);    /* Creature's ability is cancelled */
 inline bool is_levitating(THING *thing);   /* Creature is levitating */
+inline bool is_found(THING *thing);        /* Creature has been seen */
 inline bool is_confused(THING *thing);     /* Creature is confused */
 inline bool is_invisible(THING *thing);    /* Creature is invisible */
 inline bool is_hallucinating(THING *thing);/* Creature is tripping on acid */
@@ -28,6 +29,7 @@ void set_true_seeing(THING *thing, bool status, bool permanent);
 inline void set_blind(THING *thing, bool status);
 inline void set_cancelled(THING *thing, bool status);
 inline void set_levitating(THING *thing, bool status);
+inline void set_found(THING *thing, bool status);
 inline void set_confused(THING *thing, bool status);
 inline void set_invisible(THING *thing, bool status);
 inline void set_hallucinating(THING *thing, bool status);
