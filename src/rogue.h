@@ -520,7 +520,7 @@ void	door(struct room *rm, coord *cp);
 void	door_open(struct room *rp);
 void	drain();
 void	draw_room(struct room *rp);
-void	drop();
+bool	drop();
 void	eat();
 size_t  encread(char *start, size_t size, FILE *inf);
 size_t	encwrite(char *start, size_t size, FILE *outf);

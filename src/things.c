@@ -143,7 +143,7 @@ inv_name(THING *obj, bool drop)
  *	Put something down
  */
 
-void
+bool
 drop()
 {
     char ch = chat(hero.y, hero.x);
@@ -153,12 +153,12 @@ drop()
     {
 	after = false;
 	msg("there is something there already");
-	return;
+	return false;
     }
     if ((obj = get_item("drop", 0)) == NULL)
-	return;
+	return false;
     if (!dropcheck(obj))
-	return;
+	return false;
     obj = leave_pack(obj, true, !(obj->o_type == POTION ||
           obj->o_type == SCROLL || obj->o_type == FOOD));
     /*
@@ -171,6 +171,7 @@ drop()
     if (obj->o_type == AMULET)
 	amulet = false;
     msg("dropped %s", inv_name(obj, true));
+    return true;
 }
 
 /*

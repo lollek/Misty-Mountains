@@ -203,7 +203,7 @@ do_command(char ch)
       return do_move(ch);
     case 'a': return repeat_last_command();
     case 'c': give_item_nickname(); return false;
-    case 'd': drop(); return true;
+    case 'd': return drop();
     case 'e': eat(); return true;
     case 'f': return fight_monster(false);
     case 'i': inventory(pack, 0); return false;
