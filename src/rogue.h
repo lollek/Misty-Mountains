@@ -508,7 +508,7 @@ void	do_daemons(int flag);
 void	do_fuses(int flag);
 void	do_maze(struct room *rp);
 void	do_motion(THING *obj, int ydelta, int xdelta);
-bool	do_move(int dy, int dx);
+bool	do_move(char ch);
 void	do_passages();
 void	do_rooms();
 bool	do_run(char ch);

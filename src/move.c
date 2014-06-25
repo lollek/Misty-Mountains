@@ -42,9 +42,22 @@ do_run(char ch)
  */
 
 bool
-do_move(int dy, int dx)
+do_move(char ch)
 {
-    char ch, fl;
+    int dy = 0, dx = 0;
+    char fl;
+
+    switch (ch)
+    {
+	case 'h': dy =  0; dx = -1;
+	when 'j': dy =  1; dx =  0;
+	when 'k': dy = -1; dx =  0;
+	when 'l': dy =  0, dx =  1;
+	when 'y': dy = -1, dx = -1;
+	when 'u': dy = -1, dx =  1;
+	when 'b': dy =  1, dx = -1;
+	when 'n': dy =  1, dx =  1;
+    }
 
     firstmove = false;
     if (no_move)

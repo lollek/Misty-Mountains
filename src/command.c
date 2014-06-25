@@ -180,14 +180,9 @@ do_command(char ch)
     case '!': msg("Shell has been removed, use ^Z instead"); return false;
 
     /*TODO: change do_move to take a char instead of x,y */
-    case 'h': return do_move(0, -1);
-    case 'j': return do_move(1, 0);
-    case 'k': return do_move(-1, 0);
-    case 'l': return do_move(0, 1);
-    case 'y': return do_move(-1, -1);
-    case 'u': return do_move(-1, 1);
-    case 'b': return do_move(1, -1);
-    case 'n': return do_move(1, 1);
+    case 'h': case 'j': case 'k': case 'l':
+    case 'y': case 'u': case 'b': case 'n':
+      return do_move(ch);
 
     case 'H': case 'J': case 'K': case 'L':
     case 'Y': case 'U': case 'B': case 'N':
