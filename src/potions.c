@@ -126,7 +126,7 @@ quaff()
       learn_potion(obj->o_which);
       become_tripping(false);
     when P_SEEINVIS:
-      become_true_seeing(false);
+      set_true_seeing(&player, true, false);
     when P_RAISE:
       learn_potion(obj->o_which);
       raise_level();

@@ -206,8 +206,8 @@ dropcheck(THING *obj)
 		chg_str(-obj->o_arm);
 		break;
 	    case R_SEEINVIS:
-		remove_true_seeing();
-		extinguish(remove_true_seeing);
+		set_true_seeing(&player, false, false);
+		extinguish(daemon_remove_true_seeing);
 		break;
 	}
     }

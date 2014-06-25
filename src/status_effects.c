@@ -8,6 +8,7 @@ is_status(THING *thing, short flag)
   return (thing->t_flags & flag) != false;
 }
 inline bool is_confusing(THING *thing)     { return is_status(thing, CANHUH);  }
+inline bool is_true_seeing(THING *thing)   { return is_status(thing, CANSEE);  }
 inline bool is_hallucinating(THING *thing) { return is_status(thing, ISHALU);  }
 inline bool is_blind(THING *thing)         { return is_status(thing, ISBLIND); }
 inline bool is_levitating(THING *thing)    { return is_status(thing, ISLEVIT); }
@@ -27,6 +28,48 @@ inline void set_blind(THING *t, bool b)           { set_status(t, b, ISBLIND); }
 inline void set_levitating(THING *t, bool b)      { set_status(t, b, ISLEVIT); }
 inline void set_confused(THING *t, bool b)        { set_status(t, b, ISHUH);   }
 inline void set_invisible(THING *t, bool b)       { set_status(t, b, ISINVIS); }
+
+void
+set_true_seeing(THING *thing, bool status, bool permanent)
+{
+  if (thing != &player)
+  {
+    set_status(thing, status, CANSEE);
+    return;
+  }
+
+  /* Add effect */
+  if (status)
+  {
+    if (is_true_seeing(&player))
+      lengthen(daemon_remove_true_seeing, SEEDURATION);
+    else
+    {
+      player.t_flags |= CANSEE;
+      if (!permanent)
+        fuse(daemon_remove_true_seeing, 0, SEEDURATION, AFTER);
+      look(false);
+    }
+    msg("everything suddenly looks sharper");
+    cure_blindness();
+  }
+
+  /* Remove effect */
+  else
+  {
+    THING *th;
+    for (th = mlist; th != NULL; th = next(th))
+      if (is_invisible(th) && see_monst(th))
+        mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
+    player.t_flags &= ~CANSEE;
+  }
+}
+
+void
+daemon_remove_true_seeing()
+{
+  set_true_seeing(&player, false, false);
+}
 
 void
 fall_asleep()
@@ -175,7 +218,7 @@ remove_tripping()
   {
     move(tp->t_pos.y, tp->t_pos.x);
     if (cansee(tp->t_pos.y, tp->t_pos.x))
-      if (!is_invisible(tp) || on(player, CANSEE))
+      if (!is_invisible(tp) || is_true_seeing(&player))
         addcch(tp->t_disguise);
       else
         addcch(chat(tp->t_pos.y, tp->t_pos.x));
@@ -183,32 +226,6 @@ remove_tripping()
       addcch(tp->t_type | A_STANDOUT);
   }
   msg("Everything looks SO boring now.");
-}
-
-void
-become_true_seeing(bool permanent)
-{
-  if (on(player, CANSEE))
-    lengthen(remove_true_seeing, SEEDURATION);
-  else
-  {
-    player.t_flags |= CANSEE;
-    if (!permanent)
-      fuse(remove_true_seeing, 0, SEEDURATION, AFTER);
-    look(false);
-  }
-  msg("everything suddenly looks sharper");
-  cure_blindness();
-}
-
-void
-remove_true_seeing()
-{
-  register THING *th;
-  for (th = mlist; th != NULL; th = next(th))
-    if (is_invisible(th) && see_monst(th))
-      mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
-  player.t_flags &= ~CANSEE;
 }
 
 void

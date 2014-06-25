@@ -255,7 +255,7 @@ see_monst(THING *mp)
 
     if (is_blind(&player))
 	return false;
-    if (is_invisible(mp) && !on(player, CANSEE))
+    if (is_invisible(mp) && !is_true_seeing(&player))
 	return false;
     y = mp->t_pos.y;
     x = mp->t_pos.x;

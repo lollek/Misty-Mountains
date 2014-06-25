@@ -13,20 +13,25 @@
 #define SLEEPTIME	spread(7)   /* Sleep */
 
 /* Status getters */
-inline bool is_confusing(THING *thing);
-inline bool is_hallucinating(THING *thing);
-inline bool is_blind(THING *thing);
-inline bool is_levitating(THING *thing);
-inline bool is_confused(THING *thing);
-inline bool is_invisible(THING *thing);
+inline bool is_confusing(THING *thing);      /* Causes confusion on attack */
+inline bool is_true_seeing(THING *thing);    /* Can see invisible creatures */
+inline bool is_hallucinating(THING *thing);  /* Creature is tripping on acid */
+inline bool is_blind(THING *thing);          /* Creature is blind */
+inline bool is_levitating(THING *thing);     /* Creature is levitating */
+inline bool is_confused(THING *thing);       /* Creature is confused */
+inline bool is_invisible(THING *thing);      /* Creature is invisible */
 
 /* Status setters */
 inline void set_confusing(THING *thing, bool status);
+void set_true_seeing(THING *thing, bool status, bool permanent);
 inline void set_hallucinating(THING *thing, bool status);
 inline void set_blind(THING *thing, bool status);
 inline void set_levitating(THING *thing, bool status);
 inline void set_confused(THING *thing, bool status);
 inline void set_invisible(THING *thing, bool status);
+
+/* Daemon helpers */
+void daemon_remove_true_seeing();
 
 /* Functions */
 void fall_asleep();                         /* Take a unwilling powernap */
@@ -40,8 +45,6 @@ void become_stronger();                     /* Add strength */
 void become_monster_seeing(bool permanent); /* Add see-monster effect */
 void become_tripping(bool permanent);       /* Add tripping effect */
 void remove_tripping();
-void become_true_seeing(bool permanent);    /* Add see-invisiable effect */
-void remove_true_seeing();
 void become_hasted(bool permanent);         /* Become quicker */
 void remove_hasted();
 void become_blind(bool permanent);
