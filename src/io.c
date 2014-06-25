@@ -18,6 +18,20 @@
 static char msgbuf[2*MAXMSG+1];
 static int newpos = 0;
 
+void
+unsaved_msg(char *fmt, ...)
+{
+  va_list args;
+  char tmp[MAXSTR];
+
+  strcpy(tmp, huh);
+  va_start(args, fmt);
+  doadd(fmt, args);
+  va_end(args);
+  endmsg();
+  strcpy(huh, tmp);
+}
+
 /* VARARGS1 */
 int
 msg(char *fmt, ...)
@@ -68,8 +82,8 @@ endmsg()
 {
     char ch;
 
-    if (save_msg)
-	strcpy(huh, msgbuf);
+    /* Save message in case player missed it */
+    strcpy(huh, msgbuf);
     if (mpos)
     {
 	look(false);

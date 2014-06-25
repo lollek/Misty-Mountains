@@ -239,7 +239,13 @@ do_command(char ch)
     case CTRL('Z'): shell(); return false;
 
     default:
-      return do_wizard_command(ch);
+      if (wizard)
+        return do_wizard_command(ch);
+      else
+      {
+        bad_command(ch);
+        return false;
+      }
   }
 }
 
@@ -247,8 +253,6 @@ static bool
 do_wizard_command(char ch)
 {
   after = false;
-  if (!wizard)
-    return false;
 
   switch (ch)
   {
@@ -301,7 +305,7 @@ do_wizard_command(char ch)
       cur_armor = obj;
       add_pack(obj, true);
     }
- 
+
     otherwise:
       bad_command(ch);
   }
@@ -332,10 +336,8 @@ pick_up_item_from_ground()
 static void
 bad_command(int ch)
 {
-    save_msg = false;
     count = 0;
-    msg("illegal command '%s'", unctrl(ch));
-    save_msg = true;
+    unsaved_msg("illegal command '%s'", unctrl(ch));
 }
 
 static void

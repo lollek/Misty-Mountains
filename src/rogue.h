@@ -426,8 +426,7 @@ bool use_colors;  /* Use ncurses colors */
 extern bool	after, again, amulet, door_stop,
 		firstmove, has_hit, inv_describe, kamikaze,
 		move_on, msg_esc, pack_used[],
-		playing, running, save_msg,
-		seenstairs, to_death;
+		playing, running, seenstairs, to_death;
 
 extern char	dir_ch, file_name[], huh[], *inv_t_name[], prbuf[], whoami[],
 		l_last_comm, l_last_dir, last_comm, last_dir, *Numname,
@@ -557,6 +556,7 @@ void	money(int value);
 int	move_monst(THING *tp);
 void	move_msg(THING *obj);
 int	msg(char *fmt, ...);
+void	unsaved_msg(char *fmt, ...);
 void	nameit(THING *obj, char *type, char *which, struct obj_info *op, char *(*prfunc)(THING *));
 void	new_level();
 void	new_monster(THING *tp, char type, coord *cp);
