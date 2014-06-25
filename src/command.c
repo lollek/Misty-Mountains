@@ -34,6 +34,7 @@ static void give_item_nickname();         /* Call an item something           */
 static bool print_currently_wearing(char thing); /* Print weapon / armor info */
 static bool fight_monster(bool fight_to_death); /* Attack and fight something */
 static bool toggle_wizard();
+static bool identify_trap();
 
 /* command:
  * Process the user commands */
@@ -221,27 +222,6 @@ do_command(char ch)
       wrefresh(curscr);
       return false;
 
-    case '^':
-      if (get_dir())
-      {
-        char *fp;
-        delta.y += hero.y;
-        delta.x += hero.x;
-        fp = &flat(delta.y, delta.x);
-        if (!terse)
-          addmsg("You have found ");
-        if (chat(delta.y, delta.x) != TRAP)
-          msg("no trap there");
-        else if (is_hallucinating(player))
-          msg(tr_name[rnd(NTRAPS)]);
-        else
-        {
-          msg(tr_name[*fp & F_TMASK]);
-          *fp |= F_SEEN;
-        }
-      }
-      return false;
-
 
     /* Funny symbols */
     case KEY_SPACE: return false;
@@ -254,6 +234,7 @@ do_command(char ch)
     case '?': print_help(); return false;
     case '!': msg("Shell has been removed, use ^Z instead"); return false;
     case '@': status(true); return false;
+    case '^': return identify_trap();
     case ')': return print_currently_wearing(WEAPON);
     case ']': return print_currently_wearing(ARMOR);
     case '+': return toggle_wizard();
@@ -836,6 +817,30 @@ toggle_wizard()
       msg("You are one with the force (seed: #%d)", seed);
     else
       msg("not wizard any more");
+  }
+  return false;
+}
+
+static bool
+identify_trap()
+{
+  if (get_dir())
+  {
+    char *fp;
+    delta.y += hero.y;
+    delta.x += hero.x;
+    fp = &flat(delta.y, delta.x);
+    if (!terse)
+      addmsg("You have found ");
+    if (chat(delta.y, delta.x) != TRAP)
+      msg("no trap there");
+    else if (is_hallucinating(player))
+      msg(tr_name[rnd(NTRAPS)]);
+    else
+    {
+      msg(tr_name[*fp & F_TMASK]);
+      *fp |= F_SEEN;
+    }
   }
   return false;
 }
