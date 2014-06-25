@@ -15,8 +15,12 @@
 #include <stdbool.h>
 #include <ncurses.h>
 
-/* Don't change the constants, since they are used for sizes in many
- * places in the program.  */
+/* Tuneable - feel free to change these */
+#define NUMSCORES 10    /* Number of highscore entries */
+#define NUMNAME   "Ten" /* The same number in letters  */
+
+
+/* Try not to change these */
 #define MAXSTR 1024 /* maximum length of strings */
 #define MAXLINES 32 /* maximum number of screen lines used */
 #define MAXCOLS  80 /* maximum number of screen columns used */
@@ -429,7 +433,7 @@ extern bool	after, again, amulet, door_stop,
 		playing, running, seenstairs, to_death;
 
 extern char	dir_ch, file_name[], huh[], *inv_t_name[], prbuf[], whoami[],
-		l_last_comm, l_last_dir, last_comm, last_dir, *Numname,
+		l_last_comm, l_last_dir, last_comm, last_dir,
 		outbuf[], *r_stones[], runch,
 		*s_names[], take, *tr_name[], *ws_made[], *ws_type[];
 
@@ -438,7 +442,7 @@ extern int	a_class[], count, food_left, hungry_state, inpack,
 		n_objs, no_command, no_food, no_move, ntraps, purse,
 		quiet, vf_hit, potential_wizard, wizard;
 
-extern unsigned int	numscores, seed;
+extern unsigned int	seed;
 
 extern int	e_levels[];
 

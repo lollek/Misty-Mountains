@@ -287,7 +287,7 @@ rd_score(SCORE *top_ten)
 
 	rewind(scoreboard); 
 
-	for(i = 0; i < numscores; i++)
+	for(i = 0; i < NUMSCORES; i++)
     {
         encread(top_ten[i].sc_name, MAXSTR, scoreboard);
         encread(scoreline, 100, scoreboard);
@@ -314,7 +314,7 @@ wr_score(SCORE *top_ten)
 
 	rewind(scoreboard);
 
-    for(i = 0; i < numscores; i++)
+    for(i = 0; i < NUMSCORES; i++)
     {
           memset(scoreline,0,100);
           encwrite(top_ten[i].sc_name, MAXSTR, scoreboard);

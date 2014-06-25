@@ -10,14 +10,6 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
-/*
- * The various tuneable defines are:
- *
- *	NUMSCORES	Number of scores in the score file (default 10).
- *	NUMNAME		String version of NUMSCORES (first character
- *			should be capitalized) (default "Ten").
- */
-
 #include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>
@@ -25,14 +17,6 @@
 #include "rogue.h"
 
 #define LOCKFILE ".rogue14_lockfile"
-
-# ifndef NUMSCORES
-#	define	NUMSCORES	10
-#	define	NUMNAME		"Ten"
-# endif
-
-unsigned int numscores = NUMSCORES;
-char *Numname = NUMNAME;
 
 /*
  * lock_sc:

@@ -81,8 +81,8 @@ score(int amount, int flags, char monst)
 	    delwin(hw);
     }
 
-    top_ten = (SCORE *) malloc(numscores * sizeof (SCORE));
-    endp = &top_ten[numscores];
+    top_ten = (SCORE *) malloc(NUMSCORES * sizeof (SCORE));
+    endp = &top_ten[NUMSCORES];
     for (scp = top_ten; scp < endp; scp++)
     {
 	scp->sc_score = 0;
@@ -135,7 +135,7 @@ score(int amount, int flags, char monst)
      */
     if (flags != -1)
 	putchar('\n');
-    printf("Top %s %s:\n", Numname, "Scores");
+    printf("Top %s %s:\n", NUMNAME, "Scores");
     printf("   Score Name\n");
     for (scp = top_ten; scp < endp; scp++)
     {
