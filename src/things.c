@@ -146,10 +146,9 @@ inv_name(THING *obj, bool drop)
 void
 drop()
 {
-    char ch;
+    char ch = chat(hero.y, hero.x);
     THING *obj;
 
-    ch = chat(hero.y, hero.x);
     if (ch != FLOOR && ch != PASSAGE)
     {
 	after = false;

@@ -43,7 +43,7 @@ fix_stick(THING *cur)
  *	Perform a zap with a wand
  */
 
-void
+bool
 do_zap()
 {
     THING *obj, *tp;
@@ -53,17 +53,16 @@ do_zap()
     static THING bolt;
 
     if ((obj = get_item("zap with", STICK)) == NULL)
-	return;
+	return false;
     if (obj->o_type != STICK)
     {
-	after = false;
 	msg("you can't zap with that!");
-	return;
+	return false;
     }
     if (obj->o_charges == 0)
     {
 	msg("nothing happens");
-	return;
+	return true;
     }
     switch (obj->o_which)
     {
@@ -95,7 +94,7 @@ do_zap()
 	    if (pstats.s_hpt < 2)
 	    {
 		msg("you are too weak to use it");
-		return;
+		return true;
 	    }
 	    else
 		drain();
@@ -235,6 +234,7 @@ do_zap()
 	    msg("what a bizarre schtick!");
     }
     obj->o_charges--;
+    return true;
 }
 
 /*

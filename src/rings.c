@@ -17,37 +17,32 @@
  *	Put a ring on a hand
  */
 
-void
+bool
 ring_on()
 {
-    THING *obj;
+    THING *obj = get_item("put on", RING);
     int ring;
 
-    obj = get_item("put on", RING);
-    /*
-     * Make certain that it is somethings that we want to wear
-     */
+    /* Make certain that it is somethings that we want to wear */
     if (obj == NULL)
-	return;
+	return false;
     if (obj->o_type != RING)
     {
 	if (!terse)
 	    msg("it would be difficult to wrap that around a finger");
 	else
 	    msg("not a ring");
-	return;
+	return false;
     }
 
-    /*
-     * find out which hand to put it on
-     */
+    /* find out which hand to put it on */
     if (is_current(obj))
-	return;
+	return false;
 
     if (cur_ring[LEFT] == NULL && cur_ring[RIGHT] == NULL)
     {
 	if ((ring = gethand()) < 0)
-	    return;
+	    return false;
     }
     else if (cur_ring[LEFT] == NULL)
 	ring = LEFT;
@@ -59,13 +54,11 @@ ring_on()
 	    msg("you already have a ring on each hand");
 	else
 	    msg("wearing two");
-	return;
+	return false;
     }
     cur_ring[ring] = obj;
 
-    /*
-     * Calculate the effect it has on the poor guy.
-     */
+    /* Calculate the effect it has on the poor guy. */
     switch (obj->o_which)
     {
 	case R_ADDSTR:
@@ -82,6 +75,7 @@ ring_on()
     if (!terse)
 	addmsg("you are now wearing ");
     msg("%s (%c)", inv_name(obj, true), obj->o_packch);
+    return true;
 }
 
 /*
@@ -89,7 +83,7 @@ ring_on()
  *	take off a ring
  */
 
-void
+bool
 ring_off()
 {
     int ring;
@@ -101,7 +95,7 @@ ring_off()
 	    msg("no rings");
 	else
 	    msg("you aren't wearing any rings");
-	return;
+	return false;
     }
     else if (cur_ring[LEFT] == NULL)
 	ring = RIGHT;
@@ -109,16 +103,17 @@ ring_off()
 	ring = LEFT;
     else
 	if ((ring = gethand()) < 0)
-	    return;
+	    return false;
     mpos = 0;
     obj = cur_ring[ring];
     if (obj == NULL)
     {
 	msg("not wearing such a ring");
-	return;
+	return false;
     }
     if (dropcheck(obj))
 	msg("was wearing %s(%c)", inv_name(obj, true), obj->o_packch);
+    return true;
 }
 
 /*

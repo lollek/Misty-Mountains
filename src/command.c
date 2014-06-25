@@ -20,7 +20,9 @@
 #include "scrolls.h"
 
 /* Local functions */
-static void pick_up_item_from_ground();
+static bool do_command(char ch);
+static bool do_wizard_command(char ch);
+static bool pick_up_item_from_ground();
 static void bad_command(int ch);      /* Tell player she's pressed wrong keys */
 static void search();                /* Find traps, hidden doors and passages */
 static void print_help();                 /* Give command help                */
@@ -29,7 +31,7 @@ static void go_down_a_level();            /* Go down a dungeon level          */
 static void go_up_a_level();              /* Go up a dungeon_level            */
 static bool levit_check();                /* Check to see if she's levitating */
 static void give_item_nickname();         /* Call an item something           */
-static void print_currently_wearing(char thing); /* Print weapon / armor info */
+static bool print_currently_wearing(char thing); /* Print weapon / armor info */
 
 /* command:
  * Process the user commands */
@@ -38,9 +40,7 @@ command()
 {
   char ch;
   int player_moves = on(player, ISHASTE) ? 2 : 1;
-  char *fp;
-  THING *mp;
-  static char countch, direction, newcount = false;
+  static char countch;
 
   /* Let the daemons start up */
   do_daemons(BEFORE);
@@ -97,11 +97,9 @@ command()
       }
 
       /* check for prefixes */
-      newcount = false;
       if (isdigit(ch))
       {
         count = 0;
-        newcount = true;
         while (isdigit(ch))
         {
           count = count * 10 + (ch - '0');
@@ -143,247 +141,14 @@ command()
         last_dir = '\0';
         last_pick = NULL;
       }
-over:
-      switch (ch)
-      {
-        case ',': pick_up_item_from_ground();
-        when CTRL('Z'): shell();
-        when '!': after = false; msg("Shell has been removed, use ^Z instead");
-        when 'h': do_move(0, -1);
-        when 'j': do_move(1, 0);
-        when 'k': do_move(-1, 0);
-        when 'l': do_move(0, 1);
-        when 'y': do_move(-1, -1);
-        when 'u': do_move(-1, 1);
-        when 'b': do_move(1, -1);
-        when 'n': do_move(1, 1);
-        when 'H': do_run('h');
-        when 'J': do_run('j');
-        when 'K': do_run('k');
-        when 'L': do_run('l');
-        when 'Y': do_run('y');
-        when 'U': do_run('u');
-        when 'B': do_run('b');
-        when 'N': do_run('n');
-        when CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
-        case CTRL('Y'): case CTRL('U'): case CTRL('B'): case CTRL('N'):
-        {
-          if (!is_blind(player))
-          {
-            door_stop = true;
-            firstmove = true;
-          }
-          if (count && !newcount)
-            ch = direction;
-          else
-          {
-            ch += ('A' - CTRL('A'));
-            direction = ch;
-          }
-          goto over;
-        }
-        when 'F':
-          kamikaze = true;
-        /* FALLTHROUGH */
-        case 'f':
-          if (!get_dir())
-          {
-            after = false;
-            break;
-          }
-          delta.y += hero.y;
-          delta.x += hero.x;
-          if ( ((mp = moat(delta.y, delta.x)) == NULL)
-              || ((!see_monst(mp)) && !on(player, SEEMONST)))
-          {
-            if (!terse)
-              addmsg("I see ");
-            msg("no monster there");
-            after = false;
-          }
-          else if (diag_ok(&hero, &delta))
-          {
-            to_death = true;
-            max_hit = 0;
-            mp->t_flags |= ISTARGET;
-            runch = ch = dir_ch;
-            goto over;
-          }
-        when 't':
-          if (!get_dir())
-            after = false;
-          else
-            missile(delta.y, delta.x);
-        when 'a':
-          if (last_comm == '\0')
-          {
-            msg("you haven't typed a command yet");
-            after = false;
-          }
-          else
-          {
-            ch = last_comm;
-            again = true;
-            goto over;
-          }
-        when 'q': quaff();
-        when 'Q':
-          after = false;
-          q_comm = true;
-          quit(0);
-          q_comm = false;
-        when 'i': after = false; inventory(pack, 0);
-        when 'I': after = false; picky_inven();
-        when 'd': drop();
-        when 'r': read_scroll();
-        when 'e': eat();
-        when 'w': wield();
-        when 'W': wear();
-        when 'T': take_off();
-        when 'P': ring_on();
-        when 'R': ring_off();
-        when 'o': option(); after = false;
-        when 'c': give_item_nickname(); after = false;
-        when '>': after = false; go_down_a_level();
-        when '<': after = false; go_up_a_level();
-        when '?': after = false; print_help();
-        when '/': after = false; identify_a_character();
-        when 's': search();
-        when 'z':
-          if (get_dir())
-            do_zap();
-          else
-            after = false;
-        when 'D': after = false; discovered();
-        when CTRL('P'): after = false; msg(huh);
-        when CTRL('R'):
-          after = false;
-          clearok(curscr,true);
-          wrefresh(curscr);
-        when 'S': after = false; save_game();
-        when '.': ;			/* Rest command */
-        when KEY_SPACE: after = false;	/* "Legal" illegal command */
-        when '^':
-          after = false;
-          if (get_dir()) {
-            delta.y += hero.y;
-            delta.x += hero.x;
-            fp = &flat(delta.y, delta.x);
-            if (!terse)
-              addmsg("You have found ");
-            if (chat(delta.y, delta.x) != TRAP)
-              msg("no trap there");
-            else if (is_hallucinating(player))
-              msg(tr_name[rnd(NTRAPS)]);
-            else {
-              msg(tr_name[*fp & F_TMASK]);
-              *fp |= F_SEEN;
-            }
-          }
-        when '+':
-          after = false;
-          /* TODO: Add a query here, so you always can become a wiz */
-          if (potential_wizard)
-          {
-            wizard = !wizard;
-            turn_see(!wizard);
-            if (wizard)
-              msg("You are one with the force (seed: #%d)", seed);
-            else
-              msg("not wizard any more");
-          }
-        when ESCAPE:	/* Escape */
-          door_stop = false;
-          count = 0;
-          after = false;
-          again = false;
-        when 'm':
-          move_on = true;
-          if (!get_dir())
-            after = false;
-          else
-          {
-            ch = dir_ch;
-            countch = dir_ch;
-            goto over;
-          }
-        when ')': print_currently_wearing(WEAPON); after = false;
-        when ']': print_currently_wearing(ARMOR);  after = false;
-        when '=': print_currently_wearing(RING);  after = false;
-        when '@':
-          stat_msg = true;
-          status();
-          stat_msg = false;
-          after = false;
-        otherwise:
-          after = false;
-          if (wizard) switch (ch)
-          {
-            case '|': msg("@ %d,%d", hero.y, hero.x);
-            when 'C': create_obj();
-            when '$': msg("inpack = %d", inpack);
-            when CTRL('G'): inventory(lvl_obj, 0);
-            when CTRL('W'): whatis(false, 0);
-            when CTRL('D'): level++; new_level();
-            when CTRL('A'): level--; new_level();
-            when CTRL('F'): show_map();
-            when CTRL('T'): teleport();
-            when CTRL('E'): msg("food left: %d", food_left);
-            when CTRL('C'): add_pass();
-            when CTRL('X'): turn_see(on(player, SEEMONST));
-            when CTRL('~'):
-            {
-              THING *item;
+      after = do_command(ch);
 
-              if ((item = get_item("charge", STICK)) != NULL)
-                item->o_charges = 10000;
-            }
-            when CTRL('I'):
-            {
-              int i;
-              THING *obj;
-
-              for (i = 0; i < 9; i++)
-                raise_level();
-              /*
-               * Give him a sword (+1,+1)
-               */
-              obj = new_item();
-              init_weapon(obj, TWOSWORD);
-              obj->o_hplus = 1;
-              obj->o_dplus = 1;
-              add_pack(obj, true);
-              cur_weapon = obj;
-              /*
-               * And his suit of armor
-               */
-              obj = new_item();
-              obj->o_type = ARMOR;
-              obj->o_which = PLATE_MAIL;
-              obj->o_arm = -5;
-              obj->o_flags |= ISKNOW;
-              obj->o_count = 1;
-              obj->o_group = 0;
-              cur_armor = obj;
-              add_pack(obj, true);
-            }
-            when '*' :
-              pr_list();
-            otherwise:
-              bad_command(ch);
-          }
-          else
-            bad_command(ch);
-      }
-      /*
-       * turn off flags if no longer needed
-       */
+      /* turn off flags if no longer needed */
       if (!running)
         door_stop = false;
     }
-    /*
-     * If he ran into something to take, let him pick it up.
-     */
+
+    /* If he ran into something to take, let him pick it up.  */
     if (take != 0)
       pick_up(take);
     if (!running)
@@ -405,7 +170,242 @@ over:
     teleport();
 }
 
-static void
+static bool
+do_command(char ch)
+{
+  switch (ch)
+  {
+    case ',': return pick_up_item_from_ground();
+    case CTRL('Z'): shell(); return false;
+    case '!': msg("Shell has been removed, use ^Z instead"); return false;
+
+    /*TODO: change do_move to take a char instead of x,y */
+    case 'h': return do_move(0, -1);
+    case 'j': return do_move(1, 0);
+    case 'k': return do_move(-1, 0);
+    case 'l': return do_move(0, 1);
+    case 'y': return do_move(-1, -1);
+    case 'u': return do_move(-1, 1);
+    case 'b': return do_move(1, -1);
+    case 'n': return do_move(1, 1);
+
+    case 'H': case 'J': case 'K': case 'L':
+    case 'Y': case 'U': case 'B': case 'N':
+      return do_run(tolower(ch));
+
+    case CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
+    case CTRL('Y'): case CTRL('U'): case CTRL('B'): case CTRL('N'):
+      if (!is_blind(player))
+      {
+        door_stop = true;
+        firstmove = true;
+      }
+      return do_command(ch + ('A' - CTRL('A')));
+
+    case 'F':
+      kamikaze = true;
+    /* FALLTHROUGH */
+    case 'f':
+    {
+      THING *mp;
+      if (!get_dir())
+        return false;
+      delta.y += hero.y;
+      delta.x += hero.x;
+      if ((mp = moat(delta.y, delta.x)) == NULL ||
+          (!see_monst(mp) && !on(player, SEEMONST)))
+      {
+        if (!terse)
+          addmsg("I see ");
+        msg("no monster there");
+        return false;
+      }
+      else if (diag_ok(&hero, &delta))
+      {
+        to_death = true;
+        max_hit = 0;
+        mp->t_flags |= ISTARGET;
+        runch = ch = dir_ch;
+        return do_command(ch);
+      }
+    }
+    return true;
+
+    case 'a':
+      if (last_comm == '\0')
+      {
+        msg("you haven't typed a command yet");
+        return false;
+      }
+      else
+      {
+        again = true;
+        return do_command(last_comm);
+      }
+
+    case 'Q':
+      /* TODO: remove q_comm */
+      q_comm = true;
+      quit(0);
+      q_comm = false;
+      return false;
+
+    case CTRL('R'):
+      clearok(curscr,true);
+      wrefresh(curscr);
+      return false;
+
+    case '^':
+      if (get_dir())
+      {
+        char *fp;
+        delta.y += hero.y;
+        delta.x += hero.x;
+        fp = &flat(delta.y, delta.x);
+        if (!terse)
+          addmsg("You have found ");
+        if (chat(delta.y, delta.x) != TRAP)
+          msg("no trap there");
+        else if (is_hallucinating(player))
+          msg(tr_name[rnd(NTRAPS)]);
+        else
+        {
+          msg(tr_name[*fp & F_TMASK]);
+          *fp |= F_SEEN;
+        }
+      }
+      return false;
+
+    case '+':
+      /* TODO: Add a query here, so you always can become a wiz */
+      if (potential_wizard)
+      {
+        wizard = !wizard;
+        turn_see(!wizard);
+        if (wizard)
+          msg("You are one with the force (seed: #%d)", seed);
+        else
+          msg("not wizard any more");
+      }
+      return false;
+
+    case ESCAPE:
+      door_stop = false;
+      count = 0;
+      again = false;
+      return false;
+
+    case 'm':
+      move_on = true;
+      return get_dir() ? do_command(dir_ch) : false;
+
+    case '@':
+      stat_msg = true;
+      status();
+      stat_msg = false;
+      return false;
+
+    case 'q': return quaff();
+    case 'i': inventory(pack, 0); return false;
+    case 'I': picky_inven(); return false;
+    case 'd': drop(); return true;
+    case 'r': read_scroll(); return true;
+    case 't': return get_dir() ? missile(delta.y, delta.x) : false;
+    case 'e': eat(); return true;
+    case 'w': return wield();
+    case 'W': return wear();
+    case 'T': return take_off();
+    case 'P': return ring_on();
+    case 'R': return ring_off();
+    case 'o': option(); return false;
+    case 'c': give_item_nickname(); return false;
+    case '>': go_down_a_level(); return false;
+    case '<': go_up_a_level(); return false;
+    case '?': print_help(); return false;
+    case '/': identify_a_character(); return false;
+    case 's': search(); return true;
+    case 'D': discovered(); return false;
+    case CTRL('P'): msg(huh); return false;
+    case 'S': after = false; save_game(); return false;
+    when KEY_SPACE: return false;
+    when '.': return true;
+    when ')': return print_currently_wearing(WEAPON);
+    when ']': return print_currently_wearing(ARMOR);
+    when '=': return print_currently_wearing(RING);
+    when 'z': return get_dir() ? do_zap() : false;
+
+    otherwise:
+      return do_wizard_command(ch);
+  }
+  return true;
+}
+
+static bool
+do_wizard_command(char ch)
+{
+  after = false;
+  if (!wizard)
+    return false;
+
+  switch (ch)
+  {
+    case '|': msg("@ %d,%d", hero.y, hero.x);
+    when 'C': create_obj();
+    when '$': msg("inpack = %d", inpack);
+    when CTRL('G'): inventory(lvl_obj, 0);
+    when CTRL('W'): whatis(false, 0);
+    when CTRL('D'): level++; new_level();
+    when CTRL('A'): level--; new_level();
+    when CTRL('F'): show_map();
+    when CTRL('T'): teleport();
+    when CTRL('E'): msg("food left: %d", food_left);
+    when CTRL('C'): add_pass();
+    when CTRL('X'): turn_see(on(player, SEEMONST));
+    when '*' : pr_list();
+
+    when CTRL('~'):
+   {
+     THING *item;
+
+     if ((item = get_item("charge", STICK)) != NULL)
+       item->o_charges = 10000;
+   }
+
+    when CTRL('I'):
+    {
+      int i;
+      THING *obj;
+
+      for (i = 0; i < 9; i++)
+        raise_level();
+
+      /* Give him a sword (+1,+1) */
+      obj = new_item();
+      init_weapon(obj, TWOSWORD);
+      obj->o_hplus = 1;
+      obj->o_dplus = 1;
+      add_pack(obj, true);
+      cur_weapon = obj;
+
+      /* And his suit of armor */
+      obj = new_item();
+      obj->o_type = ARMOR;
+      obj->o_which = PLATE_MAIL;
+      obj->o_arm = -5;
+      obj->o_flags |= ISKNOW;
+      obj->o_count = 1;
+      obj->o_group = 0;
+      cur_armor = obj;
+      add_pack(obj, true);
+    }
+ 
+    otherwise:
+      bad_command(ch);
+  }
+  return false;
+}
+
+static bool
 pick_up_item_from_ground()
 {
   THING *obj = NULL;
@@ -414,7 +414,7 @@ pick_up_item_from_ground()
     {
       if (!levit_check())
         pick_up((char)obj->o_type);
-      return;
+      return true;
     }
 
   if (!terse)
@@ -423,6 +423,7 @@ pick_up_item_from_ground()
   if (!terse)
     addmsg(" to pick up");
   endmsg();
+  return false;
 }
 
 static void
@@ -444,11 +445,11 @@ search()
   for (y = hero.y - 1; y <= hero.y + 1; y++)
     for (x = hero.x - 1; x <= hero.x + 1; x++)
     {
-      char fp = flat(y, x);
+      char *fp = &flat(y, x);
       char chatyx = chat(y, x);
 
       /* Real wall/floor/shadow */
-      if (fp & F_REAL)
+      if (*fp & F_REAL)
         continue;
 
       /* Wall */
@@ -458,7 +459,7 @@ search()
         chat(y, x) = DOOR;
         msg("a secret door");
         found = true;
-        fp |= F_REAL;
+        *fp |= F_REAL;
       }
 
       /* Floor */
@@ -472,12 +473,12 @@ search()
         if (is_hallucinating(player))
           msg(tr_name[rnd(NTRAPS)]);
         else {
-          msg(tr_name[fp & F_TMASK]);
-          fp |= F_SEEN;
+          msg(tr_name[*fp & F_TMASK]);
+          *fp |= F_SEEN;
         }
 
         found = true;
-        fp |= F_REAL;
+        *fp |= F_REAL;
       }
 
       /* Shadow */
@@ -485,7 +486,7 @@ search()
       {
         chat(y, x) = PASSAGE;
         found = true;
-        fp |= F_REAL;
+        *fp |= F_REAL;
       }
     }
   if (found)
@@ -802,7 +803,7 @@ give_item_nickname()
   }
 }
 
-static void
+static bool
 print_currently_wearing(char thing)
 {
   bool item_found = false;
@@ -835,4 +836,6 @@ print_currently_wearing(char thing)
   if (!item_found)
     msg("no %s", thing == WEAPON ? "weapon": thing == RING ? "rings":"armor");
   inv_describe = true;
+
+  return false;
 }

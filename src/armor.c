@@ -15,27 +15,26 @@
  * wear:
  *	The player wants to wear something, so let him/her put it on.
  */
-void
+bool
 wear()
 {
     register THING *obj;
     register char *sp;
 
     if ((obj = get_item("wear", ARMOR)) == NULL)
-	return;
+	return false;
     if (cur_armor != NULL)
     {
 	addmsg("you are already wearing some");
 	if (!terse)
 	    addmsg(".  You'll have to take it off first");
 	endmsg();
-	after = false;
-	return;
+	return false;
     }
     if (obj->o_type != ARMOR)
     {
 	msg("you can't wear that");
-	return;
+	return false;
     }
     waste_time();
     obj->o_flags |= ISKNOW;
@@ -44,34 +43,35 @@ wear()
     if (!terse)
 	addmsg("you are now ");
     msg("wearing %s", sp);
+    return true;
 }
 
 /*
  * take_off:
  *	Get the armor off of the players back
  */
-void
+bool
 take_off()
 {
-    register THING *obj;
+    THING *obj = cur_armor;
 
-    if ((obj = cur_armor) == NULL)
+    if (obj == NULL)
     {
-	after = false;
 	if (terse)
 		msg("not wearing armor");
 	else
 		msg("you aren't wearing any armor");
-	return;
+	return false;
     }
     if (!dropcheck(cur_armor))
-	return;
+	return true;
     cur_armor = NULL;
     if (terse)
 	addmsg("was");
     else
 	addmsg("you used to be");
     msg(" wearing %c) %s", obj->o_packch, inv_name(obj, true));
+    return true;
 }
 
 /*

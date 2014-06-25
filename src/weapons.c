@@ -220,39 +220,36 @@ num(int n1, int n2, char type)
  *	Pull out a certain weapon
  */
 
-void
+bool
 wield()
 {
-    THING *obj, *oweapon;
+    THING *obj;
+    THING *oweapon = cur_weapon;
     char *sp;
 
-    oweapon = cur_weapon;
     if (!dropcheck(cur_weapon))
     {
 	cur_weapon = oweapon;
-	return;
+	return true;
     }
     cur_weapon = oweapon;
     if ((obj = get_item("wield", WEAPON)) == NULL)
-    {
-bad:
-	after = false;
-	return;
-    }
+	return false;
 
     if (obj->o_type == ARMOR)
     {
 	msg("you can't wield armor");
-	goto bad;
+	return false;
     }
     if (is_current(obj))
-        goto bad;
+	return false;
 
     sp = inv_name(obj, true);
     cur_weapon = obj;
     if (!terse)
 	addmsg("you are now ");
     msg("wielding %s (%c)", sp, obj->o_packch);
+    return true;
 }
 
 /*

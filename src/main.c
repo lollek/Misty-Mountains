@@ -181,7 +181,6 @@ shell()
   refresh();
   endwin();
   putchar('\n');
-  after = false;
   fflush(stdout);
 
   /* Return to shell */

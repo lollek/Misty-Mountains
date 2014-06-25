@@ -148,7 +148,7 @@ quaff()
       if (wizard)
       {
         msg("what an odd tasting potion!");
-        return;
+        return true;
       }
   }
   status();

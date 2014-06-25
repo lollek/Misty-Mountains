@@ -27,12 +27,12 @@ coord nh;
  *	Start the hero running
  */
 
-void
+bool
 do_run(char ch)
 {
     running = true;
-    after = false;
     runch = ch;
+    return false;
 }
 
 /*
@@ -41,7 +41,7 @@ do_run(char ch)
  * consequences (fighting, picking up, etc.)
  */
 
-void
+bool
 do_move(int dy, int dx)
 {
     char ch, fl;
@@ -51,7 +51,7 @@ do_move(int dy, int dx)
     {
 	no_move--;
 	msg("you are still stuck in the bear trap");
-	return;
+	return true;
     }
 
     /* Do a confused move (maybe) */
@@ -60,10 +60,9 @@ do_move(int dy, int dx)
 	nh = *rndmove(&player);
 	if (same_coords(nh, hero))
 	{
-	    after = false;
 	    running = false;
 	    to_death = false;
-	    return;
+	    return false;
 	}
     }
     else
@@ -79,9 +78,8 @@ over:
 	goto hit_bound;
     if (!diag_ok(&hero, &nh))
     {
-	after = false;
 	running = false;
-	return;
+	return false;
     }
     if (running && same_coords(hero, nh))
 	after = running = false;
@@ -98,7 +96,7 @@ over:
     else if (on(player, ISHELD) && ch != 'F')
     {
 	msg("you are being held");
-	return;
+	return after;
     }
     switch (ch)
     {
@@ -164,7 +162,7 @@ hit_bound:
 	case TRAP:
 	    ch = be_trapped(&nh);
 	    if (ch == T_DOOR || ch == T_TELEP)
-		return;
+		return after;
 	    goto move_stuff;
 	case PASSAGE:
 	    /*
@@ -197,6 +195,7 @@ move_stuff:
 		hero = nh;
 	    }
     }
+    return after;
 }
 
 /*
