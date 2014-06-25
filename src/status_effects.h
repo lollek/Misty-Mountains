@@ -4,6 +4,8 @@
 #include "rogue.h" /* THING */
 #include <stdbool.h>
 
+/* TODO: Make getters/setters for all status effects */
+
 /* Duration of effects */
 #define HUHDURATION	spread(20)  /* Confusion */
 #define MFINDDURATION	spread(20)  /* Monster find */

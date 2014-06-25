@@ -39,6 +39,12 @@
 #define NUMTHINGS	7	/* number of types of things */
 #define MAXPASS		13	/* upper limit on number of passages */
 
+extern enum rogue_game_t
+{
+  DEFAULT,
+  QUICK
+} game_type;
+
 /* return values for get functions */
 enum option_return
 {

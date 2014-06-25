@@ -363,7 +363,11 @@ check_level()
     int add = roll(i - olevel, 10);
     max_hp += add;
     pstats.s_hpt += add;
-    msg("welcome to level %d", i);
+    addmsg("welcome to level %d", i);
+    if (game_type != QUICK)
+      endmsg();
+    else
+      addmsg(", ");
   }
 }
 

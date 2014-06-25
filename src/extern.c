@@ -12,6 +12,8 @@
 
 #include "rogue.h"
 
+enum rogue_game_t game_type;            /* Which variant to play */
+
 bool after;				/* True if we want after daemons */
 bool again;				/* Repeating the last command */
 bool seenstairs;			/* Have seen the stairs (for lsd) */

@@ -215,6 +215,7 @@ parse_args(int argc, char **argv)
     {"seed",      required_argument, 0, 'S'},
     {"terse",     no_argument,       0, 't'},
     {"hide-tomb", no_argument,       0, 'T'},
+    {"quick",     no_argument,       0, 'Q'},
     {"wizard",    no_argument,       0, 'W'},
     {"help",      no_argument,       0, '0'},
     {"version",   no_argument,       0, '1'},
@@ -231,6 +232,7 @@ parse_args(int argc, char **argv)
   tombstone = true;             /* Print out tombstone when killed */
   inv_type = INV_OVER;          /* Inventory style */
   use_colors = false;           /* Use ncurses colors */
+  game_type = DEFAULT;          /* Play a normal game or rogue */
 
   /* Default file name for save file */
   strcpy(file_name, md_gethomedir());
@@ -245,7 +247,7 @@ parse_args(int argc, char **argv)
 
   for (;;)
   {
-    int c = getopt_long(argc, argv, "cE::fFi:jn:prsS:tTW",
+    int c = getopt_long(argc, argv, "cE::fFi:jn:prsS:tTQW",
                         long_options, &option_index);
     if (c == -1)
       break;
@@ -267,6 +269,7 @@ parse_args(int argc, char **argv)
       when 'S': seed = atoi(optarg);
       when 't': terse = true;
       when 'T': tombstone = false;
+      when 'Q': game_type = QUICK;
       when 'W': potential_wizard = wizard = true;
                 player.t_flags |= SEEMONST;
       when '0':
@@ -292,6 +295,7 @@ parse_args(int argc, char **argv)
                "  -t, --terse          terse output\n"
                "  -T, --hide-tomb      don't print out tombstone when killed\n"
                ); printf(
+               "  -Q, --quick          Change some rules to make the game take\n"               "                       less time to play\n"
                "  -W, --wizard         run the game in debug-mode\n"
                "      --help           display this help and exit\n"
                "      --version        display game version and exit\n\n"

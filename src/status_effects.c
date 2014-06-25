@@ -2,6 +2,7 @@
 #include "status_effects.h"
 #include "rogue.h"
 
+
 inline bool
 is_status(THING *thing, short flag)
 {

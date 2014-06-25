@@ -98,6 +98,9 @@ new_level()
 	turn_see(false);
     if (is_hallucinating(&player))
 	visuals();
+
+    if (game_type == QUICK && level > 1 && level <= 20)
+      raise_level();
 }
 
 /*

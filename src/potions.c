@@ -128,8 +128,17 @@ quaff()
     when P_SEEINVIS:
       set_true_seeing(&player, true, false);
     when P_RAISE:
-      learn_potion(obj->o_which);
-      raise_level();
+      if (game_type == DEFAULT)
+      {
+        learn_potion(obj->o_which);
+        raise_level();
+      }
+      else if (game_type == QUICK)
+      {
+        level++;
+        new_level();
+        msg("you fell through the floor!");
+      }
     when P_XHEAL:
       learn_potion(obj->o_which);
       become_extra_healed();

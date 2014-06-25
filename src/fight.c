@@ -623,7 +623,8 @@ killed(THING *tp, bool pr)
 {
     char *mname;
 
-    pstats.s_exp += tp->t_stats.s_exp;
+    if (game_type == DEFAULT)
+      pstats.s_exp += tp->t_stats.s_exp;
 
     /*
      * If the monster was a venus flytrap, un-hold him
