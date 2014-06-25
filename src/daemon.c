@@ -17,11 +17,11 @@
 #define DAEMON -1
 #define MAXDAEMONS 20
 
-#define _X_ { EMPTY }
-
 struct delayed_action d_list[MAXDAEMONS] = {
-    _X_, _X_, _X_, _X_, _X_, _X_, _X_, _X_, _X_, _X_,
-    _X_, _X_, _X_, _X_, _X_, _X_, _X_, _X_, _X_, _X_, 
+    { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY },
+    { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY },
+    { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY },
+    { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY },
 };
 
 /*
@@ -99,13 +99,9 @@ do_daemons(int flag)
 {
     register struct delayed_action *dev;
 
-    /*
-     * Loop through the devil list
-     */
+    /* Loop through the devil list */
     for (dev = d_list; dev <= &d_list[MAXDAEMONS-1]; dev++)
-	/*
-	 * Executing each one, giving it the proper arguments
-	 */
+	/* Executing each one, giving it the proper arguments */
 	if (dev->d_type == flag && dev->d_time == DAEMON)
 	    (*dev->d_func)(dev->d_arg);
 }
@@ -163,9 +159,7 @@ do_fuses(int flag)
 {
     register struct delayed_action *wire;
 
-    /*
-     * Step though the list
-     */
+    /* Step though the list */
     for (wire = d_list; wire <= &d_list[MAXDAEMONS-1]; wire++)
 	/*
 	 * Decrementing counters and starting things we want.  We also need
