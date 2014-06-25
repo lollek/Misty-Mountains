@@ -48,7 +48,7 @@ is_quaffable(THING *thing)
     return true;
 }
 
-void
+bool
 quaff()
 {
   THING *obj = get_item("quaff", POTION);
@@ -57,7 +57,7 @@ quaff()
 
   /* Make certain that it is somethings that we want to drink */
   if (!is_quaffable(obj))
-    return;
+    return false;
 
   if (obj == cur_weapon)
     cur_weapon = NULL;
@@ -152,15 +152,14 @@ quaff()
       }
   }
   status();
-  /*
-   * Throw the item away
-   */
+
+  /* Throw the item away */
 
   call_it(&pot_info[obj->o_which]);
 
   if (discardit)
     discard(obj);
-  return;
+  return true;
 }
 
 inline void
