@@ -131,7 +131,7 @@ gethand()
 	    msg("left or right ring? ");
 	else
 	    msg("left hand or right hand? ");
-	if ((c = readchar()) == ESCAPE)
+	if ((c = readchar()) == KEY_ESCAPE)
 	    return -1;
 	mpos = 0;
 	if (c == 'l' || c == 'L')

@@ -32,7 +32,7 @@ msg(char *fmt, ...)
 	move(0, 0);
 	clrtoeol();
 	mpos = 0;
-	return ~ESCAPE;
+	return ~KEY_ESCAPE;
     }
     /*
      * otherwise add to the message and flush it out
@@ -80,13 +80,13 @@ endmsg()
 	else
 	{
 	    while ((ch = readchar()) != KEY_SPACE)
-		if (ch == ESCAPE)
+		if (ch == KEY_ESCAPE)
 		{
 		    msgbuf[0] = '\0';
 		    mpos = 0;
 		    newpos = 0;
 		    msgbuf[0] = '\0';
-		    return ESCAPE;
+		    return KEY_ESCAPE;
 		}
 	}
     }
@@ -102,7 +102,7 @@ endmsg()
     newpos = 0;
     msgbuf[0] = '\0';
     refresh();
-    return ~ESCAPE;
+    return ~KEY_ESCAPE;
 }
 
 /*

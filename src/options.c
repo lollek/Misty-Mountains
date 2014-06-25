@@ -189,7 +189,7 @@ get_bool(void *vp, WINDOW *win)
 	    case '\r':
 		op_bad = false;
 		break;
-	    case ESCAPE:
+	    case KEY_ESCAPE:
 		return QUIT;
 	    case '-':
 		return MINUS;
@@ -253,7 +253,7 @@ get_str(void *vopt, WINDOW *win)
     /*
      * loop reading in the string, and put it in a temporary buffer
      */
-    for (sp = buf; (c = readchar()) != '\n' && c != '\r' && c != ESCAPE;
+    for (sp = buf; (c = readchar()) != '\n' && c != '\r' && c != KEY_ESCAPE;
 	wclrtoeol(win), wrefresh(win))
     {
 	if (c == -1)
@@ -303,7 +303,7 @@ get_str(void *vopt, WINDOW *win)
 	mpos += (int)(sp - buf);
     if (c == '-')
 	return MINUS;
-    else if (c == ESCAPE)
+    else if (c == KEY_ESCAPE)
 	return QUIT;
     else
 	return NORMAL;
@@ -348,7 +348,7 @@ get_inv_t(void *vp, WINDOW *win)
 	    case '\r':
 		op_bad = false;
 		break;
-	    case ESCAPE:
+	    case KEY_ESCAPE:
 		return QUIT;
 	    case '-':
 		return MINUS;

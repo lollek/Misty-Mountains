@@ -85,6 +85,7 @@ typedef enum INV_TYPE
 
 /* for curses */
 #define KEY_SPACE	' '
+#define KEY_ESCAPE	27
 
 /* things that appear on the screens */
 #define SHADOW		' '
@@ -108,7 +109,7 @@ typedef enum INV_TYPE
 #define STICK		'/'
 
 /* TODO: Make sure these don't bug as chars are usually unsigned */
-#define CALLABLE	-1 /* This means that we can rename it ?? */
+#define CALLABLE	-1 /* This means that we can rename it */
 #define R_OR_S		-2 /* This means ring, wand of staff */
 
 /* Various constants */
@@ -120,7 +121,6 @@ typedef enum INV_TYPE
 #define MORETIME	150
 #define STOMACHSIZE	2000
 #define STARVETIME	850
-#define ESCAPE		27
 #define LEFT		0
 #define RIGHT		1
 #define BOLT_LENGTH	6

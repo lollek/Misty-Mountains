@@ -480,7 +480,7 @@ get_dir()
         when 'u': case'U': delta.y = -1; delta.x =  1;
         when 'b': case'B': delta.y =  1; delta.x = -1;
         when 'n': case'N': delta.y =  1; delta.x =  1;
-        when ESCAPE: last_dir = '\0'; reset_last(); return false;
+        when KEY_ESCAPE: last_dir = '\0'; reset_last(); return false;
         otherwise:
           mpos = 0;
           msg(prompt);

@@ -357,7 +357,7 @@ discovered()
 	ch = readchar();
 	switch (ch)
 	{
-	    case ESCAPE:
+	    case KEY_ESCAPE:
 		msg("");
 		return;
 	    case POTION:
@@ -371,7 +371,7 @@ discovered()
 		if (terse)
 		    msg("Not a type");
 		else
-		    msg("Please type one of %c%c%c%c (ESCAPE to quit)", POTION, SCROLL, RING, STICK);
+		    msg("Please type one of %c%c%c%c (KEY_ESCAPE to quit)", POTION, SCROLL, RING, STICK);
 	}
     } while (!disc_list);
     if (ch == '*')
@@ -488,8 +488,8 @@ add_line(char *fmt, char *arg)
     if (inv_type == INV_SLOW)
     {
 	if (*fmt != '\0')
-	    if (msg(fmt, arg) == ESCAPE)
-		return ESCAPE;
+	    if (msg(fmt, arg) == KEY_ESCAPE)
+		return KEY_ESCAPE;
 	line_cnt++;
     }
     else
@@ -558,7 +558,7 @@ add_line(char *fmt, char *arg)
 	    lastarg = arg;
 	}
     }
-    return ~ESCAPE;
+    return ~KEY_ESCAPE;
 }
 
 /*

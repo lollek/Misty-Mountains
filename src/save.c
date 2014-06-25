@@ -97,7 +97,7 @@ over:
 	    msg("save file (%s)? ", file_name);
 	    c = readchar();
 	    mpos = 0;
-	    if (c == ESCAPE)
+	    if (c == KEY_ESCAPE)
 	    {
 		msg("");
 		return;
@@ -138,7 +138,7 @@ gotfile:
 	    {
 		msg("File exists.  Do you wish to overwrite it?");
 		mpos = 0;
-		if ((c = readchar()) == ESCAPE)
+		if ((c = readchar()) == KEY_ESCAPE)
 		    goto quit_it;
 		if (c == 'y' || c == 'Y')
 		    break;

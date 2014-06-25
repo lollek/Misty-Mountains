@@ -137,7 +137,7 @@ command()
       /* execute a command */
       if (count && !running)
         count--;
-      if (ch != 'a' && ch != ESCAPE && !(running || count || to_death))
+      if (ch != 'a' && ch != KEY_ESCAPE && !(running || count || to_death))
       {
         l_last_comm = last_comm;
         l_last_dir = last_dir;
@@ -182,7 +182,7 @@ do_command(char ch)
   {
     /* Funny symbols */
     case KEY_SPACE: return false;
-    case ESCAPE: door_stop = again = false; count = 0; return false;
+    case KEY_ESCAPE: door_stop = again = false; count = 0; return false;
     case '.': return true;
     case ',': return pick_up_item_from_ground();
     case '/': identify_a_character(); return false;
@@ -463,7 +463,7 @@ print_help()
     {'o',	"	examine/set options",			true},
     {CTRL('R'),	"	redraw screen",				true},
     {CTRL('P'),	"	repeat last message",			true},
-    {ESCAPE,	"	cancel command",			true},
+    {KEY_ESCAPE,	"	cancel command",			true},
     {'S',	"	save game",				true},
     {'Q',	"	quit",					true},
     {'!',	"	shell escape",				true},
@@ -562,7 +562,7 @@ identify_a_character()
   msg("what do you want identified? ");
   ch = readchar();
   mpos = 0;
-  if (ch == ESCAPE)
+  if (ch == KEY_ESCAPE)
   {
     msg("");
     return;

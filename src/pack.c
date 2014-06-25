@@ -263,7 +263,7 @@ inventory(THING *list, int type)
 	else
 	    sprintf(inv_temp, "%c) %%s", list->o_packch);
 	msg_esc = true;
-	if (add_line(inv_temp, inv_name(list, false)) == ESCAPE)
+	if (add_line(inv_temp, inv_name(list, false)) == KEY_ESCAPE)
 	{
 	    msg_esc = false;
 	    msg("");
@@ -360,7 +360,7 @@ picky_inven()
     {
 	msg(terse ? "item: " : "which item do you wish to inventory: ");
 	mpos = 0;
-	if ((mch = readchar()) == ESCAPE)
+	if ((mch = readchar()) == KEY_ESCAPE)
 	{
 	    msg("");
 	    return;
@@ -407,7 +407,7 @@ get_item(char *purpose, int type)
 	    /*
 	     * Give the poor player a chance to abort the command
 	     */
-	    if (ch == ESCAPE)
+	    if (ch == KEY_ESCAPE)
 	    {
 		reset_last();
 		after = false;
