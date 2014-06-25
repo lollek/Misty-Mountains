@@ -1881,7 +1881,7 @@ rs_save_file(FILE *savef)
     rs_write_boolean(savef, running);               /* 21 */
     rs_write_boolean(savef, save_msg);              /* 22 */
     rs_write_boolean(savef, see_floor);             /* 23 */
-    rs_write_boolean(savef, stat_msg);              /* 24 */
+    rs_write_boolean(savef, 0);                     /* 24 */
     rs_write_boolean(savef, terse);                 /* 25 */
     rs_write_boolean(savef, to_death);              /* 26 */
     rs_write_boolean(savef, tombstone);             /* 27 */
@@ -2005,7 +2005,7 @@ rs_restore_file(FILE *inf)
     rs_read_boolean(inf, &running);             /* 21 */
     rs_read_boolean(inf, &save_msg);            /* 22 */
     rs_read_boolean(inf, &dummybool);           /* 23 &see_floor */
-    rs_read_boolean(inf, &stat_msg);            /* 24 */
+    rs_read_boolean(inf, &dummybool);           /* 24 &stat_msg */
     rs_read_boolean(inf, &dummybool);           /* 25 &terse */
     rs_read_boolean(inf, &to_death);            /* 26 */
     rs_read_boolean(inf, &dummybool);           /* 27 &tombstone */

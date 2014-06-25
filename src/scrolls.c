@@ -295,7 +295,7 @@ def:
   }
   obj = orig_obj;
   look(true);	/* put the result of the scroll on the screen */
-  status();
+  status(false);
 
   call_it(&scr_info[obj->o_which]);
 

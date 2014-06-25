@@ -151,7 +151,7 @@ quaff()
         return true;
       }
   }
-  status();
+  status(false);
 
   /* Throw the item away */
 

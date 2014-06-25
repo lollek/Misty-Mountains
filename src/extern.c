@@ -28,7 +28,6 @@ bool playing = true;			/* True until he quits */
 bool q_comm = false;			/* Are we executing a 'Q' command? */
 bool running = false;			/* True if player is running */
 bool save_msg = true;			/* Remember last msg */
-bool stat_msg = false;			/* Should status() print as a msg() */
 bool to_death = false;			/* Fighting is to the death! */
 int wizard = false;			/* True if allows wizard commands */
 int potential_wizard = false;		/* True if allows to become a wizard */

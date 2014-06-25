@@ -63,7 +63,7 @@ command()
     look(true);
     if (!running)
       door_stop = false;
-    status();
+    status(false);
     lastscore = purse;
     move(hero.y, hero.x);
     if (!((running || count) && jump))
@@ -291,11 +291,6 @@ do_command(char ch)
       move_on = true;
       return get_dir() ? do_command(dir_ch) : false;
 
-    case '@':
-      stat_msg = true;
-      status();
-      stat_msg = false;
-      return false;
 
     case KEY_SPACE: return false;
     case '.': return true;
@@ -322,6 +317,7 @@ do_command(char ch)
     case '>': go_down_a_level(); return false;
     case '<': go_up_a_level(); return false;
     case '?': print_help(); return false;
+    case '@': status(true); return false;
     case '/': identify_a_character(); return false;
     case ')': return print_currently_wearing(WEAPON);
     case ']': return print_currently_wearing(ARMOR);

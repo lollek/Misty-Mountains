@@ -161,9 +161,11 @@ readchar()
  *	Display the important stats line.  Keep the cursor where it was.
  */
 void
-status()
+status(bool stat_msg)
 {
-    register int oy, ox, temp;
+    int oy, ox;
+    int temp = cur_armor != NULL ? cur_armor->o_arm : pstats.s_arm;
+    char *state_name[] = { "", "Hungry", "Weak", "Faint" };
     static int hpwidth = 0;
     static int s_hungry = 0;
     static int s_lvl = 0;
@@ -172,16 +174,8 @@ status()
     static int s_arm = 0;
     static str_t s_str = 0;
     static int s_exp = 0;
-    static char *state_name[] =
-    {
-	"", "Hungry", "Weak", "Faint"
-    };
 
-    /*
-     * If nothing has changed since the last status, don't
-     * bother.
-     */
-    temp = (cur_armor != NULL ? cur_armor->o_arm : pstats.s_arm);
+    /* If nothing has changed since the last status, don't bother. */
     if (s_hp == pstats.s_hpt && s_exp == pstats.s_exp && s_pur == purse
 	&& s_arm == temp && s_str == pstats.s_str && s_lvl == level
 	&& s_hungry == hungry_state
@@ -200,9 +194,7 @@ status()
 	    temp /= 10;
     }
 
-    /*
-     * Save current status
-     */
+    /* Save current status */
     s_lvl = level;
     s_pur = purse;
     s_hp = pstats.s_hpt;

@@ -432,7 +432,7 @@ extern bool	after, again, amulet, door_stop,
 		firstmove, has_hit, inv_describe, kamikaze,
 		lower_msg, move_on, msg_esc, pack_used[],
 		playing, q_comm, running, save_msg,
-		seenstairs, stat_msg, to_death;
+		seenstairs, to_death;
 
 extern char	dir_ch, file_name[], huh[], *inv_t_name[], prbuf[], whoami[],
 		l_last_comm, l_last_dir, last_comm, last_dir, *Numname,
@@ -607,7 +607,7 @@ void	show_win(char *message);
 int	sign(int nm);
 int	spread(int nm);
 void	start_daemon(void (*func)(), int arg, int type);
-void	status();
+void	status(bool stat_msg);
 int	step_ok(int ch);
 void	strucpy(char *s1, char *s2, int len);
 int	swing(int at_lvl, int op_arm, int wplus);
