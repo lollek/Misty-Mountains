@@ -175,9 +175,6 @@ do_command(char ch)
 {
   switch (ch)
   {
-    case ',': return pick_up_item_from_ground();
-    case CTRL('Z'): shell(); return false;
-    case '!': msg("Shell has been removed, use ^Z instead"); return false;
 
     /*TODO: change do_move to take a char instead of x,y */
     case 'h': case 'j': case 'k': case 'l':
@@ -300,10 +297,15 @@ do_command(char ch)
       stat_msg = false;
       return false;
 
+    case KEY_SPACE: return false;
+    case '.': return true;
+    case ',': return pick_up_item_from_ground();
+    case '!': msg("Shell has been removed, use ^Z instead"); return false;
     case 'q': return quaff();
     case 'i': inventory(pack, 0); return false;
     case 'I': picky_inven(); return false;
     case 'd': drop(); return true;
+    case 'D': discovered(); return false;
     case 'r': read_scroll(); return true;
     case 't': return get_dir() ? missile(delta.y, delta.x) : false;
     case 'e': eat(); return true;
@@ -314,22 +316,20 @@ do_command(char ch)
     case 'R': return ring_off();
     case 'o': option(); return false;
     case 'c': give_item_nickname(); return false;
+    case 's': search(); return true;
+    case 'S': after = false; save_game(); return false;
+    case 'z': return get_dir() ? do_zap() : false;
     case '>': go_down_a_level(); return false;
     case '<': go_up_a_level(); return false;
     case '?': print_help(); return false;
     case '/': identify_a_character(); return false;
-    case 's': search(); return true;
-    case 'D': discovered(); return false;
+    case ')': return print_currently_wearing(WEAPON);
+    case ']': return print_currently_wearing(ARMOR);
+    case '=': return print_currently_wearing(RING);
+    case CTRL('Z'): shell(); return false;
     case CTRL('P'): msg(huh); return false;
-    case 'S': after = false; save_game(); return false;
-    when KEY_SPACE: return false;
-    when '.': return true;
-    when ')': return print_currently_wearing(WEAPON);
-    when ']': return print_currently_wearing(ARMOR);
-    when '=': return print_currently_wearing(RING);
-    when 'z': return get_dir() ? do_zap() : false;
 
-    otherwise:
+    default:
       return do_wizard_command(ch);
   }
 }
