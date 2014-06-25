@@ -17,7 +17,8 @@
 
 /* Tuneable - feel free to change these */
 #define NUMSCORES 10    /* Number of highscore entries */
-#define NUMNAME   "Ten" /* The same number in letters  */
+#define NUMNAME "Ten"   /* The same number in letters  */
+#define MAXOBJ 9        /* How many attempts to put items in dungeon */
 
 
 /* Try not to change these */
@@ -30,8 +31,6 @@
 
 /* Maximum number of different things */
 #define MAXROOMS	9
-#define MAXTHINGS	9
-#define MAXOBJ		9
 #define MAXPACK		23
 #define MAXTRAPS	10
 #define AMULETLEVEL	26
