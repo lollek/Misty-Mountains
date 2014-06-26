@@ -16,11 +16,12 @@
 #include "status_effects.h"
 #include "scrolls.h"
 
-static bool pack_room(bool from_floor, THING *obj);
+static bool there_is_room_in_pack();
 static char pack_char();
 static void move_msg(THING *obj);
 static void money(int value);
 static char floor_ch();
+static void remove_from_floor(THING *obj);
 
 /*
  * add_pack:
@@ -43,9 +44,7 @@ add_pack(THING *obj, bool silent)
 	from_floor = true;
     }
 
-    /*
-     * Check for and deal with scare monster scrolls
-     */
+    /* Check for and deal with scare monster scrolls */
     if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
 	if (obj->o_flags & ISFOUND)
 	{
@@ -59,11 +58,16 @@ add_pack(THING *obj, bool silent)
 
     if (pack == NULL)
     {
-	if (!pack_room(from_floor, obj))
+	if (!there_is_room_in_pack())
+	{
+	    if (from_floor)
+		move_msg(obj);
 	    return;
+	}
+	if (from_floor)
+	    remove_from_floor(obj);
 	attach(pack, obj);
 	obj->o_packch = pack_char();
-	inpack++;
     }
     else
     {
@@ -87,8 +91,14 @@ add_pack(THING *obj, bool silent)
 		    if (op->o_type == POTION || op->o_type == SCROLL ||
                         obj->o_type == FOOD)
 		    {
-			if (!pack_room(from_floor, obj))
+			if (!there_is_room_in_pack())
+			{
+			    if (from_floor)
+				move_msg(obj);
 			    return;
+			}
+			if (from_floor)
+			    remove_from_floor(obj);
 			op->o_count++;
 dump_it:
 			discard(obj);
@@ -115,8 +125,14 @@ dump_it:
 			{
 				op->o_count += obj->o_count;
 				inpack--;
-				if (!pack_room(from_floor, obj))
+				if (!there_is_room_in_pack())
+				{
+				    if (from_floor)
+					move_msg(obj);
 				    return;
+				}
+				if (from_floor)
+				    remove_from_floor(obj);
 				goto dump_it;
 			}
 		    }
@@ -130,17 +146,21 @@ out:
 
 	if (lp != NULL)
 	{
-	    if (!pack_room(from_floor, obj))
-		return;
-	    else
+	    if (!there_is_room_in_pack())
 	    {
-		obj->o_packch = pack_char();
-		next(obj) = next(lp);
-		prev(obj) = lp;
-		if (next(lp) != NULL)
-		    prev(next(lp)) = obj;
-		next(lp) = obj;
+		if (from_floor)
+		    move_msg(obj);
+		return;
 	    }
+	    if (from_floor)
+		remove_from_floor(obj);
+
+	    obj->o_packch = pack_char();
+	    next(obj) = next(lp);
+	    prev(obj) = lp;
+	    if (next(lp) != NULL)
+		prev(next(lp)) = obj;
+	    next(lp) = obj;
 	}
     }
 
@@ -167,12 +187,12 @@ out:
 }
 
 /*
- * pack_room:
+ * there_is_room_in_pack:
  *	See if there's room in the pack.  If not, print out an
  *	appropriate message
  */
 static bool
-pack_room(bool from_floor, THING *obj)
+there_is_room_in_pack()
 {
     int max_items = 23;
     if (++inpack > max_items)
@@ -183,19 +203,9 @@ pack_room(bool from_floor, THING *obj)
 	if (!terse)
 	    addmsg(" in your pack");
 	endmsg();
-	if (from_floor)
-	    move_msg(obj);
 	inpack = max_items;
 	return false;
     }
-
-    if (from_floor)
-    {
-	detach(lvl_obj, obj);
-	mvaddcch(hero.y, hero.x, floor_ch());
-	chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
-    }
-
     return true;
 }
 
@@ -511,4 +521,12 @@ reset_last()
     last_comm = l_last_comm;
     last_dir = l_last_dir;
     last_pick = l_last_pick;
+}
+
+static void
+remove_from_floor(THING *obj)
+{
+    detach(lvl_obj, obj);
+    mvaddcch(hero.y, hero.x, floor_ch());
+    chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
 }
