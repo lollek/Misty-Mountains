@@ -99,11 +99,10 @@ add_pack(THING *obj, bool silent)
 			if (from_floor)
 			    remove_from_floor(obj);
 			op->o_count++;
-dump_it:
 			discard(obj);
 			obj = op;
 			lp = NULL;
-			goto out;
+			break;
 		    }
 		    else if (obj->o_group)
 		    {
@@ -126,13 +125,15 @@ dump_it:
 				inpack--;
 				if (from_floor)
 				    remove_from_floor(obj);
-				goto dump_it;
+				discard(obj);
+				obj = op;
+				lp = NULL;
+				break;
 			}
 		    }
 		    else
 			lp = op;
 		}
-out:
 		break;
 	    }
 	}
