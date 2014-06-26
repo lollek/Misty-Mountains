@@ -355,10 +355,8 @@ picky_inven()
     }
 }
 
-/*
- * get_item:
- *	Pick something out of a pack for a purpose
- */
+/** get_item:
+ * Pick something out of a pack for a purpose */
 THING *
 get_item(char *purpose, int type)
 {
@@ -420,76 +418,65 @@ get_item(char *purpose, int type)
     return NULL;
 }
 
-/*
- * money:
- *	Add or subtract gold from the pack
- */
-
+/** money:
+ * Add or subtract gold from the pack */
 /* TODO: Maybe inline this function? */
-
 static void
 money(int value)
 {
-    purse += value;
-    mvaddcch(hero.y, hero.x, floor_ch());
-    chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
-    if (value > 0)
-    {
-	if (!terse)
-	    addmsg("you found ");
-	msg("%d gold pieces", value);
-    }
+  purse += value;
+  mvaddcch(hero.y, hero.x, floor_ch());
+  chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
+  if (value > 0)
+  {
+    if (!terse)
+      addmsg("you found ");
+    msg("%d gold pieces", value);
+  }
 }
 
-/*
- * floor_ch:
- *	Return the appropriate floor character for her room
- */
+/** floor_ch:
+ * Return the appropriate floor character for her room */
 static char
 floor_ch()
 {
-    if (proom->r_flags & ISGONE)
-	return PASSAGE;
-    return (show_floor() ? FLOOR : SHADOW);
+  if (proom->r_flags & ISGONE)
+    return PASSAGE;
+  return show_floor() ? FLOOR : SHADOW;
 }
 
-/*
- * floor_at:
- *	Return the character at hero's position, taking see_floor
- *	into account
- */
+/** floor_at:
+ * Return the character at hero's position, taking see_floor
+ * into account */
 char
 floor_at()
 {
-    char ch;
-
-    ch = chat(hero.y, hero.x);
-    if (ch == FLOOR)
-	ch = floor_ch();
-    return ch;
+  char ch = chat(hero.y, hero.x);
+  return ch == FLOOR ? floor_ch() : ch;
 }
 
-/*
- * reset_last:
- *	Reset the last command when the current one is aborted
- */
-
+/** reset_last:
+ * Reset the last command when the current one is aborted */
 void
 reset_last()
 {
-    last_comm = l_last_comm;
-    last_dir = l_last_dir;
-    last_pick = l_last_pick;
+  last_comm = l_last_comm;
+  last_dir = l_last_dir;
+  last_pick = l_last_pick;
 }
 
+/** remove_from_floor
+ * Removes one item from the floor */
 static void
 remove_from_floor(THING *obj)
 {
-    detach(lvl_obj, obj);
-    mvaddcch(hero.y, hero.x, floor_ch());
-    chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
+  detach(lvl_obj, obj);
+  mvaddcch(hero.y, hero.x, floor_ch());
+  chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
 }
 
+/** items_in_pack
+ * Counts how many items she is carrying */
 unsigned
 items_in_pack()
 {
