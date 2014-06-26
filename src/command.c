@@ -38,6 +38,7 @@ static bool identify_trap();              /* Give the name of a trap          */
 static bool maybe_quit();                 /* Ask player if she wants to quit  */
 static bool repeat_last_command();
 static bool festina_lente(char ch);       /* Run cautiously                   */
+static bool show_players_inventory();
 
 /* command:
  * Process the user commands */
@@ -206,7 +207,7 @@ do_command(char ch)
     case 'd': return drop();
     case 'e': eat(); return true;
     case 'f': return fight_monster(false);
-    case 'i': inventory(pack, 0); return false;
+    case 'i': return show_players_inventory();
     case 'm': move_on = true; return get_dir() ? do_command(dir_ch) : false;
     case 'o': option(); return false;
     case 'q': return quaff();
@@ -259,7 +260,7 @@ do_wizard_command(char ch)
     case '|': msg("@ %d,%d", hero.y, hero.x);
     when 'C': create_obj();
     when '$': msg("inpack = %d", items_in_pack());
-    when CTRL('G'): inventory(lvl_obj, 0);
+    /* when '\\': This is used for testing new features */
     when CTRL('W'): whatis(false, 0);
     when CTRL('D'): level++; new_level();
     when CTRL('A'): level--; new_level();
@@ -845,4 +846,15 @@ festina_lente(char ch)
     firstmove = true;
   }
   return do_command(ch + ('A' - CTRL('A')));
+}
+
+static bool
+show_players_inventory()
+{
+  print_inventory(0);
+  msg("--Press any key to continue--");
+  getch();
+  clear_inventory();
+  msg("");
+  return false;
 }

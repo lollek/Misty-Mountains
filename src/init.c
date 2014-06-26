@@ -26,7 +26,6 @@ bool
 init_new_game()
 {
   /* Parse environment opts */
-  parse_opts(getenv("ROGUEOPTS"));
   if (whoami[0] == '\0')
     strucpy(whoami, md_getusername(), (int) strlen(md_getusername()));
 
@@ -130,9 +129,6 @@ init_old_game()
         printf("\n\"He's dead, Jim\"\n");
         return false;
     }
-
-    /* parse environment declaration of options */
-    parse_opts(getenv("ROGUEOPTS"));
 
     clearok(curscr, true);
     msg("file name: %s", file_name);

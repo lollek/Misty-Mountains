@@ -54,14 +54,6 @@ enum option_return
   MINUS               /* back up one option */
 };
 
-/* inventory types */
-typedef enum INV_TYPE
-{
-  INV_OVER = 0,
-  INV_SLOW = 1,
-  INV_CLEAR = 2
-} INV_TYPE;
-
 /* All the fun defines */
 #define when		break;case
 #define otherwise	break;default
@@ -425,7 +417,6 @@ bool jump;        /* Show running as a series of jumps */
 bool see_floor;   /* Show the lamp-illuminated floor */
 bool passgo;      /* Follow the turnings in passageways */
 bool tombstone;   /* Print out tombstone when killed */
-int inv_type;     /* Inventory style */
 bool use_colors;  /* Use ncurses colors */
 
 /*
@@ -479,6 +470,7 @@ bool turn_see(bool turn_off);/* Put on or off seeing monsters on this level */
 void invis_on();             /* Turn on the ability to see invisible */
 
 unsigned	items_in_pack();
+unsigned	items_in_pack_of_type(int type);
 void	_attach(THING **list, THING *item);
 void	_detach(THING **list, THING *item);
 void	_free_list(THING **ptr);
@@ -556,7 +548,8 @@ void	init_player();
 void	init_probs();
 void	init_stones();
 void	init_weapon(THING *weap, int which);
-bool	inventory(THING *list, int type);
+bool	print_inventory(int type);
+void	clear_inventory();
 void	killed(THING *tp, bool pr);
 void	kill_daemon(void (*func)());
 bool	lock_sc();
@@ -565,21 +558,16 @@ bool	missile(int ydelta, int xdelta);
 int	move_monst(THING *tp);
 int	msg(char *fmt, ...);
 void	unsaved_msg(char *fmt, ...);
-void	nameit(THING *obj, char *type, char *which, struct obj_info *op, char *(*prfunc)(THING *));
 void	new_level();
 void	new_monster(THING *tp, char type, coord *cp);
 void	numpass(int y, int x);
 void	option();
-void	parse_opts(char *str);
 void 	passnum();
 char	*pick_color(char *col);
-int	pick_one(struct obj_info *info, int nitems);
 void	pick_up(char ch);
 void	picky_inven();
-void	pr_spec(struct obj_info *info, int nitems);
 void	pr_list();
 void	put_bool(void *b);
-void	put_inv_t(void *ip);
 void	put_str(void *str);
 void	put_things();
 void	putpass(coord *cp);
@@ -648,16 +636,13 @@ char	rnd_thing();
 char	*charge_str(THING *obj);
 char	*choose_str(char *ts, char *ns);
 char	*inv_name(THING *obj, bool drop);
-char	*nullstr(THING *ignored);
 char	*num(int n1, int n2, char type);
 char	*ring_num(THING *obj);
 char	*set_mname(THING *tp);
 char	*vowelstr(char *str);
 
 void doctor();
-void end_line();
 void leave(int);
-void print_disc(char);
 void quit(int);
 void rollwand();
 void runners();
@@ -665,14 +650,11 @@ void stomach();
 void swander();
 void visuals();
 
-char add_line(char *fmt, char *arg);
-
 char *md_getusername();
 char *md_gethomedir();
 int md_hasclreol();
 
 enum option_return	get_bool(void *vp, WINDOW *win);
-enum option_return	get_inv_t(void *vp, WINDOW *win);
 enum option_return	get_num(void *vp, WINDOW *win);
 enum option_return	get_sf(void *vp, WINDOW *win);
 enum option_return	get_str(void *vopt, WINDOW *win);

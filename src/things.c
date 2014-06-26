@@ -19,14 +19,19 @@
 #include "status_effects.h"
 #include "scrolls.h"
 
+static int pick_one(struct obj_info *info, int nitems);
+static void print_disc(char type);
 static void set_order(int *order, int numthings);
+static char add_line(char *fmt, char *arg);
+static void end_line();
 static char *nothing(char type);
+static void nameit(THING *obj, char *type, char *which,
+                   struct obj_info *op, char *(*prfunc)(THING *));
+static char *nullstr(THING *ignored);
+static void pr_spec(struct obj_info *info, int nitems);
 
-/*
- * inv_name:
- *	Return the name of something as it would appear in an
- *	inventory.
- */
+/** inv_name:
+ * Return the name of something as it would appear in an inventory. */
 char *
 inv_name(THING *obj, bool drop)
 {
@@ -138,11 +143,9 @@ inv_name(THING *obj, bool drop)
     return prbuf;
 }
 
-/*
- * drop:
- *	Put something down
- */
-
+/** drop:
+ * Put something down */
+/* TODO: Maybe move this to command.c */
 bool
 drop()
 {
@@ -173,10 +176,8 @@ drop()
     return true;
 }
 
-/*
- * dropcheck:
- *	Do special checks for dropping or unweilding|unwearing|unringing
- */
+/** dropcheck:
+ * Do special checks for dropping or unweilding|unwearing|unringing */
 bool
 dropcheck(THING *obj)
 {
@@ -214,10 +215,8 @@ dropcheck(THING *obj)
     return true;
 }
 
-/*
- * new_thing:
- *	Return a new thing
- */
+/** new_thing:
+ * Return a new thing */
 THING *
 new_thing()
 {
@@ -302,11 +301,9 @@ new_thing()
     return cur;
 }
 
-/*
- * pick_one:
- *	Pick an item out of a list of nitems possible objects
- */
-int
+/** pick_one:
+ * Pick an item out of a list of nitems possible objects */
+static int
 pick_one(struct obj_info *info, int nitems)
 {
     struct obj_info *end;
@@ -330,16 +327,13 @@ pick_one(struct obj_info *info, int nitems)
     return (int)(info - start);
 }
 
-/*
- * discovered:
- *	list what the player has discovered in this game of a certain type
- */
+/** discovered:
+ * list what the player has discovered in this game of a certain type */
+/* TODO: Try to remove these */
 static int line_cnt = 0;
-
 static bool newpage = false;
-
-static char *lastfmt, *lastarg;
-
+static char *lastfmt;
+static char *lastarg;
 
 void
 discovered()
@@ -393,15 +387,10 @@ discovered()
     }
 }
 
-/*
- * print_disc:
- *	Print what we've discovered of type 'type'
- */
-
+/** print_disc:
+ * Print what we've discovered of type 'type' */
 #define MAX4(a,b,c,d)	(a > b ? (a > c ? (a > d ? a : d) : (c > d ? c : d)) : (b > c ? (b > d ? b : d) : (c > d ? c : d)))
-
-
-void
+static void
 print_disc(char type)
 {
     struct obj_info *info = NULL;
@@ -445,12 +434,9 @@ print_disc(char type)
 	add_line(nothing(type), NULL);
 }
 
-/*
- * set_order:
- *	Set up order for list
- */
-
-void
+/** set_order:
+ * Set up order for list */
+static void
 set_order(int *order, int numthings)
 {
     int i, r, t;
@@ -467,12 +453,9 @@ set_order(int *order, int numthings)
     }
 }
 
-/*
- * add_line:
- *	Add a line to the list of discoveries
- */
-/* VARARGS1 */
-char
+/** add_line:
+ * Add a line to the list of discoveries */
+static char
 add_line(char *fmt, char *arg)
 {
     WINDOW *tw, *sw;
@@ -481,114 +464,85 @@ add_line(char *fmt, char *arg)
     static int maxlen = -1;
 
     if (line_cnt == 0)
+	wclear(hw);
+    if (maxlen < 0)
+	maxlen = (int) strlen(prompt);
+    if (line_cnt >= LINES - 1 || fmt == NULL)
     {
-	    wclear(hw);
-	    if (inv_type == INV_SLOW)
-		mpos = 0;
-    }
-    if (inv_type == INV_SLOW)
-    {
-	if (*fmt != '\0')
-	    if (msg(fmt, arg) == KEY_ESCAPE)
-		return KEY_ESCAPE;
-	line_cnt++;
-    }
-    else
-    {
-	if (maxlen < 0)
-	    maxlen = (int) strlen(prompt);
-	if (line_cnt >= LINES - 1 || fmt == NULL)
+	if (fmt == NULL && !newpage)
 	{
-	    if (inv_type == INV_OVER && fmt == NULL && !newpage)
+	    msg("");
+	    refresh();
+	    tw = newwin(line_cnt + 1, maxlen + 2, 0, COLS - maxlen - 3);
+	    sw = subwin(tw, line_cnt + 1, maxlen + 1, 0, COLS - maxlen - 2);
+	    for (y = 0; y <= line_cnt; y++)
 	    {
-		msg("");
-		refresh();
-		tw = newwin(line_cnt + 1, maxlen + 2, 0, COLS - maxlen - 3);
-		sw = subwin(tw, line_cnt + 1, maxlen + 1, 0, COLS - maxlen - 2);
-                for (y = 0; y <= line_cnt; y++)
-                {
-                    wmove(sw, y, 0);
-                    for (x = 0; x <= maxlen; x++)
-                        waddcch(sw, mvwinch(hw, y, x));
-                }
-		wmove(tw, line_cnt, 1);
-		waddstr(tw, prompt);
-		/*
-		 * if there are lines below, use 'em
-		 */
-		if (LINES > NUMLINES)
-		{
-		    if (NUMLINES + line_cnt > LINES)
-			mvwin(tw, LINES - (line_cnt + 1), COLS - maxlen - 3);
-		    else
-			mvwin(tw, NUMLINES, 0);
-		}
-		touchwin(tw);
+		wmove(sw, y, 0);
+		for (x = 0; x <= maxlen; x++)
+		    waddcch(sw, mvwinch(hw, y, x));
+	    }
+	    wmove(tw, line_cnt, 1);
+	    waddstr(tw, prompt);
+
+	    /* if there are lines below, use 'em */
+	    if (LINES > NUMLINES)
+	    {
+		if (NUMLINES + line_cnt > LINES)
+		    mvwin(tw, LINES - (line_cnt + 1), COLS - maxlen - 3);
+		else
+		    mvwin(tw, NUMLINES, 0);
+	    }
+	    touchwin(tw);
+	    wrefresh(tw);
+	    wait_for(KEY_SPACE);
+	    if (md_hasclreol())
+	    {
+		werase(tw);
+		leaveok(tw, true);
 		wrefresh(tw);
-		wait_for(KEY_SPACE);
-                if (md_hasclreol())
-		{
-		    werase(tw);
-		    leaveok(tw, true);
-		    wrefresh(tw);
-		}
-		delwin(tw);
-		touchwin(stdscr);
 	    }
-	    else
-	    {
-		wmove(hw, LINES - 1, 0);
-		waddstr(hw, prompt);
-		wrefresh(hw);
-		wait_for(KEY_SPACE);
-		clearok(curscr, true);
-		wclear(hw);
-		touchwin(stdscr);
-	    }
-	    newpage = true;
-	    line_cnt = 0;
-	    maxlen = (int) strlen(prompt);
+	    delwin(tw);
+	    touchwin(stdscr);
 	}
-	if (fmt != NULL && !(line_cnt == 0 && *fmt == '\0'))
+	else
 	{
-	    mvwprintw(hw, line_cnt++, 0, fmt, arg);
-	    getyx(hw, y, x);
-	    if (maxlen < x)
-		maxlen = x;
-	    lastfmt = fmt;
-	    lastarg = arg;
+	    wmove(hw, LINES - 1, 0);
+	    waddstr(hw, prompt);
+	    wrefresh(hw);
+	    wait_for(KEY_SPACE);
+	    clearok(curscr, true);
+	    wclear(hw);
+	    touchwin(stdscr);
 	}
+	newpage = true;
+	line_cnt = 0;
+	maxlen = (int) strlen(prompt);
+    }
+
+    if (fmt != NULL && !(line_cnt == 0 && *fmt == '\0'))
+    {
+	mvwprintw(hw, line_cnt++, 0, fmt, arg);
+	getyx(hw, y, x);
+	if (maxlen < x)
+	    maxlen = x;
+	lastfmt = fmt;
+	lastarg = arg;
     }
     return ~KEY_ESCAPE;
 }
 
-/*
- * end_line:
- *	End the list of lines
- */
-
-void
+/** end_line:
+ * End the list of lines */
+static void
 end_line()
 {
-    if (inv_type != INV_SLOW)
-    {
-	if (line_cnt == 1 && !newpage)
-	{
-	    mpos = 0;
-	    msg(lastfmt, lastarg);
-	}
-	else
-	    add_line((char *) NULL, NULL);
-    }
     line_cnt = 0;
     newpage = false;
 }
 
-/*
- * nothing:
- *	Set up prbuf so that message for "nothing found" is there
- */
-char *
+/** nothing:
+ * Set up prbuf so that message for "nothing found" is there */
+static char *
 nothing(char type)
 {
     char *sp, *tystr = NULL;
@@ -612,12 +566,9 @@ nothing(char type)
     return prbuf;
 }
 
-/*
- * nameit:
- *	Give the proper name to a potion, stick, or ring
- */
-
-void
+/** nameit:
+ * Give the proper name to a potion, stick, or ring */
+static void
 nameit(THING *obj, char *type, char *which, struct obj_info *op,
     char *(*prfunc)(THING *))
 {
@@ -641,22 +592,17 @@ nameit(THING *obj, char *type, char *which, struct obj_info *op,
 	sprintf(prbuf, "%d %s %ss", obj->o_count, which, type);
 }
 
-/*
- * nullstr:
- *	Return a pointer to a null-length string
- */
-char *
+/** nullstr:
+ * Return a pointer to a null-length string */
+static char *
 nullstr(THING *ignored)
 {
     (void)ignored;
     return "";
 }
 
-/*
- * pr_list:
- *	List possible potions, scrolls, etc. for wizard.
- */
-
+/** pr_list:
+ * List possible potions, scrolls, etc. for wizard. */
 void
 pr_list()
 {
@@ -688,12 +634,9 @@ pr_list()
     }
 }
 
-/*
- * pr_spec:
- *	Print specific list of possible items to choose from
- */
-
-void
+/** pr_spec:
+ * Print specific list of possible items to choose from */
+static void
 pr_spec(struct obj_info *info, int nitems)
 {
     struct obj_info *endp;

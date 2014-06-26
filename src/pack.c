@@ -219,51 +219,6 @@ pack_char()
 }
 
 /*
- * inventory:
- *	List what is in the pack.  Return true if there is something of
- *	the given type.
- */
-bool
-inventory(THING *list, int type)
-{
-    static char inv_temp[MAXSTR];
-
-    n_objs = 0;
-    for (; list != NULL; list = next(list))
-    {
-	if (type && type != list->o_type && !(type == CALLABLE &&
-	    list->o_type != FOOD && list->o_type != AMULET) &&
-	    !(type == R_OR_S && (list->o_type == RING || list->o_type == STICK)))
-		continue;
-	n_objs++;
-	if (wizard && !list->o_packch)
-	    strcpy(inv_temp, "%s");
-	else
-	    sprintf(inv_temp, "%c) %%s", list->o_packch);
-	msg_esc = true;
-	if (add_line(inv_temp, inv_name(list, false)) == KEY_ESCAPE)
-	{
-	    msg_esc = false;
-	    msg("");
-	    return true;
-	}
-	msg_esc = false;
-    }
-    if (n_objs == 0)
-    {
-	if (terse)
-	    msg(type == 0 ? "empty handed" :
-			    "nothing appropriate");
-	else
-	    msg(type == 0 ? "you are empty handed" :
-			    "you don't have anything appropriate");
-	return false;
-    }
-    end_line();
-    return true;
-}
-
-/*
  * pick_up:
  *	Add something to characters pack.
  */
@@ -360,62 +315,69 @@ picky_inven()
 THING *
 get_item(char *purpose, int type)
 {
+  if (again)
+    if (last_pick)
+      return last_pick;
+    else
+    {
+      msg("you ran out");
+      return NULL;
+    }
+
+  /* Make sure theres an item of the type */
+  else if (items_in_pack_of_type(type) == 0)
+  {
+    msg("You have no item to %s", purpose);
+    return NULL;
+  }
+
+  for (;;)
+  {
     THING *obj;
     char ch;
 
-    if (pack == NULL)
-	msg("you aren't carrying anything");
-    else if (again)
-	if (last_pick)
-	    return last_pick;
-	else
-	    msg("you ran out");
+    if (!terse)
+      addmsg("which object do you want to ");
+    addmsg(purpose);
+    if (terse)
+      addmsg(" what");
+    msg("? (* for list): ");
+    ch = readchar();
+    mpos = 0;
+
+    /* Give the poor player a chance to abort the command */
+    if (ch == KEY_ESCAPE)
+    {
+      reset_last();
+      after = false;
+      clear_inventory(); /* Hide inventory in case we've showed it */
+      msg("");
+      return NULL;
+    }
+
+    /* normal case: person types one char */
+    n_objs = 1;
+    if (ch == '*')
+    {
+      mpos = 0;
+      print_inventory(type);
+      continue;
+    }
+
+    for (obj = pack; obj != NULL; obj = next(obj))
+      if (obj->o_packch == ch)
+        break;
+    if (obj == NULL)
+    {
+      msg("'%s' is not a valid item",unctrl(ch));
+      continue;
+    }
     else
     {
-	for (;;)
-	{
-	    if (!terse)
-		addmsg("which object do you want to ");
-	    addmsg(purpose);
-	    if (terse)
-		addmsg(" what");
-	    msg("? (* for list): ");
-	    ch = readchar();
-	    mpos = 0;
-	    /*
-	     * Give the poor player a chance to abort the command
-	     */
-	    if (ch == KEY_ESCAPE)
-	    {
-		reset_last();
-		after = false;
-		msg("");
-		return NULL;
-	    }
-	    n_objs = 1;		/* normal case: person types one char */
-	    if (ch == '*')
-	    {
-		mpos = 0;
-		if (inventory(pack, type) == 0)
-		{
-		    after = false;
-		    return NULL;
-		}
-		continue;
-	    }
-	    for (obj = pack; obj != NULL; obj = next(obj))
-		if (obj->o_packch == ch)
-		    break;
-	    if (obj == NULL)
-	    {
-		msg("'%s' is not a valid item",unctrl(ch));
-		continue;
-	    }
-	    else 
-		return obj;
-	}
+      clear_inventory(); /* Hide inventory in case we've showed it */
+      return obj;
     }
-    return NULL;
+  }
 }
 
 /** money:
@@ -480,14 +442,56 @@ remove_from_floor(THING *obj)
 unsigned
 items_in_pack()
 {
-  unsigned num = 0;
-  THING *ptr = pack;
+  return items_in_pack_of_type(0);
+}
 
-  while (ptr != NULL)
-  {
-    ptr = next(ptr);
-    ++num;
-  }
+/** items_in_pack
+ * Counts how many items she is carrying of a certain type */
+unsigned
+items_in_pack_of_type(int type)
+{
+  unsigned num = 0;
+  THING *list;
+
+  for (list = pack; list != NULL; list = next(list))
+    if (!type || type == list->o_type ||
+        (type == CALLABLE && (list->o_type != FOOD && list->o_type != AMULET))||
+        (type == R_OR_S && (list->o_type == RING || list->o_type == STICK)))
+      ++num;
   return num;
 }
 
+bool
+print_inventory(int type)
+{
+  unsigned num_items = 0;
+  THING *list;
+  WINDOW *invscr = dupwin(stdscr);
+  coord orig_pos;
+
+  getyx(stdscr, orig_pos.y, orig_pos.x);
+
+  /* Print out all items */
+  for (list= pack; list!= NULL; list= next(list))
+  {
+    if (!type || type == list->o_type ||
+        (type == CALLABLE && (list->o_type != FOOD && list->o_type != AMULET))||
+        (type == R_OR_S && (list->o_type == RING || list->o_type == STICK)))
+    {
+      /* Print out the item and move to next row */
+      wmove(invscr, ++num_items, 1);
+      wprintw(invscr, "%c) %s", list->o_packch, inv_name(list, false));
+    }
+  }
+
+  wmove(stdscr, orig_pos.y, orig_pos.x);
+  wrefresh(invscr);
+  delwin(invscr);
+  return num_items != 0;
+}
+
+void
+clear_inventory()
+{
+  touchwin(stdscr);
+}

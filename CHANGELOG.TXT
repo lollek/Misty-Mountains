@@ -1,6 +1,8 @@
 Rogue14 - r2
   Your real username now gets added to the highscore
   Changed name of the slime-mold to fruit (and no, you can't rename it anymore)
+  Removed the old style option parsing
+  Removed the three inventory types and added my own instead.
 
   Startup/Flags:
     Added -Q/--quick where you level up when you reach a new level

@@ -46,8 +46,6 @@ OPTION	optlist[] = {
 		 &passgo,	put_bool,	get_bool	},
     {"tombstone", "Print out tombstone when killed",
 		 &tombstone,	put_bool,	get_bool	},
-    {"inven",	"Inventory style",
-		 &inv_type,	put_inv_t,	get_inv_t	},
     {"name",	 "Name",
 		 whoami,	put_str,	get_str		},
     {"file",	 "Save file",
@@ -142,17 +140,6 @@ void
 put_str(void *str)
 {
     waddstr(hw, (char *) str);
-}
-
-/*
- * put_inv_t:
- *	Put out an inventory type
- */
-
-void
-put_inv_t(void *ip)
-{
-    waddstr(hw, inv_t_name[*(int *) ip]);
 }
 
 /*
@@ -310,59 +297,6 @@ get_str(void *vopt, WINDOW *win)
 }
 
 /*
- * get_inv_t
- *	Get an inventory type name
- */
-enum option_return
-get_inv_t(void *vp, WINDOW *win)
-{
-    int *ip = (int *) vp;
-    int oy, ox;
-    bool op_bad;
-
-    op_bad = true;
-    getyx(win, oy, ox);
-    waddstr(win, inv_t_name[*ip]);
-    while (op_bad)	
-    {
-	wmove(win, oy, ox);
-	wrefresh(win);
-	switch (readchar())
-	{
-	    case 'o':
-	    case 'O':
-		*ip = INV_OVER;
-		op_bad = false;
-		break;
-	    case 's':
-	    case 'S':
-		*ip = INV_SLOW;
-		op_bad = false;
-		break;
-	    case 'c':
-	    case 'C':
-		*ip = INV_CLEAR;
-		op_bad = false;
-		break;
-	    case '\n':
-	    case '\r':
-		op_bad = false;
-		break;
-	    case KEY_ESCAPE:
-		return QUIT;
-	    case '-':
-		return MINUS;
-	    default:
-		wmove(win, oy, ox + 15);
-		waddstr(win, "(O, S, or C)");
-	}
-    }
-    mvwprintw(win, oy, ox, "%s\n", inv_t_name[*ip]);
-    return NORMAL;
-}
-	
-
-/*
  * get_num:
  *	Get a numeric option
  */
@@ -376,103 +310,6 @@ get_num(void *vp, WINDOW *win)
     if ((i = get_str(buf, win)) == NORMAL)
 	*opt = (short) atoi(buf);
     return i;
-}
-
-/*
- * parse_opts:
- *	Parse options from string, usually taken from the environment.
- *	The string is a series of comma seperated values, with booleans
- *	being stated as "name" (true) or "noname" (false), and strings
- *	being "name=....", with the string being defined up to a comma
- *	or the end of the entire option string.
- */
-
-void
-parse_opts(char *str)
-{
-    char *sp;
-    OPTION *op;
-    int len;
-    char **i;
-    char *start;
-
-    if (str == NULL)
-      return;
-
-    while (*str)
-    {
-	/*
-	 * Get option name
-	 */
-	for (sp = str; isalpha(*sp); sp++)
-	    continue;
-	len = (int)(sp - str);
-	/*
-	 * Look it up and deal with it
-	 */
-	for (op = optlist; op <= &optlist[NUM_OPTS-1]; op++)
-	    if (!strncmp(str, op->o_name, len))
-	    {
-		if (op->o_putfunc == put_bool)	/* if option is a boolean */
-		    *(bool *)op->o_opt = true;	/* NOSTRICT */
-		else				/* string option */
-		{
-		    /*
-		     * Skip to start of string value
-		     */
-		    for (str = sp + 1; *str == '='; str++)
-			continue;
-		    if (*str == '~')
-		    {
-			strcpy((char *) op->o_opt, md_gethomedir()); /* NOSTRICT */
-			start = (char *) op->o_opt + strlen(md_gethomedir());/* NOSTRICT */
-			while (*++str == '/')
-			    continue;
-		    }
-		    else
-			start = (char *) op->o_opt;	/* NOSTRICT */
-		    /*
-		     * Skip to end of string value
-		     */
-		    for (sp = str + 1; *sp && *sp != ','; sp++)
-			continue;
-		    /*
-		     * check for type of inventory
-		     */
-		    if (op->o_putfunc == put_inv_t)
-		    {
-			if (islower(*str))
-			    *str = (char) toupper(*str);
-			for (i = inv_t_name; i <= &inv_t_name[INV_CLEAR]; i++)
-			    if (strncmp(str, *i, sp - str) == 0)
-			    {
-				inv_type = (int)(i - inv_t_name);
-				break;
-			    }
-		    }
-		    else
-			strucpy(start, str, (int)(sp - str));
-		}
-		break;
-	    }
-	    /*
-	     * check for "noname" for booleans
-	     */
-	    else if (op->o_putfunc == put_bool &&
-                     !strncmp(str, "no", 2) &&
-                     !strncmp(str + 2, op->o_name, len - 2))
-	    {
-		*(bool *)op->o_opt = false;	/* NOSTRICT */
-		break;
-	    }
-
-	/*
-	 * skip to start of next option name
-	 */
-	while (*sp && !isalpha(*sp))
-	    sp++;
-	str = sp;
-    }
 }
 
 /*

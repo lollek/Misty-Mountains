@@ -206,7 +206,6 @@ parse_args(int argc, char **argv)
     {"escdelay",  optional_argument, 0, 'E'},
     {"flush",     no_argument,       0, 'f'},
     {"hide-floor",no_argument,       0, 'F'},
-    {"inv-type",  required_argument, 0, 'i'},
     {"jump",      no_argument,       0, 'j'},
     {"name",      required_argument, 0, 'n'},
     {"passgo",    no_argument,       0, 'p'},
@@ -230,7 +229,6 @@ parse_args(int argc, char **argv)
   see_floor = true;             /* Show the lamp-illuminated floor */
   passgo = false;               /* Follow the turnings in passageways */
   tombstone = true;             /* Print out tombstone when killed */
-  inv_type = INV_OVER;          /* Inventory style */
   use_colors = false;           /* Use ncurses colors */
   game_type = DEFAULT;          /* Play a normal game or rogue */
 
@@ -241,13 +239,9 @@ parse_args(int argc, char **argv)
   /* Set seed and dungeon number */
   seed = time(NULL) + getpid();
 
-  /* Not sure what this does */
-  if (md_hasclreol())
-    inv_type = INV_CLEAR;
-
   for (;;)
   {
-    int c = getopt_long(argc, argv, "cE::fFi:jn:prsS:tTQW",
+    int c = getopt_long(argc, argv, "cE::fFjn:prsS:tTQW",
                         long_options, &option_index);
     if (c == -1)
       break;
@@ -258,8 +252,6 @@ parse_args(int argc, char **argv)
       when 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg);
       when 'f': fight_flush = true;
       when 'F': see_floor = false;
-      when 'i': if (atoi(optarg) >= 0 && atoi(optarg) <= 2)
-                  inv_type = atoi(optarg);
       when 'j': jump = true;
       when 'n': if (strlen(optarg))
                   strucpy(whoami, optarg, strlen(optarg));

@@ -1915,7 +1915,7 @@ rs_save_file(FILE *savef)
     rs_write_int(savef, 0);                        /* ntraps */
     rs_write_int(savef, hungry_state);
     rs_write_int(savef, items_in_pack());
-    rs_write_int(savef, inv_type);
+    rs_write_int(savef, 0);                        /* inv_type */
     rs_write_int(savef, level);
     rs_write_int(savef, max_level);
     rs_write_int(savef, mpos);
