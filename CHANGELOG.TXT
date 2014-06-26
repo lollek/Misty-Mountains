@@ -5,6 +5,9 @@ Rogue14 - r2
   Startup/Flags:
     Added -Q/--quick where you level up when you reach a new level
 
+  Bugfix:
+    Picking up items when your pack was empty would cause crash or hang
+
 
 Rogue14 - r1
   Changed to GNU/Linux-compability only
