@@ -16,27 +16,24 @@
 #include "status_effects.h"
 #include "scrolls.h"
 
-static bool there_is_room_in_pack();
 static char pack_char();
 static void move_msg(THING *obj);
 static void money(int value);
 static char floor_ch();
 static void remove_from_floor(THING *obj);
 
-/*
- * add_pack:
- *	Pick up an object and add it to the pack.  If the argument is
- *	non-null use it as the linked_list pointer instead of gettting
- *	it off the ground.
- */
+/** add_pack:
+ * Pick up an object and add it to the pack.  If the argument is
+ * non-null use it as the linked_list pointer instead of gettting
+ * it off the ground. */
 
 void
 add_pack(THING *obj, bool silent)
 {
     THING *op;
-    bool from_floor;
+    bool from_floor = false;
 
-    from_floor = false;
+    /* Either obj in an item or we try to take something from the floor */
     if (obj == NULL)
     {
 	if ((obj = find_obj(hero.y, hero.x)) == NULL)
@@ -45,25 +42,33 @@ add_pack(THING *obj, bool silent)
     }
 
     /* Check for and deal with scare monster scrolls */
-    if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
-	if (obj->o_flags & ISFOUND)
-	{
-	    detach(lvl_obj, obj);
-	    mvaddcch(hero.y, hero.x, floor_ch());
-	    chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
-	    discard(obj);
-	    msg("the scroll turns to dust as you pick it up");
-	    return;
-	}
+    if (obj->o_type == SCROLL && obj->o_which == S_SCARE &&
+        obj->o_flags & ISFOUND)
+    {
+	detach(lvl_obj, obj);
+	mvaddcch(hero.y, hero.x, floor_ch());
+	chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
+	discard(obj);
+	msg("the scroll turns to dust as you pick it up");
+	return;
+    }
+
+    if (++inpack > PACKSIZE)
+    {
+	if (!terse)
+	    addmsg("there's ");
+	addmsg("no room");
+	if (!terse)
+	    addmsg(" in your pack");
+	endmsg();
+	if (from_floor)
+	    move_msg(obj);
+	inpack = PACKSIZE;
+	return;
+    }
 
     if (pack == NULL)
     {
-	if (!there_is_room_in_pack())
-	{
-	    if (from_floor)
-		move_msg(obj);
-	    return;
-	}
 	if (from_floor)
 	    remove_from_floor(obj);
 	attach(pack, obj);
@@ -91,12 +96,6 @@ add_pack(THING *obj, bool silent)
 		    if (op->o_type == POTION || op->o_type == SCROLL ||
                         obj->o_type == FOOD)
 		    {
-			if (!there_is_room_in_pack())
-			{
-			    if (from_floor)
-				move_msg(obj);
-			    return;
-			}
 			if (from_floor)
 			    remove_from_floor(obj);
 			op->o_count++;
@@ -125,12 +124,6 @@ dump_it:
 			{
 				op->o_count += obj->o_count;
 				inpack--;
-				if (!there_is_room_in_pack())
-				{
-				    if (from_floor)
-					move_msg(obj);
-				    return;
-				}
 				if (from_floor)
 				    remove_from_floor(obj);
 				goto dump_it;
@@ -146,15 +139,8 @@ out:
 
 	if (lp != NULL)
 	{
-	    if (!there_is_room_in_pack())
-	    {
-		if (from_floor)
-		    move_msg(obj);
-		return;
-	    }
 	    if (from_floor)
 		remove_from_floor(obj);
-
 	    obj->o_packch = pack_char();
 	    next(obj) = next(lp);
 	    prev(obj) = lp;
@@ -184,29 +170,6 @@ out:
 	    addmsg("you now have ");
 	msg("%s (%c)", inv_name(obj, !terse), obj->o_packch);
     }
-}
-
-/*
- * there_is_room_in_pack:
- *	See if there's room in the pack.  If not, print out an
- *	appropriate message
- */
-static bool
-there_is_room_in_pack()
-{
-    int max_items = 23;
-    if (++inpack > max_items)
-    {
-	if (!terse)
-	    addmsg("there's ");
-	addmsg("no room");
-	if (!terse)
-	    addmsg(" in your pack");
-	endmsg();
-	inpack = max_items;
-	return false;
-    }
-    return true;
 }
 
 /*

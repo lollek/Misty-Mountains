@@ -20,6 +20,7 @@
 #define NUMNAME "Ten"   /* The same number in letters  */
 #define MAXOBJ 9        /* How many attempts to put items in dungeon */
 #define AMULETLEVEL 26  /* Level where we can find the amulet */
+#define PACKSIZE 23     /* How many items we can have in our pack */
 
 
 /* Try not to change these */
