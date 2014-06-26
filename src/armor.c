@@ -36,6 +36,8 @@ wear()
 
   if (cur_armor != NULL)
     take_off();
+  if (cur_armor != NULL)
+    return true;
 
   waste_time();
   obj->o_flags |= ISKNOW;
@@ -65,7 +67,7 @@ take_off()
 
   if (obj->o_flags & ISCURSED)
   {
-    msg("you can't.  It appears to be cursed");
+    msg("you can't. Your armor appears to be cursed");
     return true;
   }
 
