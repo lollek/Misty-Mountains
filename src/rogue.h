@@ -442,7 +442,7 @@ extern char	dir_ch, file_name[], huh[], *inv_t_name[], prbuf[], whoami[],
 		outbuf[], *r_stones[], runch,
 		*s_names[], take, *tr_name[], *ws_made[], *ws_type[];
 
-extern int	a_class[], count, food_left, hungry_state, inpack,
+extern int	a_class[], count, food_left, hungry_state,
 		lastscore, level, max_hit, max_level, mpos,
 		n_objs, no_command, no_food, no_move, purse,
 		quiet, vf_hit, potential_wizard, wizard;
@@ -478,6 +478,7 @@ bool seen_stairs();          /* Return true if the player has seen the stairs */
 bool turn_see(bool turn_off);/* Put on or off seeing monsters on this level */
 void invis_on();             /* Turn on the ability to see invisible */
 
+unsigned	items_in_pack();
 void	_attach(THING **list, THING *item);
 void	_detach(THING **list, THING *item);
 void	_free_list(THING **ptr);

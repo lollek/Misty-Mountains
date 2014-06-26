@@ -258,7 +258,7 @@ do_wizard_command(char ch)
   {
     case '|': msg("@ %d,%d", hero.y, hero.x);
     when 'C': create_obj();
-    when '$': msg("inpack = %d", inpack);
+    when '$': msg("inpack = %d", items_in_pack());
     when CTRL('G'): inventory(lvl_obj, 0);
     when CTRL('W'): whatis(false, 0);
     when CTRL('D'): level++; new_level();

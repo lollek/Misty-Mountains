@@ -53,7 +53,7 @@ add_pack(THING *obj, bool silent)
 	return;
     }
 
-    if (++inpack > PACKSIZE)
+    if (items_in_pack() == PACKSIZE)
     {
 	if (!terse)
 	    addmsg("there's ");
@@ -63,7 +63,6 @@ add_pack(THING *obj, bool silent)
 	endmsg();
 	if (from_floor)
 	    move_msg(obj);
-	inpack = PACKSIZE;
 	return;
     }
 
@@ -122,7 +121,6 @@ add_pack(THING *obj, bool silent)
 			    && op->o_group == obj->o_group)
 			{
 				op->o_count += obj->o_count;
-				inpack--;
 				if (from_floor)
 				    remove_from_floor(obj);
 				discard(obj);
@@ -182,14 +180,11 @@ leave_pack(THING *obj, bool newobj, bool all)
 {
     THING *nobj;
 
-    inpack--;
     nobj = obj;
     if (obj->o_count > 1 && !all)
     {
 	last_pick = obj;
 	obj->o_count--;
-	if (obj->o_group)
-	    inpack++;
 	if (newobj)
 	{
 	    nobj = new_item();
@@ -494,3 +489,18 @@ remove_from_floor(THING *obj)
     mvaddcch(hero.y, hero.x, floor_ch());
     chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
 }
+
+unsigned
+items_in_pack()
+{
+  unsigned num = 0;
+  THING *ptr = pack;
+
+  while (ptr != NULL)
+  {
+    ptr = next(ptr);
+    ++num;
+  }
+  return num;
+}
+
