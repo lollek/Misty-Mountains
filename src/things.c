@@ -193,11 +193,6 @@ dropcheck(THING *obj)
     }
     if (obj == cur_weapon)
 	cur_weapon = NULL;
-    else if (obj == cur_armor)
-    {
-	waste_time();
-	cur_armor = NULL;
-    }
     else
     {
 	cur_ring[obj == cur_ring[LEFT] ? LEFT : RIGHT] = NULL;

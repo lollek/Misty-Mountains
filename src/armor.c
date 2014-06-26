@@ -11,78 +11,83 @@
 
 #include "rogue.h"
 
-/*
- * wear:
- *	The player wants to wear something, so let him/her put it on.
- */
+/** wear:
+ * The player wants to wear something, so let him/her put it on.  */
 bool
 wear()
 {
-    register THING *obj;
-    register char *sp;
+  register THING *obj = get_item("wear", ARMOR);
+  register char *sp;
 
-    if ((obj = get_item("wear", ARMOR)) == NULL)
-	return false;
-    if (cur_armor != NULL)
-    {
-	addmsg("you are already wearing some");
-	if (!terse)
-	    addmsg(".  You'll have to take it off first");
-	endmsg();
-	return false;
-    }
-    if (obj->o_type != ARMOR)
-    {
-	msg("you can't wear that");
-	return false;
-    }
-    waste_time();
-    obj->o_flags |= ISKNOW;
-    sp = inv_name(obj, true);
-    cur_armor = obj;
-    if (!terse)
-	addmsg("you are now ");
-    msg("wearing %s", sp);
-    return true;
+  if (obj == NULL)
+    return false;
+
+  if (obj == cur_armor)
+  {
+    msg("that's already in use");
+    return wear();
+  }
+
+  if (obj->o_type != ARMOR)
+  {
+    msg("you can't wear that");
+    return wear();
+  }
+
+  if (cur_armor != NULL)
+    take_off();
+
+  waste_time();
+  obj->o_flags |= ISKNOW;
+  sp = inv_name(obj, true);
+  cur_armor = obj;
+  if (!terse)
+    addmsg("you are now ");
+  msg("wearing %s", sp);
+  return true;
 }
 
-/*
- * take_off:
- *	Get the armor off of the players back
- */
+/** take_off:
+ * Get the armor off of the players back */
 bool
 take_off()
 {
-    THING *obj = cur_armor;
+  THING *obj = cur_armor;
 
-    if (obj == NULL)
-    {
-	if (terse)
-		msg("not wearing armor");
-	else
-		msg("you aren't wearing any armor");
-	return false;
-    }
-    if (!dropcheck(cur_armor))
-	return true;
-    cur_armor = NULL;
+  if (cur_armor == NULL)
+  {
     if (terse)
-	addmsg("was");
+      msg("not wearing armor");
     else
-	addmsg("you used to be");
-    msg(" wearing %c) %s", obj->o_packch, inv_name(obj, true));
+      msg("you aren't wearing any armor");
+    return false;
+  }
+
+  if (obj->o_flags & ISCURSED)
+  {
+    msg("you can't.  It appears to be cursed");
     return true;
+  }
+
+  waste_time();
+  cur_armor = NULL;
+
+  if (terse)
+    addmsg("was");
+  else
+    addmsg("you used to be");
+  msg(" wearing %c) %s", obj->o_packch, inv_name(obj, true));
+
+  return true;
 }
 
-/*
- * waste_time:
- *	Do nothing but let other things happen
- */
+/** waste_time:
+ * Do nothing but let other things happen */
 void
 waste_time()
 {
-    do_daemons(BEFORE);
-    do_fuses(BEFORE);
-    do_daemons(AFTER);
-    do_fuses(AFTER);
+  do_daemons(BEFORE);
+  do_fuses(BEFORE);
+  do_daemons(AFTER);
+  do_fuses(AFTER);
 }
