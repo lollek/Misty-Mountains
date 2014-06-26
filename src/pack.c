@@ -16,6 +16,12 @@
 #include "status_effects.h"
 #include "scrolls.h"
 
+static bool pack_room(bool from_floor, THING *obj);
+static char pack_char();
+static void move_msg(THING *obj);
+static void money(int value);
+static char floor_ch();
+
 /*
  * add_pack:
  *	Pick up an object and add it to the pack.  If the argument is
@@ -165,7 +171,7 @@ out:
  *	See if there's room in the pack.  If not, print out an
  *	appropriate message
  */
-bool
+static bool
 pack_room(bool from_floor, THING *obj)
 {
     int max_items = 23;
@@ -232,7 +238,7 @@ leave_pack(THING *obj, bool newobj, bool all)
  * pack_char:
  *	Return the next unused pack character.
  */
-char
+static char
 pack_char()
 {
     bool *bp;
@@ -293,6 +299,7 @@ inventory(THING *list, int type)
  *	Add something to characters pack.
  */
 
+/* TODO: Maybe move this to command.c? */
 void
 pick_up(char ch)
 {
@@ -336,7 +343,7 @@ pick_up(char ch)
  *	Print out the message if you are just moving onto an object
  */
 
-void
+static void
 move_msg(THING *obj)
 {
     if (!terse)
@@ -349,6 +356,7 @@ move_msg(THING *obj)
  *	Allow player to inventory a single item
  */
 
+/* TODO: Maybe move this to command.c? */
 void
 picky_inven()
 {
@@ -448,7 +456,9 @@ get_item(char *purpose, int type)
  *	Add or subtract gold from the pack
  */
 
-void
+/* TODO: Maybe inline this function? */
+
+static void
 money(int value)
 {
     purse += value;
@@ -466,7 +476,7 @@ money(int value)
  * floor_ch:
  *	Return the appropriate floor character for her room
  */
-char
+static char
 floor_ch()
 {
     if (proom->r_flags & ISGONE)

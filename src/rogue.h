@@ -560,9 +560,7 @@ void	kill_daemon(void (*func)());
 bool	lock_sc();
 void	miss(char *er, char *ee, bool noend);
 bool	missile(int ydelta, int xdelta);
-void	money(int value);
 int	move_monst(THING *tp);
-void	move_msg(THING *obj);
 int	msg(char *fmt, ...);
 void	unsaved_msg(char *fmt, ...);
 void	nameit(THING *obj, char *type, char *which, struct obj_info *op, char *(*prfunc)(THING *));
@@ -636,15 +634,12 @@ bool	diag_ok(coord *sp, coord *ep);
 bool	dropcheck(THING *obj);
 bool	fallpos(coord *pos, coord *newpos);
 bool	find_floor(struct room *rp, coord *cp, int limit, bool monst);
-bool	pack_room(bool from_floor, THING *obj);
 bool	roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl);
 bool	see_monst(THING *mp);
 bool	turn_ok(int y, int x);
 bool	is_current(THING *obj);
 
 enum trap_t	be_trapped(coord *tc);
-char	floor_ch();
-char	pack_char();
 char	readchar();
 char	rnd_thing();
 
