@@ -26,7 +26,7 @@
 void
 add_pack(THING *obj, bool silent)
 {
-    THING *op, *lp;
+    THING *op;
     bool from_floor;
 
     from_floor = false;
@@ -53,13 +53,15 @@ add_pack(THING *obj, bool silent)
 
     if (pack == NULL)
     {
-	pack = obj;
+	if (!pack_room(from_floor, obj))
+	    return;
+	attach(pack, obj);
 	obj->o_packch = pack_char();
 	inpack++;
     }
     else
     {
-	lp = NULL;
+	THING *lp = NULL;
 	for (op = pack; op != NULL; op = next(op))
 	{
 	    if (op->o_type != obj->o_type)
@@ -148,9 +150,8 @@ out:
 
     if (obj->o_type == AMULET)
 	amulet = true;
-    /*
-     * Notify the user
-     */
+
+    /* Notify the user */
     if (!silent)
     {
 	if (!terse)
