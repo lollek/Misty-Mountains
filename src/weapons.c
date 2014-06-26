@@ -45,14 +45,18 @@ missile(int ydelta, int xdelta)
   if (obj == NULL)
     return false;
 
-  if (obj->o_flags & ISCURSED)
-  {
-    msg("you can't.  It appears to be cursed");
-    return true;
-  }
-
   if (obj == cur_weapon)
     cur_weapon = NULL;
+  else if (obj == cur_ring[LEFT])
+    cur_ring[LEFT] = NULL;
+  else if (obj == cur_ring[RIGHT])
+    cur_ring[RIGHT] = NULL;
+
+  if (obj->o_type == ARMOR)
+  {
+    msg("you can't throw armor");
+    return missile(ydelta, xdelta);
+  }
 
   obj = leave_pack(obj, true, false);
   do_motion(obj, ydelta, xdelta);
@@ -208,7 +212,6 @@ bool
 wield()
 {
   THING *obj = get_item("wield", WEAPON);
-  THING *oweapon = cur_weapon;
   char *sp;
 
   if (obj == NULL)
