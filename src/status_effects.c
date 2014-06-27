@@ -87,17 +87,24 @@ fall_asleep()
 void
 become_restored()
 {
-  if (ISRING(LEFT, R_ADDSTR))
-    add_str(&pstats.s_str, -cur_ring[LEFT]->o_arm);
-  if (ISRING(RIGHT, R_ADDSTR))
-    add_str(&pstats.s_str, -cur_ring[RIGHT]->o_arm);
   if (pstats.s_str < max_stats.s_str)
-    pstats.s_str = max_stats.s_str;
-  if (ISRING(LEFT, R_ADDSTR))
-    add_str(&pstats.s_str, cur_ring[LEFT]->o_arm);
-  if (ISRING(RIGHT, R_ADDSTR))
-    add_str(&pstats.s_str, cur_ring[RIGHT]->o_arm);
-  msg("you feel warm all over");
+  {
+    if (ISRING(LEFT, R_ADDSTR))
+      add_str(&pstats.s_str, -cur_ring[LEFT]->o_arm);
+    if (ISRING(RIGHT, R_ADDSTR))
+      add_str(&pstats.s_str, -cur_ring[RIGHT]->o_arm);
+
+      pstats.s_str = max_stats.s_str;
+
+    if (ISRING(LEFT, R_ADDSTR))
+      add_str(&pstats.s_str, cur_ring[LEFT]->o_arm);
+    if (ISRING(RIGHT, R_ADDSTR))
+      add_str(&pstats.s_str, cur_ring[RIGHT]->o_arm);
+
+    msg("you feel your strength returning");
+  }
+  else
+    msg("you feel warm all over");
 }
 
 void
