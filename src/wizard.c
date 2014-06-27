@@ -20,6 +20,72 @@
 #include "scrolls.h"
 
 static char *type_name(int type);
+static void pr_spec(struct obj_info *info, int nitems);
+
+/** pr_spec:
+ * Print specific list of possible items to choose from */
+static void
+pr_spec(struct obj_info *info, int nitems)
+{
+  WINDOW *printscr = dupwin(stdscr);
+  struct obj_info *endp = &info[nitems];
+  int lastprob = 0;
+  coord orig_pos;
+  unsigned curr_line = 1;
+  int ch;
+
+  getyx(stdscr, orig_pos.y, orig_pos.x);
+  for (ch = '0'; info < endp; ch++)
+  {
+    if (ch == '9' + 1)
+      ch = 'a';
+
+    wmove(printscr, curr_line++, 1);
+    wprintw(printscr, "%c: %s (%d%%)", ch, info->oi_name,
+                                     info->oi_prob - lastprob);
+    lastprob = info->oi_prob;
+    info++;
+  }
+  wmove(stdscr, orig_pos.y, orig_pos.x);
+  wrefresh(printscr);
+  delwin(printscr);
+}
+
+/** pr_list:
+ * List possible potions, scrolls, etc. for wizard. */
+int
+pr_list()
+{
+  int ch = ~KEY_ESCAPE;
+
+  if (!terse)
+    addmsg("for ");
+  addmsg("what type");
+  if (!terse)
+    addmsg(" of object do you want a list");
+  msg("? ");
+
+  while (ch != KEY_ESCAPE)
+  {
+    ch = readchar();
+    touchwin(stdscr);
+    refresh();
+    switch (ch)
+    {
+      case POTION: pr_spec(pot_info, NPOTIONS);
+      when SCROLL: pr_spec(scr_info, MAXSCROLLS);
+      when RING: pr_spec(ring_info, MAXRINGS);
+      when STICK: pr_spec(ws_info, MAXSTICKS);
+      when ARMOR: pr_spec(arm_info, MAXARMORS);
+      when WEAPON: pr_spec(weap_info, MAXWEAPONS);
+    }
+  }
+  touchwin(stdscr);
+  msg("");
+  return 0;
+}
+
+
 
 /*
  * whatis:

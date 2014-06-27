@@ -566,7 +566,7 @@ void 	passnum();
 char	*pick_color(char *col);
 void	pick_up(char ch);
 void	picky_inven();
-void	pr_list();
+int	pr_list();
 void	put_bool(void *b);
 void	put_str(void *str);
 void	put_things();
