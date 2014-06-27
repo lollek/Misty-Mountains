@@ -261,7 +261,7 @@ do_wizard_command(char ch)
     when 'C': create_obj();
     when '$': msg("inpack = %d", items_in_pack());
     /* when '\\': This is used for testing new features */
-    when CTRL('W'): whatis(false, 0);
+    when CTRL('W'): whatis(0);
     when CTRL('D'): level++; new_level();
     when CTRL('A'): level--; new_level();
     when CTRL('F'): show_map();

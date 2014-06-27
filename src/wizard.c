@@ -93,7 +93,7 @@ pr_list()
  */
 
 void
-whatis(bool insist, int type)
+whatis(int type)
 {
     THING *obj;
 
@@ -106,38 +106,22 @@ whatis(bool insist, int type)
     for (;;)
     {
 	obj = get_item("identify", type);
-	if (insist)
-	{
-	    if (n_objs == 0)
-		return;
-	    else if (obj == NULL)
-		msg("you must identify something");
-	    else if (type && obj->o_type != type &&
-	       !(type == R_OR_S && (obj->o_type == RING || obj->o_type == STICK)) )
-		    msg("you must identify a %s", type_name(type));
-	    else
-		break;
-	}
+	if (obj == NULL)
+	    return;
+	else if (type && obj->o_type != type && !(type == R_OR_S &&
+		(obj->o_type == RING || obj->o_type == STICK)))
+	    msg("you must identify a %s", type_name(type));
 	else
 	    break;
     }
 
-    if (obj == NULL)
-	return;
-
     switch (obj->o_type)
     {
-        case SCROLL:
-	    set_know(obj, scr_info);
-        when POTION:
-	    set_know(obj, pot_info);
-	when STICK:
-	    set_know(obj, ws_info);
-        when WEAPON:
-        case ARMOR:
-	    obj->o_flags |= ISKNOW;
-        when RING:
-	    set_know(obj, ring_info);
+	case SCROLL: set_know(obj, scr_info);
+	when POTION: set_know(obj, pot_info);
+	when STICK: set_know(obj, ws_info);
+	when WEAPON: case ARMOR: obj->o_flags |= ISKNOW;
+	when RING: set_know(obj, ring_info);
     }
     msg(inv_name(obj, false));
 }

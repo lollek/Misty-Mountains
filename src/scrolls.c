@@ -150,7 +150,7 @@ read_scroll()
       /* Identify, let him figure something out */
       learn_scroll(obj->o_which);
       msg("this scroll is an %s scroll", scr_info[obj->o_which].oi_name);
-      whatis(true, id_type[obj->o_which]);
+      whatis(id_type[obj->o_which]);
     }
     when S_MAP:
       /* Scroll of magic mapping. */

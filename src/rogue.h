@@ -616,7 +616,7 @@ THING  *wake_monster(int y, int x);
 void	wanderer();
 void	waste_time();
 bool	wear();
-void	whatis(bool insist, int type);
+void	whatis(int type);
 bool	wield();
 
 bool	chase(THING *tp, coord *ee);
