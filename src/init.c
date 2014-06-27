@@ -155,6 +155,10 @@ init_graphics()
       return 1;
     }
 
+    /* Because ncurses has defined COLOR_BLACK to 0 and COLOR_WHITE to 7,
+     * and then decided that init_pair cannot change number 0 (COLOR_BLACK)
+     * I use COLOR_WHITE for black text and COLOR_BLACK for white text */
+
     assume_default_colors(0, -1); /* Default is white text and any background */
     init_pair(COLOR_RED, COLOR_RED, -1);
     init_pair(COLOR_GREEN, COLOR_GREEN, -1);
@@ -162,7 +166,7 @@ init_graphics()
     init_pair(COLOR_BLUE, COLOR_BLUE, -1);
     init_pair(COLOR_MAGENTA, COLOR_MAGENTA, -1);
     init_pair(COLOR_CYAN, COLOR_CYAN, -1);
-    init_pair(COLOR_WHITE, COLOR_WHITE, -1);
+    init_pair(COLOR_WHITE, COLOR_BLACK, -1);
   }
 
   if (LINES < NUMLINES || COLS < NUMCOLS)
