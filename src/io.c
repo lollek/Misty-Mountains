@@ -21,9 +21,13 @@ colorize(const chtype ch)
 
   switch (ch)
   {
+    /* Dungeon */
     case HWALL: case VWALL: return ch | A_BOLD;
     case PASSAGE: case FLOOR: return ch | COLOR_PAIR(COLOR_YELLOW);
     case TRAP: return ch | COLOR_PAIR(COLOR_RED);
+
+    /* Items */
+    case GOLD: return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
     default: return ch;
   }
 }
