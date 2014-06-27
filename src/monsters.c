@@ -70,7 +70,7 @@ new_monster(THING *tp, char type, coord *cp)
     tp->t_disguise = type;
     tp->t_pos = *cp;
     move(cp->y, cp->x);
-    tp->t_oldch = inch() & A_CHARTEXT;
+    tp->t_oldch = incch();
     tp->t_room = roomin(cp);
     moat(cp->y, cp->x) = tp;
     mp = &monsters[tp->t_type-'A'];

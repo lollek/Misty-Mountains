@@ -659,10 +659,14 @@ enum option_return	get_sf(void *vp, WINDOW *win);
 enum option_return	get_str(void *vopt, WINDOW *win);
 
 int	get_color_for_chtype(const chtype ch);
+#define	incch() wincch(stdscr)
+chtype	wincch(WINDOW *win);
+#define	mvincch(y, x) mvwincch(stdscr, y, x)
+chtype	mvwincch(WINDOW *win, int y, int x);
 #define	addcch(ch) waddcch(stdscr, ch)
 int	waddcch(WINDOW *window, const chtype ch);
-#define	mvaddcch(y, x, ch) wmvaddcch(stdscr, y, x, ch)
-int	wmvaddcch(WINDOW *window, int y, int x, const chtype ch);
+#define	mvaddcch(y, x, ch) mvwaddcch(stdscr, y, x, ch)
+int	mvwaddcch(WINDOW *window, int y, int x, const chtype ch);
 
 coord	*find_dest(THING *tp);
 coord	*rndmove(THING *who);

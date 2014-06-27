@@ -10,7 +10,6 @@
 #include "rogue.h"
 
 
-
 /** get_color_for_chtype
  * Returns the color which is mapped for the ch */
 int
@@ -27,14 +26,28 @@ get_color_for_chtype(const chtype ch)
   }
 }
 
-/** wmvaddcch (Window Move Add Colored Character)
- * Does a move(y,x) then addcch(ch) */
-int
-wmvaddcch(WINDOW *window, int y, int x, const chtype ch)
+/** wincch
+ * Returns a winch() without any color */
+chtype
+wincch(WINDOW *win)
 {
-  if (wmove(window, y, x) == ERR)
-    return ERR;
-  return waddcch(window, ch);
+  return winch(win) & A_CHARTEXT;
+}
+
+/** mvwincch
+ * Returns a mvwinch() without any color */
+chtype
+mvwincch(WINDOW *win, int y, int x)
+{
+  return mvwinch(win, y, x) & A_CHARTEXT;
+}
+
+/** mvwaddcch (Window Move Add Colored Character)
+ * Does a mvwaddch with color if enabled */
+int
+mvwaddcch(WINDOW *window, int y, int x, const chtype ch)
+{
+  return mvwaddch(window, y, x, ch | get_color_for_chtype(ch));
 }
 
 /** waddcch (Window Add Colored Character)

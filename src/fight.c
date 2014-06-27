@@ -353,7 +353,7 @@ set_mname(THING *tp)
     else if (is_hallucinating(&player))
     {
 	move(tp->t_pos.y, tp->t_pos.x);
-	ch = toascii(inch());
+	ch = incch();
 	if (!isupper(ch))
 	    ch = rnd(26);
 	else

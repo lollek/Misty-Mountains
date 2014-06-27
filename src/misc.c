@@ -70,7 +70,7 @@ look(bool wakeup)
     if (y > 0 && y < NUMLINES - 1)
       for (x = hero.x -1; x <= hero.x + 1; x++)
       {
-        int ch;
+        char ch;
         char *fp;
         THING *tp;
 
@@ -131,7 +131,7 @@ look(bool wakeup)
         if ((proom->r_flags & ISDARK) && !see_floor && ch == FLOOR)
           ch = SHADOW;
 
-        if (tp != NULL || ch != (char)(inch() & A_CHARTEXT ))
+        if (tp != NULL || ch != incch())
           addcch(ch);
 
         if (door_stop && !firstmove && running)
@@ -210,7 +210,7 @@ erase_lamp(coord *pos, struct room *rp)
         continue;
 
       move(y, x);
-      if (inch() == (unsigned)(FLOOR | get_color_for_chtype(FLOOR)))
+      if (incch() == FLOOR)
         addcch(SHADOW);
     }
 }
@@ -537,7 +537,7 @@ seen_stairs()
   THING *tp = moat(stairs.y, stairs.x);
 
   move(stairs.y, stairs.x);
-  if (inch() == STAIRS)  /* it's on the map */
+  if (incch() == STAIRS)  /* it's on the map */
     return true;
   if (same_coords(hero, stairs)) /* It's under him */
     return true;

@@ -737,7 +737,7 @@ rs_write_window(FILE *savef, WINDOW *win)
 
     for(row=0;row<height;row++)
         for(col=0;col<width;col++)
-            if (rs_write_int(savef, mvwinch(win,row,col)) != 0)
+            if (rs_write_int(savef, mvwincch(win,row,col)) != 0)
                 return(WRITESTAT);
 
     return(WRITESTAT);
@@ -746,8 +746,8 @@ rs_write_window(FILE *savef, WINDOW *win)
 int
 rs_read_window(FILE *inf, WINDOW *win)
 {
-    int row,col,maxlines,maxcols,value,width,height;
-    
+    int row,col,maxlines,maxcols,width,height,value = 0;
+
     if (read_error || format_error)
         return(READSTAT);
 
@@ -766,9 +766,9 @@ rs_read_window(FILE *inf, WINDOW *win)
                 return(READSTAT);
 
             if ((row < height) && (col < width))
-                mvwaddch(win,row,col,value);
+                mvwaddcch(win,row,col,value);
         }
-        
+
     return(READSTAT);
 }
 
