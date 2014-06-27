@@ -218,7 +218,7 @@ wield()
     return false;
 
   /* Check if already in use */
-  if (is_current(obj))
+  if (is_in_use(obj))
     return wield();
 
   if (obj->o_type == ARMOR)

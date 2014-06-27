@@ -89,8 +89,9 @@ fight(coord *mp, THING *weap, bool thrown)
 	    ch = (char)(rnd(26) + 'A');
 	    mvaddcch(tp->t_pos.y, tp->t_pos.x, ch);
 	}
-	msg(choose_str("heavy!  That's a nasty critter!",
-		       "wait!  That's a xeroc!"));
+	msg(is_hallucinating(&player)
+	    ? "heavy!  That's a nasty critter!"
+	    : "wait!  That's a xeroc!");
 	if (!thrown)
 	    return false;
     }

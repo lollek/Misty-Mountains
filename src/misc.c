@@ -17,11 +17,10 @@
 #include "rogue.h"
 #include "status_effects.h"
 
-
+static int trip_ch(int y, int x, int ch);
 
 /** rnd:
- * Pick a very random number.
- */
+ * Pick a very random number. */
 int
 rnd(int range)
 {
@@ -41,171 +40,143 @@ roll(int number, int sides)
   return dtotal;
 }
 
-/*
- * look:
- *	A quick glance all around the player
- */
-#undef DEBUG
-
+/** look:
+ * A quick glance all around the player */
 void
 look(bool wakeup)
 {
-    int x, y;
-    int ch;
-    THING *tp;
-    PLACE *pp;
-    struct room *rp;
-    int ey, ex;
-    int passcount;
-    char pfl, *fp, pch;
-    int sy, sx, sumhero = 0, diffhero = 0;
-# ifdef DEBUG
-    static bool done = false;
+  int x, y;
+  PLACE *pp = INDEX(hero.y, hero.x);
+  char pch = pp->p_ch;
+  char pfl = pp->p_flags;
+  struct room *rp = proom;
+  int passcount = 0;
+  int sumhero = 0, diffhero = 0;
 
-    if (done)
-	return;
-    done = true;
-# endif /* DEBUG */
-    passcount = 0;
-    rp = proom;
-    if (!same_coords(oldpos, hero))
-    {
-	erase_lamp(&oldpos, oldrp);
-	oldpos = hero;
-	oldrp = rp;
-    }
-    ey = hero.y + 1;
-    ex = hero.x + 1;
-    sx = hero.x - 1;
-    sy = hero.y - 1;
-    if (door_stop && !firstmove && running)
-    {
-	sumhero = hero.y + hero.x;
-	diffhero = hero.y - hero.x;
-    }
-    pp = INDEX(hero.y, hero.x);
-    pch = pp->p_ch;
-    pfl = pp->p_flags;
+  if (!same_coords(oldpos, hero))
+  {
+    erase_lamp(&oldpos, oldrp);
+    oldpos = hero;
+    oldrp = rp;
+  }
 
-    for (y = sy; y <= ey; y++)
-	if (y > 0 && y < NUMLINES - 1) for (x = sx; x <= ex; x++)
-	{
-	    if (x < 0 || x >= NUMCOLS)
-		continue;
-	    if (!is_blind(&player))
-	    {
-		if (y == hero.y && x == hero.x)
-		    continue;
-	    }
+  if (door_stop && !firstmove && running)
+  {
+    sumhero = hero.y + hero.x;
+    diffhero = hero.y - hero.x;
+  }
 
-	    pp = INDEX(y, x);
-	    ch = pp->p_ch;
-	    if (ch == SHADOW)		/* nothing need be done with a ' ' */
-		    continue;
-	    fp = &pp->p_flags;
-	    if (pch != DOOR && ch != DOOR)
-		if ((pfl & F_PASS) != (*fp & F_PASS))
-		    continue;
-	    if (((*fp & F_PASS) || ch == DOOR) && 
-		 ((pfl & F_PASS) || pch == DOOR))
-	    {
-		if (hero.x != x && hero.y != y &&
-		    !step_ok(chat(y, hero.x)) && !step_ok(chat(hero.y, x)))
-			continue;
-	    }
+  for (y = hero.y - 1; y <= hero.y + 1; y++)
+    if (y > 0 && y < NUMLINES - 1)
+      for (x = hero.x -1; x <= hero.x + 1; x++)
+      {
+        int ch;
+        char *fp;
+        THING *tp;
 
-	    if ((tp = pp->p_monst) == NULL)
-		ch = trip_ch(y, x, ch);
-	    else
-		if (on(player, SEEMONST) && is_invisible(tp))
-		{
-		    if (door_stop && !firstmove)
-			running = false;
-		    continue;
-		}
-		else
-		{
-		    if (wakeup)
-			wake_monster(y, x);
-		    if (see_monst(tp))
-		    {
-			if (is_hallucinating(&player))
-			    ch = rnd(26) + 'A';
-			else
-			    ch = tp->t_disguise;
-		    }
-		}
-	    if (is_blind(&player) && (y != hero.y || x != hero.x))
-		continue;
+        if (x < 0 || x >= NUMCOLS)
+          continue;
 
-	    move(y, x);
+        if (!is_blind(&player) && y == hero.y && x == hero.x)
+            continue;
 
-	    if ((proom->r_flags & ISDARK) && !see_floor && ch == FLOOR)
-		ch = SHADOW;
+        pp = INDEX(y, x);
+        ch = pp->p_ch;
 
-	    if (tp != NULL || ch != (char)(inch() & A_CHARTEXT ))
-		addcch(ch);
+        if (ch == SHADOW)  /* nothing need be done with a ' ' */
+          continue;
 
-	    if (door_stop && !firstmove && running)
-	    {
-		switch (runch)
-		{
-		    case 'h':
-			if (x == ex)
-			    continue;
-		    when 'j':
-			if (y == sy)
-			    continue;
-		    when 'k':
-			if (y == ey)
-			    continue;
-		    when 'l':
-			if (x == sx)
-			    continue;
-		    when 'y':
-			if ((y + x) - sumhero >= 1)
-			    continue;
-		    when 'u':
-			if ((y - x) - diffhero >= 1)
-			    continue;
-		    when 'n':
-			if ((y + x) - sumhero <= -1)
-			    continue;
-		    when 'b':
-			if ((y - x) - diffhero <= -1)
-			    continue;
-		}
-		switch (ch)
-		{
-		    case DOOR:
-			if (x == hero.x || y == hero.y)
-			    running = false;
-			break;
-		    case PASSAGE:
-			if (x == hero.x || y == hero.y)
-			    passcount++;
-			break;
-		    case FLOOR: case VWALL: case HWALL: case SHADOW:
-			break;
-		    default:
-			running = false;
-			break;
-		}
-	    }
-	}
-    if (door_stop && !firstmove && passcount > 1)
-	running = false;
-    if (!running || !jump)
-	mvaddcch(hero.y, hero.x, PLAYER);
-# ifdef DEBUG
-    done = false;
-# endif /* DEBUG */
+        fp = &pp->p_flags;
+
+        if (pch != DOOR && ch != DOOR && (pfl & F_PASS) != (*fp & F_PASS))
+            continue;
+
+        if (((*fp & F_PASS) || ch == DOOR) &&
+            ((pfl & F_PASS) || pch == DOOR))
+        {
+          if (hero.x != x && hero.y != y &&
+              !step_ok(chat(y, hero.x)) && !step_ok(chat(hero.y, x)))
+            continue;
+        }
+
+        if ((tp = pp->p_monst) == NULL)
+          ch = trip_ch(y, x, ch);
+        else
+        {
+          if (on(player, SEEMONST) && is_invisible(tp))
+          {
+            if (door_stop && !firstmove)
+              running = false;
+            continue;
+          }
+          else
+          {
+            if (wakeup)
+              wake_monster(y, x);
+            if (see_monst(tp))
+            {
+              if (is_hallucinating(&player))
+                ch = rnd(26) + 'A';
+              else
+                ch = tp->t_disguise;
+            }
+          }
+        }
+
+        if (is_blind(&player) && (y != hero.y || x != hero.x))
+          continue;
+
+        move(y, x);
+
+        if ((proom->r_flags & ISDARK) && !see_floor && ch == FLOOR)
+          ch = SHADOW;
+
+        if (tp != NULL || ch != (char)(inch() & A_CHARTEXT ))
+          addcch(ch);
+
+        if (door_stop && !firstmove && running)
+        {
+          switch (runch)
+          {
+            case 'h': if (x == hero.x + 1)
+                        continue;
+            when 'j': if (y == hero.y - 1)
+                        continue;
+            when 'k': if (y == hero.y + 1)
+                        continue;
+            when 'l': if (x == hero.x - 1)
+                        continue;
+            when 'y': if ((y + x) - sumhero >= 1)
+                        continue;
+            when 'u': if ((y - x) - diffhero >= 1)
+                        continue;
+            when 'n': if ((y + x) - sumhero <= -1)
+                        continue;
+            when 'b': if ((y - x) - diffhero <= -1)
+                        continue;
+          }
+          switch (ch)
+          {
+            case DOOR:    if (x == hero.x || y == hero.y)
+                            running = false;
+            when PASSAGE: if (x == hero.x || y == hero.y)
+                            passcount++;
+            when FLOOR: case VWALL: case HWALL: case SHADOW:
+              break;
+            default: running = false;
+          }
+        }
+      }
+  if (door_stop && !firstmove && passcount > 1)
+    running = false;
+  if (!running || !jump)
+    mvaddcch(hero.y, hero.x, PLAYER);
 }
 
 /** trip_ch:
  * Return the character appropriate for this space, taking into
  * account whether or not the player is tripping */
-int
+static int
 trip_ch(int y, int x, int ch)
 {
   if (is_hallucinating(&player) && after)
@@ -217,7 +188,6 @@ trip_ch(int y, int x, int ch)
       default:
         if (y != stairs.y || x != stairs.x || !seenstairs)
           return rnd_thing();
-        break;
     }
   return ch;
 }
@@ -285,31 +255,33 @@ eat()
 
     if (obj->o_type != FOOD)
     {
-      if (!terse)
-        msg("ugh, you would get ill if you ate that");
-      else
-        msg("that's inedible!");
+      msg("that's inedible!");
       return;
     }
 
-    if (food_left < 0)
-      food_left = 0;
-    if ((food_left += HUNGERTIME - 200 + rnd(400)) > STOMACHSIZE)
+    food_left = (food_left > 0 ? food_left : 0) + HUNGERTIME - 200 + rnd(400);
+    if (food_left > STOMACHSIZE)
       food_left = STOMACHSIZE;
+
     hungry_state = 0;
+
     if (obj == cur_weapon)
       cur_weapon = NULL;
+
     if (obj->o_which == 1)
       msg("my, that was a yummy fruit");
     else
       if (rnd(100) > 70)
       {
         pstats.s_exp++;
-        msg("%s, this food tastes awful", choose_str("bummer", "yuk"));
+        msg("%s, this food tastes awful",
+            is_hallucinating(&player) ? "bummer" : "yuk");
         check_level();
       }
       else
-        msg("%s, that tasted good", choose_str("oh, wow", "yum"));
+        msg("%s, that tasted good",
+            is_hallucinating(&player) ? "oh, wow" : "yum");
+
     leave_pack(obj, false, false);
 }
 
@@ -345,12 +317,16 @@ chg_str(int amt)
 
   if (amt == 0)
     return;
+
   add_str(&pstats.s_str, amt);
   comp = pstats.s_str;
+
   if (ISRING(LEFT, R_ADDSTR))
     add_str(&comp, -cur_ring[LEFT]->o_arm);
+
   if (ISRING(RIGHT, R_ADDSTR))
     add_str(&comp, -cur_ring[RIGHT]->o_arm);
+
   if (comp > max_stats.s_str)
     max_stats.s_str = comp;
 }
@@ -372,7 +348,6 @@ void
 aggravate()
 {
   THING *mp;
-
   for (mp = mlist; mp != NULL; mp = next(mp))
     runto(&mp->t_pos);
 }
@@ -395,13 +370,14 @@ vowelstr(char *str)
   }
 }
 
-/** is_current:
+/** is_in_use:
  * See if the object is one of the currently used items */
 bool
-is_current(THING *obj)
+is_in_use(THING *obj)
 {
   if (obj == NULL)
     return false;
+
   if (obj == cur_armor || obj == cur_weapon || obj == cur_ring[LEFT]
       || obj == cur_ring[RIGHT])
   {
@@ -495,7 +471,6 @@ spread(int nm)
 
 /** call_it:
  * Call an object something after use */
-
 void
 call_it(struct obj_info *info)
 {
@@ -526,10 +501,10 @@ call_it(struct obj_info *info)
 char
 rnd_thing()
 {
-  int i;
-  static char thing_list[] = {
+  char thing_list[] = {
     POTION, SCROLL, RING, STICK, FOOD, WEAPON, ARMOR, STAIRS, GOLD, AMULET
   };
+  int i;
 
   if (level >= AMULETLEVEL)
     i = rnd(sizeof thing_list / sizeof (char));
@@ -538,106 +513,92 @@ rnd_thing()
   return thing_list[i];
 }
 
-/*str str:
- * Choose the first or second string depending on whether it the
- * player is tripping */
-char *
-choose_str(char *ts, char *ns)
-{
-  return (is_hallucinating(&player) ? ts : ns);
-}
-
 bool
 is_magic(THING *obj)
 {
-    switch (obj->o_type)
-    {
-	case ARMOR:
-	    return (bool)((obj->o_flags&ISPROT) || obj->o_arm != a_class[obj->o_which]);
-	case WEAPON:
-	    return (bool)(obj->o_hplus != 0 || obj->o_dplus != 0);
-	case POTION:
-	case SCROLL:
-	case STICK:
-	case RING:
-	case AMULET:
-	    return true;
-    }
-    return false;
+  switch (obj->o_type)
+  {
+    case ARMOR:
+      return (bool)(obj->o_flags & ISPROT) ||
+             obj->o_arm != a_class[obj->o_which];
+
+    case WEAPON:
+      return obj->o_hplus != 0 || obj->o_dplus != 0;
+
+    case POTION: case SCROLL: case STICK: case RING: case AMULET:
+      return true;
+  }
+  return false;
 }
 
 bool
 seen_stairs()
 {
-    THING	*tp;
+  THING *tp = moat(stairs.y, stairs.x);
 
-    move(stairs.y, stairs.x);
-    if (inch() == STAIRS)		/* it's on the map */
-	return true;
-    if (same_coords(hero, stairs))	/* It's under him */
-	return true;
+  move(stairs.y, stairs.x);
+  if (inch() == STAIRS)  /* it's on the map */
+    return true;
+  if (same_coords(hero, stairs)) /* It's under him */
+    return true;
 
-    /* if a monster is on the stairs, this gets hairy */
-    if ((tp = moat(stairs.y, stairs.x)) != NULL)
-    {
-	if (see_monst(tp) && on(*tp, ISRUN))	/* if it's visible and awake */
-	    return true;			/* it must have moved there */
+  /* if a monster is on the stairs, this gets hairy */
+  if (tp != NULL)
+  {
+    if (see_monst(tp) && on(*tp, ISRUN)) /* if it's visible and awake */
+      return true;                       /* it must have moved there */
 
-	if (on(player, SEEMONST)		/* if she can detect monster */
-	    && tp->t_oldch == STAIRS)		/* and there once were stairs */
-		return true;			/* it must have moved there */
-    }
-    return false;
+    if (on(player, SEEMONST)             /* if she can detect monster */
+        && tp->t_oldch == STAIRS)        /* and there once were stairs */
+      return true;                       /* it must have moved there */
+  }
+  return false;
 }
-
 
 bool
 turn_see(bool turn_off)
 {
-    THING *mp;
-    bool can_see, add_new;
+  THING *mp;
+  bool add_new = false;
 
-    add_new = false;
-    for (mp = mlist; mp != NULL; mp = next(mp))
-    {
-	move(mp->t_pos.y, mp->t_pos.x);
-	can_see = see_monst(mp);
-	if (turn_off)
-	{
-	    if (!can_see)
-		addcch(mp->t_oldch);
-	}
-	else
-	{
-	    if (!can_see)
-		standout();
-	    if (is_hallucinating(&player))
-		addcch(rnd(26) + 'A');
-	    else
-		addcch(mp->t_type);
-	    if (!can_see)
-	    {
-		standend();
-		add_new++;
-	    }
-	}
-    }
+  for (mp = mlist; mp != NULL; mp = next(mp))
+  {
+    move(mp->t_pos.y, mp->t_pos.x);
+    bool can_see = see_monst(mp);
+
     if (turn_off)
-	player.t_flags &= ~SEEMONST;
+    {
+      if (!can_see)
+        addcch(mp->t_oldch);
+    }
     else
-	player.t_flags |= SEEMONST;
-    return add_new;
+    {
+      if (is_hallucinating(&player))
+        addcch((rnd(26) + 'A') | A_STANDOUT);
+      else
+        addcch(mp->t_type | A_STANDOUT);
+
+      if (!can_see)
+        add_new++;
+    }
+  }
+
+  if (turn_off)
+    player.t_flags &= ~SEEMONST;
+  else
+    player.t_flags |= SEEMONST;
+  return add_new;
 }
 
 void
 invis_on()
 {
-    THING *mp;
+  THING *mp;
 
-    player.t_flags |= CANSEE;
-    for (mp = mlist; mp != NULL; mp = next(mp))
-	if (is_invisible(mp) && see_monst(mp) && !is_hallucinating(&player))
-	    mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
+  player.t_flags |= CANSEE;
+  for (mp = mlist; mp != NULL; mp = next(mp))
+    if (is_invisible(mp) && see_monst(mp) && !is_hallucinating(&player))
+      mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
 }
 
 

@@ -270,8 +270,9 @@ def:
       uncurse(cur_weapon);
       uncurse(cur_ring[LEFT]);
       uncurse(cur_ring[RIGHT]);
-      msg(choose_str("you feel in touch with the Universal Onenes",
-            "you feel as if somebody is watching over you"));
+      msg(is_hallucinating(&player)
+          ? "you feel in touch with the Universal Onenes"
+          : "you feel as if somebody is watching over you");
     when S_AGGR:
       /* This scroll aggravates all the monsters on the current
        * level and sets them running towards the hero */

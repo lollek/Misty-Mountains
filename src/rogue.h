@@ -627,14 +627,13 @@ bool	find_floor(struct room *rp, coord *cp, int limit, bool monst);
 bool	roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl);
 bool	see_monst(THING *mp);
 bool	turn_ok(int y, int x);
-bool	is_current(THING *obj);
+bool	is_in_use(THING *obj);
 
 enum trap_t	be_trapped(coord *tc);
 char	readchar();
 char	rnd_thing();
 
 char	*charge_str(THING *obj);
-char	*choose_str(char *ts, char *ns);
 char	*inv_name(THING *obj, bool drop);
 char	*num(int n1, int n2, char type);
 char	*ring_num(THING *obj);
@@ -659,7 +658,6 @@ enum option_return	get_num(void *vp, WINDOW *win);
 enum option_return	get_sf(void *vp, WINDOW *win);
 enum option_return	get_str(void *vopt, WINDOW *win);
 
-int	trip_ch(int y, int x, int ch);
 int	get_color_for_chtype(const chtype ch);
 #define	addcch(ch) waddcch(stdscr, ch)
 int	waddcch(WINDOW *window, const chtype ch);

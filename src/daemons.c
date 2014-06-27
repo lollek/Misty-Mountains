@@ -98,9 +98,12 @@ stomach()
 	no_command += rnd(8) + 4;
 	hungry_state = 3;
 	if (!terse)
-	    addmsg(choose_str("the munchies overpower your motor capabilities.  ",
-			      "you feel too weak from lack of food.  "));
-	msg(choose_str("You freak out", "You faint"));
+	    addmsg(is_hallucinating(&player)
+		? "the munchies overpower your motor capabilities.  "
+		: "you feel too weak from lack of food.  ");
+	msg(is_hallucinating(&player)
+	    ? "You freak out"
+	    : "You faint");
     }
     else
     {
@@ -110,17 +113,21 @@ stomach()
 	if (food_left < MORETIME && oldfood >= MORETIME)
 	{
 	    hungry_state = 2;
-	    msg(choose_str("the munchies are interfering with your motor capabilites",
-			   "you are starting to feel weak"));
+	    msg(is_hallucinating(&player)
+		? "the munchies are interfering with your motor capabilites"
+		: "you are starting to feel weak");
 	}
 	else if (food_left < 2 * MORETIME && oldfood >= 2 * MORETIME)
 	{
 	    hungry_state = 1;
 	    if (terse)
-		msg(choose_str("getting the munchies", "getting hungry"));
+		msg(is_hallucinating(&player)
+		    ? "getting the munchies"
+		    : "getting hungry");
 	    else
-		msg(choose_str("you are getting the munchies",
-			       "you are starting to get hungry"));
+		msg(is_hallucinating(&player)
+		    ? "you are getting the munchies"
+		    : "you are starting to get hungry");
 	}
     }
     if (hungry_state != orig_hungry) { 

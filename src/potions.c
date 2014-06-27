@@ -120,7 +120,7 @@ quaff()
       }
       else
         msg("you have a %s feeling for a moment, then it passes",
-            choose_str("normal", "strange"));
+            is_hallucinating(&player) ? "normal" : "strange");
     }
     when P_LSD:
       learn_potion(obj->o_which);

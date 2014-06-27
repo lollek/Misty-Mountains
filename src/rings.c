@@ -36,7 +36,7 @@ ring_on()
     }
 
     /* find out which hand to put it on */
-    if (is_current(obj))
+    if (is_in_use(obj))
 	return false;
 
     if (cur_ring[LEFT] == NULL && cur_ring[RIGHT] == NULL)
