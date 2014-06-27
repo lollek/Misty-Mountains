@@ -658,7 +658,6 @@ enum option_return	get_num(void *vp, WINDOW *win);
 enum option_return	get_sf(void *vp, WINDOW *win);
 enum option_return	get_str(void *vopt, WINDOW *win);
 
-int	get_color_for_chtype(const chtype ch);
 #define	incch() wincch(stdscr)
 chtype	wincch(WINDOW *win);
 #define	mvincch(y, x) mvwincch(stdscr, y, x)

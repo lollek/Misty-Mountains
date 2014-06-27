@@ -9,20 +9,22 @@
 
 #include "rogue.h"
 
+static chtype colorize(const chtype ch);
 
-/** get_color_for_chtype
- * Returns the color which is mapped for the ch */
-int
-get_color_for_chtype(const chtype ch)
+/** colorize_ch
+ * Returns a ch in color (if enabled) */
+static chtype
+colorize(const chtype ch)
 {
   if (!use_colors)
-    return 0;
+    return ch;
 
   switch (ch)
   {
-    case PASSAGE: case FLOOR: return COLOR_PAIR(COLOR_YELLOW);
-    case TRAP: return COLOR_PAIR(COLOR_RED);
-    default: return 0;
+    case HWALL: case VWALL: return ch | A_BOLD;
+    case PASSAGE: case FLOOR: return ch | COLOR_PAIR(COLOR_YELLOW);
+    case TRAP: return ch | COLOR_PAIR(COLOR_RED);
+    default: return ch;
   }
 }
 
@@ -47,7 +49,7 @@ mvwincch(WINDOW *win, int y, int x)
 int
 mvwaddcch(WINDOW *window, int y, int x, const chtype ch)
 {
-  return mvwaddch(window, y, x, ch | get_color_for_chtype(ch));
+  return mvwaddch(window, y, x, colorize(ch));
 }
 
 /** waddcch (Window Add Colored Character)
@@ -55,7 +57,7 @@ mvwaddcch(WINDOW *window, int y, int x, const chtype ch)
 int
 waddcch(WINDOW *window, const chtype ch)
 {
-  return waddch(window, ch | get_color_for_chtype(ch));
+  return waddch(window, colorize(ch));
 }
 
 /*
