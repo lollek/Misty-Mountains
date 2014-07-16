@@ -19,16 +19,28 @@ colorize(const chtype ch)
   if (!use_colors)
     return ch;
 
+  /* NOTE: COLOR_WHITE is black and COLOR_BLACK is white, because reasons */
+
   switch (ch)
   {
     /* Dungeon */
-    case HWALL: case VWALL: return ch | A_BOLD;
-    case PASSAGE: case FLOOR: return ch | COLOR_PAIR(COLOR_YELLOW);
+    case HWALL: case VWALL: return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
+    case PASSAGE: case FLOOR: case STAIRS: return ch | COLOR_PAIR(COLOR_YELLOW);
     case TRAP: return ch | COLOR_PAIR(COLOR_RED);
 
     /* Items */
     case GOLD: return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
-    default: return ch;
+
+    /* Monsters */
+    case 'B': return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
+    case 'E': return ch | COLOR_PAIR(COLOR_MAGENTA);
+    case 'H': return ch | COLOR_PAIR(COLOR_GREEN);
+    case 'I': return ch | COLOR_PAIR(COLOR_CYAN);
+    case 'R': return ch | COLOR_PAIR(COLOR_RED);
+    case 'S': return ch | COLOR_PAIR(COLOR_GREEN);
+
+
+    default: return ch | COLOR_PAIR(COLOR_BLACK);
   }
 }
 

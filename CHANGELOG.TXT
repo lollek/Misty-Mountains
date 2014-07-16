@@ -4,6 +4,10 @@ Rogue14 - r2
   Removed the old style option parsing
   Removed the three inventory types and added my own instead.
 
+  More colors:
+    Walls are now a bit bigger (they might be grey on some terminals?)
+    Gold is now yellow
+
   Startup/Flags:
     Added -Q/--quick where you level up when you reach a new level
 
