@@ -182,9 +182,6 @@ dropcheck(THING *obj)
 {
     if (obj == NULL)
 	return true;
-    if (obj != cur_armor && obj != cur_weapon
-	&& obj != cur_ring[LEFT] && obj != cur_ring[RIGHT])
-	    return true;
     if (obj->o_flags & ISCURSED)
     {
 	msg("you can't.  It appears to be cursed");
@@ -192,7 +189,9 @@ dropcheck(THING *obj)
     }
     if (obj == cur_weapon)
 	cur_weapon = NULL;
-    else
+    else if (obj == cur_armor)
+	take_off();
+    else if (obj == cur_ring[LEFT] || obj == cur_ring[RIGHT])
     {
 	cur_ring[obj == cur_ring[LEFT] ? LEFT : RIGHT] = NULL;
 	switch (obj->o_which)
