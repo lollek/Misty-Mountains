@@ -48,7 +48,7 @@ md_hasclreol()
 }
 
 
-char *
+const char *
 md_getusername()
 {
 #define USERNAME_MAXLEN 80

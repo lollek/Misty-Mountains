@@ -19,6 +19,9 @@
 
 #define	EQSTR(a, b)	(strcmp(a, b) == 0)
 
+static const char *prname(const char *mname, bool upper);
+static void thunk(THING *weap, const char *mname, bool noend);
+
 char *h_names[] = {		/* strings for hitting */
 	" scored an excellent hit on ",
 	" hit ",
@@ -475,8 +478,8 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
  * prname:
  *	The print name of a combatant
  */
-char *
-prname(char *mname, bool upper)
+static const char *
+prname(const char *mname, bool upper)
 {
     static char tbuf[MAXSTR];
 
@@ -494,8 +497,8 @@ prname(char *mname, bool upper)
  * thunk:
  *	A missile hits a monster
  */
-void
-thunk(THING *weap, char *mname, bool noend)
+static void
+thunk(THING *weap, const char *mname, bool noend)
 {
     if (to_death)
 	return;
@@ -514,7 +517,7 @@ thunk(THING *weap, char *mname, bool noend)
  */
 
 void
-hit(char *er, char *ee, bool noend)
+hit(const char *er, const char *ee, bool noend)
 {
     int i;
     char *s;
@@ -544,7 +547,7 @@ hit(char *er, char *ee, bool noend)
  *	Print a message to indicate a poor swing
  */
 void
-miss(char *er, char *ee, bool noend)
+miss(const char *er, const char *ee, bool noend)
 {
     int i;
     extern char *m_names[];
@@ -570,7 +573,7 @@ miss(char *er, char *ee, bool noend)
  *	A missile misses a monster
  */
 void
-bounce(THING *weap, char *mname, bool noend)
+bounce(THING *weap, const char *mname, bool noend)
 {
     if (to_death)
 	return;

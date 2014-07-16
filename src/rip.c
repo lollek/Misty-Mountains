@@ -24,6 +24,7 @@
 #include "scrolls.h"
 
 static char *killname(char monst, bool doart);
+static int center(const char *str);
 
 static char *rip[] = {
 "                       __________\n",
@@ -245,7 +246,7 @@ death(char monst)
  *	Return the index to center the given string
  */
 int
-center(char *str)
+center(const char *str)
 {
     return 28 - (((int)strlen(str) + 1) / 2);
 }

@@ -318,7 +318,7 @@ get_num(void *vp, WINDOW *win)
  */
 
 void
-strucpy(char *s1, char *s2, int len)
+strucpy(char *s1, const char *s2, int len)
 {
     if (len > MAXINP)
 	len = MAXINP;

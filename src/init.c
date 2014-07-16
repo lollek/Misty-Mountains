@@ -569,7 +569,7 @@ init_probs()
  *	Check to see if a series of probabilities sums to 100
  */
 void
-badcheck(char *name, struct obj_info *info, int bound)
+badcheck(const char *name, struct obj_info *info, int bound)
 {
     register struct obj_info *end;
 
@@ -589,8 +589,8 @@ badcheck(char *name, struct obj_info *info, int bound)
  *	If he is halucinating, pick a random color name and return it,
  *	otherwise return the given color.
  */
-char *
-pick_color(char *col)
+const char *
+pick_color(const char *col)
 {
     return (is_hallucinating(&player) ? rainbow[rnd(NCOLORS)] : col);
 }

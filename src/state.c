@@ -78,7 +78,7 @@ static int endian = 0x01020304;
 #define  big_endian ( *((char *)&endian) == 0x01 )
 
 int
-rs_write(FILE *savef, void *ptr, size_t size)
+rs_write(FILE *savef, const void *ptr, size_t size)
 {
     if (write_error)
         return(WRITESTAT);
@@ -173,7 +173,7 @@ rs_read_char(FILE *inf, char *c)
 }
 
 int
-rs_write_chars(FILE *savef, char *c, int count)
+rs_write_chars(FILE *savef, const char *c, int count)
 {
     if (write_error)
         return(WRITESTAT);
@@ -203,7 +203,7 @@ rs_read_chars(FILE *inf, char *i, int count)
 }
 
 int
-rs_write_ints(FILE *savef, int *c, int count)
+rs_write_ints(FILE *savef, const int *c, int count)
 {
     int n = 0;
 
@@ -268,7 +268,7 @@ rs_read_boolean(FILE *inf, bool *i)
 }
 
 int
-rs_write_booleans(FILE *savef, bool *c, int count)
+rs_write_booleans(FILE *savef, const bool *c, int count)
 {
     int n = 0;
 
@@ -350,7 +350,7 @@ rs_read_short(FILE *inf, short *i)
 } 
 
 int
-rs_write_shorts(FILE *savef, short *c, int count)
+rs_write_shorts(FILE *savef, const short *c, int count)
 {
     int n = 0;
 
@@ -511,7 +511,7 @@ rs_read_marker(FILE *inf, int id)
 /******************************************************************************/
 
 int
-rs_write_string(FILE *savef, char *s)
+rs_write_string(FILE *savef, const char *s)
 {
     int len = 0;
 

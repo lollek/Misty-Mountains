@@ -327,11 +327,10 @@ wait_for(int ch)
  *	Function used to display a window and wait before returning
  */
 void
-show_win(char *message)
+show_win(const char *message)
 {
-    WINDOW *win;
+    WINDOW *win = hw;
 
-    win = hw;
     wmove(win, 0, 0);
     waddstr(win, message);
     touchwin(win);

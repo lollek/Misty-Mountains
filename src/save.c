@@ -213,7 +213,7 @@ save_file(FILE *savef)
  */
 
 size_t
-encwrite(char *start, size_t size, FILE *outf)
+encwrite(const char *start, size_t size, FILE *outf)
 {
     char *e1, *e2, fb;
     int temp;
