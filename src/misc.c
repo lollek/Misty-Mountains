@@ -381,9 +381,7 @@ is_in_use(THING *obj)
   if (obj == cur_armor || obj == cur_weapon || obj == cur_ring[LEFT]
       || obj == cur_ring[RIGHT])
   {
-    if (!terse)
-      addmsg("That's already ");
-    msg("in use");
+    msg(terse ? "in use" : "that's already in use");
     return true;
   }
   return false;
@@ -394,7 +392,7 @@ is_in_use(THING *obj)
 bool
 get_dir()
 {
-  char *prompt;
+  const char *prompt = terse ? "direction? " : "which direction? ";
   bool gotit;
   static coord last_delt= {0,0};
 
@@ -406,10 +404,7 @@ get_dir()
   }
   else
   {
-    if (!terse)
-      msg(prompt = "which direction? ");
-    else
-      prompt = "direction: ";
+    msg(prompt);
 
     do
     {
