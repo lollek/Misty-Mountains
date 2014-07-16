@@ -86,7 +86,7 @@ static char msgbuf[2*MAXMSG+1];
 static int newpos = 0;
 
 void
-unsaved_msg(char *fmt, ...)
+unsaved_msg(const char *fmt, ...)
 {
   va_list args;
   char tmp[MAXSTR];
@@ -101,7 +101,7 @@ unsaved_msg(char *fmt, ...)
 
 /* VARARGS1 */
 int
-msg(char *fmt, ...)
+msg(const char *fmt, ...)
 {
     va_list args;
 
@@ -130,7 +130,7 @@ msg(char *fmt, ...)
  */
 /* VARARGS1 */
 void
-addmsg(char *fmt, ...)
+addmsg(const char *fmt, ...)
 {
     va_list args;
 
@@ -191,7 +191,7 @@ endmsg()
  *	Perform an add onto the message buffer
  */
 void
-doadd(char *fmt, va_list args)
+doadd(const char *fmt, va_list args)
 {
     static char buf[MAXSTR];
 
