@@ -49,7 +49,6 @@ do_zap()
 {
     THING *obj, *tp;
     int y, x;
-    char *name;
     char monster, oldch;
     static THING bolt;
 
@@ -222,6 +221,8 @@ do_zap()
 	when WS_ELECT:
 	case WS_FIRE:
 	case WS_COLD:
+	{
+	    char *name;
 	    if (obj->o_which == WS_ELECT)
 		name = "bolt";
 	    else if (obj->o_which == WS_FIRE)
@@ -230,6 +231,7 @@ do_zap()
 		name = "ice";
 	    fire_bolt(&hero, &delta, name);
 	    ws_info[obj->o_which].oi_know = true;
+	}
 	when WS_NOP:
 	    break;
 	otherwise:

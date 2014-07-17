@@ -24,9 +24,9 @@ enum game_mode_t
 };
 
 static bool playit();
-static enum game_mode_t parse_args(int argc, char **argv);
+static enum game_mode_t parse_args(int argc, char * const *argv);
 static void endit(int sig);
-static void fatal();
+static void fatal(const char *s);
 
 int open_score_and_drop_setuid_setgid(); /* src/save.c */
 void auto_save(int);                      /* src/save.c */
@@ -77,7 +77,7 @@ endit(int sig)
  * Exit the program, printing a message.
  */
 void
-fatal(char *s)
+fatal(const char *s)
 {
   endwin();
   puts(s);
@@ -196,7 +196,7 @@ shell()
  * Parse command-line arguments
  */
 enum game_mode_t
-parse_args(int argc, char **argv)
+parse_args(int argc, char * const *argv)
 {
   const char *version_string = "Rogue14 r" VERSION " - Based on Rogue5.4.4";
   enum game_mode_t game_mode = NEW_GAME;

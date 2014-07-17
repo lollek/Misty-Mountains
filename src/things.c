@@ -25,7 +25,7 @@ static void set_order(int *order, int numthings);
 static char add_line(char *fmt, char *arg);
 static void end_line();
 static char *nothing(char type);
-static void nameit(THING *obj, char *type, char *which,
+static void nameit(THING *obj, const char *type, const char *which,
                    struct obj_info *op, char *(*prfunc)(THING *));
 static char *nullstr(THING *ignored);
 
@@ -562,7 +562,7 @@ nothing(char type)
 /** nameit:
  * Give the proper name to a potion, stick, or ring */
 static void
-nameit(THING *obj, char *type, char *which, struct obj_info *op,
+nameit(THING *obj, const char *type, const char *which, struct obj_info *op,
     char *(*prfunc)(THING *))
 {
     char *pb;

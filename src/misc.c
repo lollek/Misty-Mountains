@@ -71,7 +71,7 @@ look(bool wakeup)
       for (x = hero.x -1; x <= hero.x + 1; x++)
       {
         char ch;
-        char *fp;
+        const char *fp;
         THING *tp;
 
         if (x < 0 || x >= NUMCOLS)

@@ -16,8 +16,7 @@
 bool
 wear()
 {
-  register THING *obj = get_item("wear", ARMOR);
-  register char *sp;
+  THING *obj = get_item("wear", ARMOR);
 
   if (obj == NULL)
     return false;
@@ -41,11 +40,10 @@ wear()
 
   waste_time();
   obj->o_flags |= ISKNOW;
-  sp = inv_name(obj, true);
   cur_armor = obj;
   if (!terse)
     addmsg("you are now ");
-  msg("wearing %s", sp);
+  msg("wearing %s", inv_name(obj, true));
   return true;
 }
 

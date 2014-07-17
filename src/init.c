@@ -275,7 +275,7 @@ char *rainbow[] = {
     "yellow",
 };
 
-#define NCOLORS (sizeof rainbow / sizeof (char *))
+#define NCOLORS (sizeof rainbow / sizeof (const char *))
 int cNCOLORS = NCOLORS;
 
 static char *sylls[] = {
