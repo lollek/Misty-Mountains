@@ -141,9 +141,9 @@ score(int amount, int flags, char monst)
     for (scp = top_ten; scp < endp; scp++)
     {
 	if (scp->sc_score) {
-	    printf("%2d %5d %s (%s): %s on level %d",
+	    printf("%2d %5d %s: %s on level %d",
                 (int) (scp - top_ten + 1), scp->sc_score, scp->sc_name,
-                md_getusername(), reason[scp->sc_flags], scp->sc_level);
+                reason[scp->sc_flags], scp->sc_level);
 	    if (scp->sc_flags == 0 || scp->sc_flags == 3)
 		printf(" by %s", killname((char) scp->sc_monster, true));
 	    if (prflags == 2)
