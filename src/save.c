@@ -22,9 +22,9 @@
 
 static FILE *scoreboard = NULL; /* File descriptor for score file */
 
-static char version[] = "rogue (rogueforge) 09/05/07";
-static char encstr[] = "\300k||`\251Y.'\305\321\201+\277~r\"]\240_\223=1\341)\222\212\241t;\t$\270\314/<#\201\254";
-static char statlist[] = "\355kl{+\204\255\313idJ\361\214=4:\311\271\341wK<\312\321\213,,7\271/Rk%\b\312\f\246";
+static const char version[] = "rogue (rogueforge) 09/05/07";
+static const char encstr[] = "\300k||`\251Y.'\305\321\201+\277~r\"]\240_\223=1\341)\222\212\241t;\t$\270\314/<#\201\254";
+static const char statlist[] = "\355kl{+\204\255\313idJ\361\214=4:\311\271\341wK<\312\321\213,,7\271/Rk%\b\312\f\246";
 
 /** open_score_and_drop_setuid_setgid:
  * Open up the score file for future use
@@ -215,25 +215,21 @@ save_file(FILE *savef)
 size_t
 encwrite(const char *start, size_t size, FILE *outf)
 {
-    char *e1, *e2, fb;
-    int temp;
+    const char *e1 = encstr;
+    const char *e2 = statlist;
+    char fb = 0;
     size_t o_size = size;
-    e1 = encstr;
-    e2 = statlist;
-    fb = 0;
 
-    while(size)
+    while(size--)
     {
 	if (putc(*start++ ^ *e1 ^ *e2 ^ fb, outf) == EOF)
             break;
 
-	temp = *e1++;
-	fb = fb + ((char) (temp * *e2++));
+	fb += *e1++ * *e2++;
 	if (*e1 == '\0')
 	    e1 = encstr;
 	if (*e2 == '\0')
 	    e2 = statlist;
-	size--;
     }
 
     return(o_size - size);
@@ -246,23 +242,18 @@ encwrite(const char *start, size_t size, FILE *outf)
 size_t
 encread(char *start, size_t size, FILE *inf)
 {
-    char *e1, *e2, fb;
-    int temp;
+    const char *e1 = encstr;
+    const char *e2 = statlist;
+    char fb = 0;
     size_t read_size;
-
-    fb = 0;
 
     if ((read_size = fread(start,1,size,inf)) == 0)
 	return(read_size);
 
-    e1 = encstr;
-    e2 = statlist;
-
     while (size--)
     {
 	*start++ ^= *e1 ^ *e2 ^ fb;
-	temp = *e1++;
-	fb = fb + (char)(temp * *e2++);
+	fb += *e1++ * *e2++;
 	if (*e1 == '\0')
 	    e1 = encstr;
 	if (*e2 == '\0')
