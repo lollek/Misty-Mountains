@@ -20,7 +20,6 @@
 #include "scrolls.h"
 
 static int pick_one(struct obj_info *info, int nitems);
-static char *nothing(char type);
 static void nameit(THING *obj, const char *type, const char *which,
                    struct obj_info *op, char *(*prfunc)(THING *));
 static char *nullstr(THING *ignored);
@@ -340,8 +339,22 @@ discovered_by_type(char type, struct obj_info *info, int max_items)
       mvwprintw(printscr, ++items_found, 1,
                 "%s", inv_name(&printable_object, false));
     }
+
   if (items_found == 0)
-    mvwprintw(printscr, 1, 1, "%s", nothing(type));
+  {
+    const char *type_as_str = NULL;
+    switch (type)
+    {
+      case POTION: type_as_str = "potion";
+      when SCROLL: type_as_str = "scroll";
+      when RING:   type_as_str = "ring";
+      when STICK:  type_as_str = "stick";
+    }
+    mvwprintw(printscr, 1, 1, (terse
+          ? "No known %s"
+          : "Haven't discovered anything about any %s"),
+        type_as_str);
+  }
 
   move(orig_pos.y, orig_pos.x);
   wrefresh(printscr);
@@ -364,42 +377,16 @@ discovered()
     refresh();
     switch (ch)
     {
-      case POTION: discovered_by_type(ch, pot_info, NPOTIONS); break;
-      case SCROLL: discovered_by_type(ch, scr_info, MAXSCROLLS); break;
-      case RING: discovered_by_type(ch, ring_info, MAXRINGS); break;
-      case STICK: discovered_by_type(ch, ws_info, MAXSTICKS); break;
-      default: msg(""); return;
+      case POTION: discovered_by_type(ch, pot_info, NPOTIONS);
+      when SCROLL: discovered_by_type(ch, scr_info, MAXSCROLLS);
+      when RING: discovered_by_type(ch, ring_info, MAXRINGS);
+      when STICK: discovered_by_type(ch, ws_info, MAXSTICKS);
+      otherwise: msg(""); return;
     }
   }
 
   touchwin(stdscr);
   msg("");
-}
-
-/** nothing:
- * Set up prbuf so that message for "nothing found" is there */
-static char *
-nothing(char type)
-{
-    char *sp, *tystr = NULL;
-
-    if (terse)
-	sprintf(prbuf, "Nothing");
-    else
-	sprintf(prbuf, "Haven't discovered anything");
-    if (type != '*')
-    {
-	sp = &prbuf[strlen(prbuf)];
-	switch (type)
-	{
-	    case POTION: tystr = "potion";
-	    when SCROLL: tystr = "scroll";
-	    when RING: tystr = "ring";
-	    when STICK: tystr = "stick";
-	}
-	sprintf(sp, " about any %ss", tystr);
-    }
-    return prbuf;
 }
 
 /** nameit:
