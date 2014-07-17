@@ -1,7 +1,8 @@
 Rogue14 - r2
   Changed name of the slime-mold to fruit (and no, you can't rename it anymore)
   Removed the old style option parsing
-  Removed the three inventory types and added my own instead.
+  Changed from the three inventory types into my own style
+  Changed how the 'describe' window looks, similar to the inventory
 
   More colors:
     Walls are now a bit bigger (they might be grey on some terminals?)
