@@ -23,6 +23,8 @@ static int pick_one(struct obj_info *info, int nitems);
 static void nameit(THING *obj, const char *type, const char *which,
                    struct obj_info *op, char *(*prfunc)(THING *));
 static char *nullstr(THING *ignored);
+static void discovered_by_type(char type, struct obj_info *info,
+                               int max_items);
 
 /** inv_name:
  * Return the name of something as it would appear in an inventory. */
@@ -317,7 +319,7 @@ pick_one(struct obj_info *info, int nitems)
 
 /** discovered_by_type
  * list what the player has discovered of this type */
-void
+static void
 discovered_by_type(char type, struct obj_info *info, int max_items)
 {
   int i;
