@@ -8,6 +8,9 @@ Rogue14 - r2
     Walls are now a bit bigger (they might be grey on some terminals?)
     Gold is now yellow
 
+  Trap:
+    Added "Suddenly you're somewhere else"-message when stepping on teletrap
+
   Startup/Flags:
     Added -Q/--quick where you level up when you reach a new level
 
