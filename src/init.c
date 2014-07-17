@@ -14,11 +14,13 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
+#include <pwd.h>
 
 #include "rogue.h"
 #include "potions.h"
 #include "status_effects.h"
 #include "scrolls.h"
+
 
 /* init_new_game
  * Set up everything so we can start playing already */
@@ -27,7 +29,12 @@ init_new_game()
 {
   /* Parse environment opts */
   if (whoami[0] == '\0')
-    strucpy(whoami, md_getusername(), (int) strlen(md_getusername()));
+  {
+    const struct passwd *pw = getpwuid(getuid());
+    const char *name = pw ? pw->pw_name : "nobody";
+
+    strucpy(whoami, name, strlen(name));
+  }
 
   if (wizard)
     printf("Hello %s, welcome to dungeon #%d", whoami, seed);

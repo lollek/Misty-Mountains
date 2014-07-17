@@ -49,23 +49,6 @@ md_hasclreol()
 
 
 const char *
-md_getusername()
-{
-#define USERNAME_MAXLEN 80
-  static char login[USERNAME_MAXLEN] = { '\0' };
-
-  if (*login == '\0')
-  {
-    struct passwd *pw = getpwuid(getuid());
-
-    strncpy(login, pw == NULL ? "nobody" : pw->pw_name, USERNAME_MAXLEN);
-    login[USERNAME_MAXLEN -1] = '\0';
-  }
-  return login;
-#undef USERNAME_MAXLEN
-}
-
-char *
 md_gethomedir()
 {
   static char homedir[PATH_MAX] = { '\0' };

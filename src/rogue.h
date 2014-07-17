@@ -647,8 +647,7 @@ void stomach();
 void swander();
 void visuals();
 
-const char *md_getusername();
-char *md_gethomedir();
+const char *md_gethomedir();
 int md_hasclreol();
 
 enum option_return	get_bool(void *vp, WINDOW *win);
