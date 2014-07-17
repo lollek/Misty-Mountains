@@ -37,19 +37,18 @@ static char wand_mons[] = {
 char
 randmonster(bool wander)
 {
-    int d;
-    char *mons;
+    const char *mons = (wander ? wand_mons : lvl_mons);
 
-    mons = (wander ? wand_mons : lvl_mons);
-    do
+    while (true)
     {
-	d = level + (rnd(10) - 6);
+	int d = level + (rnd(10) - 6);
 	if (d < 0)
 	    d = rnd(5);
 	if (d > 25)
 	    d = rnd(5) + 21;
-    } while (mons[d] == 0);
-    return mons[d];
+	if (mons[d] != 0)
+	    return mons[d];
+    }
 }
 
 /*

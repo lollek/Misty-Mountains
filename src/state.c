@@ -75,7 +75,7 @@ static int read_error   = false;
 static int write_error  = false;
 static int format_error = false;
 static int endian = 0x01020304;
-#define  big_endian ( *((char *)&endian) == 0x01 )
+#define  big_endian ( *((const char *)&endian) == 0x01 )
 
 int
 rs_write(FILE *savef, const void *ptr, size_t size)
@@ -105,7 +105,7 @@ int
 rs_write_int(FILE *savef, int c)
 {
     unsigned char bytes[4];
-    unsigned char *buf = (unsigned char *) &c;
+    const unsigned char *buf = (const unsigned char *) &c;
 
     if (write_error)
         return(WRITESTAT);
@@ -129,7 +129,7 @@ rs_read_int(FILE *inf, int *i)
 {
     unsigned char bytes[4];
     int input = 0;
-    unsigned char *buf = (unsigned char *)&input;
+    const unsigned char *buf = (const unsigned char *)&input;
     
     if (read_error || format_error)
         return(READSTAT);
@@ -573,7 +573,7 @@ rs_read_new_string(FILE *inf, char **s)
 }
 
 int
-rs_write_strings(FILE *savef, char *s[], int count)
+rs_write_strings(FILE *savef, char * const s[], int count)
 {
     int n = 0;
 
@@ -632,7 +632,8 @@ rs_read_new_strings(FILE *inf, char **s, int count)
 }
 
 int
-rs_write_string_index(FILE *savef, char *master[], int max, const char *str)
+rs_write_string_index(FILE *savef, char * const master[],
+                      int max, const char *str)
 {
     int i;
 
@@ -689,7 +690,7 @@ rs_read_str_t(FILE *inf, str_t *st)
 }
 
 int
-rs_write_coord(FILE *savef, coord c)
+rs_write_coord(FILE *savef, const coord c)
 {
     if (write_error)
         return(WRITESTAT);
@@ -787,7 +788,7 @@ get_list_item(THING *l, int i)
 }
 
 int
-find_list_ptr(THING *l, void *ptr)
+find_list_ptr(const THING *l, const void *ptr)
 {
     int count;
 
@@ -799,7 +800,7 @@ find_list_ptr(THING *l, void *ptr)
 }
 
 int
-list_size(THING *l)
+list_size(const THING *l)
 {
     int count;
     
@@ -812,7 +813,7 @@ list_size(THING *l)
 /******************************************************************************/
 
 int
-rs_write_stats(FILE *savef, struct stats *s)
+rs_write_stats(FILE *savef, const struct stats *s)
 {
     if (write_error)
         return(WRITESTAT);
@@ -848,7 +849,8 @@ rs_read_stats(FILE *inf, struct stats *s)
 }
 
 int
-rs_write_stone_index(FILE *savef, STONE master[], int max, const char *str)
+rs_write_stone_index(FILE *savef, const STONE master[],
+                     int max, const char *str)
 {
     int i;
 
@@ -1024,7 +1026,7 @@ rs_read_sticks(FILE *inf)
 }
 
 int
-rs_write_daemons(FILE *savef, struct delayed_action *d_list, int count)
+rs_write_daemons(FILE *savef, const struct delayed_action *d_list, int count)
 {
     int i = 0;
     int func = 0;
@@ -1129,7 +1131,7 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
 }       
         
 int
-rs_write_obj_info(FILE *savef, struct obj_info *i, int count)
+rs_write_obj_info(FILE *savef, const struct obj_info *i, int count)
 {
     int n;
     
@@ -1180,7 +1182,7 @@ rs_read_obj_info(FILE *inf, struct obj_info *mi, int count)
 }
 
 int
-rs_write_room(FILE *savef, struct room *r)
+rs_write_room(FILE *savef, const struct room *r)
 {
     if (write_error)
         return(WRITESTAT);
@@ -1236,7 +1238,7 @@ rs_read_room(FILE *inf, struct room *r)
 }
 
 int
-rs_write_rooms(FILE *savef, struct room r[], int count)
+rs_write_rooms(FILE *savef, const struct room r[], int count)
 {
     int n = 0;
 
@@ -1271,7 +1273,7 @@ rs_read_rooms(FILE *inf, struct room *r, int count)
 }
 
 int
-rs_write_room_reference(FILE *savef, struct room *rp)
+rs_write_room_reference(FILE *savef, const struct room *rp)
 {
     int i, room = -1;
     
@@ -1303,7 +1305,7 @@ rs_read_room_reference(FILE *inf, struct room **rp)
 }
 
 int
-rs_write_monsters(FILE *savef, struct monster *m, int count)
+rs_write_monsters(FILE *savef, const struct monster *m, int count)
 {
     int n;
     
@@ -1341,7 +1343,7 @@ rs_read_monsters(FILE *inf, struct monster *m, int count)
 }
 
 int
-rs_write_object(FILE *savef, THING *o)
+rs_write_object(FILE *savef, const THING *o)
 {
     if (write_error)
         return(WRITESTAT);
@@ -1390,7 +1392,7 @@ rs_read_object(FILE *inf, THING *o)
 }
 
 int
-rs_write_object_list(FILE *savef, THING *l)
+rs_write_object_list(FILE *savef, const THING *l)
 {
     if (write_error)
         return(WRITESTAT);
@@ -1444,7 +1446,7 @@ rs_read_object_list(FILE *inf, THING **list)
 }
 
 int
-rs_write_object_reference(FILE *savef, THING *list, THING *item)
+rs_write_object_reference(FILE *savef, const THING *list, const THING *item)
 {
     int i;
     
@@ -1526,7 +1528,7 @@ find_object_coord(THING *objlist, coord *c)
 }
 
 int
-rs_write_thing(FILE *savef, THING *t)
+rs_write_thing(FILE *savef, const THING *t)
 {
     int i = -1;
     
@@ -1710,7 +1712,7 @@ rs_fix_thing(THING *t)
 }
 
 int
-rs_write_thing_list(FILE *savef, THING *l)
+rs_write_thing_list(FILE *savef, const THING *l)
 {
     int cnt = 0;
     
@@ -1782,7 +1784,7 @@ rs_fix_thing_list(THING *list)
 }
 
 int
-rs_write_thing_reference(FILE *savef, THING *list, THING *item)
+rs_write_thing_reference(FILE *savef, const THING *list, const THING *item)
 {
     int i;
 
@@ -1820,7 +1822,7 @@ rs_read_thing_reference(FILE *inf, THING *list, THING **item)
 }
 
 int 
-rs_write_places(FILE *savef, PLACE *places, int count)
+rs_write_places(FILE *savef, const PLACE *places, int count)
 {
     int i = 0;
     
