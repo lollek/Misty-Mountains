@@ -18,18 +18,14 @@
 #include "potions.h"
 #include "status_effects.h"
 #include "scrolls.h"
+#include "command_sub.h"
 
 /* Local functions */
 static bool do_command(char ch);
 static bool do_wizard_command(char ch);
-static bool pick_up_item_from_ground();
+
 static void bad_command(int ch);      /* Tell player she's pressed wrong keys */
 static void search();                /* Find traps, hidden doors and passages */
-static void print_help();                 /* Give command help                */
-static void identify_a_character();       /* Identify monster and items       */
-static void go_down_a_level();            /* Go down a dungeon level          */
-static void go_up_a_level();              /* Go up a dungeon_level            */
-static bool levit_check();                /* Check to see if she's levitating */
 static void give_item_nickname();         /* Call an item something           */
 static bool print_currently_wearing(char thing); /* Print weapon / armor info */
 static bool fight_monster(bool fight_to_death); /* Attack and fight something */
@@ -186,10 +182,10 @@ do_command(char ch)
     case KEY_ESCAPE: door_stop = again = false; count = 0; return false;
     case '.': return true;
     case ',': return pick_up_item_from_ground();
-    case '/': identify_a_character(); return false;
-    case '>': go_down_a_level(); return false;
-    case '<': go_up_a_level(); return false;
-    case '?': print_help(); return false;
+    case '/': return identify_a_character();
+    case '>': return change_dungeon_level(DOWN);
+    case '<': return change_dungeon_level(UP);
+    case '?': return print_help();
     case '!': msg("Shell has been removed, use ^Z instead"); return false;
     case '@': status(true); return false;
     case '^': return identify_trap();
@@ -313,27 +309,6 @@ do_wizard_command(char ch)
   return false;
 }
 
-static bool
-pick_up_item_from_ground()
-{
-  THING *obj = NULL;
-  for (obj = lvl_obj; obj != NULL; obj = next(obj))
-    if (obj->o_pos.y == hero.y && obj->o_pos.x == hero.x)
-    {
-      if (!levit_check())
-        pick_up((char)obj->o_type);
-      return true;
-    }
-
-  if (!terse)
-    addmsg("there is ");
-  addmsg("nothing here");
-  if (!terse)
-    addmsg(" to pick up");
-  endmsg();
-  return false;
-}
-
 static void
 bad_command(int ch)
 {
@@ -401,235 +376,6 @@ search()
     count = false;
     running = false;
   }
-}
-
-static void
-print_help()
-{
-  struct h_list helpstr[] = {
-    {'?',	"	prints help",				true},
-    {'/',	"	identify object",			true},
-    {'h',	"	left",					true},
-    {'j',	"	down",					true},
-    {'k',	"	up",					true},
-    {'l',	"	right",					true},
-    {'y',	"	up & left",				true},
-    {'u',	"	up & right",				true},
-    {'b',	"	down & left",				true},
-    {'n',	"	down & right",				true},
-    {'H',	"	run left",				false},
-    {'J',	"	run down",				false},
-    {'K',	"	run up",				false},
-    {'L',	"	run right",				false},
-    {'Y',	"	run up & left",				false},
-    {'U',	"	run up & right",			false},
-    {'B',	"	run down & left",			false},
-    {'N',	"	run down & right",			false},
-    {CTRL('H'),	"	run left until adjacent",		false},
-    {CTRL('J'),	"	run down until adjacent",		false},
-    {CTRL('K'),	"	run up until adjacent",			false},
-    {CTRL('L'),	"	run right until adjacent",		false},
-    {CTRL('Y'),	"	run up & left until adjacent",		false},
-    {CTRL('U'),	"	run up & right until adjacent",		false},
-    {CTRL('B'),	"	run down & left until adjacent",	false},
-    {CTRL('N'),	"	run down & right until adjacent",	false},
-    {'\0',	"	<SHIFT><dir>: run that way",		true},
-    {'\0',	"	<CTRL><dir>: run till adjacent",	true},
-    {'f',	"<dir>	fight till death or near death",	true},
-    {'t',	"<dir>	throw something",			true},
-    {'m',	"<dir>	move onto without picking up",		true},
-    {'z',	"<dir>	zap a wand in a direction",		true},
-    {'^',	"<dir>	identify trap type",			true},
-    {'s',	"	search for trap/secret door",		true},
-    {'>',	"	go down a staircase",			true},
-    {'<',	"	go up a staircase",			true},
-    {'.',	"	rest for a turn",			true},
-    {',',	"	pick something up",			true},
-    {'i',	"	inventory",				true},
-    {'I',	"	inventory single item",			true},
-    {'q',	"	quaff potion",				true},
-    {'r',	"	read scroll",				true},
-    {'e',	"	eat food",				true},
-    {'w',	"	wield a weapon",			true},
-    {'W',	"	wear armor",				true},
-    {'T',	"	take armor off",			true},
-    {'P',	"	put on ring",				true},
-    {'R',	"	remove ring",				true},
-    {'d',	"	drop object",				true},
-    {'c',	"	call object",				true},
-    {'a',	"	repeat last command",			true},
-    {')',	"	print current weapon",			true},
-    {']',	"	print current armor",			true},
-    {'=',	"	print current rings",			true},
-    {'@',	"	print current stats",			true},
-    {'D',	"	recall what's been discovered",		true},
-    {'o',	"	examine/set options",			true},
-    {CTRL('R'),	"	redraw screen",				true},
-    {CTRL('P'),	"	repeat last message",			true},
-    {KEY_ESCAPE,	"	cancel command",			true},
-    {'S',	"	save game",				true},
-    {'Q',	"	quit",					true},
-    {'!',	"	shell escape",				true},
-    {'F',	"<dir>	fight till either of you dies",		true},
-    { 0 ,		NULL,					false}
-  };
-  struct h_list *strp;
-  char helpch;
-  int numprint;
-  int cnt;
-
-  msg("character you want help for (* for all): ");
-  helpch = readchar();
-  mpos = 0;
-
-  /* If its not a *, print the right help string
-   * or an error if he typed a funny character. */
-  if (helpch != '*')
-  {
-    move(0, 0);
-    for (strp = helpstr; strp->h_desc != NULL; strp++)
-      if (strp->h_ch == helpch)
-      {
-        msg("%s)%s", unctrl(strp->h_ch), strp->h_desc);
-        return;
-      }
-    msg("unknown character '%s'", unctrl(helpch));
-    return;
-  }
-
-  /* Here we print help for everything.
-   * Then wait before we return to command mode */
-
-  numprint = 0;
-  for (strp = helpstr; strp->h_desc != NULL; strp++)
-    if (strp->h_print)
-      numprint++;
-  if (numprint & 01)		/* round odd numbers up */
-    numprint++;
-  numprint /= 2;
-  if (numprint > LINES - 1)
-    numprint = LINES - 1;
-
-  wclear(hw);
-  cnt = 0;
-  for (strp = helpstr; strp->h_desc != NULL; strp++)
-    if (strp->h_print)
-    {
-      wmove(hw, cnt % numprint, cnt >= numprint ? COLS / 2 : 0);
-      if (strp->h_ch)
-        waddstr(hw, unctrl(strp->h_ch));
-      waddstr(hw, strp->h_desc);
-      if (++cnt >= numprint * 2)
-        break;
-    }
-  wmove(hw, LINES - 1, 0);
-  waddstr(hw, "--Press space to continue--");
-  wrefresh(hw);
-  wait_for(KEY_SPACE);
-  clearok(stdscr, true);
-
-  msg("");
-  touchwin(stdscr);
-  wrefresh(stdscr);
-}
-
-static void
-identify_a_character()
-{
-  int ch;
-  char *str;
-  struct h_list ident_list[] = {
-    {VWALL,	"wall of a room",	false},
-    {HWALL,	"wall of a room",	false},
-    {GOLD,	"gold",			false},
-    {STAIRS,	"a staircase",		false},
-    {DOOR,	"door",			false},
-    {FLOOR,	"room floor",		false},
-    {PLAYER,	"you",			false},
-    {PASSAGE,	"passage",		false},
-    {TRAP,	"trap",			false},
-    {POTION,	"potion",		false},
-    {SCROLL,	"scroll",		false},
-    {FOOD,	"food",			false},
-    {WEAPON,	"weapon",		false},
-    {SHADOW,	"solid rock",		false},
-    {ARMOR,	"armor",		false},
-    {AMULET,	"the Amulet of Yendor",	false},
-    {RING,	"ring",			false},
-    {STICK,	"wand or staff",	false},
-    {'\0'}
-  };
-
-  msg("what do you want identified? ");
-  ch = readchar();
-  mpos = 0;
-  if (ch == KEY_ESCAPE)
-  {
-    msg("");
-    return;
-  }
-  if (islower(ch))
-    ch = toupper(ch);
-  if (isupper(ch))
-    str = monsters[ch-'A'].m_name;
-  else
-  {
-    struct h_list *hp;
-    str = "unknown character";
-    for (hp = ident_list; hp->h_ch != '\0'; hp++)
-      if (hp->h_ch == ch)
-      {
-        str = hp->h_desc;
-        break;
-      }
-  }
-  msg("'%s': %s", unctrl(ch), str);
-}
-
-static void
-go_down_a_level()
-{
-  if (levit_check())
-    return;
-  if (chat(hero.y, hero.x) != STAIRS)
-    msg("I see no way down");
-  else
-  {
-    level++;
-    seenstairs = false;
-    new_level();
-  }
-}
-
-static void
-go_up_a_level()
-{
-  if (levit_check())
-    return;
-  if (chat(hero.y, hero.x) == STAIRS)
-    if (amulet)
-    {
-      level--;
-      if (level == 0)
-        total_winner();
-      new_level();
-      msg("you feel a wrenching sensation in your gut");
-    }
-    else
-      msg("your way is magically blocked");
-  else
-    msg("I see no way up");
-}
-
-static bool
-levit_check()
-{
-  if (is_levitating(&player))
-  {
-    msg("You can't. You're floating off the ground!");
-    return true;
-  }
-  return false;
 }
 
 static void
