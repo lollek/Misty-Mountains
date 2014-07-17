@@ -312,7 +312,7 @@ status(bool stat_msg)
 void
 wait_for(int ch)
 {
-    register char c;
+    char c;
 
     if (ch == '\n')
         while ((c = readchar()) != '\n' && c != '\r')

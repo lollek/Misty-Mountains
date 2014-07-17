@@ -20,7 +20,7 @@
 void
 doctor()
 {
-    register int lv, ohp;
+    int lv, ohp;
 
     lv = pstats.s_lvl;
     ohp = pstats.s_hpt;
@@ -83,7 +83,7 @@ rollwand()
 void
 stomach()
 {
-    register int oldfood;
+    int oldfood;
     int orig_hungry = hungry_state;
 
     if (food_left <= 0)
@@ -145,8 +145,8 @@ stomach()
 void
 visuals()
 {
-    register THING *tp;
-    register bool seemonst;
+    THING *tp;
+    bool seemonst;
 
     if (!after || (running && jump))
 	return;

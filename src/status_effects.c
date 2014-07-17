@@ -209,7 +209,7 @@ become_tripping(bool permanent)
 void
 remove_tripping()
 {
-  register THING *tp;
+  THING *tp;
 
   if (!is_hallucinating(&player))
     return;

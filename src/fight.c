@@ -67,9 +67,9 @@ static int add_dam[] = {
 int
 fight(coord *mp, THING *weap, bool thrown)
 {
-    register THING *tp = moat(mp->y, mp->x);
-    register bool did_hit = true;
-    register char *mname, ch;
+    THING *tp = moat(mp->y, mp->x);
+    bool did_hit = true;
+    char *mname, ch;
 
     /* Find the monster we want to fight */
     if (wizard && tp == NULL)
@@ -138,8 +138,8 @@ fight(coord *mp, THING *weap, bool thrown)
 int
 attack(THING *mp)
 {
-    register char *mname;
-    register int oldhp;
+    char *mname;
+    int oldhp;
 
     /*
      * Since this is an attack, stop running and any healing that was
@@ -236,7 +236,7 @@ attack(THING *mp)
 		     */
 		    if (rnd(100) < (mp->t_type == 'W' ? 15 : 30))
 		    {
-			register int fewer;
+			int fewer;
 
 			if (mp->t_type == 'W')
 			{
@@ -274,7 +274,7 @@ attack(THING *mp)
 		    /*
 		     * Leperachaun steals some gold
 		     */
-		    register int lastpurse;
+		    int lastpurse;
 
 		    lastpurse = purse;
 		    purse -= GOLDCALC;
@@ -289,8 +289,8 @@ attack(THING *mp)
 		}
 		when 'N':
 		{
-		    register THING *obj, *steal;
-		    register int nobj;
+		    THING *obj, *steal;
+		    int nobj;
 
 		    /*
 		     * Nymph's steal a magic item, look through the pack
@@ -389,13 +389,13 @@ swing(int at_lvl, int op_arm, int wplus)
 bool
 roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 {
-    register struct stats *att, *def;
-    register char *cp;
-    register int ndice, nsides, def_arm;
-    register bool did_hit = false;
-    register int hplus;
-    register int dplus;
-    register int damage;
+    struct stats *att, *def;
+    char *cp;
+    int ndice, nsides, def_arm;
+    bool did_hit = false;
+    int hplus;
+    int dplus;
+    int damage;
 
     att = &thatt->t_stats;
     def = &thdef->t_stats;
@@ -593,7 +593,7 @@ bounce(THING *weap, const char *mname, bool noend)
 void
 remove_mon(coord *mp, THING *tp, bool waskill)
 {
-    register THING *obj, *nexti;
+    THING *obj, *nexti;
 
     for (obj = tp->t_pack; obj != NULL; obj = nexti)
     {

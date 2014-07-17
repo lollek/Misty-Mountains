@@ -190,7 +190,7 @@ init_graphics()
 void
 init_player()
 {
-    register THING *obj;
+    THING *obj;
 
     pstats = max_stats;
     food_left = HUNGERTIME;
@@ -406,7 +406,7 @@ static bool used[MAX3(NCOLORS, NSTONES, NWOOD)];
 void
 init_colors()
 {
-    register size_t i, j;
+    size_t i, j;
 
     for (i = 0; i < NCOLORS; i++)
 	used[i] = false;
@@ -429,9 +429,9 @@ init_colors()
 void
 init_names()
 {
-    register int nsyl;
-    register char *cp, *sp;
-    register int i, nwords;
+    int nsyl;
+    char *cp, *sp;
+    int i, nwords;
     char tmpbuf[MAXSTR*2];
 
     for (i = 0; i < MAXSCROLLS; i++)
@@ -464,7 +464,7 @@ init_names()
 void
 init_stones()
 {
-    register size_t i, j;
+    size_t i, j;
 
     for (i = 0; i < NSTONES; i++)
 	used[i] = false;
@@ -486,8 +486,8 @@ init_stones()
 void
 init_materials()
 {
-    register size_t i, j;
-    register char *str;
+    size_t i, j;
+    char *str;
     static bool metused[NMETAL];
 
     for (i = 0; i < NWOOD; i++)
@@ -571,7 +571,7 @@ init_probs()
 void
 badcheck(const char *name, struct obj_info *info, int bound)
 {
-    register struct obj_info *end;
+    struct obj_info *end;
 
     if (info[bound - 1].oi_prob == 100)
 	return;
