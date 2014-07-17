@@ -20,10 +20,6 @@
 #include "scrolls.h"
 
 static int pick_one(struct obj_info *info, int nitems);
-static void print_disc(char type);
-static void set_order(int *order, int numthings);
-static char add_line(char *fmt, char *arg);
-static void end_line();
 static char *nothing(char type);
 static void nameit(THING *obj, const char *type, const char *which,
                    struct obj_info *op, char *(*prfunc)(THING *));
@@ -320,217 +316,64 @@ pick_one(struct obj_info *info, int nitems)
     return (int)(info - start);
 }
 
+/** discovered_by_type
+ * list what the player has discovered of this type */
+void
+discovered_by_type(char type, struct obj_info *info, int max_items)
+{
+  int i;
+  int items_found = 0;
+  WINDOW *printscr = dupwin(stdscr);
+  THING printable_object;
+  coord orig_pos;
+
+  getyx(stdscr, orig_pos.y, orig_pos.x);
+
+  printable_object.o_type = type;
+  printable_object.o_flags = 0;
+  printable_object.o_count = 1;
+
+  for (i = 0; i < max_items; ++i)
+    if (info[i].oi_know || info[i].oi_guess)
+    {
+      printable_object.o_which = i;
+      mvwprintw(printscr, ++items_found, 1,
+                "%s", inv_name(&printable_object, false));
+    }
+  if (items_found == 0)
+    mvwprintw(printscr, 1, 1, "%s", nothing(type));
+
+  move(orig_pos.y, orig_pos.x);
+  wrefresh(printscr);
+  delwin(printscr);
+}
+
 /** discovered:
  * list what the player has discovered in this game of a certain type */
-/* TODO: Try to remove these */
-static int line_cnt = 0;
-static bool newpage = false;
-static char *lastfmt;
-static char *lastarg;
-
 void
 discovered()
 {
-    char ch;
-    bool disc_list;
-
-    do {
-	disc_list = false;
-	if (!terse)
-	    addmsg("for ");
-	addmsg("what type");
-	if (!terse)
-	    addmsg(" of object do you want a list");
-	msg("? (* for all)");
-	ch = readchar();
-	switch (ch)
-	{
-	    case KEY_ESCAPE:
-		msg("");
-		return;
-	    case POTION:
-	    case SCROLL:
-	    case RING:
-	    case STICK:
-	    case '*':
-		disc_list = true;
-		break;
-	    default:
-		if (terse)
-		    msg("Not a type");
-		else
-		    msg("Please type one of %c%c%c%c (KEY_ESCAPE to quit)", POTION, SCROLL, RING, STICK);
-	}
-    } while (!disc_list);
-    if (ch == '*')
+  msg((terse
+      ? "what type? (%c%c%c%c) "
+      : "for what type of objects do you want a list? (%c%c%c%c) "),
+      POTION, SCROLL, RING, STICK);
+  while (true)
+  {
+    int ch = readchar();
+    touchwin(stdscr);
+    refresh();
+    switch (ch)
     {
-	print_disc(POTION);
-	add_line("", NULL);
-	print_disc(SCROLL);
-	add_line("", NULL);
-	print_disc(RING);
-	add_line("", NULL);
-	print_disc(STICK);
-	end_line();
+      case POTION: discovered_by_type(ch, pot_info, NPOTIONS); break;
+      case SCROLL: discovered_by_type(ch, scr_info, MAXSCROLLS); break;
+      case RING: discovered_by_type(ch, ring_info, MAXRINGS); break;
+      case STICK: discovered_by_type(ch, ws_info, MAXSTICKS); break;
+      default: msg(""); return;
     }
-    else
-    {
-	print_disc(ch);
-	end_line();
-    }
-}
+  }
 
-/** print_disc:
- * Print what we've discovered of type 'type' */
-#define MAX4(a,b,c,d)	(a > b ? (a > c ? (a > d ? a : d) : (c > d ? c : d)) : (b > c ? (b > d ? b : d) : (c > d ? c : d)))
-static void
-print_disc(char type)
-{
-    struct obj_info *info = NULL;
-    int i, maxnum = 0, num_found;
-    static THING obj;
-    static int order[MAX4((unsigned)MAXSCROLLS, (unsigned)NPOTIONS,
-                          (unsigned)MAXRINGS,   (unsigned)MAXSTICKS)];
-
-    switch (type)
-    {
-	case SCROLL:
-	    maxnum = MAXSCROLLS;
-	    info = scr_info;
-	    break;
-	case POTION:
-	    maxnum = NPOTIONS;
-	    info = pot_info;
-	    break;
-	case RING:
-	    maxnum = MAXRINGS;
-	    info = ring_info;
-	    break;
-	case STICK:
-	    maxnum = MAXSTICKS;
-	    info = ws_info;
-	    break;
-    }
-    set_order(order, maxnum);
-    obj.o_count = 1;
-    obj.o_flags = 0;
-    num_found = 0;
-    for (i = 0; i < maxnum; i++)
-	if (info[order[i]].oi_know || info[order[i]].oi_guess)
-	{
-	    obj.o_type = type;
-	    obj.o_which = order[i];
-	    add_line("%s", inv_name(&obj, false));
-	    num_found++;
-	}
-    if (num_found == 0)
-	add_line(nothing(type), NULL);
-}
-
-/** set_order:
- * Set up order for list */
-static void
-set_order(int *order, int numthings)
-{
-    int i, r, t;
-
-    for (i = 0; i< numthings; i++)
-	order[i] = i;
-
-    for (i = numthings; i > 0; i--)
-    {
-	r = rnd(i);
-	t = order[i - 1];
-	order[i - 1] = order[r];
-	order[r] = t;
-    }
-}
-
-/** add_line:
- * Add a line to the list of discoveries */
-static char
-add_line(char *fmt, char *arg)
-{
-    WINDOW *tw, *sw;
-    int x, y;
-    char *prompt = "--Press space to continue--";
-    static int maxlen = -1;
-
-    if (line_cnt == 0)
-	wclear(hw);
-    if (maxlen < 0)
-	maxlen = (int) strlen(prompt);
-    if (line_cnt >= LINES - 1 || fmt == NULL)
-    {
-	if (fmt == NULL && !newpage)
-	{
-	    msg("");
-	    refresh();
-	    tw = newwin(line_cnt + 1, maxlen + 2, 0, COLS - maxlen - 3);
-	    sw = subwin(tw, line_cnt + 1, maxlen + 1, 0, COLS - maxlen - 2);
-	    for (y = 0; y <= line_cnt; y++)
-	    {
-		wmove(sw, y, 0);
-		for (x = 0; x <= maxlen; x++)
-		    waddcch(sw, mvwinch(hw, y, x));
-	    }
-	    wmove(tw, line_cnt, 1);
-	    waddstr(tw, prompt);
-
-	    /* if there are lines below, use 'em */
-	    if (LINES > NUMLINES)
-	    {
-		if (NUMLINES + line_cnt > LINES)
-		    mvwin(tw, LINES - (line_cnt + 1), COLS - maxlen - 3);
-		else
-		    mvwin(tw, NUMLINES, 0);
-	    }
-	    touchwin(tw);
-	    wrefresh(tw);
-	    wait_for(KEY_SPACE);
-	    if (md_hasclreol())
-	    {
-		werase(tw);
-		leaveok(tw, true);
-		wrefresh(tw);
-	    }
-	    delwin(tw);
-	    touchwin(stdscr);
-	}
-	else
-	{
-	    wmove(hw, LINES - 1, 0);
-	    waddstr(hw, prompt);
-	    wrefresh(hw);
-	    wait_for(KEY_SPACE);
-	    clearok(curscr, true);
-	    wclear(hw);
-	    touchwin(stdscr);
-	}
-	newpage = true;
-	line_cnt = 0;
-	maxlen = (int) strlen(prompt);
-    }
-
-    if (fmt != NULL && !(line_cnt == 0 && *fmt == '\0'))
-    {
-	mvwprintw(hw, line_cnt++, 0, fmt, arg);
-	getyx(hw, y, x);
-	if (maxlen < x)
-	    maxlen = x;
-	lastfmt = fmt;
-	lastarg = arg;
-    }
-    return ~KEY_ESCAPE;
-}
-
-/** end_line:
- * End the list of lines */
-static void
-end_line()
-{
-    line_cnt = 0;
-    newpage = false;
+  touchwin(stdscr);
+  msg("");
 }
 
 /** nothing:
