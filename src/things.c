@@ -19,6 +19,7 @@
 #include "status_effects.h"
 #include "scrolls.h"
 
+static bool dropcheck(THING *obj);
 static int pick_one(struct obj_info *info, int nitems);
 static void nameit(THING *obj, const char *type, const char *which,
                    struct obj_info *op, char *(*prfunc)(THING *));
@@ -173,35 +174,36 @@ drop()
 }
 
 /** dropcheck:
- * Do special checks for dropping or unweilding|unwearing|unringing */
-bool
+ * Check if we can remove it before dropping */
+static bool
 dropcheck(THING *obj)
 {
     if (obj == NULL)
 	return true;
-    if (obj->o_flags & ISCURSED)
-    {
-	msg("you can't.  It appears to be cursed");
-	return false;
-    }
     if (obj == cur_weapon)
-	cur_weapon = NULL;
-    else if (obj == cur_armor)
-	take_off();
-    else if (obj == cur_ring[LEFT] || obj == cur_ring[RIGHT])
     {
-	cur_ring[obj == cur_ring[LEFT] ? LEFT : RIGHT] = NULL;
-	switch (obj->o_which)
-	{
-	    case R_ADDSTR:
-		chg_str(-obj->o_arm);
-		break;
-	    case R_SEEINVIS:
-		set_true_seeing(&player, false, false);
-		extinguish(daemon_remove_true_seeing);
-		break;
-	}
+	if (obj->o_flags & ISCURSED)
+	    msg("you can't.  It appears to be cursed");
+	else
+	    cur_weapon = NULL;
+	return cur_weapon == NULL;
     }
+    else if (obj == cur_armor)
+    {
+	take_off();
+	return cur_armor == NULL;
+    }
+    else if (obj == cur_ring[LEFT])
+    {
+	ring_off();
+	return cur_ring[LEFT] == NULL;
+    }
+    else if (obj == cur_ring[RIGHT])
+    {
+	ring_off();
+	return cur_ring[RIGHT] == NULL;
+    }
+
     return true;
 }
 

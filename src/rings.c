@@ -11,6 +11,7 @@
  */
 
 #include "rogue.h"
+#include "status_effects.h"
 
 /*
  * ring_on:
@@ -91,10 +92,9 @@ ring_off()
 
     if (cur_ring[LEFT] == NULL && cur_ring[RIGHT] == NULL)
     {
-	if (terse)
-	    msg("no rings");
-	else
-	    msg("you aren't wearing any rings");
+	msg(terse
+	    ? "no rings"
+	    : "You aren't wearing any rings");
 	return false;
     }
     else if (cur_ring[LEFT] == NULL)
@@ -111,8 +111,22 @@ ring_off()
 	msg("not wearing such a ring");
 	return false;
     }
-    if (dropcheck(obj))
-	msg("was wearing %s(%c)", inv_name(obj, true), obj->o_packch);
+
+    if (obj->o_flags & ISCURSED)
+    {
+	msg("you can't. The ring appears to be cursed");
+	return true;
+    }
+
+    switch (obj->o_which)
+    {
+	case R_ADDSTR: chg_str(-obj->o_arm);
+	when R_SEEINVIS:
+	    set_true_seeing(&player, false, false);
+	    extinguish(daemon_remove_true_seeing);
+    }
+
+    msg("was wearing %s(%c)", inv_name(obj, true), obj->o_packch);
     return true;
 }
 
