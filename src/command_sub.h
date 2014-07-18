@@ -8,6 +8,7 @@
 /* Functions called by command.c */
 
 bool change_dungeon_level(bool up_or_down); /* Go to next/previous level */
+bool give_item_nickname();       /* Call an item something */
 bool identify_a_character();     /* Identify monster or item */
 bool pick_up_item_from_ground(); /* Attempt to pick up something at her feet */
 bool print_help();               /* Give command help */

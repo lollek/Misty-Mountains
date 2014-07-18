@@ -1,7 +1,11 @@
 #include "ctype.h"
+#include "string.h"
+#include "stdlib.h"
 
 #include "rogue.h"
 #include "status_effects.h"
+#include "potions.h"
+#include "scrolls.h"
 
 #include "command_sub.h"
 
@@ -35,6 +39,83 @@ change_dungeon_level(bool up_or_down)
       msg("your way is magically blocked");
   }
 
+  return false;
+}
+
+bool
+give_item_nickname()
+{
+  THING *obj = get_item("call", CALLABLE);
+  char **guess;
+  char *elsewise = NULL;
+  bool already_known = false;
+  char tmpbuf[MAXSTR] = { '\0' };
+
+  if (obj == NULL)
+    return false;
+
+  switch (obj->o_type)
+  {
+    struct obj_info *op = NULL;
+
+    case FOOD: msg("Don't play with your food!"); return false;
+
+    case RING:
+      op = &ring_info[obj->o_which];
+      already_known = op->oi_know;
+      guess = &op->oi_guess;
+      elsewise = *guess ? *guess : r_stones[obj->o_which];
+
+    when POTION:
+      op = &pot_info[obj->o_which];
+      already_known = op->oi_know;
+      guess = &op->oi_guess;
+      elsewise = *guess ? *guess : p_colors[obj->o_which];
+
+    when SCROLL:
+      op = &scr_info[obj->o_which];
+      already_known = op->oi_know;
+      guess = &op->oi_guess;
+      elsewise = *guess ? *guess : s_names[obj->o_which];
+
+    when STICK:
+      op = &ws_info[obj->o_which];
+      already_known = op->oi_know;
+      guess = &op->oi_guess;
+      elsewise = *guess ? *guess : ws_made[obj->o_which];
+
+    otherwise:
+      guess = &obj->o_label;
+      elsewise = obj->o_label;
+  }
+
+  if (already_known)
+  {
+    msg("that has already been identified");
+    return false;
+  }
+
+  if (elsewise != NULL && elsewise == *guess)
+    msg("Was called \"%s\"", elsewise);
+
+  msg(terse
+      ? "call it? "
+      : "What do you want to call it? ");
+
+  if (get_str(tmpbuf, stdscr) == NORMAL)
+  {
+    if (*guess != NULL) {
+      free(*guess);
+      *guess = NULL;
+    }
+    if (strlen(tmpbuf) > 0)
+    {
+      *guess = malloc(strlen(tmpbuf) + 1);
+      strcpy(*guess, tmpbuf);
+    }
+  }
+
+  msg("");
   return false;
 }
 

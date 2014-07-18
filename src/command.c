@@ -26,7 +26,6 @@ static bool do_wizard_command(char ch);
 
 static void bad_command(int ch);      /* Tell player she's pressed wrong keys */
 static void search();                /* Find traps, hidden doors and passages */
-static void give_item_nickname();         /* Call an item something           */
 static bool print_currently_wearing(char thing); /* Print weapon / armor info */
 static bool fight_monster(bool fight_to_death); /* Attack and fight something */
 static bool toggle_wizard();              /* Toggle wizard-mode on or off     */
@@ -199,7 +198,7 @@ do_command(char ch)
     case 'y': case 'u': case 'b': case 'n':
       return do_move(ch);
     case 'a': return repeat_last_command();
-    case 'c': give_item_nickname(); return false;
+    case 'c': return give_item_nickname();
     case 'd': return drop();
     case 'e': eat(); return true;
     case 'f': return fight_monster(false);
@@ -375,81 +374,6 @@ search()
     look(false);
     count = false;
     running = false;
-  }
-}
-
-static void
-give_item_nickname()
-{
-  THING *obj = get_item("call", CALLABLE);
-  char **guess;
-  char *elsewise = NULL;
-  bool already_known = false;
-  char tmpbuf[MAXSTR] = { '\0' };
-
-  /* Make certain that it is somethings that we want to wear */
-  if (obj == NULL)
-    return;
-
-  switch (obj->o_type)
-  {
-    struct obj_info *op = NULL;
-
-    case FOOD: msg("you can't call that anything"); return;
-
-    case RING:
-      op = &ring_info[obj->o_which];
-      already_known = op->oi_know;
-      guess = &op->oi_guess;
-      elsewise = *guess ? *guess : r_stones[obj->o_which];
-
-    when POTION:
-      op = &pot_info[obj->o_which];
-      already_known = op->oi_know;
-      guess = &op->oi_guess;
-      elsewise = *guess ? *guess : p_colors[obj->o_which];
-
-    when SCROLL:
-      op = &scr_info[obj->o_which];
-      already_known = op->oi_know;
-      guess = &op->oi_guess;
-      elsewise = *guess ? *guess : s_names[obj->o_which];
-
-    when STICK:
-      op = &ws_info[obj->o_which];
-      already_known = op->oi_know;
-      guess = &op->oi_guess;
-      elsewise = *guess ? *guess : ws_made[obj->o_which];
-
-    otherwise:
-      guess = &obj->o_label;
-      elsewise = obj->o_label;
-  }
-
-  if (already_known)
-  {
-    msg("that has already been identified");
-    return;
-  }
-
-  if (elsewise != NULL && elsewise == *guess)
-    msg("Was called \"%s\"", elsewise);
-
-  if (!terse)
-    addmsg("What do you want to ");
-  msg("call it? ");
-
-  if (get_str(tmpbuf, stdscr) == NORMAL)
-  {
-    if (*guess != NULL) {
-      free(*guess);
-      *guess = NULL;
-    }
-    if (strlen(tmpbuf) > 0)
-    {
-      *guess = malloc((unsigned int) strlen(tmpbuf) + 1);
-      strcpy(*guess, tmpbuf);
-    }
   }
 }
 
