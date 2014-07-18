@@ -192,6 +192,7 @@ auto_save(int sig)
 void
 save_file(FILE *savef)
 {
+    int error = 0;
     char buf[80];
     mvcur(0, COLS - 1, LINES - 1, 0); 
     putchar('\n');
@@ -200,10 +201,14 @@ save_file(FILE *savef)
     encwrite(version, strlen(version)+1, savef);
     sprintf(buf,"%d x %d\n", LINES, COLS);
     encwrite(buf,80,savef);
-    rs_save_file(savef);
+    error = rs_save_file(savef);
     fflush(savef);
     fclose(savef);
-    exit(0);
+
+    if (error)
+      msg("Error while saving the game");
+    else
+      exit(0);
 }
 
 
@@ -218,9 +223,9 @@ encwrite(const char *start, size_t size, FILE *outf)
     const char *e1 = encstr;
     const char *e2 = statlist;
     char fb = 0;
-    size_t o_size = size;
+    size_t i;
 
-    while(size--)
+    for (i = size; i > 0; --i)
     {
 	if (putc(*start++ ^ *e1 ^ *e2 ^ fb, outf) == EOF)
             break;
@@ -232,7 +237,7 @@ encwrite(const char *start, size_t size, FILE *outf)
 	    e2 = statlist;
     }
 
-    return(o_size - size);
+    return(size - i);
 }
 
 /*
