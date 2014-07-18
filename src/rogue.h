@@ -33,6 +33,7 @@
 
 #undef CTRL
 #define CTRL(c) (c & 037)
+#define UNCTRL(c) (c + 'A' - CTRL('A'))
 
 /* Maximum number of different things */
 #define MAXROOMS	9
@@ -488,9 +489,7 @@ bool	cansee(int y, int x);
 void	chg_str(int amt);
 void	check_level();
 void	conn(int r1, int r2);
-void	command();
 void	create_obj();
-
 void	death(char monst);
 char	death_monst();
 void	dig(int y, int x);
@@ -506,7 +505,7 @@ void	do_motion(THING *obj, int ydelta, int xdelta);
 bool	do_move(char ch);
 void	do_passages();
 void	do_rooms();
-bool	do_run(char ch);
+bool	do_run(char ch, bool cautiously);
 bool	do_zap();
 void	doadd(const char *fmt, va_list args);
 void	door(struct room *rm, coord *cp);

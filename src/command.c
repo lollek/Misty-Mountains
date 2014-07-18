@@ -18,26 +18,10 @@
 #include "potions.h"
 #include "status_effects.h"
 #include "scrolls.h"
-#include "command_sub.h"
 
-/* Local functions */
-static bool do_command(char ch);
-static bool do_wizard_command(char ch);
+#include "command_private.h"
 
-static void bad_command(int ch);      /* Tell player she's pressed wrong keys */
-static void search();                /* Find traps, hidden doors and passages */
-static bool print_currently_wearing(char thing); /* Print weapon / armor info */
-static bool fight_monster(bool fight_to_death); /* Attack and fight something */
-static bool toggle_wizard();              /* Toggle wizard-mode on or off     */
-static bool identify_trap();              /* Give the name of a trap          */
-static bool maybe_quit();                 /* Ask player if she wants to quit  */
-static bool repeat_last_command();
-static bool festina_lente(char ch);       /* Run cautiously                   */
-static bool show_players_inventory();
-
-/* command:
- * Process the user commands */
-void
+int
 command()
 {
   char ch;
@@ -52,7 +36,7 @@ command()
     /* these are illegal things for the player to be, so if any are
      * set, someone's been poking in memeory */
     if (on(player, ISSLOW|ISGREED|ISINVIS|ISREGEN|ISTARGET))
-      exit(1);
+      return 1;
 
     /* TODO: Try to remove this */
     if (has_hit)
@@ -169,9 +153,11 @@ command()
     search();
   else if (ISRING(RIGHT, R_TELEPORT) && rnd(50) == 0)
     teleport();
+
+  return 0; /* Restart from top */
 }
 
-static bool
+bool
 do_command(char ch)
 {
   switch (ch)
@@ -182,15 +168,15 @@ do_command(char ch)
     case '.': return true;
     case ',': return pick_up_item_from_ground();
     case '/': return identify_a_character();
-    case '>': return change_dungeon_level(DOWN);
-    case '<': return change_dungeon_level(UP);
+    case '>': return change_dungeon_level(ch);
+    case '<': return change_dungeon_level(ch);
     case '?': return print_help();
     case '!': msg("Shell has been removed, use ^Z instead"); return false;
     case '@': status(true); return false;
     case '^': return identify_trap();
     case ')': return print_currently_wearing(WEAPON);
     case ']': return print_currently_wearing(ARMOR);
-    case '+': return toggle_wizard();
+    case '+': return toggle_wizard_mode();
     case '=': return print_currently_wearing(RING);
 
     /* Lower case */
@@ -207,7 +193,7 @@ do_command(char ch)
     case 'o': option(); return false;
     case 'q': return quaff();
     case 'r': read_scroll(); return true;
-    case 's': search(); return true;
+    case 's': return search();
     case 't': return get_dir() ? missile(delta.y, delta.x) : false;
     case 'w': return wield();
     case 'z': return get_dir() ? do_zap() : false;
@@ -215,7 +201,7 @@ do_command(char ch)
     /* Upper case */
     case 'H': case 'J': case 'K': case 'L':
     case 'Y': case 'U': case 'B': case 'N':
-      return do_run(tolower(ch));
+      return do_run(ch, false);
     case 'D': discovered(); return false;
     case 'F': return fight_monster(true);
     case 'I': picky_inven(); return false;
@@ -229,7 +215,7 @@ do_command(char ch)
     /* Ctrl case */
     case CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
     case CTRL('Y'): case CTRL('U'): case CTRL('B'): case CTRL('N'):
-      return festina_lente(ch);
+      return do_run(UNCTRL(ch), true);
     case CTRL('P'): msg(huh); return false;
     case CTRL('R'): clearok(curscr, true); wrefresh(curscr); return false;
     case CTRL('Z'): shell(); return false;
@@ -239,13 +225,14 @@ do_command(char ch)
         return do_wizard_command(ch);
       else
       {
-        bad_command(ch);
+        count = 0;
+        unsaved_msg("illegal command '%s'", unctrl(ch));
         return false;
       }
   }
 }
 
-static bool
+bool
 do_wizard_command(char ch)
 {
   after = false;
@@ -303,228 +290,9 @@ do_wizard_command(char ch)
     }
 
     otherwise:
-      bad_command(ch);
+      count = 0;
+      unsaved_msg("illegal command '%s'", unctrl(ch));
   }
   return false;
 }
 
-static void
-bad_command(int ch)
-{
-    count = 0;
-    unsaved_msg("illegal command '%s'", unctrl(ch));
-}
-
-static void
-search()
-{
-  int y, x;
-  int probinc = (is_hallucinating(&player) ? 3:0) + is_blind(&player) ? 2:0;
-  bool found = false;
-
-  for (y = hero.y - 1; y <= hero.y + 1; y++)
-    for (x = hero.x - 1; x <= hero.x + 1; x++)
-    {
-      char *fp = &flat(y, x);
-      char chatyx = chat(y, x);
-
-      /* Real wall/floor/shadow */
-      if (*fp & F_REAL)
-        continue;
-
-      /* Wall */
-      if ((chatyx == VWALL || chatyx == HWALL) &&
-          rnd(5 + probinc) == 0)
-      {
-        chat(y, x) = DOOR;
-        msg("a secret door");
-        found = true;
-        *fp |= F_REAL;
-      }
-
-      /* Floor */
-      if (chatyx == FLOOR && rnd(2 + probinc) == 0)
-      {
-        chat(y, x) = TRAP;
-
-        if (!terse)
-          addmsg("you found ");
-
-        if (is_hallucinating(&player))
-          msg(tr_name[rnd(NTRAPS)]);
-        else {
-          msg(tr_name[*fp & F_TMASK]);
-          *fp |= F_SEEN;
-        }
-
-        found = true;
-        *fp |= F_REAL;
-      }
-
-      /* Shadow */
-      if (chatyx == SHADOW && rnd(3 + probinc) == 0)
-      {
-        chat(y, x) = PASSAGE;
-        found = true;
-        *fp |= F_REAL;
-      }
-    }
-  if (found)
-  {
-    look(false);
-    count = false;
-    running = false;
-  }
-}
-
-static bool
-print_currently_wearing(char thing)
-{
-  bool item_found = false;
-
-  inv_describe = false;
-  if (!terse)
-    addmsg("You are %s ", thing == WEAPON ? "wielding" : "wearing");
-
-  if (thing == RING)
-  {
-    unsigned i;
-    for (i = 0; i < CONCURRENT_RINGS; ++i)
-      if (cur_ring[i]) {
-        addmsg("%c) %s ", cur_ring[i]->o_packch, inv_name(cur_ring[i], true));
-        item_found = true;
-      }
-    if (item_found)
-      endmsg();
-
-  }
-  else
-  {
-    THING *current_thing = thing == WEAPON ? cur_weapon : cur_armor;
-    if (current_thing) {
-      msg("%c) %s", current_thing->o_packch, inv_name(current_thing, true));
-      item_found = true;
-    }
-  }
-
-  if (!item_found)
-    msg("no %s", thing == WEAPON ? "weapon": thing == RING ? "rings":"armor");
-  inv_describe = true;
-
-  return false;
-}
-
-static bool
-fight_monster(bool fight_to_death)
-{
-  THING *mp;
-
-  kamikaze = fight_to_death;
-  if (!get_dir())
-    return false;
-  delta.y += hero.y;
-  delta.x += hero.x;
-
-  mp = moat(delta.y, delta.x);
-  if (mp == NULL || (!see_monst(mp) && !on(player, SEEMONST)))
-  {
-    if (!terse)
-      addmsg("I see ");
-    msg("no monster there");
-    return false;
-  }
-  else if (diag_ok(&hero, &delta))
-  {
-    to_death = true;
-    max_hit = 0;
-    mp->t_flags |= ISTARGET;
-    runch = dir_ch;
-    return do_command(dir_ch);
-  }
-  else
-    return true;
-}
-
-static bool
-toggle_wizard()
-{
-  /* TODO: Add a query here, so you always can become a wiz */
-  if (potential_wizard)
-  {
-    wizard = !wizard;
-    turn_see(!wizard);
-    if (wizard)
-      msg("You are one with the force (seed: #%d)", seed);
-    else
-      msg("not wizard any more");
-  }
-  return false;
-}
-
-static bool
-identify_trap()
-{
-  if (get_dir())
-  {
-    char *fp;
-    delta.y += hero.y;
-    delta.x += hero.x;
-    fp = &flat(delta.y, delta.x);
-    if (!terse)
-      addmsg("You have found ");
-    if (chat(delta.y, delta.x) != TRAP)
-      msg("no trap there");
-    else if (is_hallucinating(&player))
-      msg(tr_name[rnd(NTRAPS)]);
-    else
-    {
-      msg(tr_name[*fp & F_TMASK]);
-      *fp |= F_SEEN;
-    }
-  }
-  return false;
-}
-
-static bool
-maybe_quit()
-{
-  quit(0);
-  return false;
-}
-
-static bool
-repeat_last_command()
-{
-  if (last_comm == '\0')
-  {
-    msg("you haven't typed a command yet");
-    return false;
-  }
-  else
-  {
-    again = true;
-    return do_command(last_comm);
-  }
-}
-
-static bool
-festina_lente(char ch)
-{
-  if (!is_blind(&player))
-  {
-    door_stop = true;
-    firstmove = true;
-  }
-  return do_command(ch + ('A' - CTRL('A')));
-}
-
-static bool
-show_players_inventory()
-{
-  print_inventory(0);
-  msg("--Press any key to continue--");
-  getch();
-  clear_inventory();
-  msg("");
-  return false;
-}

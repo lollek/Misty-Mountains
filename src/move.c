@@ -28,10 +28,15 @@ coord nh;
  */
 
 bool
-do_run(char ch)
+do_run(char ch, bool cautiously)
 {
+    if (cautiously)
+    {
+	door_stop = true;
+	firstmove = true;
+    }
     running = true;
-    runch = ch;
+    runch = tolower(ch);
     return false;
 }
 

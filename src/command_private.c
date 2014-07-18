@@ -7,10 +7,10 @@
 #include "potions.h"
 #include "scrolls.h"
 
-#include "command_sub.h"
+#include "command_private.h"
 
 bool
-change_dungeon_level(bool up_or_down)
+change_dungeon_level(char up_or_down)
 {
   if (is_levitating(&player))
     msg("You can't. You're floating off the ground!");
@@ -18,14 +18,14 @@ change_dungeon_level(bool up_or_down)
   else if (chat(hero.y, hero.x) != STAIRS)
     msg("You're not standing on any stairs");
 
-  else if (up_or_down == DOWN)
+  else if (up_or_down == '>') /* DOWN */
   {
     level++;
     seenstairs = false;
     new_level();
   }
 
-  else if (up_or_down == UP)
+  else if (up_or_down == '<') /* UP */
   {
     if (amulet)
     {
@@ -40,6 +40,37 @@ change_dungeon_level(bool up_or_down)
   }
 
   return false;
+}
+
+bool
+fight_monster(bool fight_to_death)
+{
+  THING *mp;
+
+  kamikaze = fight_to_death;
+  if (!get_dir())
+    return false;
+  delta.y += hero.y;
+  delta.x += hero.x;
+
+  mp = moat(delta.y, delta.x);
+  if (mp == NULL || (!see_monst(mp) && !on(player, SEEMONST)))
+  {
+    msg(terse
+        ? "no monster there"
+        : "I see no monster there");
+    return false;
+  }
+  else if (diag_ok(&hero, &delta))
+  {
+    to_death = true;
+    max_hit = 0;
+    mp->t_flags |= ISTARGET;
+    runch = dir_ch;
+    return do_command(dir_ch);
+  }
+  else
+    return true;
 }
 
 bool
@@ -177,6 +208,37 @@ identify_a_character()
 }
 
 bool
+identify_trap()
+{
+  if (get_dir())
+  {
+    char *fp;
+    delta.y += hero.y;
+    delta.x += hero.x;
+    fp = &flat(delta.y, delta.x);
+    if (!terse)
+      addmsg("You have found ");
+    if (chat(delta.y, delta.x) != TRAP)
+      msg("no trap there");
+    else if (is_hallucinating(&player))
+      msg(tr_name[rnd(NTRAPS)]);
+    else
+    {
+      msg(tr_name[*fp & F_TMASK]);
+      *fp |= F_SEEN;
+    }
+  }
+  return false;
+}
+
+bool
+maybe_quit()
+{
+  quit(0);
+  return false;
+}
+
+bool
 pick_up_item_from_ground()
 {
   const THING *obj = NULL;
@@ -194,6 +256,43 @@ pick_up_item_from_ground()
   msg(terse
       ? "nothing here"
       : "there is nothing here to pick up");
+  return false;
+}
+
+bool
+print_currently_wearing(char thing)
+{
+  bool item_found = false;
+
+  inv_describe = false;
+  if (!terse)
+    addmsg("You are %s ", thing == WEAPON ? "wielding" : "wearing");
+
+  if (thing == RING)
+  {
+    unsigned i;
+    for (i = 0; i < CONCURRENT_RINGS; ++i)
+      if (cur_ring[i]) {
+        addmsg("%c) %s ", cur_ring[i]->o_packch, inv_name(cur_ring[i], true));
+        item_found = true;
+      }
+    if (item_found)
+      endmsg();
+
+  }
+  else
+  {
+    THING *current_thing = thing == WEAPON ? cur_weapon : cur_armor;
+    if (current_thing) {
+      msg("%c) %s", current_thing->o_packch, inv_name(current_thing, true));
+      item_found = true;
+    }
+  }
+
+  if (!item_found)
+    msg("no %s", thing == WEAPON ? "weapon": thing == RING ? "rings":"armor");
+  inv_describe = true;
+
   return false;
 }
 
@@ -325,6 +424,107 @@ print_help()
   msg("");
   touchwin(stdscr);
   wrefresh(stdscr);
+  return false;
+}
+
+bool
+repeat_last_command()
+{
+  if (last_comm != '\0')
+  {
+    again = true;
+    return do_command(last_comm);
+  }
+  return false;
+}
+
+bool
+search()
+{
+  int y, x;
+  int probinc = (is_hallucinating(&player) ? 3:0) + is_blind(&player) ? 2:0;
+  bool found = false;
+
+  for (y = hero.y - 1; y <= hero.y + 1; y++)
+    for (x = hero.x - 1; x <= hero.x + 1; x++)
+    {
+      char *fp = &flat(y, x);
+      char chatyx = chat(y, x);
+
+      /* Real wall/floor/shadow */
+      if (*fp & F_REAL)
+        continue;
+
+      /* Wall */
+      if ((chatyx == VWALL || chatyx == HWALL) &&
+          rnd(5 + probinc) == 0)
+      {
+        chat(y, x) = DOOR;
+        msg("a secret door");
+        found = true;
+        *fp |= F_REAL;
+      }
+
+      /* Floor */
+      if (chatyx == FLOOR && rnd(2 + probinc) == 0)
+      {
+        chat(y, x) = TRAP;
+
+        if (!terse)
+          addmsg("you found ");
+
+        if (is_hallucinating(&player))
+          msg(tr_name[rnd(NTRAPS)]);
+        else {
+          msg(tr_name[*fp & F_TMASK]);
+          *fp |= F_SEEN;
+        }
+
+        found = true;
+        *fp |= F_REAL;
+      }
+
+      /* Shadow */
+      if (chatyx == SHADOW && rnd(3 + probinc) == 0)
+      {
+        chat(y, x) = PASSAGE;
+        found = true;
+        *fp |= F_REAL;
+      }
+    }
+  if (found)
+  {
+    look(false);
+    count = false;
+    running = false;
+  }
+  return true;
+}
+
+bool
+show_players_inventory()
+{
+  print_inventory(0);
+  msg("--Press any key to continue--");
+  getch();
+  clear_inventory();
+  msg("");
+  return false;
+}
+
+bool
+toggle_wizard_mode()
+{
+  /* TODO: Add a query here, so you always can become a wiz */
+  if (potential_wizard)
+  {
+    wizard = !wizard;
+    turn_see(!wizard);
+    if (wizard)
+      msg("You are one with the force (seed: #%d)", seed);
+    else
+      msg("not wizard any more");
+  }
   return false;
 }
 

@@ -16,6 +16,7 @@
 #include <getopt.h>
 
 #include "rogue.h"
+#include "command.h"
 
 enum game_mode_t
 {
@@ -106,8 +107,8 @@ playit()
 
   oldpos = hero;
   oldrp = roomin(&hero);
-  while (true)
-    command();   /* Command execution */
+  while (command() != 1)
+    /* Main Loop */;
   endit(0);
   return 0;
 }
