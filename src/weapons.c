@@ -27,7 +27,7 @@ static struct init_weaps {
 } init_dam[MAXWEAPONS] = {
     { "2x4",	"1x3",	NO_WEAPON,	0,		},	/* Mace */
     { "3x4",	"1x2",	NO_WEAPON,	0,		},	/* Long sword */
-    { "1x1",	"1x1",	NO_WEAPON,	0,		},	/* Bow */
+    { "1x1",	"2x3",	NO_WEAPON,	0,		},	/* Bow */
     { "1x1",	"2x3",	BOW,		ISMANY|ISMISL,	},	/* Arrow */
     { "1x6",	"1x4",	NO_WEAPON,	ISMISL|ISMISL,	},	/* Dagger */
     { "4x4",	"1x2",	NO_WEAPON,	0,		},	/* 2h sword */
@@ -42,6 +42,7 @@ bool
 missile(int ydelta, int xdelta)
 {
   THING *obj = get_item("throw", WEAPON);
+  THING *monster_at_pos;
 
   if (obj == NULL)
     return false;
@@ -61,10 +62,22 @@ missile(int ydelta, int xdelta)
 
   obj = leave_pack(obj, true, false);
   do_motion(obj, ydelta, xdelta);
+  monster_at_pos = moat(obj->o_pos.y, obj->o_pos.x);
 
+  /* Throwing a bow or an arrow without a bow always misses */
+  if (obj->o_type == WEAPON &&
+      (obj->o_which == BOW ||
+       (obj->o_which == ARROW && (cur_weapon == NULL ||
+        cur_weapon->o_which != BOW))))
+  {
+    if (monster_at_pos)
+      bounce(obj, set_mname(monster_at_pos), terse);
+    fall(obj, true);
+    return true;
+  }
   /* AHA! Here it has hit something.  If it is a wall or a door,
    * or if it misses (combat) the monster, put it on the floor */
-  if (moat(obj->o_pos.y, obj->o_pos.x) == NULL ||
+  else if (monster_at_pos == NULL ||
       !hit_monster(obj->o_pos.y, obj->o_pos.x, obj))
     fall(obj, true);
 

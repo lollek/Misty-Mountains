@@ -13,6 +13,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 #include "rogue.h"
 #include "potions.h"
@@ -32,112 +33,112 @@ static void discovered_by_type(char type, struct obj_info *info,
 char *
 inv_name(THING *obj, bool drop)
 {
-    char *pb;
-    struct obj_info *op;
-    char *sp;
-    int which;
+  char *pb = prbuf;
+  int which = obj->o_which;
 
-    pb = prbuf;
-    which = obj->o_which;
-    switch (obj->o_type)
+  switch (obj->o_type)
+  {
+    case POTION:
+      nameit(obj, "potion", p_colors[which], &pot_info[which], nullstr);
+    when RING:
+      nameit(obj, "ring", r_stones[which], &ring_info[which], ring_num);
+    when STICK:
+      nameit(obj, ws_type[which], ws_made[which], &ws_info[which], charge_str);
+
+    when SCROLL:
     {
-        case POTION:
-	    nameit(obj, "potion", p_colors[which], &pot_info[which], nullstr);
-	when RING:
-	    nameit(obj, "ring", r_stones[which], &ring_info[which], ring_num);
-	when STICK:
-	    nameit(obj, ws_type[which], ws_made[which], &ws_info[which], charge_str);
-	when SCROLL:
-	    if (obj->o_count == 1)
-	    {
-		strcpy(pb, "A scroll ");
-		pb = &prbuf[9];
-	    }
-	    else
-	    {
-		sprintf(pb, "%d scrolls ", obj->o_count);
-		pb = &prbuf[strlen(prbuf)];
-	    }
-	    op = &scr_info[which];
-	    if (op->oi_know)
-		sprintf(pb, "of %s", op->oi_name);
-	    else if (op->oi_guess)
-		sprintf(pb, "called %s", op->oi_guess);
-	    else
-		sprintf(pb, "titled '%s'", s_names[which]);
-	when FOOD:
-	    if (which == 1)
-		if (obj->o_count == 1)
-		    sprintf(pb, "A fruit");
-		else
-		    sprintf(pb, "%d fruits", obj->o_count);
-	    else
-		if (obj->o_count == 1)
-		    strcpy(pb, "Some food");
-		else
-		    sprintf(pb, "%d rations of food", obj->o_count);
-	when WEAPON:
-	    sp = weap_info[which].oi_name;
-	    if (obj->o_count > 1)
-		sprintf(pb, "%d ", obj->o_count);
-	    else
-		sprintf(pb, "A%s ", vowelstr(sp));
-	    pb = &prbuf[strlen(prbuf)];
-	    if (obj->o_flags & ISKNOW)
-		sprintf(pb, "%s %s", num(obj->o_hplus,obj->o_dplus,WEAPON), sp);
-	    else
-		sprintf(pb, "%s", sp);
-	    if (obj->o_count > 1)
-		strcat(pb, "s");
-	    if (obj->o_label != NULL)
-	    {
-		pb = &prbuf[strlen(prbuf)];
-		sprintf(pb, " called %s", obj->o_label);
-	    }
-	when ARMOR:
-	    sp = arm_info[which].oi_name;
-	    if (obj->o_flags & ISKNOW)
-	    {
-		sprintf(pb, "%s %s [",
-		    num(a_class[which] - obj->o_arm, 0, ARMOR), sp);
-		if (!terse)
-		    strcat(pb, "protection ");
-		pb = &prbuf[strlen(prbuf)];
-		sprintf(pb, "%d]", 10 - obj->o_arm);
-	    }
-	    else
-		sprintf(pb, "%s", sp);
-	    if (obj->o_label != NULL)
-	    {
-		pb = &prbuf[strlen(prbuf)];
-		sprintf(pb, " called %s", obj->o_label);
-	    }
-	when AMULET:
-	    strcpy(pb, "The Amulet of Yendor");
-	when GOLD:
-	    sprintf(prbuf, "%d Gold pieces", obj->o_goldval);
-	otherwise:
-	    if (wizard)
-		msg("Picked up something funny %s", unctrl(obj->o_type));
-	    sprintf(pb, "Something bizarre %s", unctrl(obj->o_type));
+      struct obj_info *op = &scr_info[which];
+
+      if (obj->o_count == 1)
+        pb += strlen(strcpy(pb, "A scroll "));
+      else
+        pb += sprintf(pb, "%d scrolls ", obj->o_count);
+
+      if (op->oi_know)
+        pb += sprintf(pb, "of %s", op->oi_name);
+      else if (op->oi_guess)
+        pb += sprintf(pb, "called %s", op->oi_guess);
+      else
+        pb += sprintf(pb, "titled '%s'", s_names[which]);
     }
-    if (inv_describe)
+
+    when FOOD:
     {
-	if (obj == cur_armor)
-	    strcat(pb, " (being worn)");
-	if (obj == cur_weapon)
-	    strcat(pb, " (weapon in hand)");
-	if (obj == cur_ring[LEFT])
-	    strcat(pb, " (on left hand)");
-	else if (obj == cur_ring[RIGHT])
-	    strcat(pb, " (on right hand)");
+      const char *food_type = obj->o_which == 1 ? "fruit" : "ration of food";
+
+      if (obj->o_count == 1)
+        pb += sprintf(pb, "A %s", food_type);
+      else
+        pb += sprintf(pb, "%d %ss", obj->o_count, food_type);
     }
-    if (drop && isupper(prbuf[0]))
-	prbuf[0] = (char) tolower(prbuf[0]);
-    else if (!drop && islower(*prbuf))
-	*prbuf = (char) toupper(*prbuf);
-    prbuf[MAXSTR-1] = '\0';
-    return prbuf;
+
+    when WEAPON:
+    {
+      /* TODO: Maybe we can rename NumxNum -> NumdNum everywhere? */
+      const char *sp = weap_info[which].oi_name;
+
+      if (obj->o_count == 1)
+        pb += sprintf(pb, "A%s %s", vowelstr(sp), sp);
+      else
+        pb += sprintf(pb, "%d %ss", obj->o_count, sp);
+
+      if (which != ARROW)
+      {
+        char damage[4] = { '\0' };
+
+        sprintf(damage, "%s", which == BOW ? obj->o_hurldmg : obj->o_damage);
+        damage[1] = 'd';
+        pb += sprintf(pb, " (%s)", damage);
+      }
+
+      if (obj->o_flags & ISKNOW)
+        pb += sprintf(pb, " (%s)", num(obj->o_hplus,obj->o_dplus,WEAPON));
+
+      if (obj->o_label != NULL)
+        pb += sprintf(pb, " called %s", obj->o_label);
+    }
+
+    when ARMOR:
+    {
+      const char *sp = arm_info[which].oi_name;
+
+      pb += sprintf(pb, "A%s %s", vowelstr(sp), sp);
+
+      if (obj->o_flags & ISKNOW)
+      {
+        int bonus_ac = atoi(num(a_class[which] - obj->o_arm, 0, ARMOR) + 1);
+        int base_ac = 10 - obj->o_arm - bonus_ac;
+        pb += sprintf(pb, " [%d,+%d]", base_ac, bonus_ac);
+      }
+
+      if (obj->o_label != NULL)
+        pb += sprintf(pb, " called %s", obj->o_label);
+    }
+
+    when AMULET:
+      pb += strlen(strcpy(pb, "The Amulet of Yendor"));
+    when GOLD:
+      pb += sprintf(pb, "%d Gold pieces", obj->o_goldval);
+    otherwise:
+      msg("You feel a disturbance in the force");
+      pb += sprintf(pb, "Something bizarre %s", unctrl(obj->o_type));
+  }
+
+  if (inv_describe)
+  {
+    if (obj == cur_armor)
+      strcat(pb, " (being worn)");
+    else if (obj == cur_weapon)
+      strcat(pb, " (weapon in hand)");
+    else if (obj == cur_ring[LEFT])
+      strcat(pb, " (on left hand)");
+    else if (obj == cur_ring[RIGHT])
+      strcat(pb, " (on right hand)");
+  }
+
+  prbuf[0] = drop ? tolower(prbuf[0]) : toupper(prbuf[0]);
+  prbuf[MAXSTR-1] = '\0';
+  return prbuf;
 }
 
 /** drop:
