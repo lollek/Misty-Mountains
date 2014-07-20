@@ -11,6 +11,7 @@
  */
 
 #include <string.h>
+#include <unistd.h>
 
 #include "rogue.h"
 
@@ -100,6 +101,7 @@ do_motion(THING *obj, int ydelta, int xdelta)
       /* It hasn't hit anything yet, so display it if it alright. */
       if (cansee(obj->o_pos.y, obj->o_pos.x) && !terse)
       {
+        usleep(10000);
         mvaddcch(obj->o_pos.y, obj->o_pos.x, obj->o_type);
         refresh();
       }
