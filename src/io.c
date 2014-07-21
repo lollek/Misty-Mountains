@@ -37,6 +37,7 @@ colorize(const chtype ch)
     case 'H': return ch | COLOR_PAIR(COLOR_GREEN);
     case 'I': return ch | COLOR_PAIR(COLOR_CYAN);
     case 'K': return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
+    case 'L': return ch | COLOR_PAIR(COLOR_GREEN) | A_BOLD;
     case 'R': return ch | COLOR_PAIR(COLOR_RED);
     case 'S': return ch | COLOR_PAIR(COLOR_GREEN);
 
