@@ -4,7 +4,8 @@ Rogue14 - r2
   Changed from the three inventory types into my own style
   Changed how the 'describe' window looks, similar to the inventory
 
-  More colors:
+  Colors:
+    Colors are now enabled by default
     Walls are now a bit bigger (they might be grey on some terminals?)
     Gold is now yellow
 
