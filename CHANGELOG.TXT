@@ -8,6 +8,7 @@ Rogue14 - r2
     Colors are now enabled by default
     Walls are now a bit bigger (they might be grey on some terminals?)
     Gold is now yellow
+    Kestrels are now yellow
 
   Trap:
     Added "Suddenly you're somewhere else"-message when stepping on teletrap
