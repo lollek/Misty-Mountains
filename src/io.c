@@ -247,7 +247,7 @@ void
 status(bool stat_msg)
 {
     int oy, ox;
-    int temp = cur_armor != NULL ? cur_armor->o_arm : pstats.s_arm;
+    int temp = player_ac();
     const char *state_name[] = { "", "Hungry", "Weak", "Faint" };
     static int hpwidth = 0;
     static int s_hungry = 0;

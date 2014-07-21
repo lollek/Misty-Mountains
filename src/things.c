@@ -28,6 +28,33 @@ static char *nullstr(THING *ignored);
 static void discovered_by_type(char type, struct obj_info *info,
                                int max_items);
 
+static const char *
+type_to_string(int type, int which)
+{
+  switch (type)
+  {
+    case POTION: return "potion";
+    case RING: return "ring";
+    case STICK: return "stick";
+    case SCROLL: return "scroll";
+    case FOOD: return which == 1 ? "fruit" : "ration of food";
+    case WEAPON: return weap_info[which].oi_name;
+    case ARMOR: return arm_info[which].oi_name;
+    default: return "something";
+  }
+}
+
+static int
+add_num_type_to_string(char *ptr, int type, int which, int num)
+{
+  const char *obj_type = type_to_string(type, which);
+
+  if (num == 1)
+    return sprintf(ptr, "A%s %s", vowelstr(obj_type), obj_type);
+  else
+    return sprintf(ptr, "%d %ss", num, obj_type);
+}
+
 /** inv_name:
  * Return the name of something as it would appear in an inventory. */
 char *
@@ -49,50 +76,41 @@ inv_name(THING *obj, bool drop)
     {
       struct obj_info *op = &scr_info[which];
 
-      if (obj->o_count == 1)
-        pb += strlen(strcpy(pb, "A scroll "));
-      else
-        pb += sprintf(pb, "%d scrolls ", obj->o_count);
+      pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
 
       if (op->oi_know)
-        pb += sprintf(pb, "of %s", op->oi_name);
+        pb += sprintf(pb, " of %s", op->oi_name);
       else if (op->oi_guess)
-        pb += sprintf(pb, "called %s", op->oi_guess);
+        pb += sprintf(pb, " called %s", op->oi_guess);
       else
-        pb += sprintf(pb, "titled '%s'", s_names[which]);
+        pb += sprintf(pb, " titled '%s'", s_names[which]);
     }
 
     when FOOD:
-    {
-      const char *food_type = obj->o_which == 1 ? "fruit" : "ration of food";
-
-      if (obj->o_count == 1)
-        pb += sprintf(pb, "A %s", food_type);
-      else
-        pb += sprintf(pb, "%d %ss", obj->o_count, food_type);
-    }
+      pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
 
     when WEAPON:
     {
-      const char *sp = weap_info[which].oi_name;
-
-      if (obj->o_count == 1)
-        pb += sprintf(pb, "A%s %s", vowelstr(sp), sp);
-      else
-        pb += sprintf(pb, "%d %ss", obj->o_count, sp);
+      pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
 
       if (which != ARROW)
       {
         /* TODO: Maybe we can rename NumxNum -> NumdNum everywhere? */
         char damage[4] = { '\0' };
-
         sprintf(damage, "%s", which == BOW ? obj->o_hurldmg : obj->o_damage);
         damage[1] = 'd';
         pb += sprintf(pb, " (%s)", damage);
       }
 
       if (obj->o_flags & ISKNOW)
-        pb += sprintf(pb, " (%s)", num(obj->o_hplus,obj->o_dplus,WEAPON));
+      {
+        pb += sprintf(pb, " (");
+        pb += sprintf(pb, obj->o_hplus < 0 ? "%d," : "+%d,", obj->o_hplus);
+        pb += sprintf(pb, obj->o_dplus < 0 ? "%d)" : "+%d)", obj->o_dplus);
+      }
+
+      if (obj->o_arm != 0)
+        pb += sprintf(pb, obj->o_arm < 0 ? " [%d]" : " [+%d]", obj->o_arm);
 
       if (obj->o_label != NULL)
         pb += sprintf(pb, " called %s", obj->o_label);
@@ -100,11 +118,11 @@ inv_name(THING *obj, bool drop)
 
     when ARMOR:
     {
-      const char *sp = arm_info[which].oi_name;
       int bonus_ac = a_class[which] - obj->o_arm;
       int base_ac = 10 - obj->o_arm - bonus_ac;
 
-      pb += sprintf(pb, "A%s %s [%d]", vowelstr(sp), sp, base_ac);
+      pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
+      pb += sprintf(pb, " [%d]", base_ac);
 
       if (obj->o_flags & ISKNOW)
       {

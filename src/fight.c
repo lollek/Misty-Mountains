@@ -21,6 +21,7 @@
 
 static const char *prname(const char *mname, bool upper);
 static void thunk(THING *weap, const char *mname, bool noend);
+static bool roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl);
 
 char *h_names[] = {		/* strings for hitting */
 	" scored an excellent hit on ",
@@ -369,61 +370,43 @@ set_mname(THING *tp)
     return tbuf;
 }
 
-/*
- * swing:
- *	Returns true if the swing hits
- */
+/** swing:
+ * Returns true if the swing hits */
 int
 swing(int at_lvl, int op_arm, int wplus)
 {
-    int res = rnd(20);
-    int need = (20 - at_lvl) - op_arm;
-
-    return (res + wplus >= need);
+    return rnd(20) + wplus >= (20 - at_lvl) - op_arm;
 }
 
-/*
- * roll_em:
- *	Roll several attacks
- */
-bool
+/** roll_em:
+ * Roll several attacks */
+static bool
 roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 {
-    struct stats *att, *def;
-    char *cp;
-    int ndice, nsides, def_arm;
+    struct stats *att = &thatt->t_stats;
+    struct stats *def = &thdef->t_stats;
+    const char *cp = weap == NULL ? att->s_dmg : weap->o_damage;
+    int hplus = weap == NULL ? 0 : weap->o_hplus;
+    int dplus = weap == NULL ? 0 : weap->o_dplus;
+    bool is_player = thatt == &player;
     bool did_hit = false;
-    int hplus;
-    int dplus;
-    int damage;
+    int def_arm = is_player ? def->s_arm : player_ac();
 
-    att = &thatt->t_stats;
-    def = &thdef->t_stats;
-    if (weap == NULL)
+    if (is_player)
     {
-	cp = att->s_dmg;
-	dplus = 0;
-	hplus = 0;
-    }
-    else
-    {
-	hplus = (weap == NULL ? 0 : weap->o_hplus);
-	dplus = (weap == NULL ? 0 : weap->o_dplus);
-	if (weap == cur_weapon)
-	{
-	    if (ISRING(LEFT, R_ADDDAM))
-		dplus += cur_ring[LEFT]->o_arm;
-	    else if (ISRING(LEFT, R_ADDHIT))
-		hplus += cur_ring[LEFT]->o_arm;
-	    if (ISRING(RIGHT, R_ADDDAM))
-		dplus += cur_ring[RIGHT]->o_arm;
-	    else if (ISRING(RIGHT, R_ADDHIT))
-		hplus += cur_ring[RIGHT]->o_arm;
-	}
-	cp = weap->o_damage;
+	if (ISRING(LEFT, R_ADDDAM))
+	    dplus += cur_ring[LEFT]->o_arm;
+	else if (ISRING(LEFT, R_ADDHIT))
+	    hplus += cur_ring[LEFT]->o_arm;
+
+	if (ISRING(RIGHT, R_ADDDAM))
+	    dplus += cur_ring[RIGHT]->o_arm;
+	else if (ISRING(RIGHT, R_ADDHIT))
+	    hplus += cur_ring[RIGHT]->o_arm;
+
 	if (hurl)
 	{
-	    if ((weap->o_flags&ISMISL) && cur_weapon != NULL &&
+	    if ((weap->o_flags & ISMISL) && cur_weapon != NULL &&
 	      cur_weapon->o_which == weap->o_launch)
 	    {
 		cp = weap->o_hurldmg;
@@ -434,36 +417,23 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 		cp = weap->o_hurldmg;
 	}
     }
-    /*
-     * If the creature being attacked is not running (alseep or held)
-     * then the attacker gets a plus four bonus to hit.
-     */
+    /* If the creature being attacked is not running (alseep or held)
+     * then the attacker gets a plus four bonus to hit. */
     if (!on(*thdef, ISRUN))
 	hplus += 4;
-    def_arm = def->s_arm;
-    if (def == &pstats)
-    {
-	if (cur_armor != NULL)
-	    def_arm = cur_armor->o_arm;
-	if (ISRING(LEFT, R_PROTECT))
-	    def_arm -= cur_ring[LEFT]->o_arm;
-	if (ISRING(RIGHT, R_PROTECT))
-	    def_arm -= cur_ring[RIGHT]->o_arm;
-    }
     while(cp != NULL && *cp != '\0')
     {
-	ndice = atoi(cp);
-	if ((cp = strchr(cp, 'x')) == NULL)
+	int ndice;
+	int nsides;
+	if (sscanf(cp, "%dx%d", &ndice, &nsides) == EOF)
 	    break;
-	nsides = atoi(++cp);
 	if (swing(att->s_lvl, def_arm, hplus + str_plus[att->s_str]))
 	{
-	    int proll;
-
-	    proll = roll(ndice, nsides);
+	    int proll = roll(ndice, nsides);
+	    int damage = dplus + proll + add_dam[att->s_str];
+	
 	    if (wizard && ndice + nsides > 0 && proll <= 0)
 		msg("Damage for %dx%d came out %d, dplus = %d, add_dam = %d, def_arm = %d", ndice, nsides, proll, dplus, add_dam[att->s_str], def_arm);
-	    damage = dplus + proll + add_dam[att->s_str];
 	    def->s_hpt -= max(0, damage);
 	    did_hit = true;
 	}

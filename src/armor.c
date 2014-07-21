@@ -11,6 +11,19 @@
 
 #include "rogue.h"
 
+int
+player_ac(void)
+{
+  int ac = cur_armor ? cur_armor->o_arm : pstats.s_arm;
+  if (cur_weapon && cur_weapon->o_arm != 0)
+    ac -= cur_weapon->o_arm;
+  if (ISRING(LEFT, R_PROTECT))
+    ac -= cur_ring[LEFT]->o_arm;
+  if (ISRING(RIGHT, R_PROTECT))
+    ac -= cur_ring[RIGHT]->o_arm;
+  return ac;
+}
+
 /** wear:
  * The player wants to wear something, so let him/her put it on.  */
 bool

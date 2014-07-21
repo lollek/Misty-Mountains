@@ -179,6 +179,9 @@ init_weapon(THING *weap, int which)
   weap->o_hplus = 0;
   weap->o_dplus = 0;
 
+  if (which == SPEAR)
+    weap->o_arm = 1;
+
   if (which == DAGGER)
   {
     weap->o_count = rnd(4) + 2;
