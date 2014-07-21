@@ -101,7 +101,7 @@ inv_name(THING *obj, bool drop)
     when ARMOR:
     {
       const char *sp = arm_info[which].oi_name;
-      int bonus_ac = atoi(num(a_class[which] - obj->o_arm, 0, ARMOR) + 1);
+      int bonus_ac = a_class[which] - obj->o_arm;
       int base_ac = 10 - obj->o_arm - bonus_ac;
 
       pb += sprintf(pb, "A%s %s [%d]", vowelstr(sp), sp, base_ac);
@@ -109,7 +109,7 @@ inv_name(THING *obj, bool drop)
       if (obj->o_flags & ISKNOW)
       {
         pb -= 1;
-        pb += sprintf(pb, ",+%d]", bonus_ac);
+        pb += sprintf(pb, bonus_ac < 0 ? ",%d]" : ",+%d]", bonus_ac);
       }
 
       if (obj->o_label != NULL)
