@@ -203,7 +203,7 @@ parse_args(int argc, char * const *argv)
   enum game_mode_t game_mode = NEW_GAME;
   int option_index = 0;
   struct option long_options[] = {
-    {"colors",    no_argument,       0, 'c'},
+    {"no-colors", no_argument,       0, 'c'},
     {"escdelay",  optional_argument, 0, 'E'},
     {"flush",     no_argument,       0, 'f'},
     {"hide-floor",no_argument,       0, 'F'},
@@ -230,7 +230,7 @@ parse_args(int argc, char * const *argv)
   see_floor = true;             /* Show the lamp-illuminated floor */
   passgo = false;               /* Follow the turnings in passageways */
   tombstone = true;             /* Print out tombstone when killed */
-  use_colors = false;           /* Use ncurses colors */
+  use_colors = true;            /* Use ncurses colors */
   game_type = DEFAULT;          /* Play a normal game or rogue */
 
   /* Default file name for save file */
@@ -249,7 +249,7 @@ parse_args(int argc, char * const *argv)
 
     switch (c)
     {
-      case 'c': use_colors = true;
+      case 'c': use_colors = false;
       when 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg);
       when 'f': fight_flush = true;
       when 'F': see_floor = false;
@@ -268,7 +268,7 @@ parse_args(int argc, char * const *argv)
       when '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
                "Run Rogue14 with selected options or a savefile\n\n"
-               "  -c, --colors         colorize the game\n"
+               "  -c, --no-colors      remove colors from the game\n"
                "  -E, --escdelay=[NUM] set escdelay in ms. Not setting this\n"
                "                       defaults to 0. If you do not give a NUM\n"
                "                       argument, it's set to 64 (old standard)\n"
