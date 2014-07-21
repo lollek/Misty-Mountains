@@ -24,9 +24,8 @@
 int
 command()
 {
-  char ch;
+  static char ch;
   int player_moves = on(player, ISHASTE) ? 2 : 1;
-  static char countch;
 
   /* Let the daemons start up */
   do_daemons(BEFORE);
@@ -72,9 +71,7 @@ command()
     {
       if (running || to_death)
         ch = runch;
-      else if (count)
-        ch = countch;
-      else
+      else if (!count)
       {
         ch = readchar();
         move_on = false;
@@ -93,7 +90,6 @@ command()
             count = 255;
           ch = readchar();
         }
-        countch = ch;
 
         /* turn off count for commands which don't make sense to repeat */
         switch (ch)
@@ -165,7 +161,7 @@ do_command(char ch)
     /* Funny symbols */
     case KEY_SPACE: return false;
     case KEY_ESCAPE: door_stop = again = false; count = 0; return false;
-    case '.': return true;
+    case '.': return rest();
     case ',': return pick_up_item_from_ground();
     case '/': return identify_a_character();
     case '>': return change_dungeon_level(ch);

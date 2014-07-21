@@ -439,6 +439,14 @@ repeat_last_command()
 }
 
 bool
+rest()
+{
+  if (pstats.s_hpt == max_hp)
+    count = 0;
+  return true;
+}
+
+bool
 search()
 {
   int y, x;
