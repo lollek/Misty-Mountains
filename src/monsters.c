@@ -116,7 +116,7 @@ exp_add(THING *tp)
  */
 
 void
-wanderer()
+wanderer(void)
 {
     THING *tp;
     static coord cp;

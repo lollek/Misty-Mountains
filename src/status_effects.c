@@ -71,13 +71,13 @@ set_true_seeing(THING *thing, bool status, bool permanent)
 }
 
 void
-daemon_remove_true_seeing()
+daemon_remove_true_seeing(void)
 {
   set_true_seeing(&player, false, false);
 }
 
 void
-fall_asleep()
+fall_asleep(void)
 {
   no_command += SLEEPTIME;
   player.t_flags &= ~ISRUN;
@@ -85,7 +85,7 @@ fall_asleep()
 }
 
 void
-become_restored()
+become_restored(void)
 {
   if (pstats.s_str < max_stats.s_str)
   {
@@ -108,7 +108,7 @@ become_restored()
 }
 
 void
-become_poisoned()
+become_poisoned(void)
 {
   if (ISWEARING(R_SUSTSTR))
     msg("you feel momentarily sick");
@@ -138,7 +138,7 @@ become_confused(bool permanent)
 }
 
 void
-remove_confusion()
+remove_confusion(void)
 {
   set_confused(&player, false);
   msg("you feel less %s now",
@@ -146,7 +146,7 @@ remove_confusion()
 }
 
 void
-become_healed()
+become_healed(void)
 {
   if ((pstats.s_hpt += roll(pstats.s_lvl, 4)) > max_hp)
     pstats.s_hpt = ++max_hp;
@@ -155,7 +155,7 @@ become_healed()
 }
 
 void
-become_extra_healed()
+become_extra_healed(void)
 {
   if ((pstats.s_hpt += roll(pstats.s_lvl, 8)) > max_hp)
   {
@@ -169,7 +169,7 @@ become_extra_healed()
 }
 
 void
-become_stronger()
+become_stronger(void)
 {
   chg_str(1);
   msg("you feel stronger, now.  What bulging muscles!");
@@ -207,7 +207,7 @@ become_tripping(bool permanent)
 }
 
 void
-remove_tripping()
+remove_tripping(void)
 {
   THING *tp;
 
@@ -262,7 +262,7 @@ become_hasted(bool permanent)
 }
 
 void
-remove_hasted()
+remove_hasted(void)
 {
   player.t_flags &= ~ISHASTE;
   msg("you feel yourself slowing down");
@@ -285,7 +285,7 @@ void become_blind(bool permanent)
 }
 
 void
-cure_blindness()
+cure_blindness(void)
 {
   if (is_blind(&player))
   {
@@ -317,7 +317,7 @@ become_levitating(bool permanent)
 }
 
 void
-remove_levitating()
+remove_levitating(void)
 {
   set_levitating(&player, false);
   msg(is_hallucinating(&player)
@@ -326,7 +326,7 @@ remove_levitating()
 }
 
 void
-raise_level()
+raise_level(void)
 {
   pstats.s_exp = e_levels[pstats.s_lvl-1] + 1L;
   check_level();

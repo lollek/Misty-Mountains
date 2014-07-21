@@ -1420,9 +1420,7 @@ rs_read_object_list(FILE *inf, THING **list)
 
     for (i = 0; i < cnt; i++) 
     {
-        l = new_item(sizeof(THING));
-
-        memset(l,0,sizeof(THING));
+        l = new_item();
 
         l->l_prev = previous;
 

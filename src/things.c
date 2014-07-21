@@ -145,7 +145,7 @@ inv_name(THING *obj, bool drop)
  * Put something down */
 /* TODO: Maybe move this to command.c */
 bool
-drop()
+drop(void)
 {
     char ch = chat(hero.y, hero.x);
     THING *obj;
@@ -209,7 +209,7 @@ dropcheck(THING *obj)
 /** new_thing:
  * Return a new thing */
 THING *
-new_thing()
+new_thing(void)
 {
     THING *cur;
     int r;
@@ -367,7 +367,7 @@ discovered_by_type(char type, struct obj_info *info, int max_items)
 /** discovered:
  * list what the player has discovered in this game of a certain type */
 void
-discovered()
+discovered(void)
 {
   msg((terse
       ? "what type? (%c%c%c%c) "

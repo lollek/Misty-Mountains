@@ -37,26 +37,26 @@ inline void set_invisible(THING *thing, bool status);
 inline void set_hallucinating(THING *thing, bool status);
 
 /* Daemon helpers */
-void daemon_remove_true_seeing();
+void daemon_remove_true_seeing(void);
 
 /* Functions */
-void fall_asleep();                         /* Take a unwilling powernap */
-void become_restored();                     /* Remove bad status effects */
-void become_poisoned();                     /* Add poisoned status effect */
+void fall_asleep(void);                         /* Take a unwilling powernap */
+void become_restored(void);                     /* Remove bad status effects */
+void become_poisoned(void);                     /* Add poisoned status effect */
 void become_confused(bool permanent);       /* Add confused status effect */
-void remove_confusion();                    /* Restore player's mental health */
-void become_healed();                       /* Add healed status effect */
-void become_extra_healed();                 /* Better healing */
-void become_stronger();                     /* Add strength */
+void remove_confusion(void);                /* Restore player's mental health */
+void become_healed(void);                       /* Add healed status effect */
+void become_extra_healed(void);                 /* Better healing */
+void become_stronger(void);                     /* Add strength */
 void become_monster_seeing(bool permanent); /* Add see-monster effect */
 void become_tripping(bool permanent);       /* Add tripping effect */
-void remove_tripping();
+void remove_tripping(void);
 void become_hasted(bool permanent);         /* Become quicker */
-void remove_hasted();
+void remove_hasted(void);
 void become_blind(bool permanent);
-void cure_blindness();
+void cure_blindness(void);
 void become_levitating(bool permanent);
-void remove_levitating();
-void raise_level();                         /* Level up */
+void remove_levitating(void);
+void raise_level(void);                         /* Level up */
 
 #endif /* _ROGUE14_STATUS_EFFECTS_H_ */

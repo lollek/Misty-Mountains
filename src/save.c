@@ -31,7 +31,7 @@ static const char statlist[] = "\355kl{+\204\255\313idJ\361\214=4:\311\271\341wK
  * We drop setgid privileges after opening the score file, so subsequent
  * open()'s will fail.  Just reuse the earlier filehandle. */
 int
-open_score_and_drop_setuid_setgid()
+open_score_and_drop_setuid_setgid(void)
 {
   /* NB: SCOREDIR comes from Makefile */
   const char *scorefile = SCOREDIR "rogue14.highscore";
@@ -78,7 +78,7 @@ open_score_and_drop_setuid_setgid()
  */
 
 void
-save_game()
+save_game(void)
 {
     FILE *savef;
     struct stat sbuf;

@@ -224,7 +224,7 @@ num(int n1, int n2, char type)
 /** wield:
  * Pull out a certain weapon */
 bool
-wield()
+wield(void)
 {
   THING *obj = get_item("wield", WEAPON);
   char *sp;

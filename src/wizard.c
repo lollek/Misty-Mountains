@@ -54,7 +54,7 @@ pr_spec(struct obj_info *info, int nitems)
 /** pr_list:
  * List possible potions, scrolls, etc. for wizard. */
 int
-pr_list()
+pr_list(void)
 {
   int ch = ~KEY_ESCAPE;
 
@@ -178,7 +178,7 @@ type_name(int type)
  */
 
 void
-create_obj()
+create_obj(void)
 {
     THING *obj;
     char ch, bless;
@@ -249,7 +249,7 @@ create_obj()
  */
 
 void
-teleport()
+teleport(void)
 {
     static coord c;
 
@@ -288,7 +288,7 @@ teleport()
  */
 
 void
-show_map()
+show_map(void)
 {
     int y, x, real;
 

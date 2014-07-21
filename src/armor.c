@@ -14,7 +14,7 @@
 /** wear:
  * The player wants to wear something, so let him/her put it on.  */
 bool
-wear()
+wear(void)
 {
   THING *obj = get_item("wear", ARMOR);
 
@@ -50,7 +50,7 @@ wear()
 /** take_off:
  * Get the armor off of the players back */
 bool
-take_off()
+take_off(void)
 {
   THING *obj = cur_armor;
 
@@ -84,7 +84,7 @@ take_off()
 /** waste_time:
  * Do nothing but let other things happen */
 void
-waste_time()
+waste_time(void)
 {
   do_daemons(BEFORE);
   do_fuses(BEFORE);

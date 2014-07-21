@@ -29,7 +29,7 @@ struct delayed_action d_list[MAXDAEMONS] = {
  *	Find an empty slot in the daemon/fuse list
  */
 struct delayed_action *
-d_slot()
+d_slot(void)
 {
     struct delayed_action *dev;
 

@@ -25,7 +25,7 @@
  */
 static FILE *lfd = NULL;
 bool
-lock_sc()
+lock_sc(void)
 {
     int cnt;
     static struct stat sbuf;
@@ -86,7 +86,7 @@ over:
  */
 
 void
-unlock_sc()
+unlock_sc(void)
 {
     if (lfd != NULL)
         fclose(lfd);
@@ -100,7 +100,7 @@ unlock_sc()
  */
 
 void
-flush_type()
+flush_type(void)
 {
     flushinp();
 }

@@ -74,7 +74,7 @@ fight_monster(bool fight_to_death)
 }
 
 bool
-give_item_nickname()
+give_item_nickname(void)
 {
   THING *obj = get_item("call", CALLABLE);
   char **guess;
@@ -151,7 +151,7 @@ give_item_nickname()
 }
 
 bool
-identify_a_character()
+identify_a_character(void)
 {
   int ch;
   const struct h_list ident_list[] = {
@@ -208,7 +208,7 @@ identify_a_character()
 }
 
 bool
-identify_trap()
+identify_trap(void)
 {
   if (get_dir())
   {
@@ -232,14 +232,14 @@ identify_trap()
 }
 
 bool
-maybe_quit()
+maybe_quit(void)
 {
   quit(0);
   return false;
 }
 
 bool
-pick_up_item_from_ground()
+pick_up_item_from_ground(void)
 {
   const THING *obj = NULL;
 
@@ -297,7 +297,7 @@ print_currently_wearing(char thing)
 }
 
 bool
-print_help()
+print_help(void)
 {
   const struct h_list helpstr[] = {
     {'?',	"	prints help",				true},
@@ -428,7 +428,7 @@ print_help()
 }
 
 bool
-repeat_last_command()
+repeat_last_command(void)
 {
   if (last_comm != '\0')
   {
@@ -439,7 +439,7 @@ repeat_last_command()
 }
 
 bool
-rest()
+rest(void)
 {
   if (pstats.s_hpt == max_hp)
     count = 0;
@@ -447,7 +447,7 @@ rest()
 }
 
 bool
-search()
+search(void)
 {
   int y, x;
   int probinc = (is_hallucinating(&player) ? 3:0) + is_blind(&player) ? 2:0;
@@ -510,7 +510,7 @@ search()
 }
 
 bool
-show_players_inventory()
+show_players_inventory(void)
 {
   print_inventory(0);
   msg("--Press any key to continue--");
@@ -521,7 +521,7 @@ show_players_inventory()
 }
 
 bool
-toggle_wizard_mode()
+toggle_wizard_mode(void)
 {
   /* TODO: Add a query here, so you always can become a wiz */
   if (potential_wizard)

@@ -25,7 +25,7 @@
 /* init_new_game
  * Set up everything so we can start playing already */
 bool
-init_new_game()
+init_new_game(void)
 {
   /* Parse environment opts */
   if (whoami[0] == '\0')
@@ -71,7 +71,7 @@ init_new_game()
  * Restore a saved game from a file with elaborate checks for file
  * integrity from cheaters */
 bool
-init_old_game()
+init_old_game(void)
 {
     FILE *inf = fopen(file_name, "r");
     char buf[MAXSTR];
@@ -147,7 +147,7 @@ init_old_game()
  * 	get curses running
  */
 int
-init_graphics()
+init_graphics(void)
 {
   initscr();  /* Start up cursor package */
 
@@ -195,7 +195,7 @@ init_graphics()
  *	Roll her up
  */
 void
-init_player()
+init_player(void)
 {
     THING *obj;
 
@@ -411,7 +411,7 @@ static bool used[MAX3(NCOLORS, NSTONES, NWOOD)];
  *	Initialize the potion color scheme for this time
  */
 void
-init_colors()
+init_colors(void)
 {
     size_t i, j;
 
@@ -434,7 +434,7 @@ init_colors()
 #define MAXNAME	40	/* Max number of characters in a name */
 
 void
-init_names()
+init_names(void)
 {
     int nsyl;
     char *cp, *sp;
@@ -469,7 +469,7 @@ init_names()
  *	Initialize the ring stone setting scheme for this time
  */
 void
-init_stones()
+init_stones(void)
 {
     size_t i, j;
 
@@ -491,7 +491,7 @@ init_stones()
  *	Initialize the construction materials for wands and staffs
  */
 void
-init_materials()
+init_materials(void)
 {
     size_t i, j;
     char *str;
@@ -560,7 +560,7 @@ sumprobs(struct obj_info *info, int bound , char *name)
  *	Initialize the probabilities for the various items
  */
 void
-init_probs()
+init_probs(void)
 {
     sumprobs(things, NT);
     sumprobs(pot_info, MP);

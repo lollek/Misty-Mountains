@@ -257,7 +257,7 @@ center(const char *str)
  */
 
 void
-total_winner()
+total_winner(void)
 {
     THING *obj;
     struct obj_info *op;
@@ -401,7 +401,7 @@ killname(char monst, bool doart)
  *	Return a monster appropriate for a random death.
  */
 char
-death_monst()
+death_monst(void)
 {
     static char poss[] =
     {

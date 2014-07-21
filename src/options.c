@@ -58,7 +58,7 @@ OPTION	optlist[] = {
  */
 
 void
-option()
+option(void)
 {
     OPTION	*op;
     enum option_return	retval;

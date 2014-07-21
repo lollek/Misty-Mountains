@@ -39,7 +39,7 @@
 #include "rogue.h"
 
 int
-md_hasclreol()
+md_hasclreol(void)
 {
   return cur_term != NULL &&
          cur_term->type.Strings != NULL &&
@@ -49,7 +49,7 @@ md_hasclreol()
 
 
 const char *
-md_gethomedir()
+md_gethomedir(void)
 {
   static char homedir[PATH_MAX] = { '\0' };
 

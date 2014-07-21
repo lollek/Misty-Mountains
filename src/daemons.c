@@ -18,7 +18,7 @@
  *	A healing daemon that restors hit points after rest
  */
 void
-doctor()
+doctor(void)
 {
     int lv, ohp;
 
@@ -50,7 +50,7 @@ doctor()
  *	Called when it is time to start rolling for wandering monsters
  */
 void
-swander()
+swander(void)
 {
     start_daemon(rollwand, 0, BEFORE);
 }
@@ -61,7 +61,7 @@ swander()
  */
 int between = 0;
 void
-rollwand()
+rollwand(void)
 {
 
     if (++between >= 4)
@@ -81,7 +81,7 @@ rollwand()
  *	Digest the hero's food
  */
 void
-stomach()
+stomach(void)
 {
     int oldfood;
     int orig_hungry = hungry_state;
@@ -143,7 +143,7 @@ stomach()
  *	change the characters for the player
  */
 void
-visuals()
+visuals(void)
 {
     THING *tp;
     bool seemonst;

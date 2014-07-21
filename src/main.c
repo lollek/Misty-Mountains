@@ -90,7 +90,7 @@ fatal(const char *s)
  * refreshing things and looking at the proper times.
  */
 bool
-playit()
+playit(void)
 {
   /* Try to crash cleanly, and autosave if possible */
   signal(SIGHUP, auto_save);
@@ -174,7 +174,7 @@ leave(int sig)
  * Let them escape for a while
  */
 void
-shell()
+shell(void)
 {
   /* Set the terminal back to original mode */
   move(LINES-1, 0);

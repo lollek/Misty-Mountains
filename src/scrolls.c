@@ -37,7 +37,7 @@ struct obj_info scr_info[MAXSCROLLS] = {
 };
 
 void
-read_scroll()
+read_scroll(void)
 {
   THING *obj = get_item("read", SCROLL);
   THING *orig_obj;

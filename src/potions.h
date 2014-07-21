@@ -29,7 +29,7 @@ struct obj_info pot_info[NPOTIONS]; /* A list of potions and info */
 
 /* Functions */
 bool is_quaffable(THING *thing);    /* Check if we can drink something */
-bool quaff();                       /* Quaff a potion from the pack */
+bool quaff(void);                       /* Quaff a potion from the pack */
 inline void learn_potion(enum potion_t potion); /* Learn what a potion does */
 inline bool knows_potion(enum potion_t potion); /* She knows the potion? */
 

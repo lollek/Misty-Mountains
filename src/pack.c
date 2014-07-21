@@ -202,7 +202,7 @@ leave_pack(THING *obj, bool newobj, bool all)
  *	Return the next unused pack character.
  */
 static char
-pack_char()
+pack_char(void)
 {
     bool *bp;
 
@@ -276,7 +276,7 @@ move_msg(THING *obj)
 
 /* TODO: Maybe move this to command.c? */
 void
-picky_inven()
+picky_inven(void)
 {
     THING *obj;
     char mch;
@@ -394,7 +394,7 @@ money(int value)
 /** floor_ch:
  * Return the appropriate floor character for her room */
 static char
-floor_ch()
+floor_ch(void)
 {
   if (proom->r_flags & ISGONE)
     return PASSAGE;
@@ -405,7 +405,7 @@ floor_ch()
  * Return the character at hero's position, taking see_floor
  * into account */
 char
-floor_at()
+floor_at(void)
 {
   char ch = chat(hero.y, hero.x);
   return ch == FLOOR ? floor_ch() : ch;
@@ -414,7 +414,7 @@ floor_at()
 /** reset_last:
  * Reset the last command when the current one is aborted */
 void
-reset_last()
+reset_last(void)
 {
   last_comm = l_last_comm;
   last_dir = l_last_dir;
@@ -434,7 +434,7 @@ remove_from_floor(THING *obj)
 /** items_in_pack
  * Counts how many items she is carrying */
 unsigned
-items_in_pack()
+items_in_pack(void)
 {
   return items_in_pack_of_type(0);
 }
@@ -456,7 +456,7 @@ items_in_pack_of_type(int type)
 }
 
 bool
-player_has_amulet()
+player_has_amulet(void)
 {
   THING *ptr;
 
@@ -496,7 +496,7 @@ print_inventory(int type)
 }
 
 void
-clear_inventory()
+clear_inventory(void)
 {
   touchwin(stdscr);
 }

@@ -19,7 +19,7 @@
  */
 
 bool
-ring_on()
+ring_on(void)
 {
     THING *obj = get_item("put on", RING);
     int ring;
@@ -85,7 +85,7 @@ ring_on()
  */
 
 bool
-ring_off()
+ring_off(void)
 {
     int ring;
     THING *obj;
@@ -135,7 +135,7 @@ ring_off()
  *	Which hand is the hero interested in?
  */
 int
-gethand()
+gethand(void)
 {
     int c;
 

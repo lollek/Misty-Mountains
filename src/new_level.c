@@ -21,7 +21,7 @@
 #define MINTREAS 2	/* minimum number of treasures in a treasure room */
 
 void
-new_level()
+new_level(void)
 {
     THING *tp;
     PLACE *pp;
@@ -106,7 +106,7 @@ new_level()
  *	Pick a room that is really there
  */
 int
-rnd_room()
+rnd_room(void)
 {
     int rm;
 
@@ -123,7 +123,7 @@ rnd_room()
  */
 
 void
-put_things()
+put_things(void)
 {
     int i;
     THING *obj;
@@ -186,7 +186,7 @@ put_things()
 
 
 void
-treas_room()
+treas_room(void)
 {
     int nm;
     THING *tp;

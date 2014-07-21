@@ -49,7 +49,7 @@ is_quaffable(THING *thing)
 }
 
 bool
-quaff()
+quaff(void)
 {
   THING *obj = get_item("quaff", POTION);
   THING *tp, *mp;

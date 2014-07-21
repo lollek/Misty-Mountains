@@ -22,7 +22,7 @@
 #include "command_private.h"
 
 int
-command()
+command(void)
 {
   static char ch;
   int player_moves = on(player, ISHASTE) ? 2 : 1;

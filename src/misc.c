@@ -218,7 +218,7 @@ erase_lamp(coord *pos, struct room *rp)
 /** show_floor:
  * Should we show the floor in her room at this time? */
 bool
-show_floor()
+show_floor(void)
 {
   if ((proom->r_flags & (ISGONE|ISDARK)) == ISDARK && !is_blind(&player))
     return see_floor;
@@ -246,7 +246,7 @@ find_obj(int y, int x)
 /** eat:
  * She wants to eat something, so let her try */
 void
-eat()
+eat(void)
 {
     THING *obj = get_item("eat", FOOD);
 
@@ -288,7 +288,7 @@ eat()
 /** check_level:
  * Check to see if the guy has gone up a level */
 void
-check_level()
+check_level(void)
 {
   int i, olevel;
 
@@ -345,7 +345,7 @@ add_str(str_t *sp, int amt)
 /** aggravate:
  * Aggravate all the monsters on this level */
 void
-aggravate()
+aggravate(void)
 {
   THING *mp;
   for (mp = mlist; mp != NULL; mp = next(mp))
@@ -390,7 +390,7 @@ is_in_use(THING *obj)
 /** get_dir:
  * Set up the direction co_ordinate for use in varios "prefix" commands */
 bool
-get_dir()
+get_dir(void)
 {
   const char *prompt = terse ? "direction? " : "which direction? ";
   bool gotit;
@@ -498,7 +498,7 @@ call_it(struct obj_info *info)
 /** rnd_thing:
  * Pick a random thing appropriate for this level */
 char
-rnd_thing()
+rnd_thing(void)
 {
   char thing_list[] = {
     POTION, SCROLL, RING, STICK, FOOD, WEAPON, ARMOR, STAIRS, GOLD, AMULET
@@ -531,7 +531,7 @@ is_magic(THING *obj)
 }
 
 bool
-seen_stairs()
+seen_stairs(void)
 {
   THING *tp = moat(stairs.y, stairs.x);
 
@@ -590,7 +590,7 @@ turn_see(bool turn_off)
 }
 
 void
-invis_on()
+invis_on(void)
 {
   THING *mp;
 
