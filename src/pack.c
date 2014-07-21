@@ -55,12 +55,9 @@ add_pack(THING *obj, bool silent)
 
     if (items_in_pack() == PACKSIZE)
     {
-	if (!terse)
-	    addmsg("there's ");
-	addmsg("no room");
-	if (!terse)
-	    addmsg(" in your pack");
-	endmsg();
+	msg(terse
+	    ? "no room"
+	    : "there's no room in your pack");
 	if (from_floor)
 	    move_msg(obj);
 	return;
@@ -472,7 +469,7 @@ print_inventory(int type)
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
   /* Print out all items */
-  for (list= pack; list!= NULL; list= next(list))
+  for (list = pack; list != NULL; list = next(list))
   {
     if (!type || type == list->o_type ||
         (type == CALLABLE && (list->o_type != FOOD && list->o_type != AMULET))||

@@ -74,7 +74,6 @@ inv_name(THING *obj, bool drop)
 
     when WEAPON:
     {
-      /* TODO: Maybe we can rename NumxNum -> NumdNum everywhere? */
       const char *sp = weap_info[which].oi_name;
 
       if (obj->o_count == 1)
@@ -84,6 +83,7 @@ inv_name(THING *obj, bool drop)
 
       if (which != ARROW)
       {
+        /* TODO: Maybe we can rename NumxNum -> NumdNum everywhere? */
         char damage[4] = { '\0' };
 
         sprintf(damage, "%s", which == BOW ? obj->o_hurldmg : obj->o_damage);
