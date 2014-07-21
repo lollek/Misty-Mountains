@@ -247,7 +247,7 @@ void
 status(void)
 {
     int oy, ox;
-    int temp = player_ac();
+    int temp = get_ac(&player);
     const char *state_name[] = { "", "Hungry", "Weak", "Faint" };
     static int hpwidth = 0;
     static int s_hungry = 0;
@@ -287,7 +287,7 @@ status(void)
     printw("Level: %d  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  Arm: %-2d  "
            "Exp: %d/%d  %s",
             level, purse, hpwidth, pstats.s_hpt, hpwidth, max_hp, pstats.s_str,
-            max_stats.s_str, 10 - s_arm, pstats.s_lvl, pstats.s_exp,
+            max_stats.s_str, s_arm, pstats.s_lvl, pstats.s_exp,
             state_name[hungry_state]);
 
     clrtoeol();

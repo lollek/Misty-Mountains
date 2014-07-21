@@ -565,7 +565,7 @@ void 	passnum(void);
 const char	*pick_color(const char *col);
 void	pick_up(char ch);
 void	picky_inven(void);
-int	player_ac(void);
+int	get_ac(THING *thing);
 int	pr_list(void);
 void	put_bool(void *b);
 void	put_str(void *str);

@@ -375,7 +375,7 @@ set_mname(THING *tp)
 int
 swing(int at_lvl, int op_arm, int wplus)
 {
-    return rnd(20) + wplus >= (20 - at_lvl) - op_arm;
+    return at_lvl + wplus + rnd(20) >= op_arm;
 }
 
 /** roll_em:
@@ -388,9 +388,9 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
     const char *cp = weap == NULL ? att->s_dmg : weap->o_damage;
     int hplus = weap == NULL ? 0 : weap->o_hplus;
     int dplus = weap == NULL ? 0 : weap->o_dplus;
+    int def_arm = get_ac(thdef);
     bool is_player = thatt == &player;
     bool did_hit = false;
-    int def_arm = is_player ? def->s_arm : player_ac();
 
     if (is_player)
     {
