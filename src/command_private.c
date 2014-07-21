@@ -27,7 +27,7 @@ change_dungeon_level(char up_or_down)
 
   else if (up_or_down == '<') /* UP */
   {
-    if (amulet)
+    if (player_has_amulet())
     {
       level--;
       if (level == 0)

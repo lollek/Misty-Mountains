@@ -168,8 +168,6 @@ drop()
     chat(hero.y, hero.x) = (char) obj->o_type;
     flat(hero.y, hero.x) |= F_DROPPED;
     obj->o_pos = hero;
-    if (obj->o_type == AMULET)
-	amulet = false;
     msg("dropped %s", inv_name(obj, true));
     return true;
 }

@@ -424,7 +424,7 @@ bool use_colors;  /* Use ncurses colors */
  * External variables
  */
 
-extern bool	after, again, amulet, door_stop,
+extern bool	after, again, door_stop,
 		firstmove, has_hit, inv_describe, kamikaze,
 		move_on, msg_esc, pack_used[],
 		running, seenstairs, to_death;
@@ -472,6 +472,7 @@ void invis_on();             /* Turn on the ability to see invisible */
 
 unsigned	items_in_pack();
 unsigned	items_in_pack_of_type(int type);
+bool player_has_amulet();
 void	_attach(THING **list, THING *item);
 void	_detach(THING **list, THING *item);
 void	_free_list(THING **ptr);

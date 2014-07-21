@@ -17,7 +17,6 @@ enum rogue_game_t game_type;            /* Which variant to play */
 bool after;				/* True if we want after daemons */
 bool again;				/* Repeating the last command */
 bool seenstairs;			/* Have seen the stairs (for lsd) */
-bool amulet = false;			/* He found the amulet */
 bool door_stop = false;			/* Stop running when we pass a door */
 bool firstmove = false;			/* First move after setting door_stop */
 bool has_hit = false;			/* Has a "hit" message pending in msg */

@@ -1867,7 +1867,7 @@ rs_save_file(FILE *savef)
     rs_write_boolean(savef, again);                 /* 2  */
     rs_write_int(savef, potential_wizard);          /* 3  */
     rs_write_boolean(savef, seenstairs);            /* 4  */
-    rs_write_boolean(savef, amulet);                /* 5  */
+    rs_write_boolean(savef, player_has_amulet());   /* 5  */
     rs_write_boolean(savef, door_stop);             /* 6  */
     rs_write_boolean(savef, fight_flush);           /* 7  */
     rs_write_boolean(savef, firstmove);             /* 8  */
@@ -1991,7 +1991,7 @@ rs_restore_file(FILE *inf)
     rs_read_boolean(inf, &again);               /* 2  */
     rs_read_int(inf, &potential_wizard);        /* 3  */
     rs_read_boolean(inf, &seenstairs);          /* 4  */
-    rs_read_boolean(inf, &amulet);              /* 5  */
+    rs_read_boolean(inf, &dummybool);           /* 5 &amulet  */
     rs_read_boolean(inf, &door_stop);           /* 6  */
     rs_read_boolean(inf, &dummybool);           /* 7 &fight_flush */
     rs_read_boolean(inf, &firstmove);           /* 8  */

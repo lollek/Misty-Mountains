@@ -156,9 +156,6 @@ add_pack(THING *obj, bool silent)
 	if (op->t_dest == &obj->o_pos)
 	    op->t_dest = &hero;
 
-    if (obj->o_type == AMULET)
-	amulet = true;
-
     /* Notify the user */
     if (!silent)
     {
@@ -456,6 +453,17 @@ items_in_pack_of_type(int type)
         (type == R_OR_S && (list->o_type == RING || list->o_type == STICK)))
       ++num;
   return num;
+}
+
+bool
+player_has_amulet()
+{
+  THING *ptr;
+
+  for (ptr = pack; ptr != NULL; ptr = next(ptr))
+    if (ptr->o_type == AMULET)
+      return true;
+  return false;
 }
 
 bool
