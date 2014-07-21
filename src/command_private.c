@@ -354,7 +354,6 @@ print_help(void)
     {')',	"	print current weapon",			true},
     {']',	"	print current armor",			true},
     {'=',	"	print current rings",			true},
-    {'@',	"	print current stats",			true},
     {'D',	"	recall what's been discovered",		true},
     {'o',	"	examine/set options",			true},
     {CTRL('R'),	"	redraw screen",				true},

@@ -244,7 +244,7 @@ readchar(void)
  *	Display the important stats line.  Keep the cursor where it was.
  */
 void
-status(bool stat_msg)
+status(void)
 {
     int oy, ox;
     int temp = player_ac();
@@ -260,11 +260,9 @@ status(bool stat_msg)
 
     /* If nothing has changed since the last status, don't bother. */
     if (s_hp == pstats.s_hpt && s_exp == pstats.s_exp && s_pur == purse
-	&& s_arm == temp && s_str == pstats.s_str && s_lvl == level
-	&& s_hungry == hungry_state
-	&& !stat_msg
-	)
-	    return;
+        && s_arm == temp && s_str == pstats.s_str && s_lvl == level
+        && s_hungry == hungry_state)
+	return;
 
     s_arm = temp;
 
@@ -285,24 +283,12 @@ status(bool stat_msg)
     s_exp = pstats.s_exp;
     s_hungry = hungry_state;
 
-    {
-	char buf[MAXSTR];
-	sprintf(buf, "Level: %d  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  "
-	             "Arm: %-2d  Exp: %d/%d  %s",
-	        level, purse, hpwidth, pstats.s_hpt, hpwidth, max_hp,
-	        pstats.s_str, max_stats.s_str, 10 - s_arm, pstats.s_lvl,
-	        pstats.s_exp, state_name[hungry_state]);
-	if (stat_msg)
-	{
-	    move(0, 0);
-	    msg(buf);
-	}
-	else
-	{
-	    move(STATLINE, 0);
-	    printw(buf);
-	}
-    }
+    move(STATLINE, 0);
+    printw("Level: %d  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  Arm: %-2d  "
+           "Exp: %d/%d  %s",
+            level, purse, hpwidth, pstats.s_hpt, hpwidth, max_hp, pstats.s_str,
+            max_stats.s_str, 10 - s_arm, pstats.s_lvl, pstats.s_exp,
+            state_name[hungry_state]);
 
     clrtoeol();
     move(oy, ox);

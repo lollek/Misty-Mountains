@@ -140,7 +140,7 @@ quit(int sig)
   {
     move(0, 0);
     clrtoeol();
-    status(false);
+    status();
     move(oy, ox);
     refresh();
     mpos = 0;

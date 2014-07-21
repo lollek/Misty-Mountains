@@ -160,7 +160,7 @@ quaff(void)
         return true;
       }
   }
-  status(false);
+  status();
 
   /* Throw the item away */
 

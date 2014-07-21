@@ -48,7 +48,7 @@ command(void)
     look(true);
     if (!running)
       door_stop = false;
-    status(false);
+    status();
     lastscore = purse;
     move(hero.y, hero.x);
     if (!((running || count) && jump))
@@ -168,7 +168,6 @@ do_command(char ch)
     case '<': return change_dungeon_level(ch);
     case '?': return print_help();
     case '!': msg("Shell has been removed, use ^Z instead"); return false;
-    case '@': status(true); return false;
     case '^': return identify_trap();
     case ')': return print_currently_wearing(WEAPON);
     case ']': return print_currently_wearing(ARMOR);

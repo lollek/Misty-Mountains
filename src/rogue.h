@@ -599,7 +599,7 @@ void	show_win(const char *message);
 int	sign(int nm);
 int	spread(int nm);
 void	start_daemon(void (*func)(), int arg, int type);
-void	status(bool stat_msg);
+void	status(void);
 int	step_ok(int ch);
 void	strucpy(char *s1, const char *s2, int len);
 int	swing(int at_lvl, int op_arm, int wplus);

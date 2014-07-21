@@ -334,7 +334,7 @@ attack(THING *mp)
     if (fight_flush && !to_death)
 	flush_type();
     count = 0;
-    status(false);
+    status();
     if (mp == NULL)
         return(-1);
     else
