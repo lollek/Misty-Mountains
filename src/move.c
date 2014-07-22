@@ -346,7 +346,6 @@ be_trapped(coord *tc)
          * down for us, so we have to do it ourself */
         teleport();
         mvaddcch(tc->y, tc->x, TRAP);
-        msg("suddenly you're somewhere else");
       when T_DART:
         if (!swing(pstats.s_lvl + 1, get_ac(&player), 1))
           msg("a small dart whizzes by your ear and vanishes");

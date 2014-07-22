@@ -244,10 +244,8 @@ def:
     when S_TELEP:
       /* Scroll of teleportation: Make him dissapear and reappear */
     {
-      struct room *cur_room = proom;
       teleport();
-      if (cur_room != proom)
-        learn_scroll(S_TELEP);
+      learn_scroll(S_TELEP);
     }
     when S_ENCH:
       if (cur_weapon == NULL || cur_weapon->o_type != WEAPON)

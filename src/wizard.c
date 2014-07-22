@@ -280,6 +280,7 @@ teleport(void)
     count = 0;
     running = false;
     flush_type();
+    msg("suddenly you're somewhere else");
 }
 
 /*
