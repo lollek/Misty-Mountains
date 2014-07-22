@@ -1,8 +1,10 @@
 Rogue14 - r2
   Changed name of the slime-mold to fruit (and no, you can't rename it anymore)
-  Removed the old style option parsing
-  Changed from the three inventory types into my own style
-  Changed how the 'describe' window looks, similar to the inventory
+  Made the counter work a little better
+
+  UI:
+    Changed from the three inventory types into my own style
+    Changed how the 'describe' window looks, similar to the inventory
 
   Colors:
     Colors are now enabled by default
@@ -15,6 +17,7 @@ Rogue14 - r2
     Added "Suddenly you're somewhere else"-message when stepping on teletrap
 
   Startup/Flags:
+    Removed the old style option parsing
     Added -Q/--quick where you level up when you reach a new level
 
   Bugfix:
