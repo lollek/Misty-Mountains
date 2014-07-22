@@ -304,8 +304,7 @@ new_thing(void)
 	    cur->o_which = pick_one(ws_info, MAXSTICKS);
 	    fix_stick(cur);
 	otherwise:
-	    if (wizard)
-		msg("Picked a bad kind of object");
+	    msg("Picked a bad kind of object (this should not happen)");
 	    wait_for(KEY_SPACE);
     }
     return cur;
