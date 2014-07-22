@@ -12,6 +12,7 @@
 
 #include "rogue.h"
 #include "status_effects.h"
+#include "command.h"
 
 /*
  * doctor:
@@ -20,10 +21,12 @@
 void
 doctor(void)
 {
-    int lv, ohp;
+    int lv = pstats.s_lvl;
+    int ohp = pstats.s_hpt;
 
-    lv = pstats.s_lvl;
-    ohp = pstats.s_hpt;
+    if (ohp == max_hp)
+      return;
+
     quiet++;
     if (lv < 8)
     {
@@ -38,10 +41,12 @@ doctor(void)
     if (ISRING(RIGHT, R_REGEN))
 	pstats.s_hpt++;
     if (ohp != pstats.s_hpt)
+      quiet = 0;
+
+    if (pstats.s_hpt >= max_hp)
     {
-	if (pstats.s_hpt > max_hp)
-	    pstats.s_hpt = max_hp;
-	quiet = 0;
+	pstats.s_hpt = max_hp;
+	stop_counting(false);
     }
 }
 
@@ -130,12 +135,8 @@ stomach(void)
 		    : "you are starting to get hungry");
 	}
     }
-    if (hungry_state != orig_hungry) { 
-        player.t_flags &= ~ISRUN; 
-        running = false; 
-        to_death = false; 
-        count = 0; 
-    } 
+    if (hungry_state != orig_hungry)
+	stop_counting(true);
 }
 
 /*

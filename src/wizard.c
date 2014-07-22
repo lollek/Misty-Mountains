@@ -18,6 +18,7 @@
 #include "rogue.h"
 #include "potions.h"
 #include "scrolls.h"
+#include "command.h"
 
 static char *type_name(int type);
 static void pr_spec(struct obj_info *info, int nitems);
@@ -271,14 +272,15 @@ teleport(void)
      * turn off ISHELD in case teleportation was done while fighting
      * a Flytrap
      */
-    if (on(player, ISHELD)) {
+    if (on(player, ISHELD))
+    {
 	player.t_flags &= ~ISHELD;
 	vf_hit = 0;
 	strcpy(monsters['F'-'A'].m_stats.s_dmg, "000x0");
     }
+
     no_move = 0;
-    count = 0;
-    running = false;
+    stop_counting(true);
     flush_type();
     msg("suddenly you're somewhere else");
 }

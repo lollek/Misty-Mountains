@@ -120,12 +120,13 @@ void
 quit(int sig)
 {
   int oy, ox;
-  (void)sig;
+  (void) sig;
 
   /* Reset the signal in case we got here via an interrupt */
-  mpos = 0;
   getyx(curscr, oy, ox);
-  msg("really quit?");
+  msg("");
+  msg("really quit? ");
+
   if (getch() == 'y')
   {
     signal(SIGINT, leave);
@@ -138,14 +139,11 @@ quit(int sig)
   }
   else
   {
-    move(0, 0);
-    clrtoeol();
     status();
+    msg("");
     move(oy, ox);
     refresh();
-    mpos = 0;
-    count = 0;
-    to_death = false;
+    stop_counting(true);
   }
 }
 

@@ -438,14 +438,6 @@ repeat_last_command(void)
 }
 
 bool
-rest(void)
-{
-  if (pstats.s_hpt == max_hp)
-    count = 0;
-  return true;
-}
-
-bool
 search(void)
 {
   int y, x;

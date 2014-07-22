@@ -16,6 +16,7 @@
 
 #include "rogue.h"
 #include "status_effects.h"
+#include "command.h"
 
 #define	EQSTR(a, b)	(strcmp(a, b) == 0)
 
@@ -75,16 +76,13 @@ fight(coord *mp, THING *weap, bool thrown)
     /* Find the monster we want to fight */
     if (wizard && tp == NULL)
 	msg("Fight what @ %d,%d", mp->y, mp->x);
-    /*
-     * Since we are fighting, things are not quiet so no healing takes
-     * place.
-     */
-    count = 0;
+
+    /* Since we are fighting, things are not quiet so no healing takes place */
+    stop_counting(false);
     quiet = 0;
     runto(mp);
-    /*
-     * Let him know it was really a xeroc (if it was one).
-     */
+
+    /* Let him know it was really a xeroc (if it was one) */
     ch = '\0';
     if (tp->t_type == 'X' && tp->t_disguise != 'X' && !is_blind(&player))
     {
@@ -132,22 +130,17 @@ fight(coord *mp, THING *weap, bool thrown)
     return did_hit;
 }
 
-/*
- * attack:
- *	The monster attacks the player
- */
+/** attack:
+ * The monster attacks the player */
 int
 attack(THING *mp)
 {
     char *mname;
     int oldhp;
 
-    /*
-     * Since this is an attack, stop running and any healing that was
-     * going on at the time.
-     */
-    running = false;
-    count = 0;
+    /* Since this is an attack, stop running and any healing that was
+     * going on at the time */
+    stop_counting(false);
     quiet = 0;
     if (to_death && !on(*mp, ISTARGET))
     {
@@ -333,12 +326,9 @@ attack(THING *mp)
     }
     if (fight_flush && !to_death)
 	flush_type();
-    count = 0;
+    stop_counting(false);
     status();
-    if (mp == NULL)
-        return(-1);
-    else
-        return(0);
+    return(mp == NULL ? -1 : 0);
 }
 
 /*

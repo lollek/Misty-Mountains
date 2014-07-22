@@ -18,7 +18,6 @@ bool pick_up_item_from_ground(void); /* Pick up something at her feet */
 bool print_currently_wearing(char thing); /* Print weapon / armor info */
 bool print_help(void);               /* Give command help */
 bool repeat_last_command(void);
-bool rest(void);                   /* Player powernaps */
 bool search(void);                /* Find traps, hidden doors and passages */
 bool show_players_inventory(void);
 bool toggle_wizard_mode(void);    /* Toggle wizard-mode on or off     */

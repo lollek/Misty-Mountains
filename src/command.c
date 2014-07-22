@@ -21,6 +21,19 @@
 
 #include "command_private.h"
 
+void
+stop_counting(bool stop_fighting)
+{
+  player.t_flags &= ~ISRUN;
+  count = 0;
+  door_stop = false;
+  again = false;
+  running = false;
+
+  if (stop_fighting)
+    to_death = false;
+}
+
 int
 command(void)
 {
@@ -112,7 +125,11 @@ command(void)
 
       /* execute a command */
       if (count && !running)
-        count--;
+      {
+        msg("Count remaining: %d", --count);
+        mpos = 0;
+      }
+
       if (ch != 'a' && ch != KEY_ESCAPE && !(running || count || to_death))
       {
         l_last_comm = last_comm;
@@ -160,8 +177,8 @@ do_command(char ch)
   {
     /* Funny symbols */
     case KEY_SPACE: return false;
-    case KEY_ESCAPE: door_stop = again = false; count = 0; return false;
-    case '.': return rest();
+    case KEY_ESCAPE: stop_counting(true); return false;
+    case '.': return true;
     case ',': return pick_up_item_from_ground();
     case '/': return identify_a_character();
     case '>': return change_dungeon_level(ch);

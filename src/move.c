@@ -15,6 +15,7 @@
 #include "rogue.h"
 #include "status_effects.h"
 #include "scrolls.h"
+#include "command.h"
 
 /*
  * used to hold the new hero position
@@ -125,7 +126,7 @@ hit_bound:
 	    if (passgo && running && (proom->r_flags & ISGONE)
 		&& !is_blind(&player))
 	    {
-		bool	b1, b2;
+		bool b1, b2;
 
 		switch (runch)
 		{
@@ -288,8 +289,7 @@ be_trapped(coord *tc)
     char tr = pp->p_flags & F_TMASK;
     pp->p_ch = TRAP;
     pp->p_flags |= F_SEEN;
-    running = false;
-    count = false;
+    stop_counting(true);
     switch (tr)
     {
       case T_DOOR:

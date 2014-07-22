@@ -15,6 +15,7 @@
 #include "rogue.h"
 #include "status_effects.h"
 #include "scrolls.h"
+#include "command.h"
 
 #define DRAGONSHOT  5	/* one chance in DRAGONSHOT that a dragon will flame */
 
@@ -105,10 +106,8 @@ relocate(THING *th, coord *new_loc)
 	addcch(th->t_type | A_STANDOUT);
 }
 
-/*
- * do_chase:
- *	Make one thing chase another.
- */
+/** do_chase:
+ * Make one thing chase another */
 int
 do_chase(THING *th)
 {
@@ -127,15 +126,13 @@ do_chase(THING *th)
 	ree = proom;
     else
 	ree = roomin(th->t_dest);
-    /*
-     * We don't count doors as inside rooms for this routine
-     */
+
+    /* We don't count doors as inside rooms for this routine */
     door = (chat(th->t_pos.y, th->t_pos.x) == DOOR);
-    /*
-     * If the object of our desire is in a different room,
+
+    /* If the object of our desire is in a different room,
      * and we are not in a corridor, run to the door nearest to
-     * our goal.
-     */
+     * our goal */
 over:
     if (rer != ree)
     {
@@ -158,11 +155,10 @@ over:
     else
     {
 	this = *th->t_dest;
-	/*
-	 * For dragons check and see if (a) the hero is on a straight
+	
+	/* For dragons check and see if (a) the hero is on a straight
 	 * line from it, and (b) that it is within shooting distance,
-	 * but outside of striking range.
-	 */
+	 * but outside of striking range */
 	if (th->t_type == 'D' && (th->t_pos.y == hero.y || th->t_pos.x == hero.x
 	    || abs(th->t_pos.y - hero.y) == abs(th->t_pos.x - hero.x))
 	    && dist_cp(&th->t_pos, &hero) <= BOLT_LENGTH * BOLT_LENGTH
@@ -173,8 +169,7 @@ over:
 	    if (has_hit)
 		endmsg();
 	    fire_bolt(&th->t_pos, &delta, "flame");
-	    running = false;
-	    count = 0;
+	    stop_counting(true);
 	    quiet = 0;
 	    if (to_death && !on(*th, ISTARGET))
 	    {
