@@ -181,7 +181,7 @@ init_weapon(THING *weap, int which)
   weap->o_arm = 0;
 
   if (which == SPEAR)
-    weap->o_arm = 1;
+    weap->o_arm = 2;
 
   if (which == DAGGER)
   {
