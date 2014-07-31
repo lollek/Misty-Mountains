@@ -6,6 +6,7 @@
 #include "status_effects.h"
 #include "potions.h"
 #include "scrolls.h"
+#include "traps.h"
 
 #include "command_private.h"
 
@@ -221,10 +222,10 @@ identify_trap(void)
     if (chat(delta.y, delta.x) != TRAP)
       msg("no trap there");
     else if (is_hallucinating(&player))
-      msg(tr_name[rnd(NTRAPS)]);
+      msg(trap_names[rnd(NTRAPS)]);
     else
     {
-      msg(tr_name[*fp & F_TMASK]);
+      msg(trap_names[*fp & F_TMASK]);
       *fp |= F_SEEN;
     }
   }
@@ -473,9 +474,9 @@ search(void)
           addmsg("you found ");
 
         if (is_hallucinating(&player))
-          msg(tr_name[rnd(NTRAPS)]);
+          msg(trap_names[rnd(NTRAPS)]);
         else {
-          msg(tr_name[*fp & F_TMASK]);
+          msg(trap_names[*fp & F_TMASK]);
           *fp |= F_SEEN;
         }
 

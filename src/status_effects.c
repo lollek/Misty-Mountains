@@ -85,6 +85,13 @@ fall_asleep(void)
 }
 
 void
+become_stuck(void)
+{
+  no_move += STUCKTIME;
+  player.t_flags &= ~ISRUN;
+}
+
+void
 become_restored(void)
 {
   if (pstats.s_str < max_stats.s_str)

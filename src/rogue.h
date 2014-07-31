@@ -111,7 +111,6 @@ enum option_return
 #define R_OR_S		-2 /* This means ring, wand of staff */
 
 /* Various constants */
-#define BEARTIME	spread(3)
 #define WANDERTIME	spread(70)
 #define BEFORE		spread(1)
 #define AFTER		spread(2)
@@ -179,21 +178,6 @@ enum option_return
 #define F_REAL		0x10		/* what you see is what you get */
 #define F_PNUM		0x0f		/* passage number mask */
 #define F_TMASK		0x07		/* trap number mask */
-
-/* Trap types */
-enum trap_t
-{
-  T_DOOR  = 0,
-  T_ARROW = 1,
-  T_SLEEP = 2,
-  T_BEAR  = 3,
-  T_TELEP = 4,
-  T_DART  = 5,
-  T_RUST  = 6,
-  T_MYST  = 7,
-  NTRAPS
-};
-
 
 /*
  * Weapon types
@@ -626,7 +610,6 @@ bool	see_monst(THING *mp);
 bool	turn_ok(int y, int x);
 bool	is_in_use(THING *obj);
 
-enum trap_t	be_trapped(coord *tc);
 char	readchar(void);
 char	rnd_thing(void);
 

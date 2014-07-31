@@ -35,6 +35,7 @@
 #include "potions.h"
 #include "status_effects.h"
 #include "scrolls.h"
+#include "traps.h"
 
 /* Change this if saves become uncompatible with rogue5.4.4 */
 static char *release = "5.4.4";
@@ -1910,7 +1911,7 @@ rs_save_file(FILE *savef)
     rs_write_char(savef,l_last_dir);
     rs_write_char(savef,last_comm);
     rs_write_char(savef,last_dir);
-    rs_write_strings(savef,tr_name,8);
+    rs_write_strings(savef,trap_names,NTRAPS);
     rs_write_int(savef,n_objs);
     rs_write_int(savef, 0);                        /* ntraps */
     rs_write_int(savef, hungry_state);
@@ -2034,7 +2035,7 @@ rs_restore_file(FILE *inf)
     rs_read_char(inf, &l_last_dir);
     rs_read_char(inf, &last_comm);
     rs_read_char(inf, &last_dir);
-    rs_read_new_strings(inf,tr_name,8);
+    rs_read_new_strings(inf,trap_names,NTRAPS);
     rs_read_int(inf, &n_objs);
     rs_read_int(inf, &dummyint);                 /* &ntraps */
     rs_read_int(inf, &hungry_state);

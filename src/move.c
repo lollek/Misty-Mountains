@@ -16,6 +16,7 @@
 #include "status_effects.h"
 #include "scrolls.h"
 #include "command.h"
+#include "traps.h"
 
 /*
  * used to hold the new hero position
@@ -73,7 +74,6 @@ do_move(char ch)
 	return true;
     }
 
-    /* Do a confused move (maybe) */
     if (is_confused(&player) && rnd(5) != 0)
     {
 	nh = *rndmove(&player);
@@ -95,15 +95,19 @@ over:
      * diagonal move, and stop him if he did. */
     if (nh.x < 0 || nh.x >= NUMCOLS || nh.y <= 0 || nh.y >= NUMLINES - 1)
 	goto hit_bound;
+
     if (!diag_ok(&hero, &nh))
     {
 	running = false;
 	return false;
     }
+
     if (running && same_coords(hero, nh))
 	after = running = false;
+
     fl = flat(nh.y, nh.x);
     ch = winat(nh.y, nh.x);
+
     if (!(fl & F_REAL) && ch == FLOOR)
     {
 	if (!is_levitating(&player))
@@ -117,11 +121,10 @@ over:
 	msg("you are being held");
 	return after;
     }
+
     switch (ch)
     {
-	case SHADOW:
-	case VWALL:
-	case HWALL:
+	case SHADOW: case VWALL: case HWALL:
 hit_bound:
 	    if (passgo && running && (proom->r_flags & ISGONE)
 		&& !is_blind(&player))
@@ -172,18 +175,23 @@ hit_bound:
 	    }
 	    running = false;
 	    after = false;
-	    break;
-	case DOOR:
+	when DOOR:
 	    running = false;
 	    if (flat(hero.y, hero.x) & F_PASS)
 		enter_room(&nh);
-	    goto move_stuff;
-	case TRAP:
-	    ch = be_trapped(&nh);
+	    mvaddcch(hero.y, hero.x, floor_at());
+	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
+		leave_room(&nh);
+	    hero = nh;
+	when TRAP:
+	    ch = be_trapped(&player, &nh);
 	    if (ch == T_DOOR || ch == T_TELEP)
 		return after;
-	    goto move_stuff;
-	case PASSAGE:
+	    mvaddcch(hero.y, hero.x, floor_at());
+	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
+		leave_room(&nh);
+	    hero = nh;
+	when PASSAGE:
 	    /*
 	     * when you're in a corridor, you don't know if you're in
 	     * a maze room or not, and there ain't no way to find out
@@ -191,12 +199,18 @@ hit_bound:
 	     * always recalculate proom.
 	     */
 	    proom = roomin(&hero);
-	    goto move_stuff;
-	case FLOOR:
+	    mvaddcch(hero.y, hero.x, floor_at());
+	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
+		leave_room(&nh);
+	    hero = nh;
+	when FLOOR:
 	    if (!(fl & F_REAL))
-		be_trapped(&hero);
-	    goto move_stuff;
-	case STAIRS:
+		be_trapped(&player, &hero);
+		mvaddcch(hero.y, hero.x, floor_at());
+		if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
+		    leave_room(&nh);
+		hero = nh;
+	when STAIRS:
 	    seenstairs = true;
 	    /* FALLTHROUGH */
 	default:
@@ -207,7 +221,6 @@ hit_bound:
 	    {
 		if (ch != STAIRS)
 		    take = ch;
-move_stuff:
 		mvaddcch(hero.y, hero.x, floor_at());
 		if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		    leave_room(&nh);
@@ -273,101 +286,102 @@ door_open(struct room *rp)
 }
 
 /** be_trapped:
- * The guy stepped on a trap.... Make him pay */
+ * Someone stepped on a trap.... Make him pay */
 enum trap_t
-be_trapped(coord *tc)
+be_trapped(THING *target, coord *tc)
 {
-  THING *arrow;
+  PLACE *pp = INDEX(tc->y, tc->x);
+  char tr = pp->p_flags & F_TMASK;
 
-    /* anything that's not a door or teleport */
-    /* FIXME: Wow, this is just unfair: */
-  if (is_levitating(&player))
-    return T_RUST;
-  else
+  /* If we're levitating, we won't trigger the trap */
+  if (is_levitating(target))
+    return T_RUST; /* this needs to be neither T_DOOR nor T_TELEP */
+
+  if (target == &player)
   {
-    PLACE *pp = INDEX(tc->y, tc->x);
-    char tr = pp->p_flags & F_TMASK;
     pp->p_ch = TRAP;
     pp->p_flags |= F_SEEN;
     stop_counting(true);
-    switch (tr)
-    {
-      case T_DOOR:
-        level++;
-        new_level();
-        msg("you fell into a trap!");
-      when T_BEAR:
-        no_move += BEARTIME;
-        msg("you are caught in a bear trap");
-      when T_MYST:
-        switch(rnd(11))
+  }
+
+  switch (tr)
+  {
+    case T_DOOR:
+      level++;
+      new_level();
+      msg("you fell into a trap!");
+    when T_BEAR:
+      become_stuck();
+      msg("you are caught in a bear trap");
+    when T_MYST:
+      switch(rnd(11))
+      {
+        case 0: msg("you are suddenly in a parallel dimension");
+        when 1: msg("the light in here suddenly seems %s",
+                    rainbow[rnd(cNCOLORS)]);
+        when 2: msg("you feel a sting in the side of your neck");
+        when 3: msg("multi-colored lines swirl around you, then fade");
+        when 4: msg("a %s light flashes in your eyes",
+                    rainbow[rnd(cNCOLORS)]);
+        when 5: msg("a spike shoots past your ear!");
+        when 6: msg("%s sparks dance across your armor",
+                    rainbow[rnd(cNCOLORS)]);
+        when 7: msg("you suddenly feel very thirsty");
+        when 8: msg("you feel time speed up suddenly");
+        when 9: msg("time now seems to be going slower");
+        when 10: msg("you pack turns %s!", rainbow[rnd(cNCOLORS)]);
+      }
+    when T_SLEEP:
+      fall_asleep();
+      addmsg("a strange white mist envelops you and ");
+    when T_ARROW:
+      if (swing(pstats.s_lvl - 1, get_ac(&player), 1))
+      {
+        pstats.s_hpt -= roll(1, 6);
+        if (pstats.s_hpt <= 0)
         {
-          case 0: msg("you are suddenly in a parallel dimension");
-          when 1: msg("the light in here suddenly seems %s", 
-                      rainbow[rnd(cNCOLORS)]);
-          when 2: msg("you feel a sting in the side of your neck");
-          when 3: msg("multi-colored lines swirl around you, then fade");
-          when 4: msg("a %s light flashes in your eyes",
-                      rainbow[rnd(cNCOLORS)]);
-          when 5: msg("a spike shoots past your ear!");
-          when 6: msg("%s sparks dance across your armor",
-                      rainbow[rnd(cNCOLORS)]);
-          when 7: msg("you suddenly feel very thirsty");
-          when 8: msg("you feel time speed up suddenly");
-          when 9: msg("time now seems to be going slower");
-          when 10: msg("you pack turns %s!", rainbow[rnd(cNCOLORS)]);
-        }
-      when T_SLEEP:
-        fall_asleep();
-        addmsg("a strange white mist envelops you and ");
-      when T_ARROW:
-        if (swing(pstats.s_lvl - 1, get_ac(&player), 1))
-        {
-          pstats.s_hpt -= roll(1, 6);
-          if (pstats.s_hpt <= 0)
-          {
-            msg("an arrow killed you");
-            death('a');
-          }
-          else
-            msg("oh no! An arrow shot you");
+          msg("an arrow killed you");
+          death('a');
         }
         else
-        {
-          arrow = new_item();
-          init_weapon(arrow, ARROW);
-          arrow->o_count = 1;
-          arrow->o_pos = hero;
-          fall(arrow, false);
-          msg("an arrow shoots past you");
-        }
-      when T_TELEP:
+          msg("oh no! An arrow shot you");
+      }
+      else
+      {
+        THING *arrow = new_item();
+        init_weapon(arrow, ARROW);
+        arrow->o_count = 1;
+        arrow->o_pos = hero;
+        fall(arrow, false);
+        msg("an arrow shoots past you");
+      }
+    when T_TELEP:
         /* since the hero's leaving, look() won't put a TRAP
          * down for us, so we have to do it ourself */
-        teleport();
-        mvaddcch(tc->y, tc->x, TRAP);
-      when T_DART:
-        if (!swing(pstats.s_lvl + 1, get_ac(&player), 1))
-          msg("a small dart whizzes by your ear and vanishes");
-        else
+      teleport();
+      mvaddcch(tc->y, tc->x, TRAP);
+    when T_DART:
+      if (!swing(pstats.s_lvl + 1, get_ac(&player), 1))
+        msg("a small dart whizzes by your ear and vanishes");
+      else
+      {
+        pstats.s_hpt -= roll(1, 4);
+        if (pstats.s_hpt <= 0)
         {
-          pstats.s_hpt -= roll(1, 4);
-          if (pstats.s_hpt <= 0)
-          {
-            msg("a poisoned dart killed you");
-            death('d');
-          }
-          if (!ISWEARING(R_SUSTSTR) && !save(VS_POISON))
-            chg_str(-1);
-          msg("a small dart just hit you in the shoulder");
+          msg("a poisoned dart killed you");
+          death('d');
         }
-      when T_RUST:
-        msg("a gush of water hits you on the head");
-        rust_armor(cur_armor);
-    }
-    flush_type();
-    return tr;
+        if (!ISWEARING(R_SUSTSTR) && !save(VS_POISON))
+          chg_str(-1);
+        msg("a small dart just hit you in the shoulder");
+      }
+    when T_RUST:
+      msg("a gush of water hits you on the head");
+      rust_armor(cur_armor);
   }
+
+  flush_type();
+  return tr;
 }
 
 /*
