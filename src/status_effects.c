@@ -230,7 +230,7 @@ remove_tripping(void)
   /* undo the things */
   for (tp = lvl_obj; tp != NULL; tp = next(tp))
     if (cansee(tp->o_pos.y, tp->o_pos.x))
-      mvaddcch(tp->o_pos.y, tp->o_pos.x, tp->o_type);
+      mvaddcch(tp->o_pos.y, tp->o_pos.x, (chtype)tp->o_type);
 
   /* undo the monsters */
   for (tp = mlist; tp != NULL; tp = next(tp))
