@@ -27,7 +27,6 @@ enum game_mode_t
 static bool playit();
 static enum game_mode_t parse_args(int argc, char * const *argv);
 static void endit(int sig);
-static void fatal(const char *s);
 
 int open_score_and_drop_setuid_setgid(); /* src/save.c */
 void auto_save(int);                      /* src/save.c */
@@ -36,8 +35,7 @@ bool init_new_game();                     /* src/init.c */
 bool init_old_game();                     /* src/init.c */
 
 /** main:
- * The main program, of course
- */
+ * The main program, of course */
 int
 main(int argc, char **argv)
 {
@@ -65,23 +63,13 @@ main(int argc, char **argv)
 }
 
 /** endit:
- * Exit the program abnormally.
- */
+ * Exit the program abnormally.  */
 void
 endit(int sig)
 {
   (void)sig;
-  fatal("Okay, bye bye!\n");
-}
-
-/** fatal:
- * Exit the program, printing a message.
- */
-void
-fatal(const char *s)
-{
   endwin();
-  puts(s);
+  puts("Okay, bye bye!\n");
   exit(0);
 }
 
