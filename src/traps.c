@@ -1,0 +1,117 @@
+
+#include "status_effects.h"
+#include "command.h"
+
+#include "traps.h"
+
+
+char *trap_names[] = {
+  "a trapdoor",
+  "an arrow trap",
+  "a sleeping gas trap",
+  "a beartrap",
+  "a teleport trap",
+  "a poison dart trap",
+  "a rust trap",
+  "a mysterious trap"
+};
+
+enum trap_t
+be_trapped(THING *target, coord *tc)
+{
+  PLACE *pp = INDEX(tc->y, tc->x);
+  char tr = pp->p_flags & F_TMASK;
+
+  /* If we're levitating, we won't trigger the trap */
+  if (is_levitating(target))
+    return T_RUST; /* this needs to be neither T_DOOR nor T_TELEP */
+
+  if (target == &player)
+  {
+    pp->p_ch = TRAP;
+    pp->p_flags |= F_SEEN;
+    stop_counting(true);
+  }
+
+  switch (tr)
+  {
+    case T_DOOR:
+      level++;
+      new_level();
+      msg("you fell into a trap!");
+    when T_BEAR:
+      become_stuck();
+      msg("you are caught in a bear trap");
+    when T_MYST:
+      switch(rnd(11))
+      {
+        case 0: msg("you are suddenly in a parallel dimension");
+        when 1: msg("the light in here suddenly seems %s",
+                    rainbow[rnd(cNCOLORS)]);
+        when 2: msg("you feel a sting in the side of your neck");
+        when 3: msg("multi-colored lines swirl around you, then fade");
+        when 4: msg("a %s light flashes in your eyes",
+                    rainbow[rnd(cNCOLORS)]);
+        when 5: msg("a spike shoots past your ear!");
+        when 6: msg("%s sparks dance across your armor",
+                    rainbow[rnd(cNCOLORS)]);
+        when 7: msg("you suddenly feel very thirsty");
+        when 8: msg("you feel time speed up suddenly");
+        when 9: msg("time now seems to be going slower");
+        when 10: msg("you pack turns %s!", rainbow[rnd(cNCOLORS)]);
+      }
+    when T_SLEEP:
+      fall_asleep();
+      addmsg("a strange white mist envelops you and ");
+    when T_ARROW:
+      if (swing(pstats.s_lvl - 1, get_ac(&player), 1))
+      {
+        pstats.s_hpt -= roll(1, 6);
+        if (pstats.s_hpt <= 0)
+        {
+          msg("an arrow killed you");
+          death('a');
+        }
+        else
+          msg("oh no! An arrow shot you");
+      }
+      else
+      {
+        THING *arrow = new_item();
+        init_weapon(arrow, ARROW);
+        arrow->o_count = 1;
+        arrow->o_pos = hero;
+        fall(arrow, false);
+        msg("an arrow shoots past you");
+      }
+    when T_TELEP:
+      teleport();
+      /* since the hero's leaving, look() won't put a TRAP
+       * down for us, so we have to do it ourself */
+      if (target == &player)
+        mvaddcch(tc->y, tc->x, TRAP);
+    when T_DART:
+      if (!swing(pstats.s_lvl + 1, get_ac(&player), 1))
+        msg("a small dart whizzes by your ear and vanishes");
+      else
+      {
+        pstats.s_hpt -= roll(1, 4);
+        if (pstats.s_hpt <= 0)
+        {
+          msg("a poisoned dart killed you");
+          death('d');
+        }
+        if (!ISWEARING(R_SUSTSTR) && !save(VS_POISON))
+          chg_str(-1);
+        msg("a small dart just hit you in the shoulder");
+      }
+    when T_RUST:
+      msg("a gush of water hits you on the head");
+      rust_armor(cur_armor);
+  }
+
+  flush_type();
+  return tr;
+}
+
+
