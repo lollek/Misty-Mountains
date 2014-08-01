@@ -233,7 +233,7 @@ readchar(void)
     if (ch == 3)
     {
 	quit(0);
-        return(27);
+	return(KEY_ESCAPE);
     }
 
     return(ch);
