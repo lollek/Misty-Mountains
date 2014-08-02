@@ -21,8 +21,9 @@
 
 #include "options.h"
 
-static bool get_bool(void *vp, WINDOW *win); /* Change a boolean */
-static bool get_sf(void *vp, WINDOW *win);   /* Toggle see_floor */
+static bool get_bool(void *vp, WINDOW *win);  /* Change a boolean */
+static bool get_sf(void *vp, WINDOW *win);    /* Toggle see_floor */
+static bool get_str(void *vopt, WINDOW *win); /* Change string */
 
 #define NUM_OPTS (sizeof optlist / sizeof (OPTION))
 
@@ -144,66 +145,8 @@ get_sf(void *vp, WINDOW *win)
 }
 
 
-/* TODO: Move this to io.c */
-bool
+static bool
 get_str(void *vopt, WINDOW *win)
 {
-  char buf[MAXSTR];
-  signed char c = ~KEY_ESCAPE;
-  unsigned i = strlen((char *) vopt);
-  int oy, ox;
-
-  getyx(win, oy, ox);
-
-  strucpy(buf, (char *) vopt, i);
-  waddstr(win, buf);
-
-  /* loop reading in the string, and put it in a temporary buffer */
-  while (c != KEY_ESCAPE)
-  {
-    wrefresh(win);
-    c = readchar();
-
-    if (c == '\n' || c == '\r' || c == -1)
-      break;
-
-    else if (c == erasechar() && i > 0)
-    {
-      i--;
-      wmove(win, oy, ox + i);
-      wclrtoeol(win);
-    }
-
-    else if (c == killchar())
-    {
-      i = 0;
-      wmove(win, oy, ox);
-      wclrtoeol(win);
-    }
-
-    else if (c == '~' && i == 0)
-    {
-      strcpy(buf, md_gethomedir());
-      waddstr(win, md_gethomedir());
-      i += strlen(md_gethomedir());
-    }
-
-    else if (i < MAXINP && (isprint(c) || c == ' '))
-    {
-      buf[i++] = c;
-      waddch(win, c);
-    }
-  }
-
-  buf[i] = '\0';
-  if (i > 0) /* only change option if something has been typed */
-    strucpy((char *) vopt, buf, (int) strlen(buf));
-  else
-    waddstr(win, vopt);
-  if (win == stdscr)
-    mpos += i;
-
-  wrefresh(win);
-  return c == KEY_ESCAPE ? 1 : 0;
+  return wreadstr(win, (char *)vopt);
 }
-

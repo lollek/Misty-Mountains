@@ -6,6 +6,8 @@ void status(void);     /* Print the status line at the bottom of the screen */
 void show_win(const char *message); /* Show window and wait before returning */
 
 /* get input */
+bool wreadstr(WINDOW *win, char *buf);  /* interruptable string from user */
+inline bool readstr(char *buf);         /* wreadstr for stdscr */
 char readchar(void);   /* Interruptable getch() */
 void wait_for(int ch); /* Wait for the specified key */
 

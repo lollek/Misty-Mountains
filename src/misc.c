@@ -485,9 +485,9 @@ call_it(struct obj_info *info)
   }
   else if (!info->oi_guess)
   {
-    char tmpbuf[MAXSTR];
+    char tmpbuf[MAXSTR] = { '\0' };
     msg(terse ? "call it: " : "what do you want to call it? ");
-    if (get_str(tmpbuf, stdscr) == 0)
+    if (readstr(tmpbuf) == 0)
     {
       if (info->oi_guess != NULL)
         free(info->oi_guess);

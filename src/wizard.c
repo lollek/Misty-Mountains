@@ -240,9 +240,9 @@ create_obj(void)
 	fix_stick(obj);
     else if (obj->o_type == GOLD)
     {
-	char buf[MAXSTR];
+	char buf[MAXSTR] = { '\0' };
 	msg("how much?");
-	if (get_str(buf, stdscr) == 0)
+	if (readstr(buf) == 0)
 	    obj->o_goldval = (short) atoi(buf);
     }
     add_pack(obj, false);

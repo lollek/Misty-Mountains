@@ -123,7 +123,7 @@ over:
 	mpos = 0;
 	msg("file name: ");
 	buf[0] = '\0';
-	if (get_str(buf, stdscr) != 0)
+	if (readstr(buf) != 0)
 	{
 quit_it:
 	    msg("");
