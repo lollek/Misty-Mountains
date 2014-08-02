@@ -36,6 +36,7 @@
 #include "status_effects.h"
 #include "scrolls.h"
 #include "traps.h"
+#include "io.h"
 
 /* Change this if saves become uncompatible with rogue5.4.4 */
 static char *release = "5.4.4";

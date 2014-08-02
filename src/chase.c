@@ -16,6 +16,7 @@
 #include "status_effects.h"
 #include "scrolls.h"
 #include "command.h"
+#include "io.h"
 
 #define DRAGONSHOT  5	/* one chance in DRAGONSHOT that a dragon will flame */
 

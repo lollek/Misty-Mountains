@@ -15,6 +15,7 @@
 #include "rogue.h"
 #include "status_effects.h"
 #include "scrolls.h"
+#include "io.h"
 
 static char pack_char();
 static void move_msg(THING *obj);

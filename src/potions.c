@@ -10,9 +10,11 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
-#include "potions.h"
 #include "rogue.h"
 #include "status_effects.h"
+#include "io.h"
+
+#include "potions.h"
 
 struct obj_info pot_info[NPOTIONS] = {
   /* io_name,      oi_prob, oi_worth, oi_guess, oi_know */

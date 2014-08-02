@@ -13,6 +13,7 @@
 #include "rogue.h"
 #include "scrolls.h"
 #include "status_effects.h"
+#include "io.h"
 
 
 struct obj_info scr_info[MAXSCROLLS] = {

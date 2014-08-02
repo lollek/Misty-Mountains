@@ -20,6 +20,7 @@
 #include "rogue.h"
 #include "score.h"
 #include "options.h"
+#include "io.h"
 
 static FILE *scoreboard = NULL; /* File descriptor for score file */
 

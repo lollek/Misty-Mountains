@@ -14,6 +14,7 @@
 #include <unistd.h>
 
 #include "rogue.h"
+#include "io.h"
 
 #define NO_WEAPON -1
 

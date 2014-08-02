@@ -10,6 +10,7 @@
  */
 
 #include "rogue.h"
+#include "io.h"
 
 int
 get_ac(THING *thing)

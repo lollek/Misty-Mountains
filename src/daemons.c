@@ -13,6 +13,7 @@
 #include "rogue.h"
 #include "status_effects.h"
 #include "command.h"
+#include "io.h"
 
 /*
  * doctor:

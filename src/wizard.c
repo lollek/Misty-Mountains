@@ -20,6 +20,7 @@
 #include "scrolls.h"
 #include "command.h"
 #include "options.h"
+#include "io.h"
 
 static char *type_name(int type);
 static void pr_spec(struct obj_info *info, int nitems);

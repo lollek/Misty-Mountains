@@ -13,8 +13,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "status_effects.h"
 #include "rogue.h"
+#include "status_effects.h"
+#include "io.h"
 
 /*
  * List of monsters in rough order of vorpalness

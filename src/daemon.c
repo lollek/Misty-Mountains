@@ -12,6 +12,7 @@
  */
 
 #include "rogue.h"
+#include "io.h"
 
 #define EMPTY 0
 #define DAEMON -1

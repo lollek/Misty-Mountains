@@ -1,6 +1,8 @@
 
-#include "status_effects.h"
 #include "rogue.h"
+
+#include "status_effects.h"
+#include "io.h"
 
 
 inline bool

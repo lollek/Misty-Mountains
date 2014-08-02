@@ -17,6 +17,7 @@
 #include "scrolls.h"
 #include "command.h"
 #include "traps.h"
+#include "io.h"
 
 /*
  * used to hold the new hero position

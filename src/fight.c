@@ -17,6 +17,7 @@
 #include "rogue.h"
 #include "status_effects.h"
 #include "command.h"
+#include "io.h"
 
 #define	EQSTR(a, b)	(strcmp(a, b) == 0)
 

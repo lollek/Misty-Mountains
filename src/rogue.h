@@ -453,7 +453,6 @@ bool player_has_amulet(void);
 void	_attach(THING **list, THING *item);
 void	_detach(THING **list, THING *item);
 void	_free_list(THING **ptr);
-void	addmsg(const char *fmt, ...);
 void	add_pack(THING *obj, bool silent);
 void	add_pass(void);
 void	add_str(str_t *sp, int amt);
@@ -485,7 +484,6 @@ void	do_passages(void);
 void	do_rooms(void);
 bool	do_run(char ch, bool cautiously);
 bool	do_zap(void);
-void	doadd(const char *fmt, va_list args);
 void	door(struct room *rm, coord *cp);
 void	door_open(struct room *rp);
 void	drain(void);
@@ -495,7 +493,6 @@ void	eat(void);
 size_t  encread(char *start, size_t size, FILE *inf);
 size_t	encwrite(const char *start, size_t size, FILE *outf);
 bool	encread_and_check_version(char *buf, FILE *infile);
-int	endmsg(void);
 void	enter_room(coord *cp);
 void	erase_lamp(coord *pos, struct room *rp);
 int	exp_add(THING *tp);
@@ -532,7 +529,6 @@ bool	lock_sc(void);
 void	miss(const char *er, const char *ee, bool noend);
 bool	missile(int ydelta, int xdelta);
 int	move_monst(THING *tp);
-int	msg(const char *fmt, ...);
 void	new_level(void);
 void	new_monster(THING *tp, char type, coord *cp);
 void	numpass(int y, int x);
@@ -568,12 +564,9 @@ void	set_oldch(THING *tp, coord *cp);
 void	shell(void);
 bool	show_floor(void);
 void	show_map(void);
-void	show_win(const char *message);
 int	sign(int nm);
 int	spread(int nm);
 void	start_daemon(void (*func)(), int arg, int type);
-void	status(void);
-int	step_ok(int ch);
 void	strucpy(char *s1, const char *s2, int len);
 int	swing(int at_lvl, int op_arm, int wplus);
 bool	take_off(void);
@@ -583,7 +576,6 @@ void	treas_room(void);
 void	turnref(void);
 void	unlock_sc(void);
 void	vert(struct room *rp, int startx);
-void	wait_for(int ch);
 THING  *wake_monster(int y, int x);
 void	wanderer(void);
 void	waste_time(void);
@@ -599,7 +591,6 @@ bool	see_monst(THING *mp);
 bool	turn_ok(int y, int x);
 bool	is_in_use(THING *obj);
 
-char	readchar(void);
 char	rnd_thing(void);
 
 char	*charge_str(THING *obj);
@@ -620,15 +611,6 @@ void visuals(void);
 
 const char *md_gethomedir(void);
 int md_hasclreol(void);
-
-#define	incch(void) wincch(stdscr)
-chtype	wincch(WINDOW *win);
-#define	mvincch(y, x) mvwincch(stdscr, y, x)
-chtype	mvwincch(WINDOW *win, int y, int x);
-#define	addcch(ch) waddcch(stdscr, ch)
-int	waddcch(WINDOW *window, const chtype ch);
-#define	mvaddcch(y, x, ch) mvwaddcch(stdscr, y, x, ch)
-int	mvwaddcch(WINDOW *window, int y, int x, const chtype ch);
 
 coord	*find_dest(THING *tp);
 coord	*rndmove(THING *who);

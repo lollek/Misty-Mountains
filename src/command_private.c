@@ -8,6 +8,7 @@
 #include "scrolls.h"
 #include "traps.h"
 #include "options.h"
+#include "io.h"
 
 #include "command_private.h"
 

@@ -17,6 +17,7 @@
 #include <string.h>
 
 #include "rogue.h"
+#include "io.h"
 
 #include "options.h"
 

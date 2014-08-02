@@ -12,6 +12,7 @@
 
 #include "rogue.h"
 #include "status_effects.h"
+#include "io.h"
 
 /*
  * ring_on:

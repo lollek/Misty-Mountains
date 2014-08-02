@@ -11,7 +11,9 @@
  */
 
 #include <stdlib.h>
+
 #include "rogue.h"
+#include "io.h"
 
 int total = 0;			/* total dynamic memory bytes */
 

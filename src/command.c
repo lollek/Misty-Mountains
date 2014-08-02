@@ -19,6 +19,7 @@
 #include "status_effects.h"
 #include "scrolls.h"
 #include "options.h"
+#include "io.h"
 
 #include "command_private.h"
 

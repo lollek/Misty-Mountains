@@ -19,6 +19,7 @@
 #include "potions.h"
 #include "status_effects.h"
 #include "scrolls.h"
+#include "io.h"
 
 static bool dropcheck(THING *obj);
 static int pick_one(struct obj_info *info, int nitems);

@@ -1,6 +1,7 @@
 
 #include "status_effects.h"
 #include "command.h"
+#include "io.h"
 
 #include "traps.h"
 
