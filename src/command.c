@@ -238,8 +238,12 @@ do_command(char ch)
         return do_wizard_command(ch);
       else
       {
+        char buf[MAXSTR];
+        /* Message the player, but don't save it to ^P */
         count = 0;
-        unsaved_msg("illegal command '%s'", unctrl(ch));
+        strcpy(buf, huh);
+        msg("illegal command '%s'", unctrl(ch));
+        strcpy(huh, buf);
         return false;
       }
   }
@@ -303,8 +307,14 @@ do_wizard_command(char ch)
     }
 
     otherwise:
-      count = 0;
-      unsaved_msg("illegal command '%s'", unctrl(ch));
+      {
+        char buf[MAXSTR];
+        /* Message the player, but don't save it to ^P */
+        count = 0;
+        strcpy(buf, huh);
+        msg("illegal command '%s'", unctrl(ch));
+        strcpy(huh, buf);
+      }
   }
   return false;
 }

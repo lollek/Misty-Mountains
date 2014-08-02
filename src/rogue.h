@@ -533,7 +533,6 @@ void	miss(const char *er, const char *ee, bool noend);
 bool	missile(int ydelta, int xdelta);
 int	move_monst(THING *tp);
 int	msg(const char *fmt, ...);
-void	unsaved_msg(const char *fmt, ...);
 void	new_level(void);
 void	new_monster(THING *tp, char type, coord *cp);
 void	numpass(int y, int x);
