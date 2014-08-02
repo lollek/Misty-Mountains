@@ -18,6 +18,7 @@
 #include "potions.h"
 #include "status_effects.h"
 #include "scrolls.h"
+#include "options.h"
 
 #include "command_private.h"
 
@@ -202,7 +203,7 @@ do_command(char ch)
     case 'f': return fight_monster(false);
     case 'i': return show_players_inventory();
     case 'm': move_on = true; return get_dir() ? do_command(dir_ch) : false;
-    case 'o': option(); return false;
+    case 'o': return option();
     case 'q': return quaff();
     case 'r': read_scroll(); return true;
     case 's': return search();

@@ -16,6 +16,7 @@
 
 #include "rogue.h"
 #include "status_effects.h"
+#include "options.h"
 
 static int trip_ch(int y, int x, int ch);
 
@@ -485,7 +486,7 @@ call_it(struct obj_info *info)
   {
     char tmpbuf[MAXSTR];
     msg(terse ? "call it: " : "what do you want to call it? ");
-    if (get_str(tmpbuf, stdscr) == NORMAL)
+    if (get_str(tmpbuf, stdscr) == 0)
     {
       if (info->oi_guess != NULL)
         free(info->oi_guess);
@@ -600,4 +601,20 @@ invis_on(void)
       mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
 }
 
+
+/* strucpy:
+ * Copy string using unctrl for things */
+void
+strucpy(char *s1, const char *s2, int len)
+{
+    if (len > MAXINP)
+	len = MAXINP;
+    while (len--)
+    {
+	if (isprint(*s2) || *s2 == ' ')
+	    *s1++ = *s2;
+	s2++;
+    }
+    *s1 = '\0';
+}
 

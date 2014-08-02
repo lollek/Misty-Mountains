@@ -19,6 +19,7 @@
 #include "potions.h"
 #include "scrolls.h"
 #include "command.h"
+#include "options.h"
 
 static char *type_name(int type);
 static void pr_spec(struct obj_info *info, int nitems);
@@ -238,8 +239,10 @@ create_obj(void)
 	fix_stick(obj);
     else if (obj->o_type == GOLD)
     {
+	char buf[MAXSTR];
 	msg("how much?");
-	get_num(&obj->o_goldval, stdscr);
+	if (get_str(buf, stdscr) == 0)
+	    obj->o_goldval = (short) atoi(buf);
     }
     add_pack(obj, false);
 }

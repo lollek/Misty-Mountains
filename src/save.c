@@ -19,6 +19,7 @@
 
 #include "rogue.h"
 #include "score.h"
+#include "options.h"
 
 static FILE *scoreboard = NULL; /* File descriptor for score file */
 
@@ -121,7 +122,7 @@ over:
 	mpos = 0;
 	msg("file name: ");
 	buf[0] = '\0';
-	if (get_str(buf, stdscr) == QUIT)
+	if (get_str(buf, stdscr) != 0)
 	{
 quit_it:
 	    msg("");

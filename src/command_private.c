@@ -7,6 +7,7 @@
 #include "potions.h"
 #include "scrolls.h"
 #include "traps.h"
+#include "options.h"
 
 #include "command_private.h"
 
@@ -134,7 +135,7 @@ give_item_nickname(void)
       ? "call it? "
       : "What do you want to call it? ");
 
-  if (get_str(tmpbuf, stdscr) == NORMAL)
+  if (get_str(tmpbuf, stdscr) == 0)
   {
     if (*guess != NULL) {
       free(*guess);

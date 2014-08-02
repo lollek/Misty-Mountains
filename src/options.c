@@ -18,315 +18,191 @@
 
 #include "rogue.h"
 
+#include "options.h"
+
+static bool get_bool(void *vp, WINDOW *win); /* Change a boolean */
+static bool get_sf(void *vp, WINDOW *win);   /* Toggle see_floor */
+
 #define NUM_OPTS (sizeof optlist / sizeof (OPTION))
+
+enum put_t
+{
+  PUT_BOOL,
+  PUT_STR
+};
 
 /* description of an option and what to do with it */
 typedef struct optstruct {
-    char	*o_name;	/* option name */
-    char	*o_prompt;	/* prompt for interactive entry */
-    void 	*o_opt;		/* pointer to thing to set */
-				/* function to print value */
-    void 	(*o_putfunc)(void *opt);
-				/* function to get value interactively */
-    enum option_return	(*o_getfunc)(void *opt, WINDOW *win);
+  char *o_prompt;     /* prompt for interactive entry */
+  void *o_opt;        /* pointer to thing to set function to print value */
+  enum put_t put_type;
+  bool (*o_getfunc)(void *opt, WINDOW *win); /* Get value */
 } OPTION;
 
-void	pr_optname(OPTION *op);
-
-OPTION	optlist[] = {
-    {"terse",	 "Terse output",
-		 &terse,	put_bool,	get_bool	},
-    {"flush",	 "Flush typeahead during battle",
-		 &fight_flush,	put_bool,	get_bool	},
-    {"jump",	 "Show position only at end of run",
-		 &jump,		put_bool,	get_bool	},
-    {"seefloor", "Show the lamp-illuminated floor",
-		 &see_floor,	put_bool,	get_sf		},
-    {"passgo",	"Follow turnings in passageways",
-		 &passgo,	put_bool,	get_bool	},
-    {"tombstone", "Print out tombstone when killed",
-		 &tombstone,	put_bool,	get_bool	},
-    {"name",	 "Name",
-		 whoami,	put_str,	get_str		},
-    {"file",	 "Save file",
-		 file_name,	put_str,	get_str		}
+static OPTION optlist[] = {
+  {"Terse output",                     &terse,       PUT_BOOL, get_bool},
+  {"Flush typeahead during battle",    &fight_flush, PUT_BOOL, get_bool},
+  {"Show position only at end of run", &jump,        PUT_BOOL, get_bool},
+  {"Show the lamp-illuminated floor",  &see_floor,   PUT_BOOL, get_sf},
+  {"Follow turnings in passageways",   &passgo,      PUT_BOOL, get_bool},
+  {"Show tombstone when killed",       &tombstone,   PUT_BOOL, get_bool},
+  {"Name",                             whoami,       PUT_STR,  get_str},
+  {"Save file",                        file_name,    PUT_STR,  get_str}
 };
 
-/*
- * option:
- *	Print and then set options from the terminal
- */
 
-void
+/* option:
+ * Print and then set options from the terminal */
+bool
 option(void)
 {
-    OPTION	*op;
-    enum option_return	retval;
+  char c = ~KEY_ESCAPE;
+  WINDOW *optscr = NULL;
+  coord msg_pos;
+  unsigned i;
 
-    wclear(hw);
-    /*
-     * Display current values of options
-     */
-    for (op = optlist; op <= &optlist[NUM_OPTS-1]; op++)
+  msg("Which value do you want to change? (ESC to exit) ");
+  getyx(stdscr, msg_pos.y, msg_pos.x);
+  optscr = dupwin(stdscr);
+
+  /* Display current values of options */
+  wmove(optscr, 1, 0);
+  for (i = 0; i < NUM_OPTS; ++i)
+  {
+    wprintw(optscr, "%d: %s: ", i + 1, optlist[i].o_prompt);
+    if (optlist[i].put_type == PUT_BOOL)
+      waddstr(optscr, *(bool *) optlist[i].o_opt ? "True" : "False");
+    else /* PUT_STR */
+      waddstr(optscr, (char *) optlist[i].o_opt);
+    waddch(optscr, '\n');
+  }
+
+  while (c != KEY_ESCAPE)
+  {
+    wmove(optscr, msg_pos.y, msg_pos.x);
+    wrefresh(optscr);
+    c = readchar();
+    if (c > '0' && c <= '0' + NUM_OPTS)
     {
-	pr_optname(op);
-	(*op->o_putfunc)(op->o_opt);
-	waddch(hw, '\n');
+      i = c - '0' - 1;
+      mvwprintw(optscr, i + 1, 0, "%d: %s: ", i + 1, optlist[i].o_prompt);
+      (*optlist[i].o_getfunc)(optlist[i].o_opt, optscr);
     }
-    /*
-     * Set values
-     */
-    wmove(hw, 0, 0);
-    for (op = optlist; op <= &optlist[NUM_OPTS-1]; op++)
-    {
-	pr_optname(op);
-	retval = (*op->o_getfunc)(op->o_opt, hw);
-	if (retval)
-	{
-	    if (retval == QUIT)
-		break;
-	    else if (op > optlist) {	/* MINUS */
-		wmove(hw, (int)(op - optlist) - 1, 0);
-		op -= 2;
-	    }
-	    else	/* trying to back up beyond the top */
-	    {
-		putchar('\007');
-		wmove(hw, 0, 0);
-		op--;
-	    }
-	}
-    }
-    /*
-     * Switch back to original screen
-     */
-    wmove(hw, LINES - 1, 0);
-    waddstr(hw, "--Press space to continue--");
-    wrefresh(hw);
-    wait_for(KEY_SPACE);
-    clearok(curscr, true);
-    touchwin(stdscr);
-    after = false;
+  }
+
+  /* Switch back to original screen */
+  wmove(optscr, LINES - 1, 0);
+  delwin(optscr);
+  clearok(curscr, true);
+  touchwin(stdscr);
+  msg("");
+  return false;
 }
 
-/*
- * pr_optname:
- *	Print out the option name prompt
- */
-
-void
-pr_optname(OPTION *op)
-{
-    wprintw(hw, "%s (\"%s\"): ", op->o_prompt, op->o_name);
-}
-
-/*
- * put_bool
- *	Put out a boolean
- */
-
-void
-put_bool(void *b)
-{
-    waddstr(hw, *(bool *) b ? "True" : "False");
-}
-
-/*
- * put_str:
- *	Put out a string
- */
-
-void
-put_str(void *str)
-{
-    waddstr(hw, (char *) str);
-}
-
-/*
- * get_bool:
- *	Allow changing a boolean option and print it out
- */
-enum option_return
+static bool
 get_bool(void *vp, WINDOW *win)
 {
-    bool *bp = (bool *) vp;
-    int oy, ox;
-    bool op_bad;
+  wrefresh(win);
+  switch (readchar())
+  {
+    case 't': case 'T':
+      *(bool *)vp = true;
+      waddstr(win, "True ");
+      return 0;
 
-    op_bad = true;
-    getyx(win, oy, ox);
-    waddstr(win, *bp ? "True" : "False");
-    while (op_bad)	
-    {
-	wmove(win, oy, ox);
-	wrefresh(win);
-	switch (readchar())
-	{
-	    case 't':
-	    case 'T':
-		*bp = true;
-		op_bad = false;
-		break;
-	    case 'f':
-	    case 'F':
-		*bp = false;
-		op_bad = false;
-		break;
-	    case '\n':
-	    case '\r':
-		op_bad = false;
-		break;
-	    case KEY_ESCAPE:
-		return QUIT;
-	    case '-':
-		return MINUS;
-	    default:
-		wmove(win, oy, ox + 10);
-		waddstr(win, "(T or F)");
-	}
-    }
-    wmove(win, oy, ox);
-    waddstr(win, *bp ? "True" : "False");
-    waddch(win, '\n');
-    return NORMAL;
+    case 'f': case 'F':
+      *(bool *)vp = false;
+      waddstr(win, "False");
+      return 0;
+
+    case '\n': case '\r': case KEY_ESCAPE: return 1;
+
+    default: return get_bool(vp, win);
+  }
 }
 
-/*
- * get_sf:
- *	Change value and handle transition problems from see_floor to
- *	!see_floor.
- */
-enum option_return
+static bool
 get_sf(void *vp, WINDOW *win)
 {
-    bool	*bp = (bool *) vp;
-    bool	was_sf;
-    enum option_return	retval;
+  bool was_sf = see_floor;
 
-    was_sf = see_floor;
-    retval = get_bool(bp, win);
-    if (retval == QUIT) return(QUIT);
-    if (was_sf != see_floor)
-    {
-	if (!see_floor) {
-	    see_floor = true;
-	    erase_lamp(&hero, proom);
-	    see_floor = false;
-	}
-	else
-	    look(false);
-    }
-    return NORMAL;
+  if (get_bool(vp, win) != 0)
+    return 1;
+  else if (was_sf == see_floor)
+    return 0;
+
+  if (!see_floor) {
+    see_floor = true;
+    erase_lamp(&hero, proom);
+    see_floor = false;
+  }
+  else
+    look(false);
+
+  return 0;
 }
 
-/*
- * get_str:
- *	Set a string option
- */
-#define MAXINP	50	/* max string to read from terminal or environment */
 
-enum option_return
+/* TODO: Move this to io.c */
+bool
 get_str(void *vopt, WINDOW *win)
 {
-    char *opt = (char *) vopt;
-    char *sp;
-    int oy, ox;
-    int i;
-    signed char c;
-    static char buf[MAXSTR];
+  char buf[MAXSTR];
+  signed char c = ~KEY_ESCAPE;
+  unsigned i = strlen((char *) vopt);
+  int oy, ox;
 
-    getyx(win, oy, ox);
+  getyx(win, oy, ox);
+
+  strucpy(buf, (char *) vopt, i);
+  waddstr(win, buf);
+
+  /* loop reading in the string, and put it in a temporary buffer */
+  while (c != KEY_ESCAPE)
+  {
     wrefresh(win);
-    /*
-     * loop reading in the string, and put it in a temporary buffer
-     */
-    for (sp = buf; (c = readchar()) != '\n' && c != '\r' && c != KEY_ESCAPE;
-	wclrtoeol(win), wrefresh(win))
+    c = readchar();
+
+    if (c == '\n' || c == '\r' || c == -1)
+      break;
+
+    else if (c == erasechar() && i > 0)
     {
-	if (c == -1)
-	    continue;
-	else if (c == erasechar())	/* process erase character */
-	{
-	    if (sp > buf)
-	    {
-		sp--;
-		for (i = (int) strlen(unctrl(*sp)); i; i--)
-		    waddch(win, '\b');
-	    }
-	    continue;
-	}
-	else if (c == killchar())	/* process kill character */
-	{
-	    sp = buf;
-	    wmove(win, oy, ox);
-	    continue;
-	}
-	else if (sp == buf)
-	{
-	    if (c == '-' && win != stdscr)
-		break;
-	    else if (c == '~')
-	    {
-		strcpy(buf, md_gethomedir());
-		waddstr(win, md_gethomedir());
-		sp += strlen(md_gethomedir());
-		continue;
-	    }
-	}
-	if (sp >= &buf[MAXINP] || !(isprint(c) || c == ' '))
-	    putchar(CTRL('G'));
-	else
-	{
-	    *sp++ = c;
-	    waddstr(win, unctrl(c));
-	}
+      i--;
+      wmove(win, oy, ox + i);
+      wclrtoeol(win);
     }
-    *sp = '\0';
-    if (sp > buf)	/* only change option if something has been typed */
-	strucpy(opt, buf, (int) strlen(buf));
-    mvwprintw(win, oy, ox, "%s\n", opt);
-    wrefresh(win);
-    if (win == stdscr)
-	mpos += (int)(sp - buf);
-    if (c == '-')
-	return MINUS;
-    else if (c == KEY_ESCAPE)
-	return QUIT;
-    else
-	return NORMAL;
-}
 
-/*
- * get_num:
- *	Get a numeric option
- */
-enum option_return
-get_num(void *vp, WINDOW *win)
-{
-    short *opt = (short *) vp;
-    enum option_return i;
-    static char buf[MAXSTR];
-
-    if ((i = get_str(buf, win)) == NORMAL)
-	*opt = (short) atoi(buf);
-    return i;
-}
-
-/*
- * strucpy:
- *	Copy string using unctrl for things
- */
-
-void
-strucpy(char *s1, const char *s2, int len)
-{
-    if (len > MAXINP)
-	len = MAXINP;
-    while (len--)
+    else if (c == killchar())
     {
-	if (isprint(*s2) || *s2 == ' ')
-	    *s1++ = *s2;
-	s2++;
+      i = 0;
+      wmove(win, oy, ox);
+      wclrtoeol(win);
     }
-    *s1 = '\0';
+
+    else if (c == '~' && i == 0)
+    {
+      strcpy(buf, md_gethomedir());
+      waddstr(win, md_gethomedir());
+      i += strlen(md_gethomedir());
+    }
+
+    else if (i < MAXINP && (isprint(c) || c == ' '))
+    {
+      buf[i++] = c;
+      waddch(win, c);
+    }
+  }
+
+  buf[i] = '\0';
+  if (i > 0) /* only change option if something has been typed */
+    strucpy((char *) vopt, buf, (int) strlen(buf));
+  else
+    waddstr(win, vopt);
+  if (win == stdscr)
+    mpos += i;
+
+  wrefresh(win);
+  return c == KEY_ESCAPE ? 1 : 0;
 }
+

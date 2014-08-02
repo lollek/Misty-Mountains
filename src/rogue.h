@@ -30,6 +30,7 @@
 #define NUMLINES 24
 #define NUMCOLS  80
 #define STATLINE (NUMLINES - 1)
+#define MAXINP 50   /* max string to read from terminal or environment */
 
 #undef CTRL
 #define CTRL(c) (c & 037)
@@ -46,14 +47,6 @@ extern enum rogue_game_t
   DEFAULT,
   QUICK
 } game_type;
-
-/* return values for get functions */
-enum option_return
-{
-  NORMAL = 0,         /* normal exit */
-  QUIT = 1,           /* quit option setting */
-  MINUS               /* back up one option */
-};
 
 /* All the fun defines */
 #define when		break;case
@@ -544,15 +537,12 @@ void	unsaved_msg(const char *fmt, ...);
 void	new_level(void);
 void	new_monster(THING *tp, char type, coord *cp);
 void	numpass(int y, int x);
-void	option(void);
 void 	passnum(void);
 const char	*pick_color(const char *col);
 void	pick_up(char ch);
 void	picky_inven(void);
 int	get_ac(THING *thing);
 int	pr_list(void);
-void	put_bool(void *b);
-void	put_str(void *str);
 void	put_things(void);
 void	putpass(coord *cp);
 char	randmonster(bool wander);
@@ -631,11 +621,6 @@ void visuals(void);
 
 const char *md_gethomedir(void);
 int md_hasclreol(void);
-
-enum option_return	get_bool(void *vp, WINDOW *win);
-enum option_return	get_num(void *vp, WINDOW *win);
-enum option_return	get_sf(void *vp, WINDOW *win);
-enum option_return	get_str(void *vopt, WINDOW *win);
 
 #define	incch(void) wincch(stdscr)
 chtype	wincch(WINDOW *win);
