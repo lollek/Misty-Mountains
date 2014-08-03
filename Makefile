@@ -16,7 +16,7 @@ PREFIX   = /usr/local
 SCOREDIR = $(PREFIX)/share/$(PROGRAM)/
 
 CC       = gcc
-CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic
+CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic -g
 DFLAGS   = -DVERSION=\"$(VERSION)\" -DSCOREDIR=\"$(SCOREDIR)\"
 LDFLAGS  = -lcurses
 
