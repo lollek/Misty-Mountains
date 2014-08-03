@@ -15,6 +15,7 @@
 
 #include "rogue.h"
 #include "io.h"
+#include "chase.h"
 
 #define NO_WEAPON -1
 

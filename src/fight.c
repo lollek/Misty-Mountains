@@ -19,6 +19,7 @@
 #include "command.h"
 #include "io.h"
 #include "armor.h"
+#include "chase.h"
 
 #define	EQSTR(a, b)	(strcmp(a, b) == 0)
 

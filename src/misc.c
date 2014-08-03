@@ -18,6 +18,7 @@
 #include "status_effects.h"
 #include "options.h"
 #include "io.h"
+#include "chase.h"
 
 static int trip_ch(int y, int x, int ch);
 

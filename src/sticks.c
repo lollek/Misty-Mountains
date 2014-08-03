@@ -16,6 +16,7 @@
 #include "rogue.h"
 #include "status_effects.h"
 #include "io.h"
+#include "chase.h"
 
 /*
  * fix_stick:

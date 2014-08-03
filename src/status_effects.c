@@ -1,8 +1,9 @@
 
 #include "rogue.h"
+#include "io.h"
+#include "chase.h"
 
 #include "status_effects.h"
-#include "io.h"
 
 
 inline bool

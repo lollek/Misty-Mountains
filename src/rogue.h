@@ -462,7 +462,6 @@ int	attack(THING *mp);
 void	badcheck(const char *name, struct obj_info *info, int bound);
 void	bounce(THING *weap, const char *mname, bool noend);
 void	call_it(struct obj_info *info);
-bool	cansee(int y, int x);
 void	chg_str(int amt);
 void	check_level(void);
 void	conn(int r1, int r2);
@@ -472,9 +471,6 @@ char	death_monst(void);
 void	dig(int y, int x);
 void	discard(THING *item);
 void	discovered(void);
-int	dist(int y1, int x1, int y2, int x2);
-int	dist_cp(coord *c1, coord *c2);
-int	do_chase(THING *th);
 void	do_daemons(int flag);
 void	do_fuses(int flag);
 void	do_maze(struct room *rp);
@@ -528,7 +524,6 @@ void	kill_daemon(void (*func)());
 bool	lock_sc(void);
 void	miss(const char *er, const char *ee, bool noend);
 bool	missile(int ydelta, int xdelta);
-int	move_monst(THING *tp);
 void	new_level(void);
 void	new_monster(THING *tp, char type, coord *cp);
 void	numpass(int y, int x);
@@ -540,7 +535,6 @@ int	pr_list(void);
 void	put_things(void);
 void	putpass(coord *cp);
 char	randmonster(bool wander);
-void    relocate(THING *th, coord *new_loc);
 void	remove_mon(coord *mp, THING *tp, bool waskill);
 void	reset_last(void);
 int	ring_eat(int hand);
@@ -551,7 +545,6 @@ int	rnd_room(void);
 int	roll(int number, int sides);
 int	rs_save_file(FILE *savef);
 int	rs_restore_file(FILE *inf);
-void	runto(coord *runner);
 void	rust_armor(THING *arm);
 int	save(int which);
 void	save_file(FILE *savef);
@@ -559,7 +552,6 @@ void	save_game(void);
 int	save_throw(int which, THING *tp);
 void	score(int amount, int flags, char monst);
 void	set_know(THING *obj, struct obj_info *info);
-void	set_oldch(THING *tp, coord *cp);
 void	shell(void);
 bool	show_floor(void);
 void	show_map(void);
@@ -579,11 +571,8 @@ void	wanderer(void);
 void	whatis(int type);
 bool	wield(void);
 
-bool	chase(THING *tp, coord *ee);
-bool	diag_ok(coord *sp, coord *ep);
 bool	fallpos(coord *pos, coord *newpos);
 bool	find_floor(struct room *rp, coord *cp, int limit, bool monst);
-bool	see_monst(THING *mp);
 bool	turn_ok(int y, int x);
 bool	is_in_use(THING *obj);
 
@@ -600,7 +589,6 @@ void doctor(void);
 void leave(int);
 void quit(int);
 void rollwand(void);
-void runners(void);
 void stomach(void);
 void swander(void);
 void visuals(void);
@@ -608,7 +596,6 @@ void visuals(void);
 const char *md_gethomedir(void);
 int md_hasclreol(void);
 
-coord	*find_dest(THING *tp);
 coord	*rndmove(THING *who);
 
 THING	*find_obj(int y, int x);
@@ -616,8 +603,6 @@ THING	*get_item(const char *purpose, int type);
 THING	*leave_pack(THING *obj, bool newobj, bool all);
 THING	*new_item(void);
 THING	*new_thing(void);
-
-struct room	*roomin(coord *cp);
 
 #define MAXDAEMONS 20
 

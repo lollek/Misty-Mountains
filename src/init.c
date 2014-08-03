@@ -21,6 +21,7 @@
 #include "status_effects.h"
 #include "scrolls.h"
 #include "io.h"
+#include "chase.h"
 
 
 /* init_new_game

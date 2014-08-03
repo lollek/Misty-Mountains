@@ -21,6 +21,7 @@
 #include "command.h"
 #include "options.h"
 #include "io.h"
+#include "chase.h"
 
 static char *type_name(int type);
 static void pr_spec(struct obj_info *info, int nitems);
