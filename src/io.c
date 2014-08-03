@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "rogue.h"
+#include "armor.h"
 
 #include "io.h"
 

@@ -20,6 +20,7 @@
 #include "scrolls.h"
 #include "options.h"
 #include "io.h"
+#include "armor.h"
 
 #include "command_private.h"
 

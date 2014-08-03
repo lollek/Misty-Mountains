@@ -12,6 +12,8 @@
 #include "rogue.h"
 #include "io.h"
 
+#include "armor.h"
+
 int
 get_ac(THING *thing)
 {
@@ -34,8 +36,6 @@ get_ac(THING *thing)
   return 20 - ac;
 }
 
-/** wear:
- * The player wants to wear something, so let him/her put it on.  */
 bool
 wear(void)
 {
@@ -70,8 +70,6 @@ wear(void)
   return true;
 }
 
-/** take_off:
- * Get the armor off of the players back */
 bool
 take_off(void)
 {
@@ -104,8 +102,6 @@ take_off(void)
   return true;
 }
 
-/** waste_time:
- * Do nothing but let other things happen */
 void
 waste_time(void)
 {

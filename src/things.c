@@ -20,6 +20,7 @@
 #include "status_effects.h"
 #include "scrolls.h"
 #include "io.h"
+#include "armor.h"
 
 static bool dropcheck(THING *obj);
 static int pick_one(struct obj_info *info, int nitems);
