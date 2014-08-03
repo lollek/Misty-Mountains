@@ -153,23 +153,17 @@ do_zap(void)
 		    case WS_TELAWAY:
 		    case WS_TELTO:
                     {
-			coord new_pos;
-
-			if (obj->o_which == WS_TELAWAY)
-			{
-			    do
-			    {
-				find_floor(NULL, &new_pos, false, true);
-			    } while (same_coords(new_pos, hero));
-			}
-			else
-			{
-			    new_pos.y = hero.y + delta.y;
-			    new_pos.x = hero.x + delta.x;
-			}
 			tp->t_dest = &hero;
 			tp->t_flags |= ISRUN;
-			relocate(tp, &new_pos);
+			if (obj->o_which == WS_TELTO)
+			{
+			    coord new_pos;
+			    new_pos.y = hero.y + delta.y;
+			    new_pos.x = hero.x + delta.x;
+			    teleport(tp, &new_pos);
+			}
+			else
+			    teleport(tp, NULL);
 		    }
 		}
 	    }

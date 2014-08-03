@@ -1,7 +1,10 @@
 
+#include "string.h"
+
 #include "rogue.h"
 #include "io.h"
 #include "chase.h"
+#include "command.h"
 
 #include "status_effects.h"
 
@@ -342,4 +345,78 @@ raise_level(void)
   check_level();
   if (game_type != QUICK)
     msg("you suddenly feel much more skillful");
+}
+
+void
+teleport(THING *thing, coord *target)
+{
+  coord new_pos;
+  struct room *new_room;
+
+  /* Set target location */
+  if (target == NULL)
+    do
+      find_floor(NULL, &new_pos, false, true);
+    while (same_coords(new_pos, hero));
+  else
+  {
+    new_pos.y = target->y;
+    new_pos.x = target->x;
+  }
+  new_room = roomin(&new_pos);
+  mvaddcch(thing->t_pos.y, thing->t_pos.x,
+           thing == &player ? floor_at() : thing->t_oldch);
+
+  /* Move target */
+  if (thing == &player)
+  {
+    if (new_room != proom)
+    {
+      leave_room(&hero);
+      hero = new_pos;
+      enter_room(&hero);
+    }
+    else
+    {
+      hero = new_pos;
+      look(true);
+    }
+  }
+  else if (same_coords(new_pos, thing->t_pos) && see_monst(thing))
+    msg("%s looks confused for a moment");
+  else
+  {
+    set_oldch(thing, &new_pos);
+    moat(thing->t_pos.y, thing->t_pos.x) = NULL;
+    if (new_room != thing->t_room)
+    {
+      thing->t_dest = find_dest(thing);
+      thing->t_room = new_room;
+    }
+    thing->t_pos = new_pos;
+    moat(new_pos.y, new_pos.x) = thing;
+  }
+
+  /* Print @ new location */
+  if (thing == &player)
+    mvaddcch(new_pos.y, new_pos.x, PLAYER);
+  else if (see_monst(thing))
+    mvaddcch(new_pos.y, new_pos.x, thing->t_disguise);
+  else if (on(player, SEEMONST))
+    mvaddcch(new_pos.y, new_pos.x, thing->t_type | A_STANDOUT);
+
+  /* Some extra player things */
+  if (thing == &player)
+  {
+    if (on(player, ISHELD))
+    {
+      player.t_flags &= ~ISHELD;
+      vf_hit = 0;
+      strcpy(monsters['F'-'A'].m_stats.s_dmg, "000x0");
+    }
+    no_move = 0;
+    stop_counting(true);
+    flush_type();
+    msg("suddenly you're somewhere else");
+  }
 }

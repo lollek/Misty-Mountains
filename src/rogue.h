@@ -560,7 +560,6 @@ int	spread(int nm);
 void	start_daemon(void (*func)(), int arg, int type);
 void	strucpy(char *s1, const char *s2, int len);
 int	swing(int at_lvl, int op_arm, int wplus);
-void	teleport(void);
 void	total_winner(void);
 void	treas_room(void);
 void	turnref(void);

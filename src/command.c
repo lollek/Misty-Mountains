@@ -164,11 +164,11 @@ command(void)
   if (ISRING(LEFT, R_SEARCH))
     search();
   else if (ISRING(LEFT, R_TELEPORT) && rnd(50) == 0)
-    teleport();
+    teleport(&player, NULL);
   if (ISRING(RIGHT, R_SEARCH))
     search();
   else if (ISRING(RIGHT, R_TELEPORT) && rnd(50) == 0)
-    teleport();
+    teleport(&player, NULL);
 
   return 0; /* Restart from top */
 }
@@ -261,12 +261,12 @@ do_wizard_command(char ch)
     case '|': msg("@ %d,%d", hero.y, hero.x);
     when 'C': create_obj();
     when '$': msg("inpack = %d", items_in_pack());
-    /* when '\\': This is used for testing new features */
+    /* when '\\': get_dir(); teleport(moat(delta.y + hero.y, hero.x + delta.x), NULL); * This is used for testing new features */
     when CTRL('W'): whatis(0);
     when CTRL('D'): level++; new_level();
     when CTRL('A'): level--; new_level();
     when CTRL('F'): show_map();
-    when CTRL('T'): teleport();
+    when CTRL('T'): teleport(&player, NULL);
     when CTRL('E'): msg("food left: %d", food_left);
     when CTRL('C'): add_pass();
     when CTRL('X'): turn_see(on(player, SEEMONST));

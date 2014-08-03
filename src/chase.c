@@ -73,46 +73,22 @@ move_monst(THING *tp)
   return(0);
 }
 
-void
-relocate(THING *th, coord *new_loc)
-{
-  struct room *oroom;
-
-  if (!same_coords(*new_loc, th->t_pos))
-  {
-    mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
-    th->t_room = roomin(new_loc);
-    set_oldch(th, new_loc);
-    oroom = th->t_room;
-    moat(th->t_pos.y, th->t_pos.x) = NULL;
-
-    if (oroom != th->t_room)
-      th->t_dest = find_dest(th);
-    th->t_pos = *new_loc;
-    moat(new_loc->y, new_loc->x) = th;
-  }
-  move(new_loc->y, new_loc->x);
-
-  if (see_monst(th))
-    addcch(th->t_disguise);
-  else if (on(player, SEEMONST))
-    addcch(th->t_type | A_STANDOUT);
-}
-
 int
 do_chase(THING *th)
 {
     coord *cp;
-    struct room *rer, *ree;	/* room of chaser, room of chasee */
-    int mindist = 32767, curdist;
-    bool stoprun = false;	/* true means we are there */
+    struct room *rer = th->t_room; /* room of chaser, */
+    struct room *ree; /* room of chasee */
+    int mindist = 32767;
+    int curdist;
+    bool stoprun = false; /* true means we are there */
     bool door;
     THING *obj;
-    static coord this;			/* Temporary destination for chaser */
+    static coord this; /* Temporary destination for chaser */
 
-    rer = th->t_room;		/* Find room of chaser */
     if (on(*th, ISGREED) && rer->r_goldval == 0)
 	th->t_dest = &hero;	/* If gold has been taken, run after hero */
+
     if (th->t_dest == &hero)	/* Find room of chasee */
 	ree = proom;
     else
@@ -200,7 +176,27 @@ over:
 	if (th->t_type == 'F')
 	    return(0);
     }
-    relocate(th, &ch_ret);
+
+    if (!same_coords(ch_ret, th->t_pos))
+    {
+      struct room *oroom;
+      mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
+      th->t_room = roomin(&ch_ret);
+      set_oldch(th, &ch_ret);
+      oroom = th->t_room;
+      moat(th->t_pos.y, th->t_pos.x) = NULL;
+
+      if (oroom != th->t_room)
+        th->t_dest = find_dest(th);
+      th->t_pos = ch_ret;
+      moat(ch_ret.y, ch_ret.x) = th;
+    }
+    move(ch_ret.y, ch_ret.x);
+
+    if (see_monst(th))
+      addcch(th->t_disguise);
+    else if (on(player, SEEMONST))
+      addcch(th->t_type | A_STANDOUT);
 
     /* And stop running if need be */
     if (stoprun && same_coords(th->t_pos, *(th->t_dest)))

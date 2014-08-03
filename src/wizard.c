@@ -250,47 +250,6 @@ create_obj(void)
 }
 
 /*
- * telport:
- *	Bamf the hero someplace else
- */
-
-void
-teleport(void)
-{
-    static coord c;
-
-    mvaddcch(hero.y, hero.x, floor_at());
-    find_floor((struct room *) NULL, &c, false, true);
-    if (roomin(&c) != proom)
-    {
-	leave_room(&hero);
-	hero = c;
-	enter_room(&hero);
-    }
-    else
-    {
-	hero = c;
-	look(true);
-    }
-    mvaddcch(hero.y, hero.x, PLAYER);
-    /*
-     * turn off ISHELD in case teleportation was done while fighting
-     * a Flytrap
-     */
-    if (on(player, ISHELD))
-    {
-	player.t_flags &= ~ISHELD;
-	vf_hit = 0;
-	strcpy(monsters['F'-'A'].m_stats.s_dmg, "000x0");
-    }
-
-    no_move = 0;
-    stop_counting(true);
-    flush_type();
-    msg("suddenly you're somewhere else");
-}
-
-/*
  * show_map:
  *	Print out the map for the wizard
  */

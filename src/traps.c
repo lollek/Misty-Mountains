@@ -86,12 +86,10 @@ be_trapped(THING *target, coord *tc)
         fall(arrow, false);
         msg("an arrow shoots past you");
       }
-    when T_TELEP:
-      teleport();
-      /* since the hero's leaving, look() won't put a TRAP
-       * down for us, so we have to do it ourself */
+    when T_TELEP: /* Works for monsters */
+      teleport(target, NULL);
       if (target == &player)
-        mvaddcch(tc->y, tc->x, TRAP);
+        mvaddcch(tc->y, tc->x, TRAP); /* Mark trap before we leave */
     when T_DART:
       if (!swing(pstats.s_lvl + 1, get_ac(&player), 1))
         msg("a small dart whizzes by your ear and vanishes");

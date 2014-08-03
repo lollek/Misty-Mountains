@@ -245,7 +245,7 @@ def:
     when S_TELEP:
       /* Scroll of teleportation: Make him dissapear and reappear */
     {
-      teleport();
+      teleport(&player, NULL);
       learn_scroll(S_TELEP);
     }
     when S_ENCH:

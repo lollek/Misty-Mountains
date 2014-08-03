@@ -60,5 +60,6 @@ void cure_blindness(void);
 void become_levitating(bool permanent);
 void remove_levitating(void);
 void raise_level(void);                     /* Level up */
+void teleport(THING *thing, coord *target); /* Teleport someone somewhere */
 
 #endif /* _ROGUE14_STATUS_EFFECTS_H_ */
