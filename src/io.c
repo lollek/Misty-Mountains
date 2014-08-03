@@ -49,7 +49,7 @@ colorize(const chtype ch)
 
 inline chtype incch(void)
 {
-  return incch() & A_CHARTEXT;
+  return inch() & A_CHARTEXT;
 }
 
 inline chtype
