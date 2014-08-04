@@ -351,7 +351,6 @@ void
 teleport(THING *thing, coord *target)
 {
   coord new_pos;
-  struct room *new_room;
 
   /* Set target location */
   if (target == NULL)
@@ -363,14 +362,13 @@ teleport(THING *thing, coord *target)
     new_pos.y = target->y;
     new_pos.x = target->x;
   }
-  new_room = roomin(&new_pos);
-  mvaddcch(thing->t_pos.y, thing->t_pos.x,
-           thing == &player ? floor_at() : thing->t_oldch);
+  msg("pos: %d,%d", new_pos.y, new_pos.x);
 
   /* Move target */
   if (thing == &player)
   {
-    if (new_room != proom)
+    mvaddcch(thing->t_pos.y, thing->t_pos.x, floor_at());
+    if (roomin(&new_pos) != proom)
     {
       leave_room(&hero);
       hero = new_pos;
@@ -383,15 +381,25 @@ teleport(THING *thing, coord *target)
     }
   }
   else if (same_coords(new_pos, thing->t_pos) && see_monst(thing))
-    msg("%s looks confused for a moment");
+    msg("%s looks confused for a moment", set_mname(thing));
   else
   {
+    if (see_monst(thing))
+    {
+      mvaddcch(thing->t_pos.y, thing->t_pos.x, thing->t_oldch);
+      msg(cansee(new_pos.y, new_pos.x)
+            ? "%s teleported a short distance"
+            : "%s suddenly disappeared", set_mname(thing));
+    }
+    else if (cansee(new_pos.y, new_pos.x))
+      msg("%s appeared from thin air", set_mname(thing));
+
     set_oldch(thing, &new_pos);
     moat(thing->t_pos.y, thing->t_pos.x) = NULL;
-    if (new_room != thing->t_room)
+    if (roomin(&new_pos) != thing->t_room)
     {
       thing->t_dest = find_dest(thing);
-      thing->t_room = new_room;
+      thing->t_room = roomin(&new_pos);
     }
     thing->t_pos = new_pos;
     moat(new_pos.y, new_pos.x) = thing;
@@ -399,15 +407,8 @@ teleport(THING *thing, coord *target)
 
   /* Print @ new location */
   if (thing == &player)
-    mvaddcch(new_pos.y, new_pos.x, PLAYER);
-  else if (see_monst(thing))
-    mvaddcch(new_pos.y, new_pos.x, thing->t_disguise);
-  else if (on(player, SEEMONST))
-    mvaddcch(new_pos.y, new_pos.x, thing->t_type | A_STANDOUT);
-
-  /* Some extra player things */
-  if (thing == &player)
   {
+    mvaddcch(new_pos.y, new_pos.x, PLAYER);
     if (on(player, ISHELD))
     {
       player.t_flags &= ~ISHELD;
@@ -419,4 +420,9 @@ teleport(THING *thing, coord *target)
     flush_type();
     msg("suddenly you're somewhere else");
   }
+  else if (see_monst(thing))
+    mvaddcch(new_pos.y, new_pos.x, thing->t_disguise);
+  else if (on(player, SEEMONST))
+    mvaddcch(new_pos.y, new_pos.x, thing->t_type | A_STANDOUT);
+
 }

@@ -367,7 +367,7 @@ chase(THING *tp, coord *ee)
     return (bool)(curdist != 0 && !same_coords(ch_ret, hero));
 }
 
-  struct room *
+struct room *
 roomin(coord *cp)
 {
   char *fp = &flat(cp->y, cp->x);
