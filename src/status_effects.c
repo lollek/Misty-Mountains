@@ -362,7 +362,6 @@ teleport(THING *thing, coord *target)
     new_pos.y = target->y;
     new_pos.x = target->x;
   }
-  msg("pos: %d,%d", new_pos.y, new_pos.x);
 
   /* Move target */
   if (thing == &player)
