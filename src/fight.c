@@ -294,7 +294,7 @@ attack(THING *mp)
 		     * and pick out one we like.
 		     */
 		    steal = NULL;
-		    for (nobj = 0, obj = pack; obj != NULL; obj = next(obj))
+		    for (nobj = 0, obj = pack; obj != NULL; obj = obj->l_next)
 			if (obj != cur_armor && obj != cur_weapon
 			    && obj != cur_ring[LEFT] && obj != cur_ring[RIGHT]
 			    && is_magic(obj) && rnd(++nobj) == 0)
@@ -560,7 +560,7 @@ remove_mon(coord *mp, THING *tp, bool waskill)
 
     for (obj = tp->t_pack; obj != NULL; obj = nexti)
     {
-	nexti = next(obj);
+	nexti = obj->l_next;
 	obj->o_pos = tp->t_pos;
 	detach(tp->t_pack, obj);
 	if (waskill)

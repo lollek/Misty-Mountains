@@ -32,7 +32,7 @@ runners(void)
   for (tp = mlist; tp != NULL; tp = next)
   {
     /* remember this in case the monster's "next" is changed */
-    next = next(tp);
+    next = tp->l_next;
     if (!on(*tp, ISHELD) && on(*tp, ISRUN))
     {
       bool wastarget = on(*tp, ISTARGET);
@@ -157,7 +157,7 @@ over:
 	    return( attack(th) );
 	else if (same_coords(this, *th->t_dest))
 	{
-	    for (obj = lvl_obj; obj != NULL; obj = next(obj))
+	    for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
 		if (th->t_dest == &obj->o_pos)
 		{
 		    detach(lvl_obj, obj);
@@ -331,7 +331,7 @@ chase(THING *tp, coord *ee)
 		     */
 		    if (ch == SCROLL)
 		    {
-			for (obj = lvl_obj; obj != NULL; obj = next(obj))
+			for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
 			{
 			    if (y == obj->o_pos.y && x == obj->o_pos.x)
 				break;
@@ -429,13 +429,13 @@ find_dest(THING *tp)
     if ((prob = monsters[tp->t_type - 'A'].m_carry) <= 0 || tp->t_room == proom
 	|| see_monst(tp))
 	    return &hero;
-    for (obj = lvl_obj; obj != NULL; obj = next(obj))
+    for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
     {
 	if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
 	    continue;
 	if (roomin(&obj->o_pos) == tp->t_room && rnd(100) < prob)
 	{
-	    for (tp = mlist; tp != NULL; tp = next(tp))
+	    for (tp = mlist; tp != NULL; tp = tp->l_next)
 		if (tp->t_dest == &obj->o_pos)
 		    break;
 	    if (tp == NULL)

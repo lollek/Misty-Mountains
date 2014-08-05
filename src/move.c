@@ -314,7 +314,7 @@ rndmove(THING *who)
 	    goto bad;
 	if (ch == SCROLL)
 	{
-	    for (obj = lvl_obj; obj != NULL; obj = next(obj))
+	    for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
 		if (y == obj->o_pos.y && x == obj->o_pos.x)
 		    break;
 	    if (obj != NULL && obj->o_which == S_SCARE)

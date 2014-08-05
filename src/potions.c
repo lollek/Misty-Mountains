@@ -92,7 +92,7 @@ quaff(void)
       if (lvl_obj != NULL)
       {
         wclear(hw);
-        for (tp = lvl_obj; tp != NULL; tp = next(tp))
+        for (tp = lvl_obj; tp != NULL; tp = tp->l_next)
         {
           if (is_magic(tp))
           {
@@ -102,9 +102,9 @@ quaff(void)
             learn_potion(obj->o_which);
           }
         }
-        for (mp = mlist; mp != NULL; mp = next(mp))
+        for (mp = mlist; mp != NULL; mp = mp->l_next)
         {
-          for (tp = mp->t_pack; tp != NULL; tp = next(tp))
+          for (tp = mp->t_pack; tp != NULL; tp = tp->l_next)
           {
             if (is_magic(tp))
             {

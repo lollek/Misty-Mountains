@@ -262,7 +262,7 @@ drain(void)
 	corp = NULL;
     inpass = (bool)(proom->r_flags & ISGONE);
     dp = drainee;
-    for (mp = mlist; mp != NULL; mp = next(mp))
+    for (mp = mlist; mp != NULL; mp = mp->l_next)
 	if (mp->t_room == proom || mp->t_room == corp ||
 	    (inpass && chat(mp->t_pos.y, mp->t_pos.x) == DOOR &&
 	    &passages[flat(mp->t_pos.y, mp->t_pos.x) & F_PNUM] == proom))

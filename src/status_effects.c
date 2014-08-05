@@ -37,7 +37,7 @@ set_true_seeing(THING *thing, bool status, bool permanent)
   else
   {
     THING *th;
-    for (th = mlist; th != NULL; th = next(th))
+    for (th = mlist; th != NULL; th = th->l_next)
       if (is_invisible(th) && see_monst(th))
         mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
     player.t_flags &= ~CANSEE;
@@ -202,12 +202,12 @@ remove_tripping(void)
     return;
 
   /* undo the things */
-  for (tp = lvl_obj; tp != NULL; tp = next(tp))
+  for (tp = lvl_obj; tp != NULL; tp = tp->l_next)
     if (cansee(tp->o_pos.y, tp->o_pos.x))
       mvaddcch(tp->o_pos.y, tp->o_pos.x, (chtype)tp->o_type);
 
   /* undo the monsters */
-  for (tp = mlist; tp != NULL; tp = next(tp))
+  for (tp = mlist; tp != NULL; tp = tp->l_next)
   {
     move(tp->t_pos.y, tp->t_pos.x);
     if (cansee(tp->t_pos.y, tp->t_pos.x))

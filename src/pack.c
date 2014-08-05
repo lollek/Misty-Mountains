@@ -74,7 +74,7 @@ add_pack(THING *obj, bool silent)
     else
     {
 	THING *lp = NULL;
-	for (op = pack; op != NULL; op = next(op))
+	for (op = pack; op != NULL; op = op->l_next)
 	{
 	    if (op->o_type != obj->o_type)
 		lp = op;
@@ -83,10 +83,10 @@ add_pack(THING *obj, bool silent)
 		while (op->o_type == obj->o_type && op->o_which != obj->o_which)
 		{
 		    lp = op;
-		    if (next(op) == NULL)
+		    if (op->l_next == NULL)
 			break;
 		    else
-			op = next(op);
+			op = op->l_next;
 		}
 		if (op->o_type == obj->o_type && op->o_which == obj->o_which)
 		{
@@ -109,10 +109,10 @@ add_pack(THING *obj, bool silent)
 			    && op->o_group != obj->o_group)
 			{
 			    lp = op;
-			    if (next(op) == NULL)
+			    if (op->l_next == NULL)
 				break;
 			    else
-				op = next(op);
+				op = op->l_next;
 			}
 			if (op->o_type == obj->o_type
 			    && op->o_which == obj->o_which
@@ -139,11 +139,11 @@ add_pack(THING *obj, bool silent)
 	    if (from_floor)
 		remove_from_floor(obj);
 	    obj->o_packch = pack_char();
-	    next(obj) = next(lp);
-	    prev(obj) = lp;
-	    if (next(lp) != NULL)
-		prev(next(lp)) = obj;
-	    next(lp) = obj;
+	    obj->l_next = lp->l_next;
+	    obj->l_prev = lp;
+	    if (lp->l_next != NULL)
+		lp->l_next->l_prev = obj;
+	    lp->l_next = obj;
 	}
     }
 
@@ -153,7 +153,7 @@ add_pack(THING *obj, bool silent)
      * If this was the object of something's desire, that monster will
      * get mad and run at the hero.
      */
-    for (op = mlist; op != NULL; op = next(op))
+    for (op = mlist; op != NULL; op = op->l_next)
 	if (op->t_dest == &obj->o_pos)
 	    op->t_dest = &hero;
 
@@ -184,8 +184,8 @@ leave_pack(THING *obj, bool newobj, bool all)
 	{
 	    nobj = new_item();
 	    *nobj = *obj;
-	    next(nobj) = NULL;
-	    prev(nobj) = NULL;
+	    nobj->l_next = NULL;
+	    nobj->l_prev = NULL;
 	    nobj->o_count = 1;
 	}
     }
@@ -284,7 +284,7 @@ picky_inven(void)
 
     if (pack == NULL)
 	msg("you aren't carrying anything");
-    else if (next(pack) == NULL)
+    else if (pack->l_next == NULL)
 	msg("a) %s", inv_name(pack, false));
     else
     {
@@ -295,7 +295,7 @@ picky_inven(void)
 	    msg("");
 	    return;
 	}
-	for (obj = pack; obj != NULL; obj = next(obj))
+	for (obj = pack; obj != NULL; obj = obj->l_next)
 	    if (mch == obj->o_packch)
 	    {
 		msg("%c) %s", mch, inv_name(obj, false));
@@ -359,7 +359,7 @@ get_item(const char *purpose, int type)
       continue;
     }
 
-    for (obj = pack; obj != NULL; obj = next(obj))
+    for (obj = pack; obj != NULL; obj = obj->l_next)
       if (obj->o_packch == ch)
         break;
     if (obj == NULL)
@@ -448,7 +448,7 @@ items_in_pack_of_type(int type)
   unsigned num = 0;
   THING *list;
 
-  for (list = pack; list != NULL; list = next(list))
+  for (list = pack; list != NULL; list = list->l_next)
     if (!type || type == list->o_type ||
         (type == CALLABLE && (list->o_type != FOOD && list->o_type != AMULET))||
         (type == R_OR_S && (list->o_type == RING || list->o_type == STICK)))
@@ -461,7 +461,7 @@ player_has_amulet(void)
 {
   THING *ptr;
 
-  for (ptr = pack; ptr != NULL; ptr = next(ptr))
+  for (ptr = pack; ptr != NULL; ptr = ptr->l_next)
     if (ptr->o_type == AMULET)
       return true;
   return false;
@@ -478,7 +478,7 @@ print_inventory(int type)
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
   /* Print out all items */
-  for (list = pack; list != NULL; list = next(list))
+  for (list = pack; list != NULL; list = list->l_next)
   {
     if (!type || type == list->o_type ||
         (type == CALLABLE && (list->o_type != FOOD && list->o_type != AMULET))||

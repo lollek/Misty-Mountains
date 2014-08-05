@@ -50,8 +50,6 @@ extern enum rogue_game_t
 /* All the fun defines */
 #define when		break;case
 #define otherwise	break;default
-#define next(ptr)	(*ptr).l_next
-#define prev(ptr)	(*ptr).l_prev
 #define winat(y,x)	(moat(y,x) != NULL ? moat(y,x)->t_disguise : chat(y,x))
 #define same_coords(a,b)	((a).x == (b).x && (a).y == (b).y)
 #define hero		player.t_pos

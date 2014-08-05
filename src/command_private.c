@@ -250,7 +250,7 @@ pick_up_item_from_ground(void)
   if (is_levitating(&player))
     msg("You can't. You're floating off the ground!");
 
-  for (obj = lvl_obj; obj != NULL; obj = next(obj))
+  for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
     if (obj->o_pos.y == hero.y && obj->o_pos.x == hero.x)
     {
       pick_up(obj->o_type);

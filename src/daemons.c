@@ -156,7 +156,7 @@ visuals(void)
     /*
      * change the things
      */
-    for (tp = lvl_obj; tp != NULL; tp = next(tp))
+    for (tp = lvl_obj; tp != NULL; tp = tp->l_next)
 	if (cansee(tp->o_pos.y, tp->o_pos.x))
 	    mvaddcch(tp->o_pos.y, tp->o_pos.x, rnd_thing());
 
@@ -170,7 +170,7 @@ visuals(void)
      * change the monsters
      */
     seemonst = on(player, SEEMONST);
-    for (tp = mlist; tp != NULL; tp = next(tp))
+    for (tp = mlist; tp != NULL; tp = tp->l_next)
     {
 	move(tp->t_pos.y, tp->t_pos.x);
 	if (see_monst(tp))

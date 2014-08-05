@@ -46,7 +46,7 @@ new_level(void)
     /*
      * Free up the monsters on the last level
      */
-    for (tp = mlist; tp != NULL; tp = next(tp))
+    for (tp = mlist; tp != NULL; tp = tp->l_next)
 	free_list(tp->t_pack);
     free_list(mlist);
     /*
@@ -89,7 +89,7 @@ new_level(void)
     chat(stairs.y, stairs.x) = STAIRS;
     seenstairs = false;
 
-    for (tp = mlist; tp != NULL; tp = next(tp))
+    for (tp = mlist; tp != NULL; tp = tp->l_next)
 	tp->t_room = roomin(&tp->t_pos);
 
     find_floor((struct room *) NULL, &hero, false, true);

@@ -26,11 +26,14 @@ void
 _detach(THING **list, THING *item)
 {
     if (*list == item)
-	*list = next(item);
-    if (prev(item) != NULL)
-	item->l_prev->l_next = next(item);
-    if (next(item) != NULL)
-	item->l_next->l_prev = prev(item);
+	*list = item->l_next;
+
+    if (item->l_prev != NULL)
+	item->l_prev->l_next = item->l_next;
+
+    if (item->l_next != NULL)
+	item->l_next->l_prev = item->l_prev;
+
     item->l_next = NULL;
     item->l_prev = NULL;
 }
@@ -70,7 +73,7 @@ _free_list(THING **ptr)
     while (*ptr != NULL)
     {
 	item = *ptr;
-	*ptr = next(item);
+	*ptr = item->l_next;
 	discard(item);
     }
 }

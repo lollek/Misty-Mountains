@@ -227,7 +227,7 @@ def:
     {
       char ch = false;
       wclear(hw);
-      for (obj = lvl_obj; obj != NULL; obj = next(obj))
+      for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
         if (obj->o_type == FOOD)
         {
           ch = true;

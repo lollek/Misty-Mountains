@@ -236,7 +236,7 @@ find_obj(int y, int x)
 {
   THING *obj;
 
-  for (obj = lvl_obj; obj != NULL; obj = next(obj))
+  for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
     if (obj->o_pos.y == y && obj->o_pos.x == x)
       return obj;
 
@@ -351,7 +351,7 @@ void
 aggravate(void)
 {
   THING *mp;
-  for (mp = mlist; mp != NULL; mp = next(mp))
+  for (mp = mlist; mp != NULL; mp = mp->l_next)
     runto(&mp->t_pos);
 }
 
@@ -563,7 +563,7 @@ turn_see(bool turn_off)
   THING *mp;
   bool add_new = false;
 
-  for (mp = mlist; mp != NULL; mp = next(mp))
+  for (mp = mlist; mp != NULL; mp = mp->l_next)
   {
     move(mp->t_pos.y, mp->t_pos.x);
     bool can_see = see_monst(mp);
@@ -598,7 +598,7 @@ invis_on(void)
   THING *mp;
 
   player.t_flags |= CANSEE;
-  for (mp = mlist; mp != NULL; mp = next(mp))
+  for (mp = mlist; mp != NULL; mp = mp->l_next)
     if (is_invisible(mp) && see_monst(mp) && !is_hallucinating(&player))
       mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
 }
