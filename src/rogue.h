@@ -16,28 +16,27 @@
 #include <ncurses.h>
 
 /* Tuneable - feel free to change these */
-#define NUMSCORES 10    /* Number of highscore entries */
-#define NUMNAME "Ten"   /* The same number in letters  */
-#define MAXOBJ 9        /* How many attempts to put items in dungeon */
-#define AMULETLEVEL 26  /* Level where we can find the amulet */
-#define PACKSIZE 22     /* How many items we can have in our pack */
-
+#define NUMNAME    "Ten"   /* The same number in letters  */
+#define NUMSCORES    10    /* Number of highscore entries */
+#define MAXOBJ        9    /* How many attempts to put items in dungeon */
+#define AMULETLEVEL  26    /* Level where we can find the amulet */
 
 /* Try not to change these */
 #define MAXSTR 1024 /* maximum length of strings */
-#define MAXLINES 32 /* maximum number of screen lines used */
 #define MAXCOLS  80 /* maximum number of screen columns used */
+#define MAXINP   50 /* max string to read from terminal or environment */
+#define MAXLINES 32 /* maximum number of screen lines used */
+#define MAXROOMS  9 /* max rooms per level */
 #define NUMLINES 24
 #define NUMCOLS  80
+#define PACKSIZE 22 /* How many items we can have in our pack */
 #define STATLINE (NUMLINES - 1)
-#define MAXINP 50   /* max string to read from terminal or environment */
 
 #undef CTRL
 #define CTRL(c) (c & 037)
 #define UNCTRL(c) (c + 'A' - CTRL('A'))
 
 /* Maximum number of different things */
-#define MAXROOMS	9
 #define MAXTRAPS	10
 #define NUMTHINGS	7	/* number of types of things */
 #define MAXPASS		13	/* upper limit on number of passages */
@@ -51,7 +50,6 @@ extern enum rogue_game_t
 /* All the fun defines */
 #define when		break;case
 #define otherwise	break;default
-#define until(expr)	while(!(expr))
 #define next(ptr)	(*ptr).l_next
 #define prev(ptr)	(*ptr).l_prev
 #define winat(y,x)	(moat(y,x) != NULL ? moat(y,x)->t_disguise : chat(y,x))

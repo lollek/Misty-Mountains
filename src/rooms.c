@@ -80,7 +80,7 @@ do_rooms(void)
 		rp->r_pos.y = top.y + rnd(bsze.y - 2) + 1;
 		rp->r_max.x = -NUMCOLS;
 		rp->r_max.y = -NUMLINES;
-	    } until (rp->r_pos.y > 0 && rp->r_pos.y < NUMLINES-1);
+	    } while (!(rp->r_pos.y > 0 && rp->r_pos.y < NUMLINES-1));
 	    continue;
 	}
 	/*
@@ -114,7 +114,7 @@ do_rooms(void)
 		rp->r_max.y = rnd(bsze.y - 4) + 4;
 		rp->r_pos.x = top.x + rnd(bsze.x - rp->r_max.x);
 		rp->r_pos.y = top.y + rnd(bsze.y - rp->r_max.y);
-	    } until (rp->r_pos.y != 0);
+	    } while (rp->r_pos.y == 0);
 	draw_room(rp);
 	/*
 	 * Put the gold in

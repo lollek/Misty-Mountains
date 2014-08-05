@@ -425,7 +425,7 @@ init_colors(void)
     {
 	do
 	    j = rnd(NCOLORS);
-	until (!used[j]);
+	while (used[j]);
 	used[j] = true;
 	p_colors[i] = rainbow[j];
     }
@@ -483,7 +483,7 @@ init_stones(void)
     {
 	do
 	    j = rnd(NSTONES);
-	until (!used[j]);
+	while (used[j]);
 	used[j] = true;
 	r_stones[i] = stones[j].st_name;
 	ring_info[i].oi_worth += stones[j].st_value;

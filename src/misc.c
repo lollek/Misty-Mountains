@@ -432,7 +432,7 @@ get_dir(void)
           msg(prompt);
           gotit = false;
       }
-    } until (gotit);
+    } while (!gotit);
 
     if (isupper(dir_ch))
       dir_ch = (char) tolower(dir_ch);
