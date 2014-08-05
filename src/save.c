@@ -119,28 +119,27 @@ save_game(void)
   return false;
 }
 
-/*
- * auto_save:
- *	Automatically save a file.  This is used if a HUP signal is
- *	recieved
- */
-
+/** auto_save:
+ * Automatically save a file.  This is used if a HUP signal is recieved */
 void
 auto_save(int sig)
 {
     FILE *savef;
     int i;
 
+    (void)sig;
+
     /* Ignore all signals */
     for (i = 0; i < NSIG; i++)
       signal(i, SIG_IGN);
 
-    (void)sig;
-
-    if (file_name[0] != '\0' && ((savef = fopen(file_name, "w")) != NULL ||
-	(unlink(file_name) >= 0 && 
-         (savef = fopen(file_name, "w")) != NULL)))
-	    save_file(savef);
+    /* Always auto-save to ~/.rogue14_rescue */
+    strcpy(stpcpy(file_name, md_gethomedir()), ".rogue14_rescue");
+    unlink(file_name);
+    if ((savef = fopen(file_name, "w")) != NULL)
+      save_file(savef);
+    endwin();
+    printf("Autosaved to %s", file_name);
     exit(0);
 }
 
