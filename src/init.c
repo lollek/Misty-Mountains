@@ -86,29 +86,9 @@ init_old_game(void)
         return false;
     }
 
-    /* defeat multiple restarting from the same place
-     * TODO: should these be removed? not hard to circumvent anyways */
-    if (!wizard)
-    {
-      struct stat sbuf2;
-      if (stat(file_name, &sbuf2) == -1)
-      {
-        perror(file_name);
-        return false;
-      }
-      if (!S_ISREG(sbuf2.st_mode))
-      {
-        printf("Only normal files allowed (no symlinks, FIFOs, etc)\n");
-        return false;
-      }
-      if (sbuf2.st_nlink != 1)
-      {
-        printf("The savegame cannot be hardlinked, since that's cheating\n");
-        return false;
-      }
-    }
-
-    if (encread_and_check_version(buf, inf) == false)
+    fflush(stdout);
+    encread(buf, strlen(game_version) + 1, inf);
+    if (strcmp(buf, game_version))
     {
       printf("Sorry, saved game is out of date.\n");
       return false;

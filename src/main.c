@@ -187,7 +187,6 @@ shell(void)
 enum game_mode_t
 parse_args(int argc, char * const *argv)
 {
-  const char *version_string = "Rogue14 r" VERSION " - Based on Rogue5.4.4";
   enum game_mode_t game_mode = NEW_GAME;
   int option_index = 0;
   struct option long_options[] = {
@@ -278,9 +277,9 @@ parse_args(int argc, char * const *argv)
                "      --help           display this help and exit\n"
                "      --version        display game version and exit\n\n"
                "%s\n"
-               , version_string);
+               , game_version);
         exit(0);
-      when '1': puts(version_string); exit(0);
+      when '1': puts(game_version); exit(0);
       otherwise:
         fprintf(stderr, "Try '%s --help' for more information\n",
                 argv[0]);

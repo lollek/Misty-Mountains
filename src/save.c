@@ -24,7 +24,6 @@
 
 static FILE *scoreboard = NULL; /* File descriptor for score file */
 
-static const char version[] = "rogue (rogueforge) 09/05/07";
 static const char encstr[] = "\300k||`\251Y.'\305\321\201+\277~r\"]\240_\223=1\341)\222\212\241t;\t$\270\314/<#\201\254";
 static const char statlist[] = "\355kl{+\204\255\313idJ\361\214=4:\311\271\341wK<\312\321\213,,7\271/Rk%\b\312\f\246";
 
@@ -153,14 +152,15 @@ save_file(FILE *savef)
 {
     int error = 0;
     char buf[80];
-    mvcur(0, COLS - 1, LINES - 1, 0); 
-    putchar('\n');
+
     endwin();
     chmod(file_name, 0400);
-    encwrite(version, strlen(version)+1, savef);
+
+    encwrite(game_version, strlen(game_version)+1, savef);
     sprintf(buf,"%d x %d\n", LINES, COLS);
     encwrite(buf,80,savef);
     error = rs_save_file(savef);
+
     fflush(savef);
     fclose(savef);
 
@@ -283,10 +283,3 @@ wr_score(SCORE *top_ten)
 	rewind(scoreboard); 
 }
 
-bool
-encread_and_check_version(char *buf, FILE *infile)
-{
-  fflush(stdout);
-  encread(buf, strlen(version) + 1, infile);
-  return !strcmp(buf, version);
-}

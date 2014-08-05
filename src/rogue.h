@@ -397,6 +397,8 @@ bool use_colors;  /* Use ncurses colors */
  * External variables
  */
 
+extern const char *game_version;
+
 extern bool	after, again, door_stop,
 		firstmove, has_hit, inv_describe, kamikaze,
 		move_on, msg_esc, pack_used[],
@@ -484,7 +486,6 @@ bool	drop(void);
 void	eat(void);
 size_t  encread(char *start, size_t size, FILE *inf);
 size_t	encwrite(const char *start, size_t size, FILE *outf);
-bool	encread_and_check_version(char *buf, FILE *infile);
 void	enter_room(coord *cp);
 void	erase_lamp(coord *pos, struct room *rp);
 int	exp_add(THING *tp);

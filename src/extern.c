@@ -14,6 +14,8 @@
 
 enum rogue_game_t game_type;            /* Which variant to play */
 
+const char *game_version = "Rogue14 r" VERSION " - Based on Rogue5.4.4";
+
 bool after;				/* True if we want after daemons */
 bool again;				/* Repeating the last command */
 bool seenstairs;			/* Have seen the stairs (for lsd) */
