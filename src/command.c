@@ -222,7 +222,7 @@ do_command(char ch)
     case 'I': picky_inven(); return false;
     case 'P': return ring_on();
     case 'R': return ring_off();
-    case 'S': after = false; save_game(); return false;
+    case 'S': return save_game();
     case 'T': return take_off();
     case 'W': return wear();
     case 'Q': return maybe_quit();

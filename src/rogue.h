@@ -548,7 +548,7 @@ int	rs_restore_file(FILE *inf);
 void	rust_armor(THING *arm);
 int	save(int which);
 void	save_file(FILE *savef);
-void	save_game(void);
+bool	save_game(void);
 int	save_throw(int which, THING *tp);
 void	score(int amount, int flags, char monst);
 void	set_know(THING *obj, struct obj_info *info);

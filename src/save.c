@@ -74,91 +74,49 @@ open_score_and_drop_setuid_setgid(void)
 }
 
 
-/*
- * save_game:
- *	Implement the "save game" command
- */
-
-void
+/** save_game:
+ * Implement the "save game" command */
+bool
 save_game(void)
 {
-    FILE *savef;
-    struct stat sbuf;
-    int c;
-    char buf[MAXSTR];
+  FILE *savef = NULL;
+  after = false; /* This does not count as a move */
+  mpos = 0;
 
-    /*
-     * get file name
-     */
-    mpos = 0;
-over:
-    if (file_name[0] != '\0')
+  while (savef == NULL)
+  {
+    struct stat sbuf;
+    msg("save to file? ");
+    if (readstr(file_name) != 0)
     {
-	for (;;)
-	{
-	    msg("save file (%s)? ", file_name);
-	    c = readchar();
-	    mpos = 0;
-	    if (c == KEY_ESCAPE)
-	    {
-		msg("");
-		return;
-	    }
-	    else if (c == 'n' || c == 'N' || c == 'y' || c == 'Y')
-		break;
-	    else
-		msg("please answer Y or N");
-	}
-	if (c == 'y' || c == 'Y')
-	{
-	    addstr("Yes\n");
-	    refresh();
-	    strcpy(buf, file_name);
-	    goto gotfile;
-	}
+      msg("");
+      return false;
+    }
+    mpos = 0;
+
+    /* test to see if the file exists */
+    if (stat(file_name, &sbuf) >= 0)
+    {
+      int c;
+      msg("File exists.  Do you wish to overwrite it? ");
+      while ((c = readchar()) != 'y' && c != 'Y')
+      {
+        if (c == KEY_ESCAPE || c == 'n' || c == 'N')
+        {
+          msg("");
+          return false;
+        }
+      }
+      unlink(file_name);
     }
 
-    do
-    {
-	mpos = 0;
-	msg("file name: ");
-	buf[0] = '\0';
-	if (readstr(buf) != 0)
-	{
-quit_it:
-	    msg("");
-	    return;
-	}
-	mpos = 0;
-gotfile:
-	/*
-	 * test to see if the file exists
-	 */
-	if (stat(buf, &sbuf) >= 0)
-	{
-	    for (;;)
-	    {
-		msg("File exists.  Do you wish to overwrite it?");
-		mpos = 0;
-		if ((c = readchar()) == KEY_ESCAPE)
-		    goto quit_it;
-		if (c == 'y' || c == 'Y')
-		    break;
-		else if (c == 'n' || c == 'N')
-		    goto over;
-		else
-		    msg("Please answer Y or N");
-	    }
-	    msg("file name: %s", buf);
-	    unlink(file_name);
-	}
-	strcpy(file_name, buf);
-	if ((savef = fopen(file_name, "w")) == NULL)
-	    msg(strerror(errno));
-    } while (savef == NULL);
+    if ((savef = fopen(file_name, "w")) == NULL)
+      msg(strerror(errno));
+  }
 
-    save_file(savef);
-    /* NOTREACHED */
+  save_file(savef);
+  /* NOTREACHED */
+  return false;
 }
 
 /*
