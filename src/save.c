@@ -139,7 +139,7 @@ auto_save(int sig)
     if ((savef = fopen(file_name, "w")) != NULL)
       save_file(savef);
     endwin();
-    printf("Autosaved to %s", file_name);
+    printf("Autosaved to %s\n", file_name);
     exit(0);
 }
 
