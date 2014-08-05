@@ -79,6 +79,8 @@ bool
 save_game(void)
 {
   FILE *savef = NULL;
+  bool did_save = false;
+
   after = false; /* This does not count as a move */
   mpos = 0;
 
@@ -113,8 +115,14 @@ save_game(void)
       msg(strerror(errno));
   }
 
-  save_file(savef);
-  /* NOTREACHED */
+  did_save = save_file(savef);
+  if (did_save)
+  {
+    endwin();
+    exit(0);
+  }
+  else
+    msg("Error while saving");
   return false;
 }
 
@@ -124,6 +132,7 @@ void
 auto_save(int sig)
 {
     FILE *savef;
+    bool did_save = false;
     int i;
 
     (void)sig;
@@ -136,10 +145,19 @@ auto_save(int sig)
     strcpy(stpcpy(file_name, get_homedir()), ".rogue14_rescue");
     unlink(file_name);
     if ((savef = fopen(file_name, "w")) != NULL)
-      save_file(savef);
+      did_save = save_file(savef);
+
     endwin();
-    printf("Autosaved to %s\n", file_name);
-    exit(0);
+    if (did_save)
+    {
+      printf("Autosaved to %s\n", file_name);
+      exit(0);
+    }
+    else
+    {
+      puts("Failed to autosave");
+      exit(1);
+    }
 }
 
 /*
@@ -147,14 +165,20 @@ auto_save(int sig)
  *	Write the saved game on the file
  */
 
-void
+bool
 save_file(FILE *savef)
 {
     int error = 0;
     char buf[80];
 
-    endwin();
     chmod(file_name, 0400);
+
+    if (wizard || potential_wizard)
+    {
+      mpos = 0;
+      msg("Cannot save as a wizard");
+      return false;
+    }
 
     encwrite(game_version, strlen(game_version)+1, savef);
     sprintf(buf,"%d x %d\n", LINES, COLS);
@@ -163,11 +187,7 @@ save_file(FILE *savef)
 
     fflush(savef);
     fclose(savef);
-
-    if (error)
-      msg("Error while saving the game");
-    else
-      exit(0);
+    return error == 0;
 }
 
 
