@@ -1907,7 +1907,7 @@ rs_save_file(FILE *savef)
     rs_write_sticks(savef);
     rs_write_int(savef, 0);                         /* dummy value */
     rs_write_chars(savef, "fruit", MAXSTR);
-    rs_write_chars(savef, md_gethomedir(), MAXSTR);
+    rs_write_chars(savef, get_homedir(), MAXSTR);
     rs_write_strings(savef,inv_t_name,3);
     rs_write_char(savef,l_last_comm);
     rs_write_char(savef,l_last_dir);

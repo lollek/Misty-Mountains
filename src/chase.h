@@ -28,8 +28,6 @@ coord *find_dest(THING *tp); /* Find proper destination for monster */
  * this calculates d^2, not d, but that's good enough for
  * our purposes, since it's only used comparitively. */
 int dist(int y1, int x1, int y2, int x2);
-inline int dist_cp(coord *c1, coord *c2); /* Same as above, but with coords */
-
-
+#define dist_cp(_1, _2) dist((_1)->y, (_1)->x, (_2)->y, (_2)->x)
 
 #endif /* _ROGUE14_CHASE_H_ */

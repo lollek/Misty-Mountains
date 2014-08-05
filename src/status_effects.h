@@ -7,35 +7,45 @@
 /* TODO: Make getters/setters for all status effects */
 
 /* Duration of effects */
-#define HUHDURATION	spread(20)  /* Confusion */
-#define MFINDDURATION	spread(20)  /* Monster find */
-#define HASTEDURATION	rnd(4)+4    /* Haste */
-#define SEEDURATION	spread(850) /* See invisible / blind / hallucinating */
-#define LEVITDUR	spread(30)  /* Levitation */
-#define SLEEPTIME	spread(7)   /* Sleep */
-#define STUCKTIME	spread(3)   /* Stuck */
+#define HUHDURATION     spread(20)  /* Confusion */
+#define MFINDDURATION   spread(20)  /* Monster find */
+#define HASTEDURATION   rnd(4)+4    /* Haste */
+#define SEEDURATION     spread(850) /* See invisible / blind / hallucinating */
+#define LEVITDUR        spread(30)  /* Levitation */
+#define SLEEPTIME       spread(7)   /* Sleep */
+#define STUCKTIME       spread(3)   /* Stuck */
 
-/* Status getters */
-inline bool is_confusing(THING *thing);    /* Causes confusion on attack */
-inline bool is_true_seeing(THING *thing);  /* Can see invisible creatures */
-inline bool is_blind(THING *thing);        /* Creature is blind */
-inline bool is_cancelled(THING *thing);    /* Creature's ability is cancelled */
-inline bool is_levitating(THING *thing);   /* Creature is levitating */
-inline bool is_found(THING *thing);        /* Creature has been seen */
-inline bool is_confused(THING *thing);     /* Creature is confused */
-inline bool is_invisible(THING *thing);    /* Creature is invisible */
-inline bool is_hallucinating(THING *thing);/* Creature is tripping on acid */
+/** Status getters
+ * _t should be a (THING *) */
+#define is_confusing(_t)     is_status(_t, CANHUH) /* Attack confuses */
+#define is_true_seeing(_t)   is_status(_t, CANSEE) /* Can see invisible */
+#define is_blind(_t)         is_status(_t, ISBLIND) /* Is blind */
+#define is_cancelled(_t)     is_status(_t, ISCANC) /* Ability cancelled */
+#define is_levitating(_t)    is_status(_t, ISLEVIT) /* Is floating */
+#define is_found(_t)         is_status(_t, ISFOUND) /* Has been seen */
+#define is_confused(_t)      is_status(_t, ISHUH)   /* Confused */
+#define is_invisible(_t)     is_status(_t, ISINVIS) /* Invisible */
+#define is_hallucinating(_t) is_status(_t, ISHALU) /* Is tripping */
 
-/* Status setters */
-inline void set_confusing(THING *thing, bool status);
-void set_true_seeing(THING *thing, bool status, bool permanent);
-inline void set_blind(THING *thing, bool status);
-inline void set_cancelled(THING *thing, bool status);
-inline void set_levitating(THING *thing, bool status);
-inline void set_found(THING *thing, bool status);
-inline void set_confused(THING *thing, bool status);
-inline void set_invisible(THING *thing, bool status);
-inline void set_hallucinating(THING *thing, bool status);
+#define is_status(_t, _f)    ((_t)->t_flags & _f)
+
+/** Status setters
+ * _t should be a (THING *)
+ * _v should be a (bool) */
+void set_true_seeing(THING *_t, bool _v, bool permanent);
+#define set_confusing(_t, _v)      set_status(_t, _v, CANHUH)
+#define set_blind(_t, _v)          set_status(_t, _v, ISBLIND)
+#define set_cancelled(_t, _v)      set_status(_t, _v, ISCANC)
+#define set_levitating(_t, _v)     set_status(_t, _v, ISLEVIT)
+#define set_found(_t, _v)          set_status(_t, _v, ISFOUND)
+#define set_confused(_t, _v)       set_status(_t, _v, ISHUH)
+#define set_invisible(_t, _v)      set_status(_t, _v, ISINVIS)
+#define set_hallucinating(_t, _v)  set_status(_t, _v, ISHALU)
+
+#define set_status(_t, _v, _f) \
+  ((_t)->t_flags = _v \
+   ? (_t)->t_flags | _f \
+   : (_t)->t_flags & ~_f)
 
 /* Daemon helpers */
 void daemon_remove_true_seeing(void);

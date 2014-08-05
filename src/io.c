@@ -6,6 +6,11 @@
 
 #include <ctype.h>
 #include <string.h>
+#include <unistd.h>
+#include <pwd.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <linux/limits.h>
 
 #include "rogue.h"
 #include "armor.h"
@@ -13,6 +18,41 @@
 #include "io.h"
 
 static void doadd(const char *fmt, va_list args); /* Add things to msgbuf */
+
+const char *
+get_homedir(void)
+{
+  static char homedir[PATH_MAX +1] = { '\0' };
+
+  /* If we've already checked for homedir, we should know it by now */
+  if (*homedir == '\0')
+  {
+    size_t len;
+    struct passwd *pw = getpwuid(getuid());
+    char *h = pw == NULL ? NULL : pw->pw_dir;
+
+    if (h == NULL || *h == '\0' || !strcmp(h, "/"))
+      h = getenv("HOME");
+    if (h == NULL || !strcmp(h, "/"))
+      h = "";
+
+    /* PATH_MAX is not a hard limit,
+     * so we need to check all sources carefully */
+
+    if ((len = strlen(h)) < PATH_MAX && len > 0)
+    {
+      strcpy(homedir, h);
+      if (homedir[len -1] != '/')
+      {
+        homedir[len] = '/';
+        homedir[len +1] = '\0';
+      }
+    }
+    else
+      strcpy(homedir, "/");
+  }
+  return homedir;
+}
 
 chtype
 colorize(const chtype ch)
@@ -45,53 +85,6 @@ colorize(const chtype ch)
 
     default: return ch | COLOR_PAIR(COLOR_BLACK);
   }
-}
-
-inline chtype incch(void)
-{
-  return inch() & A_CHARTEXT;
-}
-
-inline chtype
-wincch(WINDOW *win)
-{
-  return winch(win) & A_CHARTEXT;
-}
-
-inline chtype
-mvincch(int y, int x)
-{
-  return mvinch(y, x) & A_CHARTEXT;
-}
-
-inline chtype
-mvwincch(WINDOW *win, int y, int x)
-{
-  return mvwinch(win, y, x) & A_CHARTEXT;
-}
-
-inline int
-addcch(const chtype ch)
-{
-  return addch(colorize(ch));
-}
-
-inline int
-waddcch(WINDOW *window, const chtype ch)
-{
-  return waddch(window, colorize(ch));
-}
-
-inline int
-mvaddcch(int y, int x, const chtype ch)
-{
-  return mvaddch(y, x, colorize(ch));
-}
-
-inline int
-mvwaddcch(WINDOW *window, int y, int x, const chtype ch)
-{
-  return mvwaddch(window, y, x, colorize(ch));
 }
 
 int
@@ -260,12 +253,6 @@ show_win(const char *message)
   touchwin(stdscr);
 }
 
-inline bool
-readstr(char *buf)
-{
-  return wreadstr(stdscr, buf);
-}
-
 bool
 wreadstr(WINDOW *win, char *dest)
 {
@@ -304,9 +291,9 @@ wreadstr(WINDOW *win, char *dest)
 
     else if (c == '~' && i == 0)
     {
-      strcpy(buf, md_gethomedir());
-      waddstr(win, md_gethomedir());
-      i += strlen(md_gethomedir());
+      strcpy(buf, get_homedir());
+      waddstr(win, get_homedir());
+      i += strlen(get_homedir());
     }
 
     else if (i < MAXINP && (isprint(c) || c == ' '))

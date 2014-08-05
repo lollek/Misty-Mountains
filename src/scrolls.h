@@ -30,9 +30,9 @@ char *s_names[MAXSCROLLS];         /* Names of the scrolls */
 extern struct obj_info scr_info[]; /* Scroll info */
 
 /* Functions */
-void read_scroll(void);      /* Read a scroll from the pack and do the needful */
+void read_scroll(void);     /* Read a scroll from the pack and do the needful */
 void uncurse(THING *obj);   /* Uncurse an item */
-inline void learn_scroll(enum scroll_t scroll); /* Learn what a scroll does */
-inline bool knows_scroll(enum scroll_t scroll); /* She know what scroll does? */
+#define learn_scroll(_s) (scr_info[_s].oi_know = true) /* Learn scroll info */
+#define knows_scroll(_s) (scr_info[_s].oi_know) /* Knows what scroll does? */
 
 #endif /* _ROGUE14_SCROLLS_H_ */

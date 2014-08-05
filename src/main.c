@@ -222,8 +222,8 @@ parse_args(int argc, char * const *argv)
   game_type = DEFAULT;          /* Play a normal game or rogue */
 
   /* Default file name for save file */
-  strcpy(file_name, md_gethomedir());
-  strncat(file_name, ".rogue14_save", MAXSTR - strlen(md_gethomedir()) -1);
+  strcpy(file_name, get_homedir());
+  strncat(file_name, ".rogue14_save", MAXSTR - strlen(get_homedir()) -1);
 
   /* Set seed and dungeon number */
   seed = time(NULL) + getpid();

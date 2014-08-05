@@ -134,7 +134,7 @@ auto_save(int sig)
       signal(i, SIG_IGN);
 
     /* Always auto-save to ~/.rogue14_rescue */
-    strcpy(stpcpy(file_name, md_gethomedir()), ".rogue14_rescue");
+    strcpy(stpcpy(file_name, get_homedir()), ".rogue14_rescue");
     unlink(file_name);
     if ((savef = fopen(file_name, "w")) != NULL)
       save_file(savef);

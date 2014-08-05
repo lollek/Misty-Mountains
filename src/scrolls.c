@@ -310,14 +310,3 @@ uncurse(THING *obj)
 	obj->o_flags &= ~ISCURSED;
 }
 
-inline void
-learn_scroll(enum scroll_t scroll)
-{
-  scr_info[scroll].oi_know = true;
-}
-
-inline bool
-knows_scroll(enum scroll_t scroll)
-{
-  return scr_info[scroll].oi_know;
-}

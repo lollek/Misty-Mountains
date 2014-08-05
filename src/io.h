@@ -1,13 +1,15 @@
 #ifndef _ROGUE14_IO_H_
 #define _ROGUE14_IO_H_
 
+const char *get_homedir(void); /* returns e.g. /home/user/ */
+
 bool step_ok(int ch);  /* True of it's OK to step on ch */
 void status(void);     /* Print the status line at the bottom of the screen */
 void show_win(const char *message); /* Show window and wait before returning */
 
 /* get input */
-bool wreadstr(WINDOW *win, char *buf);  /* interruptable string from user */
-inline bool readstr(char *buf);         /* wreadstr for stdscr */
+bool wreadstr(WINDOW *win, char *buf);   /* interruptable string from user */
+#define readstr(_b) wreadstr(stdscr, _b) /* wreadstr for stdscr */
 char readchar(void);   /* Interruptable getch() */
 void wait_for(int ch); /* Wait for the specified key */
 
@@ -20,13 +22,14 @@ int endmsg(void); /* Flush message */
 chtype colorize(const chtype ch);
 
 /* ncurses functions, but with custom color support */
-inline chtype incch(void);
-inline chtype wincch(WINDOW *win);
-inline chtype mvincch(int y, int x);
-inline chtype mvwincch(WINDOW *win, int y, int x);
-inline int addcch(const chtype ch);
-inline int waddcch(WINDOW *window, const chtype ch);
-inline int mvaddcch(int y, int x, const chtype ch);
-inline int mvwaddcch(WINDOW *window, int y, int x, const chtype ch);
+#define incch()              (inch() & A_CHARTEXT)
+#define wincch(_w)           (winch(_w) & A_CHARTEXT)
+#define mvincch(_y, _x)      (mvinch(_y, _x) & A_CHARTEXT)
+#define mvwincch(_w, _y, _x) (mvwinch(_w, _y, _x) & A_CHARTEXT)
+
+#define addcch(_c)                addch(colorize(_c))
+#define waddcch(_w, _c)           waddch(_w, colorize(_c))
+#define mvaddcch(_y, _x, _c)      mvaddch(_y, _x, colorize(_c))
+#define mvwaddcch(_w, _y, _x, _c) mvwaddch(_w, _y, _x, colorize(_c))
 
 #endif /* _ROGUE14_IO_H_ */

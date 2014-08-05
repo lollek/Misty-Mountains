@@ -173,14 +173,3 @@ quaff(void)
   return true;
 }
 
-inline void
-learn_potion(enum potion_t potion)
-{
-  pot_info[potion].oi_know = true;
-}
-
-inline bool
-knows_potion(enum potion_t potion)
-{
-  return pot_info[potion].oi_know;
-}

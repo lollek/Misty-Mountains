@@ -592,9 +592,6 @@ void stomach(void);
 void swander(void);
 void visuals(void);
 
-const char *md_gethomedir(void);
-int md_hasclreol(void);
-
 coord	*rndmove(THING *who);
 
 THING	*find_obj(int y, int x);

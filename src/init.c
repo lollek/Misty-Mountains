@@ -11,10 +11,12 @@
  */
 
 #include <stdlib.h>
-#include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
 #include <pwd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "rogue.h"
 #include "potions.h"
@@ -89,12 +91,12 @@ init_old_game(void)
     if (!wizard)
     {
       struct stat sbuf2;
-      if (lstat(file_name, &sbuf2) == -1)
+      if (stat(file_name, &sbuf2) == -1)
       {
         perror(file_name);
         return false;
       }
-      if ((sbuf2.st_mode & S_IFMT) != S_IFREG)
+      if (!S_ISREG(sbuf2.st_mode))
       {
         printf("Only normal files allowed (no symlinks, FIFOs, etc)\n");
         return false;

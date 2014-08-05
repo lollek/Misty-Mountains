@@ -29,8 +29,8 @@ struct obj_info pot_info[NPOTIONS]; /* A list of potions and info */
 
 /* Functions */
 bool is_quaffable(THING *thing);    /* Check if we can drink something */
-bool quaff(void);                       /* Quaff a potion from the pack */
-inline void learn_potion(enum potion_t potion); /* Learn what a potion does */
-inline bool knows_potion(enum potion_t potion); /* She knows the potion? */
+bool quaff(void);                   /* Quaff a potion from the pack */
+#define learn_potion(_p) (pot_info[_p].oi_know = true) /* Learn pot info */
+#define knows_potion(_p) (pot_info[_p].oi_know) /* Knows which pot? */
 
 #endif /* _ROGUE14_POTIONS_H_ */

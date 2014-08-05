@@ -451,8 +451,3 @@ dist(int y1, int x1, int y2, int x2)
     return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
 
-inline int
-dist_cp(coord *c1, coord *c2)
-{
-    return dist(c1->y, c1->x, c2->y, c2->x);
-}
