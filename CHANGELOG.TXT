@@ -1,6 +1,7 @@
 Rogue14 - r2
   Changed name of the slime-mold to fruit (and no, you can't rename it anymore)
   Made the counter work a little better
+  Saved games are no longer compatible with original rogue
 
   UI:
     Changed from the three inventory types into my own style
@@ -15,6 +16,7 @@ Rogue14 - r2
 
   Trap:
     Added "Suddenly you're somewhere else"-message when stepping on teletrap
+    Teletraps affect monsters as well
 
   Startup/Flags:
     Removed the old style option parsing
