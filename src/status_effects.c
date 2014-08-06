@@ -382,7 +382,7 @@ teleport(THING *thing, coord *target)
     }
     no_move = 0;
     stop_counting(true);
-    flush_type();
+    flushinp();
     msg("suddenly you're somewhere else");
   }
   else if (see_monst(thing))

@@ -485,7 +485,6 @@ void	extinguish(void (*func)());
 void	fall(THING *obj, bool pr);
 void	fire_bolt(coord *start, coord *dir, char *name);
 char	floor_at(void);
-void	flush_type(void);
 int	fight(coord *mp, THING *weap, bool thrown);
 void	fix_stick(THING *cur);
 void	fuse(void (*func)(), int arg, int time, int type);

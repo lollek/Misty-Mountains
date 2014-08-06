@@ -328,7 +328,7 @@ attack(THING *mp)
 	miss(mname, (char *) NULL, false);
     }
     if (fight_flush && !to_death)
-	flush_type();
+	flushinp();
     stop_counting(false);
     status();
     return(mp == NULL ? -1 : 0);
@@ -584,7 +584,7 @@ remove_mon(coord *mp, THING *tp, bool waskill)
 	kamikaze = false;
 	to_death = false;
 	if (fight_flush)
-	    flush_type();
+	    flushinp();
     }
     discard(tp);
 }
@@ -650,5 +650,5 @@ killed(THING *tp, bool pr)
      */
     check_level();
     if (fight_flush)
-	flush_type();
+	flushinp();
 }

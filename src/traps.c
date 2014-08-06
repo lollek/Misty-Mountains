@@ -110,7 +110,7 @@ be_trapped(THING *target, coord *tc)
       rust_armor(cur_armor);
   }
 
-  flush_type();
+  flushinp();
   return tr;
 }
 

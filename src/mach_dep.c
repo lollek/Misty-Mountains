@@ -93,14 +93,3 @@ unlock_sc(void)
     lfd = NULL;
     unlink(LOCKFILE);
 }
-
-/*
- * flush_type:
- *	Flush typeahead for traps, etc.
- */
-
-void
-flush_type(void)
-{
-    flushinp();
-}
