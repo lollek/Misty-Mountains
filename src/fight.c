@@ -20,6 +20,7 @@
 #include "io.h"
 #include "armor.h"
 #include "chase.h"
+#include "pack.h"
 
 #define	EQSTR(a, b)	(strcmp(a, b) == 0)
 

@@ -25,6 +25,7 @@
 #include "io.h"
 #include "chase.h"
 #include "armor.h"
+#include "pack.h"
 
 
 /* init_new_game

@@ -24,6 +24,7 @@
 #include "scrolls.h"
 #include "io.h"
 #include "armor.h"
+#include "pack.h"
 
 static char *killname(char monst, bool doart);
 static int center(const char *str);

@@ -21,6 +21,7 @@
 #include "scrolls.h"
 #include "io.h"
 #include "armor.h"
+#include "pack.h"
 
 static bool dropcheck(THING *obj);
 static int pick_one(struct obj_info *info, int nitems);

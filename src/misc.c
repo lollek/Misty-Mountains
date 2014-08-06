@@ -20,6 +20,7 @@
 #include "io.h"
 #include "chase.h"
 #include "armor.h"
+#include "pack.h"
 
 static int trip_ch(int y, int x, int ch);
 

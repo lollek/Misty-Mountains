@@ -436,14 +436,9 @@ bool seen_stairs(void);          /* Return true if the player has seen the stair
 bool turn_see(bool turn_off);/* Put on or off seeing monsters on this level */
 void invis_on(void);         /* Turn on the ability to see invisible */
 
-bool	players_inventory_is_empty(void);
-unsigned	items_in_pack(void);
-unsigned	items_in_pack_of_type(int type);
-bool player_has_amulet(void);
 void	_attach(THING **list, THING *item);
 void	_detach(THING **list, THING *item);
 void	_free_list(THING **ptr);
-void	add_pack(THING *obj, bool silent);
 void	add_pass(void);
 void	add_str(str_t *sp, int amt);
 void	accnt_maze(int y, int x, int ny, int nx);
@@ -476,7 +471,6 @@ void	drain(void);
 void	draw_room(struct room *rp);
 bool	drop(void);
 void	eat(void);
-size_t	evaluate_players_inventory(void);
 size_t  encread(char *start, size_t size, FILE *inf);
 size_t	encwrite(const char *start, size_t size, FILE *outf);
 void	enter_room(coord *cp);
@@ -485,7 +479,6 @@ int	exp_add(THING *tp);
 void	extinguish(void (*func)());
 void	fall(THING *obj, bool pr);
 void	fire_bolt(coord *start, coord *dir, char *name);
-char	floor_at(void);
 int	fight(coord *mp, THING *weap, bool thrown);
 void	fix_stick(THING *cur);
 void	fuse(void (*func)(), int arg, int time, int type);
@@ -506,8 +499,6 @@ void	init_player(void);
 void	init_probs(void);
 void	init_stones(void);
 void	init_weapon(THING *weap, int which);
-bool	print_inventory(int type);
-void	clear_inventory(void);
 void	killed(THING *tp, bool pr);
 void	kill_daemon(void (*func)());
 bool	lock_sc(void);
@@ -518,14 +509,11 @@ void	new_monster(THING *tp, char type, coord *cp);
 void	numpass(int y, int x);
 void 	passnum(void);
 const char	*pick_color(const char *col);
-void	pick_up(char ch);
-void	picky_inven(void);
 int	pr_list(void);
 void	put_things(void);
 void	putpass(coord *cp);
 char	randmonster(bool wander);
 void	remove_mon(coord *mp, THING *tp, bool waskill);
-void	reset_last(void);
 int	ring_eat(int hand);
 bool	ring_on(void);
 bool	ring_off(void);
@@ -585,8 +573,6 @@ void visuals(void);
 coord	*rndmove(THING *who);
 
 THING	*find_obj(int y, int x);
-THING	*get_item(const char *purpose, int type);
-THING	*leave_pack(THING *obj, bool newobj, bool all);
 THING	*new_item(void);
 THING	*new_thing(void);
 

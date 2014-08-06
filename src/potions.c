@@ -13,6 +13,7 @@
 #include "rogue.h"
 #include "status_effects.h"
 #include "io.h"
+#include "pack.h"
 
 #include "potions.h"
 

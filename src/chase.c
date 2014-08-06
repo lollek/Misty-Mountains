@@ -17,6 +17,7 @@
 #include "scrolls.h"
 #include "command.h"
 #include "io.h"
+#include "traps.h"
 
 #include "chase.h"
 

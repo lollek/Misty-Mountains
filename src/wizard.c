@@ -23,6 +23,7 @@
 #include "io.h"
 #include "chase.h"
 #include "armor.h"
+#include "pack.h"
 
 static char *type_name(int type);
 static void pr_spec(const struct obj_info *info, int nitems);

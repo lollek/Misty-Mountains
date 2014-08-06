@@ -20,6 +20,7 @@
 #include "io.h"
 #include "chase.h"
 #include "armor.h"
+#include "pack.h"
 
 /*
  * used to hold the new hero position

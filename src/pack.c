@@ -19,16 +19,15 @@
 #include "armor.h"
 #include "potions.h"
 
-static char pack_char();
-static void move_msg(THING *obj);
-static void money(int value);
-static char floor_ch();
-static void remove_from_floor(THING *obj);
+#include "pack.h"
 
-/** add_pack:
- * Pick up an object and add it to the pack.  If the argument is
- * non-null use it as the linked_list pointer instead of gettting
- * it off the ground. */
+/* TODO: Maybe inline money()? */
+
+static char pack_char();          /* Return the next unused pack character */
+static void move_msg(THING *obj); /* Print out what you are moving onto */
+static void money(int value);     /* Add or subtract gold from the pack */
+static char floor_ch();           /* Return the appropriate floor character */
+static void remove_from_floor(THING *obj); /* Removes one item from the floor */
 
 void
 add_pack(THING *obj, bool silent)
@@ -168,10 +167,6 @@ add_pack(THING *obj, bool silent)
     }
 }
 
-/*
- * leave_pack:
- *	take an item out of the pack
- */
 THING *
 leave_pack(THING *obj, bool newobj, bool all)
 {
@@ -200,10 +195,6 @@ leave_pack(THING *obj, bool newobj, bool all)
     return nobj;
 }
 
-/*
- * pack_char:
- *	Return the next unused pack character.
- */
 static char
 pack_char(void)
 {
@@ -215,12 +206,6 @@ pack_char(void)
     return (char)((int)(bp - pack_used) + 'a');
 }
 
-/*
- * pick_up:
- *	Add something to characters pack.
- */
-
-/* TODO: Maybe move this to command.c? */
 void
 pick_up(char ch)
 {
@@ -258,11 +243,6 @@ pick_up(char ch)
 	}
 }
 
-/*
- * move_msg:
- *	Print out the message if you are just moving onto an object
- */
-
 static void
 move_msg(THING *obj)
 {
@@ -288,12 +268,6 @@ find_magic_item_in_players_pack(void)
   return NULL;
 }
 
-/*
- * picky_inven:
- *	Allow player to inventory a single item
- */
-
-/* TODO: Maybe move this to command.c? */
 void
 picky_inven(void)
 {
@@ -323,8 +297,6 @@ picky_inven(void)
     }
 }
 
-/** get_item:
- * Pick something out of a pack for a purpose */
 THING *
 get_item(const char *purpose, int type)
 {
@@ -392,9 +364,6 @@ get_item(const char *purpose, int type)
   }
 }
 
-/** money:
- * Add or subtract gold from the pack */
-/* TODO: Maybe inline this function? */
 static void
 money(int value)
 {
@@ -409,8 +378,6 @@ money(int value)
   }
 }
 
-/** floor_ch:
- * Return the appropriate floor character for her room */
 static char
 floor_ch(void)
 {
@@ -419,9 +386,6 @@ floor_ch(void)
   return show_floor() ? FLOOR : SHADOW;
 }
 
-/** floor_at:
- * Return the character at hero's position, taking see_floor
- * into account */
 char
 floor_at(void)
 {
@@ -429,8 +393,6 @@ floor_at(void)
   return ch == FLOOR ? floor_ch() : ch;
 }
 
-/** reset_last:
- * Reset the last command when the current one is aborted */
 void
 reset_last(void)
 {
@@ -439,8 +401,6 @@ reset_last(void)
   last_pick = l_last_pick;
 }
 
-/** remove_from_floor
- * Removes one item from the floor */
 static void
 remove_from_floor(THING *obj)
 {
@@ -449,24 +409,18 @@ remove_from_floor(THING *obj)
   chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
 }
 
-/** players_inventory_is_empty
- * Check if she's carrying anything */
 bool
 players_inventory_is_empty(void)
 {
   return player.t_pack == NULL;
 }
 
-/** items_in_pack
- * Counts how many items she is carrying */
 unsigned
 items_in_pack(void)
 {
   return items_in_pack_of_type(0);
 }
 
-/** items_in_pack
- * Counts how many items she is carrying of a certain type */
 unsigned
 items_in_pack_of_type(int type)
 {
