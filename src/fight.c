@@ -286,24 +286,14 @@ attack(THING *mp)
 		}
 		when 'N':
 		{
-		    THING *obj, *steal;
-		    int nobj;
-
-		    /*
-		     * Nymph's steal a magic item, look through the pack
-		     * and pick out one we like.
-		     */
-		    steal = NULL;
-		    nobj = 0;
-		    for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
-			if (obj != cur_armor && obj != cur_weapon
-			    && obj != cur_ring[LEFT] && obj != cur_ring[RIGHT]
-			    && is_magic(obj) && rnd(++nobj) == 0)
-				steal = obj;
+		    /* Nymph's steal a magic item, look through the pack
+		     * and pick out one we like. */
+		    THING *steal = find_magic_item_in_players_pack();
 		    if (steal != NULL)
 		    {
-			remove_mon(&mp->t_pos, moat(mp->t_pos.y, mp->t_pos.x), false);
-                        mp=NULL;
+			remove_mon(&mp->t_pos, moat(mp->t_pos.y, mp->t_pos.x),
+			           false);
+			mp=NULL;
 			leave_pack(steal, false, false);
 			msg("she stole %s!", inv_name(steal, true, true));
 			discard(steal);

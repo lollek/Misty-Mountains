@@ -559,6 +559,7 @@ bool	wield(void);
 
 bool	fallpos(coord *pos, coord *newpos);
 bool	find_floor(struct room *rp, coord *cp, int limit, bool monst);
+THING  *find_magic_item_in_players_pack(void);
 bool	turn_ok(int y, int x);
 bool	is_in_use(THING *obj);
 

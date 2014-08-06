@@ -269,6 +269,23 @@ move_msg(THING *obj)
     msg("moved onto %s", inv_name(obj, true, true));
 }
 
+THING *
+find_magic_item_in_players_pack(void)
+{
+  THING *obj = NULL;
+  int nobj = 0;
+
+  for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
+    if (obj != cur_armor &&
+        obj != cur_weapon &&
+        obj != cur_ring[LEFT] &&
+        obj != cur_ring[RIGHT] &&
+        is_magic(obj) &&
+        rnd(++nobj) == 0)
+      return obj;
+  return NULL;
+}
+
 /*
  * picky_inven:
  *	Allow player to inventory a single item
