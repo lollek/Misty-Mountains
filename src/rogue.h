@@ -70,6 +70,9 @@ extern enum rogue_game_t
 #define flat(y,x)	(places[((x) << 5) + (y)].p_flags)
 #define moat(y,x)	(places[((x) << 5) + (y)].p_monst)
 
+#define assert_or_die(_b, _msg) if (!(_b)) do { endwin(); \
+  printf("%s +%d: %s\n", __FILE__, __LINE__, _msg); abort(); } while (0)
+
 /* for curses */
 #define KEY_SPACE	' '
 #define KEY_ESCAPE	27

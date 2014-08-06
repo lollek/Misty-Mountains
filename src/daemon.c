@@ -37,8 +37,7 @@ d_slot(void)
     for (dev = d_list; dev <= &d_list[MAXDAEMONS-1]; dev++)
 	if (dev->d_type == EMPTY)
 	    return dev;
-    if (wizard)
-      msg("Ran out of fuse slots");
+    msg("DEBUG: Ran out of fuse slots :(");
     return NULL;
 }
 

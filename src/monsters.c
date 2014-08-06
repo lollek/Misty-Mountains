@@ -137,8 +137,6 @@ wanderer(void)
 	    addcch(tp->t_type | A_STANDOUT);
     }
     runto(&tp->t_pos);
-    if (wizard)
-	msg("started a wandering %s", monsters[tp->t_type-'A'].m_name);
 }
 
 /*
@@ -152,13 +150,7 @@ wake_monster(int y, int x)
     struct room *rp;
     char ch, *mname;
 
-    if (tp == NULL)
-    {
-      if (wizard)
-        msg("can't find monster in wake_monster");
-      else
-        endwin(), abort();
-    }
+    assert_or_die(tp != NULL, "can't find monster in wake_monster");
     ch = tp->t_type;
     /*
      * Every time he sees mean monster, it might start chasing him

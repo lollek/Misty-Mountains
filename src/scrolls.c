@@ -287,11 +287,8 @@ def:
       else
         msg("you feel a strange sense of loss");
     otherwise:
-      if (wizard)
-      {
-        msg("what a puzzling scroll!");
-        return;
-      }
+      msg("what a puzzling scroll!");
+      return;
   }
   obj = orig_obj;
   look(true);	/* put the result of the scroll on the screen */

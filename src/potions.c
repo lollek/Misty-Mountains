@@ -156,11 +156,8 @@ quaff(void)
       learn_potion(obj->o_which);
       become_levitating(false);
     otherwise:
-      if (wizard)
-      {
-        msg("what an odd tasting potion!");
-        return true;
-      }
+      msg("what an odd tasting potion!");
+      return true;
   }
   status();
 

@@ -99,13 +99,8 @@ new_item(void)
 {
     THING *item = calloc(1, sizeof *item);
 
-    if (wizard)
-    {
-      if (item == NULL)
-          msg("ran out of memory after %d items", total);
-      else
-          total++;
-    }
+    assert_or_die(item != NULL, "ran out of memory!");
+    total++;
     item->l_next = NULL;
     item->l_prev = NULL;
     return item;

@@ -327,12 +327,9 @@ pick_one(struct obj_info *info, int nitems)
 	    break;
     if (info == end)
     {
-	if (wizard)
-	{
-	    msg("bad pick_one: %d from %d items", i, nitems);
-	    for (info = start; info < end; info++)
-		msg("%s: %d%%", info->oi_name, info->oi_prob);
-	}
+	msg("DEBUG: bad pick_one: %d from %d items", i, nitems);
+	for (info = start; info < end; info++)
+	    msg("DEBUG: %s: %d%%", info->oi_name, info->oi_prob);
 	info = start;
     }
     return (int)(info - start);

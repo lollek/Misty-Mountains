@@ -241,8 +241,7 @@ find_obj(int y, int x)
       return obj;
 
   /* It should have returned by now */
-  if (wizard)
-    msg("Non-object %d,%d", y, x);
+  msg("DEBUG: Non-object %d,%d", y, x);
   return NULL;
 }
 

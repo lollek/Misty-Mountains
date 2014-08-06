@@ -40,10 +40,7 @@ init_new_game(void)
     strucpy(whoami, name, strlen(name));
   }
 
-  if (wizard)
-    printf("Hello %s, welcome to dungeon #%d", whoami, seed);
-  else
-    printf("Hello %s, just a moment while I dig the dungeon...", whoami);
+  printf("Hello %s, just a moment while I dig the dungeon...", whoami);
   fflush(stdout);
 
   /* Init Graphics */
@@ -110,7 +107,7 @@ init_old_game(void)
      * inode for as long as possible
      */
 
-    if (!wizard && unlink(file_name) < 0)
+    if (unlink(file_name) < 0)
     {
         endwin();
         printf("Cannot unlink file\n");
@@ -527,8 +524,7 @@ sumprobs(struct obj_info *info, int bound , char *name)
   endp = info + bound;
   while (++info < endp)
     info->oi_prob += (info - 1)->oi_prob;
-    if (wizard)
-      badcheck(name, start, bound);
+  badcheck(name, start, bound);
 }
 
 /*
