@@ -55,16 +55,6 @@ int max_hit;				/* Max damage done to her in to_death */
 int max_level;				/* Deepest player has gone */
 int mpos = 0;				/* Where cursor is on top line */
 int no_food = 0;			/* Number of levels without food */
-int a_class[MAXARMORS] = {		/* Armor class for each armor type */
-	8,	/* LEATHER */
-	7,	/* RING_MAIL */
-	7,	/* STUDDED_LEATHER */
-	6,	/* SCALE_MAIL */
-	5,	/* CHAIN_MAIL */
-	4,	/* SPLINT_MAIL */
-	4,	/* BANDED_MAIL */
-	3,	/* PLATE_MAIL */
-};
 
 int count = 0;				/* Number of times to repeat command */
 int food_left;				/* Amount of food in hero's stomach */
@@ -178,17 +168,6 @@ struct obj_info things[] = {
     { NULL,	 7,	0,	NULL,	false },	/* armor */
     { NULL,	 4,	0,	NULL,	false },	/* ring */
     { NULL,	 4,	0,	NULL,	false },	/* stick */
-};
-
-struct obj_info arm_info[MAXARMORS] = {
-    { "leather armor",		 20,	 20, NULL, false },
-    { "ring mail",		 15,	 25, NULL, false },
-    { "studded leather armor",	 15,	 20, NULL, false },
-    { "scale mail",		 13,	 30, NULL, false },
-    { "chain mail",		 12,	 75, NULL, false },
-    { "splint mail",		 10,	 80, NULL, false },
-    { "banded mail",		 10,	 90, NULL, false },
-    { "plate mail",		  5,	150, NULL, false },
 };
 
 struct obj_info ring_info[MAXRINGS] = {

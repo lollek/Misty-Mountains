@@ -24,6 +24,7 @@
 #include "scrolls.h"
 #include "io.h"
 #include "chase.h"
+#include "armor.h"
 
 
 /* init_new_game
@@ -540,7 +541,7 @@ init_probs(void)
     sumprobs(ring_info, MAXRINGS, "rings");
     sumprobs(ws_info, MAXSTICKS, "sticks");
     sumprobs(weap_info, MAXWEAPONS, "weapons");
-    sumprobs(arm_info, MAXARMORS, "armor");
+    sumprobs(arm_info, NARMORS, "armor");
 }
 
 /*

@@ -187,19 +187,6 @@ extern enum rogue_game_t
 #define MAXWEAPONS	9	/* this should equal FLAME */
 
 /*
- * Armor types
- */
-#define LEATHER		0
-#define RING_MAIL	1
-#define STUDDED_LEATHER	2
-#define SCALE_MAIL	3
-#define CHAIN_MAIL	4
-#define SPLINT_MAIL	5
-#define BANDED_MAIL	6
-#define PLATE_MAIL	7
-#define MAXARMORS	8
-
-/*
  * Ring types
  */
 #define R_PROTECT	0
@@ -412,7 +399,7 @@ extern char	dir_ch, file_name[], huh[], prbuf[], whoami[],
 		outbuf[], *r_stones[], runch,
 		*s_names[], take, *tr_name[], *ws_made[], *ws_type[];
 
-extern int	a_class[], count, food_left, hungry_state,
+extern int	count, food_left, hungry_state,
 		level, max_hit, max_level, mpos,
 		no_command, no_food, no_move, purse,
 		quiet, vf_hit, potential_wizard, wizard;
@@ -437,7 +424,6 @@ extern struct stats	max_stats;
 extern struct monster monsters[];
 
 extern struct obj_info things[];
-extern struct obj_info arm_info[];
 extern struct obj_info ring_info[];
 extern struct obj_info ws_info[];
 extern struct obj_info weap_info[];

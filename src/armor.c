@@ -14,6 +14,37 @@
 
 #include "armor.h"
 
+int a_class[NARMORS] =  {
+ 8, /* LEATHER */
+ 7, /* RING_MAIL */
+ 7, /* STUDDED_LEATHER */
+ 6, /* SCALE_MAIL */
+ 5, /* CHAIN_MAIL */
+ 4, /* SPLINT_MAIL */
+ 4, /* BANDED_MAIL */
+ 3, /* PLATE_MAIL */
+};
+
+struct obj_info arm_info[NARMORS] = {
+    { "leather armor",           20,     20, NULL, false },
+    { "ring mail",               15,     25, NULL, false },
+    { "studded leather armor",   15,     20, NULL, false },
+    { "scale mail",              13,     30, NULL, false },
+    { "chain mail",              12,     75, NULL, false },
+    { "splint mail",             10,     80, NULL, false },
+    { "banded mail",             10,     90, NULL, false },
+    { "plate mail",               5,    150, NULL, false },
+};
+
+static void
+waste_time(void)
+{
+  do_daemons(BEFORE);
+  do_fuses(BEFORE);
+  do_daemons(AFTER);
+  do_fuses(AFTER);
+}
+
 int
 get_ac(THING *thing)
 {
@@ -100,13 +131,4 @@ take_off(void)
   msg(" wearing %c) %s", obj->o_packch, inv_name(obj, true, true));
 
   return true;
-}
-
-void
-waste_time(void)
-{
-  do_daemons(BEFORE);
-  do_fuses(BEFORE);
-  do_daemons(AFTER);
-  do_fuses(AFTER);
 }

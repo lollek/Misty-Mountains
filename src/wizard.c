@@ -22,6 +22,7 @@
 #include "options.h"
 #include "io.h"
 #include "chase.h"
+#include "armor.h"
 
 static char *type_name(int type);
 static void pr_spec(const struct obj_info *info, int nitems);
@@ -80,7 +81,7 @@ pr_list(void)
       when SCROLL: pr_spec(scr_info, MAXSCROLLS);
       when RING: pr_spec(ring_info, MAXRINGS);
       when STICK: pr_spec(ws_info, MAXSTICKS);
-      when ARMOR: pr_spec(arm_info, MAXARMORS);
+      when ARMOR: pr_spec(arm_info, NARMORS);
       when WEAPON: pr_spec(weap_info, MAXWEAPONS);
     }
   }

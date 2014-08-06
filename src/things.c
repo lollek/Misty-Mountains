@@ -274,7 +274,7 @@ new_thing(void)
 		cur->o_hplus += rnd(3) + 1;
 	when 4:
 	    cur->o_type = ARMOR;
-	    cur->o_which = pick_one(arm_info, MAXARMORS);
+	    cur->o_which = pick_one(arm_info, NARMORS);
 	    cur->o_arm = a_class[cur->o_which];
 	    if ((r = rnd(100)) < 20)
 	    {

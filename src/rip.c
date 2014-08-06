@@ -23,6 +23,7 @@
 #include "potions.h"
 #include "scrolls.h"
 #include "io.h"
+#include "armor.h"
 
 static char *killname(char monst, bool doart);
 static int center(const char *str);
