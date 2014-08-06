@@ -39,7 +39,7 @@ type_to_string(int type, int which)
     case RING: return "ring";
     case STICK: return "stick";
     case SCROLL: return "scroll";
-    case FOOD: return which == 1 ? "fruit" : "ration of food";
+    case FOOD: return which == 1 ? "fruit" : "food ration";
     case WEAPON: return weap_info[which].oi_name;
     case ARMOR: return arm_info[which].oi_name;
     default: return "something";
