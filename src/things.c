@@ -319,18 +319,24 @@ pick_one(struct obj_info *info, int nitems)
 {
     struct obj_info *end;
     struct obj_info *start;
-    int i;
+    int i = rnd(100);
 
     start = info;
-    for (end = &info[nitems], i = rnd(100); info < end; info++)
+    for (end = &info[nitems]; info < end; info++)
 	if (i < info->oi_prob)
 	    break;
+	else
+	    i -= info->oi_prob;
     if (info == end)
     {
-	msg("DEBUG: bad pick_one: %d from %d items", i, nitems);
+	coord orig;
+	int curr_y = 0;
+	getyx(stdscr, orig.y, orig.x);
+	mvprintw(0, 0, "DEBUG: bad pick_one: %d from %d items", i, nitems);
 	for (info = start; info < end; info++)
-	    msg("DEBUG: %s: %d%%", info->oi_name, info->oi_prob);
+	    mvprintw(++curr_y, 1, "%s: %d%%", info->oi_name, info->oi_prob);
 	info = start;
+	move(orig.y, orig.x);
     }
     return (int)(info - start);
 }
