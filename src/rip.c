@@ -237,9 +237,6 @@ death(char monst)
     move(LINES - 1, 0);
     refresh();
     score(purse, player_has_amulet() ? 3 : 0, monst);
-    printf("[Press return to continue]");
-    fflush(stdout);
-    (void) fgets(prbuf,10,stdin);
     exit(0);
 }
 
