@@ -36,11 +36,11 @@ void reset_last(void); /* TODO: Why is this even here? */
 
 /** players_inventory_is_empty
  * Check if she's carrying anything */
-bool players_inventory_is_empty(void); /* TODO: Inline */
+#define players_inventory_is_empty() (player.t_pack == NULL)
 
 /** items_in_pack
  * Counts how many items she is carrying */
-unsigned items_in_pack(void); /* TODO: Inline */
+#define items_in_pack() items_in_pack_of_type(0)
 
 /** items_in_pack
  * Counts how many items she is carrying of a certain type */

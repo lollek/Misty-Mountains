@@ -32,223 +32,215 @@ static void remove_from_floor(THING *obj); /* Removes one item from the floor */
 void
 add_pack(THING *obj, bool silent)
 {
-    THING *op;
-    bool from_floor = false;
+  THING *op;
+  bool from_floor = false;
 
-    /* Either obj in an item or we try to take something from the floor */
-    if (obj == NULL)
+  /* Either obj in an item or we try to take something from the floor */
+  if (obj == NULL)
+  {
+    if ((obj = find_obj(hero.y, hero.x)) == NULL)
+      return;
+    from_floor = true;
+  }
+
+  /* Check for and deal with scare monster scrolls */
+  if (obj->o_type == SCROLL && obj->o_which == S_SCARE &&
+      obj->o_flags & ISFOUND)
+  {
+    detach(lvl_obj, obj);
+    mvaddcch(hero.y, hero.x, floor_ch());
+    chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
+    discard(obj);
+    msg("the scroll turns to dust as you pick it up");
+    return;
+  }
+
+  if (items_in_pack() == PACKSIZE)
+  {
+    msg(terse
+        ? "no room"
+        : "there's no room in your pack");
+    if (from_floor)
+      move_msg(obj);
+    return;
+  }
+
+  if (player.t_pack == NULL)
+  {
+    if (from_floor)
+      remove_from_floor(obj);
+    attach(player.t_pack, obj);
+    obj->o_packch = pack_char();
+  }
+  else
+  {
+    THING *lp = NULL;
+    for (op = player.t_pack; op != NULL; op = op->l_next)
     {
-	if ((obj = find_obj(hero.y, hero.x)) == NULL)
-	    return;
-	from_floor = true;
+      if (op->o_type != obj->o_type)
+        lp = op;
+      else
+      {
+        while (op->o_type == obj->o_type && op->o_which != obj->o_which)
+        {
+          lp = op;
+          if (op->l_next == NULL)
+            break;
+          else
+            op = op->l_next;
+        }
+        if (op->o_type == obj->o_type && op->o_which == obj->o_which)
+        {
+          if (op->o_type == POTION || op->o_type == SCROLL ||
+              obj->o_type == FOOD)
+          {
+            if (from_floor)
+              remove_from_floor(obj);
+            op->o_count++;
+            discard(obj);
+            obj = op;
+            lp = NULL;
+            break;
+          }
+          else if (obj->o_group)
+          {
+            lp = op;
+            while (op->o_type == obj->o_type
+                && op->o_which == obj->o_which
+                && op->o_group != obj->o_group)
+            {
+              lp = op;
+              if (op->l_next == NULL)
+                break;
+              else
+                op = op->l_next;
+            }
+            if (op->o_type == obj->o_type
+                && op->o_which == obj->o_which
+                && op->o_group == obj->o_group)
+            {
+              op->o_count += obj->o_count;
+              if (from_floor)
+                remove_from_floor(obj);
+              discard(obj);
+              obj = op;
+              lp = NULL;
+              break;
+            }
+          }
+          else
+            lp = op;
+        }
+        break;
+      }
     }
 
-    /* Check for and deal with scare monster scrolls */
-    if (obj->o_type == SCROLL && obj->o_which == S_SCARE &&
-        obj->o_flags & ISFOUND)
+    if (lp != NULL)
     {
-	detach(lvl_obj, obj);
-	mvaddcch(hero.y, hero.x, floor_ch());
-	chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
-	discard(obj);
-	msg("the scroll turns to dust as you pick it up");
-	return;
+      if (from_floor)
+        remove_from_floor(obj);
+      obj->o_packch = pack_char();
+      obj->l_next = lp->l_next;
+      obj->l_prev = lp;
+      if (lp->l_next != NULL)
+        lp->l_next->l_prev = obj;
+      lp->l_next = obj;
     }
+  }
 
-    if (items_in_pack() == PACKSIZE)
-    {
-	msg(terse
-	    ? "no room"
-	    : "there's no room in your pack");
-	if (from_floor)
-	    move_msg(obj);
-	return;
-    }
+  obj->o_flags |= ISFOUND;
 
-    if (player.t_pack == NULL)
-    {
-	if (from_floor)
-	    remove_from_floor(obj);
-	attach(player.t_pack, obj);
-	obj->o_packch = pack_char();
-    }
-    else
-    {
-	THING *lp = NULL;
-	for (op = player.t_pack; op != NULL; op = op->l_next)
-	{
-	    if (op->o_type != obj->o_type)
-		lp = op;
-	    else
-	    {
-		while (op->o_type == obj->o_type && op->o_which != obj->o_which)
-		{
-		    lp = op;
-		    if (op->l_next == NULL)
-			break;
-		    else
-			op = op->l_next;
-		}
-		if (op->o_type == obj->o_type && op->o_which == obj->o_which)
-		{
-		    if (op->o_type == POTION || op->o_type == SCROLL ||
-                        obj->o_type == FOOD)
-		    {
-			if (from_floor)
-			    remove_from_floor(obj);
-			op->o_count++;
-			discard(obj);
-			obj = op;
-			lp = NULL;
-			break;
-		    }
-		    else if (obj->o_group)
-		    {
-			lp = op;
-			while (op->o_type == obj->o_type
-			    && op->o_which == obj->o_which
-			    && op->o_group != obj->o_group)
-			{
-			    lp = op;
-			    if (op->l_next == NULL)
-				break;
-			    else
-				op = op->l_next;
-			}
-			if (op->o_type == obj->o_type
-			    && op->o_which == obj->o_which
-			    && op->o_group == obj->o_group)
-			{
-				op->o_count += obj->o_count;
-				if (from_floor)
-				    remove_from_floor(obj);
-				discard(obj);
-				obj = op;
-				lp = NULL;
-				break;
-			}
-		    }
-		    else
-			lp = op;
-		}
-		break;
-	    }
-	}
+  /*
+   * If this was the object of something's desire, that monster will
+   * get mad and run at the hero.
+   */
+  for (op = mlist; op != NULL; op = op->l_next)
+    if (op->t_dest == &obj->o_pos)
+      op->t_dest = &hero;
 
-	if (lp != NULL)
-	{
-	    if (from_floor)
-		remove_from_floor(obj);
-	    obj->o_packch = pack_char();
-	    obj->l_next = lp->l_next;
-	    obj->l_prev = lp;
-	    if (lp->l_next != NULL)
-		lp->l_next->l_prev = obj;
-	    lp->l_next = obj;
-	}
-    }
-
-    obj->o_flags |= ISFOUND;
-
-    /*
-     * If this was the object of something's desire, that monster will
-     * get mad and run at the hero.
-     */
-    for (op = mlist; op != NULL; op = op->l_next)
-	if (op->t_dest == &obj->o_pos)
-	    op->t_dest = &hero;
-
-    /* Notify the user */
-    if (!silent)
-    {
-	if (!terse)
-	    addmsg("you now have ");
-	msg("%s (%c)", inv_name(obj, !terse, true), obj->o_packch, true);
-    }
+  /* Notify the user */
+  if (!silent)
+  {
+    if (!terse)
+      addmsg("you now have ");
+    msg("%s (%c)", inv_name(obj, !terse, true), obj->o_packch, true);
+  }
 }
 
 THING *
 leave_pack(THING *obj, bool newobj, bool all)
 {
-    THING *nobj;
-
-    nobj = obj;
-    if (obj->o_count > 1 && !all)
+  THING *nobj = obj;
+  if (obj->o_count > 1 && !all)
+  {
+    last_pick = obj;
+    obj->o_count--;
+    if (newobj)
     {
-	last_pick = obj;
-	obj->o_count--;
-	if (newobj)
-	{
-	    nobj = new_item();
-	    *nobj = *obj;
-	    nobj->l_next = NULL;
-	    nobj->l_prev = NULL;
-	    nobj->o_count = 1;
-	}
+      nobj = new_item();
+      *nobj = *obj;
+      nobj->l_next = NULL;
+      nobj->l_prev = NULL;
+      nobj->o_count = 1;
     }
-    else
-    {
-	last_pick = NULL;
-	pack_used[obj->o_packch - 'a'] = false;
-	detach(player.t_pack, obj);
-    }
-    return nobj;
+  }
+  else
+  {
+    last_pick = NULL;
+    pack_used[obj->o_packch - 'a'] = false;
+    detach(player.t_pack, obj);
+  }
+  return nobj;
 }
 
 static char
 pack_char(void)
 {
-    bool *bp;
-
-    for (bp = pack_used; *bp; bp++)
-	continue;
-    *bp = true;
-    return (char)((int)(bp - pack_used) + 'a');
+  bool *bp;
+  for (bp = pack_used; *bp; bp++)
+    ;
+  *bp = true;
+  return (char)((int)(bp - pack_used) + 'a');
 }
 
 void
 pick_up(char ch)
 {
-    THING *obj;
+  THING *obj;
 
-    if (is_levitating(&player))
-	return;
+  if (is_levitating(&player))
+    return;
 
-    obj = find_obj(hero.y, hero.x);
-    if (move_on)
-	move_msg(obj);
-    else
-	switch (ch)
-	{
-	    case GOLD:
-		if (obj == NULL)
-		    return;
-		money(obj->o_goldval);
-		detach(lvl_obj, obj);
-		discard(obj);
-		proom->r_goldval = 0;
-		break;
-	    default:
-		msg("DEBUG: You picked something you shouldn't have...");
-	    case ARMOR:
-	    case POTION:
-	    case FOOD:
-	    case WEAPON:
-	    case SCROLL:	
-	    case AMULET:
-	    case RING:
-	    case STICK:
-		add_pack((THING *) NULL, false);
-		break;
-	}
+  obj = find_obj(hero.y, hero.x);
+  if (move_on)
+    move_msg(obj);
+  else
+    switch (ch)
+    {
+      case GOLD:
+        if (obj != NULL)
+        {
+          money(obj->o_goldval);
+          detach(lvl_obj, obj);
+          discard(obj);
+          proom->r_goldval = 0;
+        }
+      otherwise:
+        msg("DEBUG: You picked something you shouldn't have...");
+        /* FALLTHROUGH */
+      case ARMOR: case POTION: case FOOD: case WEAPON:
+      case SCROLL: case AMULET: case RING: case STICK:
+        add_pack((THING *) NULL, false);
+        break;
+    }
 }
 
 static void
 move_msg(THING *obj)
 {
-    if (!terse)
-	addmsg("you ");
-    msg("moved onto %s", inv_name(obj, true, true));
+  if (!terse)
+    addmsg("you ");
+  msg("moved onto %s", inv_name(obj, true, true));
 }
 
 THING *
@@ -271,30 +263,30 @@ find_magic_item_in_players_pack(void)
 void
 picky_inven(void)
 {
-    THING *obj;
-    char mch;
+  THING *obj;
+  char mch;
 
-    if (player.t_pack == NULL)
-	msg("you aren't carrying anything");
-    else if (player.t_pack->l_next == NULL)
-	msg("a) %s", inv_name(player.t_pack, false, true));
-    else
+  if (player.t_pack == NULL)
+    msg("you aren't carrying anything");
+  else if (player.t_pack->l_next == NULL)
+    msg("a) %s", inv_name(player.t_pack, false, true));
+  else
+  {
+    msg(terse ? "item: " : "which item do you wish to inventory: ");
+    mpos = 0;
+    if ((mch = readchar()) == KEY_ESCAPE)
     {
-	msg(terse ? "item: " : "which item do you wish to inventory: ");
-	mpos = 0;
-	if ((mch = readchar()) == KEY_ESCAPE)
-	{
-	    msg("");
-	    return;
-	}
-	for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
-	    if (mch == obj->o_packch)
-	    {
-		msg("%c) %s", mch, inv_name(obj, false, true));
-		return;
-	    }
-	msg("'%s' not in pack", unctrl(mch));
+      msg("");
+      return;
     }
+    for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
+      if (mch == obj->o_packch)
+      {
+        msg("%c) %s", mch, inv_name(obj, false, true));
+        return;
+      }
+    msg("'%s' not in pack", unctrl(mch));
+  }
 }
 
 THING *
@@ -407,18 +399,6 @@ remove_from_floor(THING *obj)
   detach(lvl_obj, obj);
   mvaddcch(hero.y, hero.x, floor_ch());
   chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
-}
-
-bool
-players_inventory_is_empty(void)
-{
-  return player.t_pack == NULL;
-}
-
-unsigned
-items_in_pack(void)
-{
-  return items_in_pack_of_type(0);
 }
 
 unsigned
