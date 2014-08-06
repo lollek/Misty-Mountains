@@ -555,13 +555,11 @@ badcheck(const char *name, struct obj_info *info, int bound)
 
     if (info[bound - 1].oi_prob == 100)
 	return;
+    endwin();
     printf("\nBad percentages for %s (bound = %d):\n", name, bound);
     for (end = &info[bound]; info < end; info++)
 	printf("%3d%% %s\n", info->oi_prob, info->oi_name);
-    printf("[hit RETURN to continue]");
-    fflush(stdout);
-    while (getchar() != '\n')
-	continue;
+    exit(1);
 }
 
 /*
