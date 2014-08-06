@@ -213,7 +213,8 @@ conn(int r1, int r2)
 	turn_delta.x = 0;
 	turn_distance = abs(spos.y - epos.y);
     }
-    msg("DEBUG: error in connection tables");
+    else
+      msg("DEBUG: error in connection tables");
 
     turn_spot = rnd(distance - 1) + 1;		/* where turn starts */
 
