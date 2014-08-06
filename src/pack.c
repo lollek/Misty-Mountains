@@ -266,7 +266,7 @@ picky_inven(void)
   THING *obj;
   char mch;
 
-  if (player.t_pack == NULL)
+  if (players_inventory_is_empty())
     msg("you aren't carrying anything");
   else if (player.t_pack->l_next == NULL)
     msg("a) %s", inv_name(player.t_pack, false, true));
