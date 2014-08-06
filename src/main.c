@@ -120,10 +120,7 @@ quit(int sig)
   if (getch() == 'y')
   {
     signal(SIGINT, leave);
-    clear();
-    mvprintw(LINES - 2, 0, "You quit with %d gold pieces", purse);
-    move(LINES - 1, 0);
-    refresh();
+    evaluate_players_inventory();
     score(purse, 1, 0);
     exit(0);
   }

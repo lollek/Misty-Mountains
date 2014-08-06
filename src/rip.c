@@ -234,8 +234,10 @@ death(char monst)
 	sprintf(prbuf, "%4d", 1900+lt->tm_year);
 	mvaddstr(18, 26, prbuf);
     }
-    move(LINES - 1, 0);
+    mvprintw(LINES -1, 0, "[Press return to continue]");
     refresh();
+    wait_for(KEY_ENTER);
+    evaluate_players_inventory();
     score(purse, player_has_amulet() ? 3 : 0, monst);
     exit(0);
 }
