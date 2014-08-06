@@ -260,35 +260,6 @@ find_magic_item_in_players_pack(void)
   return NULL;
 }
 
-void
-picky_inven(void)
-{
-  THING *obj;
-  char mch;
-
-  if (players_inventory_is_empty())
-    msg("you aren't carrying anything");
-  else if (player.t_pack->l_next == NULL)
-    msg("a) %s", inv_name(player.t_pack, false, true));
-  else
-  {
-    msg(terse ? "item: " : "which item do you wish to inventory: ");
-    mpos = 0;
-    if ((mch = readchar()) == KEY_ESCAPE)
-    {
-      msg("");
-      return;
-    }
-    for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
-      if (mch == obj->o_packch)
-      {
-        msg("%c) %s", mch, inv_name(obj, false, true));
-        return;
-      }
-    msg("'%s' not in pack", unctrl(mch));
-  }
-}
-
 THING *
 get_item(const char *purpose, int type)
 {

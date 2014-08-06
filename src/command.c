@@ -219,7 +219,6 @@ do_command(char ch)
       return do_run(ch, false);
     case 'D': discovered(); return false;
     case 'F': return fight_monster(true);
-    case 'I': picky_inven(); return false;
     case 'P': return ring_on();
     case 'R': return ring_off();
     case 'S': return save_game();

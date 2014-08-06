@@ -14,9 +14,6 @@ THING *leave_pack(THING *obj, bool newobj, bool all);
 /* Add something to characters pack */
 void pick_up(char ch); /* TODO: Maybe move to command.c */
 
-/* Allow player to inventory a single item */
-void picky_inven(void); /* TODO: Maybe move to command.c */
-
 /* Pick something out of a pack for a purpose */
 THING *get_item(const char *purpose, int type);
 
