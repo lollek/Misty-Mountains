@@ -54,7 +54,6 @@ extern enum rogue_game_t
 #define same_coords(a,b)	((a).x == (b).x && (a).y == (b).y)
 #define hero		player.t_pos
 #define pstats		player.t_stats
-#define pack		player.t_pack
 #define proom		player.t_room
 #define max_hp		player.t_stats.s_maxhp
 #define attach(a,b)	_attach(&a,b)

@@ -102,7 +102,7 @@ whatis(int type)
 {
     THING *obj;
 
-    if (pack == NULL)
+    if (player.t_pack == NULL)
     {
 	msg("you don't have anything in your pack to identify");
 	return;

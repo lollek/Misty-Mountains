@@ -288,7 +288,7 @@ total_winner(void)
     clear();
     mvaddstr(0, 0, "   Worth  Item\n");
     oldpurse = purse;
-    for (obj = pack; obj != NULL; obj = obj->l_next)
+    for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
     {
 	switch (obj->o_type)
 	{

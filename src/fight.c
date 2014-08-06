@@ -294,7 +294,8 @@ attack(THING *mp)
 		     * and pick out one we like.
 		     */
 		    steal = NULL;
-		    for (nobj = 0, obj = pack; obj != NULL; obj = obj->l_next)
+		    nobj = 0;
+		    for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
 			if (obj != cur_armor && obj != cur_weapon
 			    && obj != cur_ring[LEFT] && obj != cur_ring[RIGHT]
 			    && is_magic(obj) && rnd(++nobj) == 0)

@@ -64,17 +64,17 @@ add_pack(THING *obj, bool silent)
 	return;
     }
 
-    if (pack == NULL)
+    if (player.t_pack == NULL)
     {
 	if (from_floor)
 	    remove_from_floor(obj);
-	attach(pack, obj);
+	attach(player.t_pack, obj);
 	obj->o_packch = pack_char();
     }
     else
     {
 	THING *lp = NULL;
-	for (op = pack; op != NULL; op = op->l_next)
+	for (op = player.t_pack; op != NULL; op = op->l_next)
 	{
 	    if (op->o_type != obj->o_type)
 		lp = op;
@@ -193,7 +193,7 @@ leave_pack(THING *obj, bool newobj, bool all)
     {
 	last_pick = NULL;
 	pack_used[obj->o_packch - 'a'] = false;
-	detach(pack, obj);
+	detach(player.t_pack, obj);
     }
     return nobj;
 }
@@ -281,10 +281,10 @@ picky_inven(void)
     THING *obj;
     char mch;
 
-    if (pack == NULL)
+    if (player.t_pack == NULL)
 	msg("you aren't carrying anything");
-    else if (pack->l_next == NULL)
-	msg("a) %s", inv_name(pack, false, true));
+    else if (player.t_pack->l_next == NULL)
+	msg("a) %s", inv_name(player.t_pack, false, true));
     else
     {
 	msg(terse ? "item: " : "which item do you wish to inventory: ");
@@ -294,7 +294,7 @@ picky_inven(void)
 	    msg("");
 	    return;
 	}
-	for (obj = pack; obj != NULL; obj = obj->l_next)
+	for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
 	    if (mch == obj->o_packch)
 	    {
 		msg("%c) %s", mch, inv_name(obj, false, true));
@@ -357,7 +357,7 @@ get_item(const char *purpose, int type)
       continue;
     }
 
-    for (obj = pack; obj != NULL; obj = obj->l_next)
+    for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
       if (obj->o_packch == ch)
         break;
     if (obj == NULL)
@@ -446,7 +446,7 @@ items_in_pack_of_type(int type)
   unsigned num = 0;
   THING *list;
 
-  for (list = pack; list != NULL; list = list->l_next)
+  for (list = player.t_pack; list != NULL; list = list->l_next)
     if (!type || type == list->o_type ||
         (type == CALLABLE && (list->o_type != FOOD && list->o_type != AMULET))||
         (type == R_OR_S && (list->o_type == RING || list->o_type == STICK)))
@@ -459,7 +459,7 @@ player_has_amulet(void)
 {
   THING *ptr;
 
-  for (ptr = pack; ptr != NULL; ptr = ptr->l_next)
+  for (ptr = player.t_pack; ptr != NULL; ptr = ptr->l_next)
     if (ptr->o_type == AMULET)
       return true;
   return false;
@@ -476,7 +476,7 @@ print_inventory(int type)
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
   /* Print out all items */
-  for (list = pack; list != NULL; list = list->l_next)
+  for (list = player.t_pack; list != NULL; list = list->l_next)
   {
     if (!type || type == list->o_type ||
         (type == CALLABLE && (list->o_type != FOOD && list->o_type != AMULET))||
