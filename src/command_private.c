@@ -504,6 +504,11 @@ search(void)
 bool
 show_players_inventory(void)
 {
+  if (players_inventory_is_empty())
+  {
+    msg("You inventory is empty");
+    return false;
+  }
   print_inventory(0);
   msg("--Press any key to continue--");
   getch();
