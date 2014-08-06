@@ -161,13 +161,13 @@ struct monster monsters[26] =
 /* Only oi_prob is used
  *    oi_name  oi_prob oi_worth oi_guess oi_know */
 struct obj_info things[] = {
-    { NULL,	26,	0,	NULL,	false },	/* potion */
-    { NULL,	36,	0,	NULL,	false },	/* scroll */
-    { NULL,	16,	0,	NULL,	false },	/* food */
-    { NULL,	 7,	0,	NULL,	false },	/* weapon */
-    { NULL,	 7,	0,	NULL,	false },	/* armor */
-    { NULL,	 4,	0,	NULL,	false },	/* ring */
-    { NULL,	 4,	0,	NULL,	false },	/* stick */
+    { "potion",	26,	0,	NULL,	false },	/* potion */
+    { "scroll",	36,	0,	NULL,	false },	/* scroll */
+    { "food",	16,	0,	NULL,	false },	/* food */
+    { "weapon",	 7,	0,	NULL,	false },	/* weapon */
+    { "armor",	 7,	0,	NULL,	false },	/* armor */
+    { "ring",	 4,	0,	NULL,	false },	/* ring */
+    { "stick",	 4,	0,	NULL,	false },	/* stick */
 };
 
 struct obj_info ring_info[MAXRINGS] = {
