@@ -99,7 +99,12 @@ init_old_game(void)
     if (init_graphics() != 0)
       return false;
 
-    rs_restore_file(inf);
+    if (rs_restore_file(inf) != 0)
+    {
+      endwin();
+      printf(": Corrupted save game\n");
+      return false;
+    }
     /*
      * we do not close the file so that we will have a hold of the
      * inode for as long as possible

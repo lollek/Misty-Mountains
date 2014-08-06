@@ -38,51 +38,105 @@
 #include "io.h"
 #include "chase.h"
 
-/************************************************************************/
-/* Save State Code                                                      */
-/************************************************************************/
+static const size_t RSID_STATS        = 0xABCD0001;
+static const size_t RSID_THING        = 0xABCD0002;
+static const size_t RSID_OBJECT       = 0xABCD0003;
+static const size_t RSID_MAGICITEMS   = 0xABCD0004;
+static const size_t RSID_OBJECTLIST   = 0xABCD0007;
+static const size_t RSID_MONSTERLIST  = 0xABCD0009;
+static const size_t RSID_WINDOW       = 0xABCD000D;
+static const size_t RSID_DAEMONS      = 0xABCD000E;
 
-static int RSID_STATS        = 0xABCD0001;
-static int RSID_THING        = 0xABCD0002;
-static int RSID_OBJECT       = 0xABCD0003;
-static int RSID_MAGICITEMS   = 0xABCD0004;
-static int RSID_OBJECTLIST   = 0xABCD0007;
-static int RSID_MONSTERLIST  = 0xABCD0009;
-static int RSID_WINDOW       = 0xABCD000D;
-static int RSID_DAEMONS      = 0xABCD000E;
+#define rs_assert(_a) if (_a) { return printf("L%d@%s", __LINE__, __FILE__); }
 
 
-#define rs_write(_f, _p, _s) (encwrite(_p, _s, _f) != _s)
-#define rs_write_boolean(_f, _c) rs_write(_f, (char *) &_c, 1)
-#define rs_write_char(_f, _c) rs_write(_f, &_c, 1)
-#define rs_write_short(_f, _c) rs_write(_f, (char *) &_c, 2)
-#define rs_write_int(_f, _c) rs_write(_f, (char *) &_c, 4)
-#define rs_write_uint rs_write_int
-#define rs_write_marker rs_write_int
-#define rs_write_str_t rs_write_int
+#define rs_write(_f, _p, _s)     (encwrite(_p, _s, _f) != _s)
+#define rs_write_boolean(_f, _c) rs_write(_f, (char *)&_c, 1)
+#define rs_write_char(_f, _c)    rs_write(_f, (char *)&_c, 1)
+#define rs_write_short(_f, _c)   rs_write(_f, (char *)&_c, 2)
+#define rs_write_int(_f, _c)     rs_write(_f, (char *)&_c, 4)
+#define rs_write_marker          rs_write_int
+#define rs_write_str_t           rs_write_int
 #define rs_write_coord(_f, _c) \
-  (rs_write_int(_f, (_c).x) || rs_write_int(_f, (_c).y))
+  (rs_write_int(_f, (_c).x) || \
+   rs_write_int(_f, (_c).y))
 #define rs_write_chars(_f, _c, _n) \
-  (rs_write_int(_f, _n) || rs_write(_f, _c, _n))
+  (rs_write_int(_f, _n) || \
+   rs_write(_f, _c, _n))
+#define rs_write_room(_f, _r) \
+  (rs_write_coord(savef, (_r)->r_pos) || \
+   rs_write_coord(savef, (_r)->r_max) || \
+   rs_write_coord(savef, (_r)->r_gold) || \
+   rs_write_int(savef,   (_r)->r_goldval) || \
+   rs_write_short(savef, (_r)->r_flags) || \
+   rs_write_int(savef,   (_r)->r_nexits) || \
+   rs_write_coord(savef, (_r)->r_exit[0]) || \
+   rs_write_coord(savef, (_r)->r_exit[1]) || \
+   rs_write_coord(savef, (_r)->r_exit[2]) || \
+   rs_write_coord(savef, (_r)->r_exit[3]) || \
+   rs_write_coord(savef, (_r)->r_exit[4]) || \
+   rs_write_coord(savef, (_r)->r_exit[5]) || \
+   rs_write_coord(savef, (_r)->r_exit[6]) || \
+   rs_write_coord(savef, (_r)->r_exit[7]) || \
+   rs_write_coord(savef, (_r)->r_exit[8]) || \
+   rs_write_coord(savef, (_r)->r_exit[9]) || \
+   rs_write_coord(savef, (_r)->r_exit[10]) || \
+   rs_write_coord(savef, (_r)->r_exit[11]))
+#define rs_assert_write_places(_f, _p, _n) \
+  for (temp_i = 0; temp_i < _n; ++temp_i) \
+    rs_assert(rs_write_char(_f, (_p)[temp_i].p_ch) || \
+              rs_write_char(_f, (_p)[temp_i].p_flags) || \
+              rs_write_thing_reference(_f, mlist, (_p)[temp_i].p_monst))
 
-#define rs_read(_f, _p, _s)  (encread(_p, _s, _f) != _s)
+
+#define rs_read(_f, _p, _s)     (encread(_p, _s, _f) != _s)
 #define rs_read_boolean(_f, _i) rs_read(_f, (char *)_i, 1)
-#define rs_read_char(_f, _c)  rs_read(_f, (char *)_c, 1)
-#define rs_read_short(_f, _i) rs_read(_f, (char *)_i, 2)
-#define rs_read_int(_f, _i)  rs_read(_f, (char *)_i, 4)
-#define rs_read_uint rs_read_int
-#define rs_read_str_t rs_read_int
+#define rs_read_char(_f, _c)    rs_read(_f, (char *)_c, 1)
+#define rs_read_short(_f, _i)   rs_read(_f, (char *)_i, 2)
+#define rs_read_int(_f, _i)     rs_read(_f, (char *)_i, 4)
+#define rs_read_str_t           rs_read_int
 #define rs_read_coord(_f, _c) \
-  (rs_read_int(_f, &(_c)->x) || rs_read_int(_f, &(_c)->y))
-
-static int
-rs_read_chars(FILE *inf, char *i, int count)
-{
-    int value = 0;
-    return rs_read_int(inf, &value) ||
-           value != count ||
-           rs_read(inf, i, (unsigned) count);
-}
+  (rs_read_int(_f, &(_c)->x) || \
+   rs_read_int(_f, &(_c)->y))
+#define rs_read_chars(_f, _i, _n) \
+  (rs_read_int(_f, &temp_i) || \
+   temp_i != _n || rs_read(_f, _i, _n))
+#define rs_read_marker(_f, _i) \
+  (rs_read_int(_f, &temp_i) || \
+   _i != temp_i)
+#define rs_read_stats(_f, _s) \
+  (rs_read_marker(_f, RSID_STATS) || \
+   rs_read_str_t(_f, &(_s)->s_str) || \
+   rs_read_int(_f, &(_s)->s_exp) || \
+   rs_read_int(_f, &(_s)->s_lvl) || \
+   rs_read_int(_f, &(_s)->s_arm) || \
+   rs_read_int(_f, &(_s)->s_hpt) || \
+   rs_read_chars(_f, (_s)->s_dmg, sizeof((_s)->s_dmg)) || \
+   rs_read_int(_f, &(_s)->s_maxhp))
+#define rs_read_room(_f, _r) \
+  (rs_read_coord(inf,&(_r)->r_pos) || \
+   rs_read_coord(inf,&(_r)->r_max) || \
+   rs_read_coord(inf,&(_r)->r_gold) || \
+   rs_read_int(inf,&(_r)->r_goldval) || \
+   rs_read_short(inf,&(_r)->r_flags) || \
+   rs_read_int(inf,&(_r)->r_nexits) || \
+   rs_read_coord(inf,&(_r)->r_exit[0]) || \
+   rs_read_coord(inf,&(_r)->r_exit[1]) || \
+   rs_read_coord(inf,&(_r)->r_exit[2]) || \
+   rs_read_coord(inf,&(_r)->r_exit[3]) || \
+   rs_read_coord(inf,&(_r)->r_exit[4]) || \
+   rs_read_coord(inf,&(_r)->r_exit[5]) || \
+   rs_read_coord(inf,&(_r)->r_exit[6]) || \
+   rs_read_coord(inf,&(_r)->r_exit[7]) || \
+   rs_read_coord(inf,&(_r)->r_exit[8]) || \
+   rs_read_coord(inf,&(_r)->r_exit[9]) || \
+   rs_read_coord(inf,&(_r)->r_exit[10]) || \
+   rs_read_coord(inf,&(_r)->r_exit[11]))
+#define rs_assert_read_places(_f, _p, _n) \
+  for (temp_i = 0; temp_i < _n; ++temp_i) \
+    rs_assert(rs_read_char(_f,&(_p)[temp_i].p_ch) || \
+              rs_read_char(_f,&(_p)[temp_i].p_flags) || \
+              rs_read_thing_reference(_f, mlist, &(_p)[temp_i].p_monst))
 
 
 static int
@@ -102,28 +156,16 @@ rs_write_booleans(FILE *savef, const bool *c, int count)
 static int
 rs_read_booleans(FILE *inf, bool *i, int count)
 {
-  int n = 0, value = 0;
+  int n = 0;
 
-  if (rs_read_int(inf,&value))
-    return 1;
-
-  if (value != count)
+  if (rs_read_int(inf,&n) ||
+      n != count)
     return 1;
 
   for(n = 0; n < count; n++)
-    if (rs_read_boolean(inf, &i[n]) != 0)
+    if (rs_read_boolean(inf, &i[n]))
       return 1;;
   return 0;
-}
-
-int
-rs_read_marker(FILE *inf, int id)
-{
-  int nid;
-
-  if (rs_read_int(inf, &nid) == 0)
-    return id != nid;
-  return 1;
 }
 
 static int
@@ -137,6 +179,7 @@ rs_write_string(FILE *savef, const char *s)
 static int
 rs_read_new_string(FILE *inf, char **s)
 {
+  size_t temp_i = 0; /* Used by rs_read_chars macro */
   size_t len = 0;
   char *buf = 0;
 
@@ -208,6 +251,7 @@ rs_write_window(FILE *savef, WINDOW *win)
 static int
 rs_read_window(FILE *inf, WINDOW *win)
 {
+  size_t temp_i = 0; /* Used by rs_read_marker */
   int row;
   int col;
   int maxlines;
@@ -274,21 +318,6 @@ rs_write_stats(FILE *savef, const struct stats *s)
       rs_write_int(savef, s->s_hpt) ||
       rs_write_chars(savef, s->s_dmg, dmgsize) ||
       rs_write_int(savef,s->s_maxhp))
-    return 1;
-  return 0;
-}
-
-static int
-rs_read_stats(FILE *inf, struct stats *s)
-{
-  if (rs_read_marker(inf, RSID_STATS) ||
-      rs_read_str_t(inf,&s->s_str) ||
-      rs_read_int(inf,&s->s_exp) ||
-      rs_read_int(inf,&s->s_lvl) ||
-      rs_read_int(inf,&s->s_arm) ||
-      rs_read_int(inf,&s->s_hpt) ||
-      rs_read_chars(inf,s->s_dmg, sizeof(s->s_dmg)) ||
-      rs_read_int(inf,&s->s_maxhp))
     return 1;
   return 0;
 }
@@ -382,7 +411,7 @@ rs_write_sticks(FILE *savef)
   int i;
   for (i = 0; i < MAXSTICKS; i++)
   {
-    bool staff_t = strcmp(ws_type[i], "staff");
+    int staff_t = strcmp(ws_type[i], "staff");
     if (rs_write_int(savef, staff_t) ||
         rs_write_string_index(savef, staff_t ? metal : wood,
                               staff_t ? cNMETAL : cNWOOD, ws_made[i]))
@@ -395,9 +424,9 @@ static int
 rs_read_sticks(FILE *inf)
 {
   int i = 0;
-  for(i = 0; i < MAXSTICKS; i++)
+  for (i = 0; i < MAXSTICKS; i++)
   {
-    int list;
+    int list = 0;
     if (rs_read_int(inf,&list) ||
         rs_read_string_index(inf, list ? metal : wood,
                              list ? cNMETAL : cNWOOD, &ws_made[i]))
@@ -454,6 +483,7 @@ rs_write_daemons(FILE *savef, const struct delayed_action *d_list, int count)
 static int
 rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
 {
+  size_t temp_i = 0; /* Used by rs_read_marker */
   int i = 0;
   int value = 0;
 
@@ -518,6 +548,7 @@ rs_write_obj_info(FILE *savef, const struct obj_info *i, int count)
 static int
 rs_read_obj_info(FILE *inf, struct obj_info *mi, int count)
 {
+  size_t temp_i; /* Used by rs_read_marker */
   int n;
   int value;
 
@@ -532,56 +563,6 @@ rs_read_obj_info(FILE *inf, struct obj_info *mi, int count)
         rs_read_new_string(inf,&mi[n].oi_guess) ||
         rs_read_boolean(inf,&mi[n].oi_know))
       return 1;
-  return 0;
-}
-
-static int
-rs_write_room(FILE *savef, const struct room *r)
-{
-  if (rs_write_coord(savef, r->r_pos) ||
-      rs_write_coord(savef, r->r_max) ||
-      rs_write_coord(savef, r->r_gold) ||
-      rs_write_int(savef,   r->r_goldval) ||
-      rs_write_short(savef, r->r_flags) ||
-      rs_write_int(savef, r->r_nexits) ||
-      rs_write_coord(savef, r->r_exit[0]) ||
-      rs_write_coord(savef, r->r_exit[1]) ||
-      rs_write_coord(savef, r->r_exit[2]) ||
-      rs_write_coord(savef, r->r_exit[3]) ||
-      rs_write_coord(savef, r->r_exit[4]) ||
-      rs_write_coord(savef, r->r_exit[5]) ||
-      rs_write_coord(savef, r->r_exit[6]) ||
-      rs_write_coord(savef, r->r_exit[7]) ||
-      rs_write_coord(savef, r->r_exit[8]) ||
-      rs_write_coord(savef, r->r_exit[9]) ||
-      rs_write_coord(savef, r->r_exit[10]) ||
-      rs_write_coord(savef, r->r_exit[11]))
-    return 1;
-  return 0;
-}
-
-static int
-rs_read_room(FILE *inf, struct room *r)
-{
-  if (rs_read_coord(inf,&r->r_pos) ||
-      rs_read_coord(inf,&r->r_max) ||
-      rs_read_coord(inf,&r->r_gold) ||
-      rs_read_int(inf,&r->r_goldval) ||
-      rs_read_short(inf,&r->r_flags) ||
-      rs_read_int(inf,&r->r_nexits) ||
-      rs_read_coord(inf,&r->r_exit[0]) ||
-      rs_read_coord(inf,&r->r_exit[1]) ||
-      rs_read_coord(inf,&r->r_exit[2]) ||
-      rs_read_coord(inf,&r->r_exit[3]) ||
-      rs_read_coord(inf,&r->r_exit[4]) ||
-      rs_read_coord(inf,&r->r_exit[5]) ||
-      rs_read_coord(inf,&r->r_exit[6]) ||
-      rs_read_coord(inf,&r->r_exit[7]) ||
-      rs_read_coord(inf,&r->r_exit[8]) ||
-      rs_read_coord(inf,&r->r_exit[9]) ||
-      rs_read_coord(inf,&r->r_exit[10]) ||
-      rs_read_coord(inf,&r->r_exit[11]))
-    return 1;
   return 0;
 }
 
@@ -663,6 +644,7 @@ rs_write_object(FILE *savef, const THING *o)
 static int
 rs_read_object(FILE *inf, THING *o)
 {
+  size_t temp_i = 0; /* Used by rs_read_chars && rs_read_marker */
   if (rs_read_marker(inf, RSID_OBJECT) ||
       rs_read_int(inf, &o->_o._o_type) ||
       rs_read_coord(inf, &o->_o._o_pos) ||
@@ -699,6 +681,7 @@ rs_write_object_list(FILE *savef, const THING *l)
 static int
 rs_read_object_list(FILE *inf, THING **list)
 {
+  size_t temp_i = 0; /* Used by rs_read_marker */
   int i;
   int cnt;
   THING *l = NULL;
@@ -892,6 +875,7 @@ rs_write_thing(FILE *savef, const THING *t)
 static int
 rs_read_thing(FILE *inf, THING *t)
 {
+  size_t temp_i = 0; /* Used as buffer for macros */
   int listid = 0;
   int index = -1;
 
@@ -998,6 +982,7 @@ rs_write_thing_list(FILE *savef, const THING *l)
 static int
 rs_read_thing_list(FILE *inf, THING **list)
 {
+  size_t temp_i = 0; /* Used by rs_read_marker */
   int i;
   int cnt;
   THING *l = NULL;
@@ -1072,140 +1057,113 @@ rs_read_thing_reference(FILE *inf, THING *list, THING **item)
   return 0;
 }
 
-int 
-rs_write_places(FILE *savef, const PLACE *places, int count)
-{
-  int i = 0;
-  for(i = 0; i < count; i++)
-  {
-    if (rs_write_char(savef, places[i].p_ch) ||
-        rs_write_char(savef, places[i].p_flags) ||
-        rs_write_thing_reference(savef, mlist, places[i].p_monst))
-      return 1;
-  }
-  return 0;
-}
-
-int 
-rs_read_places(FILE *inf, PLACE *places, int count)
-{
-  int i = 0;
-  for(i = 0; i < count; i++)
-  {
-    if (rs_read_char(inf,&places[i].p_ch) ||
-        rs_read_char(inf,&places[i].p_flags) ||
-        rs_read_thing_reference(inf, mlist, &places[i].p_monst))
-      return 1;
-  }
-  return 0;
-}
-
 int
 rs_save_file(FILE *savef)
 {
+  size_t temp_i = 0; /* Used as buffer for macros */
   size_t pack_used_size = 26;
   size_t maxstr = MAXSTR;
   size_t two_x_maxstr = 2 * MAXSTR;
 
-  if (rs_write_boolean(savef, firstmove) ||
-      rs_write_booleans(savef, pack_used, pack_used_size) ||
-      rs_write_chars(savef, file_name, maxstr) ||
-      rs_write_potions(savef) ||
-      rs_write_chars(savef,prbuf, two_x_maxstr) ||
-      rs_write_rings(savef) ||
-      rs_write_char(savef, runch) ||
-      rs_write_scrolls(savef) ||
-      rs_write_char(savef, take) ||
-      rs_write_chars(savef, whoami, maxstr) ||
-      rs_write_sticks(savef) ||
-      rs_write_int(savef, hungry_state) ||
-      rs_write_int(savef, level) ||
-      rs_write_int(savef, max_level) ||
-      rs_write_int(savef, no_food) ||
-      rs_write_int(savef, food_left) ||
-      rs_write_int(savef, no_move) ||
-      rs_write_int(savef, purse) ||
-      rs_write_int(savef, quiet) ||
-      rs_write_int(savef, vf_hit) ||
-      rs_write_int(savef, seed) ||
-      rs_write_coord(savef, stairs) ||
-      rs_write_thing(savef, &player) ||
-      rs_write_object_reference(savef, player.t_pack, cur_armor) ||
-      rs_write_object_reference(savef, player.t_pack, cur_ring[0]) ||
-      rs_write_object_reference(savef, player.t_pack, cur_ring[1]) ||
-      rs_write_object_reference(savef, player.t_pack, cur_weapon) ||
-      rs_write_object_reference(savef, player.t_pack, l_last_pick) ||
-      rs_write_object_reference(savef, player.t_pack, last_pick) ||
-      rs_write_object_list(savef, lvl_obj) ||
-      rs_write_thing_list(savef, mlist) ||
-      rs_write_places(savef,places,MAXLINES*MAXCOLS) ||
-      rs_write_stats(savef,&max_stats) ||
-      rs_write_rooms(savef, rooms, MAXROOMS) ||
-      rs_write_room_reference(savef, oldrp) ||
-      rs_write_rooms(savef, passages, MAXPASS) ||
-      rs_write_obj_info(savef, pot_info,  NPOTIONS) ||
-      rs_write_obj_info(savef, ring_info,  MAXRINGS) ||
-      rs_write_obj_info(savef, scr_info,  MAXSCROLLS) ||
-      rs_write_daemons(savef, &d_list[0], 20) ||
-      rs_write_int(savef,total) ||
-      rs_write_int(savef,between) ||
-      rs_write_coord(savef, nh) ||
-      rs_write_int(savef, group) ||
-      rs_write_window(savef,stdscr))
-    return 1;
+  rs_assert(rs_write_boolean(savef, firstmove))
+  rs_assert(rs_write_booleans(savef, pack_used, pack_used_size))
+  rs_assert(rs_write_chars(savef, file_name, maxstr))
+  rs_assert(rs_write_potions(savef))
+  rs_assert(rs_write_chars(savef,prbuf, two_x_maxstr))
+  rs_assert(rs_write_rings(savef))
+  rs_assert(rs_write_char(savef, runch))
+  rs_assert(rs_write_scrolls(savef))
+  rs_assert(rs_write_char(savef, take))
+  rs_assert(rs_write_chars(savef, whoami, maxstr))
+  rs_assert(rs_write_sticks(savef))
+  rs_assert(rs_write_int(savef, hungry_state))
+  rs_assert(rs_write_int(savef, level))
+  rs_assert(rs_write_int(savef, max_level))
+  rs_assert(rs_write_int(savef, no_food))
+  rs_assert(rs_write_int(savef, food_left))
+  rs_assert(rs_write_int(savef, no_move))
+  rs_assert(rs_write_int(savef, purse))
+  rs_assert(rs_write_int(savef, quiet))
+  rs_assert(rs_write_int(savef, vf_hit))
+  rs_assert(rs_write_int(savef, seed))
+  rs_assert(rs_write_coord(savef, stairs))
+  rs_assert(rs_write_thing(savef, &player))
+  rs_assert(rs_write_object_reference(savef, player.t_pack, cur_armor))
+  rs_assert(rs_write_object_reference(savef, player.t_pack, cur_ring[0]))
+  rs_assert(rs_write_object_reference(savef, player.t_pack, cur_ring[1]))
+  rs_assert(rs_write_object_reference(savef, player.t_pack, cur_weapon))
+  rs_assert(rs_write_object_reference(savef, player.t_pack, l_last_pick))
+  rs_assert(rs_write_object_reference(savef, player.t_pack, last_pick))
+  rs_assert(rs_write_object_list(savef, lvl_obj))
+  rs_assert(rs_write_thing_list(savef, mlist))
+  rs_assert_write_places(savef,places,MAXLINES*MAXCOLS)
+  rs_assert(rs_write_stats(savef,&max_stats))
+  rs_assert(rs_write_rooms(savef, rooms, MAXROOMS))
+  rs_assert(rs_write_room_reference(savef, oldrp))
+  rs_assert(rs_write_rooms(savef, passages, MAXPASS))
+  rs_assert(rs_write_obj_info(savef, pot_info,  NPOTIONS))
+  rs_assert(rs_write_obj_info(savef, ring_info,  MAXRINGS))
+  rs_assert(rs_write_obj_info(savef, scr_info,  MAXSCROLLS))
+  rs_assert(rs_write_daemons(savef, &d_list[0], 20))
+  rs_assert(rs_write_int(savef,total))
+  rs_assert(rs_write_int(savef,between))
+  rs_assert(rs_write_coord(savef, nh))
+  rs_assert(rs_write_int(savef, group))
+  rs_assert(rs_write_window(savef,stdscr))
   return 0;
 }
 
 int
 rs_restore_file(FILE *inf)
 {
-  if (rs_read_boolean(inf, &firstmove) ||
-      rs_read_booleans(inf, pack_used, 26) ||
-      rs_read_chars(inf, file_name, MAXSTR) ||
-      rs_read_potions(inf) ||
-      rs_read_chars(inf, prbuf, 2*MAXSTR) ||
-      rs_read_rings(inf) ||
-      rs_read_char(inf, &runch) ||
-      rs_read_scrolls(inf) ||
-      rs_read_char(inf, &take) ||
-      rs_read_chars(inf, whoami, MAXSTR) ||
-      rs_read_sticks(inf) ||
-      rs_read_int(inf, &hungry_state) ||
-      rs_read_int(inf, &level) ||
-      rs_read_int(inf, &max_level) ||
-      rs_read_int(inf, &no_food) ||
-      rs_read_int(inf, &food_left) ||
-      rs_read_int(inf, &no_move) ||
-      rs_read_int(inf, &purse) ||
-      rs_read_int(inf, &quiet) ||
-      rs_read_int(inf, &vf_hit) ||
-      rs_read_int(inf, (signed *) &seed) ||
-      rs_read_coord(inf, &stairs) ||
-      rs_read_thing(inf, &player) ||
-      rs_read_object_reference(inf, player.t_pack, &cur_armor) ||
-      rs_read_object_reference(inf, player.t_pack, &cur_ring[0]) ||
-      rs_read_object_reference(inf, player.t_pack, &cur_ring[1]) ||
-      rs_read_object_reference(inf, player.t_pack, &cur_weapon) ||
-      rs_read_object_reference(inf, player.t_pack, &l_last_pick) ||
-      rs_read_object_reference(inf, player.t_pack, &last_pick) ||
-      rs_read_object_list(inf, &lvl_obj) ||
-      rs_read_thing_list(inf, &mlist) ||
-      rs_fix_thing(&player) ||
-      rs_fix_thing_list(mlist) ||
-      rs_read_places(inf,places,MAXLINES*MAXCOLS) ||
-      rs_read_stats(inf, &max_stats) ||
-      rs_read_rooms(inf, rooms, MAXROOMS) ||
-      rs_read_room_reference(inf, &oldrp) ||
-      rs_read_rooms(inf, passages, MAXPASS) ||
-      rs_read_obj_info(inf, pot_info,  NPOTIONS) ||
-      rs_read_obj_info(inf, ring_info,  MAXRINGS) ||
-      rs_read_obj_info(inf, scr_info,  MAXSCROLLS) ||
-      rs_read_daemons(inf, d_list, 20) ||
-      rs_read_int(inf,&total) ||
-      rs_read_int(inf,&between) ||
-      rs_read_coord(inf, &nh) ||
-      rs_read_int(inf,&group) ||
-      rs_read_window(inf,stdscr))
-    return 1;
+  size_t temp_i = 0; /* Used as buffer for macros */
+
+  rs_assert(rs_read_boolean(inf, &firstmove))
+  rs_assert(rs_read_booleans(inf, pack_used, 26))
+  rs_assert(rs_read_chars(inf, file_name, MAXSTR))
+  rs_assert(rs_read_potions(inf))
+  rs_assert(rs_read_chars(inf, prbuf, 2*MAXSTR))
+  rs_assert(rs_read_rings(inf))
+  rs_assert(rs_read_char(inf, &runch))
+  rs_assert(rs_read_scrolls(inf))
+  rs_assert(rs_read_char(inf, &take))
+  rs_assert(rs_read_chars(inf, whoami, MAXSTR))
+  rs_assert(rs_read_sticks(inf))
+  rs_assert(rs_read_int(inf, &hungry_state))
+  rs_assert(rs_read_int(inf, &level))
+  rs_assert(rs_read_int(inf, &max_level))
+  rs_assert(rs_read_int(inf, &no_food))
+  rs_assert(rs_read_int(inf, &food_left))
+  rs_assert(rs_read_int(inf, &no_move))
+  rs_assert(rs_read_int(inf, &purse))
+  rs_assert(rs_read_int(inf, &quiet))
+  rs_assert(rs_read_int(inf, &vf_hit))
+  rs_assert(rs_read_int(inf, (signed *) &seed))
+  rs_assert(rs_read_coord(inf, &stairs))
+  rs_assert(rs_read_thing(inf, &player))
+  rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_armor))
+  rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_ring[0]))
+  rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_ring[1]))
+  rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_weapon))
+  rs_assert(rs_read_object_reference(inf, player.t_pack, &l_last_pick))
+  rs_assert(rs_read_object_reference(inf, player.t_pack, &last_pick))
+  rs_assert(rs_read_object_list(inf, &lvl_obj))
+  rs_assert(rs_read_thing_list(inf, &mlist))
+  rs_assert(rs_fix_thing(&player))
+  rs_assert(rs_fix_thing_list(mlist))
+  rs_assert_read_places(inf,places,MAXLINES*MAXCOLS)
+  rs_assert(rs_read_stats(inf, &max_stats))
+  rs_assert(rs_read_rooms(inf, rooms, MAXROOMS))
+  rs_assert(rs_read_room_reference(inf, &oldrp))
+  rs_assert(rs_read_rooms(inf, passages, MAXPASS))
+  rs_assert(rs_read_obj_info(inf, pot_info,  NPOTIONS))
+  rs_assert(rs_read_obj_info(inf, ring_info,  MAXRINGS))
+  rs_assert(rs_read_obj_info(inf, scr_info,  MAXSCROLLS))
+  rs_assert(rs_read_daemons(inf, d_list, 20))
+  rs_assert(rs_read_int(inf,&total))
+  rs_assert(rs_read_int(inf,&between))
+  rs_assert(rs_read_coord(inf, &nh))
+  rs_assert(rs_read_int(inf,&group))
+  rs_assert(rs_read_window(inf,stdscr))
   return 0;
 }
