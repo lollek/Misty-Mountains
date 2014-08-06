@@ -16,6 +16,8 @@
 #include "status_effects.h"
 #include "scrolls.h"
 #include "io.h"
+#include "armor.h"
+#include "potions.h"
 
 static char pack_char();
 static void move_msg(THING *obj);
@@ -509,6 +511,82 @@ print_inventory(int type)
   wrefresh(invscr);
   delwin(invscr);
   return num_items != 0;
+}
+
+size_t
+evaluate_players_inventory(void)
+{
+  size_t value = 0;
+  THING *obj = NULL;
+
+  clear();
+  mvaddstr(0, 0, "   Worth  Item\n");
+  for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
+  {
+    int worth = 0;
+    struct obj_info *op;
+    switch (obj->o_type)
+    {
+      case FOOD:
+        worth = 2 * obj->o_count;
+      when WEAPON:
+        worth = weap_info[obj->o_which].oi_worth;
+        worth *= 3 * (obj->o_hplus + obj->o_dplus) + obj->o_count;
+        obj->o_flags |= ISKNOW;
+      when ARMOR:
+        worth = arm_info[obj->o_which].oi_worth;
+        worth += (9 - obj->o_arm) * 100;
+        worth += (10 * (a_class[obj->o_which] - obj->o_arm));
+        obj->o_flags |= ISKNOW;
+      when SCROLL:
+        worth = scr_info[obj->o_which].oi_worth;
+        worth *= obj->o_count;
+        op = &scr_info[obj->o_which];
+        if (!op->oi_know)
+          worth /= 2;
+        op->oi_know = true;
+      when POTION:
+        worth = pot_info[obj->o_which].oi_worth;
+        worth *= obj->o_count;
+        op = &pot_info[obj->o_which];
+        if (!op->oi_know)
+          worth /= 2;
+        op->oi_know = true;
+      when RING:
+        op = &ring_info[obj->o_which];
+        worth = op->oi_worth;
+        if (obj->o_which == R_ADDSTR || obj->o_which == R_ADDDAM ||
+            obj->o_which == R_PROTECT || obj->o_which == R_ADDHIT)
+        {
+          if (obj->o_arm > 0)
+            worth += obj->o_arm * 100;
+          else
+            worth = 10;
+        }
+        if (!(obj->o_flags & ISKNOW))
+          worth /= 2;
+        obj->o_flags |= ISKNOW;
+        op->oi_know = true;
+      when STICK:
+        op = &ws_info[obj->o_which];
+        worth = op->oi_worth;
+        worth += 20 * obj->o_charges;
+        if (!(obj->o_flags & ISKNOW))
+          worth /= 2;
+        obj->o_flags |= ISKNOW;
+        op->oi_know = true;
+      when AMULET:
+        worth = 1000;
+    }
+    if (worth < 0)
+      worth = 0;
+    printw("%c) %5d  %s\n", obj->o_packch, worth,
+                            inv_name(obj, false, true));
+    value += (unsigned) worth;
+  }
+  printw("   %5d  Gold Pieces          ", purse);
+  refresh();
+  return value;
 }
 
 void
