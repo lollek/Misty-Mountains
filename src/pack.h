@@ -3,6 +3,13 @@
 
 #include "rogue.h"
 
+enum equipment_pos
+{
+  EQUIPMENT_ARMOR = 0,
+  EQUIPMENT_RHAND = 1,
+  NEQUIPMENT
+};
+
 /* Pick up an object and add it to the pack.  If the argument is
  * non-null use it as the linked_list pointer instead of gettting
  * it off the ground. */
@@ -33,9 +40,12 @@ void reset_last(void); /* TODO: Why is this even here? */
 unsigned items_in_pack_of_type(int type);
 
 bool player_has_amulet(void);
+bool print_equipment(void);
 bool print_inventory(int type);
 void clear_inventory(void);
 size_t evaluate_players_inventory(void);
+THING *equipped_item(enum equipment_pos pos);
+bool equip_item(THING *item);
 
 
 #endif /* _ROGUE14_PACK_H_ */

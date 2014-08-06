@@ -21,6 +21,15 @@
 
 #include "pack.h"
 
+static struct equipment_t
+{
+  THING *ptr;
+  const char *description;
+} equipment[NEQUIPMENT] = {
+  { NULL, "Armor" },
+  { NULL, "Right Hand" }
+};
+
 /* TODO: Maybe inline money()? */
 
 static char pack_char();          /* Return the next unused pack character */
@@ -398,6 +407,36 @@ player_has_amulet(void)
 }
 
 bool
+print_equipment(void)
+{
+  WINDOW *equipscr = dupwin(stdscr);
+  char sym = 'a';
+  size_t i;
+  coord orig_pos;
+  getyx(stdscr, orig_pos.y, orig_pos.x);
+
+  for (i = 0; i < NEQUIPMENT; ++i)
+  {
+    if (equipment[i].ptr != NULL)
+    {
+      mvwprintw(equipscr, sym - 'a' + 1, 1, "%c) %s: %s",
+                sym, equipment[i].description,
+                inv_name(equipment[i].ptr, false, true));
+      sym++;
+    }
+  }
+
+  move(orig_pos.y, orig_pos.x);
+  wrefresh(equipscr);
+  delwin(equipscr);
+  msg("--Press any key to continue--");
+  readchar();
+  touchwin(stdscr);
+  msg("");
+  return false;
+}
+
+bool
 print_inventory(int type)
 {
   unsigned num_items = 0;
@@ -506,4 +545,32 @@ void
 clear_inventory(void)
 {
   touchwin(stdscr);
+}
+
+THING *
+equipped_item(enum equipment_pos pos)
+{
+  return equipment[pos].ptr;
+}
+
+bool
+equip_item(THING *item)
+{
+  enum equipment_pos pos;
+  switch(item->o_type)
+  {
+    case ARMOR:  pos = EQUIPMENT_ARMOR;
+    when WEAPON: pos = EQUIPMENT_RHAND;
+    otherwise:
+      msg("DEBUG: Cannot equip item %s", inv_name(item, false, true));
+      return false;
+  }
+
+  if (equipment[pos].ptr)
+    return false;
+  else
+  {
+    equipment[pos].ptr = item;
+    return true;
+  }
 }

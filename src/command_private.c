@@ -341,6 +341,7 @@ print_help(void)
     {'.',	"	rest for a turn",			true},
     {',',	"	pick something up",			true},
     {'i',	"	inventory",				true},
+    {'I',	"	equipment",				true},
     {'q',	"	quaff potion",				true},
     {'r',	"	read scroll",				true},
     {'e',	"	eat food",				true},
