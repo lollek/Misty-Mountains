@@ -15,8 +15,8 @@
 #include "status_effects.h"
 #include "io.h"
 
-
-struct obj_info scr_info[MAXSCROLLS] = {
+char *s_names[NSCROLLS];
+struct obj_info scr_info[NSCROLLS] = {
     { "monster confusion",		 7, 140, NULL, false },
     { "magic mapping",			 4, 150, NULL, false },
     { "hold monster",			 2, 180, NULL, false },

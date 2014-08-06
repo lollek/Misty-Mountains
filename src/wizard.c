@@ -78,7 +78,7 @@ pr_list(void)
     switch (ch)
     {
       case POTION: pr_spec(pot_info, NPOTIONS);
-      when SCROLL: pr_spec(scr_info, MAXSCROLLS);
+      when SCROLL: pr_spec(scr_info, NSCROLLS);
       when RING: pr_spec(ring_info, MAXRINGS);
       when STICK: pr_spec(ws_info, MAXSTICKS);
       when ARMOR: pr_spec(arm_info, NARMORS);

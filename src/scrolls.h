@@ -22,12 +22,12 @@ enum scroll_t
   S_REMOVE    = 15,
   S_AGGR      = 16,
   S_PROTECT   = 17,
-  MAXSCROLLS
+  NSCROLLS
 };
 
 /* Variables */
-char *s_names[MAXSCROLLS];         /* Names of the scrolls */
-extern struct obj_info scr_info[]; /* Scroll info */
+extern char *s_names[NSCROLLS];            /* Names of the scrolls */
+extern struct obj_info scr_info[NSCROLLS]; /* Scroll info */
 
 /* Functions */
 void read_scroll(void);     /* Read a scroll from the pack and do the needful */

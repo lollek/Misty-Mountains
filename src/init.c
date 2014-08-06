@@ -423,7 +423,7 @@ init_names(void)
     int i, nwords;
     char tmpbuf[MAXSTR*2];
 
-    for (i = 0; i < MAXSCROLLS; i++)
+    for (i = 0; i < NSCROLLS; i++)
     {
 	cp = tmpbuf;
 	nwords = rnd(3) + 2;
@@ -537,7 +537,7 @@ init_probs(void)
 {
     sumprobs(things, NUMTHINGS, "things");
     sumprobs(pot_info, NPOTIONS, "potions");
-    sumprobs(scr_info, MAXSCROLLS, "scrolls");
+    sumprobs(scr_info, NSCROLLS, "scrolls");
     sumprobs(ring_info, MAXRINGS, "rings");
     sumprobs(ws_info, MAXSTICKS, "sticks");
     sumprobs(weap_info, MAXWEAPONS, "weapons");

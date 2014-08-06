@@ -349,7 +349,7 @@ static int
 rs_write_scrolls(FILE *savef)
 {
   int i;
-  for (i = 0; i < MAXSCROLLS; i++)
+  for (i = 0; i < NSCROLLS; i++)
     if (rs_write_string(savef, s_names[i]))
       return 1;
   return 0;
@@ -359,7 +359,7 @@ static int
 rs_read_scrolls(FILE *inf)
 {
   int i;
-  for (i = 0; i < MAXSCROLLS; i++)
+  for (i = 0; i < NSCROLLS; i++)
     if (rs_read_new_string(inf, &s_names[i]))
       return 1;
   return 0;
@@ -1103,7 +1103,7 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_rooms(savef, passages, MAXPASS))
   rs_assert(rs_write_obj_info(savef, pot_info,  NPOTIONS))
   rs_assert(rs_write_obj_info(savef, ring_info,  MAXRINGS))
-  rs_assert(rs_write_obj_info(savef, scr_info,  MAXSCROLLS))
+  rs_assert(rs_write_obj_info(savef, scr_info,  NSCROLLS))
   rs_assert(rs_write_daemons(savef, &d_list[0], 20))
   rs_assert(rs_write_int(savef,total))
   rs_assert(rs_write_int(savef,between))
@@ -1158,7 +1158,7 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_rooms(inf, passages, MAXPASS))
   rs_assert(rs_read_obj_info(inf, pot_info,  NPOTIONS))
   rs_assert(rs_read_obj_info(inf, ring_info,  MAXRINGS))
-  rs_assert(rs_read_obj_info(inf, scr_info,  MAXSCROLLS))
+  rs_assert(rs_read_obj_info(inf, scr_info,  NSCROLLS))
   rs_assert(rs_read_daemons(inf, d_list, 20))
   rs_assert(rs_read_int(inf,&total))
   rs_assert(rs_read_int(inf,&between))

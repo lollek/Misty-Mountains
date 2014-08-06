@@ -255,7 +255,7 @@ new_thing(void)
 	    cur->o_which = pick_one(pot_info, NPOTIONS);
 	when 1:
 	    cur->o_type = SCROLL;
-	    cur->o_which = pick_one(scr_info, MAXSCROLLS);
+	    cur->o_which = pick_one(scr_info, NSCROLLS);
 	when 2:
 	    cur->o_type = FOOD;
 	    no_food = 0;
@@ -398,7 +398,7 @@ discovered(void)
     switch (ch)
     {
       case POTION: discovered_by_type(ch, pot_info, NPOTIONS);
-      when SCROLL: discovered_by_type(ch, scr_info, MAXSCROLLS);
+      when SCROLL: discovered_by_type(ch, scr_info, NSCROLLS);
       when RING: discovered_by_type(ch, ring_info, MAXRINGS);
       when STICK: discovered_by_type(ch, ws_info, MAXSTICKS);
       otherwise: msg(""); return;
