@@ -228,6 +228,8 @@ status(void)
 void
 wait_for(int ch)
 {
+  if (ch == KEY_ENTER)
+    ch = '\n';
   if (ch == '\n')
   {
     char c;
