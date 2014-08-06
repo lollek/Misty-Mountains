@@ -449,6 +449,14 @@ remove_from_floor(THING *obj)
   chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
 }
 
+/** players_inventory_is_empty
+ * Check if she's carrying anything */
+bool
+players_inventory_is_empty(void)
+{
+  return player.t_pack == NULL;
+}
+
 /** items_in_pack
  * Counts how many items she is carrying */
 unsigned

@@ -436,6 +436,7 @@ bool seen_stairs(void);          /* Return true if the player has seen the stair
 bool turn_see(bool turn_off);/* Put on or off seeing monsters on this level */
 void invis_on(void);         /* Turn on the ability to see invisible */
 
+bool	players_inventory_is_empty(void);
 unsigned	items_in_pack(void);
 unsigned	items_in_pack_of_type(int type);
 bool player_has_amulet(void);
