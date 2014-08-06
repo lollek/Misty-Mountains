@@ -87,7 +87,6 @@ new_level(void)
      */
     find_floor((struct room *) NULL, &stairs, false, false);
     chat(stairs.y, stairs.x) = STAIRS;
-    seenstairs = false;
 
     for (tp = mlist; tp != NULL; tp = tp->l_next)
 	tp->t_room = roomin(&tp->t_pos);

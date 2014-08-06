@@ -76,7 +76,7 @@ ring_on(void)
 
     if (!terse)
 	addmsg("you are now wearing ");
-    msg("%s (%c)", inv_name(obj, true), obj->o_packch);
+    msg("%s (%c)", inv_name(obj, true, true), obj->o_packch);
     return true;
 }
 
@@ -127,7 +127,7 @@ ring_off(void)
 	    extinguish(daemon_remove_true_seeing);
     }
 
-    msg("was wearing %s(%c)", inv_name(obj, true), obj->o_packch);
+    msg("was wearing %s(%c)", inv_name(obj, true, true), obj->o_packch);
     return true;
 }
 

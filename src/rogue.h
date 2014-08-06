@@ -400,18 +400,18 @@ bool use_colors;  /* Use ncurses colors */
 extern const char *game_version;
 
 extern bool	after, again, door_stop,
-		firstmove, has_hit, inv_describe, kamikaze,
+		firstmove, has_hit, kamikaze,
 		move_on, msg_esc, pack_used[],
-		running, seenstairs, to_death;
+		running, to_death;
 
-extern char	dir_ch, file_name[], huh[], *inv_t_name[], prbuf[], whoami[],
+extern char	dir_ch, file_name[], huh[], prbuf[], whoami[],
 		l_last_comm, l_last_dir, last_comm, last_dir,
 		outbuf[], *r_stones[], runch,
 		*s_names[], take, *tr_name[], *ws_made[], *ws_type[];
 
 extern int	a_class[], count, food_left, hungry_state,
-		lastscore, level, max_hit, max_level, mpos,
-		n_objs, no_command, no_food, no_move, purse,
+		level, max_hit, max_level, mpos,
+		no_command, no_food, no_move, purse,
 		quiet, vf_hit, potential_wizard, wizard;
 
 extern unsigned int	seed;
@@ -431,10 +431,13 @@ extern struct room	*oldrp, passages[], rooms[];
 
 extern struct stats	max_stats;
 
-extern struct monster	monsters[];
+extern struct monster monsters[];
 
-extern struct obj_info	arm_info[], ring_info[],
-			things[], ws_info[], weap_info[];
+extern struct obj_info things[];
+extern struct obj_info arm_info[];
+extern struct obj_info ring_info[];
+extern struct obj_info ws_info[];
+extern struct obj_info weap_info[];
 
 /*
  * Function types
@@ -575,7 +578,7 @@ bool	is_in_use(THING *obj);
 char	rnd_thing(void);
 
 char	*charge_str(THING *obj);
-char	*inv_name(THING *obj, bool drop);
+char	*inv_name(THING *obj, bool drop, bool inv_describe);
 char	*num(int n1, int n2, char type);
 char	*ring_num(THING *obj);
 char	*set_mname(THING *tp);

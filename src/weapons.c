@@ -254,7 +254,7 @@ wield(void)
     return true;
   }
 
-  sp = inv_name(obj, true);
+  sp = inv_name(obj, true, true);
   cur_weapon = obj;
 
   if (!terse)

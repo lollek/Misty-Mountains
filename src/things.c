@@ -60,7 +60,7 @@ add_num_type_to_string(char *ptr, int type, int which, int num)
 /** inv_name:
  * Return the name of something as it would appear in an inventory. */
 char *
-inv_name(THING *obj, bool drop)
+inv_name(THING *obj, bool drop, bool inv_describe)
 {
   char *pb = prbuf;
   int which = obj->o_which;
@@ -189,7 +189,7 @@ drop(void)
     chat(hero.y, hero.x) = (char) obj->o_type;
     flat(hero.y, hero.x) |= F_DROPPED;
     obj->o_pos = hero;
-    msg("dropped %s", inv_name(obj, true));
+    msg("dropped %s", inv_name(obj, true, true));
     return true;
 }
 
@@ -360,7 +360,7 @@ discovered_by_type(char type, struct obj_info *info, int max_items)
     {
       printable_object.o_which = i;
       mvwprintw(printscr, ++items_found, 1,
-                "%s", inv_name(&printable_object, false));
+                "%s", inv_name(&printable_object, false, true));
     }
 
   if (items_found == 0)

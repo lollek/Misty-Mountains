@@ -263,7 +263,7 @@ attack(THING *mp)
 		     * Venus Flytrap stops the poor guy from moving
 		     */
 		    player.t_flags |= ISHELD;
-		    sprintf(monsters['F'-'A'].m_stats.s_dmg,"%dx1", ++vf_hit);
+		    ++vf_hit;
 		    if (--pstats.s_hpt <= 0)
 			death('F');
 		when 'L':
@@ -304,7 +304,7 @@ attack(THING *mp)
 			remove_mon(&mp->t_pos, moat(mp->t_pos.y, mp->t_pos.x), false);
                         mp=NULL;
 			leave_pack(steal, false, false);
-			msg("she stole %s!", inv_name(steal, true));
+			msg("she stole %s!", inv_name(steal, true, true));
 			discard(steal);
 		    }
 		}
@@ -384,6 +384,14 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
     int def_arm = get_ac(thdef);
     bool is_player = thatt == &player;
     bool did_hit = false;
+    char vf_damage[13];
+
+    /* Venus Flytraps have a different kind of dmg system */
+    if (thatt->o_type == 'F')
+    {
+      sprintf(vf_damage, "%dx1", vf_hit);
+      cp = vf_damage;
+    }
 
     if (is_player)
     {
@@ -601,7 +609,6 @@ killed(THING *tp, bool pr)
 	case 'F':
 	    player.t_flags &= ~ISHELD;
 	    vf_hit = 0;
-	    strcpy(monsters['F'-'A'].m_stats.s_dmg, "000x0");
 	when 'L':
 	{
 	    THING *gold;

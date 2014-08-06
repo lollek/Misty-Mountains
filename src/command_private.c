@@ -25,7 +25,6 @@ change_dungeon_level(char up_or_down)
   else if (up_or_down == '>') /* DOWN */
   {
     level++;
-    seenstairs = false;
     new_level();
   }
 
@@ -268,7 +267,6 @@ print_currently_wearing(char thing)
 {
   bool item_found = false;
 
-  inv_describe = false;
   if (!terse)
     addmsg("You are %s ", thing == WEAPON ? "wielding" : "wearing");
 
@@ -277,7 +275,7 @@ print_currently_wearing(char thing)
     unsigned i;
     for (i = 0; i < CONCURRENT_RINGS; ++i)
       if (cur_ring[i]) {
-        addmsg("%c) %s ", cur_ring[i]->o_packch, inv_name(cur_ring[i], true));
+        addmsg("%c) %s ", cur_ring[i]->o_packch, inv_name(cur_ring[i], true, 0));
         item_found = true;
       }
     if (item_found)
@@ -288,14 +286,13 @@ print_currently_wearing(char thing)
   {
     THING *current_thing = thing == WEAPON ? cur_weapon : cur_armor;
     if (current_thing) {
-      msg("%c) %s", current_thing->o_packch, inv_name(current_thing, true));
+      msg("%c) %s", current_thing->o_packch, inv_name(current_thing, true, 0));
       item_found = true;
     }
   }
 
   if (!item_found)
     msg("no %s", thing == WEAPON ? "weapon": thing == RING ? "rings":"armor");
-  inv_describe = true;
 
   return false;
 }

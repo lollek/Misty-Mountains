@@ -163,7 +163,7 @@ visuals(void)
     /*
      * change the stairs
      */
-    if (!seenstairs && cansee(stairs.y, stairs.x))
+    if (!seen_stairs())
 	mvaddcch(stairs.y, stairs.x, rnd_thing());
 
     /*

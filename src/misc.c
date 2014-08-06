@@ -189,7 +189,7 @@ trip_ch(int y, int x, int ch)
       case TRAP:
         break;
       default:
-        if (y != stairs.y || x != stairs.x || !seenstairs)
+        if (y != stairs.y || x != stairs.x || !seen_stairs())
           return rnd_thing();
     }
   return ch;

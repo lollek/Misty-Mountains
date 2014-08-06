@@ -185,16 +185,14 @@ init_player(void)
 
     pstats = max_stats;
     food_left = HUNGERTIME;
-    /*
-     * Give him some food
-     */
+
+    /* Give him some food */
     obj = new_item();
     obj->o_type = FOOD;
     obj->o_count = 1;
     add_pack(obj, true);
-    /*
-     * And his suit of armor
-     */
+
+    /* And his suit of armor */
     obj = new_item();
     obj->o_type = ARMOR;
     obj->o_which = RING_MAIL;
@@ -203,9 +201,8 @@ init_player(void)
     obj->o_count = 1;
     cur_armor = obj;
     add_pack(obj, true);
-    /*
-     * Give him his weaponry.  First a mace.
-     */
+
+    /* Give him his weaponry.  First a mace. */
     obj = new_item();
     init_weapon(obj, MACE);
     obj->o_hplus = 1;
@@ -213,17 +210,15 @@ init_player(void)
     obj->o_flags |= ISKNOW;
     add_pack(obj, true);
     cur_weapon = obj;
-    /*
-     * Now a +1 bow
-     */
+
+    /* Now a +1 bow */
     obj = new_item();
     init_weapon(obj, BOW);
     obj->o_hplus = 1;
     obj->o_flags |= ISKNOW;
     add_pack(obj, true);
-    /*
-     * Now some arrows
-     */
+
+    /* Now some arrows */
     obj = new_item();
     init_weapon(obj, ARROW);
     obj->o_count = rnd(15) + 25;
@@ -514,14 +509,6 @@ init_materials(void)
     }
 }
 
-# define	NT	NUMTHINGS, "things"
-# define	MP	NPOTIONS, "potions"
-# define	MS	MAXSCROLLS, "scrolls"
-# define	MR	MAXRINGS, "rings"
-# define	MWS	MAXSTICKS, "sticks"
-# define	MW	MAXWEAPONS, "weapons"
-# define	MA	MAXARMORS, "armor"
-
 /*
  * sumprobs:
  *	Sum up the probabilities for items appearing
@@ -546,13 +533,13 @@ sumprobs(struct obj_info *info, int bound , char *name)
 void
 init_probs(void)
 {
-    sumprobs(things, NT);
-    sumprobs(pot_info, MP);
-    sumprobs(scr_info, MS);
-    sumprobs(ring_info, MR);
-    sumprobs(ws_info, MWS);
-    sumprobs(weap_info, MW);
-    sumprobs(arm_info, MA);
+    sumprobs(things, NUMTHINGS, "things");
+    sumprobs(pot_info, NPOTIONS, "potions");
+    sumprobs(scr_info, MAXSCROLLS, "scrolls");
+    sumprobs(ring_info, MAXRINGS, "rings");
+    sumprobs(ws_info, MAXSTICKS, "sticks");
+    sumprobs(weap_info, MAXWEAPONS, "weapons");
+    sumprobs(arm_info, MAXARMORS, "armor");
 }
 
 /*

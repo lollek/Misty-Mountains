@@ -7,7 +7,7 @@
 #include "traps.h"
 
 
-char *trap_names[] = {
+const char *trap_names[] = {
   "a trapdoor",
   "an arrow trap",
   "a sleeping gas trap",

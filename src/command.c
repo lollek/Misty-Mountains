@@ -65,7 +65,6 @@ command(void)
     if (!running)
       door_stop = false;
     status();
-    lastscore = purse;
     move(hero.y, hero.x);
     if (!((running || count) && jump))
       refresh();

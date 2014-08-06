@@ -66,7 +66,7 @@ wear(void)
   cur_armor = obj;
   if (!terse)
     addmsg("you are now ");
-  msg("wearing %s", inv_name(obj, true));
+  msg("wearing %s", inv_name(obj, true, true));
   return true;
 }
 
@@ -97,7 +97,7 @@ take_off(void)
     addmsg("was");
   else
     addmsg("you used to be");
-  msg(" wearing %c) %s", obj->o_packch, inv_name(obj, true));
+  msg(" wearing %c) %s", obj->o_packch, inv_name(obj, true, true));
 
   return true;
 }

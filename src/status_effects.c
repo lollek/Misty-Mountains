@@ -178,7 +178,6 @@ become_tripping(bool permanent)
     if (on(player, SEEMONST))
       turn_see(false);
     start_daemon(visuals, 0, BEFORE);
-    seenstairs = seen_stairs();
     set_hallucinating(&player, true);
     if (!permanent)
       fuse(remove_tripping, 0, SEEDURATION, AFTER);
@@ -380,7 +379,6 @@ teleport(THING *thing, coord *target)
     {
       player.t_flags &= ~ISHELD;
       vf_hit = 0;
-      strcpy(monsters['F'-'A'].m_stats.s_dmg, "000x0");
     }
     no_move = 0;
     stop_counting(true);

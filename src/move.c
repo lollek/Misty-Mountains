@@ -212,10 +212,7 @@ hit_bound:
 		if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		    leave_room(&nh);
 		hero = nh;
-	when STAIRS:
-	    seenstairs = true;
-	    /* FALLTHROUGH */
-	default:
+	otherwise:
 	    running = false;
 	    if (isupper(ch) || moat(nh.y, nh.x))
 		fight(&nh, cur_weapon, false);

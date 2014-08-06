@@ -24,15 +24,15 @@
 #include "chase.h"
 
 static char *type_name(int type);
-static void pr_spec(struct obj_info *info, int nitems);
+static void pr_spec(const struct obj_info *info, int nitems);
 
 /** pr_spec:
  * Print specific list of possible items to choose from */
 static void
-pr_spec(struct obj_info *info, int nitems)
+pr_spec(const struct obj_info *info, int nitems)
 {
   WINDOW *printscr = dupwin(stdscr);
-  struct obj_info *endp = &info[nitems];
+  const struct obj_info *endp = &info[nitems];
   int lastprob = 0;
   coord orig_pos;
   unsigned curr_line = 1;
@@ -127,7 +127,7 @@ whatis(int type)
 	when WEAPON: case ARMOR: obj->o_flags |= ISKNOW;
 	when RING: set_know(obj, ring_info);
     }
-    msg(inv_name(obj, false));
+    msg(inv_name(obj, false, true));
 }
 
 /*

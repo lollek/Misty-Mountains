@@ -162,7 +162,7 @@ add_pack(THING *obj, bool silent)
     {
 	if (!terse)
 	    addmsg("you now have ");
-	msg("%s (%c)", inv_name(obj, !terse), obj->o_packch);
+	msg("%s (%c)", inv_name(obj, !terse, true), obj->o_packch, true);
     }
 }
 
@@ -267,7 +267,7 @@ move_msg(THING *obj)
 {
     if (!terse)
 	addmsg("you ");
-    msg("moved onto %s", inv_name(obj, true));
+    msg("moved onto %s", inv_name(obj, true, true));
 }
 
 /*
@@ -285,7 +285,7 @@ picky_inven(void)
     if (pack == NULL)
 	msg("you aren't carrying anything");
     else if (pack->l_next == NULL)
-	msg("a) %s", inv_name(pack, false));
+	msg("a) %s", inv_name(pack, false, true));
     else
     {
 	msg(terse ? "item: " : "which item do you wish to inventory: ");
@@ -298,7 +298,7 @@ picky_inven(void)
 	for (obj = pack; obj != NULL; obj = obj->l_next)
 	    if (mch == obj->o_packch)
 	    {
-		msg("%c) %s", mch, inv_name(obj, false));
+		msg("%c) %s", mch, inv_name(obj, false, true));
 		return;
 	    }
 	msg("'%s' not in pack", unctrl(mch));
@@ -351,7 +351,6 @@ get_item(const char *purpose, int type)
     }
 
     /* normal case: person types one char */
-    n_objs = 1;
     if (ch == '*')
     {
       mpos = 0;
@@ -486,7 +485,7 @@ print_inventory(int type)
     {
       /* Print out the item and move to next row */
       wmove(invscr, ++num_items, 1);
-      wprintw(invscr, "%c) %s", list->o_packch, inv_name(list, false));
+      wprintw(invscr, "%c) %s", list->o_packch, inv_name(list, false, true));
     }
   }
 

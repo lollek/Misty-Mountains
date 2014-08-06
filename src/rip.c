@@ -344,7 +344,8 @@ total_winner(void)
 	}
 	if (worth < 0)
 	    worth = 0;
-	printw("%c) %5d  %s\n", obj->o_packch, worth, inv_name(obj, false));
+	printw("%c) %5d  %s\n", obj->o_packch, worth,
+                                inv_name(obj, false, true));
 	purse += worth;
     }
     printw("   %5d  Gold Pieces          ", oldpurse);
