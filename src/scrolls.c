@@ -22,11 +22,7 @@ struct obj_info scr_info[NSCROLLS] = {
     { "hold monster",			 2, 180, NULL, false },
     { "sleep",				 3,   5, NULL, false },
     { "enchant armor",			 7, 160, NULL, false },
-    { "identify potion",		10,  80, NULL, false },
-    { "identify scroll",		10,  80, NULL, false },
-    { "identify weapon",		 6,  80, NULL, false },
-    { "identify armor",		 	 7, 100, NULL, false },
-    { "identify ring, wand or staff",	10, 115, NULL, false },
+    { "identify",			43, 115, NULL, false },
     { "scare monster",			 3, 200, NULL, false },
     { "food detection",			 2,  60, NULL, false },
     { "teleportation",			 5, 165, NULL, false },
@@ -143,15 +139,12 @@ read_scroll(void)
         new_monster(obj, randmonster(false), &mp);
       }
     }
-    when S_ID_POTION: case S_ID_SCROLL: case S_ID_WEAPON: case S_ID_ARMOR:
-    case S_ID_R_OR_S:
+    when S_ID:
     {
-      static signed char id_type[S_ID_R_OR_S + 1] =
-      { 0, 0, 0, 0, 0, POTION, SCROLL, WEAPON, ARMOR, R_OR_S };
       /* Identify, let him figure something out */
       learn_scroll(obj->o_which);
       msg("this scroll is an %s scroll", scr_info[obj->o_which].oi_name);
-      whatis(id_type[obj->o_which]);
+      whatis(0);
     }
     when S_MAP:
       /* Scroll of magic mapping. */
