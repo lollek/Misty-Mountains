@@ -483,9 +483,9 @@ print_evaluate_item(THING *obj)
       worth *= 3 * (obj->o_hplus + obj->o_dplus) + obj->o_count;
       obj->o_flags |= ISKNOW;
       when ARMOR:
-        worth = arm_info[obj->o_which].oi_worth;
+        worth = armors[obj->o_which].value;
       worth += (9 - obj->o_arm) * 100;
-      worth += (10 * (a_class[obj->o_which] - obj->o_arm));
+      worth += (10 * (armors[obj->o_which].ac - obj->o_arm));
       obj->o_flags |= ISKNOW;
       when SCROLL:
         worth = scr_info[obj->o_which].oi_worth;

@@ -42,7 +42,7 @@ type_to_string(int type, int which)
     case SCROLL: return "scroll";
     case FOOD: return which == 1 ? "fruit" : "food ration";
     case WEAPON: return weap_info[which].oi_name;
-    case ARMOR: return arm_info[which].oi_name;
+    case ARMOR: return armors[which].name;
     default: return "something";
   }
 }
@@ -121,7 +121,7 @@ inv_name(THING *obj, bool drop, bool inv_describe)
 
     when ARMOR:
     {
-      int bonus_ac = a_class[which] - obj->o_arm;
+      int bonus_ac = armors[which].ac - obj->o_arm;
       int base_ac = 10 - obj->o_arm - bonus_ac;
 
       pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
@@ -258,8 +258,8 @@ new_thing(void)
 		cur->o_hplus += rnd(3) + 1;
 	when 4:
 	    cur->o_type = ARMOR;
-	    cur->o_which = pick_one(arm_info, NARMORS);
-	    cur->o_arm = a_class[cur->o_which];
+	    cur->o_which = random_armor_type();
+	    cur->o_arm = armors[cur->o_which].ac;
 	    if ((r = rnd(100)) < 20)
 	    {
 		cur->o_flags |= ISCURSED;

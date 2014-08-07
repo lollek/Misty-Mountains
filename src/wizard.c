@@ -26,31 +26,52 @@
 #include "pack.h"
 
 static char *type_name(int type);
-static void pr_spec(const struct obj_info *info, int nitems);
 
 /** pr_spec:
  * Print specific list of possible items to choose from */
-static void
-pr_spec(const struct obj_info *info, int nitems)
+void
+pr_spec(char ch)
 {
   WINDOW *printscr = dupwin(stdscr);
-  const struct obj_info *endp = &info[nitems];
   int lastprob = 0;
   coord orig_pos;
-  unsigned curr_line = 1;
-  int ch;
+  int i;
+  int max;
+  void *ptr;
 
   getyx(stdscr, orig_pos.y, orig_pos.x);
-  for (ch = '0'; info < endp; ch++)
-  {
-    if (ch == '9' + 1)
-      ch = 'a';
 
-    wmove(printscr, curr_line++, 1);
-    wprintw(printscr, "%c: %s (%d%%)", ch, info->oi_name,
-                                     info->oi_prob - lastprob);
-    lastprob = info->oi_prob;
-    info++;
+  switch (ch)
+  {
+    case POTION: ptr = pot_info;  max = NPOTIONS;
+    when SCROLL: ptr = scr_info;  max = NSCROLLS;
+    when RING:   ptr = ring_info; max = MAXRINGS;
+    when STICK:  ptr = ws_info;   max = MAXSTICKS;
+    when ARMOR:  ptr = armors;    max = NARMORS;
+    when WEAPON: ptr = weap_info; max = MAXWEAPONS;
+    otherwise:   ptr = NULL;      max = 0;
+  }
+
+  for (i = 0, ch = '0'; i < max; ++i)
+  {
+    const char *name;
+    int prob;
+    ch = ch == '9' ? 'a' : (ch + 1);
+    wmove(printscr, i + 1, 1);
+
+    if (ptr == armors)
+    {
+      name = ((struct armor_info_t *)ptr)[i].name;
+      prob = ((struct armor_info_t *)ptr)[i].prob - lastprob;
+      lastprob = ((struct armor_info_t *)ptr)[i].prob;
+    }
+    else
+    {
+      name = ((struct obj_info *)ptr)[i].oi_name;
+      prob = ((struct obj_info *)ptr)[i].oi_prob - lastprob;
+      lastprob = ((struct obj_info *)ptr)[i].oi_prob;
+    }
+    wprintw(printscr, "%c: %s (%d%%)", ch, name, prob);
   }
   wmove(stdscr, orig_pos.y, orig_pos.x);
   wrefresh(printscr);
@@ -76,15 +97,7 @@ pr_list(void)
     ch = readchar();
     touchwin(stdscr);
     refresh();
-    switch (ch)
-    {
-      case POTION: pr_spec(pot_info, NPOTIONS);
-      when SCROLL: pr_spec(scr_info, NSCROLLS);
-      when RING: pr_spec(ring_info, MAXRINGS);
-      when STICK: pr_spec(ws_info, MAXSTICKS);
-      when ARMOR: pr_spec(arm_info, NARMORS);
-      when WEAPON: pr_spec(weap_info, MAXWEAPONS);
-    }
+    pr_spec(ch);
   }
   touchwin(stdscr);
   msg("");
@@ -215,7 +228,7 @@ create_obj(void)
 	}
 	else
 	{
-	    obj->o_arm = a_class[obj->o_which];
+	    obj->o_arm = armors[obj->o_which].ac;
 	    if (bless == '-')
 		obj->o_arm += rnd(3)+1;
 	    if (bless == '+')

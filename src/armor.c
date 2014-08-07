@@ -9,32 +9,24 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#include <stdlib.h>
+
 #include "rogue.h"
 #include "io.h"
 #include "pack.h"
 
 #include "armor.h"
 
-int a_class[NARMORS] =  {
- 8, /* LEATHER */
- 7, /* RING_MAIL */
- 7, /* STUDDED_LEATHER */
- 6, /* SCALE_MAIL */
- 5, /* CHAIN_MAIL */
- 4, /* SPLINT_MAIL */
- 4, /* BANDED_MAIL */
- 3, /* PLATE_MAIL */
-};
-
-struct obj_info arm_info[NARMORS] = {
-    { "leather armor",           20,     20, NULL, false },
-    { "ring mail",               15,     25, NULL, false },
-    { "studded leather armor",   15,     20, NULL, false },
-    { "scale mail",              13,     30, NULL, false },
-    { "chain mail",              12,     75, NULL, false },
-    { "splint mail",             10,     80, NULL, false },
-    { "banded mail",             10,     90, NULL, false },
-    { "plate mail",               5,    150, NULL, false },
+struct armor_info_t armors[NARMORS] = {
+ /* name                   ac  prob value known */
+ { "leather armor",         8, 20,   20,  false },
+ { "ring mail",             7, 15,   25,  false },
+ { "studded leather armor", 7, 15,   20,  false },
+ { "scale mail",            6, 13,   30,  false },
+ { "chain mail",            5, 12,   75,  false },
+ { "splint mail",           4, 10,   80,  false },
+ { "banded mail",           4, 10,   90,  false },
+ { "plate mail",            3,  5,  150,  false },
 };
 
 int
@@ -85,6 +77,28 @@ wear(void)
     addmsg("you are now ");
   msg("wearing %s", inv_name(obj, true, true));
   return true;
+}
+
+char
+random_armor_type(void)
+{
+  int value = rnd(100);
+  int i;
+  for (i = 0; i < NARMORS; ++i)
+  {
+    if (value < armors[i].prob)
+      return i;
+    else
+      value -= armors[i].prob;
+  }
+
+  /* Error! Sum of probs was not 100 */
+  msg("Error! Sum of probabilities is not 100%");
+  pr_spec(ARMOR);
+  readchar();
+  endwin();
+  exit(1);
+  return 0;
 }
 
 void

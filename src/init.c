@@ -28,6 +28,8 @@
 #include "pack.h"
 
 
+static void sumprobs(char ch);
+
 /* init_new_game
  * Set up everything so we can start playing already */
 bool
@@ -200,7 +202,7 @@ init_player(void)
     obj = new_item();
     obj->o_type = ARMOR;
     obj->o_which = RING_MAIL;
-    obj->o_arm = a_class[RING_MAIL] - 1;
+    obj->o_arm = armors[RING_MAIL].ac - 1;
     obj->o_flags |= ISKNOW;
     obj->o_count = 1;
     equip_item(obj);
@@ -515,16 +517,64 @@ init_materials(void)
  * sumprobs:
  *	Sum up the probabilities for items appearing
  */
-void
-sumprobs(struct obj_info *info, int bound , char *name)
+static void
+sumprobs(char ch)
 {
-  struct obj_info *start = info;
-  struct obj_info *endp;
+  int lastprob = 0;
+  const char *str;
+  void *ptr;
+  int i;
+  int max;
 
-  endp = info + bound;
-  while (++info < endp)
-    info->oi_prob += (info - 1)->oi_prob;
-  badcheck(name, start, bound);
+  /* Ready the pointers */
+  switch (ch)
+  {
+    case '0':    ptr = things;    max = NUMTHINGS;  str = "things";
+    when POTION: ptr = pot_info;  max = NPOTIONS;   str = "potions";
+    when SCROLL: ptr = scr_info;  max = NSCROLLS;   str = "scrolls";
+    when RING:   ptr = ring_info; max = MAXRINGS;   str = "rings";
+    when STICK:  ptr = ws_info;   max = MAXSTICKS;  str = "sticks";
+    when WEAPON: ptr = weap_info; max = MAXWEAPONS; str = "weapons";
+    when ARMOR:  ptr = armors;    max = NARMORS;    str = "armor";
+    otherwise:   ptr = NULL;      max = 0;          str = "error";
+  }
+
+  /* Add upp percentage */
+  for (i = 0; i < max; ++i)
+  {
+    int *prob;
+    if (ptr == armors)
+      prob = &((struct armor_info_t *)ptr)[i].prob;
+    else
+      prob = &((struct obj_info *)ptr)[i].oi_prob;
+    *prob += lastprob;
+    lastprob = *prob;
+  }
+
+  /* Make sure it adds up to 100 */
+  if (lastprob == 100)
+    return;
+
+  /* Woops, error error! */
+  endwin();
+  printf("\nBad percentages for %s (bound = %d): %d%%\n", str, max, lastprob);
+  for (i = 0; i < max; ++i)
+  {
+    int prob;
+    const char *name;
+    if (ptr == armors)
+    {
+      prob = ((struct armor_info_t *)ptr)[i].prob;
+      name = ((struct armor_info_t *)ptr)[i].name;
+    }
+    else
+    {
+      prob = ((struct obj_info *)ptr)[i].oi_prob;
+      name = ((struct obj_info *)ptr)[i].oi_name;
+    }
+    printf("%3d%% %s\n", prob, name);
+  }
+  exit(1);
 }
 
 /*
@@ -534,31 +584,13 @@ sumprobs(struct obj_info *info, int bound , char *name)
 void
 init_probs(void)
 {
-    sumprobs(things, NUMTHINGS, "things");
-    sumprobs(pot_info, NPOTIONS, "potions");
-    sumprobs(scr_info, NSCROLLS, "scrolls");
-    sumprobs(ring_info, MAXRINGS, "rings");
-    sumprobs(ws_info, MAXSTICKS, "sticks");
-    sumprobs(weap_info, MAXWEAPONS, "weapons");
-    sumprobs(arm_info, NARMORS, "armor");
-}
-
-/*
- * badcheck:
- *	Check to see if a series of probabilities sums to 100
- */
-void
-badcheck(const char *name, struct obj_info *info, int bound)
-{
-    struct obj_info *end;
-
-    if (info[bound - 1].oi_prob == 100)
-	return;
-    endwin();
-    printf("\nBad percentages for %s (bound = %d):\n", name, bound);
-    for (end = &info[bound]; info < end; info++)
-	printf("%3d%% %s\n", info->oi_prob, info->oi_name);
-    exit(1);
+    sumprobs('0');
+    sumprobs(POTION);
+    sumprobs(SCROLL);
+    sumprobs(RING);
+    sumprobs(STICK);
+    sumprobs(WEAPON);
+    sumprobs(ARMOR);
 }
 
 /*
