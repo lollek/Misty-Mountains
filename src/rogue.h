@@ -413,8 +413,7 @@ extern coord	delta, oldpos, stairs;
 
 extern PLACE	places[];
 
-extern THING	*cur_ring[], *cur_weapon, *l_last_pick,
-		*last_pick, *lvl_obj, *mlist, player;
+extern THING	*cur_ring[], *l_last_pick, *last_pick, *lvl_obj, *mlist, player;
 
 extern struct room	*oldrp, passages[], rooms[];
 
@@ -545,6 +544,7 @@ THING  *wake_monster(int y, int x);
 void	wanderer(void);
 void	whatis(int type);
 bool	wield(void);
+bool	unwield(void);
 
 bool	fallpos(coord *pos, coord *newpos);
 bool	find_floor(struct room *rp, coord *cp, int limit, bool monst);

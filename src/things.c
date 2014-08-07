@@ -148,9 +148,7 @@ inv_name(THING *obj, bool drop, bool inv_describe)
 
   if (inv_describe)
   {
-    if (obj == cur_weapon)
-      strcat(pb, " (weapon in hand)");
-    else if (obj == cur_ring[LEFT])
+    if (obj == cur_ring[LEFT])
       strcat(pb, " (on left hand)");
     else if (obj == cur_ring[RIGHT])
       strcat(pb, " (on right hand)");
@@ -199,15 +197,7 @@ dropcheck(THING *obj)
 {
     if (obj == NULL)
 	return true;
-    if (obj == cur_weapon)
-    {
-	if (obj->o_flags & ISCURSED)
-	    msg("you can't.  It appears to be cursed");
-	else
-	    cur_weapon = NULL;
-	return cur_weapon == NULL;
-    }
-    else if (obj == cur_ring[LEFT])
+    if (obj == cur_ring[LEFT])
     {
 	ring_off();
 	return cur_ring[LEFT] == NULL;

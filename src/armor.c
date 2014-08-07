@@ -55,14 +55,12 @@ get_ac(THING *thing)
   if (is_player)
   {
     THING *arm = equipped_item(EQUIPMENT_ARMOR);
-    if (arm != NULL)
-      ac = arm->o_arm;
-    if (cur_weapon && cur_weapon->o_arm != 0)
-      ac -= cur_weapon->o_arm;
-    if (ISRING(LEFT, R_PROTECT))
-      ac -= cur_ring[LEFT]->o_arm;
-    if (ISRING(RIGHT, R_PROTECT))
-      ac -= cur_ring[RIGHT]->o_arm;
+    THING *weapon = equipped_item(EQUIPMENT_RHAND);
+
+    ac  = arm ? arm->o_arm : ac;
+    ac -= weapon ? weapon->o_arm : 0;
+    ac -= ISRING(LEFT, R_PROTECT) ? cur_ring[LEFT]->o_arm : 0;
+    ac -= ISRING(RIGHT, R_PROTECT) ? cur_ring[RIGHT]->o_arm : 0;
   }
   else
     ac = thing->t_stats.s_arm;
@@ -90,9 +88,9 @@ wear(void)
     return true;
 
   waste_time();
-  obj->o_flags |= ISKNOW;
   leave_pack(obj, false, true);
   equip_item(obj);
+
   if (!terse)
     addmsg("you are now ");
   msg("wearing %s", inv_name(obj, true, true));
@@ -156,7 +154,7 @@ take_off(void)
   addmsg(terse
       ? "was"
       : "you used to be");
-  msg(" wearing %c) %s", obj->o_packch, inv_name(obj, true, true));
+  msg(" wearing %s", inv_name(obj, true, true));
 
   return true;
 }

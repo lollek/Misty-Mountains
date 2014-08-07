@@ -217,7 +217,7 @@ hit_bound:
 	otherwise:
 	    running = false;
 	    if (isupper(ch) || moat(nh.y, nh.x))
-		fight(&nh, cur_weapon, false);
+		fight(&nh, equipped_item(EQUIPMENT_RHAND), false);
 	    else
 	    {
 		if (ch != STAIRS)

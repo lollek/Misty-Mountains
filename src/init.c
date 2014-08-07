@@ -211,8 +211,7 @@ init_player(void)
     obj->o_hplus = 1;
     obj->o_dplus = 1;
     obj->o_flags |= ISKNOW;
-    add_pack(obj, true);
-    cur_weapon = obj;
+    equip_item(obj);
 
     /* Now a +1 bow */
     obj = new_item();

@@ -52,10 +52,6 @@ read_scroll(void)
     return;
   }
 
-  /* Calculate the effect it has on the poor guy. */
-  if (obj == cur_weapon)
-    cur_weapon = NULL;
-
   /* Get rid of the thing */
   discardit = (bool)(obj->o_count == 1);
   leave_pack(obj, false, false);
@@ -246,24 +242,27 @@ def:
       learn_scroll(S_TELEP);
     }
     when S_ENCH:
-      if (cur_weapon == NULL || cur_weapon->o_type != WEAPON)
+    {
+      THING *weapon = equipped_item(EQUIPMENT_RHAND);
+      if (weapon == NULL)
         msg("you feel a strange sense of loss");
       else
       {
-        cur_weapon->o_flags &= ~ISCURSED;
+        weapon->o_flags &= ~ISCURSED;
         if (rnd(2) == 0)
-          cur_weapon->o_hplus++;
+          weapon->o_hplus++;
         else
-          cur_weapon->o_dplus++;
+          weapon->o_dplus++;
         msg("your %s glows %s for a moment",
-            weap_info[cur_weapon->o_which].oi_name, pick_color("blue"));
+            weap_info[weapon->o_which].oi_name, pick_color("blue"));
       }
+    }
     when S_SCARE:
       /* Reading it is a mistake and produces laughter at her poor boo boo. */
       msg("you hear maniacal laughter in the distance");
     when S_REMOVE:
       uncurse(equipped_item(EQUIPMENT_ARMOR));
-      uncurse(cur_weapon);
+      uncurse(equipped_item(EQUIPMENT_RHAND));
       uncurse(cur_ring[LEFT]);
       uncurse(cur_ring[RIGHT]);
       msg(is_hallucinating(&player)

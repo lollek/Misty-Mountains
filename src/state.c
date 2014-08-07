@@ -1100,9 +1100,9 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_coord(savef, stairs))
   rs_assert(rs_write_thing(savef, &player))
   rs_assert(rs_write_object(savef, equipped_item(EQUIPMENT_ARMOR)));
+  rs_assert(rs_write_object(savef, equipped_item(EQUIPMENT_RHAND)));
   rs_assert(rs_write_object_reference(savef, player.t_pack, cur_ring[0]))
   rs_assert(rs_write_object_reference(savef, player.t_pack, cur_ring[1]))
-  rs_assert(rs_write_object_reference(savef, player.t_pack, cur_weapon))
   rs_assert(rs_write_object_reference(savef, player.t_pack, l_last_pick))
   rs_assert(rs_write_object_reference(savef, player.t_pack, last_pick))
   rs_assert(rs_write_object_list(savef, lvl_obj))
@@ -1153,9 +1153,9 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_coord(inf, &stairs))
   rs_assert(rs_read_thing(inf, &player))
   rs_assert(rs_read_equipment(inf)) /* ARMOR */
+  rs_assert(rs_read_equipment(inf)) /* RHAND */
   rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_ring[0]))
   rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_ring[1]))
-  rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_weapon))
   rs_assert(rs_read_object_reference(inf, player.t_pack, &l_last_pick))
   rs_assert(rs_read_object_reference(inf, player.t_pack, &last_pick))
   rs_assert(rs_read_object_list(inf, &lvl_obj))

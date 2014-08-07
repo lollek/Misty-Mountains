@@ -46,13 +46,12 @@ missile(int ydelta, int xdelta)
 {
   THING *obj = get_item("throw", WEAPON);
   THING *monster_at_pos;
+  THING *weapon = equipped_item(EQUIPMENT_RHAND);
 
   if (obj == NULL)
     return false;
 
-  if (obj == cur_weapon)
-    cur_weapon = NULL;
-  else if (obj == cur_ring[LEFT])
+  if (obj == cur_ring[LEFT])
     cur_ring[LEFT] = NULL;
   else if (obj == cur_ring[RIGHT])
     cur_ring[RIGHT] = NULL;
@@ -67,11 +66,8 @@ missile(int ydelta, int xdelta)
   do_motion(obj, ydelta, xdelta);
   monster_at_pos = moat(obj->o_pos.y, obj->o_pos.x);
 
-  /* Throwing a bow or an arrow without a bow always misses */
-  if (obj->o_type == WEAPON &&
-      (obj->o_which == BOW ||
-       (obj->o_which == ARROW && (cur_weapon == NULL ||
-        cur_weapon->o_which != BOW))))
+  /* Throwing an arrow without a bow always misses */
+  if (obj->o_which == ARROW && (weapon == NULL || weapon->o_which != BOW))
   {
     if (monster_at_pos)
       bounce(obj, set_mname(monster_at_pos), terse);
@@ -234,14 +230,9 @@ bool
 wield(void)
 {
   THING *obj = get_item("wield", WEAPON);
-  char *sp;
 
   if (obj == NULL)
     return false;
-
-  /* Check if already in use */
-  if (is_in_use(obj))
-    return wield();
 
   if (obj->o_type == ARMOR)
   {
@@ -249,18 +240,57 @@ wield(void)
     return wield();
   }
 
-  if (cur_weapon != NULL && cur_weapon->o_flags & ISCURSED)
+  if (equipped_item(EQUIPMENT_RHAND) != NULL)
+    unwield();
+  if (equipped_item(EQUIPMENT_RHAND) != NULL)
+    return false;
+
+
+  leave_pack(obj, false, true);
+  equip_item(obj);
+
+  if (!terse)
+    addmsg("you are now ");
+  msg("wielding %s", inv_name(obj, true, true));
+  return true;
+}
+
+/** unwield
+ * Remove worn weapon */
+bool unwield(void)
+{
+  THING *obj = equipped_item(EQUIPMENT_RHAND);
+  if (obj == NULL)
+  {
+    msg(terse
+        ? "not wearing weapon"
+        : "you aren't wearing any weapon");
+    return false;
+  }
+
+  if (obj->o_flags & ISCURSED)
   {
     msg("you can't. Your weapon appears to be cursed");
     return true;
   }
 
-  sp = inv_name(obj, true, true);
-  cur_weapon = obj;
+  if (!add_pack(obj, true))
+  {
+    attach(lvl_obj, obj);
+    chat(hero.y, hero.x) = (char) obj->o_type;
+    flat(hero.y, hero.x) |= F_DROPPED;
+    obj->o_pos = hero;
+    msg("dropped %s", inv_name(obj, true, true));
+    return true;
+  }
 
-  if (!terse)
-    addmsg("you are now ");
-  msg("wielding %s (%c)", sp, obj->o_packch);
+  unequip_item(EQUIPMENT_RHAND);
+
+  addmsg(terse
+      ? "was"
+      : "you used to be");
+  msg(" wielding %s", inv_name(obj, true, true));
+
   return true;
 }
 

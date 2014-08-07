@@ -289,14 +289,16 @@ do_wizard_command(char ch)
         raise_level();
 
       /* Give him a sword (+1,+1) */
+      unwield();
       obj = new_item();
       init_weapon(obj, TWOSWORD);
       obj->o_hplus = 1;
       obj->o_dplus = 1;
       add_pack(obj, true);
-      cur_weapon = obj;
+      equip_item(obj);
 
       /* And his suit of armor */
+      take_off();
       obj = new_item();
       obj->o_type = ARMOR;
       obj->o_which = PLATE_MAIL;

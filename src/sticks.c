@@ -169,14 +169,16 @@ do_zap(void)
 		}
 	    }
 	when WS_MISSILE:
+	{
+	    THING *weapon = equipped_item(EQUIPMENT_RHAND);
 	    ws_info[WS_MISSILE].oi_know = true;
 	    bolt.o_type = '*';
 	    strncpy(bolt.o_hurldmg,"1x4",sizeof(bolt.o_hurldmg));
 	    bolt.o_hplus = 100;
 	    bolt.o_dplus = 1;
 	    bolt.o_flags = ISMISL;
-	    if (cur_weapon != NULL)
-		bolt.o_launch = cur_weapon->o_which;
+	    if (weapon != NULL)
+		bolt.o_launch = weapon->o_which;
 	    do_motion(&bolt, delta.y, delta.x);
 	    if ((tp = moat(bolt.o_pos.y, bolt.o_pos.x)) != NULL
 		&& !save_throw(VS_MAGIC, tp))
@@ -185,6 +187,7 @@ do_zap(void)
 		msg("missle vanishes");
 	    else
 		msg("the missle vanishes with a puff of smoke");
+	}
 	when WS_HASTE_M:
 	case WS_SLOW_M:
 	    y = hero.y;

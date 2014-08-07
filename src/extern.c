@@ -95,7 +95,6 @@ coord stairs;				/* Location of staircase */
 PLACE places[MAXLINES*MAXCOLS];		/* level map */
 
 THING *cur_ring[2];			/* Which rings are being worn */
-THING *cur_weapon;			/* Which weapon he is weilding */
 THING *l_last_pick = NULL;		/* Last last_pick */
 THING *last_pick = NULL;		/* Last object picked in get_item() */
 THING *lvl_obj = NULL;			/* List of objects on this level */

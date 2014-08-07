@@ -285,7 +285,7 @@ print_currently_wearing(char thing)
   else
   {
     THING *current_thing = thing == WEAPON
-      ? cur_weapon
+      ? equipped_item(EQUIPMENT_RHAND)
       : equipped_item(EQUIPMENT_ARMOR);
     if (current_thing) {
       msg("%s", inv_name(current_thing, true, 0));

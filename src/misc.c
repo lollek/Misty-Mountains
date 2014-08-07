@@ -269,9 +269,6 @@ eat(void)
 
     hungry_state = 0;
 
-    if (obj == cur_weapon)
-      cur_weapon = NULL;
-
     if (obj->o_which == 1)
       msg("my, that was a yummy fruit");
     else
@@ -382,8 +379,7 @@ is_in_use(THING *obj)
   if (obj == NULL)
     return false;
 
-  if (obj == cur_weapon || obj == cur_ring[LEFT]
-      || obj == cur_ring[RIGHT])
+  if (obj == cur_ring[LEFT] || obj == cur_ring[RIGHT])
   {
     msg(terse ? "in use" : "that's already in use");
     return true;

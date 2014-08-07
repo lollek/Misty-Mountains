@@ -260,8 +260,7 @@ find_magic_item_in_players_pack(void)
   int nobj = 0;
 
   for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
-    if (obj != cur_weapon &&
-        obj != cur_ring[LEFT] &&
+    if (obj != cur_ring[LEFT] &&
         obj != cur_ring[RIGHT] &&
         is_magic(obj) &&
         rnd(++nobj) == 0)
@@ -470,6 +469,9 @@ print_evaluate_item(THING *obj)
 {
   int worth = 0;
   struct obj_info *op;
+  if (obj == NULL)
+    return 0;
+
   switch (obj->o_type)
   {
     case FOOD:
@@ -525,7 +527,7 @@ print_evaluate_item(THING *obj)
   }
   if (worth < 0)
     worth = 0;
-  printw("%c) %5d  %s\n", obj->o_packch, worth,
+  printw("%5d  %s\n", worth,
       inv_name(obj, false, true));
   return (unsigned) worth;
 }
@@ -537,13 +539,14 @@ evaluate_players_inventory(void)
   THING *obj = NULL;
 
   clear();
-  mvaddstr(0, 0, "   Worth  Item  [Equipment]\n");
+  mvaddstr(0, 0, "Worth  Item  [Equipment]\n");
   value += print_evaluate_item(equipped_item(EQUIPMENT_ARMOR));
+  value += print_evaluate_item(equipped_item(EQUIPMENT_RHAND));
 
-  addstr("\n   Worth  Item  [Inventory]\n");
+  addstr("\nWorth  Item  [Inventory]\n");
   for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
     value += print_evaluate_item(obj);
-  printw("\n   %5d  Gold Pieces          ", purse);
+  printw("\n%5d  Gold Pieces          ", purse);
   refresh();
   return value;
 }
@@ -568,9 +571,7 @@ equip_item(THING *item)
   {
     case ARMOR:  pos = EQUIPMENT_ARMOR;
     when WEAPON: pos = EQUIPMENT_RHAND;
-    otherwise:
-      msg("DEBUG: Cannot equip item %s", inv_name(item, false, true));
-      return false;
+    otherwise:   pos = EQUIPMENT_RHAND;
   }
 
   if (equipment[pos].ptr)

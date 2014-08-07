@@ -62,9 +62,6 @@ quaff(void)
   if (!is_quaffable(obj))
     return false;
 
-  if (obj == cur_weapon)
-    cur_weapon = NULL;
-
   /* Calculate the effect it has on the poor guy. */
   discardit = (bool)(obj->o_count == 1);
   leave_pack(obj, false, false);

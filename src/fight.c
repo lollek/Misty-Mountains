@@ -399,12 +399,13 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 
 	if (hurl)
 	{
-	    if ((weap->o_flags & ISMISL) && cur_weapon != NULL &&
-	      cur_weapon->o_which == weap->o_launch)
+	    THING *launcher = equipped_item(EQUIPMENT_RHAND);
+	    if ((weap->o_flags & ISMISL) && launcher != NULL &&
+	      launcher->o_which == weap->o_launch)
 	    {
 		cp = weap->o_hurldmg;
-		hplus += cur_weapon->o_hplus;
-		dplus += cur_weapon->o_dplus;
+		hplus += launcher->o_hplus;
+		dplus += launcher->o_dplus;
 	    }
 	    else if (weap->o_launch < 0)
 		cp = weap->o_hurldmg;
