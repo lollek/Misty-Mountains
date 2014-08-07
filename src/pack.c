@@ -538,16 +538,18 @@ size_t
 evaluate_players_inventory(void)
 {
   size_t value = 0;
+  int i;
   THING *obj = NULL;
 
   clear();
   mvaddstr(0, 0, "Worth  Item  [Equipment]\n");
-  value += print_evaluate_item(equipped_item(EQUIPMENT_ARMOR));
-  value += print_evaluate_item(equipped_item(EQUIPMENT_RHAND));
+  for (i = 0; i < NEQUIPMENT; ++i)
+    value += print_evaluate_item(equipped_item(i));
 
   addstr("\nWorth  Item  [Inventory]\n");
   for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
     value += print_evaluate_item(obj);
+
   printw("\n%5d  Gold Pieces          ", purse);
   refresh();
   return value;
