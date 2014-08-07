@@ -304,8 +304,7 @@ do_wizard_command(char ch)
       obj->o_flags |= ISKNOW;
       obj->o_count = 1;
       obj->o_group = 0;
-      cur_armor = obj;
-      add_pack(obj, true);
+      equip_item(obj);
     }
 
     otherwise:

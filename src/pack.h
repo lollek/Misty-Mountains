@@ -13,7 +13,7 @@ enum equipment_pos
 /* Pick up an object and add it to the pack.  If the argument is
  * non-null use it as the linked_list pointer instead of gettting
  * it off the ground. */
-void add_pack(THING *obj, bool silent);
+bool add_pack(THING *obj, bool silent);
 
 /* take an item out of the pack */
 THING *leave_pack(THING *obj, bool newobj, bool all);
@@ -44,8 +44,11 @@ bool print_equipment(void);
 bool print_inventory(int type);
 void clear_inventory(void);
 size_t evaluate_players_inventory(void);
+
 THING *equipped_item(enum equipment_pos pos);
+
 bool equip_item(THING *item);
+void unequip_item(enum equipment_pos pos);
 
 
 #endif /* _ROGUE14_PACK_H_ */

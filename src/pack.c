@@ -38,7 +38,7 @@ static void money(int value);     /* Add or subtract gold from the pack */
 static char floor_ch();           /* Return the appropriate floor character */
 static void remove_from_floor(THING *obj); /* Removes one item from the floor */
 
-void
+bool
 add_pack(THING *obj, bool silent)
 {
   THING *op;
@@ -48,7 +48,7 @@ add_pack(THING *obj, bool silent)
   if (obj == NULL)
   {
     if ((obj = find_obj(hero.y, hero.x)) == NULL)
-      return;
+      return false;
     from_floor = true;
   }
 
@@ -61,7 +61,7 @@ add_pack(THING *obj, bool silent)
     chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
     discard(obj);
     msg("the scroll turns to dust as you pick it up");
-    return;
+    return false;
   }
 
   if (items_in_pack() == PACKSIZE)
@@ -71,7 +71,7 @@ add_pack(THING *obj, bool silent)
         : "there's no room in your pack");
     if (from_floor)
       move_msg(obj);
-    return;
+    return false;
   }
 
   if (player.t_pack == NULL)
@@ -174,6 +174,7 @@ add_pack(THING *obj, bool silent)
       addmsg("you now have ");
     msg("%s (%c)", inv_name(obj, !terse, true), obj->o_packch, true);
   }
+  return true;
 }
 
 THING *
@@ -259,8 +260,7 @@ find_magic_item_in_players_pack(void)
   int nobj = 0;
 
   for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
-    if (obj != cur_armor &&
-        obj != cur_weapon &&
+    if (obj != cur_weapon &&
         obj != cur_ring[LEFT] &&
         obj != cur_ring[RIGHT] &&
         is_magic(obj) &&
@@ -465,6 +465,71 @@ print_inventory(int type)
   return num_items != 0;
 }
 
+static size_t
+print_evaluate_item(THING *obj)
+{
+  int worth = 0;
+  struct obj_info *op;
+  switch (obj->o_type)
+  {
+    case FOOD:
+      worth = 2 * obj->o_count;
+      when WEAPON:
+        worth = weap_info[obj->o_which].oi_worth;
+      worth *= 3 * (obj->o_hplus + obj->o_dplus) + obj->o_count;
+      obj->o_flags |= ISKNOW;
+      when ARMOR:
+        worth = arm_info[obj->o_which].oi_worth;
+      worth += (9 - obj->o_arm) * 100;
+      worth += (10 * (a_class[obj->o_which] - obj->o_arm));
+      obj->o_flags |= ISKNOW;
+      when SCROLL:
+        worth = scr_info[obj->o_which].oi_worth;
+      worth *= obj->o_count;
+      op = &scr_info[obj->o_which];
+      if (!op->oi_know)
+        worth /= 2;
+      op->oi_know = true;
+      when POTION:
+        worth = pot_info[obj->o_which].oi_worth;
+      worth *= obj->o_count;
+      op = &pot_info[obj->o_which];
+      if (!op->oi_know)
+        worth /= 2;
+      op->oi_know = true;
+      when RING:
+        op = &ring_info[obj->o_which];
+      worth = op->oi_worth;
+      if (obj->o_which == R_ADDSTR || obj->o_which == R_ADDDAM ||
+          obj->o_which == R_PROTECT || obj->o_which == R_ADDHIT)
+      {
+        if (obj->o_arm > 0)
+          worth += obj->o_arm * 100;
+        else
+          worth = 10;
+      }
+      if (!(obj->o_flags & ISKNOW))
+        worth /= 2;
+      obj->o_flags |= ISKNOW;
+      op->oi_know = true;
+      when STICK:
+        op = &ws_info[obj->o_which];
+      worth = op->oi_worth;
+      worth += 20 * obj->o_charges;
+      if (!(obj->o_flags & ISKNOW))
+        worth /= 2;
+      obj->o_flags |= ISKNOW;
+      op->oi_know = true;
+      when AMULET:
+        worth = 1000;
+  }
+  if (worth < 0)
+    worth = 0;
+  printw("%c) %5d  %s\n", obj->o_packch, worth,
+      inv_name(obj, false, true));
+  return (unsigned) worth;
+}
+
 size_t
 evaluate_players_inventory(void)
 {
@@ -472,71 +537,13 @@ evaluate_players_inventory(void)
   THING *obj = NULL;
 
   clear();
-  mvaddstr(0, 0, "   Worth  Item\n");
+  mvaddstr(0, 0, "   Worth  Item  [Equipment]\n");
+  value += print_evaluate_item(equipped_item(EQUIPMENT_ARMOR));
+
+  addstr("\n   Worth  Item  [Inventory]\n");
   for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
-  {
-    int worth = 0;
-    struct obj_info *op;
-    switch (obj->o_type)
-    {
-      case FOOD:
-        worth = 2 * obj->o_count;
-      when WEAPON:
-        worth = weap_info[obj->o_which].oi_worth;
-        worth *= 3 * (obj->o_hplus + obj->o_dplus) + obj->o_count;
-        obj->o_flags |= ISKNOW;
-      when ARMOR:
-        worth = arm_info[obj->o_which].oi_worth;
-        worth += (9 - obj->o_arm) * 100;
-        worth += (10 * (a_class[obj->o_which] - obj->o_arm));
-        obj->o_flags |= ISKNOW;
-      when SCROLL:
-        worth = scr_info[obj->o_which].oi_worth;
-        worth *= obj->o_count;
-        op = &scr_info[obj->o_which];
-        if (!op->oi_know)
-          worth /= 2;
-        op->oi_know = true;
-      when POTION:
-        worth = pot_info[obj->o_which].oi_worth;
-        worth *= obj->o_count;
-        op = &pot_info[obj->o_which];
-        if (!op->oi_know)
-          worth /= 2;
-        op->oi_know = true;
-      when RING:
-        op = &ring_info[obj->o_which];
-        worth = op->oi_worth;
-        if (obj->o_which == R_ADDSTR || obj->o_which == R_ADDDAM ||
-            obj->o_which == R_PROTECT || obj->o_which == R_ADDHIT)
-        {
-          if (obj->o_arm > 0)
-            worth += obj->o_arm * 100;
-          else
-            worth = 10;
-        }
-        if (!(obj->o_flags & ISKNOW))
-          worth /= 2;
-        obj->o_flags |= ISKNOW;
-        op->oi_know = true;
-      when STICK:
-        op = &ws_info[obj->o_which];
-        worth = op->oi_worth;
-        worth += 20 * obj->o_charges;
-        if (!(obj->o_flags & ISKNOW))
-          worth /= 2;
-        obj->o_flags |= ISKNOW;
-        op->oi_know = true;
-      when AMULET:
-        worth = 1000;
-    }
-    if (worth < 0)
-      worth = 0;
-    printw("%c) %5d  %s\n", obj->o_packch, worth,
-                            inv_name(obj, false, true));
-    value += (unsigned) worth;
-  }
-  printw("   %5d  Gold Pieces          ", purse);
+    value += print_evaluate_item(obj);
+  printw("\n   %5d  Gold Pieces          ", purse);
   refresh();
   return value;
 }
@@ -573,4 +580,10 @@ equip_item(THING *item)
     equipment[pos].ptr = item;
     return true;
   }
+}
+
+void
+unequip_item(enum equipment_pos pos)
+{
+  equipment[pos].ptr = NULL;
 }

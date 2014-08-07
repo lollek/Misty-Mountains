@@ -382,7 +382,7 @@ is_in_use(THING *obj)
   if (obj == NULL)
     return false;
 
-  if (obj == cur_armor || obj == cur_weapon || obj == cur_ring[LEFT]
+  if (obj == cur_weapon || obj == cur_ring[LEFT]
       || obj == cur_ring[RIGHT])
   {
     msg(terse ? "in use" : "that's already in use");

@@ -18,7 +18,7 @@ enum trap_t
 };
 
 enum trap_t be_trapped(THING *target, coord *tc);
-const char *trap_names[NTRAPS];
+extern const char *trap_names[NTRAPS];
 
 
 #endif /* _ROGUE14_TRAPS_H_ */

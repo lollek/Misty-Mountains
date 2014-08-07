@@ -50,11 +50,13 @@ int
 get_ac(THING *thing)
 {
   bool is_player = thing == &player;
-  int ac;
+  int ac = thing->t_stats.s_arm;
 
   if (is_player)
   {
-    ac = cur_armor ? cur_armor->o_arm : pstats.s_arm;
+    THING *arm = equipped_item(EQUIPMENT_ARMOR);
+    if (arm != NULL)
+      ac = arm->o_arm;
     if (cur_weapon && cur_weapon->o_arm != 0)
       ac -= cur_weapon->o_arm;
     if (ISRING(LEFT, R_PROTECT))
@@ -76,43 +78,59 @@ wear(void)
   if (obj == NULL)
     return false;
 
-  if (obj == cur_armor)
-  {
-    msg("that's already in use");
-    return wear();
-  }
-
   if (obj->o_type != ARMOR)
   {
     msg("you can't wear that");
     return wear();
   }
 
-  if (cur_armor != NULL)
+  if (equipped_item(EQUIPMENT_ARMOR) != NULL)
     take_off();
-  if (cur_armor != NULL)
+  if (equipped_item(EQUIPMENT_ARMOR) != NULL)
     return true;
 
   waste_time();
   obj->o_flags |= ISKNOW;
-  cur_armor = obj;
+  leave_pack(obj, false, true);
+  equip_item(obj);
   if (!terse)
     addmsg("you are now ");
   msg("wearing %s", inv_name(obj, true, true));
   return true;
 }
 
+void
+rust_players_armor(void)
+{
+  THING *arm = equipped_item(EQUIPMENT_ARMOR);
+  if (arm == NULL || arm->o_type != ARMOR || arm->o_which == LEATHER ||
+      arm->o_arm >= 9)
+    return;
+
+  if ((arm->o_flags & ISPROT) || ISWEARING(R_SUSTARM))
+  {
+    if (!to_death)
+      msg("the rust vanishes instantly");
+  }
+  else
+  {
+    arm->o_arm++;
+    msg(terse
+        ? "your armor weakens"
+        : "your armor appears to be weaker now. Oh my!");
+  }
+}
+
 bool
 take_off(void)
 {
-  THING *obj = cur_armor;
+  THING *obj = equipped_item(EQUIPMENT_ARMOR);
 
-  if (cur_armor == NULL)
+  if (obj == NULL)
   {
-    if (terse)
-      msg("not wearing armor");
-    else
-      msg("you aren't wearing any armor");
+    msg(terse
+        ? "not wearing armor"
+        : "you aren't wearing any armor");
     return false;
   }
 
@@ -123,12 +141,21 @@ take_off(void)
   }
 
   waste_time();
-  cur_armor = NULL;
+  if (!add_pack(obj, true))
+  {
+    attach(lvl_obj, obj);
+    chat(hero.y, hero.x) = (char) obj->o_type;
+    flat(hero.y, hero.x) |= F_DROPPED;
+    obj->o_pos = hero;
+    msg("dropped %s", inv_name(obj, true, true));
+    return true;
+  }
 
-  if (terse)
-    addmsg("was");
-  else
-    addmsg("you used to be");
+  unequip_item(EQUIPMENT_ARMOR);
+
+  addmsg(terse
+      ? "was"
+      : "you used to be");
   msg(" wearing %c) %s", obj->o_packch, inv_name(obj, true, true));
 
   return true;

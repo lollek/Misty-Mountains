@@ -37,6 +37,7 @@
 #include "scrolls.h"
 #include "io.h"
 #include "chase.h"
+#include "pack.h"
 
 static const size_t RSID_STATS        = 0xABCD0001;
 static const size_t RSID_THING        = 0xABCD0002;
@@ -665,6 +666,16 @@ rs_read_object(FILE *inf, THING *o)
 }
 
 static int
+rs_read_equipment(FILE *inf)
+{
+  THING *item = new_item();
+  if (rs_read_object(inf, item))
+    return 1;
+  equip_item(item);
+  return 0;
+}
+
+static int
 rs_write_object_list(FILE *savef, const THING *l)
 {
   size_t listsize = list_size(l);
@@ -1088,7 +1099,7 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_int(savef, seed))
   rs_assert(rs_write_coord(savef, stairs))
   rs_assert(rs_write_thing(savef, &player))
-  rs_assert(rs_write_object_reference(savef, player.t_pack, cur_armor))
+  rs_assert(rs_write_object(savef, equipped_item(EQUIPMENT_ARMOR)));
   rs_assert(rs_write_object_reference(savef, player.t_pack, cur_ring[0]))
   rs_assert(rs_write_object_reference(savef, player.t_pack, cur_ring[1]))
   rs_assert(rs_write_object_reference(savef, player.t_pack, cur_weapon))
@@ -1141,7 +1152,7 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_int(inf, (signed *) &seed))
   rs_assert(rs_read_coord(inf, &stairs))
   rs_assert(rs_read_thing(inf, &player))
-  rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_armor))
+  rs_assert(rs_read_equipment(inf)) /* ARMOR */
   rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_ring[0]))
   rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_ring[1]))
   rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_weapon))

@@ -413,7 +413,7 @@ extern coord	delta, oldpos, stairs;
 
 extern PLACE	places[];
 
-extern THING	*cur_armor, *cur_ring[], *cur_weapon, *l_last_pick,
+extern THING	*cur_ring[], *cur_weapon, *l_last_pick,
 		*last_pick, *lvl_obj, *mlist, player;
 
 extern struct room	*oldrp, passages[], rooms[];
@@ -522,7 +522,6 @@ int	rnd_room(void);
 int	roll(int number, int sides);
 int	rs_save_file(FILE *savef);
 int	rs_restore_file(FILE *inf);
-void	rust_armor(THING *arm);
 int	save(int which);
 bool	save_file(FILE *savef);
 bool	save_game(void);

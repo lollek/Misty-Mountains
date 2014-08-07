@@ -7,7 +7,7 @@
 #include "traps.h"
 
 
-const char *trap_names[] = {
+const char *trap_names[NTRAPS] = {
   "a trapdoor",
   "an arrow trap",
   "a sleeping gas trap",
@@ -107,7 +107,7 @@ be_trapped(THING *target, coord *tc)
       }
     when T_RUST:
       msg("a gush of water hits you on the head");
-      rust_armor(cur_armor);
+      rust_players_armor();
   }
 
   flushinp();

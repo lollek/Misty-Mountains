@@ -20,7 +20,8 @@ extern int a_class[NARMORS]; /* Armor class for each armor type */
 extern struct obj_info arm_info[NARMORS]; /* Info for all armor */
 
 int get_ac(THING *thing); /* Returns the AC of a creature */
-bool wear(void);          /* Let player select something to wear */
+void rust_players_armor(void); /* Rust players armor */
 bool take_off(void);      /* Take off player's armor */
+bool wear(void);          /* Let player select something to wear */
 
 #endif /* _ROGUE14_ARMOR_H_ */

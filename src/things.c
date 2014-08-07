@@ -148,9 +148,7 @@ inv_name(THING *obj, bool drop, bool inv_describe)
 
   if (inv_describe)
   {
-    if (obj == cur_armor)
-      strcat(pb, " (being worn)");
-    else if (obj == cur_weapon)
+    if (obj == cur_weapon)
       strcat(pb, " (weapon in hand)");
     else if (obj == cur_ring[LEFT])
       strcat(pb, " (on left hand)");
@@ -208,11 +206,6 @@ dropcheck(THING *obj)
 	else
 	    cur_weapon = NULL;
 	return cur_weapon == NULL;
-    }
-    else if (obj == cur_armor)
-    {
-	take_off();
-	return cur_armor == NULL;
     }
     else if (obj == cur_ring[LEFT])
     {

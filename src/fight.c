@@ -188,7 +188,7 @@ attack(THING *mp)
 		    /*
 		     * If an aquator hits, you can lose armor class.
 		     */
-		    rust_armor(cur_armor);
+		    rust_players_armor();
 		when 'I':
 		    /*
 		     * The ice monster freezes you

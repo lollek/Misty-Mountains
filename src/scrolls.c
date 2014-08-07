@@ -68,12 +68,15 @@ read_scroll(void)
       set_confusing(&player, true);
       msg("your hands begin to glow %s", pick_color("red"));
     when S_ARMOR:
-      if (cur_armor != NULL)
+    {
+      THING *arm = equipped_item(EQUIPMENT_ARMOR);
+      if (arm != NULL)
       {
-        cur_armor->o_arm--;
-        cur_armor->o_flags &= ~ISCURSED;
+        arm->o_arm--;
+        arm->o_flags &= ~ISCURSED;
         msg("your armor glows %s for a moment", pick_color("silver"));
       }
+    }
     when S_HOLD:
       /* Hold monster scroll.
        * Stop all monsters within two spaces from chasing after the hero. */
@@ -259,7 +262,7 @@ def:
       /* Reading it is a mistake and produces laughter at her poor boo boo. */
       msg("you hear maniacal laughter in the distance");
     when S_REMOVE:
-      uncurse(cur_armor);
+      uncurse(equipped_item(EQUIPMENT_ARMOR));
       uncurse(cur_weapon);
       uncurse(cur_ring[LEFT]);
       uncurse(cur_ring[RIGHT]);
@@ -272,14 +275,17 @@ def:
       aggravate();
       msg("you hear a high pitched humming noise");
     when S_PROTECT:
-      if (cur_armor != NULL)
+    {
+      THING *arm = equipped_item(EQUIPMENT_ARMOR);
+      if (arm != NULL)
       {
-        cur_armor->o_flags |= ISPROT;
+        arm->o_flags |= ISPROT;
         msg("your armor is covered by a shimmering %s shield",
             pick_color("gold"));
       }
       else
         msg("you feel a strange sense of loss");
+    }
     otherwise:
       msg("what a puzzling scroll!");
       return;

@@ -203,8 +203,7 @@ init_player(void)
     obj->o_arm = a_class[RING_MAIL] - 1;
     obj->o_flags |= ISKNOW;
     obj->o_count = 1;
-    cur_armor = obj;
-    add_pack(obj, true);
+    equip_item(obj);
 
     /* Give him his weaponry.  First a mace. */
     obj = new_item();

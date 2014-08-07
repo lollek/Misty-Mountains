@@ -94,7 +94,6 @@ coord stairs;				/* Location of staircase */
 
 PLACE places[MAXLINES*MAXCOLS];		/* level map */
 
-THING *cur_armor;			/* What he is wearing */
 THING *cur_ring[2];			/* Which rings are being worn */
 THING *cur_weapon;			/* Which weapon he is weilding */
 THING *l_last_pick = NULL;		/* Last last_pick */

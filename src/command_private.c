@@ -268,8 +268,7 @@ print_currently_wearing(char thing)
 {
   bool item_found = false;
 
-  if (!terse)
-    addmsg("You are %s ", thing == WEAPON ? "wielding" : "wearing");
+  addmsg(thing == WEAPON ? "wielding " : "wearing ");
 
   if (thing == RING)
   {
@@ -285,9 +284,11 @@ print_currently_wearing(char thing)
   }
   else
   {
-    THING *current_thing = thing == WEAPON ? cur_weapon : cur_armor;
+    THING *current_thing = thing == WEAPON
+      ? cur_weapon
+      : equipped_item(EQUIPMENT_ARMOR);
     if (current_thing) {
-      msg("%c) %s", current_thing->o_packch, inv_name(current_thing, true, 0));
+      msg("%s", inv_name(current_thing, true, 0));
       item_found = true;
     }
   }
