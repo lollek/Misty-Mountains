@@ -37,15 +37,6 @@ struct obj_info arm_info[NARMORS] = {
     { "plate mail",               5,    150, NULL, false },
 };
 
-static void
-waste_time(void)
-{
-  do_daemons(BEFORE);
-  do_fuses(BEFORE);
-  do_daemons(AFTER);
-  do_fuses(AFTER);
-}
-
 int
 get_ac(THING *thing)
 {
@@ -83,11 +74,10 @@ wear(void)
   }
 
   if (equipped_item(EQUIPMENT_ARMOR) != NULL)
-    take_off();
-  if (equipped_item(EQUIPMENT_ARMOR) != NULL)
-    return true;
+    if (!unequip_item(EQUIPMENT_ARMOR))
+      return true;
 
-  waste_time();
+  waste_time(1);
   leave_pack(obj, false, true);
   equip_item(obj);
 
@@ -119,42 +109,3 @@ rust_players_armor(void)
   }
 }
 
-bool
-take_off(void)
-{
-  THING *obj = equipped_item(EQUIPMENT_ARMOR);
-
-  if (obj == NULL)
-  {
-    msg(terse
-        ? "not wearing armor"
-        : "you aren't wearing any armor");
-    return false;
-  }
-
-  if (obj->o_flags & ISCURSED)
-  {
-    msg("you can't. Your armor appears to be cursed");
-    return true;
-  }
-
-  waste_time();
-  if (!add_pack(obj, true))
-  {
-    attach(lvl_obj, obj);
-    chat(hero.y, hero.x) = (char) obj->o_type;
-    flat(hero.y, hero.x) |= F_DROPPED;
-    obj->o_pos = hero;
-    msg("dropped %s", inv_name(obj, true, true));
-    return true;
-  }
-
-  unequip_item(EQUIPMENT_ARMOR);
-
-  addmsg(terse
-      ? "was"
-      : "you used to be");
-  msg(" wearing %s", inv_name(obj, true, true));
-
-  return true;
-}

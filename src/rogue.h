@@ -542,9 +542,9 @@ void	unlock_sc(void);
 void	vert(struct room *rp, int startx);
 THING  *wake_monster(int y, int x);
 void	wanderer(void);
+void	waste_time(int rounds);
 void	whatis(int type);
 bool	wield(void);
-bool	unwield(void);
 
 bool	fallpos(coord *pos, coord *newpos);
 bool	find_floor(struct room *rp, coord *cp, int limit, bool monst);

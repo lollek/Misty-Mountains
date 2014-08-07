@@ -7,6 +7,8 @@ enum equipment_pos
 {
   EQUIPMENT_ARMOR = 0,
   EQUIPMENT_RHAND = 1,
+  EQUIPMENT_RRING = 2,
+  EQUIPMENT_LRING = 3,
   NEQUIPMENT
 };
 
@@ -48,7 +50,7 @@ size_t evaluate_players_inventory(void);
 THING *equipped_item(enum equipment_pos pos);
 
 bool equip_item(THING *item);
-void unequip_item(enum equipment_pos pos);
+bool unequip_item(enum equipment_pos pos);
 
 
 #endif /* _ROGUE14_PACK_H_ */

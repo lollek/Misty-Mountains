@@ -241,10 +241,8 @@ wield(void)
   }
 
   if (equipped_item(EQUIPMENT_RHAND) != NULL)
-    unwield();
-  if (equipped_item(EQUIPMENT_RHAND) != NULL)
-    return false;
-
+    if (!unequip_item(EQUIPMENT_RHAND))
+      return false;
 
   leave_pack(obj, false, true);
   equip_item(obj);
@@ -252,45 +250,6 @@ wield(void)
   if (!terse)
     addmsg("you are now ");
   msg("wielding %s", inv_name(obj, true, true));
-  return true;
-}
-
-/** unwield
- * Remove worn weapon */
-bool unwield(void)
-{
-  THING *obj = equipped_item(EQUIPMENT_RHAND);
-  if (obj == NULL)
-  {
-    msg(terse
-        ? "not wearing weapon"
-        : "you aren't wearing any weapon");
-    return false;
-  }
-
-  if (obj->o_flags & ISCURSED)
-  {
-    msg("you can't. Your weapon appears to be cursed");
-    return true;
-  }
-
-  if (!add_pack(obj, true))
-  {
-    attach(lvl_obj, obj);
-    chat(hero.y, hero.x) = (char) obj->o_type;
-    flat(hero.y, hero.x) |= F_DROPPED;
-    obj->o_pos = hero;
-    msg("dropped %s", inv_name(obj, true, true));
-    return true;
-  }
-
-  unequip_item(EQUIPMENT_RHAND);
-
-  addmsg(terse
-      ? "was"
-      : "you used to be");
-  msg(" wielding %s", inv_name(obj, true, true));
-
   return true;
 }
 

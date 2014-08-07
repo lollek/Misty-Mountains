@@ -617,3 +617,15 @@ strucpy(char *s1, const char *s2, int len)
     *s1 = '\0';
 }
 
+
+void
+waste_time(int rounds)
+{
+  while (rounds--)
+  {
+    do_daemons(BEFORE);
+    do_fuses(BEFORE);
+    do_daemons(AFTER);
+    do_fuses(AFTER);
+  }
+}

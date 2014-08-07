@@ -1,6 +1,8 @@
 #ifndef _ROGUE14_COMMAND_PRIVATE_H_
 #define _ROGUE14_COMMAND_PRIVATE_H_
 
+#include "pack.h"
+
 #include "command.h"
 
 /* In command.c */
@@ -20,6 +22,7 @@ bool print_help(void);               /* Give command help */
 bool repeat_last_command(void);
 bool search(void);                /* Find traps, hidden doors and passages */
 bool show_players_inventory(void);
+bool take_off_players_equipment(enum equipment_pos pos);
 bool toggle_wizard_mode(void);    /* Toggle wizard-mode on or off     */
 
 #endif /* _ROGUE14_COMMAND_PRIVATE_H_ */

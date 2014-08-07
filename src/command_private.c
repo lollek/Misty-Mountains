@@ -520,6 +520,15 @@ show_players_inventory(void)
 }
 
 bool
+take_off_players_equipment(enum equipment_pos pos)
+{
+  if (equipped_item(pos) == NULL)
+    return false;
+  unequip_item(pos);
+  return equipped_item(pos) != NULL;
+}
+
+bool
 toggle_wizard_mode(void)
 {
   /* TODO: Add a query here, so you always can become a wiz */

@@ -223,7 +223,7 @@ do_command(char ch)
     case 'P': return ring_on();
     case 'R': return ring_off();
     case 'S': return save_game();
-    case 'T': return take_off();
+    case 'T': return take_off_players_equipment(EQUIPMENT_ARMOR);
     case 'W': return wear();
     case 'Q': return maybe_quit();
 
@@ -289,24 +289,32 @@ do_wizard_command(char ch)
         raise_level();
 
       /* Give him a sword (+1,+1) */
-      unwield();
-      obj = new_item();
-      init_weapon(obj, TWOSWORD);
-      obj->o_hplus = 1;
-      obj->o_dplus = 1;
-      add_pack(obj, true);
-      equip_item(obj);
+      if (unequip_item(EQUIPMENT_RHAND))
+      {
+        obj = new_item();
+        init_weapon(obj, TWOSWORD);
+        obj->o_hplus = 1;
+        obj->o_dplus = 1;
+        add_pack(obj, true);
+        equip_item(obj);
+      }
+      else
+        msg("failed to add weapon");
 
       /* And his suit of armor */
-      take_off();
-      obj = new_item();
-      obj->o_type = ARMOR;
-      obj->o_which = PLATE_MAIL;
-      obj->o_arm = -5;
-      obj->o_flags |= ISKNOW;
-      obj->o_count = 1;
-      obj->o_group = 0;
-      equip_item(obj);
+      if (unequip_item(EQUIPMENT_ARMOR))
+      {
+        obj = new_item();
+        obj->o_type = ARMOR;
+        obj->o_which = PLATE_MAIL;
+        obj->o_arm = -5;
+        obj->o_flags |= ISKNOW;
+        obj->o_count = 1;
+        obj->o_group = 0;
+        equip_item(obj);
+      }
+      else
+        msg("failed to add armor");
     }
 
     otherwise:

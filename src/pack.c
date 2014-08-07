@@ -26,16 +26,18 @@ static struct equipment_t
   THING *ptr;
   const char *description;
 } equipment[NEQUIPMENT] = {
-  { NULL, "Armor" },
-  { NULL, "Right Hand" }
+  { NULL, "Body" },
+  { NULL, "Right Hand" },
+  { NULL, "Right Ring" },
+  { NULL, "Left Ring" }
 };
 
 /* TODO: Maybe inline money()? */
 
-static char pack_char();          /* Return the next unused pack character */
+static char pack_char(void);      /* Return the next unused pack character */
 static void move_msg(THING *obj); /* Print out what you are moving onto */
 static void money(int value);     /* Add or subtract gold from the pack */
-static char floor_ch();           /* Return the appropriate floor character */
+static char floor_ch(void);       /* Return the appropriate floor character */
 static void remove_from_floor(THING *obj); /* Removes one item from the floor */
 
 bool
@@ -571,6 +573,9 @@ equip_item(THING *item)
   {
     case ARMOR:  pos = EQUIPMENT_ARMOR;
     when WEAPON: pos = EQUIPMENT_RHAND;
+    when RING: pos = equipment[EQUIPMENT_RRING].ptr == NULL
+                     ? EQUIPMENT_RRING
+                     : EQUIPMENT_LRING;
     otherwise:   pos = EQUIPMENT_RHAND;
   }
 
@@ -583,8 +588,38 @@ equip_item(THING *item)
   }
 }
 
-void
+bool
 unequip_item(enum equipment_pos pos)
 {
+  THING *obj = equipped_item(pos);
+  const char *doing = pos == EQUIPMENT_RHAND ? "wielding" : "wearing";
+  if (obj == NULL)
+  {
+    msg("not %s anything!", doing);
+    return false;
+  }
+
+  if (obj->o_flags & ISCURSED)
+  {
+    msg("you can't. It appears to be cursed");
+    return false;
+  }
+
   equipment[pos].ptr = NULL;
+
+  /* Waste time if armor - since they take a while */
+  if (pos == EQUIPMENT_ARMOR)
+    waste_time(1);
+
+  if (!add_pack(obj, true))
+  {
+    attach(lvl_obj, obj);
+    chat(hero.y, hero.x) = (char) obj->o_type;
+    flat(hero.y, hero.x) |= F_DROPPED;
+    obj->o_pos = hero;
+    msg("dropped %s", inv_name(obj, true, true));
+  }
+  else
+    msg("no longer %s %s", doing, inv_name(obj, true, true));
+  return true;
 }
