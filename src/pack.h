@@ -12,6 +12,9 @@ enum equipment_pos
   NEQUIPMENT
 };
 
+#define RING_SLOTS_SIZE 2
+extern enum equipment_pos ring_slots[RING_SLOTS_SIZE];
+
 /* Pick up an object and add it to the pack.  If the argument is
  * non-null use it as the linked_list pointer instead of gettting
  * it off the ground. */

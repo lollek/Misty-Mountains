@@ -17,7 +17,6 @@ bool identify_a_character(void);     /* Identify monster or item */
 bool identify_trap(void);              /* Give the name of a trap          */
 bool maybe_quit(void);                 /* Ask player if she wants to quit  */
 bool pick_up_item_from_ground(void); /* Pick up something at her feet */
-bool print_currently_wearing(char thing); /* Print weapon / armor info */
 bool print_help(void);               /* Give command help */
 bool repeat_last_command(void);
 bool search(void);                /* Find traps, hidden doors and passages */

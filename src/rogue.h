@@ -62,8 +62,6 @@ extern enum rogue_game_t
 #define max(a,b)	((a) > (b) ? (a) : (b))
 #define on(thing,flag)	((bool)(((thing).t_flags & (flag)) != 0))
 #define GOLDCALC	(rnd(50 + 10 * level) + 2)
-#define ISRING(h,r)	(cur_ring[h] != NULL && cur_ring[h]->o_which == r)
-#define ISWEARING(r)	(ISRING(LEFT, r) || ISRING(RIGHT, r))
 #define INDEX(y,x)	(&places[((x) << 5) + (y)])
 #define chat(y,x)	(places[((x) << 5) + (y)].p_ch)
 #define flat(y,x)	(places[((x) << 5) + (y)].p_flags)
@@ -413,7 +411,7 @@ extern coord	delta, oldpos, stairs;
 
 extern PLACE	places[];
 
-extern THING	*cur_ring[], *l_last_pick, *last_pick, *lvl_obj, *mlist, player;
+extern THING	*l_last_pick, *last_pick, *lvl_obj, *mlist, player;
 
 extern struct room	*oldrp, passages[], rooms[];
 
@@ -481,7 +479,6 @@ int	fight(coord *mp, THING *weap, bool thrown);
 void	fix_stick(THING *cur);
 void	fuse(void (*func)(), int arg, int time, int type);
 bool	get_dir(void);
-int	gethand(void);
 void	give_pack(THING *tp);
 void	hit(const char *er, const char *ee, bool noend);
 void	horiz(struct room *rp, int starty);
@@ -506,6 +503,7 @@ void	new_level(void);
 void	new_monster(THING *tp, char type, coord *cp);
 void	numpass(int y, int x);
 void 	passnum(void);
+bool	player_has_ring_with_ability(int ability);
 const char	*pick_color(const char *col);
 int	pr_list(void);
 void	pr_spec(char ch);
@@ -513,7 +511,7 @@ void	put_things(void);
 void	putpass(coord *cp);
 char	randmonster(bool wander);
 void	remove_mon(coord *mp, THING *tp, bool waskill);
-int	ring_eat(int hand);
+int	ring_eat(void);
 bool	ring_on(void);
 bool	ring_off(void);
 int	rnd(int range);
@@ -550,12 +548,11 @@ bool	fallpos(coord *pos, coord *newpos);
 bool	find_floor(struct room *rp, coord *cp, int limit, bool monst);
 THING  *find_magic_item_in_players_pack(void);
 bool	turn_ok(int y, int x);
-bool	is_in_use(THING *obj);
 
 char	rnd_thing(void);
 
 char	*charge_str(THING *obj);
-char	*inv_name(THING *obj, bool drop, bool inv_describe);
+char	*inv_name(THING *obj, bool drop);
 char	*num(int n1, int n2, char type);
 char	*ring_num(THING *obj);
 char	*set_mname(THING *tp);

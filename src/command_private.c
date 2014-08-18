@@ -264,42 +264,6 @@ pick_up_item_from_ground(void)
 }
 
 bool
-print_currently_wearing(char thing)
-{
-  bool item_found = false;
-
-  addmsg(thing == WEAPON ? "wielding " : "wearing ");
-
-  if (thing == RING)
-  {
-    unsigned i;
-    for (i = 0; i < CONCURRENT_RINGS; ++i)
-      if (cur_ring[i]) {
-        addmsg("%c) %s ", cur_ring[i]->o_packch, inv_name(cur_ring[i], true, 0));
-        item_found = true;
-      }
-    if (item_found)
-      endmsg();
-
-  }
-  else
-  {
-    THING *current_thing = thing == WEAPON
-      ? equipped_item(EQUIPMENT_RHAND)
-      : equipped_item(EQUIPMENT_ARMOR);
-    if (current_thing) {
-      msg("%s", inv_name(current_thing, true, 0));
-      item_found = true;
-    }
-  }
-
-  if (!item_found)
-    msg("no %s", thing == WEAPON ? "weapon": thing == RING ? "rings":"armor");
-
-  return false;
-}
-
-bool
 print_help(void)
 {
   const struct h_list helpstr[] = {
@@ -354,9 +318,6 @@ print_help(void)
     {'d',	"	drop object",				true},
     {'c',	"	call object",				true},
     {'a',	"	repeat last command",			true},
-    {')',	"	print current weapon",			true},
-    {']',	"	print current armor",			true},
-    {'=',	"	print current rings",			true},
     {'D',	"	recall what's been discovered",		true},
     {'o',	"	examine/set options",			true},
     {CTRL('R'),	"	redraw screen",				true},

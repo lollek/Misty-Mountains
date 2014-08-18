@@ -17,6 +17,7 @@
 #include "status_effects.h"
 #include "io.h"
 #include "chase.h"
+#include "pack.h"
 
 /*
  * List of monsters in rough order of vorpalness
@@ -86,7 +87,7 @@ new_monster(THING *tp, char type, coord *cp)
 	tp->t_flags |= ISHASTE;
     tp->t_turn = true;
     tp->t_pack = NULL;
-    if (ISWEARING(R_AGGR))
+    if (player_has_ring_with_ability(R_AGGR))
 	runto(cp);
     if (type == 'X')
 	tp->t_disguise = rnd_thing();
@@ -156,7 +157,7 @@ wake_monster(int y, int x)
      * Every time he sees mean monster, it might start chasing him
      */
     if (!on(*tp, ISRUN) && rnd(3) != 0 && on(*tp, ISMEAN) && !on(*tp, ISHELD)
-	&& !ISWEARING(R_STEALTH) && !is_levitating(&player))
+	&& !player_has_ring_with_ability(R_STEALTH) && !is_levitating(&player))
     {
 	tp->t_dest = &hero;
 	tp->t_flags |= ISRUN;
@@ -219,19 +220,20 @@ save_throw(int which, THING *tp)
     return (roll(1, 20) >= need);
 }
 
-/*
- * save:
- *	See if he saves against various nasty things
- */
+/** save:
+ * See if he saves against various nasty things */
 int
 save(int which)
 {
-    if (which == VS_MAGIC)
+  if (which == VS_MAGIC)
+  {
+    int i;
+    for (i = 0; i < RING_SLOTS_SIZE; ++i)
     {
-	if (ISRING(LEFT, R_PROTECT))
-	    which -= cur_ring[LEFT]->o_arm;
-	if (ISRING(RIGHT, R_PROTECT))
-	    which -= cur_ring[RIGHT]->o_arm;
+      THING *ring = equipped_item(ring_slots[i]);
+      if (ring != NULL && ring->o_which == R_PROTECT)
+        which -= ring->o_arm;
     }
-    return save_throw(which, &player);
+  }
+  return save_throw(which, &player);
 }

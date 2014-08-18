@@ -314,6 +314,7 @@ check_level(void)
 void
 chg_str(int amt)
 {
+  int i;
   str_t comp;
 
   if (amt == 0)
@@ -322,11 +323,12 @@ chg_str(int amt)
   add_str(&pstats.s_str, amt);
   comp = pstats.s_str;
 
-  if (ISRING(LEFT, R_ADDSTR))
-    add_str(&comp, -cur_ring[LEFT]->o_arm);
-
-  if (ISRING(RIGHT, R_ADDSTR))
-    add_str(&comp, -cur_ring[RIGHT]->o_arm);
+  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  {
+    THING *ring = equipped_item(ring_slots[i]);
+    if (ring != NULL && ring->o_which == R_ADDSTR)
+      add_str(&comp, -ring->o_arm);
+  }
 
   if (comp > max_stats.s_str)
     max_stats.s_str = comp;
@@ -369,22 +371,6 @@ vowelstr(const char *str)
     default:
       return "";
   }
-}
-
-/** is_in_use:
- * See if the object is one of the currently used items */
-bool
-is_in_use(THING *obj)
-{
-  if (obj == NULL)
-    return false;
-
-  if (obj == cur_ring[LEFT] || obj == cur_ring[RIGHT])
-  {
-    msg(terse ? "in use" : "that's already in use");
-    return true;
-  }
-  return false;
 }
 
 /** get_dir:

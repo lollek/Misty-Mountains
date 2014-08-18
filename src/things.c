@@ -23,7 +23,6 @@
 #include "armor.h"
 #include "pack.h"
 
-static bool dropcheck(THING *obj);
 static int pick_one(struct obj_info *info, int nitems);
 static void nameit(THING *obj, const char *type, const char *which,
                    struct obj_info *op, char *(*prfunc)(THING *));
@@ -61,7 +60,7 @@ add_num_type_to_string(char *ptr, int type, int which, int num)
 /** inv_name:
  * Return the name of something as it would appear in an inventory. */
 char *
-inv_name(THING *obj, bool drop, bool inv_describe)
+inv_name(THING *obj, bool drop)
 {
   char *pb = prbuf;
   int which = obj->o_which;
@@ -146,14 +145,6 @@ inv_name(THING *obj, bool drop, bool inv_describe)
       pb += sprintf(pb, "Something bizarre %s", unctrl(obj->o_type));
   }
 
-  if (inv_describe)
-  {
-    if (obj == cur_ring[LEFT])
-      strcat(pb, " (on left hand)");
-    else if (obj == cur_ring[RIGHT])
-      strcat(pb, " (on right hand)");
-  }
-
   prbuf[0] = drop ? tolower(prbuf[0]) : toupper(prbuf[0]);
   prbuf[MAXSTR-1] = '\0';
   return prbuf;
@@ -176,8 +167,6 @@ drop(void)
     }
     if ((obj = get_item("drop", 0)) == NULL)
 	return false;
-    if (!dropcheck(obj))
-	return false;
     obj = leave_pack(obj, true, !(obj->o_type == POTION ||
           obj->o_type == SCROLL || obj->o_type == FOOD));
 
@@ -186,28 +175,7 @@ drop(void)
     chat(hero.y, hero.x) = (char) obj->o_type;
     flat(hero.y, hero.x) |= F_DROPPED;
     obj->o_pos = hero;
-    msg("dropped %s", inv_name(obj, true, true));
-    return true;
-}
-
-/** dropcheck:
- * Check if we can remove it before dropping */
-static bool
-dropcheck(THING *obj)
-{
-    if (obj == NULL)
-	return true;
-    if (obj == cur_ring[LEFT])
-    {
-	ring_off();
-	return cur_ring[LEFT] == NULL;
-    }
-    else if (obj == cur_ring[RIGHT])
-    {
-	ring_off();
-	return cur_ring[RIGHT] == NULL;
-    }
-
+    msg("dropped %s", inv_name(obj, true));
     return true;
 }
 
@@ -347,7 +315,7 @@ discovered_by_type(char type, struct obj_info *info, int max_items)
     {
       printable_object.o_which = i;
       mvwprintw(printscr, ++items_found, 1,
-                "%s", inv_name(&printable_object, false, true));
+                "%s", inv_name(&printable_object, false));
     }
 
   if (items_found == 0)

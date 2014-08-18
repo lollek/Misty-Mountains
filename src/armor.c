@@ -39,11 +39,16 @@ get_ac(THING *thing)
   {
     THING *arm = equipped_item(EQUIPMENT_ARMOR);
     THING *weapon = equipped_item(EQUIPMENT_RHAND);
+    int i;
 
     ac  = arm ? arm->o_arm : ac;
     ac -= weapon ? weapon->o_arm : 0;
-    ac -= ISRING(LEFT, R_PROTECT) ? cur_ring[LEFT]->o_arm : 0;
-    ac -= ISRING(RIGHT, R_PROTECT) ? cur_ring[RIGHT]->o_arm : 0;
+    for (i = 0; i < RING_SLOTS_SIZE; ++i)
+    {
+      THING *ring = equipped_item(ring_slots[i]);
+      if (ring != NULL && ring->o_which == R_PROTECT)
+        ac -= ring->o_arm;
+    }
   }
   else
     ac = thing->t_stats.s_arm;
@@ -75,7 +80,7 @@ wear(void)
 
   if (!terse)
     addmsg("you are now ");
-  msg("wearing %s", inv_name(obj, true, true));
+  msg("wearing %s", inv_name(obj, true));
   return true;
 }
 
@@ -109,7 +114,7 @@ rust_players_armor(void)
       arm->o_arm >= 9)
     return;
 
-  if ((arm->o_flags & ISPROT) || ISWEARING(R_SUSTARM))
+  if ((arm->o_flags & ISPROT) || player_has_ring_with_ability(R_SUSTARM))
   {
     if (!to_death)
       msg("the rust vanishes instantly");

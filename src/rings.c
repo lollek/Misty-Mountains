@@ -15,200 +15,142 @@
 #include "io.h"
 #include "pack.h"
 
-/*
- * ring_on:
- *	Put a ring on a hand
- */
+bool
+player_has_ring_with_ability(int ability)
+{
+  int i;
+  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  {
+    THING *ring = equipped_item(ring_slots[i]);
+    if (ring != NULL && ring->o_which == ability)
+      return true;
+  }
+  return false;
+}
 
+/** ring_on:
+ * Put a ring on a hand */
 bool
 ring_on(void)
 {
-    THING *obj = get_item("put on", RING);
-    int ring;
+  THING *obj = get_item("put on", RING);
 
-    /* Make certain that it is somethings that we want to wear */
-    if (obj == NULL)
-	return false;
-    if (obj->o_type != RING)
-    {
-	if (!terse)
-	    msg("it would be difficult to wrap that around a finger");
-	else
-	    msg("not a ring");
-	return false;
+  /* Make certain that it is somethings that we want to wear */
+  if (obj == NULL)
+    return false;
+
+  if (obj->o_type != RING)
+  {
+    msg(terse
+      ? "not a ring"
+      : "it would be difficult to wrap that around a finger");
+    return ring_on();
+  }
+
+  /* Try to put it on */
+  if (!equip_item(obj))
+  {
+    msg(terse
+      ? "wearing two"
+      : "you already have a ring on each hand");
+    return false;
+  }
+  leave_pack(obj, false, true);
+
+  /* Calculate the effect it has on the poor guy. */
+  switch (obj->o_which)
+  {
+    case R_ADDSTR: chg_str(obj->o_arm);
+    when R_SEEINVIS: invis_on();
+    when R_AGGR: aggravate();
     }
 
-    /* find out which hand to put it on */
-    if (is_in_use(obj))
-	return false;
-
-    if (cur_ring[LEFT] == NULL && cur_ring[RIGHT] == NULL)
-    {
-	if ((ring = gethand()) < 0)
-	    return false;
-    }
-    else if (cur_ring[LEFT] == NULL)
-	ring = LEFT;
-    else if (cur_ring[RIGHT] == NULL)
-	ring = RIGHT;
-    else
-    {
-	if (!terse)
-	    msg("you already have a ring on each hand");
-	else
-	    msg("wearing two");
-	return false;
-    }
-    cur_ring[ring] = obj;
-
-    /* Calculate the effect it has on the poor guy. */
-    switch (obj->o_which)
-    {
-	case R_ADDSTR:
-	    chg_str(obj->o_arm);
-	    break;
-	case R_SEEINVIS:
-	    invis_on();
-	    break;
-	case R_AGGR:
-	    aggravate();
-	    break;
-    }
-
-    if (!terse)
-	addmsg("you are now wearing ");
-    msg("%s (%c)", inv_name(obj, true, true), obj->o_packch);
-    return true;
+  if (!terse)
+    addmsg("you are now wearing ");
+  msg("%s", inv_name(obj, true));
+  return true;
 }
 
-/*
- * ring_off:
- *	take off a ring
- */
+/** ring_off:
+ * take off a ring */
 
 bool
 ring_off(void)
 {
-    int ring;
-    THING *obj;
+  enum equipment_pos ring;
+  THING *obj;
 
-    if (cur_ring[LEFT] == NULL && cur_ring[RIGHT] == NULL)
-    {
-	msg(terse
-	    ? "no rings"
-	    : "You aren't wearing any rings");
-	return false;
-    }
-    else if (cur_ring[LEFT] == NULL)
-	ring = RIGHT;
-    else if (cur_ring[RIGHT] == NULL)
-	ring = LEFT;
-    else
-	if ((ring = gethand()) < 0)
-	    return false;
-    mpos = 0;
-    obj = cur_ring[ring];
-    if (obj == NULL)
-    {
-	msg("not wearing such a ring");
-	return false;
-    }
+  /* Try right, then left */
+  if (equipped_item(EQUIPMENT_RRING) != NULL)
+    ring = EQUIPMENT_RRING;
+  else
+    ring = EQUIPMENT_LRING;
 
-    if (obj->o_flags & ISCURSED)
-    {
-	msg("you can't. The ring appears to be cursed");
-	return true;
-    }
+  if (!unequip_item(ring))
+    return false;
 
-    switch (obj->o_which)
-    {
-	case R_ADDSTR: chg_str(-obj->o_arm);
-	when R_SEEINVIS:
-	    set_true_seeing(&player, false, false);
-	    extinguish(daemon_remove_true_seeing);
-    }
+  obj = equipped_item(ring);
+  switch (obj->o_which)
+  {
+    case R_ADDSTR: chg_str(-obj->o_arm);
+    when R_SEEINVIS:
+      set_true_seeing(&player, false, false);
+      extinguish(daemon_remove_true_seeing);
+  }
 
-    msg("was wearing %s(%c)", inv_name(obj, true, true), obj->o_packch);
-    return true;
+  msg("was wearing %s", inv_name(obj, true));
+  return true;
 }
 
-/*
- * gethand:
- *	Which hand is the hero interested in?
- */
+/** ring_eat:
+ * How much food does players rings use up? */
 int
-gethand(void)
+ring_eat(void)
 {
-    int c;
+  int total_eat = 0;
+  int uses[] = {
+    1, /* R_PROTECT */  1, /* R_ADDSTR */
+    1, /* R_SUSTSTR */ -3, /* R_SEARCH */
+   -5, /* R_SEEINVIS */ 0, /* R_NOP */
+    0, /* R_AGGR */    -3, /* R_ADDHIT */
+   -3, /* R_ADDDAM */   2, /* R_REGEN */
+   -2, /* R_DIGEST */   0, /* R_TELEPORT */
+    1, /* R_STEALTH */  1  /* R_SUSTARM */
+  };
+  int i;
 
-    for (;;)
+  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  {
+    THING *ring = equipped_item(ring_slots[i]);
+    if (ring != NULL)
     {
-	if (terse)
-	    msg("left or right ring? ");
-	else
-	    msg("left hand or right hand? ");
-	if ((c = readchar()) == KEY_ESCAPE)
-	    return -1;
-	mpos = 0;
-	if (c == 'l' || c == 'L')
-	    return LEFT;
-	else if (c == 'r' || c == 'R')
-	    return RIGHT;
-	if (terse)
-	    msg("L or R");
-	else
-	    msg("please type L or R");
+      int eat = uses[ring->o_which];
+      if (eat < 0)
+        eat = rnd(-eat) == 0;
+      if (ring->o_which == R_DIGEST)
+        eat = -eat;
+      total_eat += eat;
     }
+  }
+  return total_eat;
 }
 
-/*
- * ring_eat:
- *	How much food does this ring use up?
- */
-int
-ring_eat(int hand)
-{
-    THING *ring;
-    int eat;
-    static int uses[] = {
-	 1,	/* R_PROTECT */		 1,	/* R_ADDSTR */
-	 1,	/* R_SUSTSTR */		-3,	/* R_SEARCH */
-	-5,	/* R_SEEINVIS */	 0,	/* R_NOP */
-	 0,	/* R_AGGR */		-3,	/* R_ADDHIT */
-	-3,	/* R_ADDDAM */		 2,	/* R_REGEN */
-	-2,	/* R_DIGEST */		 0,	/* R_TELEPORT */
-	 1,	/* R_STEALTH */		 1	/* R_SUSTARM */
-    };
-
-    if ((ring = cur_ring[hand]) == NULL)
-	return 0;
-    if ((eat = uses[ring->o_which]) < 0)
-	eat = (rnd(-eat) == 0);
-    if (ring->o_which == R_DIGEST)
-	eat = -eat;
-    return eat;
-}
-
-/*
- * ring_num:
- *	Print ring bonuses
- */
+/** ring_num:
+ * Print ring bonuses */
 char *
 ring_num(THING *obj)
 {
-    static char buf[10];
+  static char buf[10];
 
-    if (!(obj->o_flags & ISKNOW))
-	return "";
-    switch (obj->o_which)
-    {
-	case R_PROTECT:
-	case R_ADDSTR:
-	case R_ADDDAM:
-	case R_ADDHIT:
-	    sprintf(buf, " [%s]", num(obj->o_arm, 0, RING));
-	otherwise:
-	    return "";
-    }
-    return buf;
+  if (!(obj->o_flags & ISKNOW))
+    return "";
+
+  switch (obj->o_which)
+  {
+    case R_PROTECT: case R_ADDSTR: case R_ADDDAM: case R_ADDHIT:
+      sprintf(buf, " [%s]", num(obj->o_arm, 0, RING));
+    otherwise:
+      return "";
+  }
+  return buf;
 }

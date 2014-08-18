@@ -48,6 +48,12 @@ static const size_t RSID_MONSTERLIST  = 0xABCD0009;
 static const size_t RSID_WINDOW       = 0xABCD000D;
 static const size_t RSID_DAEMONS      = 0xABCD000E;
 
+static const size_t RSID_ARMOR        = 0xABCD0010;
+static const size_t RSID_RHAND        = 0xABCD0011;
+static const size_t RSID_RRING        = 0xABCD0013;
+static const size_t RSID_LRING        = 0xABCD0012;
+static const size_t RSID_NULL         = 0xABCD0000;
+
 #define rs_assert(_a) if (_a) { return printf("L%d@%s", __LINE__, __FILE__); }
 
 
@@ -88,7 +94,6 @@ static const size_t RSID_DAEMONS      = 0xABCD000E;
     rs_assert(rs_write_char(_f, (_p)[temp_i].p_ch) || \
               rs_write_char(_f, (_p)[temp_i].p_flags) || \
               rs_write_thing_reference(_f, mlist, (_p)[temp_i].p_monst))
-
 
 #define rs_read(_f, _p, _s)     (encread(_p, _s, _f) != _s)
 #define rs_read_boolean(_f, _i) rs_read(_f, (char *)_i, 1)
@@ -666,9 +671,24 @@ rs_read_object(FILE *inf, THING *o)
 }
 
 static int
-rs_read_equipment(FILE *inf)
+rs_write_equipment(FILE *inf, THING *o, size_t marker)
 {
-  THING *item = new_item();
+  if (o == NULL)
+    return rs_write_marker(inf, RSID_NULL);
+  else if (rs_write_marker(inf, marker))
+    return 1;
+  return rs_write_object(inf, o);
+}
+
+static int
+rs_read_equipment(FILE *inf, size_t marker)
+{
+  size_t temp_i;
+  THING *item;
+
+  if (rs_read_marker(inf, marker))
+    return 0;
+  item = new_item();
   if (rs_read_object(inf, item))
     return 1;
   equip_item(item);
@@ -1099,10 +1119,10 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_int(savef, seed))
   rs_assert(rs_write_coord(savef, stairs))
   rs_assert(rs_write_thing(savef, &player))
-  rs_assert(rs_write_object(savef, equipped_item(EQUIPMENT_ARMOR)));
-  rs_assert(rs_write_object(savef, equipped_item(EQUIPMENT_RHAND)));
-  rs_assert(rs_write_object_reference(savef, player.t_pack, cur_ring[0]))
-  rs_assert(rs_write_object_reference(savef, player.t_pack, cur_ring[1]))
+  rs_write_equipment(savef, equipped_item(EQUIPMENT_ARMOR), RSID_ARMOR);
+  rs_write_equipment(savef, equipped_item(EQUIPMENT_RHAND), RSID_RHAND);
+  rs_write_equipment(savef, equipped_item(EQUIPMENT_RRING), RSID_RRING);
+  rs_write_equipment(savef, equipped_item(EQUIPMENT_LRING), RSID_LRING);
   rs_assert(rs_write_object_reference(savef, player.t_pack, l_last_pick))
   rs_assert(rs_write_object_reference(savef, player.t_pack, last_pick))
   rs_assert(rs_write_object_list(savef, lvl_obj))
@@ -1152,10 +1172,10 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_int(inf, (signed *) &seed))
   rs_assert(rs_read_coord(inf, &stairs))
   rs_assert(rs_read_thing(inf, &player))
-  rs_assert(rs_read_equipment(inf)) /* ARMOR */
-  rs_assert(rs_read_equipment(inf)) /* RHAND */
-  rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_ring[0]))
-  rs_assert(rs_read_object_reference(inf, player.t_pack, &cur_ring[1]))
+  rs_assert(rs_read_equipment(inf, RSID_ARMOR))
+  rs_assert(rs_read_equipment(inf, RSID_RHAND))
+  rs_assert(rs_read_equipment(inf, RSID_RRING))
+  rs_assert(rs_read_equipment(inf, RSID_LRING))
   rs_assert(rs_read_object_reference(inf, player.t_pack, &l_last_pick))
   rs_assert(rs_read_object_reference(inf, player.t_pack, &last_pick))
   rs_assert(rs_read_object_list(inf, &lvl_obj))

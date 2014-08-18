@@ -17,40 +17,42 @@
 #include "chase.h"
 #include "pack.h"
 
-/*
- * doctor:
- *	A healing daemon that restors hit points after rest
- */
+/** doctor:
+ * A healing daemon that restors hit points after rest */
 void
 doctor(void)
 {
-    int lv = pstats.s_lvl;
-    int ohp = pstats.s_hpt;
+  int lv = pstats.s_lvl;
+  int ohp = pstats.s_hpt;
+  int i;
 
-    if (ohp == max_hp)
-      return;
+  if (ohp == max_hp)
+    return;
 
-    quiet++;
-    if (lv < 8)
-    {
-	if (quiet + (lv << 1) > 20)
-	    pstats.s_hpt++;
-    }
-    else
-	if (quiet >= 3)
-	    pstats.s_hpt += rnd(lv - 7) + 1;
-    if (ISRING(LEFT, R_REGEN))
-	pstats.s_hpt++;
-    if (ISRING(RIGHT, R_REGEN))
-	pstats.s_hpt++;
-    if (ohp != pstats.s_hpt)
-      quiet = 0;
+  quiet++;
+  if (lv < 8)
+  {
+    if (quiet + (lv << 1) > 20)
+      pstats.s_hpt++;
+  }
+  else if (quiet >= 3)
+    pstats.s_hpt += rnd(lv - 7) + 1;
 
-    if (pstats.s_hpt >= max_hp)
-    {
-	pstats.s_hpt = max_hp;
-	stop_counting(false);
-    }
+  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  {
+    THING *ring = equipped_item(ring_slots[i]);
+    if (ring != NULL && ring->o_which == R_REGEN)
+      pstats.s_hpt++;
+  }
+
+  if (ohp != pstats.s_hpt)
+    quiet = 0;
+
+  if (pstats.s_hpt >= max_hp)
+  {
+    pstats.s_hpt = max_hp;
+    stop_counting(false);
+  }
 }
 
 /*
@@ -116,7 +118,7 @@ stomach(void)
     else
     {
 	oldfood = food_left;
-	food_left -= ring_eat(LEFT) + ring_eat(RIGHT) + 1 - player_has_amulet();
+	food_left -= ring_eat() + 1 - player_has_amulet();
 
 	if (food_left < MORETIME && oldfood >= MORETIME)
 	{

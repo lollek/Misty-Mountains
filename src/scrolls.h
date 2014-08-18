@@ -27,7 +27,6 @@ extern struct obj_info scr_info[NSCROLLS]; /* Scroll info */
 
 /* Functions */
 void read_scroll(void);     /* Read a scroll from the pack and do the needful */
-void uncurse(THING *obj);   /* Uncurse an item */
 #define learn_scroll(_s) (scr_info[_s].oi_know = true) /* Learn scroll info */
 #define knows_scroll(_s) (scr_info[_s].oi_know) /* Knows what scroll does? */
 

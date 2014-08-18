@@ -185,14 +185,10 @@ attack(THING *mp)
 	    switch (mp->t_type)
 	    {
 		case 'A':
-		    /*
-		     * If an aquator hits, you can lose armor class.
-		     */
+		    /* If an aquator hits, you can lose armor class */
 		    rust_players_armor();
 		when 'I':
-		    /*
-		     * The ice monster freezes you
-		     */
+		    /* The ice monster freezes you */
 		    player.t_flags &= ~ISRUN;
 		    if (!no_command)
 		    {
@@ -205,33 +201,25 @@ attack(THING *mp)
 		    if (no_command > 50)
 			death('h');
 		when 'R':
-		    /*
-		     * Rattlesnakes have poisonous bites
-		     */
+		    /* Rattlesnakes have poisonous bites */
 		    if (!save(VS_POISON))
 		    {
-			if (!ISWEARING(R_SUSTSTR))
+			if (!player_has_ring_with_ability(R_SUSTSTR))
 			{
 			    chg_str(-1);
-			    if (!terse)
-				msg("you feel a bite in your leg and now feel weaker");
-			    else
-				msg("a bite has weakened you");
+			    msg(terse
+			      ? "a bite has weakened you"
+			      : "you feel a bite in your leg and now feel weaker");
 			}
 			else if (!to_death)
-			{
-			    if (!terse)
-				msg("a bite momentarily weakens you");
-			    else
-				msg("bite has no effect");
-			}
+			    msg(terse
+				? "bite has no effect"
+				: "a bite momentarily weakens you");
 		    }
 		when 'W':
 		case 'V':
-		    /*
-		     * Wraiths might drain energy levels, and Vampires
-		     * can steal max_hp
-		     */
+		    /* Wraiths might drain energy levels, and Vampires
+		     * can steal max_hp */
 		    if (rnd(100) < (mp->t_type == 'W' ? 15 : 30))
 		    {
 			int fewer;
@@ -260,18 +248,14 @@ attack(THING *mp)
 			msg("you suddenly feel weaker");
 		    }
 		when 'F':
-		    /*
-		     * Venus Flytrap stops the poor guy from moving
-		     */
+		    /* Venus Flytrap stops the poor guy from moving */
 		    player.t_flags |= ISHELD;
 		    ++vf_hit;
 		    if (--pstats.s_hpt <= 0)
 			death('F');
 		when 'L':
 		{
-		    /*
-		     * Leperachaun steals some gold
-		     */
+		    /* Leperachaun steals some gold */
 		    int lastpurse;
 
 		    lastpurse = purse;
@@ -296,7 +280,7 @@ attack(THING *mp)
 			           false);
 			mp=NULL;
 			leave_pack(steal, false, false);
-			msg("she stole %s!", inv_name(steal, true, true));
+			msg("she stole %s!", inv_name(steal, true));
 			discard(steal);
 		    }
 		}
@@ -387,15 +371,17 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 
     if (is_player)
     {
-	if (ISRING(LEFT, R_ADDDAM))
-	    dplus += cur_ring[LEFT]->o_arm;
-	else if (ISRING(LEFT, R_ADDHIT))
-	    hplus += cur_ring[LEFT]->o_arm;
-
-	if (ISRING(RIGHT, R_ADDDAM))
-	    dplus += cur_ring[RIGHT]->o_arm;
-	else if (ISRING(RIGHT, R_ADDHIT))
-	    hplus += cur_ring[RIGHT]->o_arm;
+	int i;
+	for (i = 0; i < RING_SLOTS_SIZE; ++i)
+	{
+	    THING *ring = equipped_item(ring_slots[i]);
+	    if (ring == NULL)
+		continue;
+	    else if (ring->o_which == R_ADDDAM)
+		dplus += ring->o_arm;
+	    else if (ring->o_which == R_ADDHIT)
+		hplus += ring->o_arm;
+	}
 
 	if (hurl)
 	{

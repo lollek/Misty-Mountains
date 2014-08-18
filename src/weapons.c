@@ -51,11 +51,6 @@ missile(int ydelta, int xdelta)
   if (obj == NULL)
     return false;
 
-  if (obj == cur_ring[LEFT])
-    cur_ring[LEFT] = NULL;
-  else if (obj == cur_ring[RIGHT])
-    cur_ring[RIGHT] = NULL;
-
   if (obj->o_type == ARMOR)
   {
     msg("you can't throw armor");
@@ -249,7 +244,7 @@ wield(void)
 
   if (!terse)
     addmsg("you are now ");
-  msg("wielding %s", inv_name(obj, true, true));
+  msg("wielding %s", inv_name(obj, true));
   return true;
 }
 

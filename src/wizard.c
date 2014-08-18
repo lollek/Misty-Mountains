@@ -142,7 +142,7 @@ whatis(int type)
 	when WEAPON: case ARMOR: obj->o_flags |= ISKNOW;
 	when RING: set_know(obj, ring_info);
     }
-    msg(inv_name(obj, false, true));
+    msg(inv_name(obj, false));
 }
 
 /*

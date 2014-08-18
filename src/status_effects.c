@@ -71,17 +71,22 @@ become_restored(void)
 {
   if (pstats.s_str < max_stats.s_str)
   {
-    if (ISRING(LEFT, R_ADDSTR))
-      add_str(&pstats.s_str, -cur_ring[LEFT]->o_arm);
-    if (ISRING(RIGHT, R_ADDSTR))
-      add_str(&pstats.s_str, -cur_ring[RIGHT]->o_arm);
+    int i;
+    for (i = 0; i < RING_SLOTS_SIZE; ++i)
+    {
+      THING *ring = equipped_item(ring_slots[i]);
+      if (ring != NULL && ring->o_which == R_ADDSTR)
+        add_str(&pstats.s_str, -ring->o_arm);
+    }
 
-      pstats.s_str = max_stats.s_str;
+    pstats.s_str = max_stats.s_str;
 
-    if (ISRING(LEFT, R_ADDSTR))
-      add_str(&pstats.s_str, cur_ring[LEFT]->o_arm);
-    if (ISRING(RIGHT, R_ADDSTR))
-      add_str(&pstats.s_str, cur_ring[RIGHT]->o_arm);
+    for (i = 0; i < RING_SLOTS_SIZE; ++i)
+    {
+      THING *ring = equipped_item(ring_slots[i]);
+      if (ring != NULL && ring->o_which == R_ADDSTR)
+        add_str(&pstats.s_str, ring->o_arm);
+    }
 
     msg("you feel your strength returning");
   }
@@ -92,7 +97,7 @@ become_restored(void)
 void
 become_poisoned(void)
 {
-  if (ISWEARING(R_SUSTSTR))
+  if (player_has_ring_with_ability(R_SUSTSTR))
     msg("you feel momentarily sick");
   else
   {

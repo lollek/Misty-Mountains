@@ -161,14 +161,20 @@ command(void)
   do_daemons(AFTER);
   do_fuses(AFTER);
 
-  if (ISRING(LEFT, R_SEARCH))
-    search();
-  else if (ISRING(LEFT, R_TELEPORT) && rnd(50) == 0)
-    teleport(&player, NULL);
-  if (ISRING(RIGHT, R_SEARCH))
-    search();
-  else if (ISRING(RIGHT, R_TELEPORT) && rnd(50) == 0)
-    teleport(&player, NULL);
+  /* Do ring abilities */
+  {
+    int i;
+    for (i = 0; i < RING_SLOTS_SIZE; ++i)
+    {
+      THING *obj = equipped_item(ring_slots[i]);
+      if (obj == NULL)
+        continue;
+      else if (obj->o_which == R_SEARCH)
+        search();
+      else if (obj->o_which == R_TELEPORT && rnd(50) == 0)
+        teleport(&player, NULL);
+    }
+  }
 
   return 0; /* Restart from top */
 }
@@ -189,10 +195,7 @@ do_command(char ch)
     case '?': return print_help();
     case '!': msg("Shell has been removed, use ^Z instead"); return false;
     case '^': return identify_trap();
-    case ')': return print_currently_wearing(WEAPON);
-    case ']': return print_currently_wearing(ARMOR);
     case '+': return toggle_wizard_mode();
-    case '=': return print_currently_wearing(RING);
 
     /* Lower case */
     case 'h': case 'j': case 'k': case 'l':

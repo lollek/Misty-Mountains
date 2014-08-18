@@ -261,13 +261,15 @@ def:
       /* Reading it is a mistake and produces laughter at her poor boo boo. */
       msg("you hear maniacal laughter in the distance");
     when S_REMOVE:
-      uncurse(equipped_item(EQUIPMENT_ARMOR));
-      uncurse(equipped_item(EQUIPMENT_RHAND));
-      uncurse(cur_ring[LEFT]);
-      uncurse(cur_ring[RIGHT]);
+    {
+      int i;
+      for (i = 0; i < NEQUIPMENT; ++i)
+        if (equipped_item(i) != NULL)
+          set_cursed(equipped_item(i), 0);
       msg(is_hallucinating(&player)
           ? "you feel in touch with the Universal Onenes"
           : "you feel as if somebody is watching over you");
+    }
     when S_AGGR:
       /* This scroll aggravates all the monsters on the current
        * level and sets them running towards the hero */
@@ -299,10 +301,4 @@ def:
     discard(obj);
 }
 
-void
-uncurse(THING *obj)
-{
-    if (obj != NULL)
-	obj->o_flags &= ~ISCURSED;
-}
 

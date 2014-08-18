@@ -32,6 +32,11 @@ static struct equipment_t
   { NULL, "Left Ring" }
 };
 
+enum equipment_pos ring_slots[RING_SLOTS_SIZE] = { 
+  EQUIPMENT_RRING,
+  EQUIPMENT_LRING
+};
+
 /* TODO: Maybe inline money()? */
 
 static char pack_char(void);      /* Return the next unused pack character */
@@ -174,7 +179,7 @@ add_pack(THING *obj, bool silent)
   {
     if (!terse)
       addmsg("you now have ");
-    msg("%s (%c)", inv_name(obj, !terse, true), obj->o_packch, true);
+    msg("%s (%c)", inv_name(obj, !terse), obj->o_packch, true);
   }
   return true;
 }
@@ -252,7 +257,7 @@ move_msg(THING *obj)
 {
   if (!terse)
     addmsg("you ");
-  msg("moved onto %s", inv_name(obj, true, true));
+  msg("moved onto %s", inv_name(obj, true));
 }
 
 THING *
@@ -262,10 +267,7 @@ find_magic_item_in_players_pack(void)
   int nobj = 0;
 
   for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
-    if (obj != cur_ring[LEFT] &&
-        obj != cur_ring[RIGHT] &&
-        is_magic(obj) &&
-        rnd(++nobj) == 0)
+    if (is_magic(obj) && rnd(++nobj) == 0)
       return obj;
   return NULL;
 }
@@ -422,7 +424,7 @@ print_equipment(void)
     {
       mvwprintw(equipscr, sym - 'a' + 1, 1, "%c) %s: %s",
                 sym, equipment[i].description,
-                inv_name(equipment[i].ptr, false, true));
+                inv_name(equipment[i].ptr, false));
       sym++;
     }
   }
@@ -456,7 +458,7 @@ print_inventory(int type)
     {
       /* Print out the item and move to next row */
       wmove(invscr, ++num_items, 1);
-      wprintw(invscr, "%c) %s", list->o_packch, inv_name(list, false, true));
+      wprintw(invscr, "%c) %s", list->o_packch, inv_name(list, false));
     }
   }
 
@@ -530,7 +532,7 @@ print_evaluate_item(THING *obj)
   if (worth < 0)
     worth = 0;
   printw("%5d  %s\n", worth,
-      inv_name(obj, false, true));
+      inv_name(obj, false));
   return (unsigned) worth;
 }
 
@@ -619,9 +621,9 @@ unequip_item(enum equipment_pos pos)
     chat(hero.y, hero.x) = (char) obj->o_type;
     flat(hero.y, hero.x) |= F_DROPPED;
     obj->o_pos = hero;
-    msg("dropped %s", inv_name(obj, true, true));
+    msg("dropped %s", inv_name(obj, true));
   }
   else
-    msg("no longer %s %s", doing, inv_name(obj, true, true));
+    msg("no longer %s %s", doing, inv_name(obj, true));
   return true;
 }
