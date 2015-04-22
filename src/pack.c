@@ -275,6 +275,9 @@ find_magic_item_in_players_pack(void)
 THING *
 get_item(const char *purpose, int type)
 {
+  THING *obj;
+  char ch;
+
   if (again)
     if (last_pick)
       return last_pick;
@@ -291,52 +294,30 @@ get_item(const char *purpose, int type)
     return NULL;
   }
 
-  for (;;)
+  msg(terse
+      ? "%s what? "
+      : "which object do you want to %s? ",
+      purpose);
+  print_inventory(type);
+  ch = readchar();
+  mpos = 0;
+
+  clear_inventory();
+
+  if (ch == KEY_ESCAPE)
   {
-    THING *obj;
-    char ch;
-
-    if (!terse)
-      addmsg("which object do you want to ");
-    addmsg(purpose);
-    if (terse)
-      addmsg(" what");
-    msg("? (* for list): ");
-    ch = readchar();
-    mpos = 0;
-
-    /* Give the poor player a chance to abort the command */
-    if (ch == KEY_ESCAPE)
-    {
-      reset_last();
-      after = false;
-      clear_inventory(); /* Hide inventory in case we've showed it */
-      msg("");
-      return NULL;
-    }
-
-    /* normal case: person types one char */
-    if (ch == '*')
-    {
-      mpos = 0;
-      print_inventory(type);
-      continue;
-    }
-
-    for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
-      if (obj->o_packch == ch)
-        break;
-    if (obj == NULL)
-    {
-      msg("'%s' is not a valid item",unctrl(ch));
-      continue;
-    }
-    else
-    {
-      clear_inventory(); /* Hide inventory in case we've showed it */
-      return obj;
-    }
+    reset_last();
+    after = false;
+    msg("");
+    return NULL;
   }
+
+  for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
+    if (obj->o_packch == ch)
+      return obj;
+
+  msg("'%s' is not a valid item",unctrl(ch));
+  return NULL;
 }
 
 static void
