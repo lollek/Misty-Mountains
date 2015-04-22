@@ -466,7 +466,7 @@ void	door_open(struct room *rp);
 void	drain(void);
 void	draw_room(struct room *rp);
 bool	drop(void);
-void	eat(void);
+bool	eat(void);
 size_t  encread(char *start, size_t size, FILE *inf);
 size_t	encwrite(const char *start, size_t size, FILE *outf);
 void	enter_room(coord *cp);

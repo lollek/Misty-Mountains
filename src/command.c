@@ -204,7 +204,7 @@ do_command(char ch)
     case 'a': return repeat_last_command();
     case 'c': return give_item_nickname();
     case 'd': return drop();
-    case 'e': eat(); return true;
+    case 'e': return eat();
     case 'f': return fight_monster(false);
     case 'i': return show_players_inventory();
     case 'm': move_on = true; return get_dir() ? do_command(dir_ch) : false;

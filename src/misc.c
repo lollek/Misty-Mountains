@@ -249,18 +249,18 @@ find_obj(int y, int x)
 
 /** eat:
  * She wants to eat something, so let her try */
-void
+bool
 eat(void)
 {
     THING *obj = get_item("eat", FOOD);
 
     if (obj == NULL)
-      return;
+      return false;
 
     if (obj->o_type != FOOD)
     {
       msg("that's inedible!");
-      return;
+      return false;
     }
 
     food_left = (food_left > 0 ? food_left : 0) + HUNGERTIME - 200 + rnd(400);
@@ -284,6 +284,7 @@ eat(void)
             is_hallucinating(&player) ? "oh, wow" : "yum");
 
     leave_pack(obj, false, false);
+    return true;
 }
 
 /** check_level:
