@@ -589,7 +589,6 @@ typedef struct {
 extern int      total;
 extern int      between;
 extern int      group;
-extern coord    nh;
 extern char     *rainbow[];
 extern int      cNCOLORS;
 extern STONE    stones[];

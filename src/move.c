@@ -23,12 +23,6 @@
 #include "pack.h"
 
 /*
- * used to hold the new hero position
- */
-
-coord nh;
-
-/*
  * do_run:
  *	Start the hero running
  */
@@ -57,6 +51,7 @@ do_move(char ch)
 {
     int dy = 0, dx = 0;
     char fl;
+    coord nh;
 
     switch (ch)
     {

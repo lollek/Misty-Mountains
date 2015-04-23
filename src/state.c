@@ -1138,7 +1138,7 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_daemons(savef, &d_list[0], 20))
   rs_assert(rs_write_int(savef,total))
   rs_assert(rs_write_int(savef,between))
-  rs_assert(rs_write_coord(savef, nh))
+  rs_assert(rs_write_coord(savef, hero)) /* UNUSED */
   rs_assert(rs_write_int(savef, group))
   rs_assert(rs_write_window(savef,stdscr))
   return 0;
@@ -1148,6 +1148,7 @@ int
 rs_restore_file(FILE *inf)
 {
   size_t temp_i = 0; /* Used as buffer for macros */
+  coord unused_coord;
 
   rs_assert(rs_read_boolean(inf, &firstmove))
   rs_assert(rs_read_booleans(inf, pack_used, 26))
@@ -1193,7 +1194,7 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_daemons(inf, d_list, 20))
   rs_assert(rs_read_int(inf,&total))
   rs_assert(rs_read_int(inf,&between))
-  rs_assert(rs_read_coord(inf, &nh))
+  rs_assert(rs_read_coord(inf, &unused_coord)) /* UNUSED */
   rs_assert(rs_read_int(inf,&group))
   rs_assert(rs_read_window(inf,stdscr))
   return 0;
