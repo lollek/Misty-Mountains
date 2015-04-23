@@ -43,13 +43,13 @@ pr_spec(char ch)
 
   switch (ch)
   {
-    case POTION: ptr = pot_info;  max = NPOTIONS;
-    when SCROLL: ptr = scr_info;  max = NSCROLLS;
-    when RING:   ptr = ring_info; max = MAXRINGS;
-    when STICK:  ptr = ws_info;   max = MAXSTICKS;
-    when ARMOR:  ptr = armors;    max = NARMORS;
-    when WEAPON: ptr = weap_info; max = MAXWEAPONS;
-    otherwise:   ptr = NULL;      max = 0;
+    case POTION: ptr = pot_info;          max = NPOTIONS;
+    when SCROLL: ptr = scr_info;          max = NSCROLLS;
+    when RING:   ptr = ring_info;         max = MAXRINGS;
+    when STICK:  ptr = ws_info;           max = MAXSTICKS;
+    when ARMOR:  ptr = __armors_ptr();    max = NARMORS;
+    when WEAPON: ptr = weap_info;         max = MAXWEAPONS;
+    otherwise:   ptr = NULL;              max = 0;
   }
 
   for (i = 0, ch = '0'; i < max; ++i)
@@ -59,7 +59,7 @@ pr_spec(char ch)
     ch = ch == '9' ? 'a' : (ch + 1);
     wmove(printscr, i + 1, 1);
 
-    if (ptr == armors)
+    if (ptr == __armors_ptr())
     {
       name = ((struct armor_info_t *)ptr)[i].name;
       prob = ((struct armor_info_t *)ptr)[i].prob - lastprob;
@@ -228,7 +228,7 @@ create_obj(void)
 	}
 	else
 	{
-	    obj->o_arm = armors[obj->o_which].ac;
+	    obj->o_arm = armor_get_ac(obj->o_which);
 	    if (bless == '-')
 		obj->o_arm += rnd(3)+1;
 	    if (bless == '+')

@@ -506,7 +506,7 @@ is_magic(THING *obj)
   {
     case ARMOR:
       return (bool)(obj->o_flags & ISPROT) ||
-             obj->o_arm != armors[obj->o_which].ac;
+             obj->o_arm != armor_get_ac(obj->o_which);
 
     case WEAPON:
       return obj->o_hplus != 0 || obj->o_dplus != 0;

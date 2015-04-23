@@ -17,7 +17,7 @@
 
 #include "armor.h"
 
-struct armor_info_t armors[NARMORS] = {
+static struct armor_info_t armors[NARMORS] = {
  /* name                   ac  prob value known */
  { "leather armor",         8, 20,   20,  false },
  { "ring mail",             7, 15,   25,  false },
@@ -28,6 +28,12 @@ struct armor_info_t armors[NARMORS] = {
  { "banded mail",           4, 10,   90,  false },
  { "plate mail",            3,  5,  150,  false },
 };
+void *__armors_ptr(void) { return armors; }
+
+const char * armor_get_name(enum armor_t i) { return armors[i].name; }
+int armor_get_ac(enum armor_t i) { return armors[i].ac; }
+int armor_get_prob(enum armor_t i) { return armors[i].prob; }
+int armor_get_value(enum armor_t i) { return armors[i].value; }
 
 int
 get_ac(THING *thing)

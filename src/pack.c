@@ -460,31 +460,31 @@ print_evaluate_item(THING *obj)
   {
     case FOOD:
       worth = 2 * obj->o_count;
-      when WEAPON:
-        worth = weap_info[obj->o_which].oi_worth;
+    when WEAPON:
+      worth = weap_info[obj->o_which].oi_worth;
       worth *= 3 * (obj->o_hplus + obj->o_dplus) + obj->o_count;
       obj->o_flags |= ISKNOW;
-      when ARMOR:
-        worth = armors[obj->o_which].value;
+    when ARMOR:
+      worth = armor_get_value(obj->o_which);
       worth += (9 - obj->o_arm) * 100;
-      worth += (10 * (armors[obj->o_which].ac - obj->o_arm));
+      worth += (10 * (armor_get_ac(obj->o_which) - obj->o_arm));
       obj->o_flags |= ISKNOW;
-      when SCROLL:
-        worth = scr_info[obj->o_which].oi_worth;
+    when SCROLL:
+      worth = scr_info[obj->o_which].oi_worth;
       worth *= obj->o_count;
       op = &scr_info[obj->o_which];
       if (!op->oi_know)
         worth /= 2;
       op->oi_know = true;
-      when POTION:
-        worth = pot_info[obj->o_which].oi_worth;
+    when POTION:
+      worth = pot_info[obj->o_which].oi_worth;
       worth *= obj->o_count;
       op = &pot_info[obj->o_which];
       if (!op->oi_know)
         worth /= 2;
       op->oi_know = true;
-      when RING:
-        op = &ring_info[obj->o_which];
+    when RING:
+      op = &ring_info[obj->o_which];
       worth = op->oi_worth;
       if (obj->o_which == R_ADDSTR || obj->o_which == R_ADDDAM ||
           obj->o_which == R_PROTECT || obj->o_which == R_ADDHIT)
@@ -498,21 +498,24 @@ print_evaluate_item(THING *obj)
         worth /= 2;
       obj->o_flags |= ISKNOW;
       op->oi_know = true;
-      when STICK:
-        op = &ws_info[obj->o_which];
+    when STICK:
+      op = &ws_info[obj->o_which];
       worth = op->oi_worth;
       worth += 20 * obj->o_charges;
       if (!(obj->o_flags & ISKNOW))
         worth /= 2;
       obj->o_flags |= ISKNOW;
       op->oi_know = true;
-      when AMULET:
-        worth = 1000;
+    when AMULET:
+      worth = 1000;
   }
+
   if (worth < 0)
     worth = 0;
+
   printw("%5d  %s\n", worth,
       inv_name(obj, false));
+
   return (unsigned) worth;
 }
 

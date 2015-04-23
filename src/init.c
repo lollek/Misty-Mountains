@@ -202,7 +202,7 @@ init_player(void)
     obj = new_item();
     obj->o_type = ARMOR;
     obj->o_which = RING_MAIL;
-    obj->o_arm = armors[RING_MAIL].ac - 1;
+    obj->o_arm = armor_get_ac(RING_MAIL) - 1;
     obj->o_flags |= ISKNOW;
     obj->o_count = 1;
     equip_item(obj);
@@ -529,21 +529,21 @@ sumprobs(char ch)
   /* Ready the pointers */
   switch (ch)
   {
-    case '0':    ptr = things;    max = NUMTHINGS;  str = "things";
-    when POTION: ptr = pot_info;  max = NPOTIONS;   str = "potions";
-    when SCROLL: ptr = scr_info;  max = NSCROLLS;   str = "scrolls";
-    when RING:   ptr = ring_info; max = MAXRINGS;   str = "rings";
-    when STICK:  ptr = ws_info;   max = MAXSTICKS;  str = "sticks";
-    when WEAPON: ptr = weap_info; max = MAXWEAPONS; str = "weapons";
-    when ARMOR:  ptr = armors;    max = NARMORS;    str = "armor";
-    otherwise:   ptr = NULL;      max = 0;          str = "error";
+    case '0':    ptr = things;         max = NUMTHINGS;  str = "things";
+    when POTION: ptr = pot_info;       max = NPOTIONS;   str = "potions";
+    when SCROLL: ptr = scr_info;       max = NSCROLLS;   str = "scrolls";
+    when RING:   ptr = ring_info;      max = MAXRINGS;   str = "rings";
+    when STICK:  ptr = ws_info;        max = MAXSTICKS;  str = "sticks";
+    when WEAPON: ptr = weap_info;      max = MAXWEAPONS; str = "weapons";
+    when ARMOR:  ptr = __armors_ptr(); max = NARMORS;    str = "armor";
+    otherwise:   ptr = NULL;           max = 0;          str = "error";
   }
 
   /* Add upp percentage */
   for (i = 0; i < max; ++i)
   {
     int *prob;
-    if (ptr == armors)
+    if (ptr == __armors_ptr())
       prob = &((struct armor_info_t *)ptr)[i].prob;
     else
       prob = &((struct obj_info *)ptr)[i].oi_prob;
@@ -562,7 +562,7 @@ sumprobs(char ch)
   {
     int prob;
     const char *name;
-    if (ptr == armors)
+    if (ptr == __armors_ptr())
     {
       prob = ((struct armor_info_t *)ptr)[i].prob;
       name = ((struct armor_info_t *)ptr)[i].name;
