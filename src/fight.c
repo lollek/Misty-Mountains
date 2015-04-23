@@ -27,6 +27,7 @@
 static const char *prname(const char *mname, bool upper);
 static void thunk(THING *weap, const char *mname, bool noend);
 static bool roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl);
+static void print_attack(bool hit, const char *att, const char *def, bool noend);
 
 /* adjustments to hit probabilities due to strength */
 static int str_plus[] = {
@@ -84,7 +85,7 @@ fight(coord *mp, THING *weap, bool thrown)
 	if (thrown)
 	    thunk(weap, mname, terse);
 	else
-	    hit((char *) NULL, mname, terse);
+	    print_attack(true, (char *) NULL, mname, terse);
 	if (is_confusing(&player))
 	{
 	    did_hit = true;
@@ -104,7 +105,7 @@ fight(coord *mp, THING *weap, bool thrown)
 	if (thrown)
 	    bounce(weap, mname, terse);
 	else
-	    miss((char *) NULL, mname, terse);
+	    print_attack(false, (char *) NULL, mname, terse);
     return did_hit;
 }
 
@@ -139,7 +140,7 @@ attack(THING *mp)
 	{
 	    if (has_hit)
 		addmsg(".  ");
-	    hit(mname, (char *) NULL, false);
+	    print_attack(true, mname, (char *) NULL, false);
 	}
 	else
 	    if (has_hit)
@@ -275,7 +276,7 @@ attack(THING *mp)
 	    if (pstats.s_hpt <= 0)
 		death(mp->t_type);	/* Bye bye life ... */
 	}
-	miss(mname, (char *) NULL, false);
+	print_attack(false, mname, (char *) NULL, false);
     }
     if (fight_flush && !to_death)
 	flushinp();
@@ -436,12 +437,12 @@ thunk(THING *weap, const char *mname, bool noend)
 }
 
 /*
- * hit:
- *	Print a message to indicate a succesful hit
+ * print_attack:
+ *	Print a message to indicate a hit or miss
  */
 
-void
-hit(const char *er, const char *ee, bool noend)
+static void
+print_attack(bool hit, const char *att, const char *def, bool noend)
 {
   const char *h_names[] = {
       " hit "
@@ -453,58 +454,31 @@ hit(const char *er, const char *ee, bool noend)
     , " has injured "
     , " swings and hits "
   };
-  int i;
-
-  if (to_death)
-    return;
-
-  addmsg("%s", prname(er, true));
-
-  i = terse ? 0 : rnd(4);
-  if (er != NULL)
-    i += 4;
-
-  addmsg("%s", h_names[i]);
-
-  if (!terse)
-    addmsg("%s", prname(ee, false));
-
-  if (!noend)
-    endmsg();
-}
-
-/*
- * miss:
- *	Print a message to indicate a poor swing
- */
-void
-miss(const char *er, const char *ee, bool noend)
-{
   const char *m_names[] = {
-      " miss"
-    , " swing and miss"
-    , " barely miss"
-    , " don't hit"
-    , " misses"
-    , " swings and misses"
-    , " barely misses"
-    , " doesn't hit"
+      " miss "
+    , " swing and miss "
+    , " barely miss "
+    , " don't hit "
+    , " misses "
+    , " swings and misses "
+    , " barely misses "
+    , " doesn't hit "
   };
   int i;
 
   if (to_death)
     return;
 
-  addmsg("%s", prname(er, true));
+  addmsg("%s", prname(att, true));
 
   i = terse ? 0 : rnd(4);
-  if (er != NULL)
+  if (att != NULL)
     i += 4;
 
-  addmsg("%s", m_names[i]);
+  addmsg("%s", hit ? h_names[i] : m_names[i]);
 
   if (!terse)
-    addmsg(" %s", prname(ee, false));
+    addmsg("%s", prname(def, false));
 
   if (!noend)
     endmsg();
