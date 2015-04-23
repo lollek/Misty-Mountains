@@ -27,18 +27,6 @@ static void thunk(THING *weap, const char *mname, bool noend);
 static bool roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl);
 static void print_attack(bool hit, const char *att, const char *def, bool noend);
 
-/* adjustments to hit probabilities due to strength */
-static int str_plus[] = {
-  -7, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
-  1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3,
-};
-
-/* adjustments to damage done due to strength */
-static int add_dam[] = {
-  -7, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3,
-  3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6
-};
-
 /*
  * fight:
  *	The player attacks the monster.
@@ -320,81 +308,109 @@ swing(int at_lvl, int op_arm, int wplus)
     return at_lvl + wplus + rnd(20) >= op_arm;
 }
 
+/** add_player_attack_modifiers
+ * Add item bonuses to damage and to-hit */
+static void
+add_player_attack_modifiers(int *damage, int *hit)
+{
+  int i;
+  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  {
+    THING *ring = equipped_item(ring_slots[i]);
+    if (ring == NULL)
+      continue;
+
+    else if (ring->o_which == R_ADDDAM)
+      *damage += ring->o_arm;
+    else if (ring->o_which == R_ADDHIT)
+      *hit += ring->o_arm;
+  }
+}
+
 /** roll_em:
  * Roll several attacks */
 static bool
 roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 {
-    struct stats *att = &thatt->t_stats;
+  const int strbonus_to_hit[] = {
+    -7, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
+    1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3,
+  };
+  const int strbonus_to_dmg[] = {
+    -7, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3,
+    3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6
+  };
+  const struct stats *att = &thatt->t_stats;
+  const char *cp = weap == NULL ? att->s_dmg : weap->o_damage;
+  const bool attacker_is_player = thatt == &player;
+
+  int hplus = weap == NULL ? 0 : weap->o_hplus;
+  int dplus = weap == NULL ? 0 : weap->o_dplus;
+  bool did_hit = false;
+  char vf_damage[13];
+
+  /* Venus Flytraps have a different kind of dmg system */
+  if (thatt->o_type == 'F')
+  {
+    sprintf(vf_damage, "%dx1", vf_hit);
+    cp = vf_damage;
+  }
+
+  if (attacker_is_player)
+  {
+    add_player_attack_modifiers(&dplus, &hplus);
+
+    if (hurl)
+    {
+      THING *launcher = equipped_item(EQUIPMENT_RHAND);
+      if ((weap->o_flags & ISMISL) && launcher != NULL &&
+          launcher->o_which == weap->o_launch)
+      {
+        cp = weap->o_hurldmg;
+        hplus += launcher->o_hplus;
+        dplus += launcher->o_dplus;
+      }
+      else if (weap->o_launch < 0)
+        cp = weap->o_hurldmg;
+    }
+  }
+
+  /* If the creature being attacked is not running (alseep or held)
+   * then the attacker gets a plus four bonus to hit. */
+  if (!on(*thdef, ISRUN))
+    hplus += 4;
+
+  while (cp != NULL && *cp != '\0')
+  {
     struct stats *def = &thdef->t_stats;
-    const char *cp = weap == NULL ? att->s_dmg : weap->o_damage;
-    int hplus = weap == NULL ? 0 : weap->o_hplus;
-    int dplus = weap == NULL ? 0 : weap->o_dplus;
     int def_arm = get_ac(thdef);
-    bool is_player = thatt == &player;
-    bool did_hit = false;
-    char vf_damage[13];
+    int ndice;
+    int nsides;
 
-    /* Venus Flytraps have a different kind of dmg system */
-    if (thatt->o_type == 'F')
+    if (sscanf(cp, "%dx%d", &ndice, &nsides) == EOF)
+      break;
+
+    if (swing(att->s_lvl, def_arm, hplus + strbonus_to_hit[att->s_str]))
     {
-      sprintf(vf_damage, "%dx1", vf_hit);
-      cp = vf_damage;
+      int proll = roll(ndice, nsides);
+      int damage = dplus + proll + strbonus_to_dmg[att->s_str];
+
+      if (wizard && ndice + nsides > 0 && proll <= 0)
+        msg("Damage for %dx%d came out %d, "
+            "dplus = %d, add_dam = %d, def_arm = %d",
+            ndice, nsides, proll, dplus, strbonus_to_dmg[att->s_str], def_arm);
+
+      def->s_hpt -= max(0, damage);
+      did_hit = true;
     }
 
-    if (is_player)
-    {
-	int i;
-	for (i = 0; i < RING_SLOTS_SIZE; ++i)
-	{
-	    THING *ring = equipped_item(ring_slots[i]);
-	    if (ring == NULL)
-		continue;
-	    else if (ring->o_which == R_ADDDAM)
-		dplus += ring->o_arm;
-	    else if (ring->o_which == R_ADDHIT)
-		hplus += ring->o_arm;
-	}
+    if ((cp = strchr(cp, '/')) == NULL)
+      break;
 
-	if (hurl)
-	{
-	    THING *launcher = equipped_item(EQUIPMENT_RHAND);
-	    if ((weap->o_flags & ISMISL) && launcher != NULL &&
-	      launcher->o_which == weap->o_launch)
-	    {
-		cp = weap->o_hurldmg;
-		hplus += launcher->o_hplus;
-		dplus += launcher->o_dplus;
-	    }
-	    else if (weap->o_launch < 0)
-		cp = weap->o_hurldmg;
-	}
-    }
-    /* If the creature being attacked is not running (alseep or held)
-     * then the attacker gets a plus four bonus to hit. */
-    if (!on(*thdef, ISRUN))
-	hplus += 4;
-    while(cp != NULL && *cp != '\0')
-    {
-	int ndice;
-	int nsides;
-	if (sscanf(cp, "%dx%d", &ndice, &nsides) == EOF)
-	    break;
-	if (swing(att->s_lvl, def_arm, hplus + str_plus[att->s_str]))
-	{
-	    int proll = roll(ndice, nsides);
-	    int damage = dplus + proll + add_dam[att->s_str];
-	
-	    if (wizard && ndice + nsides > 0 && proll <= 0)
-		msg("Damage for %dx%d came out %d, dplus = %d, add_dam = %d, def_arm = %d", ndice, nsides, proll, dplus, add_dam[att->s_str], def_arm);
-	    def->s_hpt -= max(0, damage);
-	    did_hit = true;
-	}
-	if ((cp = strchr(cp, '/')) == NULL)
-	    break;
-	cp++;
-    }
-    return did_hit;
+    cp++;
+  }
+
+  return did_hit;
 }
 
 /*
