@@ -147,7 +147,7 @@ attack(THING *mp)
 	    {
 		case 'A':
 		    /* If an aquator hits, you can lose armor class */
-		    rust_players_armor();
+		    armor_rust();
 		when 'I':
 		    /* The ice monster freezes you */
 		    player.t_flags &= ~ISRUN;
@@ -383,7 +383,7 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
   while (cp != NULL && *cp != '\0')
   {
     struct stats *def = &thdef->t_stats;
-    int def_arm = get_ac(thdef);
+    int def_arm = armor_for_thing(thdef);
     int ndice;
     int nsides;
 

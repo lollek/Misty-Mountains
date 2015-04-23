@@ -227,7 +227,7 @@ do_command(char ch)
     case 'R': return ring_off();
     case 'S': return save_game();
     case 'T': return take_off_players_equipment(EQUIPMENT_ARMOR);
-    case 'W': return wear();
+    case 'W': return armor_command_wear();
     case 'Q': return maybe_quit();
 
     /* Ctrl case */

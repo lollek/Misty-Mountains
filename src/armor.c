@@ -35,7 +35,7 @@ int armor_ac(enum armor_t i) { return armors[i].ac; }
 int armor_value(enum armor_t i) { return armors[i].value; }
 
 int
-get_ac(THING *thing)
+armor_for_thing(THING *thing)
 {
   bool is_player = thing == &player;
   int ac = thing->t_stats.s_arm;
@@ -62,7 +62,7 @@ get_ac(THING *thing)
 }
 
 bool
-wear(void)
+armor_command_wear(void)
 {
   THING *obj = get_item("wear", ARMOR);
 
@@ -72,7 +72,7 @@ wear(void)
   if (obj->o_type != ARMOR)
   {
     msg("you can't wear that");
-    return wear();
+    return armor_command_wear();
   }
 
   if (equipped_item(EQUIPMENT_ARMOR) != NULL)
@@ -89,11 +89,11 @@ wear(void)
   return true;
 }
 
-char
-random_armor_type(void)
+enum armor_t
+armor_type_random(void)
 {
   int value = rnd(100);
-  int i;
+  enum armor_t i;
   for (i = 0; i < NARMORS; ++i)
   {
     if (value < armors[i].prob)
@@ -112,7 +112,7 @@ random_armor_type(void)
 }
 
 void
-rust_players_armor(void)
+armor_rust(void)
 {
   THING *arm = equipped_item(EQUIPMENT_ARMOR);
   if (arm == NULL || arm->o_type != ARMOR || arm->o_which == LEATHER ||

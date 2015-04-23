@@ -227,7 +227,7 @@ new_thing(void)
 		cur->o_hplus += rnd(3) + 1;
 	when 4:
 	    cur->o_type = ARMOR;
-	    cur->o_which = random_armor_type();
+	    cur->o_which = armor_type_random();
 	    cur->o_arm = armor_ac(cur->o_which);
 	    if ((r = rnd(100)) < 20)
 	    {

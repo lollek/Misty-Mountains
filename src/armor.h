@@ -31,10 +31,10 @@ void *__armors_ptr(void);
 const char *armor_name(enum armor_t armor);
 int armor_ac(enum armor_t armor);
 int armor_value(enum armor_t armor);
+enum armor_t armor_type_random(void);
 
-int get_ac(THING *thing); /* Returns the AC of a creature */
-char random_armor_type(void); /* Returns one of armor_t */
-void rust_players_armor(void); /* Rust players armor */
-bool wear(void);          /* Let player select something to wear */
+int armor_for_thing(THING *thing); /* Returns the AC of a creature */
+void armor_rust(void);             /* Rust players armor */
+bool armor_command_wear(void);     /* Let player select something to wear */
 
 #endif /* _ROGUE14_ARMOR_H_ */
