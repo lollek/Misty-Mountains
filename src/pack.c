@@ -307,7 +307,6 @@ get_item(const char *purpose, int type)
   if (ch == KEY_ESCAPE)
   {
     reset_last();
-    after = false;
     msg("");
     return NULL;
   }

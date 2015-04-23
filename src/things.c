@@ -161,12 +161,13 @@ drop(void)
 
     if (ch != FLOOR && ch != PASSAGE)
     {
-	after = false;
-	msg("there is something there already");
-	return false;
+      msg("there is something there already");
+      return false;
     }
+
     if ((obj = get_item("drop", 0)) == NULL)
-	return false;
+      return false;
+
     obj = leave_pack(obj, true, !(obj->o_type == POTION ||
           obj->o_type == SCROLL || obj->o_type == FOOD));
 
