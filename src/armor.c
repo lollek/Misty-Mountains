@@ -30,10 +30,9 @@ static struct armor_info_t armors[NARMORS] = {
 };
 void *__armors_ptr(void) { return armors; }
 
-const char * armor_get_name(enum armor_t i) { return armors[i].name; }
-int armor_get_ac(enum armor_t i) { return armors[i].ac; }
-int armor_get_prob(enum armor_t i) { return armors[i].prob; }
-int armor_get_value(enum armor_t i) { return armors[i].value; }
+const char * armor_name(enum armor_t i) { return armors[i].name; }
+int armor_ac(enum armor_t i) { return armors[i].ac; }
+int armor_value(enum armor_t i) { return armors[i].value; }
 
 int
 get_ac(THING *thing)

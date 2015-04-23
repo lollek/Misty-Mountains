@@ -228,7 +228,7 @@ create_obj(void)
 	}
 	else
 	{
-	    obj->o_arm = armor_get_ac(obj->o_which);
+	    obj->o_arm = armor_ac(obj->o_which);
 	    if (bless == '-')
 		obj->o_arm += rnd(3)+1;
 	    if (bless == '+')

@@ -202,7 +202,7 @@ init_player(void)
     obj = new_item();
     obj->o_type = ARMOR;
     obj->o_which = RING_MAIL;
-    obj->o_arm = armor_get_ac(RING_MAIL) - 1;
+    obj->o_arm = armor_ac(RING_MAIL) - 1;
     obj->o_flags |= ISKNOW;
     obj->o_count = 1;
     equip_item(obj);

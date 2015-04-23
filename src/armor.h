@@ -28,10 +28,9 @@ struct armor_info_t
 /* This function is only for init and debugging */
 void *__armors_ptr(void);
 
-const char *armor_get_name(enum armor_t armor);
-int armor_get_ac(enum armor_t armor);
-int armor_get_prob(enum armor_t armor);
-int armor_get_value(enum armor_t armor);
+const char *armor_name(enum armor_t armor);
+int armor_ac(enum armor_t armor);
+int armor_value(enum armor_t armor);
 
 int get_ac(THING *thing); /* Returns the AC of a creature */
 char random_armor_type(void); /* Returns one of armor_t */
