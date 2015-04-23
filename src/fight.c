@@ -22,8 +22,6 @@
 #include "chase.h"
 #include "pack.h"
 
-#define	EQSTR(a, b)	(strcmp(a, b) == 0)
-
 static const char *prname(const char *mname, bool upper);
 static void thunk(THING *weap, const char *mname, bool noend);
 static bool roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl);
