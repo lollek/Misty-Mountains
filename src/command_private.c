@@ -80,7 +80,7 @@ fight_monster(bool fight_to_death)
 bool
 give_item_nickname(void)
 {
-  THING *obj = get_item("call", CALLABLE);
+  THING *obj = get_item("rename", RENAMEABLE);
   char **guess;
   char *elsewise = NULL;
   bool already_known = false;

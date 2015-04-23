@@ -96,7 +96,7 @@ extern enum rogue_game_t
 #define STICK		'/'
 
 /* TODO: Make sure these don't bug as chars are usually unsigned */
-#define CALLABLE	-1 /* This means that we can rename it */
+#define RENAMEABLE	-1 /* This means that we can rename it */
 #define R_OR_S		-2 /* This means ring, wand of staff */
 
 /* Various constants */

@@ -372,7 +372,7 @@ items_in_pack_of_type(int type)
 
   for (list = player.t_pack; list != NULL; list = list->l_next)
     if (!type || type == list->o_type ||
-        (type == CALLABLE && (list->o_type != FOOD && list->o_type != AMULET))||
+        (type == RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))||
         (type == R_OR_S && (list->o_type == RING || list->o_type == STICK)))
       ++num;
   return num;
@@ -433,7 +433,7 @@ print_inventory(int type)
   for (list = player.t_pack; list != NULL; list = list->l_next)
   {
     if (!type || type == list->o_type ||
-        (type == CALLABLE && (list->o_type != FOOD && list->o_type != AMULET))||
+        (type == RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))||
         (type == R_OR_S && (list->o_type == RING || list->o_type == STICK)))
     {
       /* Print out the item and move to next row */
