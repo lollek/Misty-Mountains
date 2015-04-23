@@ -28,42 +28,16 @@ static const char *prname(const char *mname, bool upper);
 static void thunk(THING *weap, const char *mname, bool noend);
 static bool roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl);
 
-char *h_names[] = {		/* strings for hitting */
-	" scored an excellent hit on ",
-	" hit ",
-	" have injured ",
-	" swing and hit ",
-	" scored an excellent hit on ",
-	" hit ",
-	" has injured ",
-	" swings and hits "
-};
-
-char *m_names[] = {		/* strings for missing */
-	" miss",
-	" swing and miss",
-	" barely miss",
-	" don't hit",
-	" misses",
-	" swings and misses",
-	" barely misses",
-	" doesn't hit",
-};
-
-/*
- * adjustments to hit probabilities due to strength
- */
+/* adjustments to hit probabilities due to strength */
 static int str_plus[] = {
-    -7, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
-    1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3,
+  -7, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
+  1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3,
 };
 
-/*
- * adjustments to damage done due to strength
- */
+/* adjustments to damage done due to strength */
 static int add_dam[] = {
-    -7, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3,
-    3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6
+  -7, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3,
+  3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6
 };
 
 /*
@@ -469,27 +443,34 @@ thunk(THING *weap, const char *mname, bool noend)
 void
 hit(const char *er, const char *ee, bool noend)
 {
-    int i;
-    char *s;
-    extern char *h_names[];
+  const char *h_names[] = {
+      " hit "
+    , " scored an excellent hit on "
+    , " have injured "
+    , " swing and hit "
+    , " hits "
+    , " scored an excellent hit on "
+    , " has injured "
+    , " swings and hits "
+  };
+  int i;
 
-    if (to_death)
-	return;
-    addmsg(prname(er, true));
-    if (terse)
-	s = " hit";
-    else
-    {
-	i = rnd(4);
-	if (er != NULL)
-	    i += 4;
-	s = h_names[i];
-    }
-    addmsg(s);
-    if (!terse)
-	addmsg(prname(ee, false));
-    if (!noend)
-	endmsg();
+  if (to_death)
+    return;
+
+  addmsg("%s", prname(er, true));
+
+  i = terse ? 0 : rnd(4);
+  if (er != NULL)
+    i += 4;
+
+  addmsg("%s", h_names[i]);
+
+  if (!terse)
+    addmsg("%s", prname(ee, false));
+
+  if (!noend)
+    endmsg();
 }
 
 /*
@@ -499,23 +480,34 @@ hit(const char *er, const char *ee, bool noend)
 void
 miss(const char *er, const char *ee, bool noend)
 {
-    int i;
-    extern char *m_names[];
+  const char *m_names[] = {
+      " miss"
+    , " swing and miss"
+    , " barely miss"
+    , " don't hit"
+    , " misses"
+    , " swings and misses"
+    , " barely misses"
+    , " doesn't hit"
+  };
+  int i;
 
-    if (to_death)
-	return;
-    addmsg(prname(er, true));
-    if (terse)
-	i = 0;
-    else
-	i = rnd(4);
-    if (er != NULL)
-	i += 4;
-    addmsg(m_names[i]);
-    if (!terse)
-	addmsg(" %s", prname(ee, false));
-    if (!noend)
-	endmsg();
+  if (to_death)
+    return;
+
+  addmsg("%s", prname(er, true));
+
+  i = terse ? 0 : rnd(4);
+  if (er != NULL)
+    i += 4;
+
+  addmsg("%s", m_names[i]);
+
+  if (!terse)
+    addmsg(" %s", prname(ee, false));
+
+  if (!noend)
+    endmsg();
 }
 
 /*
