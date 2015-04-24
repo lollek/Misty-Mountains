@@ -26,7 +26,7 @@
 #include "command_private.h"
 
 void
-stop_counting(bool stop_fighting)
+command_stop(bool stop_fighting)
 {
   player.t_flags &= ~ISRUN;
   count = 0;
@@ -142,7 +142,7 @@ command(void)
         last_dir = '\0';
         last_pick = NULL;
       }
-      after = do_command(ch);
+      after = command_do(ch);
 
       /* turn off flags if no longer needed */
       if (!running)
@@ -170,7 +170,7 @@ command(void)
       if (obj == NULL)
         continue;
       else if (obj->o_which == R_SEARCH)
-        search();
+        command_search();
       else if (obj->o_which == R_TELEPORT && rnd(50) == 0)
         teleport(&player, NULL);
     }
@@ -180,38 +180,38 @@ command(void)
 }
 
 bool
-do_command(char ch)
+command_do(char ch)
 {
   switch (ch)
   {
     /* Funny symbols */
     case KEY_SPACE: return false;
-    case KEY_ESCAPE: stop_counting(true); return false;
+    case KEY_ESCAPE: command_stop(true); return false;
     case '.': return true;
-    case ',': return pick_up_item_from_ground();
-    case '/': return identify_a_character();
-    case '>': return change_dungeon_level(ch);
-    case '<': return change_dungeon_level(ch);
-    case '?': return print_help();
+    case ',': return command_pick_up();
+    case '/': return command_identify_character();
+    case '>': return command_use_stairs(ch);
+    case '<': return command_use_stairs(ch);
+    case '?': return command_help();
     case '!': msg("Shell has been removed, use ^Z instead"); return false;
-    case '^': return identify_trap();
-    case '+': return toggle_wizard_mode();
+    case '^': return command_identify_trap();
+    case '+': return command_toggle_wizard();
 
     /* Lower case */
     case 'h': case 'j': case 'k': case 'l':
     case 'y': case 'u': case 'b': case 'n':
       return do_move(ch);
-    case 'a': return repeat_last_command();
-    case 'c': return give_item_nickname();
+    case 'a': return command_again();
+    case 'c': return command_name_item();
     case 'd': return drop();
     case 'e': return eat();
-    case 'f': return fight_monster(false);
-    case 'i': return show_players_inventory();
-    case 'm': move_on = true; return get_dir() ? do_command(dir_ch) : false;
+    case 'f': return command_attack(false);
+    case 'i': return command_show_inventory();
+    case 'm': move_on = true; return get_dir() ? command_do(dir_ch) : false;
     case 'o': return option();
     case 'q': return quaff();
     case 'r': read_scroll(); return true;
-    case 's': return search();
+    case 's': return command_search();
     case 't': return get_dir() ? missile(delta.y, delta.x) : false;
     case 'w': return wield();
     case 'z': return get_dir() ? do_zap() : false;
@@ -221,14 +221,14 @@ do_command(char ch)
     case 'Y': case 'U': case 'B': case 'N':
       return do_run(ch, false);
     case 'D': discovered(); return false;
-    case 'F': return fight_monster(true);
+    case 'F': return command_attack(true);
     case 'I': return print_equipment();
     case 'P': return ring_on();
     case 'R': return ring_off();
     case 'S': return save_game();
-    case 'T': return take_off_players_equipment(EQUIPMENT_ARMOR);
+    case 'T': return command_take_off(EQUIPMENT_ARMOR);
     case 'W': return armor_command_wear();
-    case 'Q': return maybe_quit();
+    case 'Q': return command_quit();
 
     /* Ctrl case */
     case CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
@@ -240,7 +240,7 @@ do_command(char ch)
 
     default:
       if (wizard)
-        return do_wizard_command(ch);
+        return command_wizard_do(ch);
       else
       {
         char buf[MAXSTR];
@@ -255,7 +255,7 @@ do_command(char ch)
 }
 
 bool
-do_wizard_command(char ch)
+command_wizard_do(char ch)
 {
   after = false;
 

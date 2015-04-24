@@ -131,7 +131,7 @@ quit(int sig)
     msg("");
     move(oy, ox);
     refresh();
-    stop_counting(true);
+    command_stop(true);
   }
 }
 

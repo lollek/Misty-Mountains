@@ -1,6 +1,7 @@
-#include "ctype.h"
-#include "string.h"
-#include "stdlib.h"
+#include <ctype.h>
+#include <string.h>
+#include <stdlib.h>
+#include <assert.h>
 
 #include "rogue.h"
 #include "status_effects.h"
@@ -15,8 +16,10 @@
 #include "command_private.h"
 
 bool
-change_dungeon_level(char up_or_down)
+command_use_stairs(char up_or_down)
 {
+  assert (up_or_down == '>' || up_or_down == '<');
+
   if (is_levitating(&player))
     msg("You can't. You're floating off the ground!");
 
@@ -47,7 +50,7 @@ change_dungeon_level(char up_or_down)
 }
 
 bool
-fight_monster(bool fight_to_death)
+command_attack(bool fight_to_death)
 {
   THING *mp;
 
@@ -71,14 +74,14 @@ fight_monster(bool fight_to_death)
     max_hit = 0;
     mp->t_flags |= ISTARGET;
     runch = dir_ch;
-    return do_command(dir_ch);
+    return command_do(dir_ch);
   }
   else
     return true;
 }
 
 bool
-give_item_nickname(void)
+command_name_item(void)
 {
   THING *obj = get_item("rename", RENAMEABLE);
   char **guess;
@@ -155,7 +158,7 @@ give_item_nickname(void)
 }
 
 bool
-identify_a_character(void)
+command_identify_character(void)
 {
   int ch;
   const struct h_list ident_list[] = {
@@ -212,7 +215,7 @@ identify_a_character(void)
 }
 
 bool
-identify_trap(void)
+command_identify_trap(void)
 {
   if (get_dir())
   {
@@ -236,14 +239,14 @@ identify_trap(void)
 }
 
 bool
-maybe_quit(void)
+command_quit(void)
 {
   quit(0);
   return false;
 }
 
 bool
-pick_up_item_from_ground(void)
+command_pick_up(void)
 {
   const THING *obj = NULL;
 
@@ -264,7 +267,7 @@ pick_up_item_from_ground(void)
 }
 
 bool
-print_help(void)
+command_help(void)
 {
   const struct h_list helpstr[] = {
     {'?',	"	prints help",				true},
@@ -391,18 +394,18 @@ print_help(void)
 }
 
 bool
-repeat_last_command(void)
+command_again(void)
 {
   if (last_comm != '\0')
   {
     again = true;
-    return do_command(last_comm);
+    return command_do(last_comm);
   }
   return false;
 }
 
 bool
-search(void)
+command_search(void)
 {
   int y, x;
   int probinc = (is_hallucinating(&player) ? 3:0) + is_blind(&player) ? 2:0;
@@ -465,7 +468,7 @@ search(void)
 }
 
 bool
-show_players_inventory(void)
+command_show_inventory(void)
 {
   if (players_inventory_is_empty())
   {
@@ -481,7 +484,7 @@ show_players_inventory(void)
 }
 
 bool
-take_off_players_equipment(enum equipment_pos pos)
+command_take_off(enum equipment_pos pos)
 {
   if (equipped_item(pos) == NULL)
     return false;
@@ -490,7 +493,7 @@ take_off_players_equipment(enum equipment_pos pos)
 }
 
 bool
-toggle_wizard_mode(void)
+command_toggle_wizard(void)
 {
   /* TODO: Add a query here, so you always can become a wiz */
   if (potential_wizard)

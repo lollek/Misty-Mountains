@@ -43,7 +43,7 @@ fight(coord *mp, THING *weap, bool thrown)
 	msg("Fight what @ %d,%d", mp->y, mp->x);
 
     /* Since we are fighting, things are not quiet so no healing takes place */
-    stop_counting(false);
+    command_stop(false);
     quiet = 0;
     runto(mp);
 
@@ -105,7 +105,7 @@ attack(THING *mp)
 
     /* Since this is an attack, stop running and any healing that was
      * going on at the time */
-    stop_counting(false);
+    command_stop(false);
     quiet = 0;
     if (to_death && !on(*mp, ISTARGET))
     {
@@ -266,7 +266,7 @@ attack(THING *mp)
     }
     if (fight_flush && !to_death)
 	flushinp();
-    stop_counting(false);
+    command_stop(false);
     status();
     return(mp == NULL ? -1 : 0);
 }

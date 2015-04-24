@@ -51,7 +51,7 @@ doctor(void)
   if (pstats.s_hpt >= max_hp)
   {
     pstats.s_hpt = max_hp;
-    stop_counting(false);
+    command_stop(false);
   }
 }
 
@@ -141,7 +141,7 @@ stomach(void)
 	}
     }
     if (hungry_state != orig_hungry)
-	stop_counting(true);
+	command_stop(true);
 }
 
 /*

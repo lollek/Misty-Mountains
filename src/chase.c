@@ -137,7 +137,7 @@ over:
 	    if (has_hit)
 		endmsg();
 	    fire_bolt(&th->t_pos, &delta, "flame");
-	    stop_counting(true);
+	    command_stop(true);
 	    quiet = 0;
 	    if (to_death && !on(*th, ISTARGET))
 	    {

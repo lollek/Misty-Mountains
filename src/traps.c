@@ -32,7 +32,7 @@ be_trapped(THING *target, coord *tc)
   {
     pp->p_ch = TRAP;
     pp->p_flags |= F_SEEN;
-    stop_counting(true);
+    command_stop(true);
   }
 
   switch (tr)

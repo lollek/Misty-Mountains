@@ -387,7 +387,7 @@ teleport(THING *thing, coord *target)
       vf_hit = 0;
     }
     no_move = 0;
-    stop_counting(true);
+    command_stop(true);
     flushinp();
     msg("suddenly you're somewhere else");
   }

@@ -35,6 +35,7 @@ $(PROGRAM): $(OBJS)
 clean:
 	$(RM) $(OBJS) $(PROGRAM) $(DOCS)
 
+final: CFLAGS += NDEBUG
 final: clean $(PROGRAM)
 
 doc.nroff:
