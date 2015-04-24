@@ -570,14 +570,6 @@ THING	*find_obj(int y, int x);
 THING	*new_item(void);
 THING	*new_thing(void);
 
-#define MAXDAEMONS 20
-
-extern struct delayed_action {
-    int d_type;
-    void (*d_func)();
-    int d_arg;
-    int d_time;
-} d_list[MAXDAEMONS];
 
 typedef struct {
     char	*st_name;

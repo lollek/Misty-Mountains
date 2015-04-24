@@ -1,6 +1,9 @@
 #ifndef _ROGUE14_IO_H_
 #define _ROGUE14_IO_H_
 
+#include <stdbool.h>
+#include <curses.h>
+
 const char *get_homedir(void); /* returns e.g. /home/user/ */
 
 bool step_ok(int ch);  /* True of it's OK to step on ch */
