@@ -455,15 +455,15 @@ rs_write_daemons(FILE *savef, const struct delayed_action *d_list, int count)
   for (i = 0; i < count; i++)
   {
     int func;
-    if (d_list[i].d_func == rollwand)
+    if (d_list[i].d_func == daemon_rollwand)
       func = 1;
     else if (d_list[i].d_func == daemon_doctor)
       func = 2;
-    else if (d_list[i].d_func == stomach)
+    else if (d_list[i].d_func == daemon_digest_food)
       func = 3;
     else if (d_list[i].d_func == runners)
       func = 4;
-    else if (d_list[i].d_func == swander)
+    else if (d_list[i].d_func == daemon_start_wanderer)
       func = 5;
     else if (d_list[i].d_func == remove_hasted)
       func = 6;
@@ -512,11 +512,11 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
 
     switch(func)
     {
-      case 1:    d_list[i].d_func = rollwand;
+      case 1:    d_list[i].d_func = daemon_rollwand;
       when 2:    d_list[i].d_func = daemon_doctor;
-      when 3:    d_list[i].d_func = stomach;
+      when 3:    d_list[i].d_func = daemon_digest_food;
       when 4:    d_list[i].d_func = runners;
-      when 5:    d_list[i].d_func = swander;
+      when 5:    d_list[i].d_func = daemon_start_wanderer;
       when 6:    d_list[i].d_func = remove_hasted;
       when 7:    d_list[i].d_func = remove_confusion;
       when 8:    d_list[i].d_func = daemon_remove_true_seeing;
@@ -1138,7 +1138,7 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_obj_info(savef, scr_info,  NSCROLLS))
   rs_assert(rs_write_daemons(savef, __daemons_ptr(), 20))
   rs_assert(rs_write_int(savef,total))
-  rs_assert(rs_write_int(savef,between))
+  rs_assert(rs_write_int(savef, temp_i)) /* UNUSED */
   rs_assert(rs_write_coord(savef, hero)) /* UNUSED */
   rs_assert(rs_write_int(savef, group))
   rs_assert(rs_write_window(savef,stdscr))
@@ -1194,7 +1194,7 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_obj_info(inf, scr_info,  NSCROLLS))
   rs_assert(rs_read_daemons(inf, __daemons_ptr(), 20))
   rs_assert(rs_read_int(inf,&total))
-  rs_assert(rs_read_int(inf,&between))
+  rs_assert(rs_read_int(inf, &unused_coord.x)) /* UNUSED */
   rs_assert(rs_read_coord(inf, &unused_coord)) /* UNUSED */
   rs_assert(rs_read_int(inf,&group))
   rs_assert(rs_read_window(inf,stdscr))

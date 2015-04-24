@@ -184,7 +184,7 @@ become_tripping(bool permanent)
   {
     if (on(player, SEEMONST))
       turn_see(false);
-    daemon_start(visuals, 0, BEFORE);
+    daemon_start(daemon_change_visuals, 0, BEFORE);
     set_hallucinating(&player, true);
     if (!permanent)
       daemon_start_fuse(remove_tripping, 0, SEEDURATION, AFTER);
@@ -201,7 +201,7 @@ remove_tripping(void)
   if (!is_hallucinating(&player))
     return;
 
-  daemon_kill(visuals);
+  daemon_kill(daemon_change_visuals);
   set_hallucinating(&player, false);
 
   if (is_blind(&player))

@@ -551,10 +551,6 @@ const char	*vowelstr(const char *str);
 
 void leave(int);
 void quit(int);
-void rollwand(void);
-void stomach(void);
-void swander(void);
-void visuals(void);
 
 coord	*rndmove(THING *who);
 
@@ -569,7 +565,6 @@ typedef struct {
 } STONE;
 
 extern int      total;
-extern int      between;
 extern int      group;
 extern char     *rainbow[];
 extern int      cNCOLORS;
