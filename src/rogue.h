@@ -570,7 +570,6 @@ typedef struct {
     int		st_value;
 } STONE;
 
-extern int      total;
 extern int      group;
 extern STONE    stones[];
 extern int      cNSTONES;

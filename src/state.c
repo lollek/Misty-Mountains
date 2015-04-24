@@ -1137,7 +1137,7 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_obj_info(savef, ring_info,  MAXRINGS))
   rs_assert(rs_write_obj_info(savef, scr_info,  NSCROLLS))
   rs_assert(rs_write_daemons(savef, __daemons_ptr(), 20))
-  rs_assert(rs_write_int(savef,total))
+  rs_assert(rs_write_int(savef, temp_i)) /* UNUSED */
   rs_assert(rs_write_int(savef, temp_i)) /* UNUSED */
   rs_assert(rs_write_coord(savef, hero)) /* UNUSED */
   rs_assert(rs_write_int(savef, group))
@@ -1193,7 +1193,7 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_obj_info(inf, ring_info,  MAXRINGS))
   rs_assert(rs_read_obj_info(inf, scr_info,  NSCROLLS))
   rs_assert(rs_read_daemons(inf, __daemons_ptr(), 20))
-  rs_assert(rs_read_int(inf,&total))
+  rs_assert(rs_read_int(inf,&unused_coord.x))  /* UNUSED */
   rs_assert(rs_read_int(inf, &unused_coord.x)) /* UNUSED */
   rs_assert(rs_read_coord(inf, &unused_coord)) /* UNUSED */
   rs_assert(rs_read_int(inf,&group))

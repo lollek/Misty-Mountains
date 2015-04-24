@@ -15,93 +15,75 @@
 #include "rogue.h"
 #include "io.h"
 
-int total = 0;			/* total dynamic memory bytes */
-
-/*
- * detach:
- *	takes an item out of whatever linked list it might be in
- */
-
+/** detach:
+ * takes an item out of whatever linked list it might be in */
 void
 _detach(THING **list, THING *item)
 {
-    if (*list == item)
-	*list = item->l_next;
+  if (*list == item)
+    *list = item->l_next;
 
-    if (item->l_prev != NULL)
-	item->l_prev->l_next = item->l_next;
+  if (item->l_prev != NULL)
+    item->l_prev->l_next = item->l_next;
 
-    if (item->l_next != NULL)
-	item->l_next->l_prev = item->l_prev;
+  if (item->l_next != NULL)
+    item->l_next->l_prev = item->l_prev;
 
-    item->l_next = NULL;
-    item->l_prev = NULL;
+  item->l_next = NULL;
+  item->l_prev = NULL;
 }
 
-/*
- * _attach:
- *	add an item to the head of a list
- */
-
+/** _attach:
+ * add an item to the head of a list */
 void
 _attach(THING **list, THING *item)
 {
-    if (*list != NULL)
-    {
-	item->l_next = *list;
-	(*list)->l_prev = item;
-	item->l_prev = NULL;
-    }
-    else
-    {
-	item->l_next = NULL;
-	item->l_prev = NULL;
-    }
-    *list = item;
+  if (*list != NULL)
+  {
+    item->l_next = *list;
+    (*list)->l_prev = item;
+    item->l_prev = NULL;
+  }
+  else
+  {
+    item->l_next = NULL;
+    item->l_prev = NULL;
+  }
+  *list = item;
 }
 
-/*
- * _free_list:
- *	Throw the whole blamed thing away
- */
-
+/** _free_list:
+ * Throw the whole blamed thing away */
 void
 _free_list(THING **ptr)
 {
-    THING *item;
+  THING *item;
 
-    while (*ptr != NULL)
-    {
-	item = *ptr;
-	*ptr = item->l_next;
-	discard(item);
-    }
+  while (*ptr != NULL)
+  {
+    item = *ptr;
+    *ptr = item->l_next;
+    discard(item);
+  }
 }
 
-/*
- * discard:
- *	Free up an item
- */
-
+/** discard:
+ * Free up an item */
 void
 discard(THING *item)
 {
-    total--;
-    free((char *) item);
+  free((char *) item);
 }
 
-/*
- * new_item
- *	Get a new item with a specified size
- */
+/** new_item
+ * Get a new item with a specified size */
 THING *
 new_item(void)
 {
-    THING *item = calloc(1, sizeof *item);
+  THING *item = calloc(1, sizeof *item);
 
-    assert_or_die(item != NULL, "ran out of memory!");
-    total++;
-    item->l_next = NULL;
-    item->l_prev = NULL;
-    return item;
+  assert_or_die(item != NULL, "ran out of memory!");
+  item->l_next = NULL;
+  item->l_prev = NULL;
+  return item;
 }
