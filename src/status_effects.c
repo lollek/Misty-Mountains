@@ -6,6 +6,7 @@
 #include "chase.h"
 #include "command.h"
 #include "pack.h"
+#include "daemons.h"
 
 #include "status_effects.h"
 
@@ -22,12 +23,12 @@ set_true_seeing(THING *thing, bool status, bool permanent)
   if (status)
   {
     if (is_true_seeing(&player))
-      lengthen(daemon_remove_true_seeing, SEEDURATION);
+      daemon_lengthen_fuse(daemon_remove_true_seeing, SEEDURATION);
     else
     {
       player.t_flags |= CANSEE;
       if (!permanent)
-        fuse(daemon_remove_true_seeing, 0, SEEDURATION, AFTER);
+        daemon_start_fuse(daemon_remove_true_seeing, 0, SEEDURATION, AFTER);
       look(false);
     }
     msg("everything suddenly looks sharper");
@@ -111,12 +112,12 @@ void
 become_confused(bool permanent)
 {
   if (is_confused(&player))
-    lengthen(remove_confusion, HUHDURATION);
+    daemon_lengthen_fuse(remove_confusion, HUHDURATION);
   else
   {
     set_confused(&player, true);
     if (!permanent)
-      fuse(remove_confusion, 0, HUHDURATION, AFTER);
+      daemon_start_fuse(remove_confusion, 0, HUHDURATION, AFTER);
     look(false);
   }
   msg(is_hallucinating(&player)
@@ -167,7 +168,7 @@ become_monster_seeing(bool permanent)
 {
   player.t_flags |= SEEMONST;
   if (!permanent)
-    fuse((void(*)())turn_see, true, MFINDDURATION, AFTER);
+    daemon_start_fuse((void(*)())turn_see, true, MFINDDURATION, AFTER);
   /* FIXME: Make sure that this work */
   if (!turn_see(false))
     msg("you have a %s feeling for a moment, then it passes",
@@ -178,15 +179,15 @@ void
 become_tripping(bool permanent)
 {
   if (is_hallucinating(&player))
-    lengthen(remove_tripping, SEEDURATION);
+    daemon_lengthen_fuse(remove_tripping, SEEDURATION);
   else
   {
     if (on(player, SEEMONST))
       turn_see(false);
-    start_daemon(visuals, 0, BEFORE);
+    daemon_start(visuals, 0, BEFORE);
     set_hallucinating(&player, true);
     if (!permanent)
-      fuse(remove_tripping, 0, SEEDURATION, AFTER);
+      daemon_start_fuse(remove_tripping, 0, SEEDURATION, AFTER);
     look(false);
   }
   msg("Oh, wow!  Everything seems so cosmic!");
@@ -200,7 +201,7 @@ remove_tripping(void)
   if (!is_hallucinating(&player))
     return;
 
-  kill_daemon(visuals);
+  daemon_kill(visuals);
   set_hallucinating(&player, false);
 
   if (is_blind(&player))
@@ -234,7 +235,7 @@ become_hasted(bool permanent)
   {
     no_command += rnd(8);
     player.t_flags &= ~(ISRUN|ISHASTE);
-    extinguish(remove_hasted);
+    daemon_extinguish_fuse(remove_hasted);
     msg("you faint from exhaustion");
     return;
   }
@@ -242,7 +243,7 @@ become_hasted(bool permanent)
   {
     player.t_flags |= ISHASTE;
     if (!permanent)
-      fuse(remove_hasted, 0, HASTEDURATION, AFTER);
+      daemon_start_fuse(remove_hasted, 0, HASTEDURATION, AFTER);
     msg("you feel yourself moving much faster");
   }
 }
@@ -257,12 +258,12 @@ remove_hasted(void)
 void become_blind(bool permanent)
 {
   if (is_blind(&player))
-    lengthen(cure_blindness, SEEDURATION);
+    daemon_lengthen_fuse(cure_blindness, SEEDURATION);
   else
   {
     set_blind(&player, true);
     if (!permanent)
-      fuse(cure_blindness, 0, SEEDURATION, AFTER);
+      daemon_start_fuse(cure_blindness, 0, SEEDURATION, AFTER);
     look(false);
   }
   msg(is_hallucinating(&player)
@@ -275,7 +276,7 @@ cure_blindness(void)
 {
   if (is_blind(&player))
   {
-    extinguish(cure_blindness);
+    daemon_extinguish_fuse(cure_blindness);
     set_blind(&player, false);
     if (!(proom->r_flags & ISGONE))
       enter_room(&hero);
@@ -289,12 +290,12 @@ void
 become_levitating(bool permanent)
 {
   if (is_levitating(&player))
-    lengthen(remove_levitating, LEVITDUR);
+    daemon_lengthen_fuse(remove_levitating, LEVITDUR);
   else
   {
     set_levitating(&player, true);
     if (!permanent)
-      fuse(remove_levitating, 0, LEVITDUR, AFTER);
+      daemon_start_fuse(remove_levitating, 0, LEVITDUR, AFTER);
     look(false);
   }
   msg(is_hallucinating(&player)

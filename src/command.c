@@ -22,6 +22,7 @@
 #include "io.h"
 #include "armor.h"
 #include "pack.h"
+#include "daemons.h"
 
 #include "command_private.h"
 
@@ -45,8 +46,8 @@ command(void)
   int player_moves = on(player, ISHASTE) ? 2 : 1;
 
   /* Let the daemons start up */
-  do_daemons(BEFORE);
-  do_fuses(BEFORE);
+  daemon_run_all(BEFORE);
+  daemon_run_fuses(BEFORE);
   for (; player_moves > 0; --player_moves)
   {
     /* these are illegal things for the player to be, so if any are
@@ -158,8 +159,8 @@ command(void)
       player_moves++;
   }
 
-  do_daemons(AFTER);
-  do_fuses(AFTER);
+  daemon_run_all(AFTER);
+  daemon_run_fuses(AFTER);
 
   /* Do ring abilities */
   {

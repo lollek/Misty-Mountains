@@ -57,10 +57,10 @@ daemon_find_slot(void (*func)())
   return NULL;
 }
 
-/** start_daemon:
+/** daemon_start:
  * Start a daemon, takes a function. */
 void
-start_daemon(void (*func)(), int arg, int type)
+daemon_start(void (*func)(), int arg, int type)
 {
   struct delayed_action *dev = daemon_empty_slot();
   if (dev != NULL)
@@ -72,21 +72,21 @@ start_daemon(void (*func)(), int arg, int type)
   }
 }
 
-/** kill_daemon:
+/** daemon_kill:
  * Remove a daemon from the list */
 void
-kill_daemon(void (*func)())
+daemon_kill(void (*func)())
 {
   struct delayed_action *dev = daemon_find_slot(func);
   if (dev != NULL)
     dev->d_type = EMPTY;
 }
 
-/** do_daemons:
+/** daemon_run_all:
  * Run all the daemons that are active with the current flag,
  * passing the argument to the function. */
 void
-do_daemons(int flag)
+daemon_run_all(int flag)
 {
   struct delayed_action *dev;
 
@@ -98,7 +98,7 @@ do_daemons(int flag)
 /** fuse:
  * Start a fuse to go off in a certain number of turns */
 void
-fuse(void (*func)(), int arg, int time, int type)
+daemon_start_fuse(void (*func)(), int arg, int time, int type)
 {
   struct delayed_action *wire = daemon_empty_slot();
   if (wire != NULL)
@@ -110,30 +110,30 @@ fuse(void (*func)(), int arg, int time, int type)
   }
 }
 
-/** lengthen:
+/** daemon_lengthen_fuse:
  * Increase the time until a fuse goes off */
 void
-lengthen(void (*func)(), int xtime)
+daemon_lengthen_fuse(void (*func)(), int xtime)
 {
   struct delayed_action *wire = daemon_find_slot(func);
   if (wire != NULL)
     wire->d_time += xtime;
 }
 
-/** extinguish:
+/** daemon_extinguish_fuse:
  * Put out a fuse */
 void
-extinguish(void (*func)())
+daemon_extinguish_fuse(void (*func)())
 {
   struct delayed_action *wire = daemon_find_slot(func);
   if (wire != NULL)
     wire->d_type = EMPTY;
 }
 
-/** do_fuses:
+/** daemon_run_fuses:
  * Decrement counters and start needed fuses */
 void
-do_fuses(int flag)
+daemon_run_fuses(int flag)
 {
   struct delayed_action *wire;
 

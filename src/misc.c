@@ -21,6 +21,7 @@
 #include "chase.h"
 #include "armor.h"
 #include "pack.h"
+#include "daemons.h"
 
 static int trip_ch(int y, int x, int ch);
 
@@ -610,9 +611,9 @@ waste_time(int rounds)
 {
   while (rounds--)
   {
-    do_daemons(BEFORE);
-    do_fuses(BEFORE);
-    do_daemons(AFTER);
-    do_fuses(AFTER);
+    daemon_run_all(BEFORE);
+    daemon_run_fuses(BEFORE);
+    daemon_run_all(AFTER);
+    daemon_run_fuses(AFTER);
   }
 }

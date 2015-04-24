@@ -26,6 +26,7 @@
 #include "chase.h"
 #include "armor.h"
 #include "pack.h"
+#include "daemons.h"
 
 
 static void sumprobs(char ch);
@@ -64,10 +65,10 @@ init_new_game(void)
   new_level();                          /* Draw current level */
 
   /* Start up daemons and fuses */
-  start_daemon(runners, 0, AFTER);
-  start_daemon(doctor, 0, AFTER);
-  fuse(swander, 0, WANDERTIME, AFTER);
-  start_daemon(stomach, 0, AFTER);
+  daemon_start(runners, 0, AFTER);
+  daemon_start(doctor, 0, AFTER);
+  daemon_start_fuse(swander, 0, WANDERTIME, AFTER);
+  daemon_start(stomach, 0, AFTER);
 
   return true;
 }

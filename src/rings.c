@@ -14,6 +14,7 @@
 #include "status_effects.h"
 #include "io.h"
 #include "pack.h"
+#include "daemons.h"
 
 bool
 player_has_ring_with_ability(int ability)
@@ -95,7 +96,7 @@ ring_off(void)
     case R_ADDSTR: chg_str(-obj->o_arm);
     when R_SEEINVIS:
       set_true_seeing(&player, false, false);
-      extinguish(daemon_remove_true_seeing);
+      daemon_extinguish_fuse(daemon_remove_true_seeing);
   }
 
   msg("was wearing %s", inv_name(obj, true));

@@ -16,6 +16,7 @@
 #include "io.h"
 #include "chase.h"
 #include "pack.h"
+#include "daemons.h"
 
 /** doctor:
  * A healing daemon that restors hit points after rest */
@@ -62,7 +63,7 @@ doctor(void)
 void
 swander(void)
 {
-    start_daemon(rollwand, 0, BEFORE);
+    daemon_start(rollwand, 0, BEFORE);
 }
 
 /*
@@ -79,8 +80,8 @@ rollwand(void)
 	if (roll(1, 6) == 4)
 	{
 	    wanderer();
-	    kill_daemon(rollwand);
-	    fuse(swander, 0, WANDERTIME, BEFORE);
+	    daemon_kill(rollwand);
+	    daemon_start_fuse(swander, 0, WANDERTIME, BEFORE);
 	}
 	between = 0;
     }
