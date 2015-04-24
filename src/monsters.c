@@ -279,3 +279,99 @@ find_dest(THING *tp)
     return &hero;
 }
 
+/*
+ * killed:
+ *	Called to put a monster to death
+ */
+void
+killed(THING *tp, bool pr)
+{
+    char *mname;
+
+    if (game_type == DEFAULT)
+      pstats.s_exp += tp->t_stats.s_exp;
+
+    /*
+     * If the monster was a venus flytrap, un-hold him
+     */
+    switch (tp->t_type)
+    {
+	case 'F':
+	    player.t_flags &= ~ISHELD;
+	    vf_hit = 0;
+	when 'L':
+	{
+	    THING *gold;
+
+	    if (fallpos(&tp->t_pos, &tp->t_room->r_gold) && level >= max_level)
+	    {
+		gold = new_item();
+		gold->o_type = GOLD;
+		gold->o_goldval = GOLDCALC;
+		if (save(VS_MAGIC))
+		    gold->o_goldval += GOLDCALC + GOLDCALC
+				     + GOLDCALC + GOLDCALC;
+		attach(tp->t_pack, gold);
+	    }
+	}
+    }
+    /*
+     * Get rid of the monster.
+     */
+    mname = set_mname(tp);
+    monster_remove_from_screen(&tp->t_pos, tp, true);
+    if (pr)
+    {
+	if (has_hit)
+	{
+	    addmsg(".  Defeated ");
+	    has_hit = false;
+	}
+	else
+	{
+	    if (!terse)
+		addmsg("you have ");
+	    addmsg("defeated ");
+	}
+	msg(mname);
+    }
+    /*
+     * Do adjustments if he went up a level
+     */
+    check_level();
+    if (fight_flush)
+	flushinp();
+}
+
+/*
+ * monster_remove_from_screen:
+ *	Remove a monster from the screen
+ */
+void
+monster_remove_from_screen(coord *mp, THING *tp, bool waskill)
+{
+    THING *obj, *nexti;
+
+    for (obj = tp->t_pack; obj != NULL; obj = nexti)
+    {
+	nexti = obj->l_next;
+	obj->o_pos = tp->t_pos;
+	detach(tp->t_pack, obj);
+	if (waskill)
+	    fall(obj, false);
+	else
+	    discard(obj);
+    }
+    moat(mp->y, mp->x) = NULL;
+    mvaddcch(mp->y, mp->x, tp->t_oldch);
+    detach(mlist, tp);
+    if (on(*tp, ISTARGET))
+    {
+	kamikaze = false;
+	to_death = false;
+	if (fight_flush)
+	    flushinp();
+    }
+    discard(tp);
+}
+

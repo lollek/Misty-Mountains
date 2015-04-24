@@ -22,291 +22,7 @@
 #include "pack.h"
 #include "daemons.h"
 
-static const char *prname(const char *mname, bool upper);
-static void thunk(THING *weap, const char *mname, bool noend);
-static bool roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl);
-static void print_attack(bool hit, const char *att, const char *def, bool noend);
-
-/*
- * fight:
- *	The player attacks the monster.
- */
-int
-fight(coord *mp, THING *weap, bool thrown)
-{
-    THING *tp = moat(mp->y, mp->x);
-    bool did_hit = true;
-    char *mname, ch;
-
-    /* Find the monster we want to fight */
-    if (wizard && tp == NULL)
-	msg("Fight what @ %d,%d", mp->y, mp->x);
-
-    /* Since we are fighting, things are not quiet so no healing takes place */
-    command_stop(false);
-    daemon_reset_doctor();
-    runto(mp);
-
-    /* Let him know it was really a xeroc (if it was one) */
-    ch = '\0';
-    if (tp->t_type == 'X' && tp->t_disguise != 'X' && !is_blind(&player))
-    {
-	tp->t_disguise = 'X';
-	if (is_hallucinating(&player)) {
-	    ch = (char)(rnd(26) + 'A');
-	    mvaddcch(tp->t_pos.y, tp->t_pos.x, ch);
-	}
-	msg(is_hallucinating(&player)
-	    ? "heavy!  That's a nasty critter!"
-	    : "wait!  That's a xeroc!");
-	if (!thrown)
-	    return false;
-    }
-    mname = set_mname(tp);
-    did_hit = false;
-    has_hit = (terse && !to_death);
-    if (roll_em(&player, tp, weap, thrown))
-    {
-	did_hit = false;
-	if (thrown)
-	    thunk(weap, mname, terse);
-	else
-	    print_attack(true, (char *) NULL, mname, terse);
-	if (is_confusing(&player))
-	{
-	    did_hit = true;
-	    set_confused(tp, true);
-	    set_confusing(&player, false);
-	    endmsg();
-	    has_hit = false;
-	    msg("your hands stop glowing %s", pick_color("red"));
-	}
-	if (tp->t_stats.s_hpt <= 0)
-	    killed(tp, true);
-	else if (did_hit && !is_blind(&player))
-	    msg("%s appears confused", mname);
-	did_hit = true;
-    }
-    else
-	if (thrown)
-	    bounce(weap, mname, terse);
-	else
-	    print_attack(false, (char *) NULL, mname, terse);
-    return did_hit;
-}
-
-/** attack:
- * The monster attacks the player */
-int
-attack(THING *mp)
-{
-    char *mname;
-    int oldhp;
-
-    /* Since this is an attack, stop running and any healing that was
-     * going on at the time */
-    command_stop(false);
-    daemon_reset_doctor();
-    if (to_death && !on(*mp, ISTARGET))
-    {
-	to_death = false;
-	kamikaze = false;
-    }
-    if (mp->t_type == 'X' && mp->t_disguise != 'X' && !is_blind(&player))
-    {
-	mp->t_disguise = 'X';
-	if (is_hallucinating(&player))
-	    mvaddcch(mp->t_pos.y, mp->t_pos.x, rnd(26) + 'A');
-    }
-    mname = set_mname(mp);
-    oldhp = pstats.s_hpt;
-    if (roll_em(mp, &player, (THING *) NULL, false))
-    {
-	if (mp->t_type != 'I')
-	{
-	    if (has_hit)
-		addmsg(".  ");
-	    print_attack(true, mname, (char *) NULL, false);
-	}
-	else
-	    if (has_hit)
-		endmsg();
-	has_hit = false;
-	if (pstats.s_hpt <= 0)
-	    death(mp->t_type);	/* Bye bye life ... */
-	else if (!kamikaze)
-	{
-	    oldhp -= pstats.s_hpt;
-	    if (oldhp > max_hit)
-		max_hit = oldhp;
-	    if (pstats.s_hpt <= max_hit)
-		to_death = false;
-	}
-	if (!is_cancelled(mp))
-	    switch (mp->t_type)
-	    {
-		case 'A':
-		    /* If an aquator hits, you can lose armor class */
-		    armor_rust();
-		when 'I':
-		    /* The ice monster freezes you */
-		    player.t_flags &= ~ISRUN;
-		    if (!no_command)
-		    {
-			addmsg("you are frozen");
-			if (!terse)
-			    addmsg(" by the %s", mname);
-			endmsg();
-		    }
-		    no_command += rnd(2) + 2;
-		    if (no_command > 50)
-			death('h');
-		when 'R':
-		    /* Rattlesnakes have poisonous bites */
-		    if (!save(VS_POISON))
-		    {
-			if (!player_has_ring_with_ability(R_SUSTSTR))
-			{
-			    chg_str(-1);
-			    msg(terse
-			      ? "a bite has weakened you"
-			      : "you feel a bite in your leg and now feel weaker");
-			}
-			else if (!to_death)
-			    msg(terse
-				? "bite has no effect"
-				: "a bite momentarily weakens you");
-		    }
-		when 'W':
-		case 'V':
-		    /* Wraiths might drain energy levels, and Vampires
-		     * can steal max_hp */
-		    if (rnd(100) < (mp->t_type == 'W' ? 15 : 30))
-		    {
-			int fewer;
-
-			if (mp->t_type == 'W')
-			{
-			    if (pstats.s_exp == 0)
-				death('W');		/* All levels gone */
-			    if (--pstats.s_lvl == 0)
-			    {
-				pstats.s_exp = 0;
-				pstats.s_lvl = 1;
-			    }
-			    else
-				pstats.s_exp = e_levels[pstats.s_lvl-1]+1;
-			    fewer = roll(1, 10);
-			}
-			else
-			    fewer = roll(1, 3);
-			pstats.s_hpt -= fewer;
-			max_hp -= fewer;
-			if (pstats.s_hpt <= 0)
-			    pstats.s_hpt = 1;
-			if (max_hp <= 0)
-			    death(mp->t_type);
-			msg("you suddenly feel weaker");
-		    }
-		when 'F':
-		    /* Venus Flytrap stops the poor guy from moving */
-		    player.t_flags |= ISHELD;
-		    ++vf_hit;
-		    if (--pstats.s_hpt <= 0)
-			death('F');
-		when 'L':
-		{
-		    /* Leperachaun steals some gold */
-		    int lastpurse;
-
-		    lastpurse = purse;
-		    purse -= GOLDCALC;
-		    if (!save(VS_MAGIC))
-			purse -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
-		    if (purse < 0)
-			purse = 0;
-		    remove_mon(&mp->t_pos, mp, false);
-                    mp=NULL;
-		    if (purse != lastpurse)
-			msg("your purse feels lighter");
-		}
-		when 'N':
-		{
-		    /* Nymph's steal a magic item, look through the pack
-		     * and pick out one we like. */
-		    THING *steal = find_magic_item_in_players_pack();
-		    if (steal != NULL)
-		    {
-			remove_mon(&mp->t_pos, moat(mp->t_pos.y, mp->t_pos.x),
-			           false);
-			mp=NULL;
-			leave_pack(steal, false, false);
-			msg("she stole %s!", inv_name(steal, true));
-			discard(steal);
-		    }
-		}
-		otherwise:
-		    break;
-	    }
-    }
-    else if (mp->t_type != 'I')
-    {
-	if (has_hit)
-	{
-	    addmsg(".  ");
-	    has_hit = false;
-	}
-	if (mp->t_type == 'F')
-	{
-	    pstats.s_hpt -= vf_hit;
-	    if (pstats.s_hpt <= 0)
-		death(mp->t_type);	/* Bye bye life ... */
-	}
-	print_attack(false, mname, (char *) NULL, false);
-    }
-    if (fight_flush && !to_death)
-	flushinp();
-    command_stop(false);
-    status();
-    return(mp == NULL ? -1 : 0);
-}
-
-/*
- * set_mname:
- *	return the monster name for the given monster
- */
-char *
-set_mname(THING *tp)
-{
-    int ch;
-    char *mname;
-    static char tbuf[MAXSTR] = { 't', 'h', 'e', ' ' };
-
-    if (!see_monst(tp) && !on(player, SEEMONST))
-	return (terse ? "it" : "something");
-    else if (is_hallucinating(&player))
-    {
-	move(tp->t_pos.y, tp->t_pos.x);
-	ch = incch();
-	if (!isupper(ch))
-	    ch = rnd(26);
-	else
-	    ch -= 'A';
-	mname = monsters[ch].m_name;
-    }
-    else
-	mname = monsters[tp->t_type - 'A'].m_name;
-    strcpy(&tbuf[4], mname);
-    return tbuf;
-}
-
-/** swing:
- * Returns true if the swing hits */
-int
-swing(int at_lvl, int op_arm, int wplus)
-{
-    return at_lvl + wplus + rnd(20) >= op_arm;
-}
+#include "fight.h"
 
 /** add_player_attack_modifiers
  * Add item bonuses to damage and to-hit */
@@ -498,10 +214,250 @@ print_attack(bool hit, const char *att, const char *def, bool noend)
     endmsg();
 }
 
-/*
- * bounce:
- *	A missile misses a monster
- */
+int
+fight(coord *mp, THING *weap, bool thrown)
+{
+    THING *tp = moat(mp->y, mp->x);
+    bool did_hit = true;
+    char *mname, ch;
+
+    /* Find the monster we want to fight */
+    if (wizard && tp == NULL)
+	msg("Fight what @ %d,%d", mp->y, mp->x);
+
+    /* Since we are fighting, things are not quiet so no healing takes place */
+    command_stop(false);
+    daemon_reset_doctor();
+    runto(mp);
+
+    /* Let him know it was really a xeroc (if it was one) */
+    ch = '\0';
+    if (tp->t_type == 'X' && tp->t_disguise != 'X' && !is_blind(&player))
+    {
+	tp->t_disguise = 'X';
+	if (is_hallucinating(&player)) {
+	    ch = (char)(rnd(26) + 'A');
+	    mvaddcch(tp->t_pos.y, tp->t_pos.x, ch);
+	}
+	msg(is_hallucinating(&player)
+	    ? "heavy!  That's a nasty critter!"
+	    : "wait!  That's a xeroc!");
+	if (!thrown)
+	    return false;
+    }
+    mname = set_mname(tp);
+    did_hit = false;
+    has_hit = (terse && !to_death);
+    if (roll_em(&player, tp, weap, thrown))
+    {
+	did_hit = false;
+	if (thrown)
+	    thunk(weap, mname, terse);
+	else
+	    print_attack(true, (char *) NULL, mname, terse);
+	if (is_confusing(&player))
+	{
+	    did_hit = true;
+	    set_confused(tp, true);
+	    set_confusing(&player, false);
+	    endmsg();
+	    has_hit = false;
+	    msg("your hands stop glowing %s", pick_color("red"));
+	}
+	if (tp->t_stats.s_hpt <= 0)
+	    killed(tp, true);
+	else if (did_hit && !is_blind(&player))
+	    msg("%s appears confused", mname);
+	did_hit = true;
+    }
+    else
+	if (thrown)
+	    bounce(weap, mname, terse);
+	else
+	    print_attack(false, (char *) NULL, mname, terse);
+    return did_hit;
+}
+
+int
+attack(THING *mp)
+{
+    char *mname;
+    int oldhp;
+
+    /* Since this is an attack, stop running and any healing that was
+     * going on at the time */
+    command_stop(false);
+    daemon_reset_doctor();
+    if (to_death && !on(*mp, ISTARGET))
+    {
+	to_death = false;
+	kamikaze = false;
+    }
+    if (mp->t_type == 'X' && mp->t_disguise != 'X' && !is_blind(&player))
+    {
+	mp->t_disguise = 'X';
+	if (is_hallucinating(&player))
+	    mvaddcch(mp->t_pos.y, mp->t_pos.x, rnd(26) + 'A');
+    }
+    mname = set_mname(mp);
+    oldhp = pstats.s_hpt;
+    if (roll_em(mp, &player, (THING *) NULL, false))
+    {
+	if (mp->t_type != 'I')
+	{
+	    if (has_hit)
+		addmsg(".  ");
+	    print_attack(true, mname, (char *) NULL, false);
+	}
+	else
+	    if (has_hit)
+		endmsg();
+	has_hit = false;
+	if (pstats.s_hpt <= 0)
+	    death(mp->t_type);	/* Bye bye life ... */
+	else if (!kamikaze)
+	{
+	    oldhp -= pstats.s_hpt;
+	    if (oldhp > max_hit)
+		max_hit = oldhp;
+	    if (pstats.s_hpt <= max_hit)
+		to_death = false;
+	}
+	if (!is_cancelled(mp))
+	    switch (mp->t_type)
+	    {
+		case 'A':
+		    /* If an aquator hits, you can lose armor class */
+		    armor_rust();
+		when 'I':
+		    /* The ice monster freezes you */
+		    player.t_flags &= ~ISRUN;
+		    if (!no_command)
+		    {
+			addmsg("you are frozen");
+			if (!terse)
+			    addmsg(" by the %s", mname);
+			endmsg();
+		    }
+		    no_command += rnd(2) + 2;
+		    if (no_command > 50)
+			death('h');
+		when 'R':
+		    /* Rattlesnakes have poisonous bites */
+		    if (!save(VS_POISON))
+		    {
+			if (!player_has_ring_with_ability(R_SUSTSTR))
+			{
+			    chg_str(-1);
+			    msg(terse
+			      ? "a bite has weakened you"
+			      : "you feel a bite in your leg and now feel weaker");
+			}
+			else if (!to_death)
+			    msg(terse
+				? "bite has no effect"
+				: "a bite momentarily weakens you");
+		    }
+		when 'W':
+		case 'V':
+		    /* Wraiths might drain energy levels, and Vampires
+		     * can steal max_hp */
+		    if (rnd(100) < (mp->t_type == 'W' ? 15 : 30))
+		    {
+			int fewer;
+
+			if (mp->t_type == 'W')
+			{
+			    if (pstats.s_exp == 0)
+				death('W');		/* All levels gone */
+			    if (--pstats.s_lvl == 0)
+			    {
+				pstats.s_exp = 0;
+				pstats.s_lvl = 1;
+			    }
+			    else
+				pstats.s_exp = e_levels[pstats.s_lvl-1]+1;
+			    fewer = roll(1, 10);
+			}
+			else
+			    fewer = roll(1, 3);
+			pstats.s_hpt -= fewer;
+			max_hp -= fewer;
+			if (pstats.s_hpt <= 0)
+			    pstats.s_hpt = 1;
+			if (max_hp <= 0)
+			    death(mp->t_type);
+			msg("you suddenly feel weaker");
+		    }
+		when 'F':
+		    /* Venus Flytrap stops the poor guy from moving */
+		    player.t_flags |= ISHELD;
+		    ++vf_hit;
+		    if (--pstats.s_hpt <= 0)
+			death('F');
+		when 'L':
+		{
+		    /* Leperachaun steals some gold */
+		    int lastpurse;
+
+		    lastpurse = purse;
+		    purse -= GOLDCALC;
+		    if (!save(VS_MAGIC))
+			purse -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
+		    if (purse < 0)
+			purse = 0;
+		    monster_remove_from_screen(&mp->t_pos, mp, false);
+                    mp=NULL;
+		    if (purse != lastpurse)
+			msg("your purse feels lighter");
+		}
+		when 'N':
+		{
+		    /* Nymph's steal a magic item, look through the pack
+		     * and pick out one we like. */
+		    THING *steal = find_magic_item_in_players_pack();
+		    if (steal != NULL)
+		    {
+			monster_remove_from_screen(&mp->t_pos, moat(mp->t_pos.y, mp->t_pos.x),
+			           false);
+			mp=NULL;
+			leave_pack(steal, false, false);
+			msg("she stole %s!", inv_name(steal, true));
+			discard(steal);
+		    }
+		}
+		otherwise:
+		    break;
+	    }
+    }
+    else if (mp->t_type != 'I')
+    {
+	if (has_hit)
+	{
+	    addmsg(".  ");
+	    has_hit = false;
+	}
+	if (mp->t_type == 'F')
+	{
+	    pstats.s_hpt -= vf_hit;
+	    if (pstats.s_hpt <= 0)
+		death(mp->t_type);	/* Bye bye life ... */
+	}
+	print_attack(false, mname, (char *) NULL, false);
+    }
+    if (fight_flush && !to_death)
+	flushinp();
+    command_stop(false);
+    status();
+    return(mp == NULL ? -1 : 0);
+}
+
+int
+swing(int at_lvl, int op_arm, int wplus)
+{
+    return at_lvl + wplus + rnd(20) >= op_arm;
+}
+
 void
 bounce(THING *weap, const char *mname, bool noend)
 {
@@ -514,100 +470,4 @@ bounce(THING *weap, const char *mname, bool noend)
     addmsg(mname);
     if (!noend)
 	endmsg();
-}
-
-/*
- * remove_mon:
- *	Remove a monster from the screen
- */
-void
-remove_mon(coord *mp, THING *tp, bool waskill)
-{
-    THING *obj, *nexti;
-
-    for (obj = tp->t_pack; obj != NULL; obj = nexti)
-    {
-	nexti = obj->l_next;
-	obj->o_pos = tp->t_pos;
-	detach(tp->t_pack, obj);
-	if (waskill)
-	    fall(obj, false);
-	else
-	    discard(obj);
-    }
-    moat(mp->y, mp->x) = NULL;
-    mvaddcch(mp->y, mp->x, tp->t_oldch);
-    detach(mlist, tp);
-    if (on(*tp, ISTARGET))
-    {
-	kamikaze = false;
-	to_death = false;
-	if (fight_flush)
-	    flushinp();
-    }
-    discard(tp);
-}
-
-/*
- * killed:
- *	Called to put a monster to death
- */
-void
-killed(THING *tp, bool pr)
-{
-    char *mname;
-
-    if (game_type == DEFAULT)
-      pstats.s_exp += tp->t_stats.s_exp;
-
-    /*
-     * If the monster was a venus flytrap, un-hold him
-     */
-    switch (tp->t_type)
-    {
-	case 'F':
-	    player.t_flags &= ~ISHELD;
-	    vf_hit = 0;
-	when 'L':
-	{
-	    THING *gold;
-
-	    if (fallpos(&tp->t_pos, &tp->t_room->r_gold) && level >= max_level)
-	    {
-		gold = new_item();
-		gold->o_type = GOLD;
-		gold->o_goldval = GOLDCALC;
-		if (save(VS_MAGIC))
-		    gold->o_goldval += GOLDCALC + GOLDCALC
-				     + GOLDCALC + GOLDCALC;
-		attach(tp->t_pack, gold);
-	    }
-	}
-    }
-    /*
-     * Get rid of the monster.
-     */
-    mname = set_mname(tp);
-    remove_mon(&tp->t_pos, tp, true);
-    if (pr)
-    {
-	if (has_hit)
-	{
-	    addmsg(".  Defeated ");
-	    has_hit = false;
-	}
-	else
-	{
-	    if (!terse)
-		addmsg("you have ");
-	    addmsg("defeated ");
-	}
-	msg(mname);
-    }
-    /*
-     * Do adjustments if he went up a level
-     */
-    check_level();
-    if (fight_flush)
-	flushinp();
 }

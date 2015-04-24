@@ -720,3 +720,32 @@ dist(int y1, int x1, int y2, int x2)
 {
     return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
+
+/** set_mname:
+ * return the monster name for the given monster */
+char *
+set_mname(THING *tp)
+{
+    int ch;
+    char *mname;
+    static char tbuf[MAXSTR] = { 't', 'h', 'e', ' ' };
+
+    if (!see_monst(tp) && !on(player, SEEMONST))
+	return (terse ? "it" : "something");
+    else if (is_hallucinating(&player))
+    {
+	move(tp->t_pos.y, tp->t_pos.x);
+	ch = incch();
+	if (!isupper(ch))
+	    ch = rnd(26);
+	else
+	    ch -= 'A';
+	mname = monsters[ch].m_name;
+    }
+    else
+	mname = monsters[tp->t_type - 'A'].m_name;
+    strcpy(&tbuf[4], mname);
+    return tbuf;
+}
+
+

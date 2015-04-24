@@ -20,6 +20,7 @@
 #include "io.h"
 #include "armor.h"
 #include "pack.h"
+#include "fight.h"
 
 /*
  * do_run:

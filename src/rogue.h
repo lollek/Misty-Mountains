@@ -440,8 +440,6 @@ void	add_pass(void);
 void	add_str(str_t *sp, int amt);
 void	accnt_maze(int y, int x, int ny, int nx);
 void	aggravate(void);
-int	attack(THING *mp);
-void	bounce(THING *weap, const char *mname, bool noend);
 void	call_it(struct obj_info *info);
 void	chg_str(int amt);
 void	check_level(void);
@@ -472,7 +470,6 @@ void	erase_lamp(coord *pos, struct room *rp);
 int	exp_add(THING *tp);
 void	fall(THING *obj, bool pr);
 void	fire_bolt(coord *start, coord *dir, char *name);
-int	fight(coord *mp, THING *weap, bool thrown);
 void	fix_stick(THING *cur);
 bool	get_dir(void);
 void	give_pack(THING *tp);
@@ -502,7 +499,6 @@ void	pr_spec(char ch);
 void	put_things(void);
 void	putpass(coord *cp);
 char	randmonster(bool wander);
-void	remove_mon(coord *mp, THING *tp, bool waskill);
 int	ring_eat(void);
 bool	ring_on(void);
 bool	ring_off(void);
@@ -523,7 +519,6 @@ void	show_map(void);
 int	sign(int nm);
 int	spread(int nm);
 void	strucpy(char *s1, const char *s2, int len);
-int	swing(int at_lvl, int op_arm, int wplus);
 void	total_winner(void);
 void	treas_room(void);
 void	turnref(void);
@@ -565,6 +560,7 @@ int dist(int y1, int x1, int y2, int x2);
 #define dist_cp(_1, _2) dist((_1)->y, (_1)->x, (_2)->y, (_2)->x)
 
 bool monster_chase(THING *tp); /* Make a monster chase */
+void monster_remove_from_screen(coord *mp, THING *tp, bool waskill);
 
 void leave(int);
 void quit(int);

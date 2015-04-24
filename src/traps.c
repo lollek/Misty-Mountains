@@ -3,6 +3,7 @@
 #include "command.h"
 #include "io.h"
 #include "armor.h"
+#include "fight.h"
 
 #include "traps.h"
 
