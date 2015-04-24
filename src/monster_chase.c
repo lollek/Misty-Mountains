@@ -217,7 +217,7 @@ over:
     if (!chase(th, &this))
     {
 	if (same_coords(this, hero))
-	    return( attack(th) );
+	    return( fight_against_player(th) );
 	else if (same_coords(this, *th->t_dest))
 	{
 	    for (obj = lvl_obj; obj != NULL; obj = obj->l_next)

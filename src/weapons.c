@@ -65,7 +65,7 @@ missile(int ydelta, int xdelta)
   if (obj->o_which == ARROW && (weapon == NULL || weapon->o_which != BOW))
   {
     if (monster_at_pos)
-      bounce(obj, set_mname(monster_at_pos), terse);
+      fight_missile_miss(obj, set_mname(monster_at_pos), terse);
     fall(obj, true);
     return true;
   }
@@ -203,7 +203,7 @@ hit_monster(int y, int x, THING *obj)
 
   mp.y = y;
   mp.x = x;
-  return fight(&mp, obj, true);
+  return fight_against_monster(&mp, obj, true);
 }
 
 /** num:

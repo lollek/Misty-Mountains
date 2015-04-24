@@ -67,7 +67,7 @@ be_trapped(THING *target, coord *tc)
       fall_asleep();
       addmsg("a strange white mist envelops you and ");
     when T_ARROW:
-      if (swing(pstats.s_lvl - 1, armor_for_thing(&player), 1))
+      if (fight_swing_hits(pstats.s_lvl - 1, armor_for_thing(&player), 1))
       {
         pstats.s_hpt -= roll(1, 6);
         if (pstats.s_hpt <= 0)
@@ -92,7 +92,7 @@ be_trapped(THING *target, coord *tc)
       if (target == &player)
         mvaddcch(tc->y, tc->x, TRAP); /* Mark trap before we leave */
     when T_DART:
-      if (!swing(pstats.s_lvl + 1, armor_for_thing(&player), 1))
+      if (!fight_swing_hits(pstats.s_lvl + 1, armor_for_thing(&player), 1))
         msg("a small dart whizzes by your ear and vanishes");
       else
       {

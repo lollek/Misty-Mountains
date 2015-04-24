@@ -106,7 +106,7 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
     if (sscanf(cp, "%dx%d", &ndice, &nsides) == EOF)
       break;
 
-    if (swing(att->s_lvl, def_arm, hplus + strbonus_to_hit[att->s_str]))
+    if (fight_swing_hits(att->s_lvl, def_arm, hplus + strbonus_to_hit[att->s_str]))
     {
       int proll = roll(ndice, nsides);
       int damage = dplus + proll + strbonus_to_dmg[att->s_str];
@@ -215,7 +215,7 @@ print_attack(bool hit, const char *att, const char *def, bool noend)
 }
 
 int
-fight(coord *mp, THING *weap, bool thrown)
+fight_against_monster(coord *mp, THING *weap, bool thrown)
 {
     THING *tp = moat(mp->y, mp->x);
     bool did_hit = true;
@@ -272,14 +272,14 @@ fight(coord *mp, THING *weap, bool thrown)
     }
     else
 	if (thrown)
-	    bounce(weap, mname, terse);
+	    fight_missile_miss(weap, mname, terse);
 	else
 	    print_attack(false, (char *) NULL, mname, terse);
     return did_hit;
 }
 
 int
-attack(THING *mp)
+fight_against_player(THING *mp)
 {
     char *mname;
     int oldhp;
@@ -453,21 +453,24 @@ attack(THING *mp)
 }
 
 int
-swing(int at_lvl, int op_arm, int wplus)
+fight_swing_hits(int at_lvl, int op_arm, int wplus)
 {
-    return at_lvl + wplus + rnd(20) >= op_arm;
+  return at_lvl + wplus + rnd(20) >= op_arm;
 }
 
 void
-bounce(THING *weap, const char *mname, bool noend)
+fight_missile_miss(THING *weap, const char *mname, bool noend)
 {
-    if (to_death)
-	return;
-    if (weap->o_type == WEAPON)
-	addmsg("the %s misses ", weap_info[weap->o_which].oi_name);
-    else
-	addmsg("you missed ");
-    addmsg(mname);
-    if (!noend)
-	endmsg();
+  if (to_death)
+    return;
+
+  if (weap->o_type == WEAPON)
+    addmsg("the %s misses ", weap_info[weap->o_which].oi_name);
+  else
+    addmsg("you missed ");
+
+  addmsg("%s", mname);
+
+  if (!noend)
+    endmsg();
 }

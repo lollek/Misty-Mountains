@@ -1,20 +1,20 @@
 #ifndef _ROGUE14_FIGHT_H_
 #define _ROGUE14_FIGHT_H_
 
-/** fight:
+/** fight_against_monster:
  * The player attacks the monster. */
-int fight(coord *mp, THING *weap, bool thrown);
+int fight_against_monster(coord *mp, THING *weap, bool thrown);
 
-/** attack:
+/** fight_against_player:
  * The monster attacks the player */
-int attack(THING *mp);
+int fight_against_player(THING *mp);
 
-/** swing:
+/** fight_swing_hits:
  * Returns true if the swing hits */
-int swing(int at_lvl, int op_arm, int wplus);
+int fight_swing_hits(int at_lvl, int op_arm, int wplus);
 
-/** bounce:
+/** fight_missile_miss:
  * A missile misses a monster */
-void bounce(THING *weap, const char *mname, bool noend);
+void fight_missile_miss(THING *weap, const char *mname, bool noend);
 
 #endif /* _ROGUE14_FIGHT_H_ */
