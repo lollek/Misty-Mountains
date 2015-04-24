@@ -336,7 +336,7 @@ daemon_runners_move(void)
     {
       bool wastarget = on(*tp, ISTARGET);
       coord orig_pos = tp->t_pos;
-      if (move_monst(tp) == -1)
+      if (!move_monst(tp))
         continue;
 
       if (on(*tp, ISFLY) && dist_cp(&hero, &tp->t_pos) >= 3)

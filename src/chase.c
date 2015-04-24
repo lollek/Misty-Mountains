@@ -25,10 +25,7 @@
 #define DRAGONSHOT  5  /* one chance in DRAGONSHOT that a dragon will flame */
 static coord ch_ret;   /* Where chasing takes you */
 
-
-
-/* TODO: Change this to a bool */
-int
+bool
 move_monst(THING *tp)
 {
   if (!on(*tp, ISSLOW) || tp->t_turn)

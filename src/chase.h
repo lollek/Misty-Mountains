@@ -1,9 +1,10 @@
 #ifndef _ROGUE14_CHASE_H_
 #define _ROGUE14_CHASE_H_
 
+#include <stdbool.h>
 #include "rogue.h"
 
-int move_monst(THING *tp); /* Execute a signel turn of running */
+bool move_monst(THING *tp); /* Execute a signel turn of running */
 int do_chase(THING *th);   /* Make one thing chase another */
 void set_oldch(THING *tp, coord *cp); /* Set oldch for a monster */
 bool see_monst(THING *mp);  /* Can player see the monster? */
