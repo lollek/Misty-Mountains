@@ -429,14 +429,12 @@ bool seen_stairs(void);          /* Return true if the player has seen the stair
 bool turn_see(bool turn_off);/* Put on or off seeing monsters on this level */
 void invis_on(void);         /* Turn on the ability to see invisible */
 
-void	add_pass(void);
 void	add_str(str_t *sp, int amt);
 void	accnt_maze(int y, int x, int ny, int nx);
 void	aggravate(void);
 void	call_it(struct obj_info *info);
 void	chg_str(int amt);
 void	check_level(void);
-void	conn(int r1, int r2);
 void	create_obj(void);
 void	death(char monst);
 char	death_monst(void);
@@ -444,10 +442,8 @@ void	dig(int y, int x);
 void	discovered(void);
 void	do_maze(struct room *rp);
 void	do_motion(THING *obj, int ydelta, int xdelta);
-void	do_passages(void);
 void	do_rooms(void);
 bool	do_zap(void);
-void	door(struct room *rm, coord *cp);
 void	drain(void);
 void	draw_room(struct room *rp);
 bool	drop(void);
@@ -467,13 +463,10 @@ int	hit_monster(int y, int x, THING *obj);
 void	init_weapon(THING *weap, int which);
 bool	lock_sc(void);
 bool	missile(int ydelta, int xdelta);
-void	numpass(int y, int x);
-void 	passnum(void);
 bool	player_has_ring_with_ability(int ability);
 const char	*pick_color(const char *col);
 int	pr_list(void);
 void	pr_spec(char ch);
-void	putpass(coord *cp);
 int	ring_eat(void);
 bool	ring_on(void);
 bool	ring_off(void);

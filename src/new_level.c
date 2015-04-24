@@ -21,6 +21,7 @@
 #include "daemons.h"
 #include "list.h"
 #include "monsters.h"
+#include "passages.h"
 
 #include "new_level.h"
 
@@ -158,7 +159,7 @@ new_level(void)
      */
     free_list(lvl_obj);
     do_rooms();				/* Draw rooms */
-    do_passages();			/* Draw passages */
+    passages_do();			/* Draw passages */
     no_food++;
     put_things();			/* Place objects (if any) */
     /*

@@ -25,6 +25,7 @@
 #include "list.h"
 #include "move.h"
 #include "new_level.h"
+#include "passages.h"
 #include "rogue.h"
 
 #include "command_private.h"
@@ -275,7 +276,7 @@ command_wizard_do(char ch)
     when CTRL('F'): show_map();
     when CTRL('T'): teleport(&player, NULL);
     when CTRL('E'): msg("food left: %d", food_left);
-    when CTRL('C'): add_pass();
+    when CTRL('C'): passages_add_pass();
     when CTRL('X'): turn_see(on(player, SEEMONST));
     when '*' : pr_list();
 

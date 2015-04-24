@@ -18,6 +18,7 @@
 #include "pack.h"
 #include "list.h"
 #include "monsters.h"
+#include "passages.h"
 
 typedef struct spot {		/* position matrix for maze positions */
 	int	nexits;
@@ -253,7 +254,7 @@ do_maze(struct room *rp)
     startx = (rnd(rp->r_max.x) / 2) * 2;
     pos.y = starty + Starty;
     pos.x = startx + Startx;
-    putpass(&pos);
+    passages_putpass(&pos);
     dig(starty, startx);
 }
 
@@ -309,10 +310,10 @@ dig(int y, int x)
 	    else
 		pos.y = nexty + Starty - 1;
 	}
-	putpass(&pos);
+	passages_putpass(&pos);
 	pos.y = nexty + Starty;
 	pos.x = nextx + Startx;
-	putpass(&pos);
+	passages_putpass(&pos);
 	dig(nexty, nextx);
     }
 }

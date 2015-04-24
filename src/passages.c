@@ -15,13 +15,242 @@
 #include "rogue.h"
 #include "io.h"
 
-/*
- * do_passages:
- *	Draw all the passages on a level.
- */
+#include "passages.h"
 
+static int pnum;
+static bool newpnum;
+
+/** numpass:
+ * Number a passageway square and its brethren */
+static void
+numpass(int y, int x)
+{
+    char *fp;
+    struct room *rp;
+    char ch;
+
+    if (x >= NUMCOLS || x < 0 || y >= NUMLINES || y <= 0)
+	return;
+    fp = &flat(y, x);
+    if (*fp & F_PNUM)
+	return;
+    if (newpnum)
+    {
+	pnum++;
+	newpnum = false;
+    }
+    /*
+     * check to see if it is a door or secret door, i.e., a new exit,
+     * or a numerable type of place
+     */
+    if ((ch = chat(y, x)) == DOOR ||
+	(!(*fp & F_REAL) && (ch == VWALL || ch == HWALL)))
+    {
+	rp = &passages[pnum];
+	rp->r_exit[rp->r_nexits].y = y;
+	rp->r_exit[rp->r_nexits++].x = x;
+    }
+    else if (!(*fp & F_PASS))
+	return;
+    *fp |= pnum;
+    /*
+     * recurse on the surrounding places
+     */
+    numpass(y + 1, x);
+    numpass(y - 1, x);
+    numpass(y, x + 1);
+    numpass(y, x - 1);
+}
+
+/** passnum:
+ * Assign a number to each passageway */
+static void
+passnum(void)
+{
+  struct room *rp;
+  int i;
+
+  pnum = 0;
+  newpnum = false;
+  for (rp = passages; rp < &passages[MAXPASS]; rp++)
+    rp->r_nexits = 0;
+  for (rp = rooms; rp < &rooms[MAXROOMS]; rp++)
+    for (i = 0; i < rp->r_nexits; i++)
+    {
+      newpnum++;
+      numpass(rp->r_exit[i].y, rp->r_exit[i].x);
+    }
+}
+
+
+/** door:
+ * Add a door or possibly a secret door.  Also enters the door in
+ * the exits array of the room.  */
+static void
+door(struct room *rm, coord *cp)
+{
+  PLACE *pp;
+
+  rm->r_exit[rm->r_nexits++] = *cp;
+
+  if (rm->r_flags & ISMAZE)
+    return;
+
+  pp = INDEX(cp->y, cp->x);
+  if (rnd(10) + 1 < level && rnd(5) == 0)
+  {
+    if (cp->y == rm->r_pos.y || cp->y == rm->r_pos.y + rm->r_max.y - 1)
+      pp->p_ch = HWALL;
+    else
+      pp->p_ch = VWALL;
+    pp->p_flags &= ~F_REAL;
+  }
+  else
+    pp->p_ch = DOOR;
+}
+
+
+/** conn:
+ * Draw a corridor from a room in a certain direction. */
+static void
+conn(int r1, int r2)
+{
+    struct room *rpf, *rpt = NULL;
+    int rmt;
+    int distance = 0, turn_spot, turn_distance = 0;
+    int rm;
+    char direc;
+    static coord del, curr, turn_delta, spos, epos;
+
+    if (r1 < r2)
+    {
+	rm = r1;
+	if (r1 + 1 == r2)
+	    direc = 'r';
+	else
+	    direc = 'd';
+    }
+    else
+    {
+	rm = r2;
+	if (r2 + 1 == r1)
+	    direc = 'r';
+	else
+	    direc = 'd';
+    }
+    rpf = &rooms[rm];
+    /*
+     * Set up the movement variables, in two cases:
+     * first drawing one down.
+     */
+    if (direc == 'd')
+    {
+	rmt = rm + 3;				/* room # of dest */
+	rpt = &rooms[rmt];			/* room pointer of dest */
+	del.x = 0;				/* direction of move */
+	del.y = 1;
+	spos.x = rpf->r_pos.x;			/* start of move */
+	spos.y = rpf->r_pos.y;
+	epos.x = rpt->r_pos.x;			/* end of move */
+	epos.y = rpt->r_pos.y;
+	if (!(rpf->r_flags & ISGONE))		/* if not gone pick door pos */
+	    do
+	    {
+		spos.x = rpf->r_pos.x + rnd(rpf->r_max.x - 2) + 1;
+		spos.y = rpf->r_pos.y + rpf->r_max.y - 1;
+	    } while ((rpf->r_flags&ISMAZE) && !(flat(spos.y, spos.x)&F_PASS));
+	if (!(rpt->r_flags & ISGONE))
+	    do
+	    {
+		epos.x = rpt->r_pos.x + rnd(rpt->r_max.x - 2) + 1;
+	    } while ((rpt->r_flags&ISMAZE) && !(flat(epos.y, epos.x)&F_PASS));
+	distance = abs(spos.y - epos.y) - 1;	/* distance to move */
+	turn_delta.y = 0;			/* direction to turn */
+	turn_delta.x = (spos.x < epos.x ? 1 : -1);
+	turn_distance = abs(spos.x - epos.x);	/* how far to turn */
+    }
+    else if (direc == 'r')			/* setup for moving right */
+    {
+	rmt = rm + 1;
+	rpt = &rooms[rmt];
+	del.x = 1;
+	del.y = 0;
+	spos.x = rpf->r_pos.x;
+	spos.y = rpf->r_pos.y;
+	epos.x = rpt->r_pos.x;
+	epos.y = rpt->r_pos.y;
+	if (!(rpf->r_flags & ISGONE))
+	    do
+	    {
+		spos.x = rpf->r_pos.x + rpf->r_max.x - 1;
+		spos.y = rpf->r_pos.y + rnd(rpf->r_max.y - 2) + 1;
+	    } while ((rpf->r_flags&ISMAZE) && !(flat(spos.y, spos.x)&F_PASS));
+	if (!(rpt->r_flags & ISGONE))
+	    do
+	    {
+		epos.y = rpt->r_pos.y + rnd(rpt->r_max.y - 2) + 1;
+	    } while ((rpt->r_flags&ISMAZE) && !(flat(epos.y, epos.x)&F_PASS));
+	distance = abs(spos.x - epos.x) - 1;
+	turn_delta.y = (spos.y < epos.y ? 1 : -1);
+	turn_delta.x = 0;
+	turn_distance = abs(spos.y - epos.y);
+    }
+    else
+      msg("DEBUG: error in connection tables");
+
+    turn_spot = rnd(distance - 1) + 1;		/* where turn starts */
+
+    /*
+     * Draw in the doors on either side of the passage or just put #'s
+     * if the rooms are gone.
+     */
+    if (!(rpf->r_flags & ISGONE))
+	door(rpf, &spos);
+    else
+	passages_putpass(&spos);
+    if (!(rpt->r_flags & ISGONE))
+	door(rpt, &epos);
+    else
+	passages_putpass(&epos);
+    /*
+     * Get ready to move...
+     */
+    curr.x = spos.x;
+    curr.y = spos.y;
+    while (distance > 0)
+    {
+	/*
+	 * Move to new position
+	 */
+	curr.x += del.x;
+	curr.y += del.y;
+	/*
+	 * Check if we are at the turn place, if so do the turn
+	 */
+	if (distance == turn_spot)
+	    while (turn_distance--)
+	    {
+		passages_putpass(&curr);
+		curr.x += turn_delta.x;
+		curr.y += turn_delta.y;
+	    }
+	/*
+	 * Continue digging along
+	 */
+	passages_putpass(&curr);
+	distance--;
+    }
+    curr.x += del.x;
+    curr.y += del.y;
+    if (!same_coords(curr, epos))
+      msg("warning, connectivity problem on this level");
+}
+
+
+/** passages_do:
+ * Draw all the passages on a level.  */
 void
-do_passages(void)
+passages_do(void)
 {
     struct rdes *r1, *r2 = NULL;
     int i, j;
@@ -125,152 +354,10 @@ do_passages(void)
     passnum();
 }
 
-/*
- * conn:
- *	Draw a corridor from a room in a certain direction.
- */
-
+/** passages_putpass:
+ * add a passage character or secret passage here */
 void
-conn(int r1, int r2)
-{
-    struct room *rpf, *rpt = NULL;
-    int rmt;
-    int distance = 0, turn_spot, turn_distance = 0;
-    int rm;
-    char direc;
-    static coord del, curr, turn_delta, spos, epos;
-
-    if (r1 < r2)
-    {
-	rm = r1;
-	if (r1 + 1 == r2)
-	    direc = 'r';
-	else
-	    direc = 'd';
-    }
-    else
-    {
-	rm = r2;
-	if (r2 + 1 == r1)
-	    direc = 'r';
-	else
-	    direc = 'd';
-    }
-    rpf = &rooms[rm];
-    /*
-     * Set up the movement variables, in two cases:
-     * first drawing one down.
-     */
-    if (direc == 'd')
-    {
-	rmt = rm + 3;				/* room # of dest */
-	rpt = &rooms[rmt];			/* room pointer of dest */
-	del.x = 0;				/* direction of move */
-	del.y = 1;
-	spos.x = rpf->r_pos.x;			/* start of move */
-	spos.y = rpf->r_pos.y;
-	epos.x = rpt->r_pos.x;			/* end of move */
-	epos.y = rpt->r_pos.y;
-	if (!(rpf->r_flags & ISGONE))		/* if not gone pick door pos */
-	    do
-	    {
-		spos.x = rpf->r_pos.x + rnd(rpf->r_max.x - 2) + 1;
-		spos.y = rpf->r_pos.y + rpf->r_max.y - 1;
-	    } while ((rpf->r_flags&ISMAZE) && !(flat(spos.y, spos.x)&F_PASS));
-	if (!(rpt->r_flags & ISGONE))
-	    do
-	    {
-		epos.x = rpt->r_pos.x + rnd(rpt->r_max.x - 2) + 1;
-	    } while ((rpt->r_flags&ISMAZE) && !(flat(epos.y, epos.x)&F_PASS));
-	distance = abs(spos.y - epos.y) - 1;	/* distance to move */
-	turn_delta.y = 0;			/* direction to turn */
-	turn_delta.x = (spos.x < epos.x ? 1 : -1);
-	turn_distance = abs(spos.x - epos.x);	/* how far to turn */
-    }
-    else if (direc == 'r')			/* setup for moving right */
-    {
-	rmt = rm + 1;
-	rpt = &rooms[rmt];
-	del.x = 1;
-	del.y = 0;
-	spos.x = rpf->r_pos.x;
-	spos.y = rpf->r_pos.y;
-	epos.x = rpt->r_pos.x;
-	epos.y = rpt->r_pos.y;
-	if (!(rpf->r_flags & ISGONE))
-	    do
-	    {
-		spos.x = rpf->r_pos.x + rpf->r_max.x - 1;
-		spos.y = rpf->r_pos.y + rnd(rpf->r_max.y - 2) + 1;
-	    } while ((rpf->r_flags&ISMAZE) && !(flat(spos.y, spos.x)&F_PASS));
-	if (!(rpt->r_flags & ISGONE))
-	    do
-	    {
-		epos.y = rpt->r_pos.y + rnd(rpt->r_max.y - 2) + 1;
-	    } while ((rpt->r_flags&ISMAZE) && !(flat(epos.y, epos.x)&F_PASS));
-	distance = abs(spos.x - epos.x) - 1;
-	turn_delta.y = (spos.y < epos.y ? 1 : -1);
-	turn_delta.x = 0;
-	turn_distance = abs(spos.y - epos.y);
-    }
-    else
-      msg("DEBUG: error in connection tables");
-
-    turn_spot = rnd(distance - 1) + 1;		/* where turn starts */
-
-    /*
-     * Draw in the doors on either side of the passage or just put #'s
-     * if the rooms are gone.
-     */
-    if (!(rpf->r_flags & ISGONE))
-	door(rpf, &spos);
-    else
-	putpass(&spos);
-    if (!(rpt->r_flags & ISGONE))
-	door(rpt, &epos);
-    else
-	putpass(&epos);
-    /*
-     * Get ready to move...
-     */
-    curr.x = spos.x;
-    curr.y = spos.y;
-    while (distance > 0)
-    {
-	/*
-	 * Move to new position
-	 */
-	curr.x += del.x;
-	curr.y += del.y;
-	/*
-	 * Check if we are at the turn place, if so do the turn
-	 */
-	if (distance == turn_spot)
-	    while (turn_distance--)
-	    {
-		putpass(&curr);
-		curr.x += turn_delta.x;
-		curr.y += turn_delta.y;
-	    }
-	/*
-	 * Continue digging along
-	 */
-	putpass(&curr);
-	distance--;
-    }
-    curr.x += del.x;
-    curr.y += del.y;
-    if (!same_coords(curr, epos))
-      msg("warning, connectivity problem on this level");
-}
-
-/*
- * putpass:
- *	add a passage character or secret passage here
- */
-
-void
-putpass(coord *cp)
+passages_putpass(coord *cp)
 {
     PLACE *pp;
 
@@ -282,42 +369,10 @@ putpass(coord *cp)
 	pp->p_ch = PASSAGE;
 }
 
-/*
- * door:
- *	Add a door or possibly a secret door.  Also enters the door in
- *	the exits array of the room.
- */
-
+/** passages_add_pass:
+ * Add the passages to the current window (wizard command) */
 void
-door(struct room *rm, coord *cp)
-{
-    PLACE *pp;
-
-    rm->r_exit[rm->r_nexits++] = *cp;
-
-    if (rm->r_flags & ISMAZE)
-	return;
-
-    pp = INDEX(cp->y, cp->x);
-    if (rnd(10) + 1 < level && rnd(5) == 0)
-    {
-	if (cp->y == rm->r_pos.y || cp->y == rm->r_pos.y + rm->r_max.y - 1)
-		pp->p_ch = HWALL;
-	else
-		pp->p_ch = VWALL;
-	pp->p_flags &= ~F_REAL;
-    }
-    else
-	pp->p_ch = DOOR;
-}
-
-/*
- * add_pass:
- *	Add the passages to the current window (wizard command)
- */
-
-void
-add_pass(void)
+passages_add_pass(void)
 {
     PLACE *pp;
     int y, x;
@@ -348,75 +403,4 @@ add_pass(void)
 		}
 	    }
 	}
-}
-
-/*
- * passnum:
- *	Assign a number to each passageway
- */
-static int pnum;
-static bool newpnum;
-
-
-void
-passnum(void)
-{
-    struct room *rp;
-    int i;
-
-    pnum = 0;
-    newpnum = false;
-    for (rp = passages; rp < &passages[MAXPASS]; rp++)
-	rp->r_nexits = 0;
-    for (rp = rooms; rp < &rooms[MAXROOMS]; rp++)
-	for (i = 0; i < rp->r_nexits; i++)
-	{
-	    newpnum++;
-	    numpass(rp->r_exit[i].y, rp->r_exit[i].x);
-	}
-}
-
-/*
- * numpass:
- *	Number a passageway square and its brethren
- */
-
-void
-numpass(int y, int x)
-{
-    char *fp;
-    struct room *rp;
-    char ch;
-
-    if (x >= NUMCOLS || x < 0 || y >= NUMLINES || y <= 0)
-	return;
-    fp = &flat(y, x);
-    if (*fp & F_PNUM)
-	return;
-    if (newpnum)
-    {
-	pnum++;
-	newpnum = false;
-    }
-    /*
-     * check to see if it is a door or secret door, i.e., a new exit,
-     * or a numerable type of place
-     */
-    if ((ch = chat(y, x)) == DOOR ||
-	(!(*fp & F_REAL) && (ch == VWALL || ch == HWALL)))
-    {
-	rp = &passages[pnum];
-	rp->r_exit[rp->r_nexits].y = y;
-	rp->r_exit[rp->r_nexits++].x = x;
-    }
-    else if (!(*fp & F_PASS))
-	return;
-    *fp |= pnum;
-    /*
-     * recurse on the surrounding places
-     */
-    numpass(y + 1, x);
-    numpass(y - 1, x);
-    numpass(y, x + 1);
-    numpass(y, x - 1);
 }
