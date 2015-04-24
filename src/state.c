@@ -457,7 +457,7 @@ rs_write_daemons(FILE *savef, const struct delayed_action *d_list, int count)
     int func;
     if (d_list[i].d_func == rollwand)
       func = 1;
-    else if (d_list[i].d_func == doctor)
+    else if (d_list[i].d_func == daemon_doctor)
       func = 2;
     else if (d_list[i].d_func == stomach)
       func = 3;
@@ -513,7 +513,7 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
     switch(func)
     {
       case 1:    d_list[i].d_func = rollwand;
-      when 2:    d_list[i].d_func = doctor;
+      when 2:    d_list[i].d_func = daemon_doctor;
       when 3:    d_list[i].d_func = stomach;
       when 4:    d_list[i].d_func = runners;
       when 5:    d_list[i].d_func = swander;
@@ -1115,7 +1115,7 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_int(savef, food_left))
   rs_assert(rs_write_int(savef, no_move))
   rs_assert(rs_write_int(savef, purse))
-  rs_assert(rs_write_int(savef, quiet))
+  rs_assert(rs_write_int(savef, temp_i)) /* UNUSED */
   rs_assert(rs_write_int(savef, vf_hit))
   rs_assert(rs_write_int(savef, seed))
   rs_assert(rs_write_coord(savef, stairs))
@@ -1169,7 +1169,7 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_int(inf, &food_left))
   rs_assert(rs_read_int(inf, &no_move))
   rs_assert(rs_read_int(inf, &purse))
-  rs_assert(rs_read_int(inf, &quiet))
+  rs_assert(rs_read_int(inf, &unused_coord.x)) /* UNUSED */
   rs_assert(rs_read_int(inf, &vf_hit))
   rs_assert(rs_read_int(inf, (signed *) &seed))
   rs_assert(rs_read_coord(inf, &stairs))

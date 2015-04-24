@@ -399,7 +399,7 @@ extern char	dir_ch, file_name[], huh[], prbuf[], whoami[],
 extern int	count, food_left, hungry_state,
 		level, max_hit, max_level, mpos,
 		no_command, no_food, no_move, purse,
-		quiet, vf_hit, potential_wizard, wizard;
+		vf_hit, potential_wizard, wizard;
 
 extern unsigned int	seed;
 
@@ -549,7 +549,6 @@ char	*ring_num(THING *obj);
 char	*set_mname(THING *tp);
 const char	*vowelstr(const char *str);
 
-void doctor(void);
 void leave(int);
 void quit(int);
 void rollwand(void);

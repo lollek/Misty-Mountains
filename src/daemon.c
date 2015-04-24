@@ -12,12 +12,17 @@
  */
 
 #include "io.h"
+#include "pack.h"
+#include "command.h"
 #include "rogue.h"
+
 #include "daemons.h"
 
 #define EMPTY 0
 #define DAEMON -1
 #define MAXDAEMONS 20
+
+static int quiet_rounds = 0;
 
 static struct delayed_action d_list[MAXDAEMONS] = {
     { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY },
@@ -144,3 +149,51 @@ daemon_run_fuses(int flag)
       (*wire->d_func)(wire->d_arg);
     }
 }
+
+/** daemon_reset_doctor
+ * Stop the daemon doctor from healing */
+void
+daemon_reset_doctor(void)
+{
+  quiet_rounds = 0;
+}
+
+/** daemon_doctor:
+ * A healing daemon that restors hit points after rest */
+void
+daemon_doctor(void)
+{
+  int lv = pstats.s_lvl;
+  int ohp = pstats.s_hpt;
+  int i;
+
+  if (ohp == max_hp)
+    return;
+
+  quiet_rounds++;
+  if (lv < 8)
+  {
+    if (quiet_rounds + (lv << 1) > 20)
+      pstats.s_hpt++;
+  }
+  else if (quiet_rounds >= 3)
+    pstats.s_hpt += rnd(lv - 7) + 1;
+
+  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  {
+    THING *ring = equipped_item(ring_slots[i]);
+    if (ring != NULL && ring->o_which == R_REGEN)
+      pstats.s_hpt++;
+  }
+
+  if (ohp != pstats.s_hpt)
+    quiet_rounds = 0;
+
+  if (pstats.s_hpt >= max_hp)
+  {
+    pstats.s_hpt = max_hp;
+    command_stop(false);
+  }
+}
+
+

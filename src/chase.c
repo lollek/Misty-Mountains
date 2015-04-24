@@ -18,6 +18,7 @@
 #include "command.h"
 #include "io.h"
 #include "traps.h"
+#include "daemons.h"
 
 #include "chase.h"
 
@@ -138,7 +139,7 @@ over:
 		endmsg();
 	    fire_bolt(&th->t_pos, &delta, "flame");
 	    command_stop(true);
-	    quiet = 0;
+	    daemon_reset_doctor();
 	    if (to_death && !on(*th, ISTARGET))
 	    {
 		to_death = false;

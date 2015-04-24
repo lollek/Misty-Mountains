@@ -18,44 +18,6 @@
 #include "pack.h"
 #include "daemons.h"
 
-/** doctor:
- * A healing daemon that restors hit points after rest */
-void
-doctor(void)
-{
-  int lv = pstats.s_lvl;
-  int ohp = pstats.s_hpt;
-  int i;
-
-  if (ohp == max_hp)
-    return;
-
-  quiet++;
-  if (lv < 8)
-  {
-    if (quiet + (lv << 1) > 20)
-      pstats.s_hpt++;
-  }
-  else if (quiet >= 3)
-    pstats.s_hpt += rnd(lv - 7) + 1;
-
-  for (i = 0; i < RING_SLOTS_SIZE; ++i)
-  {
-    THING *ring = equipped_item(ring_slots[i]);
-    if (ring != NULL && ring->o_which == R_REGEN)
-      pstats.s_hpt++;
-  }
-
-  if (ohp != pstats.s_hpt)
-    quiet = 0;
-
-  if (pstats.s_hpt >= max_hp)
-  {
-    pstats.s_hpt = max_hp;
-    command_stop(false);
-  }
-}
-
 /*
  * Swander:
  *	Called when it is time to start rolling for wandering monsters

@@ -21,6 +21,7 @@
 #include "armor.h"
 #include "chase.h"
 #include "pack.h"
+#include "daemons.h"
 
 static const char *prname(const char *mname, bool upper);
 static void thunk(THING *weap, const char *mname, bool noend);
@@ -44,7 +45,7 @@ fight(coord *mp, THING *weap, bool thrown)
 
     /* Since we are fighting, things are not quiet so no healing takes place */
     command_stop(false);
-    quiet = 0;
+    daemon_reset_doctor();
     runto(mp);
 
     /* Let him know it was really a xeroc (if it was one) */
@@ -106,7 +107,7 @@ attack(THING *mp)
     /* Since this is an attack, stop running and any healing that was
      * going on at the time */
     command_stop(false);
-    quiet = 0;
+    daemon_reset_doctor();
     if (to_death && !on(*mp, ISTARGET))
     {
 	to_death = false;
