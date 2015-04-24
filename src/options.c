@@ -21,86 +21,6 @@
 
 #include "options.h"
 
-static bool get_bool(void *vp, WINDOW *win);  /* Change a boolean */
-static bool get_sf(void *vp, WINDOW *win);    /* Toggle see_floor */
-static bool get_str(void *vopt, WINDOW *win); /* Change string */
-
-#define NUM_OPTS (sizeof optlist / sizeof (OPTION))
-
-enum put_t
-{
-  PUT_BOOL,
-  PUT_STR
-};
-
-/* description of an option and what to do with it */
-typedef struct optstruct {
-  char *o_prompt;     /* prompt for interactive entry */
-  void *o_opt;        /* pointer to thing to set function to print value */
-  enum put_t put_type;
-  bool (*o_getfunc)(void *opt, WINDOW *win); /* Get value */
-} OPTION;
-
-static OPTION optlist[] = {
-  {"Terse output",                     &terse,       PUT_BOOL, get_bool},
-  {"Flush typeahead during battle",    &fight_flush, PUT_BOOL, get_bool},
-  {"Show position only at end of run", &jump,        PUT_BOOL, get_bool},
-  {"Show the lamp-illuminated floor",  &see_floor,   PUT_BOOL, get_sf},
-  {"Follow turnings in passageways",   &passgo,      PUT_BOOL, get_bool},
-  {"Show tombstone when killed",       &tombstone,   PUT_BOOL, get_bool},
-  {"Name",                             whoami,       PUT_STR,  get_str},
-  {"Save file",                        file_name,    PUT_STR,  get_str}
-};
-
-
-/* option:
- * Print and then set options from the terminal */
-bool
-option(void)
-{
-  char c = ~KEY_ESCAPE;
-  WINDOW *optscr = NULL;
-  coord msg_pos;
-  unsigned i;
-
-  msg("Which value do you want to change? (ESC to exit) ");
-  getyx(stdscr, msg_pos.y, msg_pos.x);
-  optscr = dupwin(stdscr);
-
-  /* Display current values of options */
-  wmove(optscr, 1, 0);
-  for (i = 0; i < NUM_OPTS; ++i)
-  {
-    wprintw(optscr, "%d: %s: ", i + 1, optlist[i].o_prompt);
-    if (optlist[i].put_type == PUT_BOOL)
-      waddstr(optscr, *(bool *) optlist[i].o_opt ? "True" : "False");
-    else /* PUT_STR */
-      waddstr(optscr, (char *) optlist[i].o_opt);
-    waddch(optscr, '\n');
-  }
-
-  while (c != KEY_ESCAPE)
-  {
-    wmove(optscr, msg_pos.y, msg_pos.x);
-    wrefresh(optscr);
-    c = readchar();
-    if (c > '0' && c <= '0' + NUM_OPTS)
-    {
-      i = c - '0' - 1;
-      mvwprintw(optscr, i + 1, 0, "%d: %s: ", i + 1, optlist[i].o_prompt);
-      (*optlist[i].o_getfunc)(optlist[i].o_opt, optscr);
-    }
-  }
-
-  /* Switch back to original screen */
-  wmove(optscr, LINES - 1, 0);
-  delwin(optscr);
-  clearok(curscr, true);
-  touchwin(stdscr);
-  msg("");
-  return false;
-}
-
 static bool
 get_bool(void *vp, WINDOW *win)
 {
@@ -150,3 +70,69 @@ get_str(void *vopt, WINDOW *win)
 {
   return wreadstr(win, (char *)vopt);
 }
+
+/** option:
+ * Print and then set options from the terminal */
+#define NOPTS (sizeof optlist / sizeof (*optlist))
+bool
+option(void)
+{
+  struct option {
+    char *o_prompt;     /* prompt for interactive entry */
+    void *o_opt;        /* pointer to thing to set function to print value */
+    enum put_t { PUT_BOOL, PUT_STR } put_type;
+    bool (*o_getfunc)(void *opt, WINDOW *win); /* Get value */
+  } optlist[] = {
+    {"Terse output",                     &terse,       PUT_BOOL, get_bool},
+    {"Flush typeahead during battle",    &fight_flush, PUT_BOOL, get_bool},
+    {"Show position only at end of run", &jump,        PUT_BOOL, get_bool},
+    {"Show the lamp-illuminated floor",  &see_floor,   PUT_BOOL, get_sf},
+    {"Follow turnings in passageways",   &passgo,      PUT_BOOL, get_bool},
+    {"Show tombstone when killed",       &tombstone,   PUT_BOOL, get_bool},
+    {"Name",                             whoami,       PUT_STR,  get_str},
+    {"Save file",                        file_name,    PUT_STR,  get_str}
+  };
+
+  char c = ~KEY_ESCAPE;
+  WINDOW *optscr = NULL;
+  coord msg_pos;
+  unsigned i;
+
+  msg("Which value do you want to change? (ESC to exit) ");
+  getyx(stdscr, msg_pos.y, msg_pos.x);
+  optscr = dupwin(stdscr);
+
+  /* Display current values of options */
+  wmove(optscr, 1, 0);
+  for (i = 0; i < NOPTS; ++i)
+  {
+    wprintw(optscr, "%d: %s: ", i + 1, optlist[i].o_prompt);
+    if (optlist[i].put_type == PUT_BOOL)
+      waddstr(optscr, *(bool *) optlist[i].o_opt ? "True" : "False");
+    else /* PUT_STR */
+      waddstr(optscr, (char *) optlist[i].o_opt);
+    waddch(optscr, '\n');
+  }
+
+  while (c != KEY_ESCAPE)
+  {
+    wmove(optscr, msg_pos.y, msg_pos.x);
+    wrefresh(optscr);
+    c = readchar();
+    if (c > '0' && c <= '0' + NOPTS)
+    {
+      i = c - '0' - 1;
+      mvwprintw(optscr, i + 1, 0, "%d: %s: ", i + 1, optlist[i].o_prompt);
+      (*optlist[i].o_getfunc)(optlist[i].o_opt, optscr);
+    }
+  }
+
+  /* Switch back to original screen */
+  wmove(optscr, LINES - 1, 0);
+  delwin(optscr);
+  clearok(curscr, true);
+  touchwin(stdscr);
+  msg("");
+  return false;
+}
+
