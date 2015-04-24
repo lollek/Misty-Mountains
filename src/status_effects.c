@@ -3,7 +3,6 @@
 
 #include "rogue.h"
 #include "io.h"
-#include "chase.h"
 #include "command.h"
 #include "pack.h"
 #include "daemons.h"

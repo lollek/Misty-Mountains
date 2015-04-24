@@ -21,7 +21,6 @@
 #include "command.h"
 #include "options.h"
 #include "io.h"
-#include "chase.h"
 #include "armor.h"
 #include "pack.h"
 

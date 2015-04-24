@@ -18,7 +18,6 @@
 #include "command.h"
 #include "traps.h"
 #include "io.h"
-#include "chase.h"
 #include "armor.h"
 #include "pack.h"
 

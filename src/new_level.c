@@ -17,7 +17,6 @@
 #include "status_effects.h"
 #include "traps.h"
 #include "io.h"
-#include "chase.h"
 #include "pack.h"
 #include "daemons.h"
 

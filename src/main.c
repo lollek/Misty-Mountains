@@ -18,7 +18,6 @@
 #include "rogue.h"
 #include "command.h"
 #include "io.h"
-#include "chase.h"
 #include "pack.h"
 
 enum game_mode_t

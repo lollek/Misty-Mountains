@@ -10,7 +10,6 @@
 #include "traps.h"
 #include "options.h"
 #include "io.h"
-#include "chase.h"
 #include "pack.h"
 
 #include "command_private.h"

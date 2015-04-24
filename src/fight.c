@@ -19,7 +19,6 @@
 #include "command.h"
 #include "io.h"
 #include "armor.h"
-#include "chase.h"
 #include "pack.h"
 #include "daemons.h"
 

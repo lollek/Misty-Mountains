@@ -12,12 +12,13 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "rogue.h"
 #include "status_effects.h"
 #include "io.h"
-#include "chase.h"
 #include "pack.h"
+#include "scrolls.h"
 
 /*
  * List of monsters in rough order of vorpalness
@@ -237,3 +238,44 @@ save(int which)
   }
   return save_throw(which, &player);
 }
+
+void
+runto(coord *runner)
+{
+  THING *tp = moat(runner->y, runner->x);
+
+  /* If we couldn't find him, something is funny */
+  assert (tp != NULL);
+  /* msg("couldn't find monster in runto at (%d,%d)", runner->y, runner->x); */
+
+  /* Start the beastie running */
+  tp->t_flags |= ISRUN;
+  tp->t_flags &= ~ISHELD;
+  tp->t_dest = find_dest(tp);
+}
+
+coord *
+find_dest(THING *tp)
+{
+    THING *obj;
+    int prob;
+
+    if ((prob = monsters[tp->t_type - 'A'].m_carry) <= 0 || tp->t_room == proom
+	|| see_monst(tp))
+	    return &hero;
+    for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
+    {
+	if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
+	    continue;
+	if (roomin(&obj->o_pos) == tp->t_room && rnd(100) < prob)
+	{
+	    for (tp = mlist; tp != NULL; tp = tp->l_next)
+		if (tp->t_dest == &obj->o_pos)
+		    break;
+	    if (tp == NULL)
+		return &obj->o_pos;
+	}
+    }
+    return &hero;
+}
+

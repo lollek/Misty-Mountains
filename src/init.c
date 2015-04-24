@@ -23,7 +23,6 @@
 #include "status_effects.h"
 #include "scrolls.h"
 #include "io.h"
-#include "chase.h"
 #include "armor.h"
 #include "pack.h"
 #include "daemons.h"

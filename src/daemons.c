@@ -15,7 +15,6 @@
 #include "pack.h"
 #include "command.h"
 #include "status_effects.h"
-#include "chase.h"
 #include "rogue.h"
 
 #include "daemons.h"
@@ -336,11 +335,11 @@ daemon_runners_move(void)
     {
       bool wastarget = on(*tp, ISTARGET);
       coord orig_pos = tp->t_pos;
-      if (!move_monst(tp))
+      if (!monster_chase(tp))
         continue;
 
       if (on(*tp, ISFLY) && dist_cp(&hero, &tp->t_pos) >= 3)
-        move_monst(tp);
+        monster_chase(tp);
 
       if (wastarget && !same_coords(orig_pos, tp->t_pos))
       {

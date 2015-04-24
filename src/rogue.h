@@ -549,6 +549,23 @@ char	*ring_num(THING *obj);
 char	*set_mname(THING *tp);
 const char	*vowelstr(const char *str);
 
+void set_oldch(THING *tp, coord *cp); /* Set oldch for a monster */
+bool see_monst(THING *mp);  /* Can player see the monster? */
+void runto(coord *runner);  /* Make monster chase hero */
+struct room *roomin(coord *cp);
+bool diag_ok(coord *sp, coord *ep); /* Check if move is legal if diagonal */
+bool cansee(int y, int x); /* True if player can see coord */
+coord *find_dest(THING *tp); /* Find proper destination for monster */
+
+/** Dist
+ * Calculate the "distance" between to points.  Actually,
+ * this calculates d^2, not d, but that's good enough for
+ * our purposes, since it's only used comparitively. */
+int dist(int y1, int x1, int y2, int x2);
+#define dist_cp(_1, _2) dist((_1)->y, (_1)->x, (_2)->y, (_2)->x)
+
+bool monster_chase(THING *tp); /* Make a monster chase */
+
 void leave(int);
 void quit(int);
 

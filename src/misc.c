@@ -13,12 +13,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <assert.h>
 
 #include "rogue.h"
 #include "status_effects.h"
 #include "options.h"
 #include "io.h"
-#include "chase.h"
 #include "armor.h"
 #include "pack.h"
 #include "daemons.h"
@@ -605,7 +605,6 @@ strucpy(char *s1, const char *s2, int len)
     *s1 = '\0';
 }
 
-
 void
 waste_time(int rounds)
 {
@@ -616,4 +615,108 @@ waste_time(int rounds)
     daemon_run_all(AFTER);
     daemon_run_fuses(AFTER);
   }
+}
+
+void
+set_oldch(THING *tp, coord *cp)
+{
+  char sch = tp->t_oldch;
+
+  if (same_coords(tp->t_pos, *cp))
+    return;
+
+  tp->t_oldch = mvincch(cp->y, cp->x);
+  if (!is_blind(&player))
+  {
+    if ((sch == FLOOR || tp->t_oldch == FLOOR) &&
+        (tp->t_room->r_flags & ISDARK))
+      tp->t_oldch = SHADOW;
+    else if (dist_cp(cp, &hero) <= LAMPDIST && see_floor)
+      tp->t_oldch = chat(cp->y, cp->x);
+  }
+}
+
+bool
+see_monst(THING *mp)
+{
+  int y = mp->t_pos.y;
+  int x = mp->t_pos.x;
+
+  if (is_blind(&player) ||
+      (is_invisible(mp) && !is_true_seeing(&player)))
+    return false;
+
+  if (dist(y, x, hero.y, hero.x) < LAMPDIST)
+  {
+    if (y != hero.y && x != hero.x &&
+        !step_ok(chat(y, hero.x)) && !step_ok(chat(hero.y, x)))
+      return false;
+    return true;
+  }
+
+  if (mp->t_room != proom)
+    return false;
+  return ((bool)!(mp->t_room->r_flags & ISDARK));
+}
+
+/** Roomin
+ * Find what room some coords are in, NULL means no room */
+struct room *
+roomin(coord *cp)
+{
+  char *fp = &flat(cp->y, cp->x);
+  struct room *rp;
+
+  if (*fp & F_PASS)
+    return &passages[*fp & F_PNUM];
+
+  for (rp = rooms; rp < &rooms[MAXROOMS]; rp++)
+    if (cp->x <= rp->r_pos.x + rp->r_max.x && rp->r_pos.x <= cp->x
+        && cp->y <= rp->r_pos.y + rp->r_max.y && rp->r_pos.y <= cp->y)
+      return rp;
+
+  msg("in some bizarre place (%d, %d)", cp->y, cp->x);
+  assert(0);
+  return NULL;
+}
+
+bool
+diag_ok(coord *sp, coord *ep)
+{
+  if (ep->x < 0 || ep->x >= NUMCOLS || ep->y <= 0 || ep->y >= NUMLINES - 1)
+    return false;
+  if (ep->x == sp->x || ep->y == sp->y)
+    return true;
+  return (bool)(step_ok(chat(ep->y, sp->x)) && step_ok(chat(sp->y, ep->x)));
+}
+
+bool
+cansee(int y, int x)
+{
+    struct room *rer;
+    static coord tp;
+
+    if (is_blind(&player))
+	return false;
+    if (dist(y, x, hero.y, hero.x) < LAMPDIST)
+    {
+	if (flat(y, x) & F_PASS)
+	    if (y != hero.y && x != hero.x &&
+		!step_ok(chat(y, hero.x)) && !step_ok(chat(hero.y, x)))
+		    return false;
+	return true;
+    }
+    /*
+     * We can only see if the hero in the same room as
+     * the coordinate and the room is lit or if it is close.
+     */
+    tp.y = y;
+    tp.x = x;
+    return (bool)((rer = roomin(&tp)) == proom && !(rer->r_flags & ISDARK));
+}
+
+int
+dist(int y1, int x1, int y2, int x2)
+{
+    return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
