@@ -65,7 +65,7 @@ init_new_game(void)
   new_level();                          /* Draw current level */
 
   /* Start up daemons and fuses */
-  daemon_start(runners, 0, AFTER);
+  daemon_start(daemon_runners_move, 0, AFTER);
   daemon_start(daemon_doctor, 0, AFTER);
   daemon_start_fuse(daemon_start_wanderer, 0, WANDERTIME, AFTER);
   daemon_start(daemon_digest_food, 0, AFTER);

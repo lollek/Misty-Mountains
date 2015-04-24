@@ -3,7 +3,6 @@
 
 #include "rogue.h"
 
-void runners(void); /* Make all running monsters move */
 int move_monst(THING *tp); /* Execute a signel turn of running */
 int do_chase(THING *th);   /* Make one thing chase another */
 void set_oldch(THING *tp, coord *cp); /* Set oldch for a monster */

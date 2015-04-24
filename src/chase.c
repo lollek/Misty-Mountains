@@ -25,39 +25,7 @@
 #define DRAGONSHOT  5  /* one chance in DRAGONSHOT that a dragon will flame */
 static coord ch_ret;   /* Where chasing takes you */
 
-void
-runners(void)
-{
-  THING *tp;
-  THING *next;
 
-  for (tp = mlist; tp != NULL; tp = next)
-  {
-    /* remember this in case the monster's "next" is changed */
-    next = tp->l_next;
-    if (!on(*tp, ISHELD) && on(*tp, ISRUN))
-    {
-      bool wastarget = on(*tp, ISTARGET);
-      coord orig_pos = tp->t_pos;
-      if (move_monst(tp) == -1)
-        continue;
-
-      if (on(*tp, ISFLY) && dist_cp(&hero, &tp->t_pos) >= 3)
-        move_monst(tp);
-
-      if (wastarget && !same_coords(orig_pos, tp->t_pos))
-      {
-        tp->t_flags &= ~ISTARGET;
-        to_death = false;
-      }
-    }
-  }
-  if (has_hit)
-  {
-    endmsg();
-    has_hit = false;
-  }
-}
 
 /* TODO: Change this to a bool */
 int

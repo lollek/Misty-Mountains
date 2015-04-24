@@ -318,3 +318,41 @@ daemon_change_visuals(void)
       addcch((rnd(26) + 'A') | A_STANDOUT);
   }
 }
+
+/** daemon_runners_move
+ * Make all running monsters move */
+void
+daemon_runners_move(void)
+{
+  THING *tp;
+  THING *next;
+
+  for (tp = mlist; tp != NULL; tp = next)
+  {
+    /* remember this in case the monster's "next" is changed */
+    next = tp->l_next;
+
+    if (!on(*tp, ISHELD) && on(*tp, ISRUN))
+    {
+      bool wastarget = on(*tp, ISTARGET);
+      coord orig_pos = tp->t_pos;
+      if (move_monst(tp) == -1)
+        continue;
+
+      if (on(*tp, ISFLY) && dist_cp(&hero, &tp->t_pos) >= 3)
+        move_monst(tp);
+
+      if (wastarget && !same_coords(orig_pos, tp->t_pos))
+      {
+        tp->t_flags &= ~ISTARGET;
+        to_death = false;
+      }
+    }
+  }
+
+  if (has_hit)
+  {
+    endmsg();
+    has_hit = false;
+  }
+}

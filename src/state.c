@@ -461,7 +461,7 @@ rs_write_daemons(FILE *savef, const struct delayed_action *d_list, int count)
       func = 2;
     else if (d_list[i].d_func == daemon_digest_food)
       func = 3;
-    else if (d_list[i].d_func == runners)
+    else if (d_list[i].d_func == daemon_runners_move)
       func = 4;
     else if (d_list[i].d_func == daemon_start_wanderer)
       func = 5;
@@ -515,7 +515,7 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
       case 1:    d_list[i].d_func = daemon_rollwand;
       when 2:    d_list[i].d_func = daemon_doctor;
       when 3:    d_list[i].d_func = daemon_digest_food;
-      when 4:    d_list[i].d_func = runners;
+      when 4:    d_list[i].d_func = daemon_runners_move;
       when 5:    d_list[i].d_func = daemon_start_wanderer;
       when 6:    d_list[i].d_func = remove_hasted;
       when 7:    d_list[i].d_func = remove_confusion;
