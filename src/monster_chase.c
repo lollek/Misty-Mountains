@@ -12,7 +12,6 @@
 
 #include <stdlib.h>
 
-#include "rogue.h"
 #include "status_effects.h"
 #include "scrolls.h"
 #include "command.h"
@@ -22,6 +21,8 @@
 #include "fight.h"
 #include "list.h"
 #include "monsters.h"
+#include "move.h"
+#include "rogue.h"
 
 #define DRAGONSHOT  5  /* one chance in DRAGONSHOT that a dragon will flame */
 static coord ch_ret;   /* Where chasing takes you */
@@ -52,7 +53,7 @@ chase(THING *tp, coord *ee)
 	/*
 	 * get a valid random move
 	 */
-	ch_ret = *rndmove(tp);
+	move_random(tp, &ch_ret);
 	curdist = dist_cp(&ch_ret, ee);
 	/*
 	 * Small chance that it will become un-confused 

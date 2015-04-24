@@ -14,7 +14,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "rogue.h"
 #include "potions.h"
 #include "status_effects.h"
 #include "scrolls.h"
@@ -24,6 +23,8 @@
 #include "pack.h"
 #include "daemons.h"
 #include "list.h"
+#include "move.h"
+#include "rogue.h"
 
 #include "command_private.h"
 
@@ -202,7 +203,7 @@ command_do(char ch)
     /* Lower case */
     case 'h': case 'j': case 'k': case 'l':
     case 'y': case 'u': case 'b': case 'n':
-      return do_move(ch);
+      return move_do(ch);
     case 'a': return command_again();
     case 'c': return command_name_item();
     case 'd': return drop();
@@ -221,7 +222,7 @@ command_do(char ch)
     /* Upper case */
     case 'H': case 'J': case 'K': case 'L':
     case 'Y': case 'U': case 'B': case 'N':
-      return do_run(ch, false);
+      return move_do_run(ch, false);
     case 'D': discovered(); return false;
     case 'F': return command_attack(true);
     case 'I': return print_equipment();
@@ -235,7 +236,7 @@ command_do(char ch)
     /* Ctrl case */
     case CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
     case CTRL('Y'): case CTRL('U'): case CTRL('B'): case CTRL('N'):
-      return do_run(UNCTRL(ch), true);
+      return move_do_run(UNCTRL(ch), true);
     case CTRL('P'): msg(huh); return false;
     case CTRL('R'): clearok(curscr, true); wrefresh(curscr); return false;
     case CTRL('Z'): shell(); return false;

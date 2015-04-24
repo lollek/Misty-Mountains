@@ -27,6 +27,23 @@ typedef struct spot {		/* position matrix for maze positions */
 
 #define GOLDGRP 1
 
+/** door_open:
+ * Called to illuminate a room.
+ * If it is dark, remove anything that might move.  */
+static void
+door_open(struct room *rp)
+{
+  int y, x;
+
+  if (rp->r_flags & ISGONE)
+    return;
+
+  for (y = rp->r_pos.y; y < rp->r_pos.y + rp->r_max.y; y++)
+    for (x = rp->r_pos.x; x < rp->r_pos.x + rp->r_max.x; x++)
+      if (isupper(winat(y, x)))
+        monster_notice_player(y, x);
+}
+
 /*
  * do_rooms:
  *	Create rooms and corridors with a connectivity graph

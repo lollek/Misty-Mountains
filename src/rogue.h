@@ -445,13 +445,10 @@ void	dig(int y, int x);
 void	discovered(void);
 void	do_maze(struct room *rp);
 void	do_motion(THING *obj, int ydelta, int xdelta);
-bool	do_move(char ch);
 void	do_passages(void);
 void	do_rooms(void);
-bool	do_run(char ch, bool cautiously);
 bool	do_zap(void);
 void	door(struct room *rm, coord *cp);
-void	door_open(struct room *rp);
 void	drain(void);
 void	draw_room(struct room *rp);
 bool	drop(void);
@@ -501,7 +498,6 @@ int	spread(int nm);
 void	strucpy(char *s1, const char *s2, int len);
 void	total_winner(void);
 void	treas_room(void);
-void	turnref(void);
 void	unlock_sc(void);
 void	vert(struct room *rp, int startx);
 void	waste_time(int rounds);
@@ -511,7 +507,6 @@ bool	wield(void);
 bool	fallpos(coord *pos, coord *newpos);
 bool	find_floor(struct room *rp, coord *cp, int limit, bool monst);
 THING  *find_magic_item_in_players_pack(void);
-bool	turn_ok(int y, int x);
 
 char	rnd_thing(void);
 
@@ -540,7 +535,6 @@ bool monster_chase(THING *tp); /* Make a monster chase */
 void leave(int);
 void quit(int);
 
-coord	*rndmove(THING *who);
 
 THING	*find_obj(int y, int x);
 THING	*new_thing(void);

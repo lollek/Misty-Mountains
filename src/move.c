@@ -11,8 +11,8 @@
  */
 
 #include <ctype.h>
+#include <assert.h>
 
-#include "rogue.h"
 #include "status_effects.h"
 #include "scrolls.h"
 #include "command.h"
@@ -22,33 +22,55 @@
 #include "pack.h"
 #include "fight.h"
 #include "monsters.h"
+#include "move.h"
+#include "rogue.h"
 
-/*
- * do_run:
- *	Start the hero running
- */
-
-bool
-do_run(char ch, bool cautiously)
+/** move_turn_ok:
+ * Decide whether it is legal to turn onto the given space */
+static bool
+move_turn_ok(int y, int x)
 {
-    if (cautiously)
-    {
-	door_stop = true;
-	firstmove = true;
-    }
-    running = true;
-    runch = tolower(ch);
-    return false;
+  PLACE *pp = INDEX(y, x);
+  return (pp->p_ch == DOOR
+      || (pp->p_flags & (F_REAL|F_PASS)) == (F_REAL|F_PASS));
 }
 
-/*
- * do_move:
- *	Check to see that a move is legal.  If it is handle the
- * consequences (fighting, picking up, etc.)
- */
+/** move_turnref:
+ * Decide whether to refresh at a passage turning or not */
+static void
+move_turnref(void)
+{
+  PLACE *pp = INDEX(hero.y, hero.x);
+
+  if (!(pp->p_flags & F_SEEN))
+  {
+    if (jump)
+    {
+      leaveok(stdscr, true);
+      refresh();
+      leaveok(stdscr, false);
+    }
+    pp->p_flags |= F_SEEN;
+  }
+}
 
 bool
-do_move(char ch)
+move_do_run(char ch, bool cautiously)
+{
+  if (cautiously)
+  {
+    door_stop = true;
+    firstmove = true;
+  }
+
+  running = true;
+  runch = tolower(ch);
+  return false;
+}
+
+/* TODO: Clean up this monster */
+bool
+move_do(char ch)
 {
     int dy = 0, dx = 0;
     char fl;
@@ -76,7 +98,7 @@ do_move(char ch)
 
     if (is_confused(&player) && rnd(5) != 0)
     {
-	nh = *rndmove(&player);
+	move_random(&player, &nh);
 	if (same_coords(nh, hero))
 	{
 	    running = false;
@@ -135,8 +157,8 @@ hit_bound:
 		{
 		    case 'h':
 		    case 'l':
-			b1 = (bool)(hero.y != 1 && turn_ok(hero.y - 1, hero.x));
-			b2 = (bool)(hero.y != NUMLINES - 2 && turn_ok(hero.y + 1, hero.x));
+			b1 = (bool)(hero.y != 1 && move_turn_ok(hero.y - 1, hero.x));
+			b2 = (bool)(hero.y != NUMLINES - 2 && move_turn_ok(hero.y + 1, hero.x));
 			if (!(b1 ^ b2))
 			    break;
 			if (b1)
@@ -150,12 +172,12 @@ hit_bound:
 			    dy = 1;
 			}
 			dx = 0;
-			turnref();
+			move_turnref();
 			goto over;
 		    case 'j':
 		    case 'k':
-			b1 = (bool)(hero.x != 0 && turn_ok(hero.y, hero.x - 1));
-			b2 = (bool)(hero.x != NUMCOLS - 1 && turn_ok(hero.y, hero.x + 1));
+			b1 = (bool)(hero.x != 0 && move_turn_ok(hero.y, hero.x - 1));
+			b2 = (bool)(hero.x != NUMCOLS - 1 && move_turn_ok(hero.y, hero.x + 1));
 			if (!(b1 ^ b2))
 			    break;
 			if (b1)
@@ -169,7 +191,7 @@ hit_bound:
 			    dx = 1;
 			}
 			dy = 0;
-			turnref();
+			move_turnref();
 			goto over;
 		}
 	    }
@@ -227,99 +249,50 @@ hit_bound:
     return after;
 }
 
-/*
- * turn_ok:
- *	Decide whether it is legal to turn onto the given space
- */
-bool
-turn_ok(int y, int x)
-{
-    PLACE *pp;
-
-    pp = INDEX(y, x);
-    return (pp->p_ch == DOOR
-	|| (pp->p_flags & (F_REAL|F_PASS)) == (F_REAL|F_PASS));
-}
-
-/*
- * turnref:
- *	Decide whether to refresh at a passage turning or not
- */
-
-void
-turnref(void)
-{
-    PLACE *pp;
-
-    pp = INDEX(hero.y, hero.x);
-    if (!(pp->p_flags & F_SEEN))
-    {
-	if (jump)
-	{
-	    leaveok(stdscr, true);
-	    refresh();
-	    leaveok(stdscr, false);
-	}
-	pp->p_flags |= F_SEEN;
-    }
-}
-
-/*
- * door_open:
- *	Called to illuminate a room.  If it is dark, remove anything
- *	that might move.
- */
-
-void
-door_open(struct room *rp)
-{
-    int y, x;
-
-    if (!(rp->r_flags & ISGONE))
-	for (y = rp->r_pos.y; y < rp->r_pos.y + rp->r_max.y; y++)
-	    for (x = rp->r_pos.x; x < rp->r_pos.x + rp->r_max.x; x++)
-		if (isupper(winat(y, x)))
-		    monster_notice_player(y, x);
-}
-
-/* rndmove:
+/** move_random:
  * Move in a random direction if the monster/person is confused */
-coord *
-rndmove(THING *who)
+void
+move_random(THING *who, coord *ret)
 {
-    THING *obj;
-    int x, y;
-    char ch;
-    static coord ret;  /* what we will be returning */
+  THING *obj;
+  int x = ret->x = who->t_pos.x + rnd(3) - 1;
+  int y = ret->y = who->t_pos.y + rnd(3) - 1;
+  char ch;
 
-    y = ret.y = who->t_pos.y + rnd(3) - 1;
-    x = ret.x = who->t_pos.x + rnd(3) - 1;
-    /*
-     * Now check to see if that's a legal move.  If not, don't move.
-     * (I.e., bump into the wall or whatever)
-     */
-    if (y == who->t_pos.y && x == who->t_pos.x)
-	return &ret;
-    if (!diag_ok(&who->t_pos, &ret))
-	goto bad;
-    else
+  assert(who != NULL);
+
+  /* Now check to see if that's a legal move.
+   * If not, don't move.(I.e., bump into the wall or whatever) */
+  if (y == who->t_pos.y && x == who->t_pos.x)
+    return;
+
+  if (!diag_ok(&who->t_pos, ret))
+  {
+    ret->x = who->t_pos.x;
+    ret->y = who->t_pos.y;
+    return;
+  }
+
+  ch = winat(y, x);
+  if (!step_ok(ch))
+  {
+    ret->x = who->t_pos.x;
+    ret->y = who->t_pos.y;
+    return;
+  }
+
+  if (ch == SCROLL)
+  {
+    for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
+      if (y == obj->o_pos.y && x == obj->o_pos.x)
+        break;
+
+    if (obj != NULL && obj->o_which == S_SCARE)
     {
-	ch = winat(y, x);
-	if (!step_ok(ch))
-	    goto bad;
-	if (ch == SCROLL)
-	{
-	    for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
-		if (y == obj->o_pos.y && x == obj->o_pos.x)
-		    break;
-	    if (obj != NULL && obj->o_which == S_SCARE)
-		goto bad;
-	}
+      ret->x = who->t_pos.x;
+      ret->y = who->t_pos.y;
+      return;
     }
-    return &ret;
-
-bad:
-    ret = who->t_pos;
-    return &ret;
+  }
 }
 
