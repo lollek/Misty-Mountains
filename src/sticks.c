@@ -56,7 +56,7 @@ do_zap(void)
     char monster, oldch;
     static THING bolt;
 
-    if ((obj = get_item("zap with", STICK)) == NULL)
+    if ((obj = pack_get_item("zap with", STICK)) == NULL)
 	return false;
     if (obj->o_type != STICK)
     {
@@ -171,7 +171,7 @@ do_zap(void)
 	    }
 	when WS_MISSILE:
 	{
-	    THING *weapon = equipped_item(EQUIPMENT_RHAND);
+	    THING *weapon = pack_equipped_item(EQUIPMENT_RHAND);
 	    ws_info[WS_MISSILE].oi_know = true;
 	    bolt.o_type = '*';
 	    strncpy(bolt.o_hurldmg,"1x4",sizeof(bolt.o_hurldmg));

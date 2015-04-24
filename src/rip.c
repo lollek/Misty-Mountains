@@ -238,8 +238,8 @@ death(char monst)
     mvprintw(LINES -1, 0, "[Press return to continue]");
     refresh();
     wait_for(KEY_ENTER);
-    evaluate_players_inventory();
-    score(purse, player_has_amulet() ? 3 : 0, monst);
+    pack_evaluate();
+    score(purse, pack_contains_amulet() ? 3 : 0, monst);
     exit(0);
 }
 
@@ -280,7 +280,7 @@ total_winner(void)
     mvaddstr(LINES - 1, 0, "--Press space to continue--");
     refresh();
     wait_for(KEY_SPACE);
-    purse += evaluate_players_inventory();
+    purse += pack_evaluate();
     score(purse, 2, ' ');
     exit(0);
 }

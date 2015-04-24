@@ -118,7 +118,7 @@ quit(int sig)
   if (getch() == 'y')
   {
     signal(SIGINT, leave);
-    evaluate_players_inventory();
+    pack_evaluate();
     score(purse, 1, 0);
     exit(0);
   }

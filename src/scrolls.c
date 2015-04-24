@@ -39,7 +39,7 @@ struct obj_info scr_info[NSCROLLS] = {
 void
 read_scroll(void)
 {
-  THING *obj = get_item("read", SCROLL);
+  THING *obj = pack_get_item("read", SCROLL);
   THING *orig_obj;
   bool discardit = false;
 
@@ -56,7 +56,7 @@ read_scroll(void)
 
   /* Get rid of the thing */
   discardit = (bool)(obj->o_count == 1);
-  leave_pack(obj, false, false);
+  pack_remove(obj, false, false);
   orig_obj = obj;
 
   switch (obj->o_which)
@@ -67,7 +67,7 @@ read_scroll(void)
       msg("your hands begin to glow %s", pick_color("red"));
     when S_ARMOR:
     {
-      THING *arm = equipped_item(EQUIPMENT_ARMOR);
+      THING *arm = pack_equipped_item(EQUIPMENT_ARMOR);
       if (arm != NULL)
       {
         arm->o_arm--;
@@ -245,7 +245,7 @@ def:
     }
     when S_ENCH:
     {
-      THING *weapon = equipped_item(EQUIPMENT_RHAND);
+      THING *weapon = pack_equipped_item(EQUIPMENT_RHAND);
       if (weapon == NULL)
         msg("you feel a strange sense of loss");
       else
@@ -266,8 +266,8 @@ def:
     {
       int i;
       for (i = 0; i < NEQUIPMENT; ++i)
-        if (equipped_item(i) != NULL)
-          set_cursed(equipped_item(i), 0);
+        if (pack_equipped_item(i) != NULL)
+          set_cursed(pack_equipped_item(i), 0);
       msg(is_hallucinating(&player)
           ? "you feel in touch with the Universal Onenes"
           : "you feel as if somebody is watching over you");
@@ -279,7 +279,7 @@ def:
       msg("you hear a high pitched humming noise");
     when S_PROTECT:
     {
-      THING *arm = equipped_item(EQUIPMENT_ARMOR);
+      THING *arm = pack_equipped_item(EQUIPMENT_ARMOR);
       if (arm != NULL)
       {
         arm->o_flags |= ISPROT;

@@ -116,7 +116,7 @@ whatis(int type)
 {
     THING *obj;
 
-    if (players_inventory_is_empty())
+    if (pack_is_empty())
     {
 	msg("you don't have anything in your pack to identify");
 	return;
@@ -124,7 +124,7 @@ whatis(int type)
 
     for (;;)
     {
-	obj = get_item("identify", type);
+	obj = pack_get_item("identify", type);
 	if (obj == NULL)
 	    return;
 	else if (type && obj->o_type != type && !(type == R_OR_S &&
@@ -261,7 +261,7 @@ create_obj(void)
 	if (readstr(buf) == 0)
 	    obj->o_goldval = (short) atoi(buf);
     }
-    add_pack(obj, false);
+    pack_add(obj, false);
 }
 
 /*

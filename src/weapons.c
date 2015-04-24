@@ -45,9 +45,9 @@ static struct init_weaps {
 bool
 missile(int ydelta, int xdelta)
 {
-  THING *obj = get_item("throw", WEAPON);
+  THING *obj = pack_get_item("throw", WEAPON);
   THING *monster_at_pos;
-  THING *weapon = equipped_item(EQUIPMENT_RHAND);
+  THING *weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
   if (obj == NULL)
     return false;
@@ -58,7 +58,7 @@ missile(int ydelta, int xdelta)
     return missile(ydelta, xdelta);
   }
 
-  obj = leave_pack(obj, true, false);
+  obj = pack_remove(obj, true, false);
   do_motion(obj, ydelta, xdelta);
   monster_at_pos = moat(obj->o_pos.y, obj->o_pos.x);
 
@@ -225,7 +225,7 @@ num(int n1, int n2, char type)
 bool
 wield(void)
 {
-  THING *obj = get_item("wield", WEAPON);
+  THING *obj = pack_get_item("wield", WEAPON);
 
   if (obj == NULL)
     return false;
@@ -236,12 +236,12 @@ wield(void)
     return wield();
   }
 
-  if (equipped_item(EQUIPMENT_RHAND) != NULL)
-    if (!unequip_item(EQUIPMENT_RHAND))
+  if (pack_equipped_item(EQUIPMENT_RHAND) != NULL)
+    if (!pack_unequip(EQUIPMENT_RHAND))
       return false;
 
-  leave_pack(obj, false, true);
-  equip_item(obj);
+  pack_remove(obj, false, true);
+  pack_equip_item(obj);
 
   if (!terse)
     addmsg("you are now ");

@@ -75,7 +75,7 @@ become_restored(void)
     int i;
     for (i = 0; i < RING_SLOTS_SIZE; ++i)
     {
-      THING *ring = equipped_item(ring_slots[i]);
+      THING *ring = pack_equipped_item(ring_slots[i]);
       if (ring != NULL && ring->o_which == R_ADDSTR)
         add_str(&pstats.s_str, -ring->o_arm);
     }
@@ -84,7 +84,7 @@ become_restored(void)
 
     for (i = 0; i < RING_SLOTS_SIZE; ++i)
     {
-      THING *ring = equipped_item(ring_slots[i]);
+      THING *ring = pack_equipped_item(ring_slots[i]);
       if (ring != NULL && ring->o_which == R_ADDSTR)
         add_str(&pstats.s_str, ring->o_arm);
     }

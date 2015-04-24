@@ -166,10 +166,10 @@ drop(void)
       return false;
     }
 
-    if ((obj = get_item("drop", 0)) == NULL)
+    if ((obj = pack_get_item("drop", 0)) == NULL)
       return false;
 
-    obj = leave_pack(obj, true, !(obj->o_type == POTION ||
+    obj = pack_remove(obj, true, !(obj->o_type == POTION ||
           obj->o_type == SCROLL || obj->o_type == FOOD));
 
     /* Link it into the level object list */

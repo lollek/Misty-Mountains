@@ -46,7 +46,7 @@ init_player(void)
   obj = new_item();
   obj->o_type = FOOD;
   obj->o_count = 1;
-  add_pack(obj, true);
+  pack_add(obj, true);
 
   /* And his suit of armor */
   obj = new_item();
@@ -55,7 +55,7 @@ init_player(void)
   obj->o_arm = armor_ac(RING_MAIL) - 1;
   obj->o_flags |= ISKNOW;
   obj->o_count = 1;
-  equip_item(obj);
+  pack_equip_item(obj);
 
   /* Give him his weaponry.  First a mace. */
   obj = new_item();
@@ -63,21 +63,21 @@ init_player(void)
   obj->o_hplus = 1;
   obj->o_dplus = 1;
   obj->o_flags |= ISKNOW;
-  equip_item(obj);
+  pack_equip_item(obj);
 
   /* Now a +1 bow */
   obj = new_item();
   init_weapon(obj, BOW);
   obj->o_hplus = 1;
   obj->o_flags |= ISKNOW;
-  add_pack(obj, true);
+  pack_add(obj, true);
 
   /* Now some arrows */
   obj = new_item();
   init_weapon(obj, ARROW);
   obj->o_count = rnd(15) + 25;
   obj->o_flags |= ISKNOW;
-  add_pack(obj, true);
+  pack_add(obj, true);
 }
 
 /** sumprobs:

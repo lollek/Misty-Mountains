@@ -42,15 +42,15 @@ armor_for_thing(THING *thing)
 
   if (is_player)
   {
-    THING *arm = equipped_item(EQUIPMENT_ARMOR);
-    THING *weapon = equipped_item(EQUIPMENT_RHAND);
+    THING *arm = pack_equipped_item(EQUIPMENT_ARMOR);
+    THING *weapon = pack_equipped_item(EQUIPMENT_RHAND);
     int i;
 
     ac  = arm ? arm->o_arm : ac;
     ac -= weapon ? weapon->o_arm : 0;
     for (i = 0; i < RING_SLOTS_SIZE; ++i)
     {
-      THING *ring = equipped_item(ring_slots[i]);
+      THING *ring = pack_equipped_item(ring_slots[i]);
       if (ring != NULL && ring->o_which == R_PROTECT)
         ac -= ring->o_arm;
     }
@@ -64,7 +64,7 @@ armor_for_thing(THING *thing)
 bool
 armor_command_wear(void)
 {
-  THING *obj = get_item("wear", ARMOR);
+  THING *obj = pack_get_item("wear", ARMOR);
 
   if (obj == NULL)
     return false;
@@ -75,13 +75,13 @@ armor_command_wear(void)
     return armor_command_wear();
   }
 
-  if (equipped_item(EQUIPMENT_ARMOR) != NULL)
-    if (!unequip_item(EQUIPMENT_ARMOR))
+  if (pack_equipped_item(EQUIPMENT_ARMOR) != NULL)
+    if (!pack_unequip(EQUIPMENT_ARMOR))
       return true;
 
   waste_time(1);
-  leave_pack(obj, false, true);
-  equip_item(obj);
+  pack_remove(obj, false, true);
+  pack_equip_item(obj);
 
   if (!terse)
     addmsg("you are now ");
@@ -114,7 +114,7 @@ armor_type_random(void)
 void
 armor_rust(void)
 {
-  THING *arm = equipped_item(EQUIPMENT_ARMOR);
+  THING *arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == NULL || arm->o_type != ARMOR || arm->o_which == LEATHER ||
       arm->o_arm >= 9)
     return;

@@ -502,7 +502,9 @@ bool	wield(void);
 
 bool	fallpos(coord *pos, coord *newpos);
 bool	find_floor(struct room *rp, coord *cp, int limit, bool monst);
-THING  *find_magic_item_in_players_pack(void);
+char	floor_ch(void); /* Floor-type at hero's position */
+char	floor_at(void); /* Return the character at hero's position */
+void	reset_last(void); /* Reset the last command when the current one is aborted */
 
 char	rnd_thing(void);
 

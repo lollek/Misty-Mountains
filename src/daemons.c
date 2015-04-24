@@ -183,7 +183,7 @@ daemon_doctor(void)
 
   for (i = 0; i < RING_SLOTS_SIZE; ++i)
   {
-    THING *ring = equipped_item(ring_slots[i]);
+    THING *ring = pack_equipped_item(ring_slots[i]);
     if (ring != NULL && ring->o_which == R_REGEN)
       pstats.s_hpt++;
   }
@@ -255,7 +255,7 @@ daemon_digest_food(void)
   else
   {
     oldfood = food_left;
-    food_left -= ring_eat() + 1 - player_has_amulet();
+    food_left -= ring_eat() + 1 - pack_contains_amulet();
 
     if (food_left < MORETIME && oldfood >= MORETIME)
     {

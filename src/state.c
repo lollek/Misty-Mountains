@@ -693,7 +693,7 @@ rs_read_equipment(FILE *inf, size_t marker)
   item = new_item();
   if (rs_read_object(inf, item))
     return 1;
-  equip_item(item);
+  pack_equip_item(item);
   return 0;
 }
 
@@ -1121,10 +1121,10 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_int(savef, seed))
   rs_assert(rs_write_coord(savef, stairs))
   rs_assert(rs_write_thing(savef, &player))
-  rs_write_equipment(savef, equipped_item(EQUIPMENT_ARMOR), RSID_ARMOR);
-  rs_write_equipment(savef, equipped_item(EQUIPMENT_RHAND), RSID_RHAND);
-  rs_write_equipment(savef, equipped_item(EQUIPMENT_RRING), RSID_RRING);
-  rs_write_equipment(savef, equipped_item(EQUIPMENT_LRING), RSID_LRING);
+  rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_ARMOR), RSID_ARMOR);
+  rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_RHAND), RSID_RHAND);
+  rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_RRING), RSID_RRING);
+  rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_LRING), RSID_LRING);
   rs_assert(rs_write_object_reference(savef, player.t_pack, l_last_pick))
   rs_assert(rs_write_object_reference(savef, player.t_pack, last_pick))
   rs_assert(rs_write_object_list(savef, lvl_obj))

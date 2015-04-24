@@ -34,7 +34,7 @@ command_use_stairs(char up_or_down)
 
   else if (up_or_down == '<') /* UP */
   {
-    if (player_has_amulet())
+    if (pack_contains_amulet())
     {
       level--;
       if (level == 0)
@@ -83,7 +83,7 @@ command_attack(bool fight_to_death)
 bool
 command_name_item(void)
 {
-  THING *obj = get_item("rename", RENAMEABLE);
+  THING *obj = pack_get_item("rename", RENAMEABLE);
   char **guess;
   char *elsewise = NULL;
   bool already_known = false;
@@ -256,7 +256,7 @@ command_pick_up(void)
   for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
     if (obj->o_pos.y == hero.y && obj->o_pos.x == hero.x)
     {
-      pick_up(obj->o_type);
+      pack_pick_up(obj->o_type);
       return true;
     }
 
@@ -470,15 +470,15 @@ command_search(void)
 bool
 command_show_inventory(void)
 {
-  if (players_inventory_is_empty())
+  if (pack_is_empty())
   {
     msg("You inventory is empty");
     return false;
   }
-  print_inventory(0);
+  pack_print_inventory(0);
   msg("--Press any key to continue--");
   getch();
-  clear_inventory();
+  pack_clear_inventory();
   msg("");
   return false;
 }
@@ -486,10 +486,10 @@ command_show_inventory(void)
 bool
 command_take_off(enum equipment_pos pos)
 {
-  if (equipped_item(pos) == NULL)
+  if (pack_equipped_item(pos) == NULL)
     return false;
-  unequip_item(pos);
-  return equipped_item(pos) != NULL;
+  pack_unequip(pos);
+  return pack_equipped_item(pos) != NULL;
 }
 
 bool

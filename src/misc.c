@@ -255,7 +255,7 @@ find_obj(int y, int x)
 bool
 eat(void)
 {
-    THING *obj = get_item("eat", FOOD);
+    THING *obj = pack_get_item("eat", FOOD);
 
     if (obj == NULL)
       return false;
@@ -286,7 +286,7 @@ eat(void)
         msg("%s, that tasted good",
             is_hallucinating(&player) ? "oh, wow" : "yum");
 
-    leave_pack(obj, false, false);
+    pack_remove(obj, false, false);
     return true;
 }
 
@@ -329,7 +329,7 @@ chg_str(int amt)
 
   for (i = 0; i < RING_SLOTS_SIZE; ++i)
   {
-    THING *ring = equipped_item(ring_slots[i]);
+    THING *ring = pack_equipped_item(ring_slots[i]);
     if (ring != NULL && ring->o_which == R_ADDSTR)
       add_str(&comp, -ring->o_arm);
   }
@@ -771,10 +771,34 @@ player_save_throw(int which)
     int i;
     for (i = 0; i < RING_SLOTS_SIZE; ++i)
     {
-      THING *ring = equipped_item(ring_slots[i]);
+      THING *ring = pack_equipped_item(ring_slots[i]);
       if (ring != NULL && ring->o_which == R_PROTECT)
         which -= ring->o_arm;
     }
   }
   return monster_save_throw(which, &player);
+}
+
+char
+floor_ch(void)
+{
+  if (proom->r_flags & ISGONE)
+    return PASSAGE;
+  return show_floor() ? FLOOR : SHADOW;
+}
+
+char
+floor_at(void)
+{
+  char ch = chat(hero.y, hero.x);
+  return ch == FLOOR ? floor_ch() : ch;
+}
+
+
+void
+reset_last(void)
+{
+  last_comm = l_last_comm;
+  last_dir = l_last_dir;
+  last_pick = l_last_pick;
 }

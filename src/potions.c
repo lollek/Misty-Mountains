@@ -56,7 +56,7 @@ is_quaffable(THING *thing)
 bool
 quaff(void)
 {
-  THING *obj = get_item("quaff", POTION);
+  THING *obj = pack_get_item("quaff", POTION);
   THING *tp, *mp;
   bool discardit = false;
 
@@ -66,7 +66,7 @@ quaff(void)
 
   /* Calculate the effect it has on the poor guy. */
   discardit = (bool)(obj->o_count == 1);
-  leave_pack(obj, false, false);
+  pack_remove(obj, false, false);
   switch (obj->o_which)
   {
     case P_CONFUSE:

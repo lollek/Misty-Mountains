@@ -86,7 +86,7 @@ put_things(void)
 
   /* Once you have found the amulet, the only way to get new stuff is
    * go down into the dungeon. */
-  if (player_has_amulet() && level < max_level)
+  if (pack_contains_amulet() && level < max_level)
       return;
 
   /* check for treasure rooms, and if so, put it in. */
@@ -108,7 +108,7 @@ put_things(void)
 
   /* If he is really deep in the dungeon and he hasn't found the
    * amulet yet, put it somewhere on the ground */
-  if (level >= AMULETLEVEL && !player_has_amulet())
+  if (level >= AMULETLEVEL && !pack_contains_amulet())
   {
     THING *obj = new_item();
     attach(lvl_obj, obj);

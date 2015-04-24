@@ -22,7 +22,7 @@ player_has_ring_with_ability(int ability)
   int i;
   for (i = 0; i < RING_SLOTS_SIZE; ++i)
   {
-    THING *ring = equipped_item(ring_slots[i]);
+    THING *ring = pack_equipped_item(ring_slots[i]);
     if (ring != NULL && ring->o_which == ability)
       return true;
   }
@@ -34,7 +34,7 @@ player_has_ring_with_ability(int ability)
 bool
 ring_on(void)
 {
-  THING *obj = get_item("put on", RING);
+  THING *obj = pack_get_item("put on", RING);
 
   /* Make certain that it is somethings that we want to wear */
   if (obj == NULL)
@@ -49,14 +49,14 @@ ring_on(void)
   }
 
   /* Try to put it on */
-  if (!equip_item(obj))
+  if (!pack_equip_item(obj))
   {
     msg(terse
       ? "wearing two"
       : "you already have a ring on each hand");
     return false;
   }
-  leave_pack(obj, false, true);
+  pack_remove(obj, false, true);
 
   /* Calculate the effect it has on the poor guy. */
   switch (obj->o_which)
@@ -82,15 +82,15 @@ ring_off(void)
   THING *obj;
 
   /* Try right, then left */
-  if (equipped_item(EQUIPMENT_RRING) != NULL)
+  if (pack_equipped_item(EQUIPMENT_RRING) != NULL)
     ring = EQUIPMENT_RRING;
   else
     ring = EQUIPMENT_LRING;
 
-  if (!unequip_item(ring))
+  if (!pack_unequip(ring))
     return false;
 
-  obj = equipped_item(ring);
+  obj = pack_equipped_item(ring);
   switch (obj->o_which)
   {
     case R_ADDSTR: chg_str(-obj->o_arm);
@@ -122,7 +122,7 @@ ring_eat(void)
 
   for (i = 0; i < RING_SLOTS_SIZE; ++i)
   {
-    THING *ring = equipped_item(ring_slots[i]);
+    THING *ring = pack_equipped_item(ring_slots[i]);
     if (ring != NULL)
     {
       int eat = uses[ring->o_which];

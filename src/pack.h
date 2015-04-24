@@ -18,42 +18,40 @@ extern enum equipment_pos ring_slots[RING_SLOTS_SIZE];
 /* Pick up an object and add it to the pack.  If the argument is
  * non-null use it as the linked_list pointer instead of gettting
  * it off the ground. */
-bool add_pack(THING *obj, bool silent);
+bool pack_add(THING *obj, bool silent);
 
 /* take an item out of the pack */
-THING *leave_pack(THING *obj, bool newobj, bool all);
+THING *pack_remove(THING *obj, bool newobj, bool all);
 
 /* Add something to characters pack */
-void pick_up(char ch); /* TODO: Maybe move to command.c */
+void pack_pick_up(char ch);
+
+/* Find and return a magic item in the players inventory */
+THING *pack_find_magic_item(void);
 
 /* Pick something out of a pack for a purpose */
-THING *get_item(const char *purpose, int type);
-
-/* Return the character at hero's position, taking see_floor into account */
-char floor_at(void);
-
-/* Reset the last command when the current one is aborted */
-void reset_last(void); /* TODO: Why is this even here? */
+THING *pack_get_item(const char *purpose, int type);
 
 /* Check if she's carrying anything */
-#define players_inventory_is_empty() (player.t_pack == NULL)
+bool pack_is_empty(void);
 
 /* Counts how many items she is carrying */
-#define items_in_pack() items_in_pack_of_type(0)
+unsigned pack_count_items(void);
 
 /* Counts how many items she is carrying of a certain type */
-unsigned items_in_pack_of_type(int type);
+unsigned pack_count_items_of_type(int type);
 
-bool player_has_amulet(void);
-bool print_equipment(void);
-bool print_inventory(int type);
-void clear_inventory(void);
-size_t evaluate_players_inventory(void);
+bool pack_contains_amulet(void);
+bool pack_print_equipment(void);
+bool pack_print_inventory(int type);
+void pack_clear_inventory(void);
 
-THING *equipped_item(enum equipment_pos pos);
+size_t pack_evaluate(void);
 
-bool equip_item(THING *item);
-bool unequip_item(enum equipment_pos pos);
+THING *pack_equipped_item(enum equipment_pos pos);
+
+bool pack_equip_item(THING *item);
+bool pack_unequip(enum equipment_pos pos);
 
 
 #endif /* _ROGUE14_PACK_H_ */

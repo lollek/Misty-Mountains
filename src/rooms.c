@@ -138,7 +138,7 @@ do_rooms(void)
 	/*
 	 * Put the gold in
 	 */
-	if (rnd(2) == 0 && (!player_has_amulet() || level >= max_level))
+	if (rnd(2) == 0 && (!pack_contains_amulet() || level >= max_level))
 	{
 	    THING *gold;
 

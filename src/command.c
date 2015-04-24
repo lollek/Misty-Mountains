@@ -155,7 +155,7 @@ command(void)
 
     /* If he ran into something to take, let him pick it up.  */
     if (take != 0)
-      pick_up(take);
+      pack_pick_up(take);
     if (!running)
       door_stop = false;
     if (!after)
@@ -170,7 +170,7 @@ command(void)
     int i;
     for (i = 0; i < RING_SLOTS_SIZE; ++i)
     {
-      THING *obj = equipped_item(ring_slots[i]);
+      THING *obj = pack_equipped_item(ring_slots[i]);
       if (obj == NULL)
         continue;
       else if (obj->o_which == R_SEARCH)
@@ -226,7 +226,7 @@ command_do(char ch)
       return move_do_run(ch, false);
     case 'D': discovered(); return false;
     case 'F': return command_attack(true);
-    case 'I': return print_equipment();
+    case 'I': return pack_print_equipment();
     case 'P': return ring_on();
     case 'R': return ring_off();
     case 'S': return save_game();
@@ -267,7 +267,7 @@ command_wizard_do(char ch)
   {
     case '|': msg("@ %d,%d", hero.y, hero.x);
     when 'C': create_obj();
-    when '$': msg("inpack = %d", items_in_pack());
+    when '$': msg("inpack = %d", pack_count_items());
     /* when '\\': get_dir(); teleport(moat(delta.y + hero.y, hero.x + delta.x), NULL); * This is used for testing new features */
     when CTRL('W'): whatis(0);
     when CTRL('D'): level++; new_level();
@@ -283,7 +283,7 @@ command_wizard_do(char ch)
    {
      THING *item;
 
-     if ((item = get_item("charge", STICK)) != NULL)
+     if ((item = pack_get_item("charge", STICK)) != NULL)
        item->o_charges = 10000;
    }
 
@@ -296,20 +296,20 @@ command_wizard_do(char ch)
         raise_level();
 
       /* Give him a sword (+1,+1) */
-      if (unequip_item(EQUIPMENT_RHAND))
+      if (pack_unequip(EQUIPMENT_RHAND))
       {
         obj = new_item();
         init_weapon(obj, TWOSWORD);
         obj->o_hplus = 1;
         obj->o_dplus = 1;
-        add_pack(obj, true);
-        equip_item(obj);
+        pack_add(obj, true);
+        pack_equip_item(obj);
       }
       else
         msg("failed to add weapon");
 
       /* And his suit of armor */
-      if (unequip_item(EQUIPMENT_ARMOR))
+      if (pack_unequip(EQUIPMENT_ARMOR))
       {
         obj = new_item();
         obj->o_type = ARMOR;
@@ -318,7 +318,7 @@ command_wizard_do(char ch)
         obj->o_flags |= ISKNOW;
         obj->o_count = 1;
         obj->o_group = 0;
-        equip_item(obj);
+        pack_equip_item(obj);
       }
       else
         msg("failed to add armor");

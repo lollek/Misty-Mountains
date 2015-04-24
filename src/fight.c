@@ -34,7 +34,7 @@ add_player_attack_modifiers(int *damage, int *hit)
   int i;
   for (i = 0; i < RING_SLOTS_SIZE; ++i)
   {
-    THING *ring = equipped_item(ring_slots[i]);
+    THING *ring = pack_equipped_item(ring_slots[i]);
     if (ring == NULL)
       continue;
 
@@ -80,7 +80,7 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
 
     if (hurl)
     {
-      THING *launcher = equipped_item(EQUIPMENT_RHAND);
+      THING *launcher = pack_equipped_item(EQUIPMENT_RHAND);
       if ((weap->o_flags & ISMISL) && launcher != NULL &&
           launcher->o_which == weap->o_launch)
       {
@@ -417,13 +417,13 @@ fight_against_player(THING *mp)
 		{
 		    /* Nymph's steal a magic item, look through the pack
 		     * and pick out one we like. */
-		    THING *steal = find_magic_item_in_players_pack();
+		    THING *steal = pack_find_magic_item();
 		    if (steal != NULL)
 		    {
 			monster_remove_from_screen(&mp->t_pos, moat(mp->t_pos.y, mp->t_pos.x),
 			           false);
 			mp=NULL;
-			leave_pack(steal, false, false);
+			pack_remove(steal, false, false);
 			msg("she stole %s!", inv_name(steal, true));
 			discard(steal);
 		    }

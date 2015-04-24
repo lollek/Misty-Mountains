@@ -94,7 +94,7 @@ coord stairs;				/* Location of staircase */
 PLACE places[MAXLINES*MAXCOLS];		/* level map */
 
 THING *l_last_pick = NULL;		/* Last last_pick */
-THING *last_pick = NULL;		/* Last object picked in get_item() */
+THING *last_pick = NULL;		/* Last object picked in pack_get_item() */
 THING *lvl_obj = NULL;			/* List of objects on this level */
 THING *mlist = NULL;			/* List of monsters on the level */
 THING player;				/* His stats */
