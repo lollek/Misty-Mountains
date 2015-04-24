@@ -24,6 +24,7 @@
 #include "daemons.h"
 #include "list.h"
 #include "move.h"
+#include "new_level.h"
 #include "rogue.h"
 
 #include "command_private.h"

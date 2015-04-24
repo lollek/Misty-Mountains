@@ -18,7 +18,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "rogue.h"
 #include "potions.h"
 #include "status_effects.h"
 #include "scrolls.h"
@@ -28,6 +27,8 @@
 #include "daemons.h"
 #include "colors.h"
 #include "list.h"
+#include "new_level.h"
+#include "rogue.h"
 
 #include "init.h"
 

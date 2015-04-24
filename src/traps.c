@@ -6,6 +6,7 @@
 #include "fight.h"
 #include "colors.h"
 #include "list.h"
+#include "new_level.h"
 
 #include "traps.h"
 

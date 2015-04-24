@@ -18,7 +18,6 @@
 /* Tuneable - feel free to change these */
 #define NUMNAME    "Ten"   /* The same number in letters  */
 #define NUMSCORES    10    /* Number of highscore entries */
-#define MAXOBJ        9    /* How many attempts to put items in dungeon */
 #define AMULETLEVEL  26    /* Level where we can find the amulet */
 
 /* Try not to change these */
@@ -468,14 +467,12 @@ int	hit_monster(int y, int x, THING *obj);
 void	init_weapon(THING *weap, int which);
 bool	lock_sc(void);
 bool	missile(int ydelta, int xdelta);
-void	new_level(void);
 void	numpass(int y, int x);
 void 	passnum(void);
 bool	player_has_ring_with_ability(int ability);
 const char	*pick_color(const char *col);
 int	pr_list(void);
 void	pr_spec(char ch);
-void	put_things(void);
 void	putpass(coord *cp);
 int	ring_eat(void);
 bool	ring_on(void);
@@ -497,7 +494,6 @@ int	sign(int nm);
 int	spread(int nm);
 void	strucpy(char *s1, const char *s2, int len);
 void	total_winner(void);
-void	treas_room(void);
 void	unlock_sc(void);
 void	vert(struct room *rp, int startx);
 void	waste_time(int rounds);

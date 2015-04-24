@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "rogue.h"
 #include "status_effects.h"
 #include "potions.h"
 #include "scrolls.h"
@@ -11,6 +10,8 @@
 #include "options.h"
 #include "io.h"
 #include "pack.h"
+#include "new_level.h"
+#include "rogue.h"
 
 #include "command_private.h"
 

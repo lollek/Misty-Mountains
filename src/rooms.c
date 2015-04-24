@@ -482,3 +482,17 @@ leave_room(coord *cp)
 	}
     door_open(rp);
 }
+
+/** rnd_room:
+ * Pick a room that is really there */
+int
+rnd_room(void)
+{
+  int rm;
+
+  do
+    rm = rnd(MAXROOMS);
+  while (rooms[rm].r_flags & ISGONE);
+
+  return rm;
+}

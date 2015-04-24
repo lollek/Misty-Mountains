@@ -22,10 +22,111 @@
 #include "list.h"
 #include "monsters.h"
 
-#define TREAS_ROOM 20	/* one chance in TREAS_ROOM for a treasure room */
-#define MAXTREAS 10	/* maximum number of treasures in a treasure room */
-#define MINTREAS 2	/* minimum number of treasures in a treasure room */
+#include "new_level.h"
 
+/* Tuneables */
+#define MAXOBJ		9  /* How many attempts to put items in dungeon */
+#define TREAS_ROOM	20 /* one chance in TREAS_ROOM for a treasure room */
+#define MAXTREAS	10 /* maximum number of treasures in a treasure room */
+#define MINTREAS	2  /* minimum number of treasures in a treasure room */
+#define MAXTRIES	10 /* max number of tries to put down a monster */
+
+/** treas_room:
+ * Add a treasure room */
+static void
+treas_room(void)
+{
+  int nm;
+  THING *tp;
+  struct room *rp = &rooms[rnd_room()];
+  int spots = (rp->r_max.y - 2) * (rp->r_max.x - 2) - MINTREAS;
+  int num_monst;
+  static coord mp;
+
+  if (spots > (MAXTREAS - MINTREAS))
+    spots = (MAXTREAS - MINTREAS);
+  num_monst = nm = rnd(spots) + MINTREAS;
+
+  while (nm--)
+  {
+    find_floor(rp, &mp, 2 * MAXTRIES, false);
+    tp = new_thing();
+    tp->o_pos = mp;
+    attach(lvl_obj, tp);
+    chat(mp.y, mp.x) = (char) tp->o_type;
+  }
+
+  /* fill up room with monsters from the next level down */
+  if ((nm = rnd(spots) + MINTREAS) < num_monst + 2)
+    nm = num_monst + 2;
+  spots = (rp->r_max.y - 2) * (rp->r_max.x - 2);
+  if (nm > spots)
+    nm = spots;
+  level++;
+  while (nm--)
+  {
+    spots = 0;
+    if (find_floor(rp, &mp, MAXTRIES, true))
+    {
+      tp = new_item();
+      monster_new(tp, monster_random(false), &mp);
+      tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
+      monster_give_pack(tp);
+    }
+  }
+  level--;
+}
+
+/** put_things:
+ * Put potions and scrolls on this level */
+static void
+put_things(void)
+{
+  int i;
+
+  /* Once you have found the amulet, the only way to get new stuff is
+   * go down into the dungeon. */
+  if (player_has_amulet() && level < max_level)
+      return;
+
+  /* check for treasure rooms, and if so, put it in. */
+  if (rnd(TREAS_ROOM) == 0)
+    treas_room();
+
+  /* Do MAXOBJ attempts to put things on a level */
+  for (i = 0; i < MAXOBJ; i++)
+    if (rnd(100) < 36)
+    {
+      /* Pick a new object and link it in the list */
+      THING *obj = new_thing();
+      attach(lvl_obj, obj);
+
+      /* Put it somewhere */
+      find_floor((struct room *) NULL, &obj->o_pos, false, false);
+      chat(obj->o_pos.y, obj->o_pos.x) = (char) obj->o_type;
+    }
+
+  /* If he is really deep in the dungeon and he hasn't found the
+   * amulet yet, put it somewhere on the ground */
+  if (level >= AMULETLEVEL && !player_has_amulet())
+  {
+    THING *obj = new_item();
+    attach(lvl_obj, obj);
+    obj->o_hplus = 0;
+    obj->o_dplus = 0;
+    strncpy(obj->o_damage,"0x0",sizeof(obj->o_damage));
+    strncpy(obj->o_hurldmg,"0x0",sizeof(obj->o_hurldmg));
+    obj->o_arm = 11;
+    obj->o_type = AMULET;
+
+    /* Put it somewhere */
+    find_floor((struct room *) NULL, &obj->o_pos, false, false);
+    chat(obj->o_pos.y, obj->o_pos.x) = AMULET;
+  }
+}
+
+
+/* TODO: This function needs cleanup */
 void
 new_level(void)
 {
@@ -106,133 +207,3 @@ new_level(void)
       raise_level();
 }
 
-/*
- * rnd_room:
- *	Pick a room that is really there
- */
-int
-rnd_room(void)
-{
-    int rm;
-
-    do
-    {
-	rm = rnd(MAXROOMS);
-    } while (rooms[rm].r_flags & ISGONE);
-    return rm;
-}
-
-/*
- * put_things:
- *	Put potions and scrolls on this level
- */
-
-void
-put_things(void)
-{
-    int i;
-    THING *obj;
-
-    /*
-     * Once you have found the amulet, the only way to get new stuff is
-     * go down into the dungeon.
-     */
-    if (player_has_amulet() && level < max_level)
-	return;
-    /*
-     * check for treasure rooms, and if so, put it in.
-     */
-    if (rnd(TREAS_ROOM) == 0)
-	treas_room();
-    /*
-     * Do MAXOBJ attempts to put things on a level
-     */
-    for (i = 0; i < MAXOBJ; i++)
-	if (rnd(100) < 36)
-	{
-	    /*
-	     * Pick a new object and link it in the list
-	     */
-	    obj = new_thing();
-	    attach(lvl_obj, obj);
-	    /*
-	     * Put it somewhere
-	     */
-	    find_floor((struct room *) NULL, &obj->o_pos, false, false);
-	    chat(obj->o_pos.y, obj->o_pos.x) = (char) obj->o_type;
-	}
-    /*
-     * If he is really deep in the dungeon and he hasn't found the
-     * amulet yet, put it somewhere on the ground
-     */
-    if (level >= AMULETLEVEL && !player_has_amulet())
-    {
-	obj = new_item();
-	attach(lvl_obj, obj);
-	obj->o_hplus = 0;
-	obj->o_dplus = 0;
-	strncpy(obj->o_damage,"0x0",sizeof(obj->o_damage));
-        strncpy(obj->o_hurldmg,"0x0",sizeof(obj->o_hurldmg));
-	obj->o_arm = 11;
-	obj->o_type = AMULET;
-	/*
-	 * Put it somewhere
-	 */
-	find_floor((struct room *) NULL, &obj->o_pos, false, false);
-	chat(obj->o_pos.y, obj->o_pos.x) = AMULET;
-    }
-}
-
-/*
- * treas_room:
- *	Add a treasure room
- */
-#define MAXTRIES 10	/* max number of tries to put down a monster */
-
-
-void
-treas_room(void)
-{
-    int nm;
-    THING *tp;
-    struct room *rp;
-    int spots, num_monst;
-    static coord mp;
-
-    rp = &rooms[rnd_room()];
-    spots = (rp->r_max.y - 2) * (rp->r_max.x - 2) - MINTREAS;
-    if (spots > (MAXTREAS - MINTREAS))
-	spots = (MAXTREAS - MINTREAS);
-    num_monst = nm = rnd(spots) + MINTREAS;
-    while (nm--)
-    {
-	find_floor(rp, &mp, 2 * MAXTRIES, false);
-	tp = new_thing();
-	tp->o_pos = mp;
-	attach(lvl_obj, tp);
-	chat(mp.y, mp.x) = (char) tp->o_type;
-    }
-
-    /*
-     * fill up room with monsters from the next level down
-     */
-
-    if ((nm = rnd(spots) + MINTREAS) < num_monst + 2)
-	nm = num_monst + 2;
-    spots = (rp->r_max.y - 2) * (rp->r_max.x - 2);
-    if (nm > spots)
-	nm = spots;
-    level++;
-    while (nm--)
-    {
-	spots = 0;
-	if (find_floor(rp, &mp, MAXTRIES, true))
-	{
-	    tp = new_item();
-	    monster_new(tp, monster_random(false), &mp);
-	    tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
-	    monster_give_pack(tp);
-	}
-    }
-    level--;
-}
