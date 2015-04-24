@@ -5,6 +5,7 @@
 #include "armor.h"
 #include "fight.h"
 #include "colors.h"
+#include "list.h"
 
 #include "traps.h"
 

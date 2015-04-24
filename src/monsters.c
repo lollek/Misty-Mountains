@@ -19,6 +19,7 @@
 #include "io.h"
 #include "pack.h"
 #include "scrolls.h"
+#include "list.h"
 
 /*
  * List of monsters in rough order of vorpalness

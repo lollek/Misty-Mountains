@@ -16,6 +16,7 @@
 #include "status_effects.h"
 #include "io.h"
 #include "pack.h"
+#include "list.h"
 
 typedef struct spot {		/* position matrix for maze positions */
 	int	nexits;

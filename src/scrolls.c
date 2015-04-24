@@ -15,6 +15,7 @@
 #include "status_effects.h"
 #include "io.h"
 #include "pack.h"
+#include "list.h"
 
 char *s_names[NSCROLLS];
 struct obj_info scr_info[NSCROLLS] = {

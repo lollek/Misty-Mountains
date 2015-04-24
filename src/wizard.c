@@ -23,6 +23,7 @@
 #include "io.h"
 #include "armor.h"
 #include "pack.h"
+#include "list.h"
 
 static char *type_name(int type);
 

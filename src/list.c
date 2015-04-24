@@ -12,11 +12,11 @@
 
 #include <stdlib.h>
 
-#include "rogue.h"
 #include "io.h"
+#include "rogue.h"
 
-/** detach:
- * takes an item out of whatever linked list it might be in */
+#include "list.h"
+
 void
 _detach(THING **list, THING *item)
 {
@@ -33,8 +33,6 @@ _detach(THING **list, THING *item)
   item->l_prev = NULL;
 }
 
-/** _attach:
- * add an item to the head of a list */
 void
 _attach(THING **list, THING *item)
 {
@@ -52,8 +50,6 @@ _attach(THING **list, THING *item)
   *list = item;
 }
 
-/** _free_list:
- * Throw the whole blamed thing away */
 void
 _free_list(THING **ptr)
 {
@@ -67,16 +63,12 @@ _free_list(THING **ptr)
   }
 }
 
-/** discard:
- * Free up an item */
 void
 discard(THING *item)
 {
   free((char *) item);
 }
 
-/** new_item
- * Get a new item with a specified size */
 THING *
 new_item(void)
 {

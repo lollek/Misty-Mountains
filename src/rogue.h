@@ -56,9 +56,6 @@ extern enum rogue_game_t
 #define pstats		player.t_stats
 #define proom		player.t_room
 #define max_hp		player.t_stats.s_maxhp
-#define attach(a,b)	_attach(&a,b)
-#define detach(a,b)	_detach(&a,b)
-#define free_list(a)	_free_list(&a)
 #define max(a,b)	((a) > (b) ? (a) : (b))
 #define on(thing,flag)	((bool)(((thing).t_flags & (flag)) != 0))
 #define GOLDCALC	(rnd(50 + 10 * level) + 2)
@@ -433,9 +430,6 @@ bool seen_stairs(void);          /* Return true if the player has seen the stair
 bool turn_see(bool turn_off);/* Put on or off seeing monsters on this level */
 void invis_on(void);         /* Turn on the ability to see invisible */
 
-void	_attach(THING **list, THING *item);
-void	_detach(THING **list, THING *item);
-void	_free_list(THING **ptr);
 void	add_pass(void);
 void	add_str(str_t *sp, int amt);
 void	accnt_maze(int y, int x, int ny, int nx);
@@ -448,7 +442,6 @@ void	create_obj(void);
 void	death(char monst);
 char	death_monst(void);
 void	dig(int y, int x);
-void	discard(THING *item);
 void	discovered(void);
 void	do_maze(struct room *rp);
 void	do_motion(THING *obj, int ydelta, int xdelta);
@@ -561,7 +554,6 @@ void quit(int);
 coord	*rndmove(THING *who);
 
 THING	*find_obj(int y, int x);
-THING	*new_item(void);
 THING	*new_thing(void);
 
 

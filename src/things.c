@@ -22,6 +22,7 @@
 #include "io.h"
 #include "armor.h"
 #include "pack.h"
+#include "list.h"
 
 static int pick_one(struct obj_info *info, int nitems);
 static void nameit(THING *obj, const char *type, const char *which,

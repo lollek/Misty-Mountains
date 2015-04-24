@@ -21,6 +21,7 @@
 #include "armor.h"
 #include "pack.h"
 #include "daemons.h"
+#include "list.h"
 
 #include "fight.h"
 

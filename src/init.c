@@ -27,6 +27,9 @@
 #include "pack.h"
 #include "daemons.h"
 #include "colors.h"
+#include "list.h"
+
+#include "init.h"
 
 /** init_player:
  * Roll her up */

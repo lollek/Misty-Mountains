@@ -38,6 +38,7 @@
 #include "pack.h"
 #include "daemons.h"
 #include "colors.h"
+#include "list.h"
 #include "rogue.h"
 
 static const size_t RSID_STATS        = 0xABCD0001;

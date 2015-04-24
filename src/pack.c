@@ -18,6 +18,7 @@
 #include "io.h"
 #include "armor.h"
 #include "potions.h"
+#include "list.h"
 
 #include "pack.h"
 

@@ -17,6 +17,7 @@
 #include "io.h"
 #include "pack.h"
 #include "fight.h"
+#include "list.h"
 
 #define NO_WEAPON -1
 

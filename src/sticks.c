@@ -17,6 +17,7 @@
 #include "status_effects.h"
 #include "io.h"
 #include "pack.h"
+#include "list.h"
 
 /*
  * fix_stick:
