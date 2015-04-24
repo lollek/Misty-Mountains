@@ -477,13 +477,6 @@ void	horiz(struct room *rp, int starty);
 void	leave_room(coord *cp);
 void	look(bool wakeup);
 int	hit_monster(int y, int x, THING *obj);
-int	init_graphics(void);
-void	init_colors(void);
-void	init_materials(void);
-void	init_names(void);
-void	init_player(void);
-void	init_probs(void);
-void	init_stones(void);
 void	init_weapon(THING *weap, int which);
 void	killed(THING *tp, bool pr);
 bool	lock_sc(void);
@@ -579,8 +572,6 @@ typedef struct {
 
 extern int      total;
 extern int      group;
-extern char     *rainbow[];
-extern int      cNCOLORS;
 extern STONE    stones[];
 extern int      cNSTONES;
 extern char     *wood[];

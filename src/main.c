@@ -19,6 +19,7 @@
 #include "command.h"
 #include "io.h"
 #include "pack.h"
+#include "init.h"
 
 enum game_mode_t
 {
@@ -32,9 +33,6 @@ static void endit(int sig);
 
 int open_score_and_drop_setuid_setgid(); /* src/save.c */
 void auto_save(int);                      /* src/save.c */
-
-bool init_new_game();                     /* src/init.c */
-bool init_old_game();                     /* src/init.c */
 
 /** main:
  * The main program, of course */

@@ -15,13 +15,14 @@
 #include <ctype.h>
 #include <assert.h>
 
-#include "rogue.h"
 #include "status_effects.h"
 #include "options.h"
 #include "io.h"
 #include "armor.h"
 #include "pack.h"
 #include "daemons.h"
+#include "colors.h"
+#include "rogue.h"
 
 static int trip_ch(int y, int x, int ch);
 
@@ -748,4 +749,13 @@ set_mname(THING *tp)
     return tbuf;
 }
 
-
+/*
+ * pick_color:
+ *	If he is halucinating, pick a random color name and return it,
+ *	otherwise return the given color.
+ */
+const char *
+pick_color(const char *col)
+{
+    return (is_hallucinating(&player) ? colors_random() : col);
+}

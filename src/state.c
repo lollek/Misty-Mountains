@@ -31,13 +31,14 @@
 
 #include <string.h>
 
-#include "rogue.h"
 #include "potions.h"
 #include "status_effects.h"
 #include "scrolls.h"
 #include "io.h"
 #include "pack.h"
 #include "daemons.h"
+#include "colors.h"
+#include "rogue.h"
 
 static const size_t RSID_STATS        = 0xABCD0001;
 static const size_t RSID_THING        = 0xABCD0002;
@@ -376,7 +377,7 @@ rs_write_potions(FILE *savef)
 {
   int i;
   for (i = 0; i < NPOTIONS; i++)
-    if (rs_write_string_index(savef, rainbow, cNCOLORS, p_colors[i]))
+    if (rs_write_string_index(savef, __colors_ptr(), __colors_size(), p_colors[i]))
       return 1;
   return 0;
 }
@@ -386,7 +387,7 @@ rs_read_potions(FILE *inf)
 {
   int i;
   for (i = 0; i < NPOTIONS; i++)
-    if (rs_read_string_index(inf, rainbow, cNCOLORS, &p_colors[i]))
+    if (rs_read_string_index(inf, __colors_ptr(), __colors_size(), &p_colors[i]))
       return 1;
   return 0;
 }
