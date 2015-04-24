@@ -33,47 +33,47 @@
 static void
 init_player(void)
 {
-    THING *obj;
+  THING *obj;
 
-    pstats = max_stats;
-    food_left = HUNGERTIME;
+  pstats = max_stats;
+  food_left = HUNGERTIME;
 
-    /* Give him some food */
-    obj = new_item();
-    obj->o_type = FOOD;
-    obj->o_count = 1;
-    add_pack(obj, true);
+  /* Give him some food */
+  obj = new_item();
+  obj->o_type = FOOD;
+  obj->o_count = 1;
+  add_pack(obj, true);
 
-    /* And his suit of armor */
-    obj = new_item();
-    obj->o_type = ARMOR;
-    obj->o_which = RING_MAIL;
-    obj->o_arm = armor_ac(RING_MAIL) - 1;
-    obj->o_flags |= ISKNOW;
-    obj->o_count = 1;
-    equip_item(obj);
+  /* And his suit of armor */
+  obj = new_item();
+  obj->o_type = ARMOR;
+  obj->o_which = RING_MAIL;
+  obj->o_arm = armor_ac(RING_MAIL) - 1;
+  obj->o_flags |= ISKNOW;
+  obj->o_count = 1;
+  equip_item(obj);
 
-    /* Give him his weaponry.  First a mace. */
-    obj = new_item();
-    init_weapon(obj, MACE);
-    obj->o_hplus = 1;
-    obj->o_dplus = 1;
-    obj->o_flags |= ISKNOW;
-    equip_item(obj);
+  /* Give him his weaponry.  First a mace. */
+  obj = new_item();
+  init_weapon(obj, MACE);
+  obj->o_hplus = 1;
+  obj->o_dplus = 1;
+  obj->o_flags |= ISKNOW;
+  equip_item(obj);
 
-    /* Now a +1 bow */
-    obj = new_item();
-    init_weapon(obj, BOW);
-    obj->o_hplus = 1;
-    obj->o_flags |= ISKNOW;
-    add_pack(obj, true);
+  /* Now a +1 bow */
+  obj = new_item();
+  init_weapon(obj, BOW);
+  obj->o_hplus = 1;
+  obj->o_flags |= ISKNOW;
+  add_pack(obj, true);
 
-    /* Now some arrows */
-    obj = new_item();
-    init_weapon(obj, ARROW);
-    obj->o_count = rnd(15) + 25;
-    obj->o_flags |= ISKNOW;
-    add_pack(obj, true);
+  /* Now some arrows */
+  obj = new_item();
+  init_weapon(obj, ARROW);
+  obj->o_count = rnd(15) + 25;
+  obj->o_flags |= ISKNOW;
+  add_pack(obj, true);
 }
 
 /** sumprobs:
@@ -466,58 +466,57 @@ init_new_game(void)
 bool
 init_old_game(void)
 {
-    FILE *inf = fopen(file_name, "r");
-    char buf[MAXSTR];
+  FILE *inf = fopen(file_name, "r");
+  char buf[MAXSTR];
 
-    if (inf == NULL)
-    {
-        perror(file_name);
-        return false;
-    }
+  if (inf == NULL)
+  {
+    perror(file_name);
+    return false;
+  }
 
-    fflush(stdout);
-    encread(buf, strlen(game_version) + 1, inf);
-    if (strcmp(buf, game_version))
-    {
-      printf("Sorry, saved game is out of date.\n");
-      return false;
-    }
+  fflush(stdout);
+  encread(buf, strlen(game_version) + 1, inf);
+  if (strcmp(buf, game_version))
+  {
+    printf("Sorry, saved game is out of date.\n");
+    return false;
+  }
 
-    encread(buf, 80, inf);
+  encread(buf, 80, inf);
 
-    if (init_graphics() != 0)
-      return false;
+  if (init_graphics() != 0)
+    return false;
 
-    if (rs_restore_file(inf) != 0)
-    {
-      endwin();
-      printf(": Corrupted save game\n");
-      return false;
-    }
-    /*
-     * we do not close the file so that we will have a hold of the
-     * inode for as long as possible
-     */
+  if (rs_restore_file(inf) != 0)
+  {
+    endwin();
+    printf(": Corrupted save game\n");
+    return false;
+  }
 
-    if (unlink(file_name) < 0)
-    {
-        endwin();
-        printf("Cannot unlink file\n");
-        return false;
-    }
-    mpos = 0;
-    clearok(stdscr,true);
+  /* we do not close the file so that we will have a hold of the
+   * inode for as long as possible */
 
-    if (pstats.s_hpt <= 0)
-    {
-        endwin();
-        printf("\n\"He's dead, Jim\"\n");
-        return false;
-    }
+  if (unlink(file_name) < 0)
+  {
+    endwin();
+    printf("Cannot unlink file\n");
+    return false;
+  }
+  mpos = 0;
+  clearok(stdscr,true);
 
-    clearok(curscr, true);
-    msg("file name: %s", file_name);
-    return true;
+  if (pstats.s_hpt <= 0)
+  {
+    endwin();
+    printf("\n\"He's dead, Jim\"\n");
+    return false;
+  }
+
+  clearok(curscr, true);
+  msg("file name: %s", file_name);
+  return true;
 }
 
 
