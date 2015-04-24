@@ -21,6 +21,7 @@
 #include "armor.h"
 #include "pack.h"
 #include "fight.h"
+#include "monsters.h"
 
 /*
  * do_run:
@@ -278,7 +279,7 @@ door_open(struct room *rp)
 	for (y = rp->r_pos.y; y < rp->r_pos.y + rp->r_max.y; y++)
 	    for (x = rp->r_pos.x; x < rp->r_pos.x + rp->r_max.x; x++)
 		if (isupper(winat(y, x)))
-		    wake_monster(y, x);
+		    monster_notice_player(y, x);
 }
 
 /* rndmove:

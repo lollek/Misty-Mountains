@@ -20,6 +20,7 @@
 #include "pack.h"
 #include "daemons.h"
 #include "list.h"
+#include "monsters.h"
 
 #define TREAS_ROOM 20	/* one chance in TREAS_ROOM for a treasure room */
 #define MAXTREAS 10	/* maximum number of treasures in a treasure room */
@@ -228,9 +229,9 @@ treas_room(void)
 	if (find_floor(rp, &mp, MAXTRIES, true))
 	{
 	    tp = new_item();
-	    new_monster(tp, randmonster(false), &mp);
+	    monster_new(tp, monster_random(false), &mp);
 	    tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
-	    give_pack(tp);
+	    monster_give_pack(tp);
 	}
     }
     level--;

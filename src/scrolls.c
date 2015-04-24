@@ -16,6 +16,7 @@
 #include "io.h"
 #include "pack.h"
 #include "list.h"
+#include "monsters.h"
 
 char *s_names[NSCROLLS];
 struct obj_info scr_info[NSCROLLS] = {
@@ -137,7 +138,7 @@ read_scroll(void)
       else
       {
         obj = new_item();
-        new_monster(obj, randmonster(false), &mp);
+        monster_new(obj, monster_random(false), &mp);
       }
     }
     when S_ID:

@@ -15,6 +15,7 @@
 #include "pack.h"
 #include "command.h"
 #include "status_effects.h"
+#include "monsters.h"
 #include "rogue.h"
 
 #include "daemons.h"
@@ -216,7 +217,7 @@ daemon_rollwand(void)
   {
     if (roll(1, 6) == 4)
     {
-      wanderer();
+      monster_new_random_wanderer();
       daemon_kill(daemon_rollwand);
       daemon_start_fuse(daemon_start_wanderer, 0, WANDERTIME, BEFORE);
     }

@@ -22,6 +22,7 @@
 #include "pack.h"
 #include "daemons.h"
 #include "colors.h"
+#include "monsters.h"
 #include "rogue.h"
 
 static int trip_ch(int y, int x, int ch);
@@ -119,7 +120,7 @@ look(bool wakeup)
           else
           {
             if (wakeup)
-              wake_monster(y, x);
+              monster_notice_player(y, x);
             if (see_monst(tp))
             {
               if (is_hallucinating(&player))
@@ -355,7 +356,7 @@ aggravate(void)
 {
   THING *mp;
   for (mp = mlist; mp != NULL; mp = mp->l_next)
-    runto(&mp->t_pos);
+    monster_start_running(&mp->t_pos);
 }
 
 /** vowelstr:
@@ -758,4 +759,22 @@ const char *
 pick_color(const char *col)
 {
     return (is_hallucinating(&player) ? colors_random() : col);
+}
+
+/** player_save_throw:
+ * See if player saves against various nasty things */
+int
+player_save_throw(int which)
+{
+  if (which == VS_MAGIC)
+  {
+    int i;
+    for (i = 0; i < RING_SLOTS_SIZE; ++i)
+    {
+      THING *ring = equipped_item(ring_slots[i]);
+      if (ring != NULL && ring->o_which == R_PROTECT)
+        which -= ring->o_arm;
+    }
+  }
+  return monster_save_throw(which, &player);
 }

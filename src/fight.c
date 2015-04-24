@@ -22,6 +22,7 @@
 #include "pack.h"
 #include "daemons.h"
 #include "list.h"
+#include "monsters.h"
 
 #include "fight.h"
 
@@ -229,7 +230,7 @@ fight_against_monster(coord *mp, THING *weap, bool thrown)
     /* Since we are fighting, things are not quiet so no healing takes place */
     command_stop(false);
     daemon_reset_doctor();
-    runto(mp);
+    monster_start_running(mp);
 
     /* Let him know it was really a xeroc (if it was one) */
     ch = '\0';
@@ -266,7 +267,7 @@ fight_against_monster(coord *mp, THING *weap, bool thrown)
 	    msg("your hands stop glowing %s", pick_color("red"));
 	}
 	if (tp->t_stats.s_hpt <= 0)
-	    killed(tp, true);
+	    monster_on_death(tp, true);
 	else if (did_hit && !is_blind(&player))
 	    msg("%s appears confused", mname);
 	did_hit = true;
@@ -345,7 +346,7 @@ fight_against_player(THING *mp)
 			death('h');
 		when 'R':
 		    /* Rattlesnakes have poisonous bites */
-		    if (!save(VS_POISON))
+		    if (!player_save_throw(VS_POISON))
 		    {
 			if (!player_has_ring_with_ability(R_SUSTSTR))
 			{
@@ -403,7 +404,7 @@ fight_against_player(THING *mp)
 
 		    lastpurse = purse;
 		    purse -= GOLDCALC;
-		    if (!save(VS_MAGIC))
+		    if (!player_save_throw(VS_MAGIC))
 			purse -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
 		    if (purse < 0)
 			purse = 0;

@@ -21,6 +21,7 @@
 #include "daemons.h"
 #include "fight.h"
 #include "list.h"
+#include "monsters.h"
 
 #define DRAGONSHOT  5  /* one chance in DRAGONSHOT that a dragon will flame */
 static coord ch_ret;   /* Where chasing takes you */
@@ -228,7 +229,7 @@ over:
 		    attach(th->t_pack, obj);
 		    chat(obj->o_pos.y, obj->o_pos.x) =
 			(th->t_room->r_flags & ISGONE) ? PASSAGE : FLOOR;
-		    th->t_dest = find_dest(th);
+		    th->t_dest = monster_destination(th);
 		    break;
 		}
 	    if (th->t_type != 'F')
@@ -251,7 +252,7 @@ over:
       moat(th->t_pos.y, th->t_pos.x) = NULL;
 
       if (oroom != th->t_room)
-        th->t_dest = find_dest(th);
+        th->t_dest = monster_destination(th);
       th->t_pos = ch_ret;
       moat(ch_ret.y, ch_ret.x) = th;
     }

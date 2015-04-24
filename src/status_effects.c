@@ -6,6 +6,7 @@
 #include "command.h"
 #include "pack.h"
 #include "daemons.h"
+#include "monsters.h"
 
 #include "status_effects.h"
 
@@ -370,7 +371,7 @@ teleport(THING *thing, coord *target)
     moat(thing->t_pos.y, thing->t_pos.x) = NULL;
     if (roomin(&new_pos) != thing->t_room)
     {
-      thing->t_dest = find_dest(thing);
+      thing->t_dest = monster_destination(thing);
       thing->t_room = roomin(&new_pos);
     }
     thing->t_pos = new_pos;

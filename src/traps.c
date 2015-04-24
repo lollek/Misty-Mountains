@@ -101,7 +101,7 @@ be_trapped(THING *target, coord *tc)
           msg("a poisoned dart killed you");
           death('d');
         }
-        if (!player_has_ring_with_ability(R_SUSTSTR) && !save(VS_POISON))
+        if (!player_has_ring_with_ability(R_SUSTSTR) && !player_save_throw(VS_POISON))
           chg_str(-1);
         msg("a small dart just hit you in the shoulder");
       }

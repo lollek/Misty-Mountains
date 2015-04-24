@@ -460,22 +460,18 @@ size_t  encread(char *start, size_t size, FILE *inf);
 size_t	encwrite(const char *start, size_t size, FILE *outf);
 void	enter_room(coord *cp);
 void	erase_lamp(coord *pos, struct room *rp);
-int	exp_add(THING *tp);
 void	fall(THING *obj, bool pr);
 void	fire_bolt(coord *start, coord *dir, char *name);
 void	fix_stick(THING *cur);
 bool	get_dir(void);
-void	give_pack(THING *tp);
 void	horiz(struct room *rp, int starty);
 void	leave_room(coord *cp);
 void	look(bool wakeup);
 int	hit_monster(int y, int x, THING *obj);
 void	init_weapon(THING *weap, int which);
-void	killed(THING *tp, bool pr);
 bool	lock_sc(void);
 bool	missile(int ydelta, int xdelta);
 void	new_level(void);
-void	new_monster(THING *tp, char type, coord *cp);
 void	numpass(int y, int x);
 void 	passnum(void);
 bool	player_has_ring_with_ability(int ability);
@@ -484,7 +480,6 @@ int	pr_list(void);
 void	pr_spec(char ch);
 void	put_things(void);
 void	putpass(coord *cp);
-char	randmonster(bool wander);
 int	ring_eat(void);
 bool	ring_on(void);
 bool	ring_off(void);
@@ -493,10 +488,9 @@ int	rnd_room(void);
 int	roll(int number, int sides);
 int	rs_save_file(FILE *savef);
 int	rs_restore_file(FILE *inf);
-int	save(int which);
+int	player_save_throw(int which);
 bool	save_file(FILE *savef);
 bool	save_game(void);
-int	save_throw(int which, THING *tp);
 void	score(int amount, int flags, char monst);
 void	set_know(THING *obj, struct obj_info *info);
 void	shell(void);
@@ -510,8 +504,6 @@ void	treas_room(void);
 void	turnref(void);
 void	unlock_sc(void);
 void	vert(struct room *rp, int startx);
-THING  *wake_monster(int y, int x);
-void	wanderer(void);
 void	waste_time(int rounds);
 void	whatis(int type);
 bool	wield(void);
@@ -532,11 +524,9 @@ const char	*vowelstr(const char *str);
 
 void set_oldch(THING *tp, coord *cp); /* Set oldch for a monster */
 bool see_monst(THING *mp);  /* Can player see the monster? */
-void runto(coord *runner);  /* Make monster chase hero */
 struct room *roomin(coord *cp);
 bool diag_ok(coord *sp, coord *ep); /* Check if move is legal if diagonal */
 bool cansee(int y, int x); /* True if player can see coord */
-coord *find_dest(THING *tp); /* Find proper destination for monster */
 
 /** Dist
  * Calculate the "distance" between to points.  Actually,
@@ -546,7 +536,6 @@ int dist(int y1, int x1, int y2, int x2);
 #define dist_cp(_1, _2) dist((_1)->y, (_1)->x, (_2)->y, (_2)->x)
 
 bool monster_chase(THING *tp); /* Make a monster chase */
-void monster_remove_from_screen(coord *mp, THING *tp, bool waskill);
 
 void leave(int);
 void quit(int);

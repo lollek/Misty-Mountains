@@ -17,6 +17,7 @@
 #include "io.h"
 #include "pack.h"
 #include "list.h"
+#include "monsters.h"
 
 typedef struct spot {		/* position matrix for maze positions */
 	int	nexits;
@@ -141,8 +142,8 @@ do_rooms(void)
 	{
 	    tp = new_item();
 	    find_floor(rp, &mp, false, true);
-	    new_monster(tp, randmonster(false), &mp);
-	    give_pack(tp);
+	    monster_new(tp, monster_random(false), &mp);
+	    monster_give_pack(tp);
 	}
     }
 }

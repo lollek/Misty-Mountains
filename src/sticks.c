@@ -18,6 +18,7 @@
 #include "io.h"
 #include "pack.h"
 #include "list.h"
+#include "monsters.h"
 
 /*
  * fix_stick:
@@ -135,7 +136,7 @@ do_zap(void)
 			oldch = tp->t_oldch;
 			delta.y = y;
 			delta.x = x;
-			new_monster(tp, monster = (char)(rnd(26) + 'A'), &delta);
+			monster_new(tp, monster = (char)(rnd(26) + 'A'), &delta);
 			if (see_monst(tp))
 			    mvaddcch(y, x, monster);
 			tp->t_oldch = oldch;
@@ -181,7 +182,7 @@ do_zap(void)
 		bolt.o_launch = weapon->o_which;
 	    do_motion(&bolt, delta.y, delta.x);
 	    if ((tp = moat(bolt.o_pos.y, bolt.o_pos.x)) != NULL
-		&& !save_throw(VS_MAGIC, tp))
+		&& !monster_save_throw(VS_MAGIC, tp))
 		    hit_monster(bolt.o_pos.y, bolt.o_pos.x, &bolt);
 	    else if (terse)
 		msg("missle vanishes");
@@ -216,7 +217,7 @@ do_zap(void)
 		}
 		delta.y = y;
 		delta.x = x;
-		runto(&delta);
+		monster_start_running(&delta);
 	    }
 	when WS_ELECT:
 	case WS_FIRE:
@@ -286,9 +287,9 @@ drain(void)
     {
 	mp = *dp;
 	if ((mp->t_stats.s_hpt -= cnt) <= 0)
-	    killed(mp, see_monst(mp));
+	    monster_on_death(mp, see_monst(mp));
 	else
-	    runto(&mp->t_pos);
+	    monster_start_running(&mp->t_pos);
     }
 }
 
@@ -357,7 +358,7 @@ def:
 		    hit_hero = true;
 		    changed = !changed;
 		    tp->t_oldch = chat(pos.y, pos.x);
-		    if (!save_throw(VS_MAGIC, tp))
+		    if (!monster_save_throw(VS_MAGIC, tp))
 		    {
 			bolt.o_pos = pos;
 			used = true;
@@ -374,7 +375,7 @@ def:
 		    else if (ch != 'M' || tp->t_disguise == 'M')
 		    {
 			if (start == &hero)
-			    runto(&pos);
+			    monster_start_running(&pos);
 			if (terse)
 			    msg("%s misses", name);
 			else
@@ -385,7 +386,7 @@ def:
 		{
 		    hit_hero = false;
 		    changed = !changed;
-		    if (!save(VS_MAGIC))
+		    if (!player_save_throw(VS_MAGIC))
 		    {
 			if ((pstats.s_hpt -= roll(6, 6)) <= 0)
 			{
