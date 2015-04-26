@@ -411,33 +411,25 @@ bool turn_see(bool turn_off);/* Put on or off seeing monsters on this level */
 void invis_on(void);         /* Turn on the ability to see invisible */
 
 void	add_str(str_t *sp, int amt);
-void	accnt_maze(int y, int x, int ny, int nx);
 void	aggravate(void);
 void	call_it(struct obj_info *info);
 void	chg_str(int amt);
 void	check_level(void);
 void	create_obj(void);
 void	death(char monst);
-void	dig(int y, int x);
 void	discovered(void);
-void	do_maze(struct room *rp);
 void	do_motion(THING *obj, int ydelta, int xdelta);
-void	do_rooms(void);
 bool	do_zap(void);
 void	drain(void);
-void	draw_room(struct room *rp);
 bool	drop(void);
 bool	eat(void);
 size_t  encread(char *start, size_t size, FILE *inf);
 size_t	encwrite(const char *start, size_t size, FILE *outf);
-void	enter_room(coord *cp);
 void	erase_lamp(coord *pos, struct room *rp);
 void	fall(THING *obj, bool pr);
 void	fire_bolt(coord *start, coord *dir, char *name);
 void	fix_stick(THING *cur);
 bool	get_dir(void);
-void	horiz(struct room *rp, int starty);
-void	leave_room(coord *cp);
 void	look(bool wakeup);
 int	hit_monster(int y, int x, THING *obj);
 void	init_weapon(THING *weap, int which);
@@ -448,7 +440,6 @@ const char	*pick_color(const char *col);
 int	pr_list(void);
 void	pr_spec(char ch);
 int	rnd(int range);
-int	rnd_room(void);
 int	roll(int number, int sides);
 int	rs_save_file(FILE *savef);
 int	rs_restore_file(FILE *inf);
@@ -465,13 +456,11 @@ int	spread(int nm);
 void	strucpy(char *s1, const char *s2, int len);
 void	total_winner(void);
 void	unlock_sc(void);
-void	vert(struct room *rp, int startx);
 void	waste_time(int rounds);
 void	whatis(int type);
 bool	wield(void);
 
 bool	fallpos(coord *pos, coord *newpos);
-bool	find_floor(struct room *rp, coord *cp, int limit, bool monst);
 char	floor_ch(void); /* Floor-type at hero's position */
 char	floor_at(void); /* Return the character at hero's position */
 void	reset_last(void); /* Reset the last command when the current one is aborted */

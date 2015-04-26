@@ -23,6 +23,7 @@
 #include "fight.h"
 #include "monsters.h"
 #include "move.h"
+#include "rooms.h"
 #include "rogue.h"
 
 /** move_turn_ok:
@@ -200,10 +201,10 @@ hit_bound:
 	when DOOR:
 	    running = false;
 	    if (flat(hero.y, hero.x) & F_PASS)
-		enter_room(&nh);
+		room_enter(&nh);
 	    mvaddcch(hero.y, hero.x, floor_at());
 	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
-		leave_room(&nh);
+		room_leave(&nh);
 	    hero = nh;
 	when TRAP:
 	    ch = be_trapped(&player, &nh);
@@ -211,7 +212,7 @@ hit_bound:
 		return after;
 	    mvaddcch(hero.y, hero.x, floor_at());
 	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
-		leave_room(&nh);
+		room_leave(&nh);
 	    hero = nh;
 	when PASSAGE:
 	    /*
@@ -223,14 +224,14 @@ hit_bound:
 	    proom = roomin(&hero);
 	    mvaddcch(hero.y, hero.x, floor_at());
 	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
-		leave_room(&nh);
+		room_leave(&nh);
 	    hero = nh;
 	when FLOOR:
 	    if (!(fl & F_REAL))
 		be_trapped(&player, &hero);
 		mvaddcch(hero.y, hero.x, floor_at());
 		if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
-		    leave_room(&nh);
+		    room_leave(&nh);
 		hero = nh;
 	otherwise:
 	    running = false;
@@ -242,7 +243,7 @@ hit_bound:
 		    take = ch;
 		mvaddcch(hero.y, hero.x, floor_at());
 		if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
-		    leave_room(&nh);
+		    room_leave(&nh);
 		hero = nh;
 	    }
     }

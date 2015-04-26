@@ -13,12 +13,13 @@
 
 #include <string.h>
 
-#include "rogue.h"
 #include "status_effects.h"
 #include "io.h"
 #include "pack.h"
 #include "list.h"
 #include "monsters.h"
+#include "rooms.h"
+#include "rogue.h"
 
 /*
  * fix_stick:
@@ -83,7 +84,7 @@ do_zap(void)
 		/*
 		 * Light the room and put the player back up
 		 */
-		enter_room(&hero);
+		room_enter(&hero);
 		addmsg("the room is lit");
 		if (!terse)
 		    addmsg(" by a shimmering %s light", pick_color("blue"));

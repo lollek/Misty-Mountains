@@ -20,6 +20,7 @@
 #include "scrolls.h"
 #include "list.h"
 #include "rings.h"
+#include "rooms.h"
 #include "rogue.h"
 
 #include "monsters.h"
@@ -121,7 +122,7 @@ monster_new_random_wanderer(void)
 
   do
   {
-    find_floor((struct room *) NULL, &cp, false, true);
+    room_find_floor((struct room *) NULL, &cp, false, true);
   } while (roomin(&cp) == proom);
 
   monster_new(tp, monster_random(true), &cp);

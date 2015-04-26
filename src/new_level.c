@@ -22,6 +22,7 @@
 #include "list.h"
 #include "monsters.h"
 #include "passages.h"
+#include "rooms.h"
 
 #include "new_level.h"
 
@@ -39,7 +40,7 @@ treas_room(void)
 {
   int nm;
   THING *tp;
-  struct room *rp = &rooms[rnd_room()];
+  struct room *rp = &rooms[room_random()];
   int spots = (rp->r_max.y - 2) * (rp->r_max.x - 2) - MINTREAS;
   int num_monst;
   static coord mp;
@@ -50,7 +51,7 @@ treas_room(void)
 
   while (nm--)
   {
-    find_floor(rp, &mp, 2 * MAXTRIES, false);
+    room_find_floor(rp, &mp, 2 * MAXTRIES, false);
     tp = new_thing();
     tp->o_pos = mp;
     attach(lvl_obj, tp);
@@ -67,7 +68,7 @@ treas_room(void)
   while (nm--)
   {
     spots = 0;
-    if (find_floor(rp, &mp, MAXTRIES, true))
+    if (room_find_floor(rp, &mp, MAXTRIES, true))
     {
       tp = new_item();
       monster_new(tp, monster_random(false), &mp);
@@ -103,7 +104,7 @@ put_things(void)
       attach(lvl_obj, obj);
 
       /* Put it somewhere */
-      find_floor((struct room *) NULL, &obj->o_pos, false, false);
+      room_find_floor((struct room *) NULL, &obj->o_pos, false, false);
       chat(obj->o_pos.y, obj->o_pos.x) = (char) obj->o_type;
     }
 
@@ -121,7 +122,7 @@ put_things(void)
     obj->o_type = AMULET;
 
     /* Put it somewhere */
-    find_floor((struct room *) NULL, &obj->o_pos, false, false);
+    room_find_floor((struct room *) NULL, &obj->o_pos, false, false);
     chat(obj->o_pos.y, obj->o_pos.x) = AMULET;
   }
 }
@@ -158,7 +159,7 @@ new_level(void)
      * Throw away stuff left on the previous level (if anything)
      */
     free_list(lvl_obj);
-    do_rooms();				/* Draw rooms */
+    rooms_create();			/* Draw rooms */
     passages_do();			/* Draw passages */
     no_food++;
     put_things();			/* Place objects (if any) */
@@ -180,7 +181,7 @@ new_level(void)
 	     */
 	    do
 	    {
-		find_floor((struct room *) NULL, &stairs, false, false);
+		room_find_floor((struct room *) NULL, &stairs, false, false);
 	    } while (chat(stairs.y, stairs.x) != FLOOR);
 	    sp = &flat(stairs.y, stairs.x);
 	    *sp &= ~F_REAL;
@@ -190,14 +191,14 @@ new_level(void)
     /*
      * Place the staircase down.
      */
-    find_floor((struct room *) NULL, &stairs, false, false);
+    room_find_floor((struct room *) NULL, &stairs, false, false);
     chat(stairs.y, stairs.x) = STAIRS;
 
     for (tp = mlist; tp != NULL; tp = tp->l_next)
 	tp->t_room = roomin(&tp->t_pos);
 
-    find_floor((struct room *) NULL, &hero, false, true);
-    enter_room(&hero);
+    room_find_floor((struct room *) NULL, &hero, false, true);
+    room_enter(&hero);
     mvaddcch(hero.y, hero.x, PLAYER);
     if (on(player, SEEMONST))
 	turn_see(false);
