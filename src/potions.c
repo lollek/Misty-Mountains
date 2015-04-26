@@ -37,7 +37,9 @@ struct obj_info pot_info[NPOTIONS] = {
   { "levitation",        6,       75,     NULL, false },
 };
 
-bool
+/** is_quaffable
+ * Can we dring thing? */
+static bool
 is_quaffable(THING *thing)
 {
   if (thing == NULL)
@@ -53,8 +55,24 @@ is_quaffable(THING *thing)
     return true;
 }
 
+/** potion_learn
+ * Hero learn what a potion does */
+static void
+potion_learn(enum potion_t potion)
+{
+  pot_info[potion].oi_know = true;
+}
+
+/** potion_known
+ * Does the hero know what this potion does? */
+static bool
+potion_known(enum potion_t potion)
+{
+  return pot_info[potion].oi_know;
+}
+
 bool
-quaff(void)
+potion_quaff_something(void)
 {
   THING *obj = pack_get_item("quaff", POTION);
   THING *tp, *mp;
@@ -70,20 +88,20 @@ quaff(void)
   switch (obj->o_which)
   {
     case P_CONFUSE:
-      if (!knows_potion(obj->o_which) && !is_hallucinating(&player))
-        learn_potion(obj->o_which);
+      if (!is_hallucinating(&player))
+        potion_learn(obj->o_which);
       become_confused(false);
     when P_POISON:
-      learn_potion(obj->o_which);
+      potion_learn(obj->o_which);
       become_poisoned();
     when P_HEALING:
-      learn_potion(obj->o_which);
+      potion_learn(obj->o_which);
       become_healed();
     when P_STRENGTH:
-      learn_potion(obj->o_which);
+      potion_learn(obj->o_which);
       become_stronger();
     when P_MFIND:
-      learn_potion(obj->o_which);
+      potion_learn(obj->o_which);
       become_monster_seeing(false);
     when P_TFIND:
     {
@@ -99,7 +117,7 @@ quaff(void)
             show = true;
             wmove(hw, tp->o_pos.y, tp->o_pos.x);
             waddcch(hw, MAGIC);
-            learn_potion(obj->o_which);
+            potion_learn(obj->o_which);
           }
         }
         for (mp = mlist; mp != NULL; mp = mp->l_next)
@@ -117,7 +135,7 @@ quaff(void)
       }
       if (show)
       {
-        learn_potion(obj->o_which);
+        potion_learn(obj->o_which);
         show_win("You sense the presence of magic on this level.--More--");
       }
       else
@@ -125,14 +143,14 @@ quaff(void)
             is_hallucinating(&player) ? "normal" : "strange");
     }
     when P_LSD:
-      learn_potion(obj->o_which);
+      potion_learn(obj->o_which);
       become_tripping(false);
     when P_SEEINVIS:
       set_true_seeing(&player, true, false);
     when P_RAISE:
       if (game_type == DEFAULT)
       {
-        learn_potion(obj->o_which);
+        potion_learn(obj->o_which);
         raise_level();
       }
       else if (game_type == QUICK)
@@ -142,18 +160,18 @@ quaff(void)
         msg("you fell through the floor!");
       }
     when P_XHEAL:
-      learn_potion(obj->o_which);
+      potion_learn(obj->o_which);
       become_extra_healed();
     when P_HASTE:
-      learn_potion(obj->o_which);
+      potion_learn(obj->o_which);
       become_hasted(false);
     when P_RESTORE:
       become_restored();
     when P_BLIND:
-      learn_potion(obj->o_which);
+      potion_learn(obj->o_which);
       become_blind(false);
     when P_LEVIT:
-      learn_potion(obj->o_which);
+      potion_learn(obj->o_which);
       become_levitating(false);
     otherwise:
       msg("what an odd tasting potion!");

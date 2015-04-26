@@ -23,14 +23,11 @@ enum potion_t
   NPOTIONS
 };
 
-/* Variables */
+/* Variables, TODO: Make these private */
 char *p_colors[NPOTIONS];           /* Colors of the potions */
 struct obj_info pot_info[NPOTIONS]; /* A list of potions and info */
 
 /* Functions */
-bool is_quaffable(THING *thing);    /* Check if we can drink something */
-bool quaff(void);                   /* Quaff a potion from the pack */
-#define learn_potion(_p) (pot_info[_p].oi_know = true) /* Learn pot info */
-#define knows_potion(_p) (pot_info[_p].oi_know) /* Knows which pot? */
+bool potion_quaff_something(void);  /* Quaff a potion from the pack */
 
 #endif /* _ROGUE14_POTIONS_H_ */
