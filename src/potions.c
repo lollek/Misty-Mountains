@@ -63,14 +63,6 @@ potion_learn(enum potion_t potion)
   pot_info[potion].oi_know = true;
 }
 
-/** potion_known
- * Does the hero know what this potion does? */
-static bool
-potion_known(enum potion_t potion)
-{
-  return pot_info[potion].oi_know;
-}
-
 bool
 potion_quaff_something(void)
 {
