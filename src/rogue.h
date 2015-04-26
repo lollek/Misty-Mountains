@@ -418,7 +418,6 @@ void	chg_str(int amt);
 void	check_level(void);
 void	create_obj(void);
 void	death(char monst);
-char	death_monst(void);
 void	dig(int y, int x);
 void	discovered(void);
 void	do_maze(struct room *rp);

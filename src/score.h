@@ -10,6 +10,8 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#include "rogue.h"
+
 struct sc_ent {
     unsigned int sc_uid;
     int sc_score;

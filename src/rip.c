@@ -18,16 +18,13 @@
 #include <ctype.h>
 #include <unistd.h>
 
-#include "rogue.h"
 #include "score.h"
 #include "potions.h"
 #include "scrolls.h"
 #include "io.h"
 #include "armor.h"
 #include "pack.h"
-
-static char *killname(char monst, bool doart);
-static int center(const char *str);
+#include "rogue.h"
 
 static char *rip[] = {
 "                       __________\n",
@@ -45,6 +42,60 @@ static char *rip[] = {
 "         ________)/\\\\_//(\\/(/\\)/\\//\\/|_)_______\n",
     0
 };
+
+/** center:
+ * Return the index to center the given string */
+static int
+center(const char *str)
+{
+  return 28 - (((int)strlen(str) + 1) / 2);
+}
+
+
+/** killname:
+ * Convert a code to a monster name */
+static char *
+killname(char monst, bool doart)
+{
+  char *sp;
+  bool article;
+  static struct h_list nlist[] = {
+    {'a',	"arrow",		true},
+    {'b',	"bolt",			true},
+    {'d',	"dart",			true},
+    {'h',	"hypothermia",		false},
+    {'s',	"starvation",		false},
+    {'\0'}
+  };
+
+  if (isupper(monst))
+  {
+    sp = monsters[monst-'A'].m_name;
+    article = true;
+  }
+  else
+  {
+    struct h_list *hp;
+    sp = "Wally the Wonder Badger";
+    article = false;
+    for (hp = nlist; hp->h_ch; hp++)
+      if (hp->h_ch == monst)
+      {
+        sp = hp->h_desc;
+        article = hp->h_print;
+        break;
+      }
+  }
+
+  if (doart && article)
+    sprintf(prbuf, "a%s ", vowelstr(sp));
+  else
+    prbuf[0] = '\0';
+  strcat(prbuf, sp);
+  return prbuf;
+}
+
+
 
 /*
  * score:
@@ -244,16 +295,6 @@ death(char monst)
 }
 
 /*
- * center:
- *	Return the index to center the given string
- */
-int
-center(const char *str)
-{
-    return 28 - (((int)strlen(str) + 1) / 2);
-}
-
-/*
  * total_winner:
  *	Code for a winner
  */
@@ -285,65 +326,4 @@ total_winner(void)
     exit(0);
 }
 
-/*
- * killname:
- *	Convert a code to a monster name
- */
-char *
-killname(char monst, bool doart)
-{
-    struct h_list *hp;
-    char *sp;
-    bool article;
-    static struct h_list nlist[] = {
-	{'a',	"arrow",		true},
-	{'b',	"bolt",			true},
-	{'d',	"dart",			true},
-	{'h',	"hypothermia",		false},
-	{'s',	"starvation",		false},
-	{'\0'}
-    };
 
-    if (isupper(monst))
-    {
-	sp = monsters[monst-'A'].m_name;
-	article = true;
-    }
-    else
-    {
-	sp = "Wally the Wonder Badger";
-	article = false;
-	for (hp = nlist; hp->h_ch; hp++)
-	    if (hp->h_ch == monst)
-	    {
-		sp = hp->h_desc;
-		article = hp->h_print;
-		break;
-	    }
-    }
-    if (doart && article)
-	sprintf(prbuf, "a%s ", vowelstr(sp));
-    else
-	prbuf[0] = '\0';
-    strcat(prbuf, sp);
-    return prbuf;
-}
-
-/*
- * death_monst:
- *	Return a monster appropriate for a random death.
- */
-char
-death_monst(void)
-{
-    static char poss[] =
-    {
-	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-	'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-	'Y', 'Z', 'a', 'b', 'h', 'd', 's',
-	' '	/* This is provided to generate the "Wally the Wonder Badger"
-		   message for killer */
-    };
-
-    return poss[rnd(sizeof poss / sizeof (char))];
-}
