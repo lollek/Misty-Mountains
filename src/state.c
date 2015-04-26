@@ -39,6 +39,7 @@
 #include "daemons.h"
 #include "colors.h"
 #include "list.h"
+#include "rings.h"
 #include "rogue.h"
 
 static const size_t RSID_STATS        = 0xABCD0001;
@@ -397,7 +398,7 @@ static int
 rs_write_rings(FILE *savef)
 {
   int i;
-  for (i = 0; i < MAXRINGS; i++)
+  for (i = 0; i < NRINGS; i++)
     if (rs_write_stone_index(savef, stones, cNSTONES, r_stones[i]))
       return 1;
   return 0;
@@ -407,7 +408,7 @@ static int
 rs_read_rings(FILE *inf)
 {
   int i;
-  for (i = 0; i < MAXRINGS; i++)
+  for (i = 0; i < NRINGS; i++)
     if (rs_read_stone_index(inf, stones, cNSTONES, &r_stones[i]))
       return 1;
   return 0;
@@ -1135,7 +1136,7 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_room_reference(savef, oldrp))
   rs_assert(rs_write_rooms(savef, passages, MAXPASS))
   rs_assert(rs_write_obj_info(savef, pot_info,  NPOTIONS))
-  rs_assert(rs_write_obj_info(savef, ring_info,  MAXRINGS))
+  rs_assert(rs_write_obj_info(savef, ring_info,  NRINGS))
   rs_assert(rs_write_obj_info(savef, scr_info,  NSCROLLS))
   rs_assert(rs_write_daemons(savef, __daemons_ptr(), 20))
   rs_assert(rs_write_int(savef, temp_i)) /* UNUSED */
@@ -1191,7 +1192,7 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_room_reference(inf, &oldrp))
   rs_assert(rs_read_rooms(inf, passages, MAXPASS))
   rs_assert(rs_read_obj_info(inf, pot_info,  NPOTIONS))
-  rs_assert(rs_read_obj_info(inf, ring_info,  MAXRINGS))
+  rs_assert(rs_read_obj_info(inf, ring_info,  NRINGS))
   rs_assert(rs_read_obj_info(inf, scr_info,  NSCROLLS))
   rs_assert(rs_read_daemons(inf, __daemons_ptr(), 20))
   rs_assert(rs_read_int(inf,&unused_coord.x))  /* UNUSED */

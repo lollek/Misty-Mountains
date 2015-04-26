@@ -14,6 +14,7 @@
 #include "rogue.h"
 #include "io.h"
 #include "pack.h"
+#include "rings.h"
 
 #include "armor.h"
 

@@ -38,7 +38,6 @@ char dir_ch;				/* Direction from last get_dir() call */
 char file_name[MAXSTR];			/* Save file name */
 char huh[MAXSTR] = { '\0' };		/* The last message printed */
 char prbuf[2*MAXSTR];			/* buffer for sprintfs */
-char *r_stones[MAXRINGS];		/* Stone settings of the rings */
 char runch;				/* Direction player is running */
 char take;				/* Thing she is taking */
 char whoami[MAXSTR];			/* Name of player */
@@ -166,22 +165,6 @@ struct obj_info things[] = {
     { "stick",	 4,	0,	NULL,	false },	/* stick */
 };
 
-struct obj_info ring_info[MAXRINGS] = {
-    { "protection",		 9, 400, NULL, false },
-    { "add strength",		 9, 400, NULL, false },
-    { "sustain strength",	 5, 280, NULL, false },
-    { "searching",		10, 420, NULL, false },
-    { "see invisible",		10, 310, NULL, false },
-    { "adornment",		 1,  10, NULL, false },
-    { "aggravate monster",	10,  10, NULL, false },
-    { "dexterity",		 8, 440, NULL, false },
-    { "increase damage",	 8, 400, NULL, false },
-    { "regeneration",		 4, 460, NULL, false },
-    { "slow digestion",		 9, 240, NULL, false },
-    { "teleportation",		 5,  30, NULL, false },
-    { "stealth",		 7, 470, NULL, false },
-    { "maintain armor",		 5, 380, NULL, false },
-};
 
 struct obj_info weap_info[MAXWEAPONS + 1] = {
     { "mace",				11,   8, NULL, false },

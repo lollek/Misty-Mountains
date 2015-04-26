@@ -14,7 +14,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "rogue.h"
 #include "status_effects.h"
 #include "command.h"
 #include "io.h"
@@ -23,6 +22,8 @@
 #include "daemons.h"
 #include "list.h"
 #include "monsters.h"
+#include "rings.h"
+#include "rogue.h"
 
 #include "fight.h"
 

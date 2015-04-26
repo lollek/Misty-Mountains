@@ -23,6 +23,7 @@
 #include "daemons.h"
 #include "colors.h"
 #include "monsters.h"
+#include "rings.h"
 #include "rogue.h"
 
 static int trip_ch(int y, int x, int ch);

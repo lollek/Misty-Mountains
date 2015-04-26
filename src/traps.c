@@ -7,6 +7,7 @@
 #include "colors.h"
 #include "list.h"
 #include "new_level.h"
+#include "rings.h"
 
 #include "traps.h"
 

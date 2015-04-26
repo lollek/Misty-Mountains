@@ -1,12 +1,13 @@
 
 #include "string.h"
 
-#include "rogue.h"
 #include "io.h"
 #include "command.h"
 #include "pack.h"
 #include "daemons.h"
 #include "monsters.h"
+#include "rings.h"
+#include "rogue.h"
 
 #include "status_effects.h"
 

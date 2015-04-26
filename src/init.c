@@ -28,6 +28,7 @@
 #include "colors.h"
 #include "list.h"
 #include "new_level.h"
+#include "rings.h"
 #include "rogue.h"
 
 #include "init.h"
@@ -97,7 +98,7 @@ sumprobs(char ch)
     case '0':    ptr = things;         max = NUMTHINGS;  str = "things";
     when POTION: ptr = pot_info;       max = NPOTIONS;   str = "potions";
     when SCROLL: ptr = scr_info;       max = NSCROLLS;   str = "scrolls";
-    when RING:   ptr = ring_info;      max = MAXRINGS;   str = "rings";
+    when RING:   ptr = ring_info;      max = NRINGS;   str = "rings";
     when STICK:  ptr = ws_info;        max = MAXSTICKS;  str = "sticks";
     when WEAPON: ptr = weap_info;      max = MAXWEAPONS; str = "weapons";
     when ARMOR:  ptr = __armors_ptr(); max = NARMORS;    str = "armor";
@@ -357,7 +358,7 @@ init_stones(void)
   for (i = 0; i < NSTONES; i++)
     used[i] = false;
 
-  for (i = 0; i < MAXRINGS; i++)
+  for (i = 0; i < NRINGS; i++)
   {
     size_t j;
     do

@@ -15,7 +15,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "rogue.h"
 #include "potions.h"
 #include "scrolls.h"
 #include "command.h"
@@ -24,6 +23,8 @@
 #include "armor.h"
 #include "pack.h"
 #include "list.h"
+#include "rings.h"
+#include "rogue.h"
 
 static char *type_name(int type);
 
@@ -45,7 +46,7 @@ pr_spec(char ch)
   {
     case POTION: ptr = pot_info;          max = NPOTIONS;
     when SCROLL: ptr = scr_info;          max = NSCROLLS;
-    when RING:   ptr = ring_info;         max = MAXRINGS;
+    when RING:   ptr = ring_info;         max = NRINGS;
     when STICK:  ptr = ws_info;           max = MAXSTICKS;
     when ARMOR:  ptr = __armors_ptr();    max = NARMORS;
     when WEAPON: ptr = weap_info;         max = MAXWEAPONS;

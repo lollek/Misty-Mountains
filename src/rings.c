@@ -18,6 +18,23 @@
 
 #include "rings.h"
 
+struct obj_info ring_info[] = {
+  { "protection",		 9, 400, NULL, false },
+  { "add strength",		 9, 400, NULL, false },
+  { "sustain strength",	 5, 280, NULL, false },
+  { "searching",		10, 420, NULL, false },
+  { "see invisible",		10, 310, NULL, false },
+  { "adornment",		 1,  10, NULL, false },
+  { "aggravate monster",	10,  10, NULL, false },
+  { "dexterity",		 8, 440, NULL, false },
+  { "increase damage",	 8, 400, NULL, false },
+  { "regeneration",		 4, 460, NULL, false },
+  { "slow digestion",		 9, 240, NULL, false },
+  { "teleportation",		 5,  30, NULL, false },
+  { "stealth",		 7, 470, NULL, false },
+  { "maintain armor",		 5, 380, NULL, false },
+};
+
 bool
 ring_put_on(void)
 {

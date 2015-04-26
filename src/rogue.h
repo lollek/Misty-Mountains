@@ -179,24 +179,6 @@ extern enum rogue_game_t
 #define FLAME		9	/* fake entry for dragon breath (ick) */
 #define MAXWEAPONS	9	/* this should equal FLAME */
 
-/*
- * Ring types
- */
-#define R_PROTECT	0
-#define R_ADDSTR	1
-#define R_SUSTSTR	2
-#define R_SEARCH	3
-#define R_SEEINVIS	4
-#define R_NOP		5
-#define R_AGGR		6
-#define R_ADDHIT	7
-#define R_ADDDAM	8
-#define R_REGEN		9
-#define R_DIGEST	10
-#define R_TELEPORT	11
-#define R_STEALTH	12
-#define R_SUSTARM	13
-#define MAXRINGS	14
 
 /*
  * Rod/Wand/Staff types
@@ -416,7 +398,6 @@ extern struct stats	max_stats;
 extern struct monster monsters[];
 
 extern struct obj_info things[];
-extern struct obj_info ring_info[];
 extern struct obj_info ws_info[];
 extern struct obj_info weap_info[];
 

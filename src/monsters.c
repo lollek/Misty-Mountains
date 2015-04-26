@@ -14,12 +14,13 @@
 #include <string.h>
 #include <assert.h>
 
-#include "rogue.h"
 #include "status_effects.h"
 #include "io.h"
 #include "pack.h"
 #include "scrolls.h"
 #include "list.h"
+#include "rings.h"
+#include "rogue.h"
 
 #include "monsters.h"
 

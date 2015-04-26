@@ -240,7 +240,7 @@ new_thing(void)
 		cur->o_arm -= rnd(3) + 1;
 	when 5:
 	    cur->o_type = RING;
-	    cur->o_which = pick_one(ring_info, MAXRINGS);
+	    cur->o_which = pick_one(ring_info, NRINGS);
 	    switch (cur->o_which)
 	    {
 		case R_ADDSTR:
@@ -360,7 +360,7 @@ discovered(void)
     {
       case POTION: discovered_by_type(ch, pot_info, NPOTIONS);
       when SCROLL: discovered_by_type(ch, scr_info, NSCROLLS);
-      when RING: discovered_by_type(ch, ring_info, MAXRINGS);
+      when RING: discovered_by_type(ch, ring_info, NRINGS);
       when STICK: discovered_by_type(ch, ws_info, MAXSTICKS);
       otherwise: msg(""); return;
     }

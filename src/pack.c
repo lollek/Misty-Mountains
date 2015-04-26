@@ -12,13 +12,14 @@
 
 #include <string.h>
 
-#include "rogue.h"
 #include "status_effects.h"
 #include "scrolls.h"
 #include "io.h"
 #include "armor.h"
 #include "potions.h"
 #include "list.h"
+#include "rings.h"
+#include "rogue.h"
 
 #include "pack.h"
 
