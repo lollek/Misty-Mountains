@@ -1,0 +1,100 @@
+#include <unistd.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include <string.h>
+
+#include "save.h"
+
+#include "score.h"
+
+static FILE *scoreboard = NULL; /* File descriptor for score file */
+static char scoreline[100];
+
+int
+open_score_and_drop_setuid_setgid(void)
+{
+  /* NB: SCOREDIR comes from Makefile */
+  const char *scorefile = SCOREDIR "rogue14.highscore";
+
+  /* Open file */
+  scoreboard = fopen(scorefile, "r+");
+
+  if (scoreboard == NULL && errno == ENOENT) {
+    scoreboard = fopen(scorefile, "w+");
+    if (scoreboard != NULL) {
+      chmod(scorefile, 0664);
+      chown(scorefile, geteuid(), getegid());
+    }
+  }
+
+  if (scoreboard == NULL) {
+    fprintf(stderr, "Could not open %s for writing: %s\n",
+            scorefile, strerror(errno));
+    fflush(stderr);
+    return 1;
+  }
+
+  /* Drop setuid/setgid */
+  {
+    gid_t realgid = getgid();
+    uid_t realuid = getuid();
+
+    if (setregid(realgid, realgid) != 0) {
+      perror("Could not drop setgid privileges.  Aborting.");
+      return 1;
+    }
+    if (setreuid(realuid, realuid) != 0) {
+      perror("Could not drop setuid privileges.  Aborting.");
+      return 1;
+    }
+  }
+  return 0;
+}
+
+void
+score_read(SCORE *top_ten)
+{
+  unsigned int i;
+
+  if (scoreboard == NULL)
+    return;
+
+  rewind(scoreboard);
+
+  for(i = 0; i < NUMSCORES; i++)
+  {
+    encread(top_ten[i].sc_name, MAXSTR, scoreboard);
+    encread(scoreline, 100, scoreboard);
+    sscanf(scoreline, " %u %d %u %hu %d %x \n",
+        &top_ten[i].sc_uid, &top_ten[i].sc_score,
+        &top_ten[i].sc_flags, &top_ten[i].sc_monster,
+        &top_ten[i].sc_level, &top_ten[i].sc_time);
+  }
+
+  rewind(scoreboard);
+}
+
+void
+score_write(SCORE *top_ten)
+{
+  unsigned int i;
+
+  if (scoreboard == NULL)
+    return;
+
+  rewind(scoreboard);
+
+  for(i = 0; i < NUMSCORES; i++)
+  {
+    memset(scoreline,0,100);
+    encwrite(top_ten[i].sc_name, MAXSTR, scoreboard);
+    sprintf(scoreline, " %u %d %u %hu %d %x \n",
+        top_ten[i].sc_uid, top_ten[i].sc_score,
+        top_ten[i].sc_flags, top_ten[i].sc_monster,
+        top_ten[i].sc_level, top_ten[i].sc_time);
+    encwrite(scoreline,100,scoreboard);
+  }
+
+  rewind(scoreboard);
+}
+

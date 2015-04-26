@@ -29,6 +29,7 @@
 #include "list.h"
 #include "new_level.h"
 #include "rings.h"
+#include "save.h"
 #include "rogue.h"
 
 #include "init.h"

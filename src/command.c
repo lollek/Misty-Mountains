@@ -27,6 +27,7 @@
 #include "new_level.h"
 #include "passages.h"
 #include "rings.h"
+#include "save.h"
 #include "rogue.h"
 
 #include "command_private.h"

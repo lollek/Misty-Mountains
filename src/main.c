@@ -15,11 +15,13 @@
 #include <time.h>
 #include <getopt.h>
 
-#include "rogue.h"
 #include "command.h"
 #include "io.h"
 #include "pack.h"
 #include "init.h"
+#include "save.h"
+#include "score.h"
+#include "rogue.h"
 
 enum game_mode_t
 {
@@ -30,9 +32,6 @@ enum game_mode_t
 static bool playit();
 static enum game_mode_t parse_args(int argc, char * const *argv);
 static void endit(int sig);
-
-int open_score_and_drop_setuid_setgid(); /* src/save.c */
-void auto_save(int);                      /* src/save.c */
 
 /** main:
  * The main program, of course */

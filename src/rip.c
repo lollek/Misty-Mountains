@@ -154,7 +154,7 @@ score(int amount, int flags, char monst)
     if (wizard && strcmp(prbuf, "edit") == 0)
       prflags = 2;
 
-    rd_score(top_ten);
+    score_read(top_ten);
     /*
      * Insert her in list if need be
      */
@@ -233,7 +233,7 @@ score(int amount, int flags, char monst)
 	if (lock_sc())
 	{
 	    fp = signal(SIGINT, SIG_IGN);
-	    wr_score(top_ten);
+	    score_write(top_ten);
 	    unlock_sc();
 	    signal(SIGINT, fp);
 	}
