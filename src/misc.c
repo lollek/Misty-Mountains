@@ -802,3 +802,16 @@ reset_last(void)
   last_dir = l_last_dir;
   last_pick = l_last_pick;
 }
+
+bool
+player_has_ring_with_ability(int ability)
+{
+  int i;
+  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  {
+    THING *ring = pack_equipped_item(ring_slots[i]);
+    if (ring != NULL && ring->o_which == ability)
+      return true;
+  }
+  return false;
+}

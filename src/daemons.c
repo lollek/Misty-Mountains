@@ -16,6 +16,7 @@
 #include "command.h"
 #include "status_effects.h"
 #include "monsters.h"
+#include "rings.h"
 #include "rogue.h"
 
 #include "daemons.h"
@@ -255,7 +256,7 @@ daemon_digest_food(void)
   else
   {
     oldfood = food_left;
-    food_left -= ring_eat() + 1 - pack_contains_amulet();
+    food_left -= ring_drain_amount() + 1 - pack_contains_amulet();
 
     if (food_left < MORETIME && oldfood >= MORETIME)
     {

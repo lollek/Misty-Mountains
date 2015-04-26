@@ -15,7 +15,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#include "rogue.h"
 #include "potions.h"
 #include "status_effects.h"
 #include "scrolls.h"
@@ -23,6 +22,8 @@
 #include "armor.h"
 #include "pack.h"
 #include "list.h"
+#include "rings.h"
+#include "rogue.h"
 
 static int pick_one(struct obj_info *info, int nitems);
 static void nameit(THING *obj, const char *type, const char *which,
@@ -71,7 +72,7 @@ inv_name(THING *obj, bool drop)
     case POTION:
       nameit(obj, "potion", p_colors[which], &pot_info[which], nullstr);
     when RING:
-      nameit(obj, "ring", r_stones[which], &ring_info[which], ring_num);
+      nameit(obj, "ring", r_stones[which], &ring_info[which], ring_bonus);
     when STICK:
       nameit(obj, ws_type[which], ws_made[which], &ws_info[which], charge_str);
 

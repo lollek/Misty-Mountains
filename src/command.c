@@ -26,6 +26,7 @@
 #include "move.h"
 #include "new_level.h"
 #include "passages.h"
+#include "rings.h"
 #include "rogue.h"
 
 #include "command_private.h"
@@ -228,8 +229,8 @@ command_do(char ch)
     case 'D': discovered(); return false;
     case 'F': return command_attack(true);
     case 'I': return pack_print_equipment();
-    case 'P': return ring_on();
-    case 'R': return ring_off();
+    case 'P': return ring_put_on();
+    case 'R': return ring_take_off();
     case 'S': return save_game();
     case 'T': return command_take_off(EQUIPMENT_ARMOR);
     case 'W': return armor_command_wear();

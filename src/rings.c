@@ -10,29 +10,16 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
-#include "rogue.h"
 #include "status_effects.h"
 #include "io.h"
 #include "pack.h"
 #include "daemons.h"
+#include "rogue.h"
+
+#include "rings.h"
 
 bool
-player_has_ring_with_ability(int ability)
-{
-  int i;
-  for (i = 0; i < RING_SLOTS_SIZE; ++i)
-  {
-    THING *ring = pack_equipped_item(ring_slots[i]);
-    if (ring != NULL && ring->o_which == ability)
-      return true;
-  }
-  return false;
-}
-
-/** ring_on:
- * Put a ring on a hand */
-bool
-ring_on(void)
+ring_put_on(void)
 {
   THING *obj = pack_get_item("put on", RING);
 
@@ -45,7 +32,7 @@ ring_on(void)
     msg(terse
       ? "not a ring"
       : "it would be difficult to wrap that around a finger");
-    return ring_on();
+    return ring_put_on();
   }
 
   /* Try to put it on */
@@ -72,11 +59,8 @@ ring_on(void)
   return true;
 }
 
-/** ring_off:
- * take off a ring */
-
 bool
-ring_off(void)
+ring_take_off(void)
 {
   enum equipment_pos ring;
   THING *obj;
@@ -103,10 +87,8 @@ ring_off(void)
   return true;
 }
 
-/** ring_eat:
- * How much food does players rings use up? */
 int
-ring_eat(void)
+ring_drain_amount(void)
 {
   int total_eat = 0;
   int uses[] = {
@@ -136,10 +118,8 @@ ring_eat(void)
   return total_eat;
 }
 
-/** ring_num:
- * Print ring bonuses */
 char *
-ring_num(THING *obj)
+ring_bonus(THING *obj)
 {
   static char buf[10];
 

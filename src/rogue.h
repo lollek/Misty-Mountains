@@ -467,9 +467,6 @@ bool	player_has_ring_with_ability(int ability);
 const char	*pick_color(const char *col);
 int	pr_list(void);
 void	pr_spec(char ch);
-int	ring_eat(void);
-bool	ring_on(void);
-bool	ring_off(void);
 int	rnd(int range);
 int	rnd_room(void);
 int	roll(int number, int sides);
@@ -504,7 +501,6 @@ char	rnd_thing(void);
 char	*charge_str(THING *obj);
 char	*inv_name(THING *obj, bool drop);
 char	*num(int n1, int n2, char type);
-char	*ring_num(THING *obj);
 char	*set_mname(THING *tp);
 const char	*vowelstr(const char *str);
 
