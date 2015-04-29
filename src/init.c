@@ -27,7 +27,7 @@
 #include "daemons.h"
 #include "colors.h"
 #include "list.h"
-#include "new_level.h"
+#include "level.h"
 #include "rings.h"
 #include "save.h"
 #include "misc.h"
@@ -459,7 +459,7 @@ init_new_game(void)
   init_stones();                        /* Set up stone settings of rings */
   init_materials();                     /* Set up materials of wands */
 
-  new_level();                          /* Draw current level */
+  level_new();                          /* Draw current level */
 
   /* Start up daemons and fuses */
   daemon_start(daemon_runners_move, 0, AFTER);

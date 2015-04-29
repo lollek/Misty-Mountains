@@ -1,8 +1,8 @@
 /*
- * new_level:
+ * level:
  *	Dig and draw a new level
  *
- * @(#)new_level.c	4.38 (Berkeley) 02/05/99
+ * @(#)level.c	4.38 (Berkeley) 02/05/99
  *
  * Rogue: Exploring the Dungeons of Doom
  * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
@@ -25,7 +25,7 @@
 #include "misc.h"
 #include "rooms.h"
 
-#include "new_level.h"
+#include "level.h"
 
 /* Tuneables */
 #define MAXOBJ		9  /* How many attempts to put items in dungeon */
@@ -131,7 +131,7 @@ put_things(void)
 
 /* TODO: This function needs cleanup */
 void
-new_level(void)
+level_new(void)
 {
     THING *tp;
     PLACE *pp;

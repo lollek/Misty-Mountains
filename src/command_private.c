@@ -10,7 +10,7 @@
 #include "options.h"
 #include "io.h"
 #include "pack.h"
-#include "new_level.h"
+#include "level.h"
 #include "rings.h"
 #include "misc.h"
 #include "monster.h"
@@ -32,7 +32,7 @@ command_use_stairs(char up_or_down)
   else if (up_or_down == '>') /* DOWN */
   {
     level++;
-    new_level();
+    level_new();
   }
 
   else if (up_or_down == '<') /* UP */
@@ -42,7 +42,7 @@ command_use_stairs(char up_or_down)
       level--;
       if (level == 0)
         total_winner();
-      new_level();
+      level_new();
       msg("you feel a wrenching sensation in your gut");
     }
     else

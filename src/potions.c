@@ -14,7 +14,7 @@
 #include "io.h"
 #include "pack.h"
 #include "list.h"
-#include "new_level.h"
+#include "level.h"
 #include "misc.h"
 #include "rogue.h"
 
@@ -149,7 +149,7 @@ potion_quaff_something(void)
       else if (game_type == QUICK)
       {
         level++;
-        new_level();
+        level_new();
         msg("you fell through the floor!");
       }
     when P_XHEAL:

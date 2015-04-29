@@ -6,7 +6,7 @@
 #include "fight.h"
 #include "colors.h"
 #include "list.h"
-#include "new_level.h"
+#include "level.h"
 #include "rings.h"
 #include "misc.h"
 
@@ -45,7 +45,7 @@ be_trapped(THING *target, coord *tc)
   {
     case T_DOOR:
       level++;
-      new_level();
+      level_new();
       msg("you fell into a trap!");
     when T_BEAR:
       become_stuck();

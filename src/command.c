@@ -24,7 +24,7 @@
 #include "daemons.h"
 #include "list.h"
 #include "move.h"
-#include "new_level.h"
+#include "level.h"
 #include "passages.h"
 #include "rings.h"
 #include "save.h"
@@ -274,8 +274,8 @@ command_wizard_do(char ch)
     when '$': msg("inpack = %d", pack_count_items());
     /* when '\\': get_dir(); teleport(moat(delta.y + hero.y, hero.x + delta.x), NULL); * This is used for testing new features */
     when CTRL('W'): whatis(0);
-    when CTRL('D'): level++; new_level();
-    when CTRL('A'): level--; new_level();
+    when CTRL('D'): level++; level_new();
+    when CTRL('A'): level--; level_new();
     when CTRL('F'): show_map();
     when CTRL('T'): teleport(&player, NULL);
     when CTRL('E'): msg("food left: %d", food_left);
