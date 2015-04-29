@@ -126,8 +126,6 @@ static int newpos = 0;
 int
 endmsg(void)
 {
-  char ch;
-
   /* Save message in case player missed it */
   strcpy(huh, msgbuf);
   /* TODO: Remove mpos by replacing mpos = 0 with a clearmsg() */
