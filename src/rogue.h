@@ -482,7 +482,6 @@ bool cansee(int y, int x); /* True if player can see coord */
 int dist(int y1, int x1, int y2, int x2);
 #define dist_cp(_1, _2) dist((_1)->y, (_1)->x, (_2)->y, (_2)->x)
 
-bool monster_chase(THING *tp); /* Make a monster chase */
 
 void leave(int);
 void quit(int);

@@ -23,7 +23,7 @@
 #include "rooms.h"
 #include "rogue.h"
 
-#include "monsters.h"
+#include "monster.h"
 
 char
 monster_random(bool wander)

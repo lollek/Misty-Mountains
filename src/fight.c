@@ -21,7 +21,7 @@
 #include "pack.h"
 #include "daemons.h"
 #include "list.h"
-#include "monsters.h"
+#include "monster.h"
 #include "rings.h"
 #include "rogue.h"
 

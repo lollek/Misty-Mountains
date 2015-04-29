@@ -17,7 +17,7 @@
 #include "io.h"
 #include "pack.h"
 #include "list.h"
-#include "monsters.h"
+#include "monster.h"
 #include "rooms.h"
 #include "rogue.h"
 

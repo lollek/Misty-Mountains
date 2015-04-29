@@ -22,7 +22,7 @@
 #include "pack.h"
 #include "daemons.h"
 #include "colors.h"
-#include "monsters.h"
+#include "monster.h"
 #include "rings.h"
 #include "rogue.h"
 

@@ -1,5 +1,7 @@
-#ifndef _ROGUE14_MONSTERS_H_
-#define _ROGUE14_MONSTERS_H_
+#ifndef _ROGUE14_MONSTER_H_
+#define _ROGUE14_MONSTER_H_
+
+#include <stdbool.h>
 
 #include "rogue.h"
 
@@ -33,4 +35,7 @@ void monster_on_death(THING *tp, bool pr);
 /* Remove a monster from the screen */
 void monster_remove_from_screen(coord *mp, THING *tp, bool waskill);
 
-#endif /* _ROGUE14_MONSTERS_H_ */
+/** monster_chase.c **/
+bool monster_chase(THING *tp); /* Make a monster chase */
+
+#endif /* _ROGUE14_MONSTER_H_ */

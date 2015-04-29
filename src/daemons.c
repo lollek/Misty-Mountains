@@ -15,7 +15,7 @@
 #include "pack.h"
 #include "command.h"
 #include "status_effects.h"
-#include "monsters.h"
+#include "monster.h"
 #include "rings.h"
 #include "rogue.h"
 

@@ -20,9 +20,10 @@
 #include "daemons.h"
 #include "fight.h"
 #include "list.h"
-#include "monsters.h"
 #include "move.h"
 #include "rogue.h"
+
+#include "monster.h"
 
 #define DRAGONSHOT  5  /* one chance in DRAGONSHOT that a dragon will flame */
 static coord ch_ret;   /* Where chasing takes you */

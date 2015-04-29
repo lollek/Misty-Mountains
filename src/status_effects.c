@@ -5,7 +5,7 @@
 #include "command.h"
 #include "pack.h"
 #include "daemons.h"
-#include "monsters.h"
+#include "monster.h"
 #include "rings.h"
 #include "rooms.h"
 #include "rogue.h"

@@ -16,7 +16,7 @@
 #include "io.h"
 #include "pack.h"
 #include "list.h"
-#include "monsters.h"
+#include "monster.h"
 
 char *s_names[NSCROLLS];
 struct obj_info scr_info[NSCROLLS] = {

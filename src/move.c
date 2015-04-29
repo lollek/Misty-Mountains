@@ -21,7 +21,7 @@
 #include "armor.h"
 #include "pack.h"
 #include "fight.h"
-#include "monsters.h"
+#include "monster.h"
 #include "move.h"
 #include "rooms.h"
 #include "rogue.h"

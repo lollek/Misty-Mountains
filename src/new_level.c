@@ -20,7 +20,7 @@
 #include "pack.h"
 #include "daemons.h"
 #include "list.h"
-#include "monsters.h"
+#include "monster.h"
 #include "passages.h"
 #include "rooms.h"
 
