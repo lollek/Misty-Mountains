@@ -22,6 +22,7 @@
 #include "save.h"
 #include "score.h"
 #include "misc.h"
+#include "rooms.h"
 #include "rogue.h"
 
 enum game_mode_t

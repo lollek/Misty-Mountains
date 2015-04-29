@@ -14,6 +14,7 @@
 
 #include "io.h"
 #include "misc.h"
+#include "rooms.h"
 #include "rogue.h"
 
 #include "passages.h"

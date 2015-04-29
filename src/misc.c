@@ -25,6 +25,7 @@
 #include "monster.h"
 #include "rings.h"
 #include "passages.h"
+#include "rooms.h"
 #include "rogue.h"
 
 #include "misc.h"

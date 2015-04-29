@@ -1,6 +1,12 @@
 #ifndef _ROGUE14_ROOMS_H_
 #define _ROGUE14_ROOMS_H_
 
+
+/* Variables. TODO: Move these */
+#define MAXROOMS  9 /* max rooms per level */
+struct room *oldrp;			/* Roomin(&oldpos) */
+struct room rooms[MAXROOMS];		/* One for each room -- A level */
+
 /* Create rooms and corridors with a connectivity graph */
 void rooms_create(void);
 

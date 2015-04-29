@@ -98,6 +98,3 @@ WINDOW *hw = NULL;			/* used as a scratch window */
 /* The maximum for the player */
 struct stats max_stats = { 16, 0, 1, 10, 12, "1x4", 12 };
 
-struct room *oldrp;			/* Roomin(&oldpos) */
-struct room rooms[MAXROOMS];		/* One for each room -- A level */
-

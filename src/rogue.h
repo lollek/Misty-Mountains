@@ -25,7 +25,6 @@
 #define MAXCOLS  80 /* maximum number of screen columns used */
 #define MAXINP   50 /* max string to read from terminal or environment */
 #define MAXLINES 32 /* maximum number of screen lines used */
-#define MAXROOMS  9 /* max rooms per level */
 #define NUMLINES 24
 #define NUMCOLS  80
 #define PACKSIZE 22 /* How many items we can have in our pack */
@@ -378,8 +377,6 @@ extern coord	delta, oldpos, stairs;
 extern PLACE	places[];
 
 extern THING	*l_last_pick, *last_pick, *lvl_obj, *mlist, player;
-
-extern struct room	*oldrp, rooms[];
 
 extern struct stats	max_stats;
 
