@@ -22,6 +22,7 @@
 #include "list.h"
 #include "move.h"
 #include "misc.h"
+#include "passages.h"
 #include "rogue.h"
 
 #include "monster.h"

@@ -20,6 +20,7 @@
 #include "monster.h"
 #include "rooms.h"
 #include "misc.h"
+#include "passages.h"
 #include "rogue.h"
 
 struct obj_info ws_info[MAXSTICKS] = {

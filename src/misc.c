@@ -24,6 +24,7 @@
 #include "colors.h"
 #include "monster.h"
 #include "rings.h"
+#include "passages.h"
 #include "rogue.h"
 
 #include "misc.h"

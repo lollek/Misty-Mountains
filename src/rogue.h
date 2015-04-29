@@ -38,7 +38,6 @@
 /* Maximum number of different things */
 #define MAXTRAPS	10
 #define NUMTHINGS	7	/* number of types of things */
-#define MAXPASS		13	/* upper limit on number of passages */
 
 extern enum rogue_game_t
 {
@@ -380,7 +379,7 @@ extern PLACE	places[];
 
 extern THING	*l_last_pick, *last_pick, *lvl_obj, *mlist, player;
 
-extern struct room	*oldrp, passages[], rooms[];
+extern struct room	*oldrp, rooms[];
 
 extern struct stats	max_stats;
 

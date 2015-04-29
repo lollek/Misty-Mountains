@@ -41,6 +41,7 @@
 #include "list.h"
 #include "rings.h"
 #include "save.h"
+#include "passages.h"
 #include "rogue.h"
 
 static const size_t RSID_STATS        = 0xABCD0001;
