@@ -136,8 +136,7 @@ endmsg(void)
     look(false);
     mvaddstr(0, mpos, "--More--");
     refresh();
-    if (!msg_esc)
-      wait_for(KEY_SPACE);
+    wait_for(KEY_SPACE);
     else
     {
       while ((ch = readchar()) != KEY_SPACE)

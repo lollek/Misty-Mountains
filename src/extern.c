@@ -23,7 +23,6 @@ bool firstmove = false;			/* First move after setting door_stop */
 bool has_hit = false;			/* Has a "hit" message pending in msg */
 bool kamikaze = false;			/* to_death really to DEATH */
 bool move_on = false;			/* Next move shouldn't pick up items */
-bool msg_esc = false;			/* Check for ESC from msg's --More-- */
 bool running = false;			/* True if player is running */
 bool to_death = false;			/* Fighting is to the death! */
 int wizard = false;			/* True if allows wizard commands */
