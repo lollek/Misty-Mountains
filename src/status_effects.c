@@ -9,6 +9,7 @@
 #include "rings.h"
 #include "rooms.h"
 #include "misc.h"
+#include "level.h"
 #include "rogue.h"
 
 #include "status_effects.h"

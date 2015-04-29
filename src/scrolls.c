@@ -17,6 +17,7 @@
 #include "list.h"
 #include "monster.h"
 #include "misc.h"
+#include "level.h"
 #include "rogue.h"
 
 char *s_names[NSCROLLS];

@@ -19,6 +19,7 @@
 #include "monster.h"
 #include "passages.h"
 #include "misc.h"
+#include "level.h"
 #include "rogue.h"
 
 #include "rooms.h"

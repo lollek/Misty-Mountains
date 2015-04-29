@@ -20,6 +20,7 @@
 #include "list.h"
 #include "rings.h"
 #include "misc.h"
+#include "level.h"
 #include "rogue.h"
 
 #include "pack.h"

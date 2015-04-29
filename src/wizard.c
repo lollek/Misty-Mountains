@@ -25,6 +25,7 @@
 #include "list.h"
 #include "rings.h"
 #include "misc.h"
+#include "level.h"
 #include "rogue.h"
 
 static char *type_name(int type);

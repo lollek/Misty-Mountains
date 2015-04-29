@@ -24,6 +24,7 @@
 #include "list.h"
 #include "rings.h"
 #include "misc.h"
+#include "level.h"
 #include "rogue.h"
 
 /* Only oi_prob is used

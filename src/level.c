@@ -34,6 +34,7 @@
 #define MINTREAS	2  /* minimum number of treasures in a treasure room */
 #define MAXTRIES	10 /* max number of tries to put down a monster */
 
+
 /** treas_room:
  * Add a treasure room */
 static void

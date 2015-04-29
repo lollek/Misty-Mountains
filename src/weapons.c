@@ -18,6 +18,7 @@
 #include "fight.h"
 #include "list.h"
 #include "misc.h"
+#include "level.h"
 #include "rogue.h"
 
 #define NO_WEAPON -1

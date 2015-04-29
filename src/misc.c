@@ -26,6 +26,7 @@
 #include "rings.h"
 #include "passages.h"
 #include "rooms.h"
+#include "level.h"
 #include "rogue.h"
 
 #include "misc.h"

@@ -43,6 +43,7 @@
 #include "save.h"
 #include "passages.h"
 #include "rooms.h"
+#include "level.h"
 #include "rogue.h"
 
 static const size_t RSID_STATS        = 0xABCD0001;

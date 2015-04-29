@@ -56,10 +56,6 @@ extern enum rogue_game_t
 #define max(a,b)	((a) > (b) ? (a) : (b))
 #define on(thing,flag)	((bool)(((thing).t_flags & (flag)) != 0))
 #define GOLDCALC	(rnd(50 + 10 * level) + 2)
-#define INDEX(y,x)	(&places[((x) << 5) + (y)])
-#define chat(y,x)	(places[((x) << 5) + (y)].p_ch)
-#define flat(y,x)	(places[((x) << 5) + (y)].p_flags)
-#define moat(y,x)	(places[((x) << 5) + (y)].p_monst)
 
 #define assert_or_die(_b, _msg) if (!(_b)) do { endwin(); \
   printf("%s +%d: %s\n", __FILE__, __LINE__, _msg); abort(); } while (0)
@@ -374,7 +370,6 @@ extern WINDOW	*hw;
 
 extern coord	delta, oldpos, stairs;
 
-extern PLACE	places[];
 
 extern THING	*l_last_pick, *last_pick, *lvl_obj, *mlist, player;
 

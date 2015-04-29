@@ -25,6 +25,7 @@
 #include "move.h"
 #include "rooms.h"
 #include "misc.h"
+#include "level.h"
 #include "rogue.h"
 
 /** move_turn_ok:

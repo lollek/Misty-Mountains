@@ -24,6 +24,7 @@
 #include "monster.h"
 #include "rings.h"
 #include "misc.h"
+#include "level.h"
 #include "rogue.h"
 
 #include "fight.h"
