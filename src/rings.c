@@ -14,6 +14,7 @@
 #include "io.h"
 #include "pack.h"
 #include "daemons.h"
+#include "misc.h"
 #include "rogue.h"
 
 #include "rings.h"

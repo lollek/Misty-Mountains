@@ -15,6 +15,7 @@
 #include "pack.h"
 #include "list.h"
 #include "new_level.h"
+#include "misc.h"
 #include "rogue.h"
 
 #include "potions.h"

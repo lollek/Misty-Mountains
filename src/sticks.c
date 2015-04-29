@@ -19,6 +19,7 @@
 #include "list.h"
 #include "monster.h"
 #include "rooms.h"
+#include "misc.h"
 #include "rogue.h"
 
 /*

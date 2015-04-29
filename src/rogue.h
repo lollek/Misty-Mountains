@@ -405,16 +405,7 @@ extern struct obj_info weap_info[];
  * Function types
  */
 
-bool is_magic(THING *obj);   /* Returns true if an object radiates magic */
-bool seen_stairs(void);          /* Return true if the player has seen the stairs */
-bool turn_see(bool turn_off);/* Put on or off seeing monsters on this level */
-void invis_on(void);         /* Turn on the ability to see invisible */
 
-void	add_str(str_t *sp, int amt);
-void	aggravate(void);
-void	call_it(struct obj_info *info);
-void	chg_str(int amt);
-void	check_level(void);
 void	create_obj(void);
 void	death(char monst);
 void	discovered(void);
@@ -422,74 +413,36 @@ void	do_motion(THING *obj, int ydelta, int xdelta);
 bool	do_zap(void);
 void	drain(void);
 bool	drop(void);
-bool	eat(void);
-void	erase_lamp(coord *pos, struct room *rp);
 void	fall(THING *obj, bool pr);
 void	fire_bolt(coord *start, coord *dir, char *name);
 void	fix_stick(THING *cur);
-bool	get_dir(void);
-void	look(bool wakeup);
 int	hit_monster(int y, int x, THING *obj);
 void	init_weapon(THING *weap, int which);
 bool	lock_sc(void);
 bool	missile(int ydelta, int xdelta);
-bool	player_has_ring_with_ability(int ability);
-const char	*pick_color(const char *col);
 int	pr_list(void);
 void	pr_spec(char ch);
-int	rnd(int range);
-int	roll(int number, int sides);
 int	rs_save_file(FILE *savef);
 int	rs_restore_file(FILE *inf);
-int	player_save_throw(int which);
 void	score(int amount, int flags, char monst);
 void	set_know(THING *obj, struct obj_info *info);
 void	shell(void);
-bool	show_floor(void);
 void	show_map(void);
-int	sign(int nm);
-int	spread(int nm);
-void	strucpy(char *s1, const char *s2, int len);
 void	total_winner(void);
 void	unlock_sc(void);
-void	waste_time(int rounds);
 void	whatis(int type);
 bool	wield(void);
 
 bool	fallpos(coord *pos, coord *newpos);
-char	floor_ch(void); /* Floor-type at hero's position */
-char	floor_at(void); /* Return the character at hero's position */
-void	reset_last(void); /* Reset the last command when the current one is aborted */
-
-char	rnd_thing(void);
 
 char	*charge_str(THING *obj);
 char	*inv_name(THING *obj, bool drop);
 char	*num(int n1, int n2, char type);
-char	*set_mname(THING *tp);
-const char	*vowelstr(const char *str);
-
-void set_oldch(THING *tp, coord *cp); /* Set oldch for a monster */
-bool see_monst(THING *mp);  /* Can player see the monster? */
-struct room *roomin(coord *cp);
-bool diag_ok(coord *sp, coord *ep); /* Check if move is legal if diagonal */
-bool cansee(int y, int x); /* True if player can see coord */
-
-/** Dist
- * Calculate the "distance" between to points.  Actually,
- * this calculates d^2, not d, but that's good enough for
- * our purposes, since it's only used comparitively. */
-int dist(int y1, int x1, int y2, int x2);
-#define dist_cp(_1, _2) dist((_1)->y, (_1)->x, (_2)->y, (_2)->x)
-
 
 void leave(int);
 void quit(int);
 
-
-THING	*find_obj(int y, int x);
 THING	*new_thing(void);
-
 
 typedef struct {
     char	*st_name;

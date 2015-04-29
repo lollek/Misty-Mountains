@@ -23,6 +23,7 @@
 #include "pack.h"
 #include "list.h"
 #include "rings.h"
+#include "misc.h"
 #include "rogue.h"
 
 static int pick_one(struct obj_info *info, int nitems);

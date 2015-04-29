@@ -12,8 +12,9 @@
 #include <sys/types.h>
 #include <linux/limits.h>
 
-#include "rogue.h"
 #include "armor.h"
+#include "misc.h"
+#include "rogue.h"
 
 #include "io.h"
 

@@ -24,6 +24,7 @@
 #include "io.h"
 #include "armor.h"
 #include "pack.h"
+#include "misc.h"
 #include "rogue.h"
 
 static char *rip[] = {

@@ -12,8 +12,9 @@
 
 #include <stdlib.h>
 
-#include "rogue.h"
 #include "io.h"
+#include "misc.h"
+#include "rogue.h"
 
 #include "passages.h"
 

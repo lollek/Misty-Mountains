@@ -24,6 +24,7 @@
 #include "monster.h"
 #include "move.h"
 #include "rooms.h"
+#include "misc.h"
 #include "rogue.h"
 
 /** move_turn_ok:

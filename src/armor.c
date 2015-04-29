@@ -11,10 +11,11 @@
 
 #include <stdlib.h>
 
-#include "rogue.h"
 #include "io.h"
 #include "pack.h"
 #include "rings.h"
+#include "misc.h"
+#include "rogue.h"
 
 #include "armor.h"
 

@@ -21,6 +21,7 @@
 #include "list.h"
 #include "rings.h"
 #include "rooms.h"
+#include "misc.h"
 #include "rogue.h"
 
 #include "monster.h"

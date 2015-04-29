@@ -17,6 +17,7 @@
 #include "status_effects.h"
 #include "monster.h"
 #include "rings.h"
+#include "misc.h"
 #include "rogue.h"
 
 #include "daemons.h"

@@ -30,6 +30,7 @@
 #include "new_level.h"
 #include "rings.h"
 #include "save.h"
+#include "misc.h"
 #include "rogue.h"
 
 #include "init.h"

@@ -8,6 +8,7 @@
 #include "list.h"
 #include "new_level.h"
 #include "rings.h"
+#include "misc.h"
 
 #include "traps.h"
 

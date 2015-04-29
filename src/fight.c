@@ -23,6 +23,7 @@
 #include "list.h"
 #include "monster.h"
 #include "rings.h"
+#include "misc.h"
 #include "rogue.h"
 
 #include "fight.h"

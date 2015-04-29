@@ -16,8 +16,9 @@
 #include <ctype.h>
 #include <string.h>
 
-#include "rogue.h"
 #include "io.h"
+#include "misc.h"
+#include "rogue.h"
 
 #include "options.h"
 

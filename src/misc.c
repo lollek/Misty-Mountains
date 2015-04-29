@@ -26,19 +26,32 @@
 #include "rings.h"
 #include "rogue.h"
 
-static int trip_ch(int y, int x, int ch);
+#include "misc.h"
 
-/** rnd:
- * Pick a very random number. */
+/* Return the character appropriate for this space, taking into
+ * account whether or not the player is tripping */
+static int
+trip_ch(int y, int x, int ch)
+{
+  if (is_hallucinating(&player) && after)
+    switch (ch)
+    {
+      case FLOOR: case SHADOW: case PASSAGE: case HWALL: case VWALL: case DOOR:
+      case TRAP:
+        break;
+      default:
+        if (y != stairs.y || x != stairs.x || !seen_stairs())
+          return rnd_thing();
+    }
+  return ch;
+}
+
 int
 rnd(int range)
 {
   return range == 0 ? 0 : rand_r(&seed) % range;
 }
 
-/** roll:
- * Roll a number of dice
- */
 int
 roll(int number, int sides)
 {
@@ -49,8 +62,6 @@ roll(int number, int sides)
   return dtotal;
 }
 
-/** look:
- * A quick glance all around the player */
 void
 look(bool wakeup)
 {
@@ -182,27 +193,6 @@ look(bool wakeup)
     mvaddcch(hero.y, hero.x, PLAYER);
 }
 
-/** trip_ch:
- * Return the character appropriate for this space, taking into
- * account whether or not the player is tripping */
-static int
-trip_ch(int y, int x, int ch)
-{
-  if (is_hallucinating(&player) && after)
-    switch (ch)
-    {
-      case FLOOR: case SHADOW: case PASSAGE: case HWALL: case VWALL: case DOOR:
-      case TRAP:
-        break;
-      default:
-        if (y != stairs.y || x != stairs.x || !seen_stairs())
-          return rnd_thing();
-    }
-  return ch;
-}
-
-/** erase_lamp:
- * Erase the area shown by a lamp in a dark room. */
 void
 erase_lamp(coord *pos, struct room *rp)
 {
@@ -224,8 +214,6 @@ erase_lamp(coord *pos, struct room *rp)
     }
 }
 
-/** show_floor:
- * Should we show the floor in her room at this time? */
 bool
 show_floor(void)
 {
@@ -235,8 +223,6 @@ show_floor(void)
     return true;
 }
 
-/** find_obj:
- * Find the unclaimed object at y, x */
 THING *
 find_obj(int y, int x)
 {
@@ -251,8 +237,6 @@ find_obj(int y, int x)
   return NULL;
 }
 
-/** eat:
- * She wants to eat something, so let her try */
 bool
 eat(void)
 {
@@ -291,8 +275,6 @@ eat(void)
     return true;
 }
 
-/** check_level:
- * Check to see if the guy has gone up a level */
 void
 check_level(void)
 {
@@ -313,9 +295,6 @@ check_level(void)
   }
 }
 
-/** chg_str:
- * used to modify the playes strength.  It keeps track of the
- * highest it has been, just in case */
 void
 chg_str(int amt)
 {
@@ -339,8 +318,6 @@ chg_str(int amt)
     max_stats.s_str = comp;
 }
 
-/** add_str:
- * Perform the actual add, checking upper and lower bound limits */
 void
 add_str(str_t *sp, int amt)
 {
@@ -350,8 +327,6 @@ add_str(str_t *sp, int amt)
     *sp = 31;
 }
 
-/** aggravate:
- * Aggravate all the monsters on this level */
 void
 aggravate(void)
 {
@@ -360,8 +335,6 @@ aggravate(void)
     monster_start_running(&mp->t_pos);
 }
 
-/** vowelstr:
- * For printfs: if string starts with a vowel, return "n" for an "an" */
 const char *
 vowelstr(const char *str)
 {
@@ -378,8 +351,6 @@ vowelstr(const char *str)
   }
 }
 
-/** get_dir:
- * Set up the direction co_ordinate for use in varios "prefix" commands */
 bool
 get_dir(void)
 {
@@ -440,8 +411,6 @@ get_dir(void)
   return true;
 }
 
-/** sign:
- * Return the sign of the number */
 int
 sign(int nm)
 {
@@ -451,16 +420,12 @@ sign(int nm)
     return (nm > 0);
 }
 
-/** spread:
- * Give a spread around a given number (+/- 20%) */
 int
 spread(int nm)
 {
   return nm - nm / 20 + rnd(nm / 10);
 }
 
-/** call_it:
- * Call an object something after use */
 void
 call_it(struct obj_info *info)
 {
@@ -486,8 +451,6 @@ call_it(struct obj_info *info)
   }
 }
 
-/** rnd_thing:
- * Pick a random thing appropriate for this level */
 char
 rnd_thing(void)
 {
@@ -592,8 +555,6 @@ invis_on(void)
 }
 
 
-/* strucpy:
- * Copy string using unctrl for things */
 void
 strucpy(char *s1, const char *s2, int len)
 {
@@ -662,8 +623,6 @@ see_monst(THING *mp)
   return ((bool)!(mp->t_room->r_flags & ISDARK));
 }
 
-/** Roomin
- * Find what room some coords are in, NULL means no room */
 struct room *
 roomin(coord *cp)
 {
@@ -724,8 +683,6 @@ dist(int y1, int x1, int y2, int x2)
     return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
 
-/** set_mname:
- * return the monster name for the given monster */
 char *
 set_mname(THING *tp)
 {
@@ -751,19 +708,12 @@ set_mname(THING *tp)
     return tbuf;
 }
 
-/*
- * pick_color:
- *	If he is halucinating, pick a random color name and return it,
- *	otherwise return the given color.
- */
 const char *
 pick_color(const char *col)
 {
     return (is_hallucinating(&player) ? colors_random() : col);
 }
 
-/** player_save_throw:
- * See if player saves against various nasty things */
 int
 player_save_throw(int which)
 {

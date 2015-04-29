@@ -13,11 +13,12 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "rogue.h"
 #include "io.h"
 #include "pack.h"
 #include "fight.h"
 #include "list.h"
+#include "misc.h"
+#include "rogue.h"
 
 #define NO_WEAPON -1
 

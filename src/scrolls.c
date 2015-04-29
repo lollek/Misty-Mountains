@@ -10,13 +10,14 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
-#include "rogue.h"
 #include "scrolls.h"
 #include "status_effects.h"
 #include "io.h"
 #include "pack.h"
 #include "list.h"
 #include "monster.h"
+#include "misc.h"
+#include "rogue.h"
 
 char *s_names[NSCROLLS];
 struct obj_info scr_info[NSCROLLS] = {

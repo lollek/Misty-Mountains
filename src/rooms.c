@@ -18,9 +18,10 @@
 #include "list.h"
 #include "monster.h"
 #include "passages.h"
-#include "rooms.h"
+#include "misc.h"
 #include "rogue.h"
 
+#include "rooms.h"
 
 /* position matrix for maze positions */
 typedef struct spot {

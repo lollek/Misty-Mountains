@@ -22,6 +22,7 @@
 #include "list.h"
 #include "monster.h"
 #include "passages.h"
+#include "misc.h"
 #include "rooms.h"
 
 #include "new_level.h"

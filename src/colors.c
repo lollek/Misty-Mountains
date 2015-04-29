@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 #include "potions.h"
+#include "misc.h"
 #include "rogue.h"
 
 #include "colors.h"

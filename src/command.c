@@ -28,6 +28,7 @@
 #include "passages.h"
 #include "rings.h"
 #include "save.h"
+#include "misc.h"
 #include "rogue.h"
 
 #include "command_private.h"
