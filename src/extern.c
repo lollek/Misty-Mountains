@@ -129,17 +129,3 @@ struct obj_info things[] = {
     { "stick",	 4,	0,	NULL,	false },	/* stick */
 };
 
-
-struct obj_info weap_info[MAXWEAPONS + 1] = {
-    { "mace",				11,   8, NULL, false },
-    { "long sword",			11,  15, NULL, false },
-    { "short bow",			12,  15, NULL, false },
-    { "arrow",				12,   1, NULL, false },
-    { "dagger",				 8,   3, NULL, false },
-    { "two handed sword",		10,  75, NULL, false },
-    { "dart",				12,   2, NULL, false },
-    { "shuriken",			12,   5, NULL, false },
-    { "spear",				12,   5, NULL, false },
-    /* DO NOT REMOVE: fake entry for dragon's breath */
-    { NULL,				0,    0, NULL, false },	
-};
