@@ -5,6 +5,16 @@
 
 #include "rogue.h"
 
+/* Array containing information on all the various types of monsters */
+struct monster {
+    char *m_name;			/* What to call the monster */
+    int m_carry;			/* Probability of carrying something */
+    short m_flags;			/* things about the monster */
+    struct stats m_stats;		/* Initial stats */
+};
+
+extern struct monster monsters[];
+
 /* Pick a monster to show up.  The lower the level, the meaner the monster. */
 char monster_random(bool wander);
 

@@ -13,6 +13,7 @@
 #include "new_level.h"
 #include "rings.h"
 #include "misc.h"
+#include "monster.h"
 #include "rogue.h"
 
 #include "command_private.h"

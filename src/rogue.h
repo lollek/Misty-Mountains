@@ -339,16 +339,6 @@ typedef struct {
     THING *p_monst;
 } PLACE;
 
-/*
- * Array containing information on all the various types of monsters
- */
-struct monster {
-    char *m_name;			/* What to call the monster */
-    int m_carry;			/* Probability of carrying something */
-    short m_flags;			/* things about the monster */
-    struct stats m_stats;		/* Initial stats */
-};
-
 /* Game Options - These are set in main.c */
 bool terse;       /* Terse output */
 bool fight_flush; /* Flush typeahead during battle */
@@ -395,7 +385,6 @@ extern struct room	*oldrp, passages[], rooms[];
 
 extern struct stats	max_stats;
 
-extern struct monster monsters[];
 
 extern struct obj_info things[];
 extern struct obj_info ws_info[];

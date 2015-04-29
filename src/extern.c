@@ -122,36 +122,6 @@ struct room passages[MAXPASS] =		/* One for each passage */
     { {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {{0,0}} }
 };
 
-struct monster monsters[26] =
-    {
-/* Name		 CARRY	FLAG    str, exp, lvl, amr, hpt, dmg,      ,maxhp */
-{ "aquator",	   0,	ISMEAN,	{ 10, 20,   5,   2,  1, "0x0/0x0", 0 } },
-{ "bat",	   0,	ISFLY,	{ 10,  1,   1,   3,  1, "1x2", 0 } },
-{ "centaur",	  15,	0,	{ 10, 17,   4,   4,  1, "1x2/1x5/1x5", 0 } },
-{ "dragon",	 100,	ISMEAN,	{ 10,5000, 10,  -1,  1, "1x8/1x8/3x10", 0 } },
-{ "emu",	   0,	ISMEAN,	{ 10,  2,   1,   7,  1, "1x2", 0 } },
-{ "venus flytrap", 0,	ISMEAN,	{ 10, 80,   8,   3,  1, "000x0", 0 } },
-{ "griffin",	  20,	ISMEAN|ISFLY|ISREGEN, { 10,2000, 13,   2, 1, "4x3/3x5", 0 } },
-{ "hobgoblin",	   0,	ISMEAN,	{ 10,  3,   1,   5,  1, "1x8", 0 } },
-{ "ice monster",   0,	0,	{ 10,  5,   1,   9,  1, "0x0", 0 } },
-{ "jabberwock",   70,	0,	{ 10,3000, 15,   6,  1, "2x12/2x4", 0 } },
-{ "kestrel",	   0,	ISMEAN|ISFLY,	{ 10,  1,    1,   7, 1, "1x4", 0 } },
-{ "leprechaun",	   0,	0,	{ 10, 10,   3,   8,  1, "1x1", 0 } },
-{ "medusa",	  40,	ISMEAN,	{ 10,200,   8,   2,  1, "3x4/3x4/2x5", 0 } },
-{ "nymph",	 100,	0,	{ 10, 37,   3,   9,  1, "0x0", 0 } },
-{ "orc",	  15,	ISGREED,{ 10,  5,   1,   6,  1, "1x8", 0 } },
-{ "phantom",	   0,	ISINVIS,{ 10,120,   8,   3,  1, "4x4", 0 } },
-{ "quagga",	   0,	ISMEAN,	{ 10, 15,   3,   3,  1, "1x5/1x5", 0 } },
-{ "rattlesnake",   0,	ISMEAN,	{ 10,  9,   2,   3,  1, "1x6", 0 } },
-{ "snake",	   0,	ISMEAN,	{ 10,  2,   1,   5,  1, "1x3", 0 } },
-{ "troll",	  50,	ISREGEN|ISMEAN,{ 10, 120, 6, 4, 1, "1x8/1x8/2x6", 0 } },
-{ "black unicorn", 0,	ISMEAN,	{ 10,190,   7,  -2, 1, "1x9/1x9/2x9", 0 } },
-{ "vampire",	  20,	ISREGEN|ISMEAN,{ 10,350,   8,   1, 1, "1x10", 0 } },
-{ "wraith",	   0,	0,	{ 10, 55,   5,   4,  1, "1x6", 0 } },
-{ "xeroc",	  30,	0,	{ 10,100,   7,   7,  1, "4x4", 0 } },
-{ "yeti",	  30,	0,	{ 10, 50,   4,   6,  1, "1x6/1x6", 0 } },
-{ "zombie",	   0,	ISMEAN,	{ 10,  6,   2,   8,  1, "1x8", 0 } }
-    };
 
 /* Only oi_prob is used
  *    oi_name  oi_prob oi_worth oi_guess oi_know */
