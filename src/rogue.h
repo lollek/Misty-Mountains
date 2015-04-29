@@ -356,8 +356,7 @@ extern const char *game_version;
 
 extern bool	after, again, door_stop,
 		firstmove, has_hit, kamikaze,
-		move_on,
-		running, to_death;
+		move_on, running, to_death;
 
 extern char	dir_ch, file_name[], huh[], prbuf[], whoami[],
 		l_last_comm, l_last_dir, last_comm, last_dir,

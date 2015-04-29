@@ -22,6 +22,23 @@
 #include "misc.h"
 #include "rogue.h"
 
+struct obj_info ws_info[MAXSTICKS] = {
+    { "light",			12, 250, NULL, false },
+    { "invisibility",		 6,   5, NULL, false },
+    { "lightning",		 3, 330, NULL, false },
+    { "fire",			 3, 330, NULL, false },
+    { "cold",			 3, 330, NULL, false },
+    { "polymorph",		15, 310, NULL, false },
+    { "magic missile",		10, 170, NULL, false },
+    { "haste monster",		10,   5, NULL, false },
+    { "slow monster",		11, 350, NULL, false },
+    { "drain life",		 9, 300, NULL, false },
+    { "nothing",		 1,   5, NULL, false },
+    { "teleport away",		 6, 340, NULL, false },
+    { "teleport to",		 6,  50, NULL, false },
+    { "cancellation",		 5, 280, NULL, false },
+};
+
 /*
  * fix_stick:
  *	Set up a new stick
