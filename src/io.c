@@ -137,18 +137,6 @@ endmsg(void)
     mvaddstr(0, mpos, "--More--");
     refresh();
     wait_for(KEY_SPACE);
-    else
-    {
-      while ((ch = readchar()) != KEY_SPACE)
-        if (ch == KEY_ESCAPE)
-        {
-          msgbuf[0] = '\0';
-          mpos = 0;
-          newpos = 0;
-          msgbuf[0] = '\0';
-          return KEY_ESCAPE;
-        }
-    }
   }
 
   /* All messages should start with uppercase, except ones that

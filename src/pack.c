@@ -35,6 +35,12 @@ static struct equipment_t
   { NULL, "Left Ring" }
 };
 
+bool pack_used[26] = {			/* Is the character used in the pack? */
+    false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false
+};
+
 enum equipment_pos ring_slots[RING_SLOTS_SIZE] = { 
   EQUIPMENT_RRING,
   EQUIPMENT_LRING
