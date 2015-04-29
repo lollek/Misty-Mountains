@@ -26,6 +26,18 @@
 #include "misc.h"
 #include "rogue.h"
 
+/* Only oi_prob is used
+ *    oi_name  oi_prob oi_worth oi_guess oi_know */
+struct obj_info things[] = {
+    { "potion",	26,	0,	NULL,	false },	/* potion */
+    { "scroll",	36,	0,	NULL,	false },	/* scroll */
+    { "food",	16,	0,	NULL,	false },	/* food */
+    { "weapon",	 7,	0,	NULL,	false },	/* weapon */
+    { "armor",	 7,	0,	NULL,	false },	/* armor */
+    { "ring",	 4,	0,	NULL,	false },	/* ring */
+    { "stick",	 4,	0,	NULL,	false },	/* stick */
+};
+
 static int pick_one(struct obj_info *info, int nitems);
 static void nameit(THING *obj, const char *type, const char *which,
                    struct obj_info *op, char *(*prfunc)(THING *));

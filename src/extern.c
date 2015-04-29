@@ -116,16 +116,3 @@ struct room passages[MAXPASS] =		/* One for each passage */
     { {0, 0}, {0, 0}, {0, 0}, 0, ISGONE|ISDARK, 0, {{0,0}} }
 };
 
-
-/* Only oi_prob is used
- *    oi_name  oi_prob oi_worth oi_guess oi_know */
-struct obj_info things[] = {
-    { "potion",	26,	0,	NULL,	false },	/* potion */
-    { "scroll",	36,	0,	NULL,	false },	/* scroll */
-    { "food",	16,	0,	NULL,	false },	/* food */
-    { "weapon",	 7,	0,	NULL,	false },	/* weapon */
-    { "armor",	 7,	0,	NULL,	false },	/* armor */
-    { "ring",	 4,	0,	NULL,	false },	/* ring */
-    { "stick",	 4,	0,	NULL,	false },	/* stick */
-};
-
