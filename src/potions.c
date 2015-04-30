@@ -84,19 +84,24 @@ potion_quaff_something(void)
       if (!is_hallucinating(&player))
         potion_learn(obj->o_which);
       become_confused(false);
-    when P_POISON:
+      break;
+    case P_POISON:
       potion_learn(obj->o_which);
       become_poisoned();
-    when P_HEALING:
+      break;
+    case P_HEALING:
       potion_learn(obj->o_which);
       become_healed();
-    when P_STRENGTH:
+      break;
+    case P_STRENGTH:
       potion_learn(obj->o_which);
       become_stronger();
-    when P_MFIND:
+      break;
+    case P_MFIND:
       potion_learn(obj->o_which);
       become_monster_seeing(false);
-    when P_TFIND:
+      break;
+    case P_TFIND:
     {
       /* Potion of magic detection.  Show the potions and scrolls */
       bool show = false;
@@ -135,12 +140,15 @@ potion_quaff_something(void)
         msg("you have a %s feeling for a moment, then it passes",
             is_hallucinating(&player) ? "normal" : "strange");
     }
-    when P_LSD:
+    break;
+    case P_LSD:
       potion_learn(obj->o_which);
       become_tripping(false);
-    when P_SEEINVIS:
+      break;
+    case P_SEEINVIS:
       set_true_seeing(&player, true, false);
-    when P_RAISE:
+      break;
+    case P_RAISE:
       if (game_type == DEFAULT)
       {
         potion_learn(obj->o_which);
@@ -152,21 +160,27 @@ potion_quaff_something(void)
         level_new();
         msg("you fell through the floor!");
       }
-    when P_XHEAL:
+      break;
+    case P_XHEAL:
       potion_learn(obj->o_which);
       become_extra_healed();
-    when P_HASTE:
+      break;
+    case P_HASTE:
       potion_learn(obj->o_which);
       become_hasted(false);
-    when P_RESTORE:
+      break;
+    case P_RESTORE:
       become_restored();
-    when P_BLIND:
+      break;
+    case P_BLIND:
       potion_learn(obj->o_which);
       become_blind(false);
-    when P_LEVIT:
+      break;
+    case P_LEVIT:
       potion_learn(obj->o_which);
       become_levitating(false);
-    otherwise:
+      break;
+    default:
       msg("what an odd tasting potion!");
       return true;
   }

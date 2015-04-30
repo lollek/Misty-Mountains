@@ -49,9 +49,9 @@ main(int argc, char **argv)
   /* Parse args and then init new (or old) game */
   switch (parse_args(argc, argv))
   {
-    case LOAD_GAME: retval = init_old_game();
-    when NEW_GAME:  retval = init_new_game();
-    otherwise:
+    case LOAD_GAME: retval = init_old_game(); break;
+    case NEW_GAME:  retval = init_new_game(); break;
+    default:
       printf("Error: Failed while parsing arguments\n");
       return 1;
   }
@@ -232,23 +232,27 @@ parse_args(int argc, char * const *argv)
 
     switch (c)
     {
-      case 'c': use_colors = false;
-      when 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg);
-      when 'f': fight_flush = true;
-      when 'F': see_floor = false;
-      when 'j': jump = true;
-      when 'n': if (strlen(optarg))
+      case 'c': use_colors = false; break;
+      case 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg); break;
+      case 'f': fight_flush = true; break;
+      case 'F': see_floor = false; break;
+      case 'j': jump = true; break;
+      case 'n': if (strlen(optarg))
                   strucpy(whoami, optarg, strlen(optarg));
-      when 'p': passgo = true;
-      when 'r': game_mode = LOAD_GAME;
-      when 's': potential_wizard = true; score(0, -1, 0); exit(0);
-      when 'S': seed = atoi(optarg);
-      when 't': terse = true;
-      when 'T': tombstone = false;
-      when 'Q': game_type = QUICK;
-      when 'W': potential_wizard = wizard = true;
+                break;
+      case 'p': passgo = true; break;
+      case 'r': game_mode = LOAD_GAME; break;
+      case 's': potential_wizard = true;
+                score(0, -1, 0);
+                exit(0);
+      case 'S': seed = atoi(optarg); break;
+      case 't': terse = true; break;
+      case 'T': tombstone = false; break;
+      case 'Q': game_type = QUICK; break;
+      case 'W': potential_wizard = wizard = true;
                 player.t_flags |= SEEMONST;
-      when '0':
+                break;
+      case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
                "Run Rogue14 with selected options or a savefile\n\n"
                "  -c, --no-colors      remove colors from the game\n"
@@ -275,8 +279,10 @@ parse_args(int argc, char * const *argv)
                "%s\n"
                , game_version);
         exit(0);
-      when '1': puts(game_version); exit(0);
-      otherwise:
+      case '1':
+        puts(game_version);
+        exit(0);
+      default:
         fprintf(stderr, "Try '%s --help' for more information\n",
                 argv[0]);
         exit(1);

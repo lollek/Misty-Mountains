@@ -269,29 +269,29 @@ command_wizard_do(char ch)
 
   switch (ch)
   {
-    case '|': msg("@ %d,%d", hero.y, hero.x);
-    when 'C': create_obj();
-    when '$': msg("inpack = %d", pack_count_items());
-    /* when '\\': get_dir(); teleport(moat(delta.y + hero.y, hero.x + delta.x), NULL); * This is used for testing new features */
-    when CTRL('W'): whatis(0);
-    when CTRL('D'): level++; level_new();
-    when CTRL('A'): level--; level_new();
-    when CTRL('F'): show_map();
-    when CTRL('T'): teleport(&player, NULL);
-    when CTRL('E'): msg("food left: %d", food_left);
-    when CTRL('C'): passages_add_pass();
-    when CTRL('X'): turn_see(on(player, SEEMONST));
-    when '*' : pr_list();
+    case '|': msg("@ %d,%d", hero.y, hero.x); break;
+    case 'C': create_obj(); break;
+    case '$': msg("inpack = %d", pack_count_items()); break;
+    case CTRL('W'): whatis(0); break;
+    case CTRL('D'): level++; level_new(); break;
+    case CTRL('A'): level--; level_new(); break;
+    case CTRL('F'): show_map(); break;
+    case CTRL('T'): teleport(&player, NULL); break;
+    case CTRL('E'): msg("food left: %d", food_left); break;
+    case CTRL('C'): passages_add_pass(); break;
+    case CTRL('X'): turn_see(on(player, SEEMONST)); break;
+    case '*' : pr_list(); break;
 
-    when CTRL('~'):
-   {
-     THING *item;
+    case CTRL('~'):
+     {
+       THING *item;
 
-     if ((item = pack_get_item("charge", STICK)) != NULL)
-       item->o_charges = 10000;
-   }
+       if ((item = pack_get_item("charge", STICK)) != NULL)
+         item->o_charges = 10000;
+     }
+     break;
 
-    when CTRL('I'):
+    case CTRL('I'):
     {
       int i;
       THING *obj;
@@ -327,8 +327,8 @@ command_wizard_do(char ch)
       else
         msg("failed to add armor");
     }
-
-    otherwise:
+    break;
+    default:
       {
         char buf[MAXSTR];
         /* Message the player, but don't save it to ^P */
@@ -337,6 +337,7 @@ command_wizard_do(char ch)
         msg("illegal command '%s'", unctrl(ch));
         strcpy(huh, buf);
       }
+      break;
   }
   return false;
 }

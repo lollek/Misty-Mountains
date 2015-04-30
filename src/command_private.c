@@ -106,28 +106,33 @@ command_name_item(void)
       already_known = op->oi_know;
       guess = &op->oi_guess;
       elsewise = *guess ? *guess : r_stones[obj->o_which];
+      break;
 
-    when POTION:
+    case POTION:
       op = &pot_info[obj->o_which];
       already_known = op->oi_know;
       guess = &op->oi_guess;
       elsewise = *guess ? *guess : p_colors[obj->o_which];
+      break;
 
-    when SCROLL:
+    case SCROLL:
       op = &scr_info[obj->o_which];
       already_known = op->oi_know;
       guess = &op->oi_guess;
       elsewise = *guess ? *guess : s_names[obj->o_which];
+      break;
 
-    when STICK:
+    case STICK:
       op = &ws_info[obj->o_which];
       already_known = op->oi_know;
       guess = &op->oi_guess;
       elsewise = *guess ? *guess : ws_made[obj->o_which];
+      break;
 
-    otherwise:
+    default:
       guess = &obj->o_label;
       elsewise = obj->o_label;
+      break;
   }
 
   if (already_known)

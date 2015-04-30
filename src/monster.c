@@ -285,9 +285,10 @@ monster_on_death(THING *tp, bool pr)
     case 'F':
       player.t_flags &= ~ISHELD;
       vf_hit = 0;
+      break;
 
     /* Leprechauns drop gold */
-    when 'L':
+    case 'L':
       {
         THING *gold;
 

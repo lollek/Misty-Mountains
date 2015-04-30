@@ -47,28 +47,32 @@ be_trapped(THING *target, coord *tc)
       level++;
       level_new();
       msg("you fell into a trap!");
-    when T_BEAR:
+      break;
+    case T_BEAR:
       become_stuck();
       msg("you are caught in a bear trap");
-    when T_MYST:
+      break;
+    case T_MYST:
       switch(rnd(11))
       {
-        case 0: msg("you are suddenly in a parallel dimension");
-        when 1: msg("the light in here suddenly seems %s", colors_random());
-        when 2: msg("you feel a sting in the side of your neck");
-        when 3: msg("multi-colored lines swirl around you, then fade");
-        when 4: msg("a %s light flashes in your eyes", colors_random());
-        when 5: msg("a spike shoots past your ear!");
-        when 6: msg("%s sparks dance across your armor", colors_random());
-        when 7: msg("you suddenly feel very thirsty");
-        when 8: msg("you feel time speed up suddenly");
-        when 9: msg("time now seems to be going slower");
-        when 10: msg("you pack turns %s!", colors_random());
+        case 0: msg("you are suddenly in a parallel dimension"); break;
+        case 1: msg("the light in here suddenly seems %s", colors_random()); break;
+        case 2: msg("you feel a sting in the side of your neck"); break;
+        case 3: msg("multi-colored lines swirl around you, then fade"); break;
+        case 4: msg("a %s light flashes in your eyes", colors_random()); break;
+        case 5: msg("a spike shoots past your ear!"); break;
+        case 6: msg("%s sparks dance across your armor", colors_random()); break;
+        case 7: msg("you suddenly feel very thirsty"); break;
+        case 8: msg("you feel time speed up suddenly"); break;
+        case 9: msg("time now seems to be going slower"); break;
+        case 10: msg("you pack turns %s!", colors_random()); break;
       }
-    when T_SLEEP:
+      break;
+    case T_SLEEP:
       fall_asleep();
       addmsg("a strange white mist envelops you and ");
-    when T_ARROW:
+      break;
+    case T_ARROW:
       if (fight_swing_hits(pstats.s_lvl - 1, armor_for_thing(&player), 1))
       {
         pstats.s_hpt -= roll(1, 6);
@@ -89,11 +93,13 @@ be_trapped(THING *target, coord *tc)
         fall(arrow, false);
         msg("an arrow shoots past you");
       }
-    when T_TELEP: /* Works for monsters */
+      break;
+    case T_TELEP: /* Works for monsters */
       teleport(target, NULL);
       if (target == &player)
         mvaddcch(tc->y, tc->x, TRAP); /* Mark trap before we leave */
-    when T_DART:
+      break;
+    case T_DART:
       if (!fight_swing_hits(pstats.s_lvl + 1, armor_for_thing(&player), 1))
         msg("a small dart whizzes by your ear and vanishes");
       else
@@ -108,9 +114,11 @@ be_trapped(THING *target, coord *tc)
           chg_str(-1);
         msg("a small dart just hit you in the shoulder");
       }
-    when T_RUST:
+      break;
+    case T_RUST:
       msg("a gush of water hits you on the head");
       armor_rust();
+      break;
   }
 
   flushinp();

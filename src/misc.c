@@ -163,30 +163,41 @@ look(bool wakeup)
           {
             case 'h': if (x == hero.x + 1)
                         continue;
-            when 'j': if (y == hero.y - 1)
+                      break;
+            case 'j': if (y == hero.y - 1)
                         continue;
-            when 'k': if (y == hero.y + 1)
+                      break;
+            case 'k': if (y == hero.y + 1)
                         continue;
-            when 'l': if (x == hero.x - 1)
+                      break;
+            case 'l': if (x == hero.x - 1)
                         continue;
-            when 'y': if ((y + x) - sumhero >= 1)
+                      break;
+            case 'y': if ((y + x) - sumhero >= 1)
                         continue;
-            when 'u': if ((y - x) - diffhero >= 1)
+                      break;
+            case 'u': if ((y - x) - diffhero >= 1)
                         continue;
-            when 'n': if ((y + x) - sumhero <= -1)
+                      break;
+            case 'n': if ((y + x) - sumhero <= -1)
                         continue;
-            when 'b': if ((y - x) - diffhero <= -1)
+                      break;
+            case 'b': if ((y - x) - diffhero <= -1)
                         continue;
+                      break;
           }
           switch (ch)
           {
             case DOOR:    if (x == hero.x || y == hero.y)
                             running = false;
-            when PASSAGE: if (x == hero.x || y == hero.y)
+                          break;
+            case PASSAGE: if (x == hero.x || y == hero.y)
                             passcount++;
-            when FLOOR: case VWALL: case HWALL: case SHADOW:
+                          break;
+            case FLOOR: case VWALL: case HWALL: case SHADOW:
               break;
             default: running = false;
+                     break;
           }
         }
       }
@@ -376,23 +387,25 @@ get_dir(void)
       gotit = true;
       switch (dir_ch = readchar())
       {
-        case 'h': case'H': delta.y =  0; delta.x = -1;
-        when 'j': case'J': delta.y =  1; delta.x =  0;
-        when 'k': case'K': delta.y = -1; delta.x =  0;
-        when 'l': case'L': delta.y =  0; delta.x =  1;
-        when 'y': case'Y': delta.y = -1; delta.x = -1;
-        when 'u': case'U': delta.y = -1; delta.x =  1;
-        when 'b': case'B': delta.y =  1; delta.x = -1;
-        when 'n': case'N': delta.y =  1; delta.x =  1;
-        when KEY_ESCAPE:
+        case 'h': case'H': delta.y =  0; delta.x = -1; break;
+        case 'j': case'J': delta.y =  1; delta.x =  0; break;
+        case 'k': case'K': delta.y = -1; delta.x =  0; break;
+        case 'l': case'L': delta.y =  0; delta.x =  1; break;
+        case 'y': case'Y': delta.y = -1; delta.x = -1; break;
+        case 'u': case'U': delta.y = -1; delta.x =  1; break;
+        case 'b': case'B': delta.y =  1; delta.x = -1; break;
+        case 'n': case'N': delta.y =  1; delta.x =  1; break;
+        case KEY_ESCAPE:
           last_dir = '\0';
           reset_last();
           msg("");
           return false;
-        otherwise:
+
+        default:
           mpos = 0;
           msg(prompt);
           gotit = false;
+          break;
       }
     } while (!gotit);
 

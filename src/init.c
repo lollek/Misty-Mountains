@@ -97,14 +97,14 @@ sumprobs(char ch)
   /* Ready the pointers */
   switch (ch)
   {
-    case '0':    ptr = things;         max = NUMTHINGS;  str = "things";
-    when POTION: ptr = pot_info;       max = NPOTIONS;   str = "potions";
-    when SCROLL: ptr = scr_info;       max = NSCROLLS;   str = "scrolls";
-    when RING:   ptr = ring_info;      max = NRINGS;   str = "rings";
-    when STICK:  ptr = ws_info;        max = MAXSTICKS;  str = "sticks";
-    when WEAPON: ptr = weap_info;      max = MAXWEAPONS; str = "weapons";
-    when ARMOR:  ptr = __armors_ptr(); max = NARMORS;    str = "armor";
-    otherwise:   ptr = NULL;           max = 0;          str = "error";
+    case '0':    ptr = things;         max = NUMTHINGS;  str = "things"; break;
+    case POTION: ptr = pot_info;       max = NPOTIONS;   str = "potions"; break;
+    case SCROLL: ptr = scr_info;       max = NSCROLLS;   str = "scrolls"; break;
+    case RING:   ptr = ring_info;      max = NRINGS;     str = "rings"; break;
+    case STICK:  ptr = ws_info;        max = MAXSTICKS;  str = "sticks"; break;
+    case WEAPON: ptr = weap_info;      max = MAXWEAPONS; str = "weapons"; break;
+    case ARMOR:  ptr = __armors_ptr(); max = NARMORS;    str = "armor"; break;
+    default:     ptr = NULL;           max = 0;          str = "error"; break;
   }
 
   /* Add upp percentage */

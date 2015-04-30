@@ -66,9 +66,9 @@ ring_put_on(void)
   /* Calculate the effect it has on the poor guy. */
   switch (obj->o_which)
   {
-    case R_ADDSTR: chg_str(obj->o_arm);
-    when R_SEEINVIS: invis_on();
-    when R_AGGR: aggravate();
+    case R_ADDSTR: chg_str(obj->o_arm); break;
+    case R_SEEINVIS: invis_on(); break;
+    case R_AGGR: aggravate(); break;
     }
 
   if (!terse)
@@ -95,10 +95,11 @@ ring_take_off(void)
   obj = pack_equipped_item(ring);
   switch (obj->o_which)
   {
-    case R_ADDSTR: chg_str(-obj->o_arm);
-    when R_SEEINVIS:
+    case R_ADDSTR: chg_str(-obj->o_arm); break;
+    case R_SEEINVIS:
       set_true_seeing(&player, false, false);
       daemon_extinguish_fuse(daemon_remove_true_seeing);
+      break;
   }
 
   msg("was wearing %s", inv_name(obj, true));
@@ -148,7 +149,8 @@ ring_bonus(THING *obj)
   {
     case R_PROTECT: case R_ADDSTR: case R_ADDDAM: case R_ADDHIT:
       sprintf(buf, " [%s]", num(obj->o_arm, 0, RING));
-    otherwise:
+      break;
+    default:
       return "";
   }
   return buf;

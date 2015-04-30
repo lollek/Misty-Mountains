@@ -59,30 +59,35 @@ pack_print_evaluate_item(THING *obj)
   {
     case FOOD:
       worth = 2 * obj->o_count;
-    when WEAPON:
+      break;
+    case WEAPON:
       worth = weap_info[obj->o_which].oi_worth;
       worth *= 3 * (obj->o_hplus + obj->o_dplus) + obj->o_count;
       obj->o_flags |= ISKNOW;
-    when ARMOR:
+      break;
+    case ARMOR:
       worth = armor_value(obj->o_which);
       worth += (9 - obj->o_arm) * 100;
       worth += (10 * (armor_ac(obj->o_which) - obj->o_arm));
       obj->o_flags |= ISKNOW;
-    when SCROLL:
+      break;
+    case SCROLL:
       worth = scr_info[obj->o_which].oi_worth;
       worth *= obj->o_count;
       op = &scr_info[obj->o_which];
       if (!op->oi_know)
         worth /= 2;
       op->oi_know = true;
-    when POTION:
+      break;
+    case POTION:
       worth = pot_info[obj->o_which].oi_worth;
       worth *= obj->o_count;
       op = &pot_info[obj->o_which];
       if (!op->oi_know)
         worth /= 2;
       op->oi_know = true;
-    when RING:
+      break;
+    case RING:
       op = &ring_info[obj->o_which];
       worth = op->oi_worth;
       if (obj->o_which == R_ADDSTR || obj->o_which == R_ADDDAM ||
@@ -97,7 +102,8 @@ pack_print_evaluate_item(THING *obj)
         worth /= 2;
       obj->o_flags |= ISKNOW;
       op->oi_know = true;
-    when STICK:
+      break;
+    case STICK:
       op = &ws_info[obj->o_which];
       worth = op->oi_worth;
       worth += 20 * obj->o_charges;
@@ -105,8 +111,10 @@ pack_print_evaluate_item(THING *obj)
         worth /= 2;
       obj->o_flags |= ISKNOW;
       op->oi_know = true;
-    when AMULET:
+      break;
+    case AMULET:
       worth = 1000;
+      break;
   }
 
   if (worth < 0)
@@ -346,7 +354,8 @@ pack_pick_up(char ch)
           discard(obj);
           proom->r_goldval = 0;
         }
-      otherwise:
+        break;
+      default:
         msg("DEBUG: You picked something you shouldn't have...");
         /* FALLTHROUGH */
       case ARMOR: case POTION: case FOOD: case WEAPON:
@@ -551,12 +560,20 @@ pack_equip_item(THING *item)
   enum equipment_pos pos;
   switch(item->o_type)
   {
-    case ARMOR:  pos = EQUIPMENT_ARMOR;
-    when WEAPON: pos = EQUIPMENT_RHAND;
-    when RING: pos = equipment[EQUIPMENT_RRING].ptr == NULL
-                     ? EQUIPMENT_RRING
-                     : EQUIPMENT_LRING;
-    otherwise:   pos = EQUIPMENT_RHAND;
+    case ARMOR:
+      pos = EQUIPMENT_ARMOR;
+      break;
+    case WEAPON:
+      pos = EQUIPMENT_RHAND;
+      break;
+    case RING:
+      pos = equipment[EQUIPMENT_RRING].ptr == NULL
+        ? EQUIPMENT_RRING
+        : EQUIPMENT_LRING;
+      break;
+    default:
+      pos = EQUIPMENT_RHAND;
+      break;
   }
 
   if (equipment[pos].ptr)

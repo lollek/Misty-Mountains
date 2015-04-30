@@ -85,80 +85,85 @@ inv_name(THING *obj, bool drop)
   {
     case POTION:
       nameit(obj, "potion", p_colors[which], &pot_info[which], nullstr);
-    when RING:
+      break;
+    case RING:
       nameit(obj, "ring", r_stones[which], &ring_info[which], ring_bonus);
-    when STICK:
+      break;
+    case STICK:
       nameit(obj, ws_type[which], ws_made[which], &ws_info[which], charge_str);
-
-    when SCROLL:
-    {
-      struct obj_info *op = &scr_info[which];
-
-      pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
-
-      if (op->oi_know)
-        pb += sprintf(pb, " of %s", op->oi_name);
-      else if (op->oi_guess)
-        pb += sprintf(pb, " called %s", op->oi_guess);
-      else
-        pb += sprintf(pb, " titled '%s'", s_names[which]);
-    }
-
-    when FOOD:
-      pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
-
-    when WEAPON:
-    {
-      pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
-
-      if (which != ARROW)
+      break;
+    case SCROLL:
       {
-        /* TODO: Maybe we can rename NumxNum -> NumdNum everywhere? */
-        char damage[4] = { '\0' };
-        sprintf(damage, "%s", which == BOW ? obj->o_hurldmg : obj->o_damage);
-        damage[1] = 'd';
-        pb += sprintf(pb, " (%s)", damage);
+        struct obj_info *op = &scr_info[which];
+
+        pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
+
+        if (op->oi_know)
+          pb += sprintf(pb, " of %s", op->oi_name);
+        else if (op->oi_guess)
+          pb += sprintf(pb, " called %s", op->oi_guess);
+        else
+          pb += sprintf(pb, " titled '%s'", s_names[which]);
       }
-
-      if (obj->o_flags & ISKNOW)
-      {
-        pb += sprintf(pb, " (");
-        pb += sprintf(pb, obj->o_hplus < 0 ? "%d," : "+%d,", obj->o_hplus);
-        pb += sprintf(pb, obj->o_dplus < 0 ? "%d)" : "+%d)", obj->o_dplus);
-      }
-
-      if (obj->o_arm != 0)
-        pb += sprintf(pb, obj->o_arm < 0 ? " [%d]" : " [+%d]", obj->o_arm);
-
-      if (obj->o_label != NULL)
-        pb += sprintf(pb, " called %s", obj->o_label);
-    }
-
-    when ARMOR:
-    {
-      int bonus_ac = armor_ac(which) - obj->o_arm;
-      int base_ac = 10 - obj->o_arm - bonus_ac;
-
+      break;
+    case FOOD:
       pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
-      pb += sprintf(pb, " [%d]", base_ac);
-
-      if (obj->o_flags & ISKNOW)
+      break;
+    case WEAPON:
       {
-        pb -= 1;
-        pb += sprintf(pb, bonus_ac < 0 ? ",%d]" : ",+%d]", bonus_ac);
+        pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
+
+        if (which != ARROW)
+        {
+          /* TODO: Maybe we can rename NumxNum -> NumdNum everywhere? */
+          char damage[4] = { '\0' };
+          sprintf(damage, "%s", which == BOW ? obj->o_hurldmg : obj->o_damage);
+          damage[1] = 'd';
+          pb += sprintf(pb, " (%s)", damage);
+        }
+
+        if (obj->o_flags & ISKNOW)
+        {
+          pb += sprintf(pb, " (");
+          pb += sprintf(pb, obj->o_hplus < 0 ? "%d," : "+%d,", obj->o_hplus);
+          pb += sprintf(pb, obj->o_dplus < 0 ? "%d)" : "+%d)", obj->o_dplus);
+        }
+
+        if (obj->o_arm != 0)
+          pb += sprintf(pb, obj->o_arm < 0 ? " [%d]" : " [+%d]", obj->o_arm);
+
+        if (obj->o_label != NULL)
+          pb += sprintf(pb, " called %s", obj->o_label);
       }
+      break;
+    case ARMOR:
+      {
+        int bonus_ac = armor_ac(which) - obj->o_arm;
+        int base_ac = 10 - obj->o_arm - bonus_ac;
 
-      if (obj->o_label != NULL)
-        pb += sprintf(pb, " called %s", obj->o_label);
-    }
+        pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
+        pb += sprintf(pb, " [%d]", base_ac);
 
-    when AMULET:
+        if (obj->o_flags & ISKNOW)
+        {
+          pb -= 1;
+          pb += sprintf(pb, bonus_ac < 0 ? ",%d]" : ",+%d]", bonus_ac);
+        }
+
+        if (obj->o_label != NULL)
+          pb += sprintf(pb, " called %s", obj->o_label);
+      }
+      break;
+    case AMULET:
       pb += strlen(strcpy(pb, "The Amulet of Yendor"));
-    when GOLD:
+      break;
+    case GOLD:
       pb += sprintf(pb, "%d Gold pieces", obj->o_goldval);
-    otherwise:
+      break;
+    default:
       msg("You feel a disturbance in the force");
       pb += sprintf(pb, "Something bizarre %s", unctrl(obj->o_type));
+      break;
   }
 
   prbuf[0] = drop ? tolower(prbuf[0]) : toupper(prbuf[0]);
@@ -222,17 +227,20 @@ new_thing(void)
 	case 0:
 	    cur->o_type = POTION;
 	    cur->o_which = pick_one(pot_info, NPOTIONS);
-	when 1:
+            break;
+	case 1:
 	    cur->o_type = SCROLL;
 	    cur->o_which = pick_one(scr_info, NSCROLLS);
-	when 2:
+            break;
+	case 2:
 	    cur->o_type = FOOD;
 	    no_food = 0;
 	    if (rnd(10) != 0)
 		cur->o_which = 0;
 	    else
 		cur->o_which = 1;
-	when 3:
+            break;
+	case 3:
 	    init_weapon(cur, pick_one(weap_info, MAXWEAPONS));
 	    if ((r = rnd(100)) < 10)
 	    {
@@ -241,7 +249,8 @@ new_thing(void)
 	    }
 	    else if (r < 15)
 		cur->o_hplus += rnd(3) + 1;
-	when 4:
+            break;
+	case 4:
 	    cur->o_type = ARMOR;
 	    cur->o_which = armor_type_random();
 	    cur->o_arm = armor_ac(cur->o_which);
@@ -252,7 +261,8 @@ new_thing(void)
 	    }
 	    else if (r < 28)
 		cur->o_arm -= rnd(3) + 1;
-	when 5:
+            break;
+	case 5:
 	    cur->o_type = RING;
 	    cur->o_which = pick_one(ring_info, NRINGS);
 	    switch (cur->o_which)
@@ -266,17 +276,21 @@ new_thing(void)
 			cur->o_arm = -1;
 			cur->o_flags |= ISCURSED;
 		    }
-		when R_AGGR:
+                    break;
+		case R_AGGR:
 		case R_TELEPORT:
 		    cur->o_flags |= ISCURSED;
 	    }
-	when 6:
+            break;
+	case 6:
 	    cur->o_type = STICK;
 	    cur->o_which = pick_one(ws_info, MAXSTICKS);
 	    fix_stick(cur);
-	otherwise:
+            break;
+	default:
 	    msg("Picked a bad kind of object (this should not happen)");
 	    wait_for(KEY_SPACE);
+            break;
     }
     return cur;
 }
@@ -340,10 +354,10 @@ discovered_by_type(char type, struct obj_info *info, int max_items)
     const char *type_as_str = NULL;
     switch (type)
     {
-      case POTION: type_as_str = "potion";
-      when SCROLL: type_as_str = "scroll";
-      when RING:   type_as_str = "ring";
-      when STICK:  type_as_str = "stick";
+      case POTION: type_as_str = "potion"; break;
+      case SCROLL: type_as_str = "scroll"; break;
+      case RING:   type_as_str = "ring"; break;
+      case STICK:  type_as_str = "stick"; break;
     }
     mvwprintw(printscr, 1, 1, (terse
           ? "No known %s"
@@ -372,11 +386,11 @@ discovered(void)
     refresh();
     switch (ch)
     {
-      case POTION: discovered_by_type(ch, pot_info, NPOTIONS);
-      when SCROLL: discovered_by_type(ch, scr_info, NSCROLLS);
-      when RING: discovered_by_type(ch, ring_info, NRINGS);
-      when STICK: discovered_by_type(ch, ws_info, MAXSTICKS);
-      otherwise: msg(""); return;
+      case POTION: discovered_by_type(ch, pot_info, NPOTIONS); break;
+      case SCROLL: discovered_by_type(ch, scr_info, NSCROLLS); break;
+      case RING: discovered_by_type(ch, ring_info, NRINGS); break;
+      case STICK: discovered_by_type(ch, ws_info, MAXSTICKS); break;
+      default: msg(""); return;
     }
   }
 

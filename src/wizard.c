@@ -46,13 +46,13 @@ pr_spec(char ch)
 
   switch (ch)
   {
-    case POTION: ptr = pot_info;          max = NPOTIONS;
-    when SCROLL: ptr = scr_info;          max = NSCROLLS;
-    when RING:   ptr = ring_info;         max = NRINGS;
-    when STICK:  ptr = ws_info;           max = MAXSTICKS;
-    when ARMOR:  ptr = __armors_ptr();    max = NARMORS;
-    when WEAPON: ptr = weap_info;         max = MAXWEAPONS;
-    otherwise:   ptr = NULL;              max = 0;
+    case POTION: ptr = pot_info;          max = NPOTIONS;  break;
+    case SCROLL: ptr = scr_info;          max = NSCROLLS;  break;
+    case RING:   ptr = ring_info;         max = NRINGS;    break;
+    case STICK:  ptr = ws_info;           max = MAXSTICKS; break;
+    case ARMOR:  ptr = __armors_ptr();    max = NARMORS;   break;
+    case WEAPON: ptr = weap_info;         max = MAXWEAPONS;break;
+    default:     ptr = NULL;              max = 0;         break;
   }
 
   for (i = 0, ch = '0'; i < max; ++i)
@@ -139,11 +139,11 @@ whatis(int type)
 
     switch (obj->o_type)
     {
-	case SCROLL: set_know(obj, scr_info);
-	when POTION: set_know(obj, pot_info);
-	when STICK: set_know(obj, ws_info);
-	when WEAPON: case ARMOR: obj->o_flags |= ISKNOW;
-	when RING: set_know(obj, ring_info);
+	case SCROLL: set_know(obj, scr_info);  break;
+	case POTION: set_know(obj, pot_info);  break;
+	case STICK:  set_know(obj, ws_info);   break;
+	case RING:   set_know(obj, ring_info); break;
+	case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
     }
     msg(inv_name(obj, false));
 }
@@ -251,9 +251,10 @@ create_obj(void)
 		if (bless == '-')
 		    obj->o_flags |= ISCURSED;
 		obj->o_arm = (bless == '-' ? -1 : rnd(2) + 1);
-	    when R_AGGR:
-	    case R_TELEPORT:
+		break;
+	    case R_AGGR: case R_TELEPORT:
 		obj->o_flags |= ISCURSED;
+		break;
 	}
     else if (obj->o_type == STICK)
 	fix_stick(obj);

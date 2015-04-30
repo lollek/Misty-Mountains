@@ -334,7 +334,8 @@ fight_against_player(THING *mp)
 		case 'A':
 		    /* If an aquator hits, you can lose armor class */
 		    armor_rust();
-		when 'I':
+                    break;
+		case 'I':
 		    /* The ice monster freezes you */
 		    player.t_flags &= ~ISRUN;
 		    if (!no_command)
@@ -347,7 +348,8 @@ fight_against_player(THING *mp)
 		    no_command += rnd(2) + 2;
 		    if (no_command > 50)
 			death('h');
-		when 'R':
+                    break;
+		case 'R':
 		    /* Rattlesnakes have poisonous bites */
 		    if (!player_save_throw(VS_POISON))
 		    {
@@ -363,7 +365,8 @@ fight_against_player(THING *mp)
 				? "bite has no effect"
 				: "a bite momentarily weakens you");
 		    }
-		when 'W':
+                    break;
+		case 'W':
 		case 'V':
 		    /* Wraiths might drain energy levels, and Vampires
 		     * can steal max_hp */
@@ -394,13 +397,15 @@ fight_against_player(THING *mp)
 			    death(mp->t_type);
 			msg("you suddenly feel weaker");
 		    }
-		when 'F':
+                    break;
+		case 'F':
 		    /* Venus Flytrap stops the poor guy from moving */
 		    player.t_flags |= ISHELD;
 		    ++vf_hit;
 		    if (--pstats.s_hpt <= 0)
 			death('F');
-		when 'L':
+                    break;
+		case 'L':
 		{
 		    /* Leperachaun steals some gold */
 		    int lastpurse;
@@ -416,7 +421,8 @@ fight_against_player(THING *mp)
 		    if (purse != lastpurse)
 			msg("your purse feels lighter");
 		}
-		when 'N':
+                break;
+		case 'N':
 		{
 		    /* Nymph's steal a magic item, look through the pack
 		     * and pick out one we like. */
@@ -431,8 +437,9 @@ fight_against_player(THING *mp)
 			discard(steal);
 		    }
 		}
-		otherwise:
-		    break;
+                break;
+		default:
+                  break;
 	    }
     }
     else if (mp->t_type != 'I')

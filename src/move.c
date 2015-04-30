@@ -81,14 +81,14 @@ move_do(char ch)
 
     switch (ch)
     {
-	case 'h': dy =  0; dx = -1;
-	when 'j': dy =  1; dx =  0;
-	when 'k': dy = -1; dx =  0;
-	when 'l': dy =  0, dx =  1;
-	when 'y': dy = -1, dx = -1;
-	when 'u': dy = -1, dx =  1;
-	when 'b': dy =  1, dx = -1;
-	when 'n': dy =  1, dx =  1;
+	case 'h': dy =  0; dx = -1; break;
+	case 'j': dy =  1; dx =  0; break;
+	case 'k': dy = -1; dx =  0; break;
+	case 'l': dy =  0, dx =  1; break;
+	case 'y': dy = -1, dx = -1; break;
+	case 'u': dy = -1, dx =  1; break;
+	case 'b': dy =  1, dx = -1; break;
+	case 'n': dy =  1, dx =  1; break;
     }
 
     firstmove = false;
@@ -200,7 +200,8 @@ hit_bound:
 	    }
 	    running = false;
 	    after = false;
-	when DOOR:
+            break;
+	case DOOR:
 	    running = false;
 	    if (flat(hero.y, hero.x) & F_PASS)
 		room_enter(&nh);
@@ -208,7 +209,8 @@ hit_bound:
 	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		room_leave(&nh);
 	    hero = nh;
-	when TRAP:
+            break;
+	case TRAP:
 	    ch = be_trapped(&player, &nh);
 	    if (ch == T_DOOR || ch == T_TELEP)
 		return after;
@@ -216,7 +218,8 @@ hit_bound:
 	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		room_leave(&nh);
 	    hero = nh;
-	when PASSAGE:
+            break;
+	case PASSAGE:
 	    /*
 	     * when you're in a corridor, you don't know if you're in
 	     * a maze room or not, and there ain't no way to find out
@@ -228,14 +231,16 @@ hit_bound:
 	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		room_leave(&nh);
 	    hero = nh;
-	when FLOOR:
+            break;
+	case FLOOR:
 	    if (!(fl & F_REAL))
 		be_trapped(&player, &hero);
 		mvaddcch(hero.y, hero.x, floor_at());
 		if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		    room_leave(&nh);
 		hero = nh;
-	otherwise:
+                break;
+	default:
 	    running = false;
 	    if (isupper(ch) || moat(nh.y, nh.x))
 		fight_against_monster(&nh, pack_equipped_item(EQUIPMENT_RHAND), false);
@@ -248,6 +253,7 @@ hit_bound:
 		    room_leave(&nh);
 		hero = nh;
 	    }
+            break;
     }
     return after;
 }

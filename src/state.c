@@ -518,16 +518,16 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
 
     switch(func)
     {
-      case 1:    d_list[i].d_func = daemon_rollwand;
-      when 2:    d_list[i].d_func = daemon_doctor;
-      when 3:    d_list[i].d_func = daemon_digest_food;
-      when 4:    d_list[i].d_func = daemon_runners_move;
-      when 5:    d_list[i].d_func = daemon_start_wanderer;
-      when 6:    d_list[i].d_func = remove_hasted;
-      when 7:    d_list[i].d_func = remove_confusion;
-      when 8:    d_list[i].d_func = daemon_remove_true_seeing;
-      when 9:    d_list[i].d_func = cure_blindness;
-      otherwise: d_list[i].d_func = NULL;
+      case 1:    d_list[i].d_func = daemon_rollwand; break;
+      case 2:    d_list[i].d_func = daemon_doctor; break;
+      case 3:    d_list[i].d_func = daemon_digest_food; break;
+      case 4:    d_list[i].d_func = daemon_runners_move; break;
+      case 5:    d_list[i].d_func = daemon_start_wanderer; break;
+      case 6:    d_list[i].d_func = remove_hasted; break;
+      case 7:    d_list[i].d_func = remove_confusion; break;
+      case 8:    d_list[i].d_func = daemon_remove_true_seeing; break;
+      case 9:    d_list[i].d_func = cure_blindness; break;
+      default:   d_list[i].d_func = NULL; break;
     }
   }
 
