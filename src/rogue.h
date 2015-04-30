@@ -35,7 +35,6 @@
 #define UNCTRL(c) (c + 'A' - CTRL('A'))
 
 /* Maximum number of different things */
-#define MAXTRAPS	10
 #define NUMTHINGS	7	/* number of types of things */
 
 extern enum rogue_game_t

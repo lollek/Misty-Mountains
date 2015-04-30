@@ -33,6 +33,7 @@
 #define MAXTREAS	10 /* maximum number of treasures in a treasure room */
 #define MINTREAS	2  /* minimum number of treasures in a treasure room */
 #define MAXTRIES	10 /* max number of tries to put down a monster */
+#define MAXTRAPS	10
 
 
 /** treas_room:
