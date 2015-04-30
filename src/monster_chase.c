@@ -24,6 +24,7 @@
 #include "misc.h"
 #include "passages.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "monster.h"
@@ -138,7 +139,7 @@ chase(THING *tp, coord *ee)
 	    }
 	}
     }
-    return (bool)(curdist != 0 && !same_coords(ch_ret, hero));
+    return (bool)(curdist != 0 && !same_coords(ch_ret, *player_get_pos()));
 }
 
 
@@ -155,11 +156,12 @@ chase_do(THING *th)
     bool door;
     THING *obj;
     static coord this; /* Temporary destination for chaser */
+    coord *player_pos = player_get_pos();
 
     if (on(*th, ISGREED) && rer->r_goldval == 0)
-	th->t_dest = &hero;	/* If gold has been taken, run after hero */
+	th->t_dest = player_pos;	/* If gold has been taken, run after hero */
 
-    if (th->t_dest == &hero)	/* Find room of chasee */
+    if (th->t_dest == player_pos)	/* Find room of chasee */
 	ree = proom;
     else
 	ree = roomin(th->t_dest);
@@ -196,13 +198,15 @@ over:
 	/* For dragons check and see if (a) the hero is on a straight
 	 * line from it, and (b) that it is within shooting distance,
 	 * but outside of striking range */
-	if (th->t_type == 'D' && (th->t_pos.y == hero.y || th->t_pos.x == hero.x
-	    || abs(th->t_pos.y - hero.y) == abs(th->t_pos.x - hero.x))
-	    && dist_cp(&th->t_pos, &hero) <= BOLT_LENGTH * BOLT_LENGTH
+	if (th->t_type == 'D' && (th->t_pos.y == player_pos->y
+              || th->t_pos.x == player_pos->x
+              || abs(th->t_pos.y - player_pos->y)
+                  == abs(th->t_pos.x - player_pos->x))
+	    && dist_cp(&th->t_pos, player_pos) <= BOLT_LENGTH * BOLT_LENGTH
 	    && !is_cancelled(th) && rnd(DRAGONSHOT) == 0)
 	{
-	    delta.y = sign(hero.y - th->t_pos.y);
-	    delta.x = sign(hero.x - th->t_pos.x);
+	    delta.y = sign(player_pos->y - th->t_pos.y);
+	    delta.x = sign(player_pos->x - th->t_pos.x);
 	    if (has_hit)
 		endmsg();
 	    fire_bolt(&th->t_pos, &delta, "flame");
@@ -223,7 +227,7 @@ over:
      */
     if (!chase(th, &this))
     {
-	if (same_coords(this, hero))
+	if (same_coords(this, *player_pos))
 	    return( fight_against_player(th) );
 	else if (same_coords(this, *th->t_dest))
 	{

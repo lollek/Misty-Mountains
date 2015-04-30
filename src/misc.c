@@ -27,6 +27,7 @@
 #include "passages.h"
 #include "rooms.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "misc.h"
@@ -69,29 +70,30 @@ void
 look(bool wakeup)
 {
   int x, y;
-  PLACE *pp = INDEX(hero.y, hero.x);
+  coord *player_pos = player_get_pos();
+  PLACE *pp = INDEX(player_pos->y, player_pos->x);
   char pch = pp->p_ch;
   char pfl = pp->p_flags;
   struct room *rp = proom;
   int passcount = 0;
   int sumhero = 0, diffhero = 0;
 
-  if (!same_coords(oldpos, hero))
+  if (!same_coords(oldpos, *player_pos))
   {
     erase_lamp(&oldpos, oldrp);
-    oldpos = hero;
+    oldpos = *player_pos;
     oldrp = rp;
   }
 
   if (door_stop && !firstmove && running)
   {
-    sumhero = hero.y + hero.x;
-    diffhero = hero.y - hero.x;
+    sumhero = player_pos->y + player_pos->x;
+    diffhero = player_pos->y - player_pos->x;
   }
 
-  for (y = hero.y - 1; y <= hero.y + 1; y++)
+  for (y = player_pos->y - 1; y <= player_pos->y + 1; y++)
     if (y > 0 && y < NUMLINES - 1)
-      for (x = hero.x -1; x <= hero.x + 1; x++)
+      for (x = player_pos->x -1; x <= player_pos->x + 1; x++)
       {
         char ch;
         const char *fp;
@@ -100,7 +102,7 @@ look(bool wakeup)
         if (x < 0 || x >= NUMCOLS)
           continue;
 
-        if (!is_blind(&player) && y == hero.y && x == hero.x)
+        if (!is_blind(&player) && y == player_pos->y && x == player_pos->x)
             continue;
 
         pp = INDEX(y, x);
@@ -117,8 +119,8 @@ look(bool wakeup)
         if (((*fp & F_PASS) || ch == DOOR) &&
             ((pfl & F_PASS) || pch == DOOR))
         {
-          if (hero.x != x && hero.y != y &&
-              !step_ok(chat(y, hero.x)) && !step_ok(chat(hero.y, x)))
+          if (player_pos->x != x && player_pos->y != y &&
+              !step_ok(chat(y, player_pos->x)) && !step_ok(chat(player_pos->y, x)))
             continue;
         }
 
@@ -146,7 +148,7 @@ look(bool wakeup)
           }
         }
 
-        if (is_blind(&player) && (y != hero.y || x != hero.x))
+        if (is_blind(&player) && (y != player_pos->y || x != player_pos->x))
           continue;
 
         move(y, x);
@@ -161,16 +163,16 @@ look(bool wakeup)
         {
           switch (runch)
           {
-            case 'h': if (x == hero.x + 1)
+            case 'h': if (x == player_pos->x + 1)
                         continue;
                       break;
-            case 'j': if (y == hero.y - 1)
+            case 'j': if (y == player_pos->y - 1)
                         continue;
                       break;
-            case 'k': if (y == hero.y + 1)
+            case 'k': if (y == player_pos->y + 1)
                         continue;
                       break;
-            case 'l': if (x == hero.x - 1)
+            case 'l': if (x == player_pos->x - 1)
                         continue;
                       break;
             case 'y': if ((y + x) - sumhero >= 1)
@@ -188,10 +190,10 @@ look(bool wakeup)
           }
           switch (ch)
           {
-            case DOOR:    if (x == hero.x || y == hero.y)
+            case DOOR:    if (x == player_pos->x || y == player_pos->y)
                             running = false;
                           break;
-            case PASSAGE: if (x == hero.x || y == hero.y)
+            case PASSAGE: if (x == player_pos->x || y == player_pos->y)
                             passcount++;
                           break;
             case FLOOR: case VWALL: case HWALL: case SHADOW:
@@ -204,12 +206,13 @@ look(bool wakeup)
   if (door_stop && !firstmove && passcount > 1)
     running = false;
   if (!running || !jump)
-    mvaddcch(hero.y, hero.x, PLAYER);
+    mvaddcch(player_pos->y, player_pos->x, PLAYER);
 }
 
 void
 erase_lamp(coord *pos, struct room *rp)
 {
+  coord *player_pos = player_get_pos();
   int y, x;
 
   if (!(see_floor && (rp->r_flags & (ISGONE|ISDARK)) == ISDARK
@@ -219,7 +222,7 @@ erase_lamp(coord *pos, struct room *rp)
   for (x = pos->x -1; x <= pos->x +1; x++)
     for (y = pos->y -1; y <= pos->y +1; y++)
     {
-      if (y == hero.y && x == hero.x)
+      if (y == player_pos->y && x == player_pos->x)
         continue;
 
       move(y, x);
@@ -508,7 +511,7 @@ seen_stairs(void)
   move(stairs.y, stairs.x);
   if (incch() == STAIRS)  /* it's on the map */
     return true;
-  if (same_coords(hero, stairs)) /* It's under him */
+  if (same_coords(*player_get_pos(), stairs)) /* It's under him */
     return true;
 
   /* if a monster is on the stairs, this gets hairy */
@@ -611,7 +614,7 @@ set_oldch(THING *tp, coord *cp)
     if ((sch == FLOOR || tp->t_oldch == FLOOR) &&
         (tp->t_room->r_flags & ISDARK))
       tp->t_oldch = SHADOW;
-    else if (dist_cp(cp, &hero) <= LAMPDIST && see_floor)
+    else if (dist_cp(cp, player_get_pos()) <= LAMPDIST && see_floor)
       tp->t_oldch = chat(cp->y, cp->x);
   }
 }
@@ -619,6 +622,7 @@ set_oldch(THING *tp, coord *cp)
 bool
 see_monst(THING *mp)
 {
+  coord *player_pos = player_get_pos();
   int y = mp->t_pos.y;
   int x = mp->t_pos.x;
 
@@ -626,10 +630,10 @@ see_monst(THING *mp)
       (is_invisible(mp) && !is_true_seeing(&player)))
     return false;
 
-  if (dist(y, x, hero.y, hero.x) < LAMPDIST)
+  if (dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
   {
-    if (y != hero.y && x != hero.x &&
-        !step_ok(chat(y, hero.x)) && !step_ok(chat(hero.y, x)))
+    if (y != player_pos->y && x != player_pos->x &&
+        !step_ok(chat(y, player_pos->x)) && !step_ok(chat(player_pos->y, x)))
       return false;
     return true;
   }
@@ -671,16 +675,18 @@ diag_ok(coord *sp, coord *ep)
 bool
 cansee(int y, int x)
 {
+    coord *player_pos = player_get_pos();
     struct room *rer;
     static coord tp;
 
     if (is_blind(&player))
 	return false;
-    if (dist(y, x, hero.y, hero.x) < LAMPDIST)
+    if (dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
     {
 	if (flat(y, x) & F_PASS)
-	    if (y != hero.y && x != hero.x &&
-		!step_ok(chat(y, hero.x)) && !step_ok(chat(hero.y, x)))
+	    if (y != player_pos->y && x != player_pos->x &&
+		!step_ok(chat(y, player_pos->x))
+                && !step_ok(chat(player_pos->y, x)))
 		    return false;
 	return true;
     }
@@ -757,7 +763,8 @@ floor_ch(void)
 char
 floor_at(void)
 {
-  char ch = chat(hero.y, hero.x);
+  coord *player_pos = player_get_pos();
+  char ch = chat(player_pos->y, player_pos->x);
   return ch == FLOOR ? floor_ch() : ch;
 }
 

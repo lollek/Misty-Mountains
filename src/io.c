@@ -14,6 +14,7 @@
 
 #include "armor.h"
 #include "misc.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "io.h"
@@ -230,11 +231,11 @@ wait_for(int ch)
 void
 show_win(const char *message)
 {
-
+  coord *player_pos = player_get_pos();
   wmove(hw, 0, 0);
   waddstr(hw, message);
   touchwin(hw);
-  wmove(hw, hero.y, hero.x);
+  wmove(hw, player_pos->y, player_pos->x);
   wrefresh(hw);
   wait_for(KEY_SPACE);
   clearok(curscr, true);

@@ -22,6 +22,7 @@
 #include "misc.h"
 #include "passages.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 struct obj_info ws_info[MAXSTICKS] = {
@@ -106,7 +107,7 @@ do_zap(void)
 		/*
 		 * Light the room and put the player back up
 		 */
-		room_enter(&hero);
+		room_enter(player_get_pos());
 		addmsg("the room is lit");
 		if (!terse)
 		    addmsg(" by a shimmering %s light", pick_color("blue"));
@@ -132,8 +133,10 @@ do_zap(void)
 	case WS_TELAWAY:
 	case WS_TELTO:
 	case WS_CANCEL:
-	    y = hero.y;
-	    x = hero.x;
+          {
+            coord *player_pos = player_get_pos();
+	    y = player_pos->y;
+	    x = player_pos->x;
 	    while (step_ok(winat(y, x)))
 	    {
 		y += delta.y;
@@ -180,13 +183,13 @@ do_zap(void)
 		    case WS_TELAWAY:
 		    case WS_TELTO:
                     {
-			tp->t_dest = &hero;
+			tp->t_dest = player_pos;
 			tp->t_flags |= ISRUN;
 			if (obj->o_which == WS_TELTO)
 			{
 			    coord new_pos;
-			    new_pos.y = hero.y + delta.y;
-			    new_pos.x = hero.x + delta.x;
+			    new_pos.y = player_pos->y + delta.y;
+			    new_pos.x = player_pos->x + delta.x;
 			    teleport(tp, &new_pos);
 			}
 			else
@@ -194,7 +197,8 @@ do_zap(void)
 		    }
 		}
 	    }
-            break;
+          }
+          break;
 	case WS_MISSILE:
 	{
 	    THING *weapon = pack_equipped_item(EQUIPMENT_RHAND);
@@ -218,8 +222,10 @@ do_zap(void)
         break;
 	case WS_HASTE_M:
 	case WS_SLOW_M:
-	    y = hero.y;
-	    x = hero.x;
+          {
+            coord *player_pos = player_get_pos();
+	    y = player_pos->y;
+	    x = player_pos->x;
 	    while (step_ok(winat(y, x)))
 	    {
 		y += delta.y;
@@ -246,7 +252,8 @@ do_zap(void)
 		delta.x = x;
 		monster_start_running(&delta);
 	    }
-            break;
+          }
+          break;
 	case WS_ELECT:
 	case WS_FIRE:
 	case WS_COLD:
@@ -258,7 +265,7 @@ do_zap(void)
 		name = "flame";
 	    else
 		name = "ice";
-	    fire_bolt(&hero, &delta, name);
+	    fire_bolt(player_get_pos(), &delta, name);
 	    ws_info[obj->o_which].oi_know = true;
 	}
         break;
@@ -286,13 +293,14 @@ drain(void)
     int cnt;
     bool inpass;
     static THING *drainee[40];
+    coord *player_pos = player_get_pos();
 
     /*
      * First cnt how many things we need to spread the hit points among
      */
     cnt = 0;
-    if (chat(hero.y, hero.x) == DOOR)
-	corp = &passages[flat(hero.y, hero.x) & F_PNUM];
+    if (chat(player_pos->y, player_pos->x) == DOOR)
+	corp = &passages[flat(player_pos->y, player_pos->x) & F_PNUM];
     else
 	corp = NULL;
     inpass = (bool)(proom->r_flags & ISGONE);
@@ -352,7 +360,7 @@ fire_bolt(coord *start, coord *dir, char *name)
 	case 2: case -2: dirch = '\\'; break;
     }
     pos = *start;
-    hit_hero = (bool)(start != &hero);
+    hit_hero = (bool)(start != player_get_pos());
     used = false;
     changed = false;
     for (c1 = spotpos; c1 <= &spotpos[BOLT_LENGTH-1] && !used; c1++)
@@ -369,7 +377,7 @@ fire_bolt(coord *start, coord *dir, char *name)
 		 * and he fires at the wall the door is in, it would
 		 * otherwise loop infinitely
 		 */
-		if (same_coords(hero, pos))
+		if (same_coords(*player_get_pos(), pos))
 		    goto def;
 		/* FALLTHROUGH */
 	    case VWALL: case HWALL: case SHADOW:
@@ -404,7 +412,7 @@ def:
 		    }
 		    else if (ch != 'M' || tp->t_disguise == 'M')
 		    {
-			if (start == &hero)
+			if (start == player_get_pos())
 			    monster_start_running(&pos);
 			if (terse)
 			    msg("%s misses", name);
@@ -412,7 +420,7 @@ def:
 			    msg("the %s whizzes past %s", name, set_mname(tp));
 		    }
 		}
-		else if (hit_hero && same_coords(pos, hero))
+		else if (hit_hero && same_coords(pos, *player_get_pos()))
 		{
 		    hit_hero = false;
 		    changed = !changed;
@@ -420,7 +428,7 @@ def:
 		    {
 			if ((pstats.s_hpt -= roll(6, 6)) <= 0)
 			{
-			    if (start == &hero)
+			    if (start == player_get_pos())
 				death('b');
 			    else
 				death(moat(start->y, start->x)->t_type);

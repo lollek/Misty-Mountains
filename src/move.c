@@ -26,6 +26,7 @@
 #include "rooms.h"
 #include "misc.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 /** move_turn_ok:
@@ -43,7 +44,8 @@ move_turn_ok(int y, int x)
 static void
 move_turnref(void)
 {
-  PLACE *pp = INDEX(hero.y, hero.x);
+  coord *player_pos = player_get_pos();
+  PLACE *pp = INDEX(player_pos->y, player_pos->x);
 
   if (!(pp->p_flags & F_SEEN))
   {
@@ -102,7 +104,7 @@ move_do(char ch)
     if (is_confused(&player) && rnd(5) != 0)
     {
 	move_random(&player, &nh);
-	if (same_coords(nh, hero))
+	if (same_coords(nh, *player_get_pos()))
 	{
 	    running = false;
 	    to_death = false;
@@ -112,8 +114,11 @@ move_do(char ch)
     else
     {
 over:
-	nh.y = hero.y + dy;
-	nh.x = hero.x + dx;
+      {
+	coord *player_pos = player_get_pos();
+	nh.y = player_pos->y + dy;
+	nh.x = player_pos->x + dx;
+      }
     }
 
     /* Check if he tried to move off the screen or make an illegal
@@ -121,13 +126,13 @@ over:
     if (nh.x < 0 || nh.x >= NUMCOLS || nh.y <= 0 || nh.y >= NUMLINES - 1)
 	goto hit_bound;
 
-    if (!diag_ok(&hero, &nh))
+    if (!diag_ok(player_get_pos(), &nh))
     {
 	running = false;
 	return false;
     }
 
-    if (running && same_coords(hero, nh))
+    if (running && same_coords(*player_get_pos(), nh))
 	after = running = false;
 
     fl = flat(nh.y, nh.x);
@@ -154,14 +159,15 @@ hit_bound:
 	    if (passgo && running && (proom->r_flags & ISGONE)
 		&& !is_blind(&player))
 	    {
+		coord *player_pos = player_get_pos();
 		bool b1, b2;
 
 		switch (runch)
 		{
 		    case 'h':
 		    case 'l':
-			b1 = (bool)(hero.y != 1 && move_turn_ok(hero.y - 1, hero.x));
-			b2 = (bool)(hero.y != NUMLINES - 2 && move_turn_ok(hero.y + 1, hero.x));
+			b1 = (bool)(player_pos->y != 1 && move_turn_ok(player_pos->y - 1, player_pos->x));
+			b2 = (bool)(player_pos->y != NUMLINES - 2 && move_turn_ok(player_pos->y + 1, player_pos->x));
 			if (!(b1 ^ b2))
 			    break;
 			if (b1)
@@ -179,8 +185,8 @@ hit_bound:
 			goto over;
 		    case 'j':
 		    case 'k':
-			b1 = (bool)(hero.x != 0 && move_turn_ok(hero.y, hero.x - 1));
-			b2 = (bool)(hero.x != NUMCOLS - 1 && move_turn_ok(hero.y, hero.x + 1));
+			b1 = (bool)(player_pos->x != 0 && move_turn_ok(player_pos->y, player_pos->x - 1));
+			b2 = (bool)(player_pos->x != NUMCOLS - 1 && move_turn_ok(player_pos->y, player_pos->x + 1));
 			if (!(b1 ^ b2))
 			    break;
 			if (b1)
@@ -202,56 +208,69 @@ hit_bound:
 	    after = false;
             break;
 	case DOOR:
+          {
+            coord *player_pos = player_get_pos();
 	    running = false;
-	    if (flat(hero.y, hero.x) & F_PASS)
+	    if (flat(player_pos->y, player_pos->x) & F_PASS)
 		room_enter(&nh);
-	    mvaddcch(hero.y, hero.x, floor_at());
+	    mvaddcch(player_pos->y, player_pos->x, floor_at());
 	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		room_leave(&nh);
-	    hero = nh;
+            player_set_pos(&nh);
+          }
             break;
 	case TRAP:
+          {
+            coord *player_pos = player_get_pos();
 	    ch = be_trapped(&player, &nh);
 	    if (ch == T_DOOR || ch == T_TELEP)
 		return after;
-	    mvaddcch(hero.y, hero.x, floor_at());
+	    mvaddcch(player_pos->y, player_pos->x, floor_at());
 	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		room_leave(&nh);
-	    hero = nh;
-            break;
+            player_set_pos(&nh);
+          }
+          break;
 	case PASSAGE:
+          {
 	    /*
 	     * when you're in a corridor, you don't know if you're in
 	     * a maze room or not, and there ain't no way to find out
 	     * if you're leaving a maze room, so it is necessary to
 	     * always recalculate proom.
 	     */
-	    proom = roomin(&hero);
-	    mvaddcch(hero.y, hero.x, floor_at());
+            coord *player_pos = player_get_pos();
+	    proom = roomin(player_pos);
+	    mvaddcch(player_pos->y, player_pos->x, floor_at());
 	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		room_leave(&nh);
-	    hero = nh;
-            break;
+            player_set_pos(&nh);
+          }
+          break;
 	case FLOOR:
+          {
+            coord *player_pos = player_get_pos();
 	    if (!(fl & F_REAL))
-		be_trapped(&player, &hero);
-		mvaddcch(hero.y, hero.x, floor_at());
+		be_trapped(&player, player_pos);
+		mvaddcch(player_pos->y, player_pos->x, floor_at());
 		if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		    room_leave(&nh);
-		hero = nh;
-                break;
+                player_set_pos(&nh);
+          }
+          break;
 	default:
 	    running = false;
 	    if (isupper(ch) || moat(nh.y, nh.x))
 		fight_against_monster(&nh, pack_equipped_item(EQUIPMENT_RHAND), false);
 	    else
 	    {
+              coord *player_pos = player_get_pos();
 		if (ch != STAIRS)
 		    take = ch;
-		mvaddcch(hero.y, hero.x, floor_at());
+		mvaddcch(player_pos->y, player_pos->x, floor_at());
 		if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		    room_leave(&nh);
-		hero = nh;
+                player_set_pos(&nh);
 	    }
             break;
     }

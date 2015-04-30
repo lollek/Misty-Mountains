@@ -18,6 +18,7 @@
 #include "monster.h"
 #include "misc.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 char *s_names[NSCROLLS];
@@ -85,9 +86,10 @@ read_scroll(void)
       {
         int x, y;
         char ch = 0;
-        for (x = hero.x - 2; x <= hero.x + 2; x++)
+        coord *player_pos = player_get_pos();
+        for (x = player_pos->x - 2; x <= player_pos->x + 2; x++)
           if (x >= 0 && x < NUMCOLS)
-            for (y = hero.y - 2; y <= hero.y + 2; y++)
+            for (y = player_pos->y - 2; y <= player_pos->y + 2; y++)
               if (y >= 0 && y <= NUMLINES - 1)
                 if ((obj = moat(y, x)) != NULL && on(*obj, ISRUN))
                 {
@@ -119,13 +121,14 @@ read_scroll(void)
        * 1: look in a circle around him, 2: try his room, otherwise give up */
       {
         coord mp;
+        coord *player_pos = player_get_pos();
         int x, y;
         int i = 0;
         char ch;
-        for (y = hero.y - 1; y <= hero.y + 1; y++)
-          for (x = hero.x - 1; x <= hero.x + 1; x++)
+        for (y = player_pos->y - 1; y <= player_pos->y + 1; y++)
+          for (x = player_pos->x - 1; x <= player_pos->x + 1; x++)
             /* Don't put a monster in top of the player. */
-            if (y == hero.y && x == hero.x)
+            if (y == player_pos->y && x == player_pos->x)
               continue;
             /* Or anything else nasty */
             else if (step_ok(ch = winat(y, x)))

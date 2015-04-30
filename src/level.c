@@ -13,7 +13,6 @@
 
 #include <string.h>
 
-#include "rogue.h"
 #include "status_effects.h"
 #include "traps.h"
 #include "io.h"
@@ -23,7 +22,9 @@
 #include "monster.h"
 #include "passages.h"
 #include "misc.h"
+#include "player.h"
 #include "rooms.h"
+#include "rogue.h"
 
 #include "level.h"
 
@@ -200,9 +201,13 @@ level_new(void)
     for (tp = mlist; tp != NULL; tp = tp->l_next)
 	tp->t_room = roomin(&tp->t_pos);
 
-    room_find_floor((struct room *) NULL, &hero, false, true);
-    room_enter(&hero);
-    mvaddcch(hero.y, hero.x, PLAYER);
+    {
+      coord *player_pos = player_get_pos();
+      room_find_floor((struct room *) NULL, player_pos, false, true);
+      room_enter(player_pos);
+      mvaddcch(player_pos->y, player_pos->x, PLAYER);
+    }
+
     if (on(player, SEEMONST))
 	turn_see(false);
     if (is_hallucinating(&player))

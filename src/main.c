@@ -23,6 +23,7 @@
 #include "score.h"
 #include "misc.h"
 #include "rooms.h"
+#include "player.h"
 #include "rogue.h"
 
 enum game_mode_t
@@ -94,8 +95,8 @@ playit(void)
   signal(SIGTERM, auto_save);
   signal(SIGINT, quit);
 
-  oldpos = hero;
-  oldrp = roomin(&hero);
+  oldpos = *player_get_pos();
+  oldrp = roomin(player_get_pos());
   while (command() != 1)
     /* Main Loop */;
   endit(0);

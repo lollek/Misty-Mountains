@@ -18,6 +18,7 @@
 #include "monster.h"
 #include "rings.h"
 #include "misc.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "daemons.h"
@@ -341,7 +342,7 @@ daemon_runners_move(void)
       if (!monster_chase(tp))
         continue;
 
-      if (on(*tp, ISFLY) && dist_cp(&hero, &tp->t_pos) >= 3)
+      if (on(*tp, ISFLY) && dist_cp(player_get_pos(), &tp->t_pos) >= 3)
         monster_chase(tp);
 
       if (wastarget && !same_coords(orig_pos, tp->t_pos))

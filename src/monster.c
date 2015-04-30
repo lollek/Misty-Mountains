@@ -23,6 +23,7 @@
 #include "rooms.h"
 #include "misc.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "monster.h"
@@ -172,6 +173,7 @@ monster_new_random_wanderer(void)
 THING *
 monster_notice_player(int y, int x)
 {
+  coord *player_pos = player_get_pos();
   THING *tp = moat(y, x);
   char ch;
 
@@ -182,7 +184,7 @@ monster_notice_player(int y, int x)
   if (!on(*tp, ISRUN) && rnd(3) != 0 && on(*tp, ISMEAN) && !on(*tp, ISHELD)
       && !player_has_ring_with_ability(R_STEALTH) && !is_levitating(&player))
   {
-    tp->t_dest = &hero;
+    tp->t_dest = player_pos;
     tp->t_flags |= ISRUN;
   }
 
@@ -191,7 +193,7 @@ monster_notice_player(int y, int x)
   {
     struct room *rp = proom;
     if ((rp != NULL && !(rp->r_flags & ISDARK))
-        || dist(y, x, hero.y, hero.x) < LAMPDIST)
+        || dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
     {
       set_found(tp, true);
       if (!player_save_throw(VS_MAGIC))
@@ -213,7 +215,7 @@ monster_notice_player(int y, int x)
     if (proom->r_goldval)
       tp->t_dest = &proom->r_gold;
     else
-      tp->t_dest = &hero;
+      tp->t_dest = player_pos;
   }
   return tp;
 }
@@ -251,7 +253,7 @@ monster_destination(THING *tp)
   int prob = monsters[tp->t_type - 'A'].m_carry;
 
   if (prob <= 0 || tp->t_room == proom || see_monst(tp))
-    return &hero;
+    return player_get_pos();
 
   for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
   {
@@ -268,7 +270,7 @@ monster_destination(THING *tp)
         return &obj->o_pos;
     }
   }
-  return &hero;
+  return player_get_pos();
 }
 
 void

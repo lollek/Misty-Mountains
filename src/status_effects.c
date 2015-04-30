@@ -10,6 +10,7 @@
 #include "rooms.h"
 #include "misc.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "status_effects.h"
@@ -283,7 +284,7 @@ cure_blindness(void)
     daemon_extinguish_fuse(cure_blindness);
     set_blind(&player, false);
     if (!(proom->r_flags & ISGONE))
-      room_enter(&hero);
+      room_enter(player_get_pos());
     msg(is_hallucinating(&player)
       ? "far out!  Everything is all cosmic again"
       : "the veil of darkness lifts");
@@ -334,7 +335,7 @@ teleport(THING *thing, coord *target)
   if (target == NULL)
     do
       room_find_floor(NULL, &new_pos, false, true);
-    while (same_coords(new_pos, hero));
+    while (same_coords(new_pos, *player_get_pos()));
   else
   {
     new_pos.y = target->y;
@@ -347,13 +348,13 @@ teleport(THING *thing, coord *target)
     mvaddcch(thing->t_pos.y, thing->t_pos.x, floor_at());
     if (roomin(&new_pos) != proom)
     {
-      room_leave(&hero);
-      hero = new_pos;
-      room_enter(&hero);
+      room_leave(player_get_pos());
+      player_set_pos(&new_pos);
+      room_enter(player_get_pos());
     }
     else
     {
-      hero = new_pos;
+      player_set_pos(&new_pos);
       look(true);
     }
   }

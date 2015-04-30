@@ -14,6 +14,7 @@
 #include "rings.h"
 #include "misc.h"
 #include "monster.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "command_private.h"
@@ -21,12 +22,14 @@
 bool
 command_use_stairs(char up_or_down)
 {
+  coord *player_pos = player_get_pos();
+
   assert (up_or_down == '>' || up_or_down == '<');
 
   if (is_levitating(&player))
     msg("You can't. You're floating off the ground!");
 
-  else if (chat(hero.y, hero.x) != STAIRS)
+  else if (chat(player_pos->y, player_pos->x) != STAIRS)
     msg("You're not standing on any stairs");
 
   else if (up_or_down == '>') /* DOWN */
@@ -56,12 +59,13 @@ bool
 command_attack(bool fight_to_death)
 {
   THING *mp;
+  coord *player_pos = player_get_pos();
 
   kamikaze = fight_to_death;
   if (!get_dir())
     return false;
-  delta.y += hero.y;
-  delta.x += hero.x;
+  delta.y += player_pos->y;
+  delta.x += player_pos->x;
 
   mp = moat(delta.y, delta.x);
   if (mp == NULL || (!see_monst(mp) && !on(player, SEEMONST)))
@@ -71,7 +75,7 @@ command_attack(bool fight_to_death)
         : "I see no monster there");
     return false;
   }
-  else if (diag_ok(&hero, &delta))
+  else if (diag_ok(player_pos, &delta))
   {
     to_death = true;
     max_hit = 0;
@@ -228,8 +232,9 @@ command_identify_trap(void)
   if (get_dir())
   {
     char *fp;
-    delta.y += hero.y;
-    delta.x += hero.x;
+    coord *player_pos = player_get_pos();
+    delta.y += player_pos->y;
+    delta.x += player_pos->x;
     fp = &flat(delta.y, delta.x);
     if (!terse)
       addmsg("You have found ");
@@ -257,12 +262,13 @@ bool
 command_pick_up(void)
 {
   const THING *obj = NULL;
+  coord *player_pos = player_get_pos();
 
   if (is_levitating(&player))
     msg("You can't. You're floating off the ground!");
 
   for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
-    if (obj->o_pos.y == hero.y && obj->o_pos.x == hero.x)
+    if (obj->o_pos.y == player_pos->y && obj->o_pos.x == player_pos->x)
     {
       pack_pick_up(obj->o_type);
       return true;
@@ -418,9 +424,10 @@ command_search(void)
   int y, x;
   int probinc = (is_hallucinating(&player) ? 3:0) + is_blind(&player) ? 2:0;
   bool found = false;
+  coord *player_pos = player_get_pos();
 
-  for (y = hero.y - 1; y <= hero.y + 1; y++)
-    for (x = hero.x - 1; x <= hero.x + 1; x++)
+  for (y = player_pos->y - 1; y <= player_pos->y + 1; y++)
+    for (x = player_pos->x - 1; x <= player_pos->x + 1; x++)
     {
       char *fp = &flat(y, x);
       char chatyx = chat(y, x);

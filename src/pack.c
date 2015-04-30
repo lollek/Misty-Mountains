@@ -21,6 +21,7 @@
 #include "rings.h"
 #include "misc.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "pack.h"
@@ -147,9 +148,10 @@ pack_move_msg(THING *obj)
 static void
 pack_add_money(int value)
 {
+  coord *player_pos = player_get_pos();
   purse += value;
-  mvaddcch(hero.y, hero.x, floor_ch());
-  chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
+  mvaddcch(player_pos->y, player_pos->x, floor_ch());
+  chat(player_pos->y, player_pos->x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
   if (value > 0)
   {
     if (!terse)
@@ -161,21 +163,23 @@ pack_add_money(int value)
 static void
 pack_remove_from_floor(THING *obj)
 {
+  coord *player_pos = player_get_pos();
   detach(lvl_obj, obj);
-  mvaddcch(hero.y, hero.x, floor_ch());
-  chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
+  mvaddcch(player_pos->y, player_pos->x, floor_ch());
+  chat(player_pos->y, player_pos->x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
 }
 
 bool
 pack_add(THING *obj, bool silent)
 {
+  coord *player_pos = player_get_pos();
   THING *op;
   bool from_floor = false;
 
   /* Either obj in an item or we try to take something from the floor */
   if (obj == NULL)
   {
-    if ((obj = find_obj(hero.y, hero.x)) == NULL)
+    if ((obj = find_obj(player_pos->y, player_pos->x)) == NULL)
       return false;
     from_floor = true;
   }
@@ -185,8 +189,8 @@ pack_add(THING *obj, bool silent)
       obj->o_flags & ISFOUND)
   {
     detach(lvl_obj, obj);
-    mvaddcch(hero.y, hero.x, floor_ch());
-    chat(hero.y, hero.x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
+    mvaddcch(player_pos->y, player_pos->x, floor_ch());
+    chat(player_pos->y, player_pos->x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
     discard(obj);
     msg("the scroll turns to dust as you pick it up");
     return false;
@@ -293,7 +297,7 @@ pack_add(THING *obj, bool silent)
    */
   for (op = mlist; op != NULL; op = op->l_next)
     if (op->t_dest == &obj->o_pos)
-      op->t_dest = &hero;
+      op->t_dest = player_pos;
 
   /* Notify the user */
   if (!silent)
@@ -336,11 +340,12 @@ void
 pack_pick_up(char ch)
 {
   THING *obj;
+  coord *player_pos = player_get_pos();
 
   if (is_levitating(&player))
     return;
 
-  obj = find_obj(hero.y, hero.x);
+  obj = find_obj(player_pos->y, player_pos->x);
   if (move_on)
     pack_move_msg(obj);
   else
@@ -610,10 +615,11 @@ pack_unequip(enum equipment_pos pos)
 
   if (!pack_add(obj, true))
   {
+    coord *player_pos = player_get_pos();
     attach(lvl_obj, obj);
-    chat(hero.y, hero.x) = (char) obj->o_type;
-    flat(hero.y, hero.x) |= F_DROPPED;
-    obj->o_pos = hero;
+    chat(player_pos->y, player_pos->x) = (char) obj->o_type;
+    flat(player_pos->y, player_pos->x) |= F_DROPPED;
+    obj->o_pos = *player_pos;
     msg("dropped %s", inv_name(obj, true));
   }
   else

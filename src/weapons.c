@@ -19,6 +19,7 @@
 #include "list.h"
 #include "misc.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 #define NO_WEAPON -1
@@ -101,14 +102,15 @@ missile(int ydelta, int xdelta)
 void
 do_motion(THING *obj, int ydelta, int xdelta)
 {
+  coord *player_pos = player_get_pos();
   int ch;
 
   /* Come fly with us ... */
-  obj->o_pos = hero;
+  obj->o_pos = *player_pos;
   for (;;)
   {
     /* Erase the old one */
-    if (!same_coords(obj->o_pos, hero) &&
+    if (!same_coords(obj->o_pos, *player_pos) &&
         cansee(obj->o_pos.y, obj->o_pos.x) && !terse)
     {
       ch = chat(obj->o_pos.y, obj->o_pos.x);
@@ -276,12 +278,13 @@ fallpos(coord *pos, coord *newpos)
   for (y = pos->y - 1; y <= pos->y + 1; y++)
     for (x = pos->x - 1; x <= pos->x + 1; x++)
     {
+      coord *player_pos = player_get_pos();
       /*
        * check to make certain the spot is empty, if it is,
        * put the object there, set it in the level list
        * and re-draw the room if he can see it
        */
-      if (y == hero.y && x == hero.x)
+      if (y == player_pos->y && x == player_pos->x)
         continue;
       if (((ch = chat(y, x)) == FLOOR || ch == PASSAGE)
           && rnd(++cnt) == 0)

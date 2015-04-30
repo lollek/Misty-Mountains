@@ -9,6 +9,7 @@
 #include "level.h"
 #include "rings.h"
 #include "misc.h"
+#include "player.h"
 
 #include "traps.h"
 
@@ -89,7 +90,7 @@ be_trapped(THING *target, coord *tc)
         THING *arrow = new_item();
         init_weapon(arrow, ARROW);
         arrow->o_count = 1;
-        arrow->o_pos = hero;
+        arrow->o_pos = *player_get_pos();
         fall(arrow, false);
         msg("an arrow shoots past you");
       }

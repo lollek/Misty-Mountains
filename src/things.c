@@ -25,6 +25,7 @@
 #include "rings.h"
 #include "misc.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 /* Only oi_prob is used
@@ -177,28 +178,29 @@ inv_name(THING *obj, bool drop)
 bool
 drop(void)
 {
-    char ch = chat(hero.y, hero.x);
-    THING *obj;
+  coord *player_pos = player_get_pos();
+  char ch = chat(player_pos->y, player_pos->x);
+  THING *obj;
 
-    if (ch != FLOOR && ch != PASSAGE)
-    {
-      msg("there is something there already");
-      return false;
-    }
+  if (ch != FLOOR && ch != PASSAGE)
+  {
+    msg("there is something there already");
+    return false;
+  }
 
-    if ((obj = pack_get_item("drop", 0)) == NULL)
-      return false;
+  if ((obj = pack_get_item("drop", 0)) == NULL)
+    return false;
 
-    obj = pack_remove(obj, true, !(obj->o_type == POTION ||
-          obj->o_type == SCROLL || obj->o_type == FOOD));
+  obj = pack_remove(obj, true, !(obj->o_type == POTION ||
+        obj->o_type == SCROLL || obj->o_type == FOOD));
 
-    /* Link it into the level object list */
-    attach(lvl_obj, obj);
-    chat(hero.y, hero.x) = (char) obj->o_type;
-    flat(hero.y, hero.x) |= F_DROPPED;
-    obj->o_pos = hero;
-    msg("dropped %s", inv_name(obj, true));
-    return true;
+  /* Link it into the level object list */
+  attach(lvl_obj, obj);
+  chat(player_pos->y, player_pos->x) = (char) obj->o_type;
+  flat(player_pos->y, player_pos->x) |= F_DROPPED;
+  obj->o_pos = *player_pos;
+  msg("dropped %s", inv_name(obj, true));
+  return true;
 }
 
 /** new_thing:

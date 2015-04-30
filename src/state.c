@@ -44,6 +44,7 @@
 #include "passages.h"
 #include "rooms.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 static const size_t RSID_STATS        = 0xABCD0001;
@@ -848,7 +849,7 @@ rs_write_thing(FILE *savef, const THING *t)
   */
 
 
-  if (t->t_dest == &hero)
+  if (t->t_dest == player_get_pos())
   {
     if (rs_write_int(savef, i_zero) ||
         rs_write_int(savef, i_one))
@@ -951,7 +952,7 @@ rs_read_thing(FILE *inf, THING *t)
   if (listid == 0) /* hero or NULL */
   {
     if (index == 1)
-      t->_t._t_dest = &hero;
+      t->_t._t_dest = player_get_pos();
     else
       t->_t._t_dest = NULL;
   }
@@ -1098,6 +1099,7 @@ rs_read_thing_reference(FILE *inf, THING *list, THING **item)
 int
 rs_save_file(FILE *savef)
 {
+  coord unused_coord = { 0, 0 };
   size_t temp_i = 0; /* Used as buffer for macros */
   size_t pack_used_size = 26;
   size_t maxstr = MAXSTR;
@@ -1145,7 +1147,7 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_daemons(savef, __daemons_ptr(), 20))
   rs_assert(rs_write_int(savef, temp_i)) /* UNUSED */
   rs_assert(rs_write_int(savef, temp_i)) /* UNUSED */
-  rs_assert(rs_write_coord(savef, hero)) /* UNUSED */
+  rs_assert(rs_write_coord(savef, unused_coord)) /* UNUSED */
   rs_assert(rs_write_int(savef, group))
   rs_assert(rs_write_window(savef,stdscr))
   return 0;

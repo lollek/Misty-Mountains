@@ -29,6 +29,7 @@
 #include "rings.h"
 #include "save.h"
 #include "misc.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "command_private.h"
@@ -57,6 +58,7 @@ command(void)
   daemon_run_fuses(BEFORE);
   for (; player_moves > 0; --player_moves)
   {
+    coord *player_pos = player_get_pos();
     /* these are illegal things for the player to be, so if any are
      * set, someone's been poking in memeory */
     if (on(player, ISSLOW|ISGREED|ISINVIS|ISREGEN|ISTARGET))
@@ -74,7 +76,7 @@ command(void)
     if (!running)
       door_stop = false;
     status();
-    move(hero.y, hero.x);
+    move(player_pos->y, player_pos->x);
     if (!((running || count) && jump))
       refresh();
     take = 0;
@@ -269,7 +271,7 @@ command_wizard_do(char ch)
 
   switch (ch)
   {
-    case '|': msg("@ %d,%d", hero.y, hero.x); break;
+    case '|': msg("@ %d,%d", player_get_pos()->y, player_get_pos()->x); break;
     case 'C': create_obj(); break;
     case '$': msg("inpack = %d", pack_count_items()); break;
     case CTRL('W'): whatis(0); break;
