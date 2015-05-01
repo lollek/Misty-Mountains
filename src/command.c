@@ -37,7 +37,7 @@
 void
 command_stop(bool stop_fighting)
 {
-  player.t_flags &= ~ISRUN;
+  player_stop_running();
   count = 0;
   door_stop = false;
   again = false;
@@ -51,7 +51,7 @@ int
 command(void)
 {
   static char ch;
-  int player_moves = on(player, ISHASTE) ? 2 : 1;
+  int player_moves = player_is_hasted() ? 2 : 1;
 
   /* Let the daemons start up */
   daemon_run_all(BEFORE);
@@ -59,10 +59,6 @@ command(void)
   for (; player_moves > 0; --player_moves)
   {
     coord *player_pos = player_get_pos();
-    /* these are illegal things for the player to be, so if any are
-     * set, someone's been poking in memeory */
-    if (on(player, ISSLOW|ISGREED|ISINVIS|ISREGEN|ISTARGET))
-      return 1;
 
     /* TODO: Try to remove this */
     if (has_hit)
@@ -88,7 +84,7 @@ command(void)
       ch = '.';
       if (--no_command == 0)
       {
-        player.t_flags |= ISRUN;
+        player_start_running();
         msg("you can move again");
       }
     }
@@ -182,7 +178,8 @@ command(void)
       else if (obj->o_which == R_SEARCH)
         command_search();
       else if (obj->o_which == R_TELEPORT && rnd(50) == 0)
-        teleport(&player, NULL);
+        /* TODO: remove __player_ptr() */
+        teleport(__player_ptr(), NULL);
     }
   }
 
@@ -278,10 +275,10 @@ command_wizard_do(char ch)
     case CTRL('D'): level++; level_new(); break;
     case CTRL('A'): level--; level_new(); break;
     case CTRL('F'): show_map(); break;
-    case CTRL('T'): teleport(&player, NULL); break;
+    case CTRL('T'): teleport(__player_ptr(), NULL); break;
     case CTRL('E'): msg("food left: %d", food_left); break;
     case CTRL('C'): passages_add_pass(); break;
-    case CTRL('X'): turn_see(on(player, SEEMONST)); break;
+    case CTRL('X'): turn_see(player_can_sense_monsters()); break;
     case '*' : pr_list(); break;
 
     case CTRL('~'):

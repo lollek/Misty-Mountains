@@ -36,54 +36,6 @@
 
 #include "init.h"
 
-/** init_player:
- * Roll her up */
-static void
-init_player(void)
-{
-  THING *obj;
-
-  player.t_stats = max_stats;
-  food_left = HUNGERTIME;
-
-  /* Give him some food */
-  obj = new_item();
-  obj->o_type = FOOD;
-  obj->o_count = 1;
-  pack_add(obj, true);
-
-  /* And his suit of armor */
-  obj = new_item();
-  obj->o_type = ARMOR;
-  obj->o_which = RING_MAIL;
-  obj->o_arm = armor_ac(RING_MAIL) - 1;
-  obj->o_flags |= ISKNOW;
-  obj->o_count = 1;
-  pack_equip_item(obj);
-
-  /* Give him his weaponry.  First a mace. */
-  obj = new_item();
-  init_weapon(obj, MACE);
-  obj->o_hplus = 1;
-  obj->o_dplus = 1;
-  obj->o_flags |= ISKNOW;
-  pack_equip_item(obj);
-
-  /* Now a +1 bow */
-  obj = new_item();
-  init_weapon(obj, BOW);
-  obj->o_hplus = 1;
-  obj->o_flags |= ISKNOW;
-  pack_add(obj, true);
-
-  /* Now some arrows */
-  obj = new_item();
-  init_weapon(obj, ARROW);
-  obj->o_count = rnd(15) + 25;
-  obj->o_flags |= ISKNOW;
-  pack_add(obj, true);
-}
-
 /** sumprobs:
  * Sum up the probabilities for items appearing */
 static void
@@ -454,7 +406,7 @@ init_new_game(void)
 
   /* Init stuff */
   init_probs();                         /* Set up prob tables for objects */
-  init_player();                        /* Set up initial player stats */
+  player_init();                        /* Set up initial player stats */
   init_names();                         /* Set up names of scrolls */
   colors_init();                        /* Set up colors of potions */
   init_stones();                        /* Set up stone settings of rings */

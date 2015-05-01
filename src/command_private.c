@@ -26,7 +26,7 @@ command_use_stairs(char up_or_down)
 
   assert (up_or_down == '>' || up_or_down == '<');
 
-  if (is_levitating(&player))
+  if (player_is_levitating())
     msg("You can't. You're floating off the ground!");
 
   else if (chat(player_pos->y, player_pos->x) != STAIRS)
@@ -68,7 +68,7 @@ command_attack(bool fight_to_death)
   delta.x += player_pos->x;
 
   mp = moat(delta.y, delta.x);
-  if (mp == NULL || (!see_monst(mp) && !on(player, SEEMONST)))
+  if (mp == NULL || (!see_monst(mp) && !player_can_sense_monsters()))
   {
     msg(terse
         ? "no monster there"
@@ -240,7 +240,7 @@ command_identify_trap(void)
       addmsg("You have found ");
     if (chat(delta.y, delta.x) != TRAP)
       msg("no trap there");
-    else if (is_hallucinating(&player))
+    else if (player_has_confusing_attack())
       msg(trap_names[rnd(NTRAPS)]);
     else
     {
@@ -264,7 +264,7 @@ command_pick_up(void)
   const THING *obj = NULL;
   coord *player_pos = player_get_pos();
 
-  if (is_levitating(&player))
+  if (player_is_levitating())
     msg("You can't. You're floating off the ground!");
 
   for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
@@ -422,7 +422,7 @@ bool
 command_search(void)
 {
   int y, x;
-  int probinc = (is_hallucinating(&player) ? 3:0) + is_blind(&player) ? 2:0;
+  int probinc = (player_is_hallucinating() ? 3:0) + player_is_blind() ? 2:0;
   bool found = false;
   coord *player_pos = player_get_pos();
 
@@ -454,7 +454,7 @@ command_search(void)
         if (!terse)
           addmsg("you found ");
 
-        if (is_hallucinating(&player))
+        if (player_is_hallucinating())
           msg(trap_names[rnd(NTRAPS)]);
         else {
           msg(trap_names[*fp & F_TMASK]);

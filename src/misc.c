@@ -37,7 +37,7 @@
 static int
 trip_ch(int y, int x, int ch)
 {
-  if (is_hallucinating(&player) && after)
+  if (player_is_hallucinating() && after)
     switch (ch)
     {
       case FLOOR: case SHADOW: case PASSAGE: case HWALL: case VWALL: case DOOR:
@@ -102,7 +102,7 @@ look(bool wakeup)
         if (x < 0 || x >= NUMCOLS)
           continue;
 
-        if (!is_blind(&player) && y == player_pos->y && x == player_pos->x)
+        if (!player_is_blind() && y == player_pos->y && x == player_pos->x)
             continue;
 
         pp = INDEX(y, x);
@@ -128,7 +128,7 @@ look(bool wakeup)
           ch = trip_ch(y, x, ch);
         else
         {
-          if (on(player, SEEMONST) && is_invisible(tp))
+          if (player_can_sense_monsters() && monster_is_invisible(tp))
           {
             if (door_stop && !firstmove)
               running = false;
@@ -140,15 +140,14 @@ look(bool wakeup)
               monster_notice_player(y, x);
             if (see_monst(tp))
             {
-              if (is_hallucinating(&player))
-                ch = rnd(26) + 'A';
-              else
-                ch = tp->t_disguise;
+              ch = player_is_hallucinating()
+                ? rnd(26) + 'A'
+                : tp->t_disguise;
             }
           }
         }
 
-        if (is_blind(&player) && (y != player_pos->y || x != player_pos->x))
+        if (player_is_blind() && (y != player_pos->y || x != player_pos->x))
           continue;
 
         move(y, x);
@@ -216,7 +215,7 @@ erase_lamp(coord *pos, struct room *rp)
   int y, x;
 
   if (!(see_floor && (rp->r_flags & (ISGONE|ISDARK)) == ISDARK
-        && !is_blind(&player)))
+        && !player_is_blind()))
     return;
 
   for (x = pos->x -1; x <= pos->x +1; x++)
@@ -234,10 +233,11 @@ erase_lamp(coord *pos, struct room *rp)
 bool
 show_floor(void)
 {
-  if ((player_get_room()->r_flags & (ISGONE|ISDARK)) == ISDARK && !is_blind(&player))
-    return see_floor;
-  else
-    return true;
+  return
+    ((player_get_room()->r_flags & (ISGONE|ISDARK)) == ISDARK
+     && !player_is_blind())
+    ? see_floor
+    : true;
 }
 
 THING *
@@ -281,12 +281,12 @@ eat(void)
       {
         player_earn_exp(1);
         msg("%s, this food tastes awful",
-            is_hallucinating(&player) ? "bummer" : "yuk");
+            player_is_hallucinating() ? "bummer" : "yuk");
         player_check_for_level_up();
       }
       else
         msg("%s, that tasted good",
-            is_hallucinating(&player) ? "oh, wow" : "yum");
+            player_is_hallucinating() ? "oh, wow" : "yum");
 
     pack_remove(obj, false, false);
     return true;
@@ -367,7 +367,7 @@ get_dir(void)
     last_delt.y = delta.y;
     last_delt.x = delta.x;
   }
-  if (is_confused(&player) && rnd(5) == 0)
+  if (player_is_confused() && rnd(5) == 0)
     do
     {
       delta.y = rnd(3) - 1;
@@ -468,7 +468,7 @@ seen_stairs(void)
     if (see_monst(tp) && on(*tp, ISRUN)) /* if it's visible and awake */
       return true;                       /* it must have moved there */
 
-    if (on(player, SEEMONST)             /* if she can detect monster */
+    if (player_can_sense_monsters()      /* if she can detect monster */
         && tp->t_oldch == STAIRS)        /* and there once were stairs */
       return true;                       /* it must have moved there */
   }
@@ -493,20 +493,19 @@ turn_see(bool turn_off)
     }
     else
     {
-      if (is_hallucinating(&player))
-        addcch((rnd(26) + 'A') | A_STANDOUT);
-      else
-        addcch(mp->t_type | A_STANDOUT);
-
+      addcch((player_is_hallucinating()
+            ? (rnd(26) + 'A')
+            : mp->t_type)
+          | A_STANDOUT);
       if (!can_see)
         add_new++;
     }
   }
 
   if (turn_off)
-    player.t_flags &= ~SEEMONST;
+    player_remove_sense_monsters();
   else
-    player.t_flags |= SEEMONST;
+    player_add_sense_monsters(false);
   return add_new;
 }
 
@@ -515,9 +514,9 @@ invis_on(void)
 {
   THING *mp;
 
-  player.t_flags |= CANSEE;
+  player_add_true_sight(true);
   for (mp = mlist; mp != NULL; mp = mp->l_next)
-    if (is_invisible(mp) && see_monst(mp) && !is_hallucinating(&player))
+    if (monster_is_invisible(mp) && see_monst(mp) && !player_is_hallucinating())
       mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
 }
 
@@ -557,7 +556,7 @@ set_oldch(THING *tp, coord *cp)
     return;
 
   tp->t_oldch = mvincch(cp->y, cp->x);
-  if (!is_blind(&player))
+  if (!player_is_blind())
   {
     if ((sch == FLOOR || tp->t_oldch == FLOOR) &&
         (tp->t_room->r_flags & ISDARK))
@@ -574,8 +573,8 @@ see_monst(THING *mp)
   int y = mp->t_pos.y;
   int x = mp->t_pos.x;
 
-  if (is_blind(&player) ||
-      (is_invisible(mp) && !is_true_seeing(&player)))
+  if (player_is_blind() ||
+      (monster_is_invisible(mp) && !player_has_true_sight()))
     return false;
 
   if (dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
@@ -627,7 +626,7 @@ cansee(int y, int x)
     struct room *rer;
     static coord tp;
 
-    if (is_blind(&player))
+    if (player_is_blind())
 	return false;
     if (dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
     {
@@ -660,9 +659,9 @@ set_mname(THING *tp)
     char *mname;
     static char tbuf[MAXSTR] = { 't', 'h', 'e', ' ' };
 
-    if (!see_monst(tp) && !on(player, SEEMONST))
+    if (!see_monst(tp) && !player_can_sense_monsters())
 	return (terse ? "it" : "something");
-    else if (is_hallucinating(&player))
+    else if (player_is_hallucinating())
     {
 	move(tp->t_pos.y, tp->t_pos.x);
 	ch = incch();
@@ -681,23 +680,7 @@ set_mname(THING *tp)
 const char *
 pick_color(const char *col)
 {
-    return (is_hallucinating(&player) ? colors_random() : col);
-}
-
-int
-player_save_throw(int which)
-{
-  if (which == VS_MAGIC)
-  {
-    int i;
-    for (i = 0; i < RING_SLOTS_SIZE; ++i)
-    {
-      THING *ring = pack_equipped_item(ring_slots[i]);
-      if (ring != NULL && ring->o_which == R_PROTECT)
-        which -= ring->o_arm;
-    }
-  }
-  return monster_save_throw(which, &player);
+  return player_is_hallucinating() ? colors_random() : col;
 }
 
 char

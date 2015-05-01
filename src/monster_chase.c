@@ -52,7 +52,8 @@ chase(THING *tp, coord *ee)
      * Stalkers are slightly confused all of the time, and bats are
      * quite confused all the time
      */
-    if ((is_confused(tp) && rnd(5) != 0) || (tp->t_type == 'P' && rnd(5) == 0)
+    if ((monster_is_confused(tp) && rnd(5) != 0)
+        || (tp->t_type == 'P' && rnd(5) == 0)
 	|| (tp->t_type == 'B' && rnd(2) == 0))
     {
 	/*
@@ -64,7 +65,7 @@ chase(THING *tp, coord *ee)
 	 * Small chance that it will become un-confused 
 	 */
 	if (rnd(20) == 0)
-	    set_confused(tp, false);
+	    monster_remove_confused(tp);
     }
     /*
      * Otherwise, find the empty spot next to the chaser that is
@@ -203,7 +204,7 @@ over:
               || abs(th->t_pos.y - player_pos->y)
                   == abs(th->t_pos.x - player_pos->x))
 	    && dist_cp(&th->t_pos, player_pos) <= BOLT_LENGTH * BOLT_LENGTH
-	    && !is_cancelled(th) && rnd(DRAGONSHOT) == 0)
+	    && !monster_is_cancelled(th) && rnd(DRAGONSHOT) == 0)
 	{
 	    delta.y = sign(player_pos->y - th->t_pos.y);
 	    delta.x = sign(player_pos->x - th->t_pos.x);
@@ -269,7 +270,7 @@ over:
 
     if (see_monst(th))
       addcch(th->t_disguise);
-    else if (on(player, SEEMONST))
+    else if (player_can_sense_monsters())
       addcch(th->t_type | A_STANDOUT);
 
     /* And stop running if need be */

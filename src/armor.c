@@ -39,28 +39,7 @@ int armor_value(enum armor_t i) { return armors[i].value; }
 int
 armor_for_thing(THING *thing)
 {
-  bool is_player = thing == &player;
-  int ac = thing->t_stats.s_arm;
-
-  if (is_player)
-  {
-    THING *arm = pack_equipped_item(EQUIPMENT_ARMOR);
-    THING *weapon = pack_equipped_item(EQUIPMENT_RHAND);
-    int i;
-
-    ac  = arm ? arm->o_arm : ac;
-    ac -= weapon ? weapon->o_arm : 0;
-    for (i = 0; i < RING_SLOTS_SIZE; ++i)
-    {
-      THING *ring = pack_equipped_item(ring_slots[i]);
-      if (ring != NULL && ring->o_which == R_PROTECT)
-        ac -= ring->o_arm;
-    }
-  }
-  else
-    ac = thing->t_stats.s_arm;
-
-  return 20 - ac;
+  return 20 - thing->t_stats.s_arm;
 }
 
 bool

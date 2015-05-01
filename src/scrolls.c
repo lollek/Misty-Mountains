@@ -65,9 +65,7 @@ read_scroll(void)
   switch (obj->o_which)
   {
     case S_CONFUSE:
-      /* Scroll of monster confusion.  Give him that power. */
-      set_confusing(&player, true);
-      msg("your hands begin to glow %s", pick_color("red"));
+      player_set_confusing_attack();
       break;
     case S_ARMOR:
       {
@@ -223,7 +221,7 @@ def:
             {
               if ((obj = pp->p_monst) != NULL)
                 obj->t_oldch = ch;
-              if (obj == NULL || !on(player, SEEMONST))
+              if (obj == NULL || !player_can_sense_monsters())
                 mvaddcch(y, x, ch);
             }
           }
@@ -252,7 +250,8 @@ def:
       break;
     case S_TELEP:
       /* Scroll of teleportation: Make him dissapear and reappear */
-      teleport(&player, NULL);
+      /* TODO: Remove __player_ptr() */
+      teleport(__player_ptr(), NULL);
       learn_scroll(S_TELEP);
       break;
     case S_ENCH:
@@ -281,8 +280,8 @@ def:
         int i;
         for (i = 0; i < NEQUIPMENT; ++i)
           if (pack_equipped_item(i) != NULL)
-            set_cursed(pack_equipped_item(i), 0);
-        msg(is_hallucinating(&player)
+            pack_uncurse_item(pack_equipped_item(i));
+        msg(player_is_hallucinating()
             ? "you feel in touch with the Universal Onenes"
             : "you feel as if somebody is watching over you");
       }

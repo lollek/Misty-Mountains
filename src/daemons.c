@@ -242,10 +242,10 @@ daemon_digest_food(void)
     no_command += rnd(8) + 4;
     hungry_state = 3;
     if (!terse)
-      addmsg(is_hallucinating(&player)
+      addmsg(player_is_hallucinating()
           ? "the munchies overpower your motor capabilities.  "
           : "you feel too weak from lack of food.  ");
-    msg(is_hallucinating(&player)
+    msg(player_is_hallucinating()
         ? "You freak out"
         : "You faint");
   }
@@ -257,7 +257,7 @@ daemon_digest_food(void)
     if (food_left < MORETIME && oldfood >= MORETIME)
     {
       hungry_state = 2;
-      msg(is_hallucinating(&player)
+      msg(player_is_hallucinating()
           ? "the munchies are interfering with your motor capabilites"
           : "you are starting to feel weak");
     }
@@ -265,11 +265,11 @@ daemon_digest_food(void)
     {
       hungry_state = 1;
       if (terse)
-        msg(is_hallucinating(&player)
+        msg(player_is_hallucinating()
             ? "getting the munchies"
             : "getting hungry");
       else
-        msg(is_hallucinating(&player)
+        msg(player_is_hallucinating()
             ? "you are getting the munchies"
             : "you are starting to get hungry");
     }
@@ -300,7 +300,7 @@ daemon_change_visuals(void)
     mvaddcch(stairs.y, stairs.x, rnd_thing());
 
   /* change the monsters */
-  seemonst = on(player, SEEMONST);
+  seemonst = player_can_sense_monsters();
   for (tp = mlist; tp != NULL; tp = tp->l_next)
   {
     move(tp->t_pos.y, tp->t_pos.x);

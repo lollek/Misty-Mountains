@@ -96,10 +96,12 @@ ring_take_off(void)
   obj = pack_equipped_item(ring);
   switch (obj->o_which)
   {
-    case R_ADDSTR: player_modify_strength(-obj->o_arm); break;
+    case R_ADDSTR:
+      player_modify_strength(-obj->o_arm);
+      break;
     case R_SEEINVIS:
-      set_true_seeing(&player, false, false);
-      daemon_extinguish_fuse(daemon_remove_true_seeing);
+      player_remove_true_sight();
+      daemon_extinguish_fuse(player_remove_true_sight);
       break;
   }
 

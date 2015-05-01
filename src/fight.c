@@ -64,7 +64,7 @@ roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
   };
   const struct stats *att = &thatt->t_stats;
   const char *cp = weap == NULL ? att->s_dmg : weap->o_damage;
-  const bool attacker_is_player = thatt == &player;
+  const bool attacker_is_player = is_player(thatt);
 
   int hplus = weap == NULL ? 0 : weap->o_hplus;
   int dplus = weap == NULL ? 0 : weap->o_dplus;
@@ -238,14 +238,14 @@ fight_against_monster(coord *mp, THING *weap, bool thrown)
 
     /* Let him know it was really a xeroc (if it was one) */
     ch = '\0';
-    if (tp->t_type == 'X' && tp->t_disguise != 'X' && !is_blind(&player))
+    if (tp->t_type == 'X' && tp->t_disguise != 'X' && !player_is_blind())
     {
 	tp->t_disguise = 'X';
-	if (is_hallucinating(&player)) {
+	if (player_is_hallucinating()) {
 	    ch = (char)(rnd(26) + 'A');
 	    mvaddcch(tp->t_pos.y, tp->t_pos.x, ch);
 	}
-	msg(is_hallucinating(&player)
+	msg(player_is_hallucinating()
 	    ? "heavy!  That's a nasty critter!"
 	    : "wait!  That's a xeroc!");
 	if (!thrown)
@@ -254,25 +254,26 @@ fight_against_monster(coord *mp, THING *weap, bool thrown)
     mname = set_mname(tp);
     did_hit = false;
     has_hit = (terse && !to_death);
-    if (roll_em(&player, tp, weap, thrown))
+    /* TODO: remove __player_ptr reference */
+    if (roll_em(__player_ptr(), tp, weap, thrown)) 
     {
 	did_hit = false;
 	if (thrown)
 	    thunk(weap, mname, terse);
 	else
 	    print_attack(true, (char *) NULL, mname, terse);
-	if (is_confusing(&player))
+	if (player_has_confusing_attack())
 	{
 	    did_hit = true;
-	    set_confused(tp, true);
-	    set_confusing(&player, false);
+	    monster_set_confused(tp);
+            player_remove_confusing_attack();
 	    endmsg();
 	    has_hit = false;
 	    msg("your hands stop glowing %s", pick_color("red"));
 	}
 	if (tp->t_stats.s_hpt <= 0)
 	    monster_on_death(tp, true);
-	else if (did_hit && !is_blind(&player))
+	else if (did_hit && !player_is_blind())
 	    msg("%s appears confused", mname);
 	did_hit = true;
     }
@@ -299,15 +300,16 @@ fight_against_player(THING *mp)
 	to_death = false;
 	kamikaze = false;
     }
-    if (mp->t_type == 'X' && mp->t_disguise != 'X' && !is_blind(&player))
+    if (mp->t_type == 'X' && mp->t_disguise != 'X' && !player_is_blind())
     {
 	mp->t_disguise = 'X';
-	if (is_hallucinating(&player))
+	if (player_is_hallucinating())
 	    mvaddcch(mp->t_pos.y, mp->t_pos.x, rnd(26) + 'A');
     }
     mname = set_mname(mp);
     oldhp = player_get_health();
-    if (roll_em(mp, &player, (THING *) NULL, false))
+    /* TODO: Remove __player_ptr() reference */
+    if (roll_em(mp, __player_ptr(), (THING *) NULL, false))
     {
 	if (mp->t_type != 'I')
 	{
@@ -329,7 +331,7 @@ fight_against_player(THING *mp)
 	    if (player_get_health() <= max_hit)
 		to_death = false;
 	}
-	if (!is_cancelled(mp))
+	if (!monster_is_cancelled(mp))
 	    switch (mp->t_type)
 	    {
 		case 'A':
@@ -338,7 +340,7 @@ fight_against_player(THING *mp)
                     break;
 		case 'I':
 		    /* The ice monster freezes you */
-		    player.t_flags &= ~ISRUN;
+		    player_stop_running();
 		    if (!no_command)
 		    {
 			addmsg("you are frozen");
@@ -395,7 +397,7 @@ fight_against_player(THING *mp)
                     break;
 		case 'F':
 		    /* Venus Flytrap stops the poor guy from moving */
-		    player.t_flags |= ISHELD;
+		    player_set_held();
 		    ++vf_hit;
                     player_lose_health(1);
 		    if (player_get_health() <= 0)

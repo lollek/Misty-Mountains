@@ -16,6 +16,7 @@
 #include "list.h"
 #include "level.h"
 #include "misc.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "potions.h"
@@ -81,9 +82,9 @@ potion_quaff_something(void)
   switch (obj->o_which)
   {
     case P_CONFUSE:
-      if (!is_hallucinating(&player))
+      if (!player_is_hallucinating())
         potion_learn(obj->o_which);
-      become_confused(false);
+      player_set_confused(false);
       break;
     case P_POISON:
       potion_learn(obj->o_which);
@@ -99,7 +100,7 @@ potion_quaff_something(void)
       break;
     case P_MFIND:
       potion_learn(obj->o_which);
-      become_monster_seeing(false);
+      player_add_sense_monsters(false);
       break;
     case P_TFIND:
     {
@@ -138,15 +139,15 @@ potion_quaff_something(void)
       }
       else
         msg("you have a %s feeling for a moment, then it passes",
-            is_hallucinating(&player) ? "normal" : "strange");
+            player_is_hallucinating() ? "normal" : "strange");
     }
     break;
     case P_LSD:
       potion_learn(obj->o_which);
-      become_tripping(false);
+      player_set_hallucinating(false);
       break;
     case P_SEEINVIS:
-      set_true_seeing(&player, true, false);
+      player_add_true_sight(false);
       break;
     case P_RAISE:
       if (game_type == DEFAULT)
@@ -167,18 +168,18 @@ potion_quaff_something(void)
       break;
     case P_HASTE:
       potion_learn(obj->o_which);
-      become_hasted(false);
+      player_set_hasted(false);
       break;
     case P_RESTORE:
       become_restored();
       break;
     case P_BLIND:
       potion_learn(obj->o_which);
-      become_blind(false);
+      player_set_blind(false);
       break;
     case P_LEVIT:
       potion_learn(obj->o_which);
-      become_levitating(false);
+      player_start_levitating(false);
       break;
     default:
       msg("what an odd tasting potion!");

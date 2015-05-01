@@ -140,7 +140,7 @@ level_new(void)
     PLACE *pp;
     char *sp;
 
-    player.t_flags &= ~ISHELD;	/* unhold when you go down just in case */
+    player_remove_held(); /* unhold when you go down just in case */
     if (level > max_level)
 	max_level = level;
     /*
@@ -208,9 +208,9 @@ level_new(void)
       mvaddcch(player_pos->y, player_pos->x, PLAYER);
     }
 
-    if (on(player, SEEMONST))
+    if (player_can_sense_monsters())
 	turn_see(false);
-    if (is_hallucinating(&player))
+    if (player_is_hallucinating())
 	daemon_change_visuals();
 
     if (game_type == QUICK && level > 1 && level <= 20)

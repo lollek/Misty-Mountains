@@ -206,7 +206,7 @@ status(void)
          "Exp: %d/%d  %s",
          level, purse, hpwidth, player_get_health(), hpwidth,
          player_get_max_health(), player_get_strength(), max_stats.s_str,
-         armor_for_thing(&player), player_get_level(), player_get_exp(),
+         player_get_armor(), player_get_level(), player_get_exp(),
          state_name[hungry_state]);
 
   clrtoeol();

@@ -14,6 +14,7 @@ enum equipment_pos
 
 /* Variables. TODO: Move these */
 #define RING_SLOTS_SIZE 2
+void *__pack_ptr(void);
 enum equipment_pos ring_slots[RING_SLOTS_SIZE];
 bool pack_used[26];
 
@@ -54,6 +55,10 @@ THING *pack_equipped_item(enum equipment_pos pos);
 
 bool pack_equip_item(THING *item);
 bool pack_unequip(enum equipment_pos pos);
+
+bool pack_item_is_cursed(THING *item);
+void pack_curse_item(THING *item);
+void pack_uncurse_item(THING *item);
 
 
 #endif /* _ROGUE14_PACK_H_ */

@@ -472,13 +472,13 @@ rs_write_daemons(FILE *savef, const struct delayed_action *d_list, int count)
       func = 4;
     else if (d_list[i].d_func == daemon_start_wanderer)
       func = 5;
-    else if (d_list[i].d_func == remove_hasted)
+    else if (d_list[i].d_func == player_remove_hasted)
       func = 6;
-    else if (d_list[i].d_func == remove_confusion)
+    else if (d_list[i].d_func == player_remove_confused)
       func = 7;
-    else if (d_list[i].d_func == daemon_remove_true_seeing)
+    else if (d_list[i].d_func == player_remove_true_sight)
       func = 8;
-    else if (d_list[i].d_func == cure_blindness)
+    else if (d_list[i].d_func == player_remove_blind)
       func = 9;
     else if (d_list[i].d_func == NULL)
       func = 0;
@@ -524,10 +524,10 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
       case 3:    d_list[i].d_func = daemon_digest_food; break;
       case 4:    d_list[i].d_func = daemon_runners_move; break;
       case 5:    d_list[i].d_func = daemon_start_wanderer; break;
-      case 6:    d_list[i].d_func = remove_hasted; break;
-      case 7:    d_list[i].d_func = remove_confusion; break;
-      case 8:    d_list[i].d_func = daemon_remove_true_seeing; break;
-      case 9:    d_list[i].d_func = cure_blindness; break;
+      case 6:    d_list[i].d_func = player_remove_hasted; break;
+      case 7:    d_list[i].d_func = player_remove_confused; break;
+      case 8:    d_list[i].d_func = player_remove_true_sight; break;
+      case 9:    d_list[i].d_func = player_remove_blind; break;
       default:   d_list[i].d_func = NULL; break;
     }
   }
@@ -1127,13 +1127,13 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_int(savef, vf_hit))
   rs_assert(rs_write_int(savef, seed))
   rs_assert(rs_write_coord(savef, stairs))
-  rs_assert(rs_write_thing(savef, &player))
+  rs_assert(rs_write_thing(savef, __player_ptr()))
   rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_ARMOR), RSID_ARMOR);
   rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_RHAND), RSID_RHAND);
   rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_RRING), RSID_RRING);
   rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_LRING), RSID_LRING);
-  rs_assert(rs_write_object_reference(savef, player.t_pack, l_last_pick))
-  rs_assert(rs_write_object_reference(savef, player.t_pack, last_pick))
+  rs_assert(rs_write_object_reference(savef, __pack_ptr(), l_last_pick))
+  rs_assert(rs_write_object_reference(savef, __pack_ptr(), last_pick))
   rs_assert(rs_write_object_list(savef, lvl_obj))
   rs_assert(rs_write_thing_list(savef, mlist))
   rs_assert_write_places(savef,places,MAXLINES*MAXCOLS)
@@ -1181,16 +1181,16 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_int(inf, &vf_hit))
   rs_assert(rs_read_int(inf, (signed *) &seed))
   rs_assert(rs_read_coord(inf, &stairs))
-  rs_assert(rs_read_thing(inf, &player))
+  rs_assert(rs_read_thing(inf, __player_ptr()))
   rs_assert(rs_read_equipment(inf, RSID_ARMOR))
   rs_assert(rs_read_equipment(inf, RSID_RHAND))
   rs_assert(rs_read_equipment(inf, RSID_RRING))
   rs_assert(rs_read_equipment(inf, RSID_LRING))
-  rs_assert(rs_read_object_reference(inf, player.t_pack, &l_last_pick))
-  rs_assert(rs_read_object_reference(inf, player.t_pack, &last_pick))
+  rs_assert(rs_read_object_reference(inf, __pack_ptr(), &l_last_pick))
+  rs_assert(rs_read_object_reference(inf, __pack_ptr(), &last_pick))
   rs_assert(rs_read_object_list(inf, &lvl_obj))
   rs_assert(rs_read_thing_list(inf, &mlist))
-  rs_assert(rs_fix_thing(&player))
+  rs_assert(rs_fix_thing(__player_ptr()))
   rs_assert(rs_fix_thing_list(mlist))
   rs_assert_read_places(inf,places,MAXLINES*MAXCOLS)
   rs_assert(rs_read_stats(inf, &max_stats))

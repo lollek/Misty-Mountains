@@ -101,9 +101,10 @@ move_do(char ch)
 	return true;
     }
 
-    if (is_confused(&player) && rnd(5) != 0)
+    if (player_is_confused() && rnd(5) != 0)
     {
-	move_random(&player, &nh);
+      /* TODO: Remove __player_ptr() */
+	move_random(__player_ptr(), &nh);
 	if (same_coords(nh, *player_get_pos()))
 	{
 	    running = false;
@@ -140,13 +141,13 @@ over:
 
     if (!(fl & F_REAL) && ch == FLOOR)
     {
-	if (!is_levitating(&player))
+	if (!player_is_levitating())
 	{
 	    chat(nh.y, nh.x) = ch = TRAP;
 	    flat(nh.y, nh.x) |= F_REAL;
 	}
     }
-    else if (on(player, ISHELD) && ch != 'F')
+    else if (player_is_held() && ch != 'F')
     {
 	msg("you are being held");
 	return after;
@@ -157,7 +158,7 @@ over:
 	case SHADOW: case VWALL: case HWALL:
 hit_bound:
 	    if (passgo && running && (player_get_room()->r_flags & ISGONE)
-		&& !is_blind(&player))
+		&& !player_is_blind())
 	    {
 		coord *player_pos = player_get_pos();
 		bool b1, b2;
@@ -222,7 +223,7 @@ hit_bound:
 	case TRAP:
           {
             coord *player_pos = player_get_pos();
-	    ch = be_trapped(&player, &nh);
+	    ch = be_trapped(&nh);
 	    if (ch == T_DOOR || ch == T_TELEP)
 		return after;
 	    mvaddcch(player_pos->y, player_pos->x, floor_at());
@@ -251,7 +252,7 @@ hit_bound:
           {
             coord *player_pos = player_get_pos();
 	    if (!(fl & F_REAL))
-		be_trapped(&player, player_pos);
+		be_trapped(player_pos);
 		mvaddcch(player_pos->y, player_pos->x, floor_at());
 		if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		    room_leave(&nh);

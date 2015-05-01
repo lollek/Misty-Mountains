@@ -26,6 +26,8 @@
 
 #include "pack.h"
 
+static THING *player_pack;
+
 static struct equipment_t
 {
   THING *ptr;
@@ -47,6 +49,8 @@ enum equipment_pos ring_slots[RING_SLOTS_SIZE] = {
   EQUIPMENT_RRING,
   EQUIPMENT_LRING
 };
+
+void *__pack_ptr(void) { return player_pack; }
 
 static size_t
 pack_print_evaluate_item(THING *obj)
@@ -209,17 +213,17 @@ pack_add(THING *obj, bool silent)
     return false;
   }
 
-  if (player.t_pack == NULL)
+  if (player_pack == NULL)
   {
     if (from_floor)
       pack_remove_from_floor(obj);
-    attach(player.t_pack, obj);
+    attach(player_pack, obj);
     obj->o_packch = pack_char();
   }
   else
   {
     THING *lp = NULL;
-    for (op = player.t_pack; op != NULL; op = op->l_next)
+    for (op = player_pack; op != NULL; op = op->l_next)
     {
       if (op->o_type != obj->o_type)
         lp = op;
@@ -333,7 +337,7 @@ pack_remove(THING *obj, bool newobj, bool all)
   {
     last_pick = NULL;
     pack_used[obj->o_packch - 'a'] = false;
-    detach(player.t_pack, obj);
+    detach(player_pack, obj);
   }
   return nobj;
 }
@@ -345,7 +349,7 @@ pack_pick_up(char ch)
   THING *obj;
   coord *player_pos = player_get_pos();
 
-  if (is_levitating(&player))
+  if (player_is_levitating())
     return;
 
   obj = find_obj(player_pos->y, player_pos->x);
@@ -380,7 +384,7 @@ pack_find_magic_item(void)
   THING *obj = NULL;
   int nobj = 0;
 
-  for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
+  for (obj = player_pack; obj != NULL; obj = obj->l_next)
     if (is_magic(obj) && rnd(++nobj) == 0)
       return obj;
   return NULL;
@@ -425,7 +429,7 @@ pack_get_item(const char *purpose, int type)
     return NULL;
   }
 
-  for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
+  for (obj = player_pack; obj != NULL; obj = obj->l_next)
     if (obj->o_packch == ch)
       return obj;
 
@@ -436,7 +440,7 @@ pack_get_item(const char *purpose, int type)
 bool
 pack_is_empty(void)
 {
-  return player.t_pack == NULL;
+  return player_pack == NULL;
 }
 
 unsigned
@@ -451,7 +455,7 @@ pack_count_items_of_type(int type)
   unsigned num = 0;
   THING *list;
 
-  for (list = player.t_pack; list != NULL; list = list->l_next)
+  for (list = player_pack; list != NULL; list = list->l_next)
     if (!type || type == list->o_type ||
         (type == RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))||
         (type == R_OR_S && (list->o_type == RING || list->o_type == STICK)))
@@ -464,7 +468,7 @@ pack_contains_amulet(void)
 {
   THING *ptr;
 
-  for (ptr = player.t_pack; ptr != NULL; ptr = ptr->l_next)
+  for (ptr = player_pack; ptr != NULL; ptr = ptr->l_next)
     if (ptr->o_type == AMULET)
       return true;
   return false;
@@ -511,7 +515,7 @@ pack_print_inventory(int type)
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
   /* Print out all items */
-  for (list = player.t_pack; list != NULL; list = list->l_next)
+  for (list = player_pack; list != NULL; list = list->l_next)
   {
     if (!type || type == list->o_type ||
         (type == RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))||
@@ -548,7 +552,7 @@ pack_evaluate(void)
     value += pack_print_evaluate_item(pack_equipped_item(i));
 
   addstr("\nWorth  Item  [Inventory]\n");
-  for (obj = player.t_pack; obj != NULL; obj = obj->l_next)
+  for (obj = player_pack; obj != NULL; obj = obj->l_next)
     value += pack_print_evaluate_item(obj);
 
   printw("\n%5d  Gold Pieces          ", purse);
@@ -629,3 +633,7 @@ pack_unequip(enum equipment_pos pos)
     msg("no longer %s %s", doing, inv_name(obj, true));
   return true;
 }
+
+bool pack_item_is_cursed(THING *item)     { return item->t_flags & ISCURSED; }
+void pack_curse_item(THING *item)         { item->t_flags |= ISCURSED; }
+void pack_uncurse_item(THING *item)       { item->t_flags &= ~ISCURSED; }

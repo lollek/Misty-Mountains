@@ -59,6 +59,38 @@ struct monster monsters[26] =
 { "zombie",	   0,	ISMEAN,	{ 10,  6,   2,   8,  1, "1x8", 0 } }
 };
 
+bool monster_is_blind(THING *mon)         { return mon->t_flags & ISBLIND; }
+bool monster_is_cancelled(THING *mon)     { return mon->t_flags & ISCANC; }
+bool monster_is_confused(THING *mon)      { return mon->t_flags & ISHUH; }
+bool monster_is_confusing(THING *mon)     { return mon->t_flags & CANHUH; }
+bool monster_is_found(THING *mon)         { return mon->t_flags & ISFOUND; }
+bool monster_is_hallucinating(THING *mon) { return mon->t_flags & ISHALU; }
+bool monster_is_invisible(THING *mon)     { return mon->t_flags & ISINVIS; }
+bool monster_is_levitating(THING *mon)    { return mon->t_flags & ISLEVIT; }
+bool monster_is_true_seeing(THING *mon)   { return mon->t_flags & CANSEE; }
+
+void monster_set_blind(THING *mon)        { mon->t_flags |= ISBLIND; }
+void monster_set_cancelled(THING *mon)    { mon->t_flags |= ISCANC; }
+void monster_set_confused(THING *mon)     { mon->t_flags |= ISHUH; }
+void monster_set_confusing(THING *mon)    { mon->t_flags |= CANHUH; }
+void monster_set_found(THING *mon)        { mon->t_flags |= ISFOUND; }
+void monster_set_hallucinating(THING *mon){ mon->t_flags |= ISHALU; }
+void monster_set_invisible(THING *mon)    { mon->t_flags |= ISINVIS; }
+void monster_set_levitating(THING *mon)   { mon->t_flags |= ISLEVIT; }
+void monster_set_true_seeing(THING *mon)  { mon->t_flags |= CANSEE; }
+
+void monster_remove_blind(THING *mon)        { mon->t_flags &= ~ISBLIND; }
+void monster_remove_cancelled(THING *mon)    { mon->t_flags &= ~ISCANC; }
+void monster_remove_confused(THING *mon)     { mon->t_flags &= ~ISHUH; }
+void monster_remove_confusing(THING *mon)    { mon->t_flags &= ~CANHUH; }
+void monster_remove_found(THING *mon)        { mon->t_flags &= ~ISFOUND; }
+void monster_remove_hallucinating(THING *mon){ mon->t_flags &= ~ISHALU; }
+void monster_remove_invisible(THING *mon)    { mon->t_flags &= ~ISINVIS; }
+void monster_remove_levitating(THING *mon)   { mon->t_flags &= ~ISLEVIT; }
+void monster_remove_true_seeing(THING *mon)  { mon->t_flags &= ~CANSEE; }
+
+
+
 char
 monster_random(bool wander)
 {
@@ -160,9 +192,9 @@ monster_new_random_wanderer(void)
   } while (roomin(&cp) == player_get_room());
 
   monster_new(tp, monster_random(true), &cp);
-  if (on(player, SEEMONST))
+  if (player_can_sense_monsters())
   {
-    if (is_hallucinating(&player))
+    if (player_is_hallucinating())
       addcch((rnd(26) + 'A') | A_STANDOUT);
     else
       addcch(tp->t_type | A_STANDOUT);
@@ -182,20 +214,20 @@ monster_notice_player(int y, int x)
 
   /* Every time he sees mean monster, it might start chasing him */
   if (!on(*tp, ISRUN) && rnd(3) != 0 && on(*tp, ISMEAN) && !on(*tp, ISHELD)
-      && !player_has_ring_with_ability(R_STEALTH) && !is_levitating(&player))
+      && !player_has_ring_with_ability(R_STEALTH) && !player_is_levitating())
   {
     tp->t_dest = player_pos;
     tp->t_flags |= ISRUN;
   }
 
-  if (ch == 'M' && !is_blind(&player) && !is_hallucinating(&player)
-      && !is_found(tp) && !is_cancelled(tp) && on(*tp, ISRUN))
+  if (ch == 'M' && !player_is_blind() && !player_is_hallucinating()
+      && !monster_is_found(tp) && !monster_is_cancelled(tp) && on(*tp, ISRUN))
   {
     struct room *rp = player_get_room();
     if ((rp != NULL && !(rp->r_flags & ISDARK))
         || dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
     {
-      set_found(tp, true);
+      monster_set_found(tp);
       if (!player_save_throw(VS_MAGIC))
       {
         char *mname = set_mname(tp);
@@ -203,7 +235,7 @@ monster_notice_player(int y, int x)
         if (strcmp(mname, "it") != 0)
           addmsg("'");
         msg("s gaze has confused you. ");
-        become_confused(false);
+        player_set_confused(false);
       }
     }
   }
@@ -285,7 +317,7 @@ monster_on_death(THING *tp, bool pr)
   {
     /* If the monster was a venus flytrap, un-hold him */
     case 'F':
-      player.t_flags &= ~ISHELD;
+      player_remove_held();
       vf_hit = 0;
       break;
 

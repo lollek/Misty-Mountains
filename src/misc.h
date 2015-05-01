@@ -38,7 +38,6 @@ int dist(int y1, int x1, int y2, int x2);
 #define dist_cp(_1, _2) dist((_1)->y, (_1)->x, (_2)->y, (_2)->x)
 char *set_mname(THING *tp); /* return the monster name for the given monster */
 const char *pick_color(const char *col); /* Return given color (or random if hallucinating) */
-int player_save_throw(int which); /* See if player saves against various nasty things */
 char floor_ch(void); /* Floor-type at hero's position */
 char floor_at(void); /* Return the character at hero's position */
 void reset_last(void); /* Reset the last command when the current one is aborted */

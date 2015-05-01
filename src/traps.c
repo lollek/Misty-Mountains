@@ -26,21 +26,18 @@ const char *trap_names[NTRAPS] = {
 };
 
 enum trap_t
-be_trapped(THING *target, coord *tc)
+be_trapped(coord *tc)
 {
   PLACE *pp = INDEX(tc->y, tc->x);
   char tr = pp->p_flags & F_TMASK;
 
   /* If we're levitating, we won't trigger the trap */
-  if (is_levitating(target))
+  if (player_is_levitating())
     return T_RUST; /* this needs to be neither T_DOOR nor T_TELEP */
 
-  if (target == &player)
-  {
-    pp->p_ch = TRAP;
-    pp->p_flags |= F_SEEN;
-    command_stop(true);
-  }
+  pp->p_ch = TRAP;
+  pp->p_flags |= F_SEEN;
+  command_stop(true);
 
   switch (tr)
   {
@@ -74,7 +71,7 @@ be_trapped(THING *target, coord *tc)
       addmsg("a strange white mist envelops you and ");
       break;
     case T_ARROW:
-      if (fight_swing_hits(player_get_level() - 1, armor_for_thing(&player), 1))
+      if (fight_swing_hits(player_get_level() - 1, player_get_armor(), 1))
       {
         player_lose_health(roll(1, 6));
         if (player_get_health() <= 0)
@@ -96,12 +93,12 @@ be_trapped(THING *target, coord *tc)
       }
       break;
     case T_TELEP: /* Works for monsters */
-      teleport(target, NULL);
-      if (target == &player)
-        mvaddcch(tc->y, tc->x, TRAP); /* Mark trap before we leave */
+      /* TODO: remove __player_ptr() */
+      teleport(__player_ptr(), NULL);
+      mvaddcch(tc->y, tc->x, TRAP); /* Mark trap before we leave */
       break;
     case T_DART:
-      if (!fight_swing_hits(player_get_level() + 1, armor_for_thing(&player), 1))
+      if (!fight_swing_hits(player_get_level() + 1, player_get_armor(), 1))
         msg("a small dart whizzes by your ear and vanishes");
       else
       {

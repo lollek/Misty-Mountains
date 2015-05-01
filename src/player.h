@@ -5,6 +5,54 @@
 
 #include "rogue.h"
 
+void *__player_ptr(void);
+
+/* General */
+void player_init(void);
+bool is_player(THING *thing);
+int player_save_throw(int which);
+
+/* Status Effects */
+bool player_has_true_sight(void);
+void player_add_true_sight(bool permanent);
+void player_remove_true_sight(void);
+
+bool player_is_confused(void);
+void player_set_confused(bool permanent);
+void player_remove_confused(void);
+
+bool player_is_held(void);
+void player_set_held(void);
+void player_remove_held(void);
+
+bool player_can_sense_monsters(void);
+void player_add_sense_monsters(bool permanent);
+void player_remove_sense_monsters(void);
+
+bool player_is_hallucinating(void);
+void player_set_hallucinating(bool permanent);
+void player_remove_hallucinating(void);
+
+bool player_is_hasted(void);
+void player_set_hasted(bool permanent);
+void player_remove_hasted(void);
+
+bool player_is_running(void);
+void player_start_running(void);
+void player_stop_running(void);
+
+bool player_is_blind(void);
+void player_set_blind(bool permanent);
+void player_remove_blind(void);
+
+bool player_is_levitating(void);
+void player_start_levitating(bool permanent);
+void player_stop_levitating(void);
+
+bool player_has_confusing_attack(void);
+void player_set_confusing_attack(void);
+void player_remove_confusing_attack(void);
+
 /* Position */
 coord *player_get_pos(void);
 void player_set_pos(coord *new_pos);
@@ -27,6 +75,9 @@ bool player_is_hurt(void);
 void player_modify_max_health(int amount);
 void player_lose_health(int amount);
 
+/* Armor */
+int player_get_armor(void);
+
 /* Level */
 int player_get_level(void);
 void player_raise_level(void);
@@ -36,7 +87,5 @@ void player_lower_level(void);
 /* Experience */
 int player_get_exp(void);
 void player_earn_exp(int amount);
-
-/* #define pstats		player.t_stats */
 
 #endif /* _ROGUE14_PLAYER_H_ */

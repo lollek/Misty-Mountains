@@ -17,7 +17,7 @@ enum trap_t
   NTRAPS
 };
 
-enum trap_t be_trapped(THING *target, coord *tc);
+enum trap_t be_trapped(coord *tc);
 extern const char *trap_names[NTRAPS];
 
 

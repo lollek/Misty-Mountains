@@ -251,7 +251,7 @@ parse_args(int argc, char * const *argv)
       case 'T': tombstone = false; break;
       case 'Q': game_type = QUICK; break;
       case 'W': potential_wizard = wizard = true;
-                player.t_flags |= SEEMONST;
+                player_add_sense_monsters(false);
                 break;
       case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"

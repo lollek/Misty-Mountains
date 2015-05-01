@@ -348,7 +348,7 @@ room_enter(coord *cp)
 
   player_set_room(rp);
   room_open_door(rp);
-  if (!(rp->r_flags & ISDARK) && !is_blind(&player))
+  if (!(rp->r_flags & ISDARK) && !player_is_blind())
   {
     int y, x;
     for (y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++)
@@ -367,7 +367,7 @@ room_enter(coord *cp)
         {
           tp->t_oldch = ch;
           if (!see_monst(tp))
-            if (on(player, SEEMONST))
+            if (player_can_sense_monsters())
               addcch(tp->t_disguise | A_STANDOUT);
             else
               addcch(ch);
@@ -393,7 +393,7 @@ room_leave(coord *cp)
 
     if (rp->r_flags & ISGONE)
 	floor = PASSAGE;
-    else if (!(rp->r_flags & ISDARK) || is_blind(&player))
+    else if (!(rp->r_flags & ISDARK) || player_is_blind())
 	floor = FLOOR;
     else
 	floor = SHADOW;
@@ -418,7 +418,7 @@ room_leave(coord *cp)
 		    if (isupper(toascii(ch)))
 		    {
                       PLACE *pp = INDEX(y,x);
-			if (on(player, SEEMONST))
+			if (player_can_sense_monsters())
 			{
 			    addcch(ch | A_STANDOUT);
 			    break;

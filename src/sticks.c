@@ -146,10 +146,10 @@ do_zap(void)
 	    {
 		monster = tp->t_type;
 		if (monster == 'F')
-		    player.t_flags &= ~ISHELD;
+		    player_remove_held();
 		switch (obj->o_which) {
 		    case WS_INVIS:
-			set_invisible(tp, true);
+			monster_set_invisible(tp);
 			if (cansee(y, x))
 			    mvaddcch(y, x, tp->t_oldch);
 			break;
@@ -173,9 +173,9 @@ do_zap(void)
 			break;
 		    }
 		    case WS_CANCEL:
-			set_cancelled(tp, true);
-			set_invisible(tp, false);
-			set_confusing(tp, false);
+			monster_set_cancelled(tp);
+			monster_remove_invisible(tp);
+			monster_remove_confusing(tp);
 			tp->t_disguise = tp->t_type;
 			if (see_monst(tp))
 			    mvaddcch(y, x, tp->t_disguise);
