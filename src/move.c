@@ -156,7 +156,7 @@ over:
     {
 	case SHADOW: case VWALL: case HWALL:
 hit_bound:
-	    if (passgo && running && (proom->r_flags & ISGONE)
+	    if (passgo && running && (player_get_room()->r_flags & ISGONE)
 		&& !is_blind(&player))
 	    {
 		coord *player_pos = player_get_pos();
@@ -240,7 +240,7 @@ hit_bound:
 	     * always recalculate proom.
 	     */
             coord *player_pos = player_get_pos();
-	    proom = roomin(player_pos);
+	    player_set_room(roomin(player_pos));
 	    mvaddcch(player_pos->y, player_pos->x, floor_at());
 	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		room_leave(&nh);

@@ -45,6 +45,18 @@ player_set_pos(coord *new_pos)
   player.t_pos.y = new_pos->y;
 }
 
+struct room *
+player_get_room(void)
+{
+  return player.t_room;
+}
+
+void
+player_set_room(struct room *new_room)
+{
+  player.t_room = new_room;
+}
+
 int
 player_get_strength(void)
 {

@@ -261,7 +261,7 @@ cure_blindness(void)
   {
     daemon_extinguish_fuse(cure_blindness);
     set_blind(&player, false);
-    if (!(proom->r_flags & ISGONE))
+    if (!(player_get_room()->r_flags & ISGONE))
       room_enter(player_get_pos());
     msg(is_hallucinating(&player)
       ? "far out!  Everything is all cosmic again"
@@ -323,7 +323,7 @@ teleport(THING *thing, coord *target)
   if (thing == &player)
   {
     mvaddcch(thing->t_pos.y, thing->t_pos.x, floor_at());
-    if (roomin(&new_pos) != proom)
+    if (roomin(&new_pos) != player_get_room())
     {
       room_leave(player_get_pos());
       player_set_pos(&new_pos);

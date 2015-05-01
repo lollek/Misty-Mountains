@@ -9,6 +9,10 @@
 coord *player_get_pos(void);
 void player_set_pos(coord *new_pos);
 
+/* Current Room */
+struct room *player_get_room(void);
+void player_set_room(struct room *new_room);
+
 /* Strength */
 int player_get_strength(void);
 bool player_strength_is_weakened(void);

@@ -151,7 +151,8 @@ pack_add_money(int value)
   coord *player_pos = player_get_pos();
   purse += value;
   mvaddcch(player_pos->y, player_pos->x, floor_ch());
-  chat(player_pos->y, player_pos->x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
+  chat(player_pos->y, player_pos->x) = (player_get_room()->r_flags & ISGONE)
+    ? PASSAGE : FLOOR;
   if (value > 0)
   {
     if (!terse)
@@ -166,7 +167,8 @@ pack_remove_from_floor(THING *obj)
   coord *player_pos = player_get_pos();
   detach(lvl_obj, obj);
   mvaddcch(player_pos->y, player_pos->x, floor_ch());
-  chat(player_pos->y, player_pos->x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
+  chat(player_pos->y, player_pos->x) = (player_get_room()->r_flags & ISGONE)
+    ? PASSAGE : FLOOR;
 }
 
 bool
@@ -190,7 +192,8 @@ pack_add(THING *obj, bool silent)
   {
     detach(lvl_obj, obj);
     mvaddcch(player_pos->y, player_pos->x, floor_ch());
-    chat(player_pos->y, player_pos->x) = (proom->r_flags & ISGONE) ? PASSAGE : FLOOR;
+    chat(player_pos->y, player_pos->x) = (player_get_room()->r_flags & ISGONE)
+      ? PASSAGE : FLOOR;
     discard(obj);
     msg("the scroll turns to dust as you pick it up");
     return false;
@@ -357,7 +360,7 @@ pack_pick_up(char ch)
           pack_add_money(obj->o_goldval);
           detach(lvl_obj, obj);
           discard(obj);
-          proom->r_goldval = 0;
+          player_get_room()->r_goldval = 0;
         }
         break;
       default:

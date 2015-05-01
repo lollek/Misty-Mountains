@@ -99,11 +99,11 @@ do_zap(void)
 	     * Reddy Kilowat wand.  Light up the room
 	     */
 	    ws_info[WS_LIGHT].oi_know = true;
-	    if (proom->r_flags & ISGONE)
+	    if (player_get_room()->r_flags & ISGONE)
 		msg("the corridor glows and then fades");
 	    else
 	    {
-		proom->r_flags &= ~ISDARK;
+		player_get_room()->r_flags &= ~ISDARK;
 		/*
 		 * Light the room and put the player back up
 		 */
@@ -303,12 +303,12 @@ drain(void)
 	corp = &passages[flat(player_pos->y, player_pos->x) & F_PNUM];
     else
 	corp = NULL;
-    inpass = (bool)(proom->r_flags & ISGONE);
+    inpass = (bool)(player_get_room()->r_flags & ISGONE);
     dp = drainee;
     for (mp = mlist; mp != NULL; mp = mp->l_next)
-	if (mp->t_room == proom || mp->t_room == corp ||
+	if (mp->t_room == player_get_room() || mp->t_room == corp ||
 	    (inpass && chat(mp->t_pos.y, mp->t_pos.x) == DOOR &&
-	    &passages[flat(mp->t_pos.y, mp->t_pos.x) & F_PNUM] == proom))
+	    &passages[flat(mp->t_pos.y, mp->t_pos.x) & F_PNUM] == player_get_room()))
 		*dp++ = mp;
     if ((cnt = (int)(dp - drainee)) == 0)
     {

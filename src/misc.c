@@ -74,7 +74,7 @@ look(bool wakeup)
   PLACE *pp = INDEX(player_pos->y, player_pos->x);
   char pch = pp->p_ch;
   char pfl = pp->p_flags;
-  struct room *rp = proom;
+  struct room *rp = player_get_room();
   int passcount = 0;
   int sumhero = 0, diffhero = 0;
 
@@ -153,7 +153,7 @@ look(bool wakeup)
 
         move(y, x);
 
-        if ((proom->r_flags & ISDARK) && !see_floor && ch == FLOOR)
+        if ((player_get_room()->r_flags & ISDARK) && !see_floor && ch == FLOOR)
           ch = SHADOW;
 
         if (tp != NULL || ch != incch())
@@ -234,7 +234,7 @@ erase_lamp(coord *pos, struct room *rp)
 bool
 show_floor(void)
 {
-  if ((proom->r_flags & (ISGONE|ISDARK)) == ISDARK && !is_blind(&player))
+  if ((player_get_room()->r_flags & (ISGONE|ISDARK)) == ISDARK && !is_blind(&player))
     return see_floor;
   else
     return true;
@@ -586,7 +586,7 @@ see_monst(THING *mp)
     return true;
   }
 
-  if (mp->t_room != proom)
+  if (mp->t_room != player_get_room())
     return false;
   return ((bool)!(mp->t_room->r_flags & ISDARK));
 }
@@ -644,7 +644,7 @@ cansee(int y, int x)
      */
     tp.y = y;
     tp.x = x;
-    return (bool)((rer = roomin(&tp)) == proom && !(rer->r_flags & ISDARK));
+    return (bool)((rer = roomin(&tp)) == player_get_room() && !(rer->r_flags & ISDARK));
 }
 
 int
@@ -703,7 +703,7 @@ player_save_throw(int which)
 char
 floor_ch(void)
 {
-  if (proom->r_flags & ISGONE)
+  if (player_get_room()->r_flags & ISGONE)
     return PASSAGE;
   return show_floor() ? FLOOR : SHADOW;
 }

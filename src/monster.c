@@ -157,7 +157,7 @@ monster_new_random_wanderer(void)
   do
   {
     room_find_floor((struct room *) NULL, &cp, false, true);
-  } while (roomin(&cp) == proom);
+  } while (roomin(&cp) == player_get_room());
 
   monster_new(tp, monster_random(true), &cp);
   if (on(player, SEEMONST))
@@ -191,7 +191,7 @@ monster_notice_player(int y, int x)
   if (ch == 'M' && !is_blind(&player) && !is_hallucinating(&player)
       && !is_found(tp) && !is_cancelled(tp) && on(*tp, ISRUN))
   {
-    struct room *rp = proom;
+    struct room *rp = player_get_room();
     if ((rp != NULL && !(rp->r_flags & ISDARK))
         || dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
     {
@@ -212,8 +212,8 @@ monster_notice_player(int y, int x)
   if (on(*tp, ISGREED) && !on(*tp, ISRUN))
   {
     tp->t_flags |= ISRUN;
-    if (proom->r_goldval)
-      tp->t_dest = &proom->r_gold;
+    if (player_get_room()->r_goldval)
+      tp->t_dest = &player_get_room()->r_gold;
     else
       tp->t_dest = player_pos;
   }
@@ -252,7 +252,7 @@ monster_destination(THING *tp)
   THING *obj;
   int prob = monsters[tp->t_type - 'A'].m_carry;
 
-  if (prob <= 0 || tp->t_room == proom || see_monst(tp))
+  if (prob <= 0 || tp->t_room == player_get_room() || see_monst(tp))
     return player_get_pos();
 
   for (obj = lvl_obj; obj != NULL; obj = obj->l_next)

@@ -20,6 +20,7 @@
 #include "passages.h"
 #include "misc.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "rooms.h"
@@ -343,8 +344,9 @@ room_find_floor(struct room *rp, coord *cp, int limit, bool monst)
 void
 room_enter(coord *cp)
 {
-  struct room *rp = proom = roomin(cp);
+  struct room *rp = roomin(cp);
 
+  player_set_room(rp);
   room_open_door(rp);
   if (!(rp->r_flags & ISDARK) && !is_blind(&player))
   {
@@ -382,7 +384,7 @@ room_enter(coord *cp)
 void
 room_leave(coord *cp)
 {
-    struct room *rp = proom;
+    struct room *rp = player_get_room();
     int y, x;
     char floor;
 
@@ -396,7 +398,7 @@ room_leave(coord *cp)
     else
 	floor = SHADOW;
 
-    proom = &passages[flat(cp->y, cp->x) & F_PNUM];
+    player_set_room(&passages[flat(cp->y, cp->x) & F_PNUM]);
     for (y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++)
 	for (x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
 	{

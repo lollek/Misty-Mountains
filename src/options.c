@@ -57,7 +57,7 @@ get_sf(void *vp, WINDOW *win)
 
   if (!see_floor) {
     see_floor = true;
-    erase_lamp(player_get_pos(), proom);
+    erase_lamp(player_get_pos(), player_get_room());
     see_floor = false;
   }
   else

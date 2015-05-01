@@ -162,7 +162,7 @@ chase_do(THING *th)
 	th->t_dest = player_pos;	/* If gold has been taken, run after hero */
 
     if (th->t_dest == player_pos)	/* Find room of chasee */
-	ree = proom;
+	ree = player_get_room();
     else
 	ree = roomin(th->t_dest);
 
