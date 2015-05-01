@@ -47,7 +47,6 @@ extern enum rogue_game_t
 #define winat(y,x)	(moat(y,x) != NULL ? moat(y,x)->t_disguise : chat(y,x))
 #define same_coords(a,b)	((a).x == (b).x && (a).y == (b).y)
 #define proom		player.t_room
-#define max_hp		player.t_stats.s_maxhp
 #define max(a,b)	((a) > (b) ? (a) : (b))
 #define on(thing,flag)	((bool)(((thing).t_flags & (flag)) != 0))
 #define GOLDCALC	(rnd(50 + 10 * level) + 2)

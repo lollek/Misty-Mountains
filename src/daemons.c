@@ -172,7 +172,7 @@ daemon_doctor(void)
   int ohp = player_get_health();
   int i;
 
-  if (ohp == max_hp)
+  if (ohp == player_get_max_health())
     return;
 
   quiet_rounds++;

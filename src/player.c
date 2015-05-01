@@ -81,6 +81,12 @@ player_get_health(void)
   return player.t_stats.s_hpt;
 }
 
+int
+player_get_max_health(void)
+{
+  return player.t_stats.s_maxhp;
+}
+
 void
 player_restore_health(int amount, bool can_raise_total)
 {
@@ -88,20 +94,31 @@ player_restore_health(int amount, bool can_raise_total)
 
   if (can_raise_total)
   {
-    if (player.t_stats.s_hpt > max_hp + player_get_level() + 1)
-      ++max_hp;
-    if (player.t_stats.s_hpt > max_hp)
-      ++max_hp;
+    int amount = 0;
+    if (player_get_health() > player_get_max_health() + player_get_level() + 1)
+      ++amount;
+    if (player_get_health() > player_get_max_health())
+      ++amount;
+    if (amount > 0)
+      player_modify_max_health(amount);
   }
 
-  if (player.t_stats.s_hpt > max_hp)
-    player.t_stats.s_hpt = max_hp;
+  if (player_get_health() > player_get_max_health())
+    player.t_stats.s_hpt = player_get_max_health();
 }
 
 bool
 player_is_hurt(void)
 {
-  return player.t_stats.s_hpt != max_hp;
+  return player_get_health() != player_get_max_health();
+}
+
+void
+player_modify_max_health(int amount)
+{
+  player.t_stats.s_maxhp += amount;
+  if (player.t_stats.s_hpt > player.t_stats.s_maxhp)
+    player.t_stats.s_hpt = player.t_stats.s_maxhp;
 }
 
 void player_lose_health(int amount)
@@ -139,8 +156,8 @@ player_check_for_level_up(void)
   if (i > old_level)
   {
     int add_to_hp = roll(i - old_level, 10);
-    max_hp += add_to_hp;
-    player.t_stats.s_hpt += add_to_hp;
+    player_modify_max_health(add_to_hp);
+    player_restore_health(add_to_hp, false);
     msg("welcome to level %d", player.t_stats.s_lvl);
   }
 }

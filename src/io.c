@@ -197,16 +197,17 @@ status(void)
   if (player_is_hurt())
   {
     int temp;
-    for (temp = max_hp; temp > 0; temp /= 10, hpwidth++)
+    for (temp = player_get_max_health(); temp > 0; temp /= 10, hpwidth++)
       ;
   }
 
   move(STATLINE, 0);
   printw("Level: %d  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  Arm: %-2d  "
          "Exp: %d/%d  %s",
-         level, purse, hpwidth, player_get_health(), hpwidth, max_hp,
-         player_get_strength(), max_stats.s_str, armor_for_thing(&player),
-         player_get_level(), player_get_exp(), state_name[hungry_state]);
+         level, purse, hpwidth, player_get_health(), hpwidth,
+         player_get_max_health(), player_get_strength(), max_stats.s_str,
+         armor_for_thing(&player), player_get_level(), player_get_exp(),
+         state_name[hungry_state]);
 
   clrtoeol();
   move(oy, ox);
