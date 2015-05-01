@@ -75,25 +75,9 @@ become_stuck(void)
 void
 become_restored(void)
 {
-  if (pstats.s_str < max_stats.s_str)
+  if (player_strength_is_weakened())
   {
-    int i;
-    for (i = 0; i < RING_SLOTS_SIZE; ++i)
-    {
-      THING *ring = pack_equipped_item(ring_slots[i]);
-      if (ring != NULL && ring->o_which == R_ADDSTR)
-        add_str(&pstats.s_str, -ring->o_arm);
-    }
-
-    pstats.s_str = max_stats.s_str;
-
-    for (i = 0; i < RING_SLOTS_SIZE; ++i)
-    {
-      THING *ring = pack_equipped_item(ring_slots[i]);
-      if (ring != NULL && ring->o_which == R_ADDSTR)
-        add_str(&pstats.s_str, ring->o_arm);
-    }
-
+    player_restore_strength();
     msg("you feel your strength returning");
   }
   else
@@ -107,7 +91,7 @@ become_poisoned(void)
     msg("you feel momentarily sick");
   else
   {
-    chg_str(-(rnd(3) + 1));
+    player_modify_strength(-(rnd(3) + 1));
     msg("you feel very sick now");
     remove_tripping();
   }
@@ -141,8 +125,7 @@ remove_confusion(void)
 void
 become_healed(void)
 {
-  if ((pstats.s_hpt += roll(pstats.s_lvl, 4)) > max_hp)
-    pstats.s_hpt = ++max_hp;
+  player_restore_health(roll(player_get_level(), 4), true);
   cure_blindness();
   msg("you begin to feel better");
 }
@@ -150,12 +133,7 @@ become_healed(void)
 void
 become_extra_healed(void)
 {
-  if ((pstats.s_hpt += roll(pstats.s_lvl, 8)) > max_hp)
-  {
-    if (pstats.s_hpt > max_hp + pstats.s_lvl + 1)
-      ++max_hp;
-    pstats.s_hpt = ++max_hp;
-  }
+  player_restore_health(roll(player_get_level(), 8), true);
   cure_blindness();
   remove_tripping();
   msg("you begin to feel much better");
@@ -164,7 +142,7 @@ become_extra_healed(void)
 void
 become_stronger(void)
 {
-  chg_str(1);
+  player_modify_strength(1);
   msg("you feel stronger, now.  What bulging muscles!");
 }
 
@@ -320,8 +298,7 @@ remove_levitating(void)
 void
 raise_level(void)
 {
-  pstats.s_exp = e_levels[pstats.s_lvl-1] + 1L;
-  check_level();
+  player_raise_level();
   if (game_type != QUICK)
     msg("you suddenly feel much more skillful");
 }

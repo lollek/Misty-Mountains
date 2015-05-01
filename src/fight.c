@@ -25,6 +25,7 @@
 #include "rings.h"
 #include "misc.h"
 #include "level.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "fight.h"
@@ -305,7 +306,7 @@ fight_against_player(THING *mp)
 	    mvaddcch(mp->t_pos.y, mp->t_pos.x, rnd(26) + 'A');
     }
     mname = set_mname(mp);
-    oldhp = pstats.s_hpt;
+    oldhp = player_get_health();
     if (roll_em(mp, &player, (THING *) NULL, false))
     {
 	if (mp->t_type != 'I')
@@ -318,14 +319,14 @@ fight_against_player(THING *mp)
 	    if (has_hit)
 		endmsg();
 	has_hit = false;
-	if (pstats.s_hpt <= 0)
+	if (player_get_health() <= 0)
 	    death(mp->t_type);	/* Bye bye life ... */
 	else if (!kamikaze)
 	{
-	    oldhp -= pstats.s_hpt;
+	    oldhp -= player_get_health();
 	    if (oldhp > max_hit)
 		max_hit = oldhp;
-	    if (pstats.s_hpt <= max_hit)
+	    if (player_get_health() <= max_hit)
 		to_death = false;
 	}
 	if (!is_cancelled(mp))
@@ -355,7 +356,7 @@ fight_against_player(THING *mp)
 		    {
 			if (!player_has_ring_with_ability(R_SUSTSTR))
 			{
-			    chg_str(-1);
+			    player_modify_strength(-1);
 			    msg(terse
 			      ? "a bite has weakened you"
 			      : "you feel a bite in your leg and now feel weaker");
@@ -376,23 +377,17 @@ fight_against_player(THING *mp)
 
 			if (mp->t_type == 'W')
 			{
-			    if (pstats.s_exp == 0)
+			    if (player_get_exp() == 0)
 				death('W');		/* All levels gone */
-			    if (--pstats.s_lvl == 0)
-			    {
-				pstats.s_exp = 0;
-				pstats.s_lvl = 1;
-			    }
-			    else
-				pstats.s_exp = e_levels[pstats.s_lvl-1]+1;
+                            player_lower_level();
 			    fewer = roll(1, 10);
 			}
 			else
 			    fewer = roll(1, 3);
-			pstats.s_hpt -= fewer;
+                        player_lose_health(fewer);
 			max_hp -= fewer;
-			if (pstats.s_hpt <= 0)
-			    pstats.s_hpt = 1;
+			while (player_get_health() <= 0)
+                            player_restore_health(1, false);
 			if (max_hp <= 0)
 			    death(mp->t_type);
 			msg("you suddenly feel weaker");
@@ -402,7 +397,8 @@ fight_against_player(THING *mp)
 		    /* Venus Flytrap stops the poor guy from moving */
 		    player.t_flags |= ISHELD;
 		    ++vf_hit;
-		    if (--pstats.s_hpt <= 0)
+                    player_lose_health(1);
+		    if (player_get_health() <= 0)
 			death('F');
                     break;
 		case 'L':
@@ -451,8 +447,8 @@ fight_against_player(THING *mp)
 	}
 	if (mp->t_type == 'F')
 	{
-	    pstats.s_hpt -= vf_hit;
-	    if (pstats.s_hpt <= 0)
+	    player_lose_health(vf_hit);
+	    if (player_get_health() <= 0)
 		death(mp->t_type);	/* Bye bye life ... */
 	}
 	print_attack(false, mname, (char *) NULL, false);

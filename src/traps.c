@@ -74,10 +74,10 @@ be_trapped(THING *target, coord *tc)
       addmsg("a strange white mist envelops you and ");
       break;
     case T_ARROW:
-      if (fight_swing_hits(pstats.s_lvl - 1, armor_for_thing(&player), 1))
+      if (fight_swing_hits(player_get_level() - 1, armor_for_thing(&player), 1))
       {
-        pstats.s_hpt -= roll(1, 6);
-        if (pstats.s_hpt <= 0)
+        player_lose_health(roll(1, 6));
+        if (player_get_health() <= 0)
         {
           msg("an arrow killed you");
           death('a');
@@ -101,18 +101,18 @@ be_trapped(THING *target, coord *tc)
         mvaddcch(tc->y, tc->x, TRAP); /* Mark trap before we leave */
       break;
     case T_DART:
-      if (!fight_swing_hits(pstats.s_lvl + 1, armor_for_thing(&player), 1))
+      if (!fight_swing_hits(player_get_level() + 1, armor_for_thing(&player), 1))
         msg("a small dart whizzes by your ear and vanishes");
       else
       {
-        pstats.s_hpt -= roll(1, 4);
-        if (pstats.s_hpt <= 0)
+        player_lose_health(roll(1, 4));
+        if (player_get_health() <= 0)
         {
           msg("a poisoned dart killed you");
           death('d');
         }
         if (!player_has_ring_with_ability(R_SUSTSTR) && !player_save_throw(VS_POISON))
-          chg_str(-1);
+          player_modify_strength(-1);
         msg("a small dart just hit you in the shoulder");
       }
       break;

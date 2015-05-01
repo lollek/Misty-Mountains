@@ -12,9 +12,6 @@ void erase_lamp(coord *pos, struct room *rp); /* Erase the area shown by a lamp 
 bool show_floor(void); /* Should we show the floor in her room at this time? */
 THING *find_obj(int y, int x); /* Find the unclaimed object at y, x */
 bool eat(void); /* She wants to eat something, so let her try */
-void check_level(void); /* Check to see if the guy has gone up a level */
-void chg_str(int amt); /* used to modify the playes strength.  It keeps track of the highest it has been, just in case */
-void add_str(str_t *sp, int amt); /* Perform the actual add, checking upper and lower bound limits */
 void aggravate(void); /* Aggravate all the monsters on this level */
 const char *vowelstr(const char *str); /* For printfs: if string starts with a vowel, return "n" for an "an" */
 bool get_dir(void); /* Set up the direction co_ordinate for use in varios "prefix" commands */

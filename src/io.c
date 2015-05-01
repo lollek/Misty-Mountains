@@ -194,7 +194,7 @@ status(void)
 
   getyx(stdscr, oy, ox);
 
-  if (pstats.s_hpt != max_hp)
+  if (player_is_hurt())
   {
     int temp;
     for (temp = max_hp; temp > 0; temp /= 10, hpwidth++)
@@ -204,9 +204,9 @@ status(void)
   move(STATLINE, 0);
   printw("Level: %d  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  Arm: %-2d  "
          "Exp: %d/%d  %s",
-         level, purse, hpwidth, pstats.s_hpt, hpwidth, max_hp, pstats.s_str,
-         max_stats.s_str, armor_for_thing(&player), pstats.s_lvl, pstats.s_exp,
-         state_name[hungry_state]);
+         level, purse, hpwidth, player_get_health(), hpwidth, max_hp,
+         player_get_strength(), max_stats.s_str, armor_for_thing(&player),
+         player_get_level(), player_get_exp(), state_name[hungry_state]);
 
   clrtoeol();
   move(oy, ox);

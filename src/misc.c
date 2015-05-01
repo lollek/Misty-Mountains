@@ -279,10 +279,10 @@ eat(void)
     else
       if (rnd(100) > 70)
       {
-        pstats.s_exp++;
+        player_earn_exp(1);
         msg("%s, this food tastes awful",
             is_hallucinating(&player) ? "bummer" : "yuk");
-        check_level();
+        player_check_for_level_up();
       }
       else
         msg("%s, that tasted good",
@@ -290,58 +290,6 @@ eat(void)
 
     pack_remove(obj, false, false);
     return true;
-}
-
-void
-check_level(void)
-{
-  int i, olevel;
-
-  for (i = 0; e_levels[i] != 0; i++)
-    if (e_levels[i] > pstats.s_exp)
-      break;
-  i++;
-  olevel = pstats.s_lvl;
-  pstats.s_lvl = i;
-  if (i > olevel)
-  {
-    int add = roll(i - olevel, 10);
-    max_hp += add;
-    pstats.s_hpt += add;
-    msg("welcome to level %d", i);
-  }
-}
-
-void
-chg_str(int amt)
-{
-  int i;
-  str_t comp;
-
-  if (amt == 0)
-    return;
-
-  add_str(&pstats.s_str, amt);
-  comp = pstats.s_str;
-
-  for (i = 0; i < RING_SLOTS_SIZE; ++i)
-  {
-    THING *ring = pack_equipped_item(ring_slots[i]);
-    if (ring != NULL && ring->o_which == R_ADDSTR)
-      add_str(&comp, -ring->o_arm);
-  }
-
-  if (comp > max_stats.s_str)
-    max_stats.s_str = comp;
-}
-
-void
-add_str(str_t *sp, int amt)
-{
-  if ((*sp += amt) < 3)
-    *sp = 3;
-  else if (*sp > 31)
-    *sp = 31;
 }
 
 void

@@ -15,6 +15,7 @@
 #include "pack.h"
 #include "daemons.h"
 #include "misc.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "rings.h"
@@ -66,7 +67,7 @@ ring_put_on(void)
   /* Calculate the effect it has on the poor guy. */
   switch (obj->o_which)
   {
-    case R_ADDSTR: chg_str(obj->o_arm); break;
+    case R_ADDSTR: player_modify_strength(obj->o_arm); break;
     case R_SEEINVIS: invis_on(); break;
     case R_AGGR: aggravate(); break;
     }
@@ -95,7 +96,7 @@ ring_take_off(void)
   obj = pack_equipped_item(ring);
   switch (obj->o_which)
   {
-    case R_ADDSTR: chg_str(-obj->o_arm); break;
+    case R_ADDSTR: player_modify_strength(-obj->o_arm); break;
     case R_SEEINVIS:
       set_true_seeing(&player, false, false);
       daemon_extinguish_fuse(daemon_remove_true_seeing);

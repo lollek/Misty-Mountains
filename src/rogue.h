@@ -46,7 +46,6 @@ extern enum rogue_game_t
 /* All the fun defines */
 #define winat(y,x)	(moat(y,x) != NULL ? moat(y,x)->t_disguise : chat(y,x))
 #define same_coords(a,b)	((a).x == (b).x && (a).y == (b).y)
-#define pstats		player.t_stats
 #define proom		player.t_room
 #define max_hp		player.t_stats.s_maxhp
 #define max(a,b)	((a) > (b) ? (a) : (b))

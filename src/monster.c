@@ -279,7 +279,7 @@ monster_on_death(THING *tp, bool pr)
   char *mname;
 
   if (game_type == DEFAULT)
-    pstats.s_exp += tp->t_stats.s_exp;
+    player_earn_exp(tp->t_stats.s_exp);
 
   switch (tp->t_type)
   {
@@ -324,7 +324,7 @@ monster_on_death(THING *tp, bool pr)
   }
 
   /* Do adjustments if he went up a level */
-  check_level();
+  player_check_for_level_up();
   if (fight_flush)
     flushinp();
 }

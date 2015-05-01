@@ -31,6 +31,7 @@
 #include "rings.h"
 #include "save.h"
 #include "misc.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "init.h"
@@ -42,7 +43,7 @@ init_player(void)
 {
   THING *obj;
 
-  pstats = max_stats;
+  player.t_stats = max_stats;
   food_left = HUNGERTIME;
 
   /* Give him some food */
@@ -514,7 +515,7 @@ init_old_game(void)
   mpos = 0;
   clearok(stdscr,true);
 
-  if (pstats.s_hpt <= 0)
+  if (player_get_health() <= 0)
   {
     endwin();
     printf("\n\"He's dead, Jim\"\n");

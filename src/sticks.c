@@ -120,7 +120,7 @@ do_zap(void)
 	     * evenly from the monsters in the room (or next to hero
 	     * if he is in a passage)
 	     */
-	    if (pstats.s_hpt < 2)
+	    if (player_get_health() < 2)
 	    {
 		msg("you are too weak to use it");
 		return true;
@@ -316,8 +316,8 @@ drain(void)
 	return;
     }
     *dp = NULL;
-    pstats.s_hpt /= 2;
-    cnt = pstats.s_hpt / cnt;
+    player_lose_health(player_get_health() / 2);
+    cnt = player_get_health() / cnt;
     /*
      * Now zot all of the monsters
      */
@@ -426,7 +426,8 @@ def:
 		    changed = !changed;
 		    if (!player_save_throw(VS_MAGIC))
 		    {
-			if ((pstats.s_hpt -= roll(6, 6)) <= 0)
+			player_lose_health(roll(6, 6));
+			if (player_get_health() <= 0)
 			{
 			    if (start == player_get_pos())
 				death('b');
