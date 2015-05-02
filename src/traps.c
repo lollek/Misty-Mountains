@@ -8,6 +8,7 @@
 #include "level.h"
 #include "rings.h"
 #include "misc.h"
+#include "weapons.h"
 #include "player.h"
 
 #include "traps.h"

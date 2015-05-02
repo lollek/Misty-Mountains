@@ -22,6 +22,8 @@
 #include "player.h"
 #include "rogue.h"
 
+#include "weapons.h"
+
 #define NO_WEAPON -1
 
 static THING *last_wielded_weapon = NULL;
@@ -45,7 +47,7 @@ static struct init_weaps {
     { "2x3",	"1x6",	NO_WEAPON,	ISMISL,		},	/* Spear */
 };
 
-struct obj_info weap_info[MAXWEAPONS + 1] = {
+struct obj_info weap_info[] = {
     { "mace",				11,   8, NULL, false },
     { "long sword",			11,  15, NULL, false },
     { "short bow",			12,  15, NULL, false },
@@ -59,8 +61,6 @@ struct obj_info weap_info[MAXWEAPONS + 1] = {
     { NULL,				0,    0, NULL, false },	
 };
 
-/** missile:
- * Fire a missile in a given direction */
 bool
 missile(int ydelta, int xdelta)
 {
@@ -98,9 +98,6 @@ missile(int ydelta, int xdelta)
   return true;
 }
 
-/** do_motion:
- * Do the actual motion on the screen done by an object traveling
- * across the room */
 void
 do_motion(THING *obj, int ydelta, int xdelta)
 {
@@ -139,8 +136,6 @@ do_motion(THING *obj, int ydelta, int xdelta)
   }
 }
 
-/** fall:
- * Drop an item someplace around here. */
 void
 fall(THING *obj, bool pr)
 {
@@ -175,9 +170,6 @@ fall(THING *obj, bool pr)
   }
   discard(obj);
 }
-
-/** init_weapon:
- * Set up the initial goodies for a weapon */
 
 void
 init_weapon(THING *weap, int which)
@@ -215,8 +207,6 @@ init_weapon(THING *weap, int which)
   }
 }
 
-/** hit_monster:
- * Does the missile hit the monster? */
 int
 hit_monster(int y, int x, THING *obj)
 {
@@ -227,8 +217,6 @@ hit_monster(int y, int x, THING *obj)
   return fight_against_monster(&mp, obj, true);
 }
 
-/** num:
- * Figure out the plus number for armor/weapons */
 char *
 num(int n1, int n2, char type)
 {
@@ -257,7 +245,6 @@ weapon_wield(THING *weapon)
   return true;
 }
 
-/* wield last wielded weapon */
 bool
 last_weapon(void)
 {
@@ -277,8 +264,6 @@ last_weapon(void)
   return weapon_wield(last_wielded_weapon);
 }
 
-/** fallpos:
- * Pick a random position around the give (y, x) coordinates */
 bool
 fallpos(coord *pos, coord *newpos)
 {

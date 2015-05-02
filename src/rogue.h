@@ -151,20 +151,6 @@ extern enum rogue_game_t
 #define F_PNUM		0x0f		/* passage number mask */
 #define F_TMASK		0x07		/* trap number mask */
 
-/*
- * Weapon types
- */
-#define MACE		0
-#define SWORD		1
-#define BOW		2
-#define ARROW		3
-#define DAGGER		4
-#define TWOSWORD	5
-#define DART		6
-#define SHIRAKEN	7
-#define SPEAR		8
-#define FLAME		9	/* fake entry for dragon breath (ick) */
-#define MAXWEAPONS	9	/* this should equal FLAME */
 
 
 /*
@@ -371,7 +357,6 @@ extern struct stats	max_stats;
 
 extern struct obj_info things[];
 extern struct obj_info ws_info[];
-extern struct obj_info weap_info[];
 
 /*
  * Function types
@@ -380,29 +365,19 @@ extern struct obj_info weap_info[];
 
 void	death(char monst);
 void	discovered(void);
-void	do_motion(THING *obj, int ydelta, int xdelta);
 bool	do_zap(void);
 void	drain(void);
 bool	drop(void);
-void	fall(THING *obj, bool pr);
 void	fire_bolt(coord *start, coord *dir, char *name);
 void	fix_stick(THING *cur);
-int	hit_monster(int y, int x, THING *obj);
-void	init_weapon(THING *weap, int which);
-bool	missile(int ydelta, int xdelta);
 int	rs_save_file(FILE *savef);
 int	rs_restore_file(FILE *inf);
 void	score(int amount, int flags, char monst);
 void	shell(void);
 void	total_winner(void);
-bool	weapon_wield(THING *weapon);
-bool	last_weapon(void);
-
-bool	fallpos(coord *pos, coord *newpos);
 
 char	*charge_str(THING *obj);
 char	*inv_name(THING *obj, bool drop);
-char	*num(int n1, int n2, char type);
 
 void leave(int);
 void quit(int);

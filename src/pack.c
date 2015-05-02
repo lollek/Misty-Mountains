@@ -21,6 +21,7 @@
 #include "misc.h"
 #include "level.h"
 #include "player.h"
+#include "weapons.h"
 #include "rogue.h"
 
 #include "pack.h"

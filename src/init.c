@@ -31,6 +31,7 @@
 #include "save.h"
 #include "misc.h"
 #include "player.h"
+#include "weapons.h"
 #include "rogue.h"
 
 #include "init.h"

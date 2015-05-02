@@ -22,6 +22,7 @@
 #include "passages.h"
 #include "level.h"
 #include "player.h"
+#include "weapons.h"
 #include "rogue.h"
 
 struct obj_info ws_info[MAXSTICKS] = {

@@ -14,6 +14,7 @@
 #include "misc.h"
 #include "monster.h"
 #include "player.h"
+#include "weapons.h"
 #include "rogue.h"
 
 #include "command_private.h"

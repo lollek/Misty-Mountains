@@ -26,6 +26,7 @@
 #include "rings.h"
 #include "misc.h"
 #include "level.h"
+#include "weapons.h"
 #include "rogue.h"
 
 void

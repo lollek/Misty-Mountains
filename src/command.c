@@ -30,6 +30,7 @@
 #include "misc.h"
 #include "player.h"
 #include "wizard.h"
+#include "weapons.h"
 #include "rogue.h"
 
 #include "command_private.h"

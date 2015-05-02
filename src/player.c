@@ -11,6 +11,7 @@
 #include "rooms.h"
 #include "monster.h"
 #include "command.h"
+#include "weapons.h"
 #include "rogue.h"
 
 #include "player.h"

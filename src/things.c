@@ -25,6 +25,7 @@
 #include "misc.h"
 #include "level.h"
 #include "player.h"
+#include "weapons.h"
 #include "rogue.h"
 
 /* Only oi_prob is used
