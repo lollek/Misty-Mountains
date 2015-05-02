@@ -522,4 +522,19 @@ command_toggle_wizard(void)
   return false;
 }
 
+bool
+command_wield(void)
+{
+  THING *obj = pack_get_item("wield", WEAPON);
 
+  if (obj == NULL)
+    return false;
+
+  if (obj->o_type == ARMOR)
+  {
+    msg("you can't wield armor");
+    return command_wield();
+  }
+  return weapon_wield(obj);
+
+}

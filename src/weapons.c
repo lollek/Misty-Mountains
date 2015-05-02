@@ -240,8 +240,8 @@ num(int n1, int n2, char type)
   return numbuf;
 }
 
-static bool
-try_wielding(THING *weapon)
+bool
+weapon_wield(THING *weapon)
 {
   THING *currently_wielding = pack_equipped_item(EQUIPMENT_RHAND);
 
@@ -274,25 +274,7 @@ last_weapon(void)
     return false;
   }
 
-  return try_wielding(last_wielded_weapon);
-}
-
-/** wield:
- * Pull out a certain weapon */
-bool
-wield(void)
-{
-  THING *obj = pack_get_item("wield", WEAPON);
-
-  if (obj == NULL)
-    return false;
-
-  if (obj->o_type == ARMOR)
-  {
-    msg("you can't wield armor");
-    return wield();
-  }
-  return try_wielding(obj);
+  return weapon_wield(last_wielded_weapon);
 }
 
 /** fallpos:

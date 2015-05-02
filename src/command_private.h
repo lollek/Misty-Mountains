@@ -23,5 +23,6 @@ bool command_search(void);                /* Search for hidden things */
 bool command_show_inventory(void);        /* Print player inventory */
 bool command_take_off(enum equipment_pos pos); /* Unequip something */
 bool command_toggle_wizard(void);         /* Toggle wizard-mode on or off     */
+bool command_wield(void);                 /* Asks player for weapon to wield */
 
 #endif /* _ROGUE14_COMMAND_PRIVATE_H_ */
