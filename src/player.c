@@ -5,12 +5,12 @@
 #include "misc.h"
 #include "io.h"
 #include "daemons.h"
-#include "status_effects.h"
 #include "list.h"
 #include "armor.h"
 #include "level.h"
 #include "rooms.h"
 #include "monster.h"
+#include "command.h"
 #include "rogue.h"
 
 #include "player.h"
@@ -19,6 +19,16 @@ static THING player;
 
 static const int player_min_strength = 3;
 static const int player_max_strength = 31;
+
+/* Duration of effects */
+#define HUHDURATION     spread(20)  /* Confusion */
+#define MFINDDURATION   spread(20)  /* Monster find */
+#define HASTEDURATION   rnd(4)+4    /* Haste */
+#define SEEDURATION     spread(850) /* See invisible / blind / hallucinating */
+#define LEVITDUR        spread(30)  /* Levitation */
+#define SLEEPTIME       spread(7)   /* Sleep */
+#define STUCKTIME       spread(3)   /* Stuck */
+
 
 void *__player_ptr(void) { return &player; }
 
@@ -333,6 +343,74 @@ void player_set_confusing_attack(void)
 }
 void player_remove_confusing_attack(void) { player.t_flags &= ~CANHUH; }
 
+void
+player_fall_asleep(void)
+{
+  no_command += SLEEPTIME;
+  player_stop_running();
+  msg("you fall asleep");
+}
+
+void player_become_stuck(void)
+{
+  no_move += STUCKTIME;
+  player_stop_running();
+}
+
+void player_become_poisoned(void)
+{
+  if (player_has_ring_with_ability(R_SUSTSTR))
+    msg("you feel momentarily sick");
+  else
+  {
+    player_modify_strength(-(rnd(3) + 1));
+    msg("you feel very sick now");
+    player_remove_hallucinating();
+  }
+}
+
+void player_teleport(coord *target)
+{
+  coord new_pos;
+
+  /* Set target location */
+  if (target == NULL)
+    do
+      room_find_floor(NULL, &new_pos, false, true);
+    while (same_coords(new_pos, *player_get_pos()));
+  else
+  {
+    new_pos.y = target->y;
+    new_pos.x = target->x;
+  }
+
+  /* Move target */
+  mvaddcch(player.t_pos.y, player.t_pos.x, floor_at());
+  if (roomin(&new_pos) != player_get_room())
+  {
+    room_leave(player_get_pos());
+    player_set_pos(&new_pos);
+    room_enter(player_get_pos());
+  }
+  else
+  {
+    player_set_pos(&new_pos);
+    look(true);
+  }
+
+  /* Print @ new location */
+  mvaddcch(new_pos.y, new_pos.x, PLAYER);
+  if (player_is_held())
+  {
+    player_remove_held();
+    vf_hit = 0;
+  }
+  no_move = 0;
+  command_stop(true);
+  flushinp();
+  msg("suddenly you're somewhere else");
+}
+
 coord * player_get_pos(void) { return &player.t_pos; }
 void
 player_set_pos(coord *new_pos)
@@ -459,6 +537,8 @@ player_raise_level(void)
 {
   player.t_stats.s_exp = e_levels[player.t_stats.s_lvl-1] + 1L;
   player_check_for_level_up();
+  if (game_type != QUICK)
+    msg("you suddenly feel much more skillful");
 }
 
 void

@@ -15,7 +15,6 @@
 #include <ctype.h>
 #include <assert.h>
 
-#include "status_effects.h"
 #include "options.h"
 #include "io.h"
 #include "armor.h"

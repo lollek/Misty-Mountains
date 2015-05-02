@@ -10,7 +10,6 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
-#include "status_effects.h"
 #include "io.h"
 #include "pack.h"
 #include "daemons.h"

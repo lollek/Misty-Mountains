@@ -11,7 +11,6 @@
  */
 
 #include "scrolls.h"
-#include "status_effects.h"
 #include "io.h"
 #include "pack.h"
 #include "list.h"
@@ -112,7 +111,7 @@ read_scroll(void)
       break;
     case S_SLEEP:
       learn_scroll(S_SLEEP);
-      fall_asleep();
+      player_fall_asleep();
       break;
     case S_CREATE:
       /* Create a monster:
@@ -250,8 +249,7 @@ def:
       break;
     case S_TELEP:
       /* Scroll of teleportation: Make him dissapear and reappear */
-      /* TODO: Remove __player_ptr() */
-      teleport(__player_ptr(), NULL);
+      player_teleport(NULL);
       learn_scroll(S_TELEP);
       break;
     case S_ENCH:

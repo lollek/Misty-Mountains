@@ -14,7 +14,6 @@
 #include "io.h"
 #include "pack.h"
 #include "command.h"
-#include "status_effects.h"
 #include "monster.h"
 #include "rings.h"
 #include "misc.h"

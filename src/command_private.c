@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "status_effects.h"
 #include "potions.h"
 #include "scrolls.h"
 #include "traps.h"

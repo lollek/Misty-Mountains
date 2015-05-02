@@ -12,7 +12,6 @@
 
 #include <stdlib.h>
 
-#include "status_effects.h"
 #include "scrolls.h"
 #include "command.h"
 #include "io.h"

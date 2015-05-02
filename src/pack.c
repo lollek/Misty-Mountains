@@ -12,7 +12,6 @@
 
 #include <string.h>
 
-#include "status_effects.h"
 #include "scrolls.h"
 #include "io.h"
 #include "armor.h"

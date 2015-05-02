@@ -13,7 +13,6 @@
 #include <ctype.h>
 #include <assert.h>
 
-#include "status_effects.h"
 #include "scrolls.h"
 #include "command.h"
 #include "traps.h"

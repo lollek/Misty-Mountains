@@ -14,7 +14,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "status_effects.h"
 #include "command.h"
 #include "io.h"
 #include "armor.h"
@@ -387,7 +386,7 @@ fight_against_player(THING *mp)
 			else
 			    fewer = roll(1, 3);
                         player_lose_health(fewer);
-			player_modify_max_health(fewer);
+			player_modify_max_health(-fewer);
 			while (player_get_health() <= 0)
                             player_restore_health(1, false);
 			if (player_get_max_health() <= 0)

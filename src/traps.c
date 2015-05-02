@@ -1,5 +1,4 @@
 
-#include "status_effects.h"
 #include "command.h"
 #include "io.h"
 #include "armor.h"
@@ -47,7 +46,7 @@ be_trapped(coord *tc)
       msg("you fell into a trap!");
       break;
     case T_BEAR:
-      become_stuck();
+      player_become_stuck();
       msg("you are caught in a bear trap");
       break;
     case T_MYST:
@@ -67,7 +66,7 @@ be_trapped(coord *tc)
       }
       break;
     case T_SLEEP:
-      fall_asleep();
+      player_fall_asleep();
       addmsg("a strange white mist envelops you and ");
       break;
     case T_ARROW:
@@ -93,8 +92,7 @@ be_trapped(coord *tc)
       }
       break;
     case T_TELEP: /* Works for monsters */
-      /* TODO: remove __player_ptr() */
-      teleport(__player_ptr(), NULL);
+      player_teleport(NULL);
       mvaddcch(tc->y, tc->x, TRAP); /* Mark trap before we leave */
       break;
     case T_DART:

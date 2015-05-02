@@ -14,7 +14,6 @@
 #include <string.h>
 #include <assert.h>
 
-#include "status_effects.h"
 #include "io.h"
 #include "pack.h"
 #include "scrolls.h"

@@ -53,6 +53,11 @@ bool player_has_confusing_attack(void);
 void player_set_confusing_attack(void);
 void player_remove_confusing_attack(void);
 
+void player_fall_asleep(void);
+void player_become_stuck(void);
+void player_become_poisoned(void);
+void player_teleport(coord *target);
+
 /* Position */
 coord *player_get_pos(void);
 void player_set_pos(coord *new_pos);

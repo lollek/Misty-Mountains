@@ -10,7 +10,6 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
-#include "status_effects.h"
 #include "io.h"
 #include "pack.h"
 #include "list.h"
@@ -88,15 +87,18 @@ potion_quaff_something(void)
       break;
     case P_POISON:
       potion_learn(obj->o_which);
-      become_poisoned();
+      player_become_poisoned();
       break;
     case P_HEALING:
       potion_learn(obj->o_which);
-      become_healed();
+      player_restore_health(roll(player_get_level(), 4), true);
+      player_remove_blind();
+      msg("you begin to feel better");
       break;
     case P_STRENGTH:
       potion_learn(obj->o_which);
-      become_stronger();
+      player_modify_strength(1);
+      msg("you feel stronger, now.  What bulging muscles!");
       break;
     case P_MFIND:
       potion_learn(obj->o_which);
@@ -153,7 +155,7 @@ potion_quaff_something(void)
       if (game_type == DEFAULT)
       {
         potion_learn(obj->o_which);
-        raise_level();
+        player_raise_level();
       }
       else if (game_type == QUICK)
       {
@@ -164,14 +166,23 @@ potion_quaff_something(void)
       break;
     case P_XHEAL:
       potion_learn(obj->o_which);
-      become_extra_healed();
+      player_restore_health(roll(player_get_level(), 8), true);
+      player_remove_blind();
+      player_remove_hallucinating();
+      msg("you begin to feel much better");
       break;
     case P_HASTE:
       potion_learn(obj->o_which);
       player_set_hasted(false);
       break;
     case P_RESTORE:
-      become_restored();
+      if (player_strength_is_weakened())
+      {
+        player_restore_strength();
+        msg("you feel your strength returning");
+      }
+      else
+        msg("you feel warm all over");
       break;
     case P_BLIND:
       potion_learn(obj->o_which);

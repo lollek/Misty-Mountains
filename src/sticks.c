@@ -13,7 +13,6 @@
 
 #include <string.h>
 
-#include "status_effects.h"
 #include "io.h"
 #include "pack.h"
 #include "list.h"
@@ -190,10 +189,10 @@ do_zap(void)
 			    coord new_pos;
 			    new_pos.y = player_pos->y + delta.y;
 			    new_pos.x = player_pos->x + delta.x;
-			    teleport(tp, &new_pos);
+			    player_teleport(&new_pos);
 			}
 			else
-			    teleport(tp, NULL);
+			    player_teleport(NULL);
 		    }
 		}
 	    }

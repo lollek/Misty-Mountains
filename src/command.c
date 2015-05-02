@@ -15,7 +15,6 @@
 #include <ctype.h>
 
 #include "potions.h"
-#include "status_effects.h"
 #include "scrolls.h"
 #include "options.h"
 #include "io.h"
@@ -178,8 +177,7 @@ command(void)
       else if (obj->o_which == R_SEARCH)
         command_search();
       else if (obj->o_which == R_TELEPORT && rnd(50) == 0)
-        /* TODO: remove __player_ptr() */
-        teleport(__player_ptr(), NULL);
+        player_teleport(NULL);
     }
   }
 
@@ -275,7 +273,7 @@ command_wizard_do(char ch)
     case CTRL('D'): level++; level_new(); break;
     case CTRL('A'): level--; level_new(); break;
     case CTRL('F'): show_map(); break;
-    case CTRL('T'): teleport(__player_ptr(), NULL); break;
+    case CTRL('T'): player_teleport(NULL); break;
     case CTRL('E'): msg("food left: %d", food_left); break;
     case CTRL('C'): passages_add_pass(); break;
     case CTRL('X'): turn_see(player_can_sense_monsters()); break;
@@ -296,7 +294,7 @@ command_wizard_do(char ch)
       THING *obj;
 
       for (i = 0; i < 9; i++)
-        raise_level();
+        player_raise_level();
 
       /* Give him a sword (+1,+1) */
       if (pack_unequip(EQUIPMENT_RHAND))

@@ -19,7 +19,6 @@
 #include <sys/stat.h>
 
 #include "potions.h"
-#include "status_effects.h"
 #include "scrolls.h"
 #include "io.h"
 #include "armor.h"
