@@ -28,10 +28,6 @@
 #include "level.h"
 #include "rogue.h"
 
-static char *type_name(int type);
-
-/** pr_spec:
- * Print specific list of possible items to choose from */
 void
 pr_spec(char ch)
 {
@@ -81,8 +77,6 @@ pr_spec(char ch)
   delwin(printscr);
 }
 
-/** pr_list:
- * List possible potions, scrolls, etc. for wizard. */
 int
 pr_list(void)
 {
@@ -106,98 +100,6 @@ pr_list(void)
   msg("");
   return 0;
 }
-
-
-
-/*
- * whatis:
- *	What a certin object is
- */
-
-void
-whatis(int type)
-{
-    THING *obj;
-
-    if (pack_is_empty())
-    {
-	msg("you don't have anything in your pack to identify");
-	return;
-    }
-
-    for (;;)
-    {
-	obj = pack_get_item("identify", type);
-	if (obj == NULL)
-	    return;
-	else if (type && obj->o_type != type && !(type == R_OR_S &&
-		(obj->o_type == RING || obj->o_type == STICK)))
-	    msg("you must identify a %s", type_name(type));
-	else
-	    break;
-    }
-
-    switch (obj->o_type)
-    {
-	case SCROLL: set_know(obj, scr_info);  break;
-	case POTION: set_know(obj, pot_info);  break;
-	case STICK:  set_know(obj, ws_info);   break;
-	case RING:   set_know(obj, ring_info); break;
-	case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
-    }
-    msg(inv_name(obj, false));
-}
-
-/*
- * set_know:
- *	Set things up when we really know what a thing is
- */
-
-void
-set_know(THING *obj, struct obj_info *info)
-{
-    char **guess;
-
-    info[obj->o_which].oi_know = true;
-    obj->o_flags |= ISKNOW;
-    guess = &info[obj->o_which].oi_guess;
-    if (*guess)
-    {
-	free(*guess);
-	*guess = NULL;
-    }
-}
-
-/*
- * type_name:
- *	Return a pointer to the name of the type
- */
-char *
-type_name(int type)
-{
-    struct h_list *hp;
-    static struct h_list tlist[] = {
-	{POTION, "potion",		false},
-	{SCROLL, "scroll",		false},
-	{FOOD,	 "food",		false},
-	{R_OR_S, "ring, wand or staff",	false},
-	{RING,	 "ring",		false},
-	{STICK,	 "wand or staff",	false},
-	{WEAPON, "weapon",		false},
-	{ARMOR,	 "suit of armor",	false},
-    };
-
-    for (hp = tlist; hp->h_ch; hp++)
-	if (type == hp->h_ch)
-	    return hp->h_desc;
-    /* NOTREACHED */
-    return(0);
-}
-
-/*
- * create_obj:
- *	wizard command for getting anything he wants
- */
 
 void
 create_obj(void)
@@ -268,27 +170,23 @@ create_obj(void)
     pack_add(obj, false);
 }
 
-/*
- * show_map:
- *	Print out the map for the wizard
- */
-
 void
 show_map(void)
 {
-    int y, x, real;
+  int y;
+  int x;
 
-    wclear(hw);
-    for (y = 1; y < NUMLINES - 1; y++)
-	for (x = 0; x < NUMCOLS; x++)
-	{
-	    real = flat(y, x);
-	    if (!(real & F_REAL))
-		wstandout(hw);
-	    wmove(hw, y, x);
-	    waddcch(hw, chat(y, x));
-	    if (!real)
-		wstandend(hw);
-	}
-    show_win("---More (level map)---");
+  wclear(hw);
+  for (y = 1; y < NUMLINES - 1; y++)
+    for (x = 0; x < NUMCOLS; x++)
+    {
+      int real = flat(y, x);
+      if (!(real & F_REAL))
+        wstandout(hw);
+      wmove(hw, y, x);
+      waddcch(hw, chat(y, x));
+      if (!real)
+        wstandend(hw);
+    }
+  show_win("---More (level map)---");
 }

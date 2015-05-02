@@ -10,6 +10,8 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#include <stdlib.h>
+
 #include "scrolls.h"
 #include "io.h"
 #include "pack.h"
@@ -18,6 +20,8 @@
 #include "misc.h"
 #include "level.h"
 #include "player.h"
+#include "potions.h"
+#include "rings.h"
 #include "rogue.h"
 
 char *s_names[NSCROLLS];
@@ -37,6 +41,47 @@ struct obj_info scr_info[NSCROLLS] = {
     { "aggravate monsters",		 3,  20, NULL, false },
     { "protect armor",			 2, 250, NULL, false },
 };
+
+static void
+set_know(THING *obj, struct obj_info *info)
+{
+  char **guess;
+
+  info[obj->o_which].oi_know = true;
+  obj->o_flags |= ISKNOW;
+  guess = &info[obj->o_which].oi_guess;
+  if (*guess)
+  {
+    free(*guess);
+    *guess = NULL;
+  }
+}
+
+void
+identify(void)
+{
+  THING *obj;
+
+  if (pack_is_empty())
+  {
+    msg("you don't have anything in your pack to identify");
+    return;
+  }
+
+  obj = pack_get_item("identify", 0);
+  if (obj == NULL)
+    return;
+
+  switch (obj->o_type)
+  {
+    case SCROLL: set_know(obj, scr_info);  break;
+    case POTION: set_know(obj, pot_info);  break;
+    case STICK:  set_know(obj, ws_info);   break;
+    case RING:   set_know(obj, ring_info); break;
+    case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
+  }
+  msg(inv_name(obj, false));
+}
 
 void
 read_scroll(void)
@@ -153,7 +198,7 @@ read_scroll(void)
         /* Identify, let him figure something out */
         learn_scroll(obj->o_which);
         msg("this scroll is an %s scroll", scr_info[obj->o_which].oi_name);
-        whatis(0);
+        identify();
       }
       break;
     case S_MAP:

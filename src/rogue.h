@@ -378,7 +378,6 @@ extern struct obj_info weap_info[];
  */
 
 
-void	create_obj(void);
 void	death(char monst);
 void	discovered(void);
 void	do_motion(THING *obj, int ydelta, int xdelta);
@@ -391,16 +390,11 @@ void	fix_stick(THING *cur);
 int	hit_monster(int y, int x, THING *obj);
 void	init_weapon(THING *weap, int which);
 bool	missile(int ydelta, int xdelta);
-int	pr_list(void);
-void	pr_spec(char ch);
 int	rs_save_file(FILE *savef);
 int	rs_restore_file(FILE *inf);
 void	score(int amount, int flags, char monst);
-void	set_know(THING *obj, struct obj_info *info);
 void	shell(void);
-void	show_map(void);
 void	total_winner(void);
-void	whatis(int type);
 bool	wield(void);
 
 bool	fallpos(coord *pos, coord *newpos);

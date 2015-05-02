@@ -15,6 +15,7 @@
 #include "pack.h"
 #include "rings.h"
 #include "misc.h"
+#include "wizard.h"
 #include "rogue.h"
 
 #include "armor.h"
