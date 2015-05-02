@@ -396,6 +396,7 @@ void	score(int amount, int flags, char monst);
 void	shell(void);
 void	total_winner(void);
 bool	wield(void);
+bool	last_weapon(void);
 
 bool	fallpos(coord *pos, coord *newpos);
 

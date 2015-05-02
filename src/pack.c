@@ -474,6 +474,17 @@ pack_contains_amulet(void)
 }
 
 bool
+pack_contains(THING *item)
+{
+  THING *ptr;
+
+  for (ptr = player_pack; ptr != NULL; ptr = ptr->l_next)
+    if (ptr == item)
+      return true;
+  return false;
+}
+
+bool
 pack_print_equipment(void)
 {
   WINDOW *equipscr = dupwin(stdscr);

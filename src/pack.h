@@ -45,6 +45,7 @@ unsigned pack_count_items(void);
 unsigned pack_count_items_of_type(int type);
 
 bool pack_contains_amulet(void);
+bool pack_contains(THING *item);
 bool pack_print_equipment(void);
 bool pack_print_inventory(int type);
 void pack_clear_inventory(void);

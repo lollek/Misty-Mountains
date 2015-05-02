@@ -220,6 +220,7 @@ command_do(char ch)
     case 's': return command_search();
     case 't': return get_dir() ? missile(delta.y, delta.x) : false;
     case 'w': return wield();
+    case 'x': return last_weapon();
     case 'z': return get_dir() ? do_zap() : false;
 
     /* Upper case */

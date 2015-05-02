@@ -24,6 +24,8 @@
 
 #define NO_WEAPON -1
 
+static THING *last_wielded_weapon = NULL;
+
 int group = 2;
 
 static struct init_weaps {
@@ -238,6 +240,43 @@ num(int n1, int n2, char type)
   return numbuf;
 }
 
+static bool
+try_wielding(THING *weapon)
+{
+  THING *currently_wielding = pack_equipped_item(EQUIPMENT_RHAND);
+
+  if (currently_wielding != NULL)
+    if (!pack_unequip(EQUIPMENT_RHAND))
+      return true;
+
+  pack_remove(weapon, false, true);
+  pack_equip_item(weapon);
+
+  msg("wielding %s", inv_name(weapon, true));
+  last_wielded_weapon = currently_wielding;
+  return true;
+}
+
+/* wield last wielded weapon */
+bool
+last_weapon(void)
+{
+  if (last_wielded_weapon == NULL)
+  {
+    msg("you have no weapon to switch to");
+    return false;
+  }
+
+  if (!pack_contains(last_wielded_weapon))
+  {
+    last_wielded_weapon = NULL;
+    msg("you have no weapon to switch to");
+    return false;
+  }
+
+  return try_wielding(last_wielded_weapon);
+}
+
 /** wield:
  * Pull out a certain weapon */
 bool
@@ -253,18 +292,7 @@ wield(void)
     msg("you can't wield armor");
     return wield();
   }
-
-  if (pack_equipped_item(EQUIPMENT_RHAND) != NULL)
-    if (!pack_unequip(EQUIPMENT_RHAND))
-      return false;
-
-  pack_remove(obj, false, true);
-  pack_equip_item(obj);
-
-  if (!terse)
-    addmsg("you are now ");
-  msg("wielding %s", inv_name(obj, true));
-  return true;
+  return try_wielding(obj);
 }
 
 /** fallpos:

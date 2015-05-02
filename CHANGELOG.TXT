@@ -2,6 +2,10 @@ Rogue14 - r2
   Changed name of the slime-mold to fruit (and no, you can't rename it anymore)
   Made the counter work a little better
 
+  Controls:
+    'x' now switches between the most recently used weapons (e.g. switching
+      between the mace and the bow)
+
   UI:
     Changed from the three inventory types into my own style
     Changed how the 'describe' window looks, similar to the inventory
