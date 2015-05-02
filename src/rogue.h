@@ -390,7 +390,6 @@ void	fire_bolt(coord *start, coord *dir, char *name);
 void	fix_stick(THING *cur);
 int	hit_monster(int y, int x, THING *obj);
 void	init_weapon(THING *weap, int which);
-bool	lock_sc(void);
 bool	missile(int ydelta, int xdelta);
 int	pr_list(void);
 void	pr_spec(char ch);
@@ -401,7 +400,6 @@ void	set_know(THING *obj, struct obj_info *info);
 void	shell(void);
 void	show_map(void);
 void	total_winner(void);
-void	unlock_sc(void);
 void	whatis(int type);
 bool	wield(void);
 

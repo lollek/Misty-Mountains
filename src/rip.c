@@ -113,7 +113,6 @@ score(int amount, int flags, char monst)
     SCORE *sc2;
     SCORE *top_ten, *endp;
     int prflags = 0;
-    void (*fp)(int);
     unsigned int uid;
     static char *reason[] = {
 	"killed",
@@ -231,15 +230,7 @@ score(int amount, int flags, char monst)
      * Update the list file
      */
     if (sc2 != NULL)
-    {
-	if (lock_sc())
-	{
-	    fp = signal(SIGINT, SIG_IGN);
-	    score_write(top_ten);
-	    unlock_sc();
-	    signal(SIGINT, fp);
-	}
-    }
+      score_write(top_ten);
 }
 
 /*
