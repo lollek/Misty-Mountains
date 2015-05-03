@@ -198,7 +198,7 @@ STONE stones[] = {
 #define NSTONES (sizeof stones / sizeof (STONE))
 int cNSTONES = NSTONES;
 
-char *wood[] = {
+const char *wood[] = {
     "avocado wood",
     "balsa",
     "bamboo",
@@ -237,7 +237,7 @@ char *wood[] = {
 #define NWOOD (sizeof wood / sizeof (char *))
 int cNWOOD = NWOOD;
 
-char *metal[] = {
+const char *metal[] = {
   "aluminum",
   "beryllium",
   "bone",
@@ -264,8 +264,6 @@ char *metal[] = {
 
 #define NMETAL (sizeof metal / sizeof (char *))
 int cNMETAL = NMETAL;
-
-static bool used[NSTONES > NWOOD ? NSTONES : NWOOD];
 
 /** init_names:
  * Generate the names of the various scrolls */
@@ -308,6 +306,7 @@ init_names(void)
 static void
 init_stones(void)
 {
+  bool used[NSTONES];
   size_t i;
 
   for (i = 0; i < NSTONES; i++)
@@ -331,7 +330,8 @@ static void
 init_materials(void)
 {
   size_t i;
-  static bool metused[NMETAL];
+  bool metused[NMETAL];
+  bool used[NWOOD];
 
   for (i = 0; i < NWOOD; i++)
     used[i] = false;
@@ -341,7 +341,7 @@ init_materials(void)
 
   for (i = 0; i < MAXSTICKS; i++)
   {
-    char *str;
+    const char *str;
     for (;;)
       if (rnd(2) == 0)
       {

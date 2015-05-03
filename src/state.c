@@ -237,7 +237,7 @@ rs_write_string_index(FILE *savef, char * const master[],
 }
 
 static int
-rs_read_string_index(FILE *inf, char *master[], int maxindex, char **str)
+rs_read_string_index(FILE *inf, char *master[], int maxindex, char const **str)
 {
   int i;
 
@@ -1109,7 +1109,6 @@ rs_read_thing_reference(FILE *inf, THING *list, THING **item)
 int
 rs_save_file(FILE *savef)
 {
-  coord unused_coord = { 0, 0 };
   size_t temp_i = 0; /* Used as buffer for macros */
   size_t pack_used_size = 26;
   size_t maxstr = MAXSTR;
@@ -1133,7 +1132,6 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_int(savef, food_left))
   rs_assert(rs_write_int(savef, no_move))
   rs_assert(rs_write_int(savef, purse))
-  rs_assert(rs_write_int(savef, temp_i)) /* UNUSED */
   rs_assert(rs_write_int(savef, vf_hit))
   rs_assert(rs_write_int(savef, seed))
   rs_assert(rs_write_coord(savef, stairs))
@@ -1155,9 +1153,6 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_obj_info(savef, ring_info,  NRINGS))
   rs_assert(rs_write_obj_info(savef, scr_info,  NSCROLLS))
   rs_assert(rs_write_daemons(savef, __daemons_ptr(), 20))
-  rs_assert(rs_write_int(savef, temp_i)) /* UNUSED */
-  rs_assert(rs_write_int(savef, temp_i)) /* UNUSED */
-  rs_assert(rs_write_coord(savef, unused_coord)) /* UNUSED */
   rs_assert(rs_write_int(savef, group))
   rs_assert(rs_write_window(savef,stdscr))
   return 0;
@@ -1167,7 +1162,6 @@ int
 rs_restore_file(FILE *inf)
 {
   size_t temp_i = 0; /* Used as buffer for macros */
-  coord unused_coord;
 
   rs_assert(rs_read_boolean(inf, &firstmove))
   rs_assert(rs_read_booleans(inf, pack_used, 26))
@@ -1187,7 +1181,6 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_int(inf, &food_left))
   rs_assert(rs_read_int(inf, &no_move))
   rs_assert(rs_read_int(inf, &purse))
-  rs_assert(rs_read_int(inf, &unused_coord.x)) /* UNUSED */
   rs_assert(rs_read_int(inf, &vf_hit))
   rs_assert(rs_read_int(inf, (signed *) &seed))
   rs_assert(rs_read_coord(inf, &stairs))
@@ -1211,9 +1204,6 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_obj_info(inf, ring_info,  NRINGS))
   rs_assert(rs_read_obj_info(inf, scr_info,  NSCROLLS))
   rs_assert(rs_read_daemons(inf, __daemons_ptr(), 20))
-  rs_assert(rs_read_int(inf,&unused_coord.x))  /* UNUSED */
-  rs_assert(rs_read_int(inf, &unused_coord.x)) /* UNUSED */
-  rs_assert(rs_read_coord(inf, &unused_coord)) /* UNUSED */
   rs_assert(rs_read_int(inf,&group))
   rs_assert(rs_read_window(inf,stdscr))
   return 0;

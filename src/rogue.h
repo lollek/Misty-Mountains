@@ -336,7 +336,9 @@ extern bool	after, again, door_stop,
 extern char	dir_ch, file_name[], huh[], prbuf[], whoami[],
 		l_last_comm, l_last_dir, last_comm, last_dir,
 		outbuf[], *r_stones[], runch,
-		take, *tr_name[], *ws_made[], *ws_type[];
+		take, *tr_name[], *ws_type[];
+
+extern const char *ws_made[];
 
 extern int	count, food_left, hungry_state,
 		level, max_hit, max_level, mpos,

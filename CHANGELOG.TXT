@@ -1,3 +1,7 @@
+Rogue14 - 1.2.1
+  Save:
+    Made save games a tiny bit smaller
+
 Rogue14 - r2
   Changed name of the slime-mold to fruit (and no, you can't rename it anymore)
   Made the counter work a little better

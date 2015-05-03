@@ -92,7 +92,7 @@ command_name_item(void)
 {
   THING *obj = pack_get_item("rename", RENAMEABLE);
   char **guess;
-  char *elsewise = NULL;
+  const char *elsewise = NULL;
   bool already_known = false;
   char tmpbuf[MAXSTR] = { '\0' };
 

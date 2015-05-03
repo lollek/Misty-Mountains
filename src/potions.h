@@ -24,7 +24,7 @@ enum potion_t
 };
 
 /* Variables, TODO: Make these private */
-char *p_colors[NPOTIONS];           /* Colors of the potions */
+const char *p_colors[NPOTIONS];           /* Colors of the potions */
 struct obj_info pot_info[NPOTIONS]; /* A list of potions and info */
 
 /* Functions */
