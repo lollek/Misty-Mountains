@@ -16,7 +16,6 @@
 #include <ncurses.h>
 
 /* Version */
-#define VERSION "r2-devel"
 #define GAME_VERSION "Rogue14 " VERSION " - Based on Rogue5.4.4"
 
 /* Tuneable - feel free to change these */

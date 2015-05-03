@@ -11,12 +11,13 @@
 
 
 PROGRAM  = rogue14
+VERSION  = r2
 PREFIX   = /usr/local
 SCOREDIR = $(PREFIX)/share/$(PROGRAM)/
 
 CC       = cc
 CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic -std=c89
-DFLAGS   = -DSCOREDIR=\"$(SCOREDIR)\"
+DFLAGS   = -DVERSION=\"$(VERSION)\" -DSCOREDIR=\"$(SCOREDIR)\"
 LDFLAGS  = -lcurses
 
 CFILES   = $(wildcard src/*.c)
@@ -34,7 +35,7 @@ $(PROGRAM): $(OBJS)
 clean:
 	$(RM) $(OBJS) $(PROGRAM) $(DOCS)
 
-final: CFLAGS += NDEBUG
+final: CFLAGS += -DNDEBUG
 final: clean $(PROGRAM)
 
 doc.nroff:
