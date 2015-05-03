@@ -278,10 +278,10 @@ parse_args(int argc, char * const *argv)
                "      --help           display this help and exit\n"
                "      --version        display game version and exit\n\n"
                "%s\n"
-               , game_version);
+               , GAME_VERSION);
         exit(0);
       case '1':
-        puts(game_version);
+        puts(GAME_VERSION);
         exit(0);
       default:
         fprintf(stderr, "Try '%s --help' for more information\n",

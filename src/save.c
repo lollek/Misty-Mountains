@@ -42,7 +42,7 @@ save_file(FILE *savef)
     return false;
   }
 
-  encwrite(game_version, strlen(game_version)+1, savef);
+  encwrite(GAME_VERSION, strlen(GAME_VERSION)+1, savef);
   sprintf(buf,"%d x %d\n", LINES, COLS);
   encwrite(buf,80,savef);
   error = rs_save_file(savef);

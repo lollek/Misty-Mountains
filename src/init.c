@@ -436,8 +436,8 @@ init_old_game(void)
   }
 
   fflush(stdout);
-  encread(buf, strlen(game_version) + 1, inf);
-  if (strcmp(buf, game_version))
+  encread(buf, strlen(GAME_VERSION) + 1, inf);
+  if (strcmp(buf, GAME_VERSION))
   {
     printf("Sorry, saved game is out of date.\n");
     return false;

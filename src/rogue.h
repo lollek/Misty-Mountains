@@ -15,6 +15,10 @@
 #include <stdbool.h>
 #include <ncurses.h>
 
+/* Version */
+#define VERSION "r2-devel"
+#define GAME_VERSION "Rogue14 " VERSION " - Based on Rogue5.4.4"
+
 /* Tuneable - feel free to change these */
 #define NUMNAME    "Ten"   /* The same number in letters  */
 #define NUMSCORES    10    /* Number of highscore entries */
@@ -325,7 +329,6 @@ bool use_colors;  /* Use ncurses colors */
  * External variables
  */
 
-extern const char *game_version;
 
 extern bool	after, again, door_stop,
 		firstmove, has_hit, kamikaze,

@@ -11,13 +11,12 @@
 
 
 PROGRAM  = rogue14
-VERSION  = 2
 PREFIX   = /usr/local
 SCOREDIR = $(PREFIX)/share/$(PROGRAM)/
 
 CC       = cc
 CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic -std=c89
-DFLAGS   = -DVERSION=\"$(VERSION)\" -DSCOREDIR=\"$(SCOREDIR)\"
+DFLAGS   = -DSCOREDIR=\"$(SCOREDIR)\"
 LDFLAGS  = -lcurses
 
 CFILES   = $(wildcard src/*.c)
