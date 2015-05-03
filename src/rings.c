@@ -90,7 +90,7 @@ ring_take_off(void)
   else
     ring = EQUIPMENT_LRING;
 
-  if (!pack_unequip(ring))
+  if (!pack_unequip(ring, false))
     return false;
 
   obj = pack_equipped_item(ring);

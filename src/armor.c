@@ -58,7 +58,7 @@ armor_command_wear(void)
   }
 
   if (pack_equipped_item(EQUIPMENT_ARMOR) != NULL)
-    if (!pack_unequip(EQUIPMENT_ARMOR))
+    if (!pack_unequip(EQUIPMENT_ARMOR, false))
       return true;
 
   waste_time(1);

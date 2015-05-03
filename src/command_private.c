@@ -503,7 +503,7 @@ command_take_off(enum equipment_pos pos)
 {
   if (pack_equipped_item(pos) == NULL)
     return false;
-  pack_unequip(pos);
+  pack_unequip(pos, false);
   return pack_equipped_item(pos) != NULL;
 }
 

@@ -609,7 +609,7 @@ pack_equip_item(THING *item)
 }
 
 bool
-pack_unequip(enum equipment_pos pos)
+pack_unequip(enum equipment_pos pos, bool quiet_on_success)
 {
   THING *obj = pack_equipped_item(pos);
   const char *doing = pos == EQUIPMENT_RHAND ? "wielding" : "wearing";
@@ -640,7 +640,7 @@ pack_unequip(enum equipment_pos pos)
     obj->o_pos = *player_pos;
     msg("dropped %s", inv_name(obj, true));
   }
-  else
+  else if (!quiet_on_success)
     msg("no longer %s %s", doing, inv_name(obj, true));
   return true;
 }

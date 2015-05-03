@@ -234,7 +234,7 @@ weapon_wield(THING *weapon)
   THING *currently_wielding = pack_equipped_item(EQUIPMENT_RHAND);
 
   if (currently_wielding != NULL)
-    if (!pack_unequip(EQUIPMENT_RHAND))
+    if (!pack_unequip(EQUIPMENT_RHAND, true))
       return true;
 
   pack_remove(weapon, false, true);

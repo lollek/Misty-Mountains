@@ -300,7 +300,7 @@ command_wizard_do(char ch)
         player_raise_level();
 
       /* Give him a sword (+1,+1) */
-      if (pack_unequip(EQUIPMENT_RHAND))
+      if (pack_unequip(EQUIPMENT_RHAND, false))
       {
         obj = new_item();
         init_weapon(obj, TWOSWORD);
@@ -313,7 +313,7 @@ command_wizard_do(char ch)
         msg("failed to add weapon");
 
       /* And his suit of armor */
-      if (pack_unequip(EQUIPMENT_ARMOR))
+      if (pack_unequip(EQUIPMENT_ARMOR, false))
       {
         obj = new_item();
         obj->o_type = ARMOR;

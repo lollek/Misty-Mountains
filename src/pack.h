@@ -55,7 +55,7 @@ size_t pack_evaluate(void);
 THING *pack_equipped_item(enum equipment_pos pos);
 
 bool pack_equip_item(THING *item);
-bool pack_unequip(enum equipment_pos pos);
+bool pack_unequip(enum equipment_pos pos, bool quiet_on_success);
 
 bool pack_item_is_cursed(THING *item);
 void pack_curse_item(THING *item);
