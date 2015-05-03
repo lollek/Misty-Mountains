@@ -1,7 +1,7 @@
 v1.2.2 - Fixed crashbug with seeing invisible monsters
 v1.2.1 - Made save games a tiny bit smaller
 
-Rogue14 - r2
+Rogue14 - r2 (v1.2.0)
   Changed name of the slime-mold to fruit (and no, you can't rename it anymore)
   Made the counter work a little better
 
@@ -32,7 +32,7 @@ Rogue14 - r2
     Picking up items when your pack was empty would cause crash or hang
 
 
-Rogue14 - r1
+Rogue14 - r1 (v.1.1.0)
   Changed to GNU/Linux-compability only
   Made the highscore always sort by scores, and not players
   Game now tries to autosaves when killed or crashing
