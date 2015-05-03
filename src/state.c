@@ -62,6 +62,16 @@ static const size_t RSID_RRING        = 0xABCD0013;
 static const size_t RSID_LRING        = 0xABCD0012;
 static const size_t RSID_NULL         = 0xABCD0000;
 
+/* From init.c */
+extern char *wood[];
+extern char *metal[];
+extern STONE stones[];
+extern int cNWOOD;
+extern int cNMETAL;
+extern int cNSTONES;
+extern int group;
+
+
 #define rs_assert(_a) if (_a) { return printf("L%d@%s", __LINE__, __FILE__); }
 
 

@@ -392,12 +392,4 @@ typedef struct {
     int		st_value;
 } STONE;
 
-extern int      group;
-extern STONE    stones[];
-extern int      cNSTONES;
-extern char     *wood[];
-extern int      cNWOOD;
-extern char     *metal[];
-extern int      cNMETAL;
-
 #endif /* _ROGUE14_ROGUE_H_ */
