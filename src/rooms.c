@@ -9,7 +9,6 @@
  *
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
-
 #include <ctype.h>
 
 #include "io.h"
@@ -20,6 +19,7 @@
 #include "misc.h"
 #include "level.h"
 #include "player.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "rooms.h"
@@ -414,7 +414,7 @@ room_leave(coord *cp)
 		     * to check for monster, we have to strip out
 		     * standout bit
 		     */
-		    if (isupper(toascii(ch)))
+		    if (isupper(ch & 0x7F))
 		    {
                       PLACE *pp = INDEX(y,x);
 			if (player_can_sense_monsters())

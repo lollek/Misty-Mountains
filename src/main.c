@@ -169,7 +169,7 @@ shell(void)
   fflush(stdout);
 
   /* Return to shell */
-  kill(getpid(), SIGSTOP);
+  raise(SIGSTOP);
 
   /* Set the terminal to gaming mode */
   fflush(stdout);

@@ -9,7 +9,6 @@
  *
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
-
 #include <stdlib.h>
 #include <signal.h>
 #include <string.h>
@@ -109,16 +108,23 @@ auto_save(int sig)
 {
   FILE *savef;
   bool did_save = false;
-  int i;
 
   (void)sig;
 
-  /* Ignore all signals */
-  for (i = 0; i < NSIG; i++)
-    signal(i, SIG_IGN);
+  /* Ignore all signals that might have sent us here */
+  signal(SIGHUP, SIG_IGN);
+  signal(SIGILL, SIG_IGN);
+  signal(SIGTRAP, SIG_IGN);
+  signal(SIGIOT, SIG_IGN);
+  signal(SIGFPE, SIG_IGN);
+  signal(SIGBUS, SIG_IGN);
+  signal(SIGSEGV, SIG_IGN);
+  signal(SIGSYS, SIG_IGN);
+  signal(SIGTERM, SIG_IGN);
 
   /* Always auto-save to ~/.rogue14_rescue */
-  strcpy(stpcpy(file_name, get_homedir()), ".rogue14_rescue");
+  strcpy(file_name, get_homedir());
+  strcat(file_name, ".rogue14_rescue");
   unlink(file_name);
   if ((savef = fopen(file_name, "w")) != NULL)
     did_save = save_file(savef);

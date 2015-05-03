@@ -20,6 +20,7 @@
 #include "misc.h"
 #include "level.h"
 #include "player.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "weapons.h"

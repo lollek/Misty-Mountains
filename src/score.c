@@ -5,6 +5,7 @@
 #include <time.h>
 
 #include "save.h"
+#include "os.h"
 
 #include "score.h"
 

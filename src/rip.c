@@ -26,6 +26,7 @@
 #include "pack.h"
 #include "misc.h"
 #include "monster.h"
+#include "os.h"
 #include "rogue.h"
 
 static char *rip[] = {

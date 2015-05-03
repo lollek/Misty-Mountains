@@ -30,6 +30,7 @@
 */
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "potions.h"
 #include "scrolls.h"
