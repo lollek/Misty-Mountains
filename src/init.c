@@ -41,7 +41,7 @@
 static void
 sumprobs(char ch)
 {
-  int lastprob = 0;
+  int sum = 0;
   const char *str;
   void *ptr;
   int i;
@@ -63,22 +63,23 @@ sumprobs(char ch)
   /* Add upp percentage */
   for (i = 0; i < max; ++i)
   {
-    int *prob;
+    int prob;
+
     if (ptr == __armors_ptr())
-      prob = &((struct armor_info_t *)ptr)[i].prob;
+      prob = ((struct armor_info_t *)ptr)[i].prob;
     else
-      prob = &((struct obj_info *)ptr)[i].oi_prob;
-    *prob += lastprob;
-    lastprob = *prob;
+      prob = ((struct obj_info *)ptr)[i].oi_prob;
+
+    sum += prob;
   }
 
   /* Make sure it adds up to 100 */
-  if (lastprob == 100)
+  if (sum == 100)
     return;
 
   /* Woops, error error! */
   endwin();
-  printf("\nBad percentages for %s (bound = %d): %d%%\n", str, max, lastprob);
+  printf("\nBad percentages for %s (bound = %d): %d%%\n", str, max, sum);
   for (i = 0; i < max; ++i)
   {
     int prob;

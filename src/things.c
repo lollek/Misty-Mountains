@@ -223,29 +223,32 @@ new_thing(void)
   cur->o_group = 0;
   cur->o_flags = 0;
 
+  if (no_food > 3)
+    r = 2;
+  else
+    r = pick_one(things, NUMTHINGS);
+
   /* Decide what kind of object it will be
    * If we haven't had food for a while, let it be food. */
-  switch (no_food > 3 ? 2 : pick_one(things, NUMTHINGS))
+  switch (r)
   {
     case 0:
       cur->o_type = POTION;
       cur->o_which = pick_one(pot_info, NPOTIONS);
       break;
-
     case 1:
       cur->o_type = SCROLL;
       cur->o_which = pick_one(scr_info, NSCROLLS);
       break;
-
     case 2:
       cur->o_type = FOOD;
       no_food = 0;
       cur->o_which = rnd(10) ? 0 : 1;
       break;
-
     case 3:
       init_weapon(cur, pick_one(weap_info, MAXWEAPONS));
-      if ((r = rnd(100)) < 10)
+      r = rnd(100);
+      if (r < 10)
       {
         cur->o_flags |= ISCURSED;
         cur->o_hplus -= rnd(3) + 1;
@@ -253,12 +256,12 @@ new_thing(void)
       else if (r < 15)
         cur->o_hplus += rnd(3) + 1;
       break;
-
     case 4:
       cur->o_type = ARMOR;
       cur->o_which = armor_type_random();
       cur->o_arm = armor_ac(cur->o_which);
-      if ((r = rnd(100)) < 20)
+      r = rnd(100);
+      if (r < 20)
       {
         cur->o_flags |= ISCURSED;
         cur->o_arm += rnd(3) + 1;
@@ -266,7 +269,6 @@ new_thing(void)
       else if (r < 28)
         cur->o_arm -= rnd(3) + 1;
       break;
-
     case 5:
       cur->o_type = RING;
       cur->o_which = pick_one(ring_info, NRINGS);
@@ -287,13 +289,11 @@ new_thing(void)
           cur->o_flags |= ISCURSED;
       }
       break;
-
     case 6:
       cur->o_type = STICK;
       cur->o_which = pick_one(ws_info, MAXSTICKS);
       fix_stick(cur);
       break;
-
     default:
       msg("Picked a bad kind of object (this should not happen)");
       wait_for(KEY_SPACE);
