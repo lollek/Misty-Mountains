@@ -475,40 +475,6 @@ seen_stairs(void)
   return false;
 }
 
-bool
-turn_see(bool turn_off)
-{
-  THING *mp;
-  bool add_new = false;
-
-  for (mp = mlist; mp != NULL; mp = mp->l_next)
-  {
-    move(mp->t_pos.y, mp->t_pos.x);
-    bool can_see = see_monst(mp);
-
-    if (turn_off)
-    {
-      if (!can_see)
-        addcch(mp->t_oldch);
-    }
-    else
-    {
-      addcch((player_is_hallucinating()
-            ? (rnd(26) + 'A')
-            : mp->t_type)
-          | A_STANDOUT);
-      if (!can_see)
-        add_new++;
-    }
-  }
-
-  if (turn_off)
-    player_remove_sense_monsters();
-  else
-    player_add_sense_monsters(false);
-  return add_new;
-}
-
 void
 invis_on(void)
 {

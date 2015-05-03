@@ -279,7 +279,9 @@ command_wizard_do(char ch)
     case CTRL('T'): player_teleport(NULL); break;
     case CTRL('E'): msg("food left: %d", food_left); break;
     case CTRL('C'): passages_add_pass(); break;
-    case CTRL('X'): turn_see(player_can_sense_monsters()); break;
+    case CTRL('X'): player_can_sense_monsters()
+                    ? player_remove_sense_monsters()
+                    : player_add_sense_monsters(true); break;
     case '*' : pr_list(); break;
 
     case CTRL('~'):

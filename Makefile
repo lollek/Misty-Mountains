@@ -11,7 +11,7 @@
 
 
 PROGRAM  = rogue14
-VERSION  = 1.2.1
+VERSION  = 1.2.2
 PREFIX   = /usr/local
 SCOREDIR = $(PREFIX)/share/$(PROGRAM)/
 
@@ -25,6 +25,9 @@ OBJS     = $(addsuffix .o, $(basename $(CFILES)))
 DOCSRC   = $(wildcard docsrc/*)
 DOCS     = $(notdir $(DOCSRC))
 MISC     = install CHANGELOG.TXT LICENSE.TXT rogue.png rogue.desktop
+
+debug: CFLAGS += -g3
+debug: $(PROGRAM)
 
 .c.o:
 	$(CC) $(CFLAGS) $(DFLAGS) -c -o $*.o $*.c

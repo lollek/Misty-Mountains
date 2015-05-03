@@ -1,6 +1,5 @@
-Rogue14 - 1.2.1
-  Save:
-    Made save games a tiny bit smaller
+v1.2.2 - Fixed crashbug with seeing invisible monsters
+v1.2.1 - Made save games a tiny bit smaller
 
 Rogue14 - r2
   Changed name of the slime-mold to fruit (and no, you can't rename it anymore)

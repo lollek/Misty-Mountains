@@ -14,6 +14,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "potions.h"
 #include "scrolls.h"
@@ -40,7 +41,7 @@ struct obj_info things[] = {
     { "stick",	 4,	0,	NULL,	false },	/* stick */
 };
 
-static int pick_one(struct obj_info *info, int nitems);
+static unsigned pick_one(struct obj_info *info, int nitems);
 static void nameit(THING *obj, const char *type, const char *which,
                    struct obj_info *op, char *(*prfunc)(THING *));
 static char *nullstr(THING *ignored);
@@ -208,122 +209,126 @@ drop(void)
 THING *
 new_thing(void)
 {
-    THING *cur;
-    int r;
+  THING *cur = new_item();
+  int r;
 
-    cur = new_item();
-    cur->o_hplus = 0;
-    cur->o_dplus = 0;
-    strncpy(cur->o_damage, "0x0", sizeof(cur->o_damage));
-    strncpy(cur->o_hurldmg, "0x0", sizeof(cur->o_hurldmg));
-    cur->o_arm = 11;
-    cur->o_count = 1;
-    cur->o_group = 0;
-    cur->o_flags = 0;
-    /*
-     * Decide what kind of object it will be
-     * If we haven't had food for a while, let it be food.
-     */
-    switch (no_food > 3 ? 2 : pick_one(things, NUMTHINGS))
-    {
-	case 0:
-	    cur->o_type = POTION;
-	    cur->o_which = pick_one(pot_info, NPOTIONS);
-            break;
-	case 1:
-	    cur->o_type = SCROLL;
-	    cur->o_which = pick_one(scr_info, NSCROLLS);
-            break;
-	case 2:
-	    cur->o_type = FOOD;
-	    no_food = 0;
-	    if (rnd(10) != 0)
-		cur->o_which = 0;
-	    else
-		cur->o_which = 1;
-            break;
-	case 3:
-	    init_weapon(cur, pick_one(weap_info, MAXWEAPONS));
-	    if ((r = rnd(100)) < 10)
-	    {
-		cur->o_flags |= ISCURSED;
-		cur->o_hplus -= rnd(3) + 1;
-	    }
-	    else if (r < 15)
-		cur->o_hplus += rnd(3) + 1;
-            break;
-	case 4:
-	    cur->o_type = ARMOR;
-	    cur->o_which = armor_type_random();
-	    cur->o_arm = armor_ac(cur->o_which);
-	    if ((r = rnd(100)) < 20)
-	    {
-		cur->o_flags |= ISCURSED;
-		cur->o_arm += rnd(3) + 1;
-	    }
-	    else if (r < 28)
-		cur->o_arm -= rnd(3) + 1;
-            break;
-	case 5:
-	    cur->o_type = RING;
-	    cur->o_which = pick_one(ring_info, NRINGS);
-	    switch (cur->o_which)
-	    {
-		case R_ADDSTR:
-		case R_PROTECT:
-		case R_ADDHIT:
-		case R_ADDDAM:
-		    if ((cur->o_arm = rnd(3)) == 0)
-		    {
-			cur->o_arm = -1;
-			cur->o_flags |= ISCURSED;
-		    }
-                    break;
-		case R_AGGR:
-		case R_TELEPORT:
-		    cur->o_flags |= ISCURSED;
-	    }
-            break;
-	case 6:
-	    cur->o_type = STICK;
-	    cur->o_which = pick_one(ws_info, MAXSTICKS);
-	    fix_stick(cur);
-            break;
-	default:
-	    msg("Picked a bad kind of object (this should not happen)");
-	    wait_for(KEY_SPACE);
-            break;
-    }
-    return cur;
+  cur->o_hplus = 0;
+  cur->o_dplus = 0;
+  assert (sizeof(cur->o_damage) >= sizeof("0x0"));
+  strcpy(cur->o_damage, "0x0");
+  assert (sizeof(cur->o_hurldmg) >= sizeof("0x0"));
+  strcpy(cur->o_hurldmg, "0x0");
+  cur->o_arm = 11;
+  cur->o_count = 1;
+  cur->o_group = 0;
+  cur->o_flags = 0;
+
+  /* Decide what kind of object it will be
+   * If we haven't had food for a while, let it be food. */
+  switch (no_food > 3 ? 2 : pick_one(things, NUMTHINGS))
+  {
+    case 0:
+      cur->o_type = POTION;
+      cur->o_which = pick_one(pot_info, NPOTIONS);
+      break;
+
+    case 1:
+      cur->o_type = SCROLL;
+      cur->o_which = pick_one(scr_info, NSCROLLS);
+      break;
+
+    case 2:
+      cur->o_type = FOOD;
+      no_food = 0;
+      cur->o_which = rnd(10) ? 0 : 1;
+      break;
+
+    case 3:
+      init_weapon(cur, pick_one(weap_info, MAXWEAPONS));
+      if ((r = rnd(100)) < 10)
+      {
+        cur->o_flags |= ISCURSED;
+        cur->o_hplus -= rnd(3) + 1;
+      }
+      else if (r < 15)
+        cur->o_hplus += rnd(3) + 1;
+      break;
+
+    case 4:
+      cur->o_type = ARMOR;
+      cur->o_which = armor_type_random();
+      cur->o_arm = armor_ac(cur->o_which);
+      if ((r = rnd(100)) < 20)
+      {
+        cur->o_flags |= ISCURSED;
+        cur->o_arm += rnd(3) + 1;
+      }
+      else if (r < 28)
+        cur->o_arm -= rnd(3) + 1;
+      break;
+
+    case 5:
+      cur->o_type = RING;
+      cur->o_which = pick_one(ring_info, NRINGS);
+      switch (cur->o_which)
+      {
+        case R_ADDSTR:
+        case R_PROTECT:
+        case R_ADDHIT:
+        case R_ADDDAM:
+          if ((cur->o_arm = rnd(3)) == 0)
+          {
+            cur->o_arm = -1;
+            cur->o_flags |= ISCURSED;
+          }
+          break;
+        case R_AGGR:
+        case R_TELEPORT:
+          cur->o_flags |= ISCURSED;
+      }
+      break;
+
+    case 6:
+      cur->o_type = STICK;
+      cur->o_which = pick_one(ws_info, MAXSTICKS);
+      fix_stick(cur);
+      break;
+
+    default:
+      msg("Picked a bad kind of object (this should not happen)");
+      wait_for(KEY_SPACE);
+      break;
+  }
+  return cur;
 }
 
 /** pick_one:
  * Pick an item out of a list of nitems possible objects */
-static int
-pick_one(struct obj_info *info, int nitems)
+static unsigned
+pick_one(struct obj_info *start, int nitems)
 {
-    struct obj_info *end;
-    struct obj_info *start;
-    int i = rnd(100);
+  struct obj_info *ptr;
+  struct obj_info *end = &start[nitems];
+  int i = rnd(100);
 
-    start = info;
-    for (end = &info[nitems]; info < end; info++)
-	if (i < info->oi_prob)
-	    break;
-	else
-	    i -= info->oi_prob;
-    if (info == end)
-    {
-	coord orig;
-	int curr_y = 0;
-	getyx(stdscr, orig.y, orig.x);
-	mvprintw(0, 0, "DEBUG: bad pick_one: %d from %d items", i, nitems);
-	for (info = start; info < end; info++)
-	    mvprintw(++curr_y, 1, "%s: %d%%", info->oi_name, info->oi_prob);
-	info = start;
-	move(orig.y, orig.x);
-    }
-    return (int)(info - start);
+  for (ptr = start ; ptr != end; ++ptr)
+    if (i < ptr->oi_prob)
+      return ptr - start;
+    else
+      i -= ptr->oi_prob;
+
+  /* The functions should have returned by now */
+  {
+    coord orig;
+    int curr_y = 0;
+    getyx(stdscr, orig.y, orig.x);
+    mvprintw(0, 0, "DEBUG: bad pick_one: %d from %d items", i, nitems);
+    for (ptr = start; ptr != end; ++ptr)
+      mvprintw(++curr_y, 1, "%s: %d%%", ptr->oi_name, ptr->oi_prob);
+    move(orig.y, orig.x);
+    assert(0);
+    return 0;
+  }
 }
 
 /** discovered_by_type

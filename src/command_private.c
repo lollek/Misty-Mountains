@@ -514,11 +514,16 @@ command_toggle_wizard(void)
   if (potential_wizard)
   {
     wizard = !wizard;
-    turn_see(!wizard);
     if (wizard)
+    {
+      player_add_sense_monsters(true);
       msg("You are one with the force (seed: #%d)", seed);
+    }
     else
+    {
+      player_remove_sense_monsters();
       msg("not wizard any more");
+    }
   }
   return false;
 }

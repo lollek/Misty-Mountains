@@ -208,7 +208,7 @@ level_new(void)
     }
 
     if (player_can_sense_monsters())
-	turn_see(false);
+	player_add_sense_monsters(true);
     if (player_is_hallucinating())
 	daemon_change_visuals();
 

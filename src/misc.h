@@ -21,7 +21,6 @@ void call_it(struct obj_info *info); /* Call an object something after use */
 char rnd_thing(void); /* Pick a random thing appropriate for this level */
 bool is_magic(THING *obj);   /* Returns true if an object radiates magic */
 bool seen_stairs(void);          /* Return true if the player has seen the stairs */
-bool turn_see(bool turn_off);/* Put on or off seeing monsters on this level */
 void invis_on(void);         /* Turn on the ability to see invisible */
 void strucpy(char *s1, const char *s2, int len); /* Copy string using unctrl for things */
 void waste_time(int rounds);

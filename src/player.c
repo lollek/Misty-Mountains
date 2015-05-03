@@ -187,15 +187,37 @@ void player_remove_held(void) { player.t_flags &= ~ISHELD; }
 bool player_can_sense_monsters(void)    { return player.t_flags & SEEMONST; }
 void player_add_sense_monsters(bool permanent)
 {
+  THING *monster;
+  bool spotted_something = false;
+
   player.t_flags |= SEEMONST;
+
   if (!permanent)
-      daemon_start_fuse((void(*)())turn_see, true, MFINDDURATION, AFTER);
-  /* FIXME: Make sure that this work */
-  if (!turn_see(false))
+      daemon_start_fuse(player_remove_sense_monsters, 0, MFINDDURATION, AFTER);
+
+  for (monster = mlist; monster != NULL; monster = monster->l_next)
+    if (!see_monst(monster))
+    {
+      mvaddcch(monster->t_pos.y, monster->t_pos.x,
+          (player_is_hallucinating() ? rnd(26) + 'A' : monster->t_type)
+            | A_STANDOUT);
+      spotted_something = true;
+    }
+
+  if (!spotted_something)
     msg("you have a %s feeling for a moment, then it passes",
         player_is_hallucinating() ? "normal" : "strange");
 }
-void player_remove_sense_monsters(void) { player.t_flags &= ~SEEMONST; }
+void player_remove_sense_monsters(void)
+{
+  THING *monster;
+
+  player.t_flags &= ~SEEMONST;
+
+  for (monster = mlist; monster != NULL; monster = monster->l_next)
+    if (!see_monst(monster))
+      mvaddcch(monster->t_pos.y, monster->t_pos.x, monster->t_oldch);
+}
 
 bool player_is_hallucinating(void)     { return player.t_flags & ISHALU; }
 void player_set_hallucinating(bool permanent)
@@ -205,7 +227,7 @@ void player_set_hallucinating(bool permanent)
   else
   {
     if (player_can_sense_monsters())
-      turn_see(false);
+      player_add_sense_monsters(true);
     daemon_start(daemon_change_visuals, 0, BEFORE);
     player.t_flags |= ISHALU;
     look(false);
