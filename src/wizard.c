@@ -79,27 +79,58 @@ pr_spec(char ch)
   delwin(printscr);
 }
 
+static void
+print_things(void)
+{
+  char index_to_char[] = {
+    POTION, SCROLL, FOOD,
+    WEAPON, ARMOR, RING,
+    STICK
+  };
+  unsigned num_items = 0;
+  unsigned i;
+  unsigned end = NUMTHINGS;
+  WINDOW *tmp = dupwin(stdscr);
+  coord orig_pos;
+
+  getyx(stdscr, orig_pos.y, orig_pos.x);
+
+  for (i = 0; i < end; ++i)
+  {
+    wmove(tmp, ++num_items, 1);
+    wprintw(tmp, "%c) %s", index_to_char[i], things[i].oi_name);
+  }
+
+  wmove(stdscr, orig_pos.y, orig_pos.x);
+  wrefresh(tmp);
+  delwin(tmp);
+}
+
 int
 pr_list(void)
 {
   int ch = ~KEY_ESCAPE;
 
-  if (!terse)
-    addmsg("for ");
-  addmsg("what type");
-  if (!terse)
-    addmsg(" of object do you want a list");
-  msg("? ");
+  msg("for what type of object do you want a list? ");
+  print_things();
 
-  while (ch != KEY_ESCAPE)
-  {
-    ch = readchar();
-    touchwin(stdscr);
-    refresh();
-    pr_spec(ch);
-  }
+  ch = readchar();
   touchwin(stdscr);
+  refresh();
+
+  switch (ch)
+  {
+    case POTION: case SCROLL: case FOOD: case WEAPON: case ARMOR: case RING:
+      pr_spec(ch);
+      msg("");
+      msg("--Press any key to continue--");
+      readchar();
+      break;
+    default: break;
+  }
+
   msg("");
+  touchwin(stdscr);
   return 0;
 }
 

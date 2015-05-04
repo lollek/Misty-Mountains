@@ -2,6 +2,7 @@ v1.2.5
   Wandering monsters no longer appear
   Game no longer crashes on player removing ring
   Starting game in wiz-mode no longer activates sense monster
+  Made the '*'-list in wiz-mode more clear
 
 v1.2.4
   Using a scroll of remove curse does no longer trigger monsters to aggro you
