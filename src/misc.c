@@ -394,20 +394,21 @@ spread(int nm)
 }
 
 void
-call_it(struct obj_info *info)
+call_it(const char *what, struct obj_info *info)
 {
   if (info->oi_know)
   {
-    if (info->oi_guess)
+    if (info->oi_guess != NULL)
     {
       free(info->oi_guess);
       info->oi_guess = NULL;
     }
   }
+
   else if (!info->oi_guess)
   {
     char tmpbuf[MAXSTR] = { '\0' };
-    msg(terse ? "call it: " : "what do you want to call it? ");
+    msg("what do you want to name the %s? ", what);
     if (readstr(tmpbuf) == 0)
     {
       if (info->oi_guess != NULL)

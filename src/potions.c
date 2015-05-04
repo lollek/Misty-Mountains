@@ -200,7 +200,7 @@ potion_quaff_something(void)
 
   /* Throw the item away */
 
-  call_it(&pot_info[obj->o_which]);
+  call_it("potion", &pot_info[obj->o_which]);
 
   if (discardit)
     discard(obj);

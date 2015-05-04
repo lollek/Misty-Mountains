@@ -17,7 +17,7 @@ const char *vowelstr(const char *str); /* For printfs: if string starts with a v
 bool get_dir(void); /* Set up the direction co_ordinate for use in varios "prefix" commands */
 int sign(int nm); /* Return the sign of the number */
 int spread(int nm); /* Give a spread around a given number (+/- 20%) */
-void call_it(struct obj_info *info); /* Call an object something after use */
+void call_it(const char *what, struct obj_info *info); /* Call an object something after use */
 char rnd_thing(void); /* Pick a random thing appropriate for this level */
 bool is_magic(THING *obj);   /* Returns true if an object radiates magic */
 bool seen_stairs(void);          /* Return true if the player has seen the stairs */
