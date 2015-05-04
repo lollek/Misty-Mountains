@@ -308,7 +308,6 @@ command_wizard_do(char ch)
         init_weapon(obj, TWOSWORD);
         obj->o_hplus = 1;
         obj->o_dplus = 1;
-        pack_add(obj, true);
         pack_equip_item(obj);
       }
       else
