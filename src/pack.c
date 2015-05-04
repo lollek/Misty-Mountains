@@ -11,6 +11,7 @@
  */
 
 #include <string.h>
+#include <assert.h>
 
 #include "scrolls.h"
 #include "io.h"
@@ -574,6 +575,7 @@ pack_evaluate(void)
 THING *
 pack_equipped_item(enum equipment_pos pos)
 {
+  assert (pos >= 0 && pos < (sizeof equipment / sizeof (*equipment)));
   return equipment[pos].ptr;
 }
 

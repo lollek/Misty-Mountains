@@ -90,10 +90,11 @@ ring_take_off(void)
   else
     ring = EQUIPMENT_LRING;
 
+  obj = pack_equipped_item(ring);
+
   if (!pack_unequip(ring, false))
     return false;
 
-  obj = pack_equipped_item(ring);
   switch (obj->o_which)
   {
     case R_ADDSTR:
@@ -105,7 +106,6 @@ ring_take_off(void)
       break;
   }
 
-  msg("was wearing %s", inv_name(obj, true));
   return true;
 }
 
