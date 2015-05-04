@@ -10,4 +10,6 @@ void create_obj(void);
 /* Print out the map for the wizard */
 void show_map(void);
 
+void wizard_levels_and_gear(void);
+
 #endif /* _ROGUE14_WIZARD_H_ */

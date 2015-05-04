@@ -27,6 +27,7 @@
 #include "misc.h"
 #include "level.h"
 #include "weapons.h"
+#include "player.h"
 #include "rogue.h"
 
 void
@@ -190,4 +191,37 @@ show_map(void)
         wstandend(hw);
     }
   show_win("---More (level map)---");
+}
+
+void
+wizard_levels_and_gear(void)
+{
+  int i;
+  THING *obj;
+
+  for (i = 0; i < 9; i++)
+    player_raise_level();
+
+  /* Give him a sword (+1,+1) */
+  if (pack_equipped_item(EQUIPMENT_RHAND) == NULL)
+  {
+    obj = new_item();
+    init_weapon(obj, TWOSWORD);
+    obj->o_hplus = 1;
+    obj->o_dplus = 1;
+    pack_equip_item(obj);
+  }
+
+  /* And his suit of armor */
+  if (pack_equipped_item(EQUIPMENT_ARMOR) == NULL)
+  {
+    obj = new_item();
+    obj->o_type = ARMOR;
+    obj->o_which = PLATE_MAIL;
+    obj->o_arm = -5;
+    obj->o_flags |= ISKNOW;
+    obj->o_count = 1;
+    obj->o_group = 0;
+    pack_equip_item(obj);
+  }
 }

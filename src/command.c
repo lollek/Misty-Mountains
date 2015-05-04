@@ -272,13 +272,14 @@ command_wizard_do(char ch)
     case '|': msg("@ %d,%d", player_get_pos()->y, player_get_pos()->x); break;
     case 'C': create_obj(); break;
     case '$': msg("inpack = %d", pack_count_items()); break;
-    case CTRL('W'): identify(); break;
-    case CTRL('D'): level++; level_new(); break;
     case CTRL('A'): level--; level_new(); break;
-    case CTRL('F'): show_map(); break;
-    case CTRL('T'): player_teleport(NULL); break;
-    case CTRL('E'): msg("food left: %d", food_left); break;
     case CTRL('C'): passages_add_pass(); break;
+    case CTRL('D'): level++; level_new(); break;
+    case CTRL('E'): msg("food left: %d", food_left); break;
+    case CTRL('F'): show_map(); break;
+    case CTRL('I'): wizard_levels_and_gear(); break;
+    case CTRL('T'): player_teleport(NULL); break;
+    case CTRL('W'): identify(); break;
     case CTRL('X'): player_can_sense_monsters()
                     ? player_remove_sense_monsters()
                     : player_add_sense_monsters(true); break;
@@ -293,42 +294,6 @@ command_wizard_do(char ch)
      }
      break;
 
-    case CTRL('I'):
-    {
-      int i;
-      THING *obj;
-
-      for (i = 0; i < 9; i++)
-        player_raise_level();
-
-      /* Give him a sword (+1,+1) */
-      if (pack_unequip(EQUIPMENT_RHAND, false))
-      {
-        obj = new_item();
-        init_weapon(obj, TWOSWORD);
-        obj->o_hplus = 1;
-        obj->o_dplus = 1;
-        pack_equip_item(obj);
-      }
-      else
-        msg("failed to add weapon");
-
-      /* And his suit of armor */
-      if (pack_unequip(EQUIPMENT_ARMOR, false))
-      {
-        obj = new_item();
-        obj->o_type = ARMOR;
-        obj->o_which = PLATE_MAIL;
-        obj->o_arm = -5;
-        obj->o_flags |= ISKNOW;
-        obj->o_count = 1;
-        obj->o_group = 0;
-        pack_equip_item(obj);
-      }
-      else
-        msg("failed to add armor");
-    }
-    break;
     default:
       {
         char buf[MAXSTR];
