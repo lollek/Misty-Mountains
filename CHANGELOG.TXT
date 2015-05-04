@@ -1,3 +1,6 @@
+v1.2.5
+  Wandering monsters no longer appear
+
 v1.2.4
   Using a scroll of remove curse does no longer trigger monsters to aggro you
   Bow is now set to 'last used weapon' at the start of the game
