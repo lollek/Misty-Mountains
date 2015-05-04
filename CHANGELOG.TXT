@@ -1,6 +1,7 @@
 v1.2.4
   Using a scroll of remove curse does no longer trigger monsters to aggro you
   Bow is now set to 'last used weapon' at the start of the game
+  Added more messages on reading scrolls
 
 v1.2.3 - Fix item chances. Could previously only spawn a few scrolls and potions
 v1.2.2 - Fixed crashbug with seeing invisible monsters

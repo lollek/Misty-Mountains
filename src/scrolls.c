@@ -58,6 +58,108 @@ set_know(THING *obj, struct obj_info *info)
   }
 }
 
+static void
+enchant_players_armor(void)
+{
+  THING *arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  if (arm == NULL)
+  {
+    switch (rnd(3))
+    {
+      case 0: msg("you are unsure if anything happened"); break;
+      case 1: msg("you feel naked"); break;
+      case 2: msg("you feel like something just touched you"); break;
+    }
+    return;
+  }
+
+  arm->o_arm--;
+  arm->o_flags &= ~ISCURSED;
+  msg("your armor glows %s for a moment", pick_color("silver"));
+  return;
+}
+
+/* Stop all monsters within two spaces from chasing after the hero. */
+static void
+hold_monsters(void)
+{
+  int x, y;
+  int monsters_affected = 0;
+  coord *player_pos = player_get_pos();
+  THING *monster;
+
+  for (x = player_pos->x - 2; x <= player_pos->x + 2; x++)
+    if (x >= 0 && x < NUMCOLS)
+      for (y = player_pos->y - 2; y <= player_pos->y + 2; y++)
+        if (y >= 0 && y <= NUMLINES - 1)
+        {
+          monster = moat(y, x);
+          if (monster != NULL && on(*monster, ISRUN))
+          {
+            monster->t_flags &= ~ISRUN;
+            monster->t_flags |= ISHELD;
+            monsters_affected++;
+          }
+        }
+
+  if (monsters_affected == 1)
+  {
+    msg("the monster freezes");
+    learn_scroll(S_HOLD);
+  }
+  else if (monsters_affected > 1)
+  {
+    msg("the monsters around you freeze");
+    learn_scroll(S_HOLD);
+  }
+  else /* monsters_affected == 0 */
+    switch (rnd(3))
+    {
+      case 0: msg("you are unsure if anything happened"); break;
+      case 1: msg("you feel a strange sense of loss"); break;
+      case 2: msg("you feel a powerful aura"); break;
+    }
+}
+
+static void
+create_monster(void)
+{
+  const coord *player_pos = player_get_pos();
+  THING *obj;
+  coord mp;
+  int x, y;
+  int i = 0;
+
+  for (y = player_pos->y - 1; y <= player_pos->y + 1; y++)
+    for (x = player_pos->x - 1; x <= player_pos->x + 1; x++)
+    {
+      char ch = winat(y, x);
+
+      if ((y == player_pos->y && x == player_pos->x)
+          ||(!step_ok(ch))
+          ||(ch == SCROLL && find_obj(y, x)->o_which == S_SCARE)
+          ||(rnd(++i) != 0))
+        continue;
+
+      mp.y = y;
+      mp.x = x;
+    }
+
+  if (i == 0)
+    switch (rnd(3))
+    {
+      case 0: msg("you are unsure if anything happened"); break;
+      case 1: msg("you hear a faint cry of anguish in the distance"); break;
+      case 2: msg("you think you felt someone's presence"); break;
+    }
+  else
+  {
+    obj = new_item();
+    monster_new(obj, monster_random(false), &mp);
+    msg("A %s appears out of thin air", monsters[obj->t_type - 'A'].m_name);
+  }
+}
+
 void
 identify(void)
 {
@@ -113,86 +215,17 @@ read_scroll(void)
       player_set_confusing_attack();
       break;
     case S_ARMOR:
-      {
-        THING *arm = pack_equipped_item(EQUIPMENT_ARMOR);
-        if (arm != NULL)
-        {
-          arm->o_arm--;
-          arm->o_flags &= ~ISCURSED;
-          msg("your armor glows %s for a moment", pick_color("silver"));
-        }
-      }
+      enchant_players_armor();
       break;
     case S_HOLD:
-      /* Hold monster scroll.
-       * Stop all monsters within two spaces from chasing after the hero. */
-      {
-        int x, y;
-        char ch = 0;
-        coord *player_pos = player_get_pos();
-        for (x = player_pos->x - 2; x <= player_pos->x + 2; x++)
-          if (x >= 0 && x < NUMCOLS)
-            for (y = player_pos->y - 2; y <= player_pos->y + 2; y++)
-              if (y >= 0 && y <= NUMLINES - 1)
-                if ((obj = moat(y, x)) != NULL && on(*obj, ISRUN))
-                {
-                  obj->t_flags &= ~ISRUN;
-                  obj->t_flags |= ISHELD;
-                  ch++;
-                }
-        if (ch)
-        {
-          addmsg("the monster");
-          if (ch > 1)
-            addmsg("s around you");
-          addmsg(" freeze");
-          if (ch == 1)
-            addmsg("s");
-          endmsg();
-          learn_scroll(S_HOLD);
-        }
-        else
-          msg("you feel a strange sense of loss");
-      }
+      hold_monsters();
       break;
     case S_SLEEP:
       learn_scroll(S_SLEEP);
       player_fall_asleep();
       break;
     case S_CREATE:
-      /* Create a monster:
-       * 1: look in a circle around him, 2: try his room, otherwise give up */
-      {
-        coord mp;
-        coord *player_pos = player_get_pos();
-        int x, y;
-        int i = 0;
-        char ch;
-        for (y = player_pos->y - 1; y <= player_pos->y + 1; y++)
-          for (x = player_pos->x - 1; x <= player_pos->x + 1; x++)
-            /* Don't put a monster in top of the player. */
-            if (y == player_pos->y && x == player_pos->x)
-              continue;
-            /* Or anything else nasty */
-            else if (step_ok(ch = winat(y, x)))
-            {
-              if (ch == SCROLL
-                  && find_obj(y, x)->o_which == S_SCARE)
-                continue;
-              else if (rnd(++i) == 0)
-              {
-                mp.y = y;
-                mp.x = x;
-              }
-            }
-        if (i == 0)
-          msg("you hear a faint cry of anguish in the distance");
-        else
-        {
-          obj = new_item();
-          monster_new(obj, monster_random(false), &mp);
-        }
-      }
+      create_monster();
       break;
     case S_ID:
       {
