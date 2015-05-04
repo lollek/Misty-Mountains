@@ -3,6 +3,7 @@ v1.2.5
   Game no longer crashes on player removing ring
   Starting game in wiz-mode no longer activates sense monster
   Made the '*'-list in wiz-mode more clear
+  Game now saves inventory again
 
 v1.2.4
   Using a scroll of remove curse does no longer trigger monsters to aggro you

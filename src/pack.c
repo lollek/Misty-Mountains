@@ -51,7 +51,7 @@ enum equipment_pos ring_slots[RING_SLOTS_SIZE] = {
   EQUIPMENT_LRING
 };
 
-void *__pack_ptr(void) { return player_pack; }
+void *__pack_ptr(void) { return &player_pack; }
 
 static size_t
 pack_print_evaluate_item(THING *obj)

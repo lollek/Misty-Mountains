@@ -1114,6 +1114,9 @@ rs_save_file(FILE *savef)
   size_t maxstr = MAXSTR;
   size_t two_x_maxstr = 2 * MAXSTR;
 
+  /* TODO: Fix a better way to save pack */
+  ((THING *)__player_ptr())->t_pack = *((THING **)__pack_ptr());
+
   rs_assert(rs_write_boolean(savef, firstmove))
   rs_assert(rs_write_booleans(savef, pack_used, pack_used_size))
   rs_assert(rs_write_chars(savef, file_name, maxstr))
@@ -1155,6 +1158,7 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_daemons(savef, __daemons_ptr(), 20))
   rs_assert(rs_write_int(savef, group))
   rs_assert(rs_write_window(savef,stdscr))
+
   return 0;
 }
 
@@ -1206,5 +1210,9 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_daemons(inf, __daemons_ptr(), 20))
   rs_assert(rs_read_int(inf,&group))
   rs_assert(rs_read_window(inf,stdscr))
+
+  /* TODO: Fix a better way to save pack */
+  *((THING **)__pack_ptr()) = ((THING *)__player_ptr())->t_pack;
+
   return 0;
 }
