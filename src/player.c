@@ -33,6 +33,31 @@ static const int player_max_strength = 31;
 
 void *__player_ptr(void) { return &player; }
 
+static int e_levels[] = {
+  10L,
+  20L,
+  40L,
+  80L,
+  160L,
+  320L,
+  640L,
+  1300L,
+  2600L,
+  5200L,
+  13000L,
+  26000L,
+  50000L,
+  100000L,
+  200000L,
+  400000L,
+  800000L,
+  2000000L,
+  4000000L,
+  8000000L,
+  0L
+};
+
+
 static str_t
 player_get_strength_bonuses(void)
 {
@@ -559,7 +584,11 @@ player_get_level(void)
 void
 player_raise_level(void)
 {
-  player.t_stats.s_exp = e_levels[player.t_stats.s_lvl-1] + 1L;
+  int next_level = e_levels[player.t_stats.s_lvl -1] + 1L;
+  if (next_level < player.t_stats.s_exp)
+    return;
+
+  player.t_stats.s_exp = next_level;
   player_check_for_level_up();
   if (game_type != QUICK)
     msg("you suddenly feel much more skillful");
@@ -569,14 +598,13 @@ void
 player_check_for_level_up(void)
 {
   int i;
-  int old_level;
+  int old_level = player.t_stats.s_lvl;
 
   for (i = 0; e_levels[i] != 0; ++i)
     if (e_levels[i] > player.t_stats.s_exp)
       break;
 
   ++i;
-  old_level = player.t_stats.s_lvl;
   player.t_stats.s_lvl = i;
 
   if (i > old_level)

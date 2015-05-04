@@ -54,29 +54,6 @@ int no_move = 0;			/* Number of turns held in place */
 int purse = 0;				/* How much gold he has */
 int vf_hit = 0;				/* Number of time flytrap has hit */
 unsigned seed;				/* Random number seed */
-int e_levels[] = {
-        10L,
-	20L,
-	40L,
-	80L,
-       160L,
-       320L,
-       640L,
-      1300L,
-      2600L,
-      5200L,
-     13000L,
-     26000L,
-     50000L,
-    100000L,
-    200000L,
-    400000L,
-    800000L,
-   2000000L,
-   4000000L,
-   8000000L,
-	 0L
-};
 
 coord delta;				/* Change indicated to get_dir() */
 coord oldpos;				/* Position before last look() call */

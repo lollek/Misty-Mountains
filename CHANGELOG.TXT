@@ -4,6 +4,7 @@ v1.2.4
   Added more messages on reading scrolls
   Changed some texts to make more sense
   Fix a wizard feature which previously put the game in an infinite loop
+  Players no longer return to level 1 after level 20
 
 v1.2.3 - Fix item chances. Could previously only spawn a few scrolls and potions
 v1.2.2 - Fixed crashbug with seeing invisible monsters

@@ -347,8 +347,6 @@ extern int	count, food_left, hungry_state,
 
 extern unsigned int	seed;
 
-extern int	e_levels[];
-
 extern WINDOW	*hw;
 
 extern coord	delta, oldpos, stairs;
