@@ -43,6 +43,7 @@ int hit_monster(int y, int x, THING *obj);
 char *num(int n1, int n2, char type);
 
 bool weapon_wield(THING *weapon);
+void set_last_weapon(THING *weapon);
 bool last_weapon(void);
 
 /* Pick a random position around the give (y, x) coordinates */

@@ -329,6 +329,7 @@ def:
             ? "you feel in touch with the Universal Onenes"
             : "you feel as if somebody is watching over you");
       }
+      break;
     case S_AGGR:
       /* This scroll aggravates all the monsters on the current
        * level and sets them running towards the hero */

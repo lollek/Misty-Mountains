@@ -246,6 +246,12 @@ weapon_wield(THING *weapon)
   return true;
 }
 
+void
+set_last_weapon(THING *weapon)
+{
+  last_wielded_weapon = weapon;
+}
+
 bool
 last_weapon(void)
 {
