@@ -4,6 +4,7 @@ v1.2.5
   Starting game in wiz-mode no longer activates sense monster
   Made the '*'-list in wiz-mode more clear
   Game now saves inventory again
+  Game now saves and loads wand and staff information
 
 v1.2.4
   Using a scroll of remove curse does no longer trigger monsters to aggro you
