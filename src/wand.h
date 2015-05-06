@@ -26,7 +26,6 @@ enum wand
 
 /* TODO: Hide these vars */
 struct obj_info ws_info[MAXSTICKS];
-const char *ws_made[MAXSTICKS];		/* What sticks are made of */
 
 /* Sets up wands for use
  * wand_init or wand_load_state should run before wands are used */

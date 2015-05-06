@@ -131,7 +131,7 @@ command_name_item(void)
       op = &ws_info[obj->o_which];
       already_known = op->oi_know;
       guess = &op->oi_guess;
-      elsewise = *guess ? *guess : ws_made[obj->o_which];
+      elsewise = *guess ? *guess : wand_material(obj->o_which);
       break;
 
     default:

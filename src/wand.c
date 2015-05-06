@@ -45,6 +45,8 @@ static const char *material[] = {
   "zinc",
 };
 
+static const char *_wand_material[MAXSTICKS];
+
 struct obj_info ws_info[] = {
     { "light",			12, 250, NULL, false },
     { "invisibility",		 6,   5, NULL, false },
@@ -79,7 +81,7 @@ void wand_init(void)
     while (used[j])
       j = rnd(NMATERIAL);
 
-    ws_made[i] = material[j];
+    _wand_material[i] = material[j];
     used[j] = true;
   }
 }
@@ -90,7 +92,7 @@ bool wand_save_state(void *fd)
 
   /* Save material */
   for (i = 0; i < MAXSTICKS; i++)
-    if (state_save_index(fd, material, NMATERIAL, ws_made[i]))
+    if (state_save_index(fd, material, NMATERIAL, _wand_material[i]))
       return 1;
 
   /* Save obj_info data */
@@ -104,10 +106,8 @@ bool wand_load_state(void *fd)
 
   /* Load material */
   for (i = 0; i < MAXSTICKS; i++)
-  {
-    if (state_load_index(fd, material, NMATERIAL, &ws_made[i]))
+    if (state_load_index(fd, material, NMATERIAL, &_wand_material[i]))
       return 1;
-  }
 
   /* Load obj_info data */
   state_load_obj_info(fd, ws_info, MAXSTICKS);
@@ -119,23 +119,22 @@ const char *
 wand_material(enum wand wand)
 {
   assert (wand >= 0 && wand < MAXSTICKS);
-  return ws_made[wand];
+  return _wand_material[wand];
 }
 
 void
 fix_stick(THING *cur)
 {
-  strncpy(cur->o_damage,"1x1",sizeof(cur->o_damage));
-  strncpy(cur->o_hurldmg,"1x1",sizeof(cur->o_hurldmg));
+  assert(sizeof("1x1") <= sizeof(cur->o_damage));
+  assert(sizeof("1x1") <= sizeof(cur->o_hurldmg));
+
+  strcpy(cur->o_damage, "1x1");
+  strcpy(cur->o_hurldmg,"1x1");
 
   switch (cur->o_which)
   {
-    case WS_LIGHT:
-      cur->o_charges = rnd(10) + 10;
-      break;
-    default:
-      cur->o_charges = rnd(5) + 3;
-      break;
+    case WS_LIGHT: cur->o_charges = rnd(10) + 10; break;
+    default:       cur->o_charges = rnd(5) + 3;   break;
   }
 }
 
