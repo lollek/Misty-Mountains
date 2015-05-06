@@ -23,6 +23,7 @@
 #include "potions.h"
 #include "rings.h"
 #include "weapons.h"
+#include "wand.h"
 #include "rogue.h"
 
 char *s_names[NSCROLLS];

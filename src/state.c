@@ -45,6 +45,7 @@
 #include "rooms.h"
 #include "level.h"
 #include "player.h"
+#include "wand.h"
 #include "rogue.h"
 
 static const size_t RSID_STATS        = 0xABCD0001;

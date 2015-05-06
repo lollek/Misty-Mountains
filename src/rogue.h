@@ -157,25 +157,6 @@ extern enum rogue_game_t
 
 
 /*
- * Rod/Wand/Staff types
- */
-#define WS_LIGHT	0
-#define WS_INVIS	1
-#define WS_ELECT	2
-#define WS_FIRE		3
-#define WS_COLD		4
-#define WS_POLYMORPH	5
-#define WS_MISSILE	6
-#define WS_HASTE_M	7
-#define WS_SLOW_M	8
-#define WS_DRAIN	9
-#define WS_NOP		10
-#define WS_TELAWAY	11
-#define WS_TELTO	12
-#define WS_CANCEL	13
-#define MAXSTICKS	14
-
-/*
  * Now we define the structures and types
  */
 
@@ -336,9 +317,7 @@ extern bool	after, again, door_stop,
 extern char	dir_ch, file_name[], huh[], prbuf[], whoami[],
 		l_last_comm, l_last_dir, last_comm, last_dir,
 		outbuf[], *r_stones[], runch,
-		take, *tr_name[], *ws_type[];
-
-extern const char *ws_made[];
+		take, *tr_name[];
 
 extern int	count, food_left, hungry_state,
 		level, max_hit, max_level, mpos,
@@ -358,7 +337,6 @@ extern struct stats	max_stats;
 
 
 extern struct obj_info things[];
-extern struct obj_info ws_info[];
 
 /*
  * Function types
@@ -367,18 +345,13 @@ extern struct obj_info ws_info[];
 
 void	death(char monst);
 void	discovered(void);
-bool	do_zap(void);
-void	drain(void);
 bool	drop(void);
-void	fire_bolt(coord *start, coord *dir, char *name);
-void	fix_stick(THING *cur);
 int	rs_save_file(FILE *savef);
 int	rs_restore_file(FILE *inf);
 void	score(int amount, int flags, char monst);
 void	shell(void);
 void	total_winner(void);
 
-char	*charge_str(THING *obj);
 char	*inv_name(THING *obj, bool drop);
 
 void leave(int);

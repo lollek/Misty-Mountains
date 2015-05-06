@@ -33,8 +33,6 @@ char prbuf[2*MAXSTR];			/* buffer for sprintfs */
 char runch;				/* Direction player is running */
 char take;				/* Thing she is taking */
 char whoami[MAXSTR];			/* Name of player */
-const char *ws_made[MAXSTICKS];		/* What sticks are made of */
-char *ws_type[MAXSTICKS];		/* Is it a wand or a staff */
 char l_last_comm = '\0';		/* Last last_comm */
 char l_last_dir = '\0';			/* Last last_dir */
 char last_comm = '\0';			/* Last command typed */

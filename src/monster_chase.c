@@ -24,6 +24,7 @@
 #include "passages.h"
 #include "level.h"
 #include "player.h"
+#include "wand.h"
 #include "rogue.h"
 
 #include "monster.h"

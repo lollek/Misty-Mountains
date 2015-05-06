@@ -28,6 +28,7 @@
 #include "level.h"
 #include "weapons.h"
 #include "player.h"
+#include "wand.h"
 #include "rogue.h"
 
 void

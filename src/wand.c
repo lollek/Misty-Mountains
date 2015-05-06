@@ -25,7 +25,9 @@
 #include "weapons.h"
 #include "rogue.h"
 
-struct obj_info ws_info[MAXSTICKS] = {
+#include "wand.h"
+
+struct obj_info ws_info[] = {
     { "light",			12, 250, NULL, false },
     { "invisibility",		 6,   5, NULL, false },
     { "lightning",		 3, 330, NULL, false },
@@ -42,35 +44,25 @@ struct obj_info ws_info[MAXSTICKS] = {
     { "cancellation",		 5, 280, NULL, false },
 };
 
-/*
- * fix_stick:
- *	Set up a new stick
- */
-
 void
 fix_stick(THING *cur)
 {
-    if (strcmp(ws_type[cur->o_which], "staff") == 0)
-	strncpy(cur->o_damage,"2x3",sizeof(cur->o_damage));
-    else
-	strncpy(cur->o_damage,"1x1",sizeof(cur->o_damage));
-    strncpy(cur->o_hurldmg,"1x1",sizeof(cur->o_hurldmg));
+  if (strcmp(ws_type[cur->o_which], "staff") == 0)
+    strncpy(cur->o_damage,"2x3",sizeof(cur->o_damage));
+  else
+    strncpy(cur->o_damage,"1x1",sizeof(cur->o_damage));
+  strncpy(cur->o_hurldmg,"1x1",sizeof(cur->o_hurldmg));
 
-    switch (cur->o_which)
-    {
-	case WS_LIGHT:
-	    cur->o_charges = rnd(10) + 10;
-            break;
-	default:
-	    cur->o_charges = rnd(5) + 3;
-            break;
-    }
+  switch (cur->o_which)
+  {
+    case WS_LIGHT:
+      cur->o_charges = rnd(10) + 10;
+      break;
+    default:
+      cur->o_charges = rnd(5) + 3;
+      break;
+  }
 }
-
-/*
- * do_zap:
- *	Perform a zap with a wand
- */
 
 bool
 do_zap(void)
@@ -279,10 +271,6 @@ do_zap(void)
     return true;
 }
 
-/*
- * drain:
- *	Do drain hit points from player shtick
- */
 
 void
 drain(void)
@@ -331,10 +319,6 @@ drain(void)
     }
 }
 
-/*
- * fire_bolt:
- *	Fire a bolt in a given direction from a specific starting place
- */
 
 void
 fire_bolt(coord *start, coord *dir, char *name)
@@ -451,20 +435,16 @@ def:
 	mvaddcch(c2->y, c2->x, chat(c2->y, c2->x));
 }
 
-/*
- * charge_str:
- *	Return an appropriate string for a wand charge
- */
 char *
 charge_str(THING *obj)
 {
-    static char buf[20];
+  static char buf[20];
 
-    if (!(obj->o_flags & ISKNOW))
-	buf[0] = '\0';
-    else if (terse)
-	sprintf(buf, " [%d]", obj->o_charges);
-    else
-	sprintf(buf, " [%d charges]", obj->o_charges);
-    return buf;
+  if (!(obj->o_flags & ISKNOW))
+    buf[0] = '\0';
+  else if (terse)
+    sprintf(buf, " [%d]", obj->o_charges);
+  else
+    sprintf(buf, " [%d charges]", obj->o_charges);
+  return buf;
 }

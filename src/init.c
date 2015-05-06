@@ -32,6 +32,7 @@
 #include "misc.h"
 #include "player.h"
 #include "weapons.h"
+#include "wand.h"
 #include "rogue.h"
 
 #include "init.h"
