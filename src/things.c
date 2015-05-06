@@ -202,6 +202,26 @@ drop(void)
   return true;
 }
 
+static THING *
+new_generic_thing(void)
+{
+  THING *cur = new_item();
+
+  assert (sizeof(cur->o_damage) >= sizeof("0x0"));
+  assert (sizeof(cur->o_hurldmg) >= sizeof("0x0"));
+
+  cur->o_hplus = 0;
+  cur->o_dplus = 0;
+  strcpy(cur->o_damage, "0x0");
+  strcpy(cur->o_hurldmg, "0x0");
+  cur->o_arm = 11;
+  cur->o_count = 1;
+  cur->o_group = 0;
+  cur->o_flags = 0;
+
+  return cur;
+}
+
 /** new_thing:
  * Return a new thing */
 THING *
@@ -220,70 +240,23 @@ new_thing(void)
   switch (r)
   {
     case 0:
-
-      cur = new_item();
-      cur->o_hplus = 0;
-      cur->o_dplus = 0;
-      assert (sizeof(cur->o_damage) >= sizeof("0x0"));
-      strcpy(cur->o_damage, "0x0");
-      assert (sizeof(cur->o_hurldmg) >= sizeof("0x0"));
-      strcpy(cur->o_hurldmg, "0x0");
-      cur->o_arm = 11;
-      cur->o_count = 1;
-      cur->o_group = 0;
-      cur->o_flags = 0;
-
+      cur = new_generic_thing();
       cur->o_type = POTION;
       cur->o_which = pick_one(pot_info, NPOTIONS);
       break;
     case 1:
-      cur = new_item();
-      cur->o_hplus = 0;
-      cur->o_dplus = 0;
-      assert (sizeof(cur->o_damage) >= sizeof("0x0"));
-      strcpy(cur->o_damage, "0x0");
-      assert (sizeof(cur->o_hurldmg) >= sizeof("0x0"));
-      strcpy(cur->o_hurldmg, "0x0");
-      cur->o_arm = 11;
-      cur->o_count = 1;
-      cur->o_group = 0;
-      cur->o_flags = 0;
-
-
+      cur = new_generic_thing();
       cur->o_type = SCROLL;
       cur->o_which = pick_one(scr_info, NSCROLLS);
       break;
     case 2:
-      cur = new_item();
-      cur->o_hplus = 0;
-      cur->o_dplus = 0;
-      assert (sizeof(cur->o_damage) >= sizeof("0x0"));
-      strcpy(cur->o_damage, "0x0");
-      assert (sizeof(cur->o_hurldmg) >= sizeof("0x0"));
-      strcpy(cur->o_hurldmg, "0x0");
-      cur->o_arm = 11;
-      cur->o_count = 1;
-      cur->o_group = 0;
-      cur->o_flags = 0;
-
-
+      cur = new_generic_thing();
       cur->o_type = FOOD;
       no_food = 0;
       cur->o_which = rnd(10) ? 0 : 1;
       break;
     case 3:
-      cur = new_item();
-      cur->o_hplus = 0;
-      cur->o_dplus = 0;
-      assert (sizeof(cur->o_damage) >= sizeof("0x0"));
-      strcpy(cur->o_damage, "0x0");
-      assert (sizeof(cur->o_hurldmg) >= sizeof("0x0"));
-      strcpy(cur->o_hurldmg, "0x0");
-      cur->o_arm = 11;
-      cur->o_count = 1;
-      cur->o_group = 0;
-      cur->o_flags = 0;
-
+      cur = new_generic_thing();
 
       init_weapon(cur, pick_one(weap_info, MAXWEAPONS));
       r = rnd(100);
@@ -296,18 +269,7 @@ new_thing(void)
         cur->o_hplus += rnd(3) + 1;
       break;
     case 4:
-      cur = new_item();
-      cur->o_hplus = 0;
-      cur->o_dplus = 0;
-      assert (sizeof(cur->o_damage) >= sizeof("0x0"));
-      strcpy(cur->o_damage, "0x0");
-      assert (sizeof(cur->o_hurldmg) >= sizeof("0x0"));
-      strcpy(cur->o_hurldmg, "0x0");
-      cur->o_arm = 11;
-      cur->o_count = 1;
-      cur->o_group = 0;
-      cur->o_flags = 0;
-
+      cur = new_generic_thing();
 
       cur->o_type = ARMOR;
       cur->o_which = armor_type_random();
@@ -322,19 +284,7 @@ new_thing(void)
         cur->o_arm -= rnd(3) + 1;
       break;
     case 5:
-      cur = new_item();
-      cur->o_hplus = 0;
-      cur->o_dplus = 0;
-      assert (sizeof(cur->o_damage) >= sizeof("0x0"));
-      strcpy(cur->o_damage, "0x0");
-      assert (sizeof(cur->o_hurldmg) >= sizeof("0x0"));
-      strcpy(cur->o_hurldmg, "0x0");
-      cur->o_arm = 11;
-      cur->o_count = 1;
-      cur->o_group = 0;
-      cur->o_flags = 0;
-
-
+      cur = new_generic_thing();
       cur->o_type = RING;
       cur->o_which = pick_one(ring_info, NRINGS);
       switch (cur->o_which)
