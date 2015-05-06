@@ -93,7 +93,7 @@ inv_name(THING *obj, bool drop)
       nameit(obj, "ring", r_stones[which], &ring_info[which], ring_bonus);
       break;
     case STICK:
-      nameit(obj, ws_type[which], ws_made[which], &ws_info[which], charge_str);
+      nameit(obj, "wand", ws_made[which], &ws_info[which], charge_str);
       break;
     case SCROLL:
       {

@@ -29,6 +29,7 @@
 
 #include "wand.h"
 
+#define NMATERIAL ((sizeof(material)) / sizeof(*material))
 static const char *material[] = {
   /* Wood */
   "avocado wood", "balsa", "bamboo", "banyan", "birch", "cedar", "cherry",
@@ -61,13 +62,10 @@ struct obj_info ws_info[] = {
     { "cancellation",		 5, 280, NULL, false },
 };
 
-void *__wand_material_ptr(void) { return material; }
-
 void wand_init(void)
 {
   size_t i;
   bool used[sizeof(material) / sizeof(*material)];
-  NMATERIAL = sizeof(material) / sizeof(*material);
 
   assert (NMATERIAL >= MAXSTICKS);
 
@@ -81,7 +79,6 @@ void wand_init(void)
     while (used[j])
       j = rnd(NMATERIAL);
 
-    ws_type[i] = "wand";
     ws_made[i] = material[j];
     used[j] = true;
   }
@@ -90,23 +87,30 @@ void wand_init(void)
 bool wand_save_state(void *fd)
 {
   int i;
+
+  /* Save material */
   for (i = 0; i < MAXSTICKS; i++)
     if (state_save_index(fd, material, NMATERIAL, ws_made[i]))
       return 1;
+
+  /* Save obj_info data */
+  state_save_obj_info(fd, ws_info, MAXSTICKS);
   return 0;
 }
 
 bool wand_load_state(void *fd)
 {
   int i = 0;
-  NMATERIAL = sizeof(material) / sizeof(*material);
 
+  /* Load material */
   for (i = 0; i < MAXSTICKS; i++)
   {
     if (state_load_index(fd, material, NMATERIAL, &ws_made[i]))
       return 1;
-    ws_type[i] = "wand";
   }
+
+  /* Load obj_info data */
+  state_load_obj_info(fd, ws_info, MAXSTICKS);
   return 0;
 
 }
@@ -121,10 +125,7 @@ wand_material(enum wand wand)
 void
 fix_stick(THING *cur)
 {
-  if (strcmp(ws_type[cur->o_which], "staff") == 0)
-    strncpy(cur->o_damage,"2x3",sizeof(cur->o_damage));
-  else
-    strncpy(cur->o_damage,"1x1",sizeof(cur->o_damage));
+  strncpy(cur->o_damage,"1x1",sizeof(cur->o_damage));
   strncpy(cur->o_hurldmg,"1x1",sizeof(cur->o_hurldmg));
 
   switch (cur->o_which)

@@ -517,7 +517,7 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
   return 0;
 }
 
-static int
+int
 rs_write_obj_info(FILE *savef, const struct obj_info *i, int count)
 {
   int n;
@@ -535,7 +535,7 @@ rs_write_obj_info(FILE *savef, const struct obj_info *i, int count)
   return 0;
 }
 
-static int
+int
 rs_read_obj_info(FILE *inf, struct obj_info *mi, int count)
 {
   size_t temp_i; /* Used by rs_read_marker */
@@ -1118,7 +1118,6 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_rooms(savef, rooms, MAXROOMS))
   rs_assert(rs_write_room_reference(savef, oldrp))
   rs_assert(rs_write_rooms(savef, passages, MAXPASS))
-  rs_assert(rs_write_obj_info(savef, ws_info,  NPOTIONS))
   rs_assert(rs_write_obj_info(savef, pot_info,  NPOTIONS))
   rs_assert(rs_write_obj_info(savef, ring_info,  NRINGS))
   rs_assert(rs_write_obj_info(savef, scr_info,  NSCROLLS))
@@ -1171,7 +1170,6 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_rooms(inf, rooms, MAXROOMS))
   rs_assert(rs_read_room_reference(inf, &oldrp))
   rs_assert(rs_read_rooms(inf, passages, MAXPASS))
-  rs_assert(rs_read_obj_info(inf, ws_info,  NPOTIONS))
   rs_assert(rs_read_obj_info(inf, pot_info,  NPOTIONS))
   rs_assert(rs_read_obj_info(inf, ring_info,  NRINGS))
   rs_assert(rs_read_obj_info(inf, scr_info,  NSCROLLS))
