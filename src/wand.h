@@ -54,11 +54,11 @@ int wand_get_worth(enum wand wand);
 /* Set name of wand */
 void wand_set_name(enum wand wand, const char *new_name);
 
-/* Set up a new stick */
-void fix_stick(THING *cur);
+/* Set up a new wand */
+THING *wand_create(int which);
 
 /* Perform a zap with a wand */
-bool do_zap(void);
+bool wand_zap(void);
 
 /* Do drain hit points from player shtick */
 void drain(void);

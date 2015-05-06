@@ -125,24 +125,40 @@ wand_material(enum wand wand)
   return _wand_material[wand];
 }
 
-void
-fix_stick(THING *cur)
+THING *
+wand_create(int wand)
 {
-  assert(sizeof("1x1") <= sizeof(cur->o_damage));
-  assert(sizeof("1x1") <= sizeof(cur->o_hurldmg));
+  THING *new_wand = new_item();
 
-  strcpy(cur->o_damage, "1x1");
-  strcpy(cur->o_hurldmg,"1x1");
+  assert(sizeof("1x1") <= sizeof(new_wand->o_damage));
+  assert(sizeof("1x1") <= sizeof(new_wand->o_hurldmg));
 
-  switch (cur->o_which)
+  new_wand->o_hplus = 0;
+  new_wand->o_dplus = 0;
+  strcpy(new_wand->o_damage, "1x1");
+  strcpy(new_wand->o_hurldmg,"1x1");
+  new_wand->o_arm = 11;
+  new_wand->o_count = 1;
+  new_wand->o_group = 0;
+  new_wand->o_flags = 0;
+
+  new_wand->o_type = STICK;
+  if (wand < 0 || wand >= MAXSTICKS)
+    new_wand->o_which = pick_one(wands, MAXSTICKS);
+  else
+    new_wand->o_which = wand;
+
+  switch (new_wand->o_which)
   {
-    case WS_LIGHT: cur->o_charges = rnd(10) + 10; break;
-    default:       cur->o_charges = rnd(5) + 3;   break;
+    case WS_LIGHT: new_wand->o_charges = rnd(10) + 10; break;
+    default:       new_wand->o_charges = rnd(5) + 3;   break;
   }
+
+  return new_wand;
 }
 
 bool
-do_zap(void)
+wand_zap(void)
 {
     THING *obj, *tp;
     int y, x;

@@ -364,4 +364,6 @@ typedef struct {
     int		st_value;
 } STONE;
 
+unsigned pick_one(struct obj_info *start, int nitems);
+
 #endif /* _ROGUE14_ROGUE_H_ */

@@ -223,7 +223,7 @@ command_do(char ch)
     case 't': return get_dir() ? missile(delta.y, delta.x) : false;
     case 'w': return command_wield();
     case 'x': return last_weapon();
-    case 'z': return get_dir() ? do_zap() : false;
+    case 'z': return get_dir() ? wand_zap() : false;
 
     /* Upper case */
     case 'H': case 'J': case 'K': case 'L':
