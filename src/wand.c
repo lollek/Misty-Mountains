@@ -12,6 +12,7 @@
  */
 
 #include <string.h>
+#include <assert.h>
 
 #include "io.h"
 #include "pack.h"
@@ -26,6 +27,21 @@
 #include "rogue.h"
 
 #include "wand.h"
+
+static const char *material[] = {
+  /* Wood */
+  "avocado wood", "balsa", "bamboo", "banyan", "birch", "cedar", "cherry",
+  "cinnibar", "cypress", "dogwood", "driftwood", "ebony", "elm", "eucalyptus",
+  "fall", "hemlock", "holly", "ironwood", "kukui wood", "mahogany",
+  "manzanita", "maple", "oaken", "persimmon wood", "pecan", "pine", "poplar",
+  "redwood", "rosewood", "spruce", "teak", "walnut", "zebrawood",
+
+  /* Metal */
+  "aluminum", "beryllium", "bone", "brass", "bronze", "copper", "electrum",
+  "gold", "iron", "lead", "magnesium", "mercury", "nickel", "pewter",
+  "platinum", "steel", "silver", "silicon", "tin", "titanium", "tungsten",
+  "zinc",
+};
 
 struct obj_info ws_info[] = {
     { "light",			12, 250, NULL, false },
@@ -43,6 +59,39 @@ struct obj_info ws_info[] = {
     { "teleport to",		 6,  50, NULL, false },
     { "cancellation",		 5, 280, NULL, false },
 };
+
+void *__wand_material_ptr(void) { return material; }
+
+void wand_init(void)
+{
+  size_t i;
+  bool used[sizeof(material) / sizeof(*material)];
+  NMATERIAL = sizeof(material) / sizeof(*material);
+
+  assert (NMATERIAL >= MAXSTICKS);
+
+  for (i = 0; i < NMATERIAL; i++)
+    used[i] = false;
+
+  for (i = 0; i < MAXSTICKS; i++)
+  {
+    size_t j = rnd(NMATERIAL);
+
+    while (used[j])
+      j = rnd(NMATERIAL);
+
+    ws_type[i] = "wand";
+    ws_made[i] = material[j];
+    used[j] = true;
+  }
+}
+
+const char *
+wand_material(enum wand wand)
+{
+  assert (wand >= 0 && wand < MAXSTICKS);
+  return ws_made[wand];
+}
 
 void
 fix_stick(THING *cur)

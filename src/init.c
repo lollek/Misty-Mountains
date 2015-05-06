@@ -200,72 +200,6 @@ STONE stones[] = {
 #define NSTONES (sizeof stones / sizeof (STONE))
 int cNSTONES = NSTONES;
 
-const char *wood[] = {
-    "avocado wood",
-    "balsa",
-    "bamboo",
-    "banyan",
-    "birch",
-    "cedar",
-    "cherry",
-    "cinnibar",
-    "cypress",
-    "dogwood",
-    "driftwood",
-    "ebony",
-    "elm",
-    "eucalyptus",
-    "fall",
-    "hemlock",
-    "holly",
-    "ironwood",
-    "kukui wood",
-    "mahogany",
-    "manzanita",
-    "maple",
-    "oaken",
-    "persimmon wood",
-    "pecan",
-    "pine",
-    "poplar",
-    "redwood",
-    "rosewood",
-    "spruce",
-    "teak",
-    "walnut",
-    "zebrawood",
-};
-
-#define NWOOD (sizeof wood / sizeof (char *))
-int cNWOOD = NWOOD;
-
-const char *metal[] = {
-  "aluminum",
-  "beryllium",
-  "bone",
-  "brass",
-  "bronze",
-  "copper",
-  "electrum",
-  "gold",
-  "iron",
-  "lead",
-  "magnesium",
-  "mercury",
-  "nickel",
-  "pewter",
-  "platinum",
-  "steel",
-  "silver",
-  "silicon",
-  "tin",
-  "titanium",
-  "tungsten",
-  "zinc",
-};
-
-#define NMETAL (sizeof metal / sizeof (char *))
-int cNMETAL = NMETAL;
 
 /** init_names:
  * Generate the names of the various scrolls */
@@ -326,51 +260,6 @@ init_stones(void)
   }
 }
 
-/** init_materials:
- * Initialize the construction materials for wands and staffs */
-static void
-init_materials(void)
-{
-  size_t i;
-  bool metused[NMETAL];
-  bool used[NWOOD];
-
-  for (i = 0; i < NWOOD; i++)
-    used[i] = false;
-
-  for (i = 0; i < NMETAL; i++)
-    metused[i] = false;
-
-  for (i = 0; i < MAXSTICKS; i++)
-  {
-    const char *str;
-    for (;;)
-      if (rnd(2) == 0)
-      {
-        size_t j = rnd(NMETAL);
-        if (!metused[j])
-        {
-          ws_type[i] = "wand";
-          str = metal[j];
-          metused[j] = true;
-          break;
-        }
-      }
-      else
-      {
-        size_t j = rnd(NWOOD);
-        if (!used[j])
-        {
-          ws_type[i] = "staff";
-          str = wood[j];
-          used[j] = true;
-          break;
-        }
-      }
-    ws_made[i] = str;
-  }
-}
-
 /** init_probs:
  * Initialize the probabilities for the various items */
 static void
@@ -412,7 +301,7 @@ init_new_game(void)
   init_names();                         /* Set up names of scrolls */
   colors_init();                        /* Set up colors of potions */
   init_stones();                        /* Set up stone settings of rings */
-  init_materials();                     /* Set up materials of wands */
+  wand_init();                          /* Set up materials of wands */
 
   level_new();                          /* Draw current level */
 

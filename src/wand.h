@@ -28,6 +28,13 @@ enum wand
 struct obj_info ws_info[MAXSTICKS];
 const char *ws_made[MAXSTICKS];		/* What sticks are made of */
 char *ws_type[MAXSTICKS];		/* Is it a wand or a staff */
+void *__wand_material_ptr(void);
+size_t NMATERIAL;
+
+/* Sets up wands for use */
+void wand_init(void);
+
+const char *wand_material(enum wand wand);
 
 /* Set up a new stick */
 void fix_stick(THING *cur);

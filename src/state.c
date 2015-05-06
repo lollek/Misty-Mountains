@@ -64,11 +64,7 @@ static const size_t RSID_LRING        = 0xABCD0012;
 static const size_t RSID_NULL         = 0xABCD0000;
 
 /* From init.c */
-extern char *wood[];
-extern char *metal[];
 extern STONE stones[];
-extern int cNWOOD;
-extern int cNMETAL;
 extern int cNSTONES;
 extern int group;
 
@@ -436,10 +432,8 @@ rs_write_sticks(FILE *savef)
   int i;
   for (i = 0; i < MAXSTICKS; i++)
   {
-    int staff_t = strcmp(ws_type[i], "staff");
-    if (rs_write_int(savef, staff_t) ||
-        rs_write_string_index(savef, staff_t ? metal : wood,
-                              staff_t ? cNMETAL : cNWOOD, ws_made[i]))
+    if (rs_write_string_index(savef, __wand_material_ptr(), NMATERIAL,
+                              ws_made[i]))
       return 1;
   }
   return 0;
@@ -449,14 +443,13 @@ static int
 rs_read_sticks(FILE *inf)
 {
   int i = 0;
+  wand_init();
   for (i = 0; i < MAXSTICKS; i++)
   {
-    int list = 0;
-    if (rs_read_int(inf,&list) ||
-        rs_read_string_index(inf, list ? metal : wood,
-                             list ? cNMETAL : cNWOOD, &ws_made[i]))
+    if (rs_read_string_index(inf, __wand_material_ptr(), NMATERIAL,
+                             &ws_made[i]))
       return 1;
-    ws_type[i] = list ? "wand" : "staff";
+    ws_type[i] = "wand";
   }
   return 0;
 }
