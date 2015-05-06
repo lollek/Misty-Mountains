@@ -31,8 +31,13 @@ char *ws_type[MAXSTICKS];		/* Is it a wand or a staff */
 void *__wand_material_ptr(void);
 size_t NMATERIAL;
 
-/* Sets up wands for use */
+/* Sets up wands for use
+ * wand_init or wand_load_state should run before wands are used */
 void wand_init(void);
+bool wand_load_state(void *fd);
+
+/* Save wand state to file */
+bool wand_save_state(void *fd);
 
 const char *wand_material(enum wand wand);
 

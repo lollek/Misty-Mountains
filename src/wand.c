@@ -24,6 +24,7 @@
 #include "level.h"
 #include "player.h"
 #include "weapons.h"
+#include "state.h"
 #include "rogue.h"
 
 #include "wand.h"
@@ -84,6 +85,30 @@ void wand_init(void)
     ws_made[i] = material[j];
     used[j] = true;
   }
+}
+
+bool wand_save_state(void *fd)
+{
+  int i;
+  for (i = 0; i < MAXSTICKS; i++)
+    if (state_save_index(fd, material, NMATERIAL, ws_made[i]))
+      return 1;
+  return 0;
+}
+
+bool wand_load_state(void *fd)
+{
+  int i = 0;
+  NMATERIAL = sizeof(material) / sizeof(*material);
+
+  for (i = 0; i < MAXSTICKS; i++)
+  {
+    if (state_load_index(fd, material, NMATERIAL, &ws_made[i]))
+      return 1;
+    ws_type[i] = "wand";
+  }
+  return 0;
+
 }
 
 const char *

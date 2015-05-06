@@ -63,6 +63,7 @@ static const size_t RSID_RRING        = 0xABCD0013;
 static const size_t RSID_LRING        = 0xABCD0012;
 static const size_t RSID_NULL         = 0xABCD0000;
 
+
 /* From init.c */
 extern STONE stones[];
 extern int cNSTONES;
@@ -220,9 +221,8 @@ rs_read_new_string(FILE *inf, char **s)
   return 0;
 }
 
-static int
-rs_write_string_index(FILE *savef, char * const master[],
-                      int max, const char *str)
+int
+rs_write_string_index(FILE *savef, const char **master, int max, const char *str)
 {
   int i;
   for(i = 0; i < max; i++)
@@ -233,12 +233,12 @@ rs_write_string_index(FILE *savef, char * const master[],
   return rs_write_int(savef, i);
 }
 
-static int
-rs_read_string_index(FILE *inf, char *master[], int maxindex, char const **str)
+int
+rs_read_string_index(FILE *inf, const char **master, int max, const char **str)
 {
   int i;
 
-  if (rs_read_int(inf, &i) || i > maxindex)
+  if (rs_read_int(inf, &i) || i > max)
     return 1;
 
   *str = i >= 0 ? master[i] : NULL;
@@ -423,34 +423,6 @@ rs_read_rings(FILE *inf)
   for (i = 0; i < NRINGS; i++)
     if (rs_read_stone_index(inf, stones, cNSTONES, &r_stones[i]))
       return 1;
-  return 0;
-}
-
-static int
-rs_write_sticks(FILE *savef)
-{
-  int i;
-  for (i = 0; i < MAXSTICKS; i++)
-  {
-    if (rs_write_string_index(savef, __wand_material_ptr(), NMATERIAL,
-                              ws_made[i]))
-      return 1;
-  }
-  return 0;
-}
-
-static int
-rs_read_sticks(FILE *inf)
-{
-  int i = 0;
-  wand_init();
-  for (i = 0; i < MAXSTICKS; i++)
-  {
-    if (rs_read_string_index(inf, __wand_material_ptr(), NMATERIAL,
-                             &ws_made[i]))
-      return 1;
-    ws_type[i] = "wand";
-  }
   return 0;
 }
 
@@ -1121,7 +1093,7 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_scrolls(savef))
   rs_assert(rs_write_char(savef, take))
   rs_assert(rs_write_chars(savef, whoami, maxstr))
-  rs_assert(rs_write_sticks(savef))
+  rs_assert(wand_save_state(savef))
   rs_assert(rs_write_int(savef, hungry_state))
   rs_assert(rs_write_int(savef, level))
   rs_assert(rs_write_int(savef, max_level))
@@ -1172,7 +1144,7 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_scrolls(inf))
   rs_assert(rs_read_char(inf, &take))
   rs_assert(rs_read_chars(inf, whoami, MAXSTR))
-  rs_assert(rs_read_sticks(inf))
+  rs_assert(wand_load_state(inf))
   rs_assert(rs_read_int(inf, &hungry_state))
   rs_assert(rs_read_int(inf, &level))
   rs_assert(rs_read_int(inf, &max_level))
