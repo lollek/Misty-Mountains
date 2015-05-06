@@ -35,12 +35,14 @@ save_file(FILE *savef)
 
   chmod(file_name, 0400);
 
+#ifndef DEBUG
   if (wizard || potential_wizard)
   {
     mpos = 0;
     msg("Cannot save as a wizard");
     return false;
   }
+#endif
 
   encwrite(GAME_VERSION, strlen(GAME_VERSION)+1, savef);
   sprintf(buf,"%d x %d\n", LINES, COLS);
