@@ -92,8 +92,7 @@ bool
 command_name_item(void)
 {
   THING *obj = pack_get_item("rename", RENAMEABLE);
-  char **guess;
-  const char *elsewise = NULL;
+  char **guess = NULL;
   bool already_known = false;
   char tmpbuf[MAXSTR] = { '\0' };
 
@@ -110,33 +109,26 @@ command_name_item(void)
       op = &ring_info[obj->o_which];
       already_known = op->oi_know;
       guess = &op->oi_guess;
-      elsewise = *guess ? *guess : r_stones[obj->o_which];
       break;
 
     case POTION:
       op = &pot_info[obj->o_which];
       already_known = op->oi_know;
       guess = &op->oi_guess;
-      elsewise = *guess ? *guess : p_colors[obj->o_which];
       break;
 
     case SCROLL:
       op = &scr_info[obj->o_which];
       already_known = op->oi_know;
       guess = &op->oi_guess;
-      elsewise = *guess ? *guess : s_names[obj->o_which];
       break;
 
     case STICK:
-      op = &ws_info[obj->o_which];
-      already_known = op->oi_know;
-      guess = &op->oi_guess;
-      elsewise = *guess ? *guess : wand_material(obj->o_which);
+      already_known = wand_is_known(obj->o_which);
       break;
 
     default:
       guess = &obj->o_label;
-      elsewise = obj->o_label;
       break;
   }
 
@@ -146,23 +138,25 @@ command_name_item(void)
     return false;
   }
 
-  if (elsewise != NULL && elsewise == *guess)
-    msg("Was called \"%s\"", elsewise);
-
   msg(terse
       ? "call it? "
       : "What do you want to call it? ");
 
   if (readstr(tmpbuf) == 0)
   {
-    if (*guess != NULL) {
-      free(*guess);
-      *guess = NULL;
-    }
-    if (strlen(tmpbuf) > 0)
+    if (obj->o_type == STICK)
+      wand_set_name(obj->o_which, tmpbuf);
+    else if (guess != NULL)
     {
-      *guess = malloc(strlen(tmpbuf) + 1);
-      strcpy(*guess, tmpbuf);
+      if (*guess != NULL) {
+        free(*guess);
+        *guess = NULL;
+      }
+      if (strlen(tmpbuf) > 0)
+      {
+        *guess = malloc(strlen(tmpbuf) + 1);
+        strcpy(*guess, tmpbuf);
+      }
     }
   }
 

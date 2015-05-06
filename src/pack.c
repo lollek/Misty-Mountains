@@ -111,13 +111,12 @@ pack_print_evaluate_item(THING *obj)
       op->oi_know = true;
       break;
     case STICK:
-      op = &ws_info[obj->o_which];
-      worth = op->oi_worth;
+      wand_get_worth(obj->o_which);
       worth += 20 * obj->o_charges;
       if (!(obj->o_flags & ISKNOW))
         worth /= 2;
       obj->o_flags |= ISKNOW;
-      op->oi_know = true;
+      wand_set_known(obj->o_which);
       break;
     case AMULET:
       worth = 1000;

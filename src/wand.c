@@ -11,6 +11,7 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 
@@ -47,7 +48,7 @@ static const char *material[] = {
 
 static const char *_wand_material[MAXSTICKS];
 
-struct obj_info ws_info[] = {
+static struct obj_info wands[] = {
     { "light",			12, 250, NULL, false },
     { "invisibility",		 6,   5, NULL, false },
     { "lightning",		 3, 330, NULL, false },
@@ -63,6 +64,8 @@ struct obj_info ws_info[] = {
     { "teleport to",		 6,  50, NULL, false },
     { "cancellation",		 5, 280, NULL, false },
 };
+
+void *__wands_ptr(void) { return wands; }
 
 void wand_init(void)
 {
@@ -96,7 +99,7 @@ bool wand_save_state(void *fd)
       return 1;
 
   /* Save obj_info data */
-  state_save_obj_info(fd, ws_info, MAXSTICKS);
+  state_save_obj_info(fd, wands, MAXSTICKS);
   return 0;
 }
 
@@ -110,7 +113,7 @@ bool wand_load_state(void *fd)
       return 1;
 
   /* Load obj_info data */
-  state_load_obj_info(fd, ws_info, MAXSTICKS);
+  state_load_obj_info(fd, wands, MAXSTICKS);
   return 0;
 
 }
@@ -164,7 +167,7 @@ do_zap(void)
 	    /*
 	     * Reddy Kilowat wand.  Light up the room
 	     */
-	    ws_info[WS_LIGHT].oi_know = true;
+	    wands[WS_LIGHT].oi_know = true;
 	    if (player_get_room()->r_flags & ISGONE)
 		msg("the corridor glows and then fades");
 	    else
@@ -235,7 +238,7 @@ do_zap(void)
 			    mvaddcch(y, x, monster);
 			tp->t_oldch = oldch;
 			tp->t_pack = pp;
-			ws_info[WS_POLYMORPH].oi_know |= see_monst(tp);
+			wands[WS_POLYMORPH].oi_know |= see_monst(tp);
 			break;
 		    }
 		    case WS_CANCEL:
@@ -268,7 +271,7 @@ do_zap(void)
 	case WS_MISSILE:
 	{
 	    THING *weapon = pack_equipped_item(EQUIPMENT_RHAND);
-	    ws_info[WS_MISSILE].oi_know = true;
+	    wands[WS_MISSILE].oi_know = true;
 	    bolt.o_type = '*';
 	    strncpy(bolt.o_hurldmg,"1x4",sizeof(bolt.o_hurldmg));
 	    bolt.o_hplus = 100;
@@ -332,7 +335,7 @@ do_zap(void)
 	    else
 		name = "ice";
 	    fire_bolt(player_get_pos(), &delta, name);
-	    ws_info[obj->o_which].oi_know = true;
+	    wands[obj->o_which].oi_know = true;
 	}
         break;
 	case WS_NOP:
@@ -510,15 +513,71 @@ def:
 }
 
 char *
-charge_str(THING *obj)
+wand_description(THING *obj, char *buf)
 {
-  static char buf[20];
+  char *ptr = buf;
+  struct obj_info oi = wands[obj->o_which];
 
-  if (!(obj->o_flags & ISKNOW))
-    buf[0] = '\0';
-  else if (terse)
-    sprintf(buf, " [%d]", obj->o_charges);
+  if (oi.oi_know || oi.oi_guess)
+  {
+    if (obj->o_count == 1)
+      strcpy(ptr, "A wand");
+    else
+      sprintf(ptr, "%d wands", obj->o_count);
+
+    ptr += strlen(ptr);
+    if (oi.oi_know)
+      sprintf(ptr, " of %s", oi.oi_name);
+    else if (oi.oi_guess)
+      sprintf(ptr, " called %s", oi.oi_guess);
+
+    ptr += strlen(ptr);
+    if (obj->o_flags & ISKNOW)
+      sprintf(ptr, " [%d charges]", obj->o_charges);
+
+    ptr += strlen(ptr);
+    sprintf(ptr, " (%s)", wand_material(obj->o_which));
+  }
+  else if (obj->o_count == 1)
+    sprintf(ptr, "A %s wand", wand_material(obj->o_which));
   else
-    sprintf(buf, " [%d charges]", obj->o_charges);
+    sprintf(ptr, "%d %s wands", obj->o_count, wand_material(obj->o_which));
+
   return buf;
+}
+
+const char *wand_nickname(THING *obj)
+{
+  return wands[obj->o_which].oi_guess;
+}
+
+bool wand_is_known(enum wand wand)
+{
+  return wands[wand].oi_know;
+}
+void wand_set_known(enum wand wand)
+{
+  wands[wand].oi_know = true;
+}
+
+void wand_set_name(enum wand wand, const char *new_name)
+{
+  size_t len = strlen(new_name);
+
+  if (wands[wand].oi_guess != NULL)
+  {
+    free(wands[wand].oi_guess);
+    wands[wand].oi_guess = NULL;
+  }
+
+  if (len > 0)
+  {
+    wands[wand].oi_guess = malloc(len + 1);
+    strcpy(wands[wand].oi_guess, new_name);
+  }
+}
+
+int wand_get_worth(enum wand wand)
+{
+  return wands[wand].oi_worth;
 }

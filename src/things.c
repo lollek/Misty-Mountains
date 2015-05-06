@@ -92,9 +92,7 @@ inv_name(THING *obj, bool drop)
     case RING:
       nameit(obj, "ring", r_stones[which], &ring_info[which], ring_bonus);
       break;
-    case STICK:
-      nameit(obj, "wand", wand_material(which), &ws_info[which], charge_str);
-      break;
+    case STICK: wand_description(obj, prbuf); break;
     case SCROLL:
       {
         struct obj_info *op = &scr_info[which];
@@ -292,7 +290,7 @@ new_thing(void)
       break;
     case 6:
       cur->o_type = STICK;
-      cur->o_which = pick_one(ws_info, MAXSTICKS);
+      cur->o_which = pick_one(__wands_ptr(), MAXSTICKS);
       fix_stick(cur);
       break;
     default:
@@ -397,7 +395,7 @@ discovered(void)
       case POTION: discovered_by_type(ch, pot_info, NPOTIONS); break;
       case SCROLL: discovered_by_type(ch, scr_info, NSCROLLS); break;
       case RING: discovered_by_type(ch, ring_info, NRINGS); break;
-      case STICK: discovered_by_type(ch, ws_info, MAXSTICKS); break;
+      case STICK: discovered_by_type(ch, __wands_ptr(), MAXSTICKS); break;
       default: msg(""); return;
     }
   }

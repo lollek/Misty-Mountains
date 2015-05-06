@@ -48,7 +48,7 @@ pr_spec(char ch)
     case POTION: ptr = pot_info;          max = NPOTIONS;  break;
     case SCROLL: ptr = scr_info;          max = NSCROLLS;  break;
     case RING:   ptr = ring_info;         max = NRINGS;    break;
-    case STICK:  ptr = ws_info;           max = MAXSTICKS; break;
+    case STICK:  ptr = __wands_ptr();     max = MAXSTICKS; break;
     case ARMOR:  ptr = __armors_ptr();    max = NARMORS;   break;
     case WEAPON: ptr = weap_info;         max = MAXWEAPONS;break;
     default:     ptr = NULL;              max = 0;         break;

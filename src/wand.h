@@ -24,8 +24,8 @@ enum wand
   MAXSTICKS
 };
 
-/* TODO: Hide these vars */
-struct obj_info ws_info[MAXSTICKS];
+/* TODO: Remove this */
+void *__wands_ptr(void);
 
 /* Sets up wands for use
  * wand_init or wand_load_state should run before wands are used */
@@ -35,7 +35,24 @@ bool wand_load_state(void *fd);
 /* Save wand state to file */
 bool wand_save_state(void *fd);
 
+/* Returns the wand's material as a string */
 const char *wand_material(enum wand wand);
+
+/* Returns a description of the obj (e.g. for inventory screen) */
+char *wand_description(THING *obj, char *buf);
+
+/* What the hero has called the wand (might be NULL) */
+const char *wand_nickname(THING *obj);
+
+/* Does the player know what the wand does? */
+void wand_set_known(enum wand wand);
+bool wand_is_known(enum wand wand);
+
+/* How mmuch gold is the wand worth? */
+int wand_get_worth(enum wand wand);
+
+/* Set name of wand */
+void wand_set_name(enum wand wand, const char *new_name);
 
 /* Set up a new stick */
 void fix_stick(THING *cur);
@@ -49,7 +66,5 @@ void drain(void);
 /* Fire a bolt in a given direction from a specific starting place */
 void fire_bolt(coord *start, coord *dir, char *name);
 
-/* Return an appropriate string for a wand charge */
-char *charge_str(THING *obj);
 
 #endif /* _ROGUE14_WAND_H_ */

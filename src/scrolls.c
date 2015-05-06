@@ -326,7 +326,7 @@ identify(void)
   {
     case SCROLL: set_know(obj, scr_info);  break;
     case POTION: set_know(obj, pot_info);  break;
-    case STICK:  set_know(obj, ws_info);   break;
+    case STICK:  set_know(obj, __wands_ptr());   break;
     case RING:   set_know(obj, ring_info); break;
     case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
   }
