@@ -35,7 +35,7 @@ save_file(FILE *savef)
 
   chmod(file_name, 0400);
 
-#ifndef DEBUG
+#ifdef NDEBUG
   if (wizard || potential_wizard)
   {
     mpos = 0;
