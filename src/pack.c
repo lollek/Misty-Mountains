@@ -423,7 +423,7 @@ pack_get_item(const char *purpose, int type)
 
   pack_clear_inventory();
 
-  if (ch == KEY_ESCAPE)
+  if (ch == KEY_ESCAPE || ch == KEY_SPACE)
   {
     reset_last();
     msg("");

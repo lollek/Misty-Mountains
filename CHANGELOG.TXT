@@ -1,6 +1,7 @@
 v1.2.6
   Nymphs are now green
   Can now uncurse items again
+  Can now use space as escape when selecting items
 
 v1.2.5
   Wandering monsters no longer appear
