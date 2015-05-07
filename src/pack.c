@@ -647,6 +647,6 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   return true;
 }
 
-bool pack_item_is_cursed(THING *item)     { return item->t_flags & ISCURSED; }
-void pack_curse_item(THING *item)         { item->t_flags |= ISCURSED; }
-void pack_uncurse_item(THING *item)       { item->t_flags &= ~ISCURSED; }
+bool pack_item_is_cursed(THING *item)     { return item->o_flags & ISCURSED; }
+void pack_curse_item(THING *item)         { item->o_flags |= ISCURSED; }
+void pack_uncurse_item(THING *item)       { item->o_flags &= ~ISCURSED; }
