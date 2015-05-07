@@ -93,6 +93,10 @@ bool wand_save_state(void *fd)
 {
   int i;
 
+  assert(MAXSTICKS > 0);
+  assert(NMATERIAL > 0);
+  assert(MAXSTICKS <= NMATERIAL);
+
   /* Save material */
   for (i = 0; i < MAXSTICKS; i++)
     if (state_save_index(fd, material, NMATERIAL, _wand_material[i]))
@@ -105,7 +109,11 @@ bool wand_save_state(void *fd)
 
 bool wand_load_state(void *fd)
 {
-  int i = 0;
+  int i;
+
+  assert(MAXSTICKS > 0);
+  assert(NMATERIAL > 0);
+  assert(MAXSTICKS <= NMATERIAL);
 
   /* Load material */
   for (i = 0; i < MAXSTICKS; i++)
@@ -121,7 +129,7 @@ bool wand_load_state(void *fd)
 const char *
 wand_material(enum wand wand)
 {
-  assert (wand >= 0 && wand < MAXSTICKS);
+  assert(wand >= 0 && wand < MAXSTICKS);
   return _wand_material[wand];
 }
 
