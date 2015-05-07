@@ -75,7 +75,15 @@ void monster_set_confused(THING *mon)     { mon->t_flags |= ISHUH; }
 void monster_set_confusing(THING *mon)    { mon->t_flags |= CANHUH; }
 void monster_set_found(THING *mon)        { mon->t_flags |= ISFOUND; }
 void monster_set_hallucinating(THING *mon){ mon->t_flags |= ISHALU; }
-void monster_set_invisible(THING *mon)    { mon->t_flags |= ISINVIS; }
+void monster_set_invisible(THING *mon)
+{
+  mon->t_flags |= ISINVIS;
+  if (cansee(mon->t_pos.y, mon->t_pos.x))
+  {
+    msg("%s disappeared", set_mname(mon));
+    mvaddcch(mon->t_pos.y, mon->t_pos.x, mon->t_oldch);
+  }
+}
 void monster_set_levitating(THING *mon)   { mon->t_flags |= ISLEVIT; }
 void monster_set_true_seeing(THING *mon)  { mon->t_flags |= CANSEE; }
 

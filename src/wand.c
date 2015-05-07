@@ -165,216 +165,43 @@ wand_create(int wand)
   return new_wand;
 }
 
-bool
-wand_zap(void)
+/* This can only be used inside the wand_zap() function */
+static THING *
+wand_find_target(int *y, int *x)
 {
-    THING *obj, *tp;
-    int y, x;
-    char monster, oldch;
-    static THING bolt;
+  coord *player_pos = player_get_pos();
+  *x = player_pos->x;
+  *y = player_pos->y;
 
-    if ((obj = pack_get_item("zap with", STICK)) == NULL)
-	return false;
-    if (obj->o_type != STICK)
-    {
-	msg("you can't zap with that!");
-	return false;
-    }
-    if (obj->o_charges == 0)
-    {
-	msg("nothing happens");
-	return true;
-    }
-    switch (obj->o_which)
-    {
-	case WS_LIGHT:
-	    /*
-	     * Reddy Kilowat wand.  Light up the room
-	     */
-	    wands[WS_LIGHT].oi_know = true;
-	    if (player_get_room()->r_flags & ISGONE)
-		msg("the corridor glows and then fades");
-	    else
-	    {
-		player_get_room()->r_flags &= ~ISDARK;
-		/*
-		 * Light the room and put the player back up
-		 */
-		room_enter(player_get_pos());
-		addmsg("the room is lit");
-		if (!terse)
-		    addmsg(" by a shimmering %s light", pick_color("blue"));
-		endmsg();
-	    }
-            break;
-	case WS_DRAIN:
-	    /*
-	     * take away 1/2 of hero's hit points, then take it away
-	     * evenly from the monsters in the room (or next to hero
-	     * if he is in a passage)
-	     */
-	    if (player_get_health() < 2)
-	    {
-		msg("you are too weak to use it");
-		return true;
-	    }
-	    else
-		drain();
-            break;
-	case WS_INVIS:
-	case WS_POLYMORPH:
-	case WS_TELAWAY:
-	case WS_TELTO:
-	case WS_CANCEL:
-          {
-            coord *player_pos = player_get_pos();
-	    y = player_pos->y;
-	    x = player_pos->x;
-	    while (step_ok(winat(y, x)))
-	    {
-		y += delta.y;
-		x += delta.x;
-	    }
-	    if ((tp = moat(y, x)) != NULL)
-	    {
-		monster = tp->t_type;
-		if (monster == 'F')
-		    player_remove_held();
-		switch (obj->o_which) {
-		    case WS_INVIS:
-			monster_set_invisible(tp);
-			if (cansee(y, x))
-			    mvaddcch(y, x, tp->t_oldch);
-			break;
-		    case WS_POLYMORPH:
-		    {
-			THING *pp;
+  /* "walk" in the zap direction until we find a target */
+  while (step_ok(winat(*y, *x)))
+  {
+    *y += delta.y;
+    *x += delta.x;
+  }
 
-			pp = tp->t_pack;
-			detach(mlist, tp);
-			if (see_monst(tp))
-			    mvaddcch(y, x, chat(y, x));
-			oldch = tp->t_oldch;
-			delta.y = y;
-			delta.x = x;
-			monster_new(tp, monster = (char)(rnd(26) + 'A'), &delta);
-			if (see_monst(tp))
-			    mvaddcch(y, x, monster);
-			tp->t_oldch = oldch;
-			tp->t_pack = pp;
-			wands[WS_POLYMORPH].oi_know |= see_monst(tp);
-			break;
-		    }
-		    case WS_CANCEL:
-			monster_set_cancelled(tp);
-			monster_remove_invisible(tp);
-			monster_remove_confusing(tp);
-			tp->t_disguise = tp->t_type;
-			if (see_monst(tp))
-			    mvaddcch(y, x, tp->t_disguise);
-			break;
-		    case WS_TELAWAY:
-		    case WS_TELTO:
-                    {
-			tp->t_dest = player_pos;
-			tp->t_flags |= ISRUN;
-			if (obj->o_which == WS_TELTO)
-			{
-			    coord new_pos;
-			    new_pos.y = player_pos->y + delta.y;
-			    new_pos.x = player_pos->x + delta.x;
-			    player_teleport(&new_pos);
-			}
-			else
-			    player_teleport(NULL);
-		    }
-		}
-	    }
-          }
-          break;
-	case WS_MISSILE:
-	{
-	    THING *weapon = pack_equipped_item(EQUIPMENT_RHAND);
-	    wands[WS_MISSILE].oi_know = true;
-	    bolt.o_type = '*';
-	    strncpy(bolt.o_hurldmg,"1x4",sizeof(bolt.o_hurldmg));
-	    bolt.o_hplus = 100;
-	    bolt.o_dplus = 1;
-	    bolt.o_flags = ISMISL;
-	    if (weapon != NULL)
-		bolt.o_launch = weapon->o_which;
-	    do_motion(&bolt, delta.y, delta.x);
-	    if ((tp = moat(bolt.o_pos.y, bolt.o_pos.x)) != NULL
-		&& !monster_save_throw(VS_MAGIC, tp))
-		    hit_monster(bolt.o_pos.y, bolt.o_pos.x, &bolt);
-	    else if (terse)
-		msg("missle vanishes");
-	    else
-		msg("the missle vanishes with a puff of smoke");
-	}
-        break;
-	case WS_HASTE_M:
-	case WS_SLOW_M:
-          {
-            coord *player_pos = player_get_pos();
-	    y = player_pos->y;
-	    x = player_pos->x;
-	    while (step_ok(winat(y, x)))
-	    {
-		y += delta.y;
-		x += delta.x;
-	    }
-	    if ((tp = moat(y, x)) != NULL)
-	    {
-		if (obj->o_which == WS_HASTE_M)
-		{
-		    if (on(*tp, ISSLOW))
-			tp->t_flags &= ~ISSLOW;
-		    else
-			tp->t_flags |= ISHASTE;
-		}
-		else
-		{
-		    if (on(*tp, ISHASTE))
-			tp->t_flags &= ~ISHASTE;
-		    else
-			tp->t_flags |= ISSLOW;
-		    tp->t_turn = true;
-		}
-		delta.y = y;
-		delta.x = x;
-		monster_start_running(&delta);
-	    }
-          }
-          break;
-	case WS_ELECT:
-	case WS_FIRE:
-	case WS_COLD:
-	{
-	    char *name;
-	    if (obj->o_which == WS_ELECT)
-		name = "bolt";
-	    else if (obj->o_which == WS_FIRE)
-		name = "flame";
-	    else
-		name = "ice";
-	    fire_bolt(player_get_pos(), &delta, name);
-	    wands[obj->o_which].oi_know = true;
-	}
-        break;
-	case WS_NOP:
-	    break;
-	default:
-	    msg("what a bizarre schtick!");
-            break;
-    }
-    obj->o_charges--;
-    return true;
+  return moat(*y, *x);
 }
 
+static void
+wand_spell_light(void)
+{
+  if (player_get_room()->r_flags & ISGONE)
+  {
+    msg("the corridor glows and then fades");
+    return;
+  }
 
-void
-drain(void)
+  player_get_room()->r_flags &= ~ISDARK;
+  room_enter(player_get_pos());
+  msg("the rooms is lit by a shimmering %s light", pick_color("blue"));
+}
+
+/* take away 1/2 of hero's hit points, then take it away
+ * evenly from the monsters in the room (or next to hero
+ * if he is in a passage) */
+static void
+wand_spell_drain_health(void)
 {
     THING *mp;
     struct room *corp;
@@ -406,6 +233,7 @@ drain(void)
     }
     *dp = NULL;
     player_lose_health(player_get_health() / 2);
+    msg("You feel an intense pain");
     cnt = player_get_health() / cnt;
     /*
      * Now zot all of the monsters
@@ -416,9 +244,270 @@ drain(void)
 	if ((mp->t_stats.s_hpt -= cnt) <= 0)
 	    monster_on_death(mp, see_monst(mp));
 	else
+        {
 	    monster_start_running(&mp->t_pos);
+            msg("%s screams in pain", set_mname(mp));
+        }
     }
 }
+
+static void
+wand_spell_polymorph(THING *target)
+{
+  THING *target_pack;
+  int x;
+  int y;
+  char monster;
+  char oldch;
+  bool was_seen;
+  bool same_monster;
+
+  assert(target != NULL);
+
+  x = target->t_pos.x;
+  y = target->t_pos.y;
+
+  if (target->t_type == 'F')
+    player_remove_held();
+
+  target_pack = target->t_pack;
+  detach(mlist, target);
+  was_seen = see_monst(target);
+  if (was_seen)
+  {
+    mvaddcch(y, x, chat(y, x));
+    addmsg("%s", set_mname(target));
+  }
+  oldch = target->t_oldch;
+
+  delta.y = y;
+  delta.x = x;
+  monster = rnd(26) + 'A';
+  same_monster = monster == target->t_type;
+
+  monster_new(target, monster, &delta);
+  if (see_monst(target))
+  {
+    mvaddcch(y, x, monster);
+    if (same_monster)
+      msg(" now looks a bit different");
+    else
+      msg(" turned into a %s", set_mname(target));
+  }
+  else if (was_seen)
+    msg(" disappeared");
+
+  target->t_oldch = oldch;
+  target->t_pack = target_pack;
+  wands[WS_POLYMORPH].oi_know |= see_monst(target);
+}
+
+static void
+wand_spell_cancel(THING *target)
+{
+  assert(target != NULL);
+
+  if (target->t_type == 'F')
+    player_remove_held();
+
+  monster_set_cancelled(target);
+  monster_remove_invisible(target);
+  monster_remove_confusing(target);
+
+  target->t_disguise = target->t_type;
+  if (see_monst(target))
+    mvaddcch(target->t_pos.y, target->t_pos.x, target->t_disguise);
+}
+
+static void
+wand_spell_magic_missile(int dy, int dx)
+{
+  THING bolt;
+  THING *target;
+  THING *weapon = pack_equipped_item(EQUIPMENT_RHAND);
+
+  assert(sizeof(bolt.o_hurldmg) >= sizeof("1x4"));
+
+  bolt.o_type = '*';
+  bolt.o_hplus = 100;
+  bolt.o_dplus = 1;
+  bolt.o_flags = ISMISL;
+  strcpy(bolt.o_hurldmg,"1x4");
+  if (weapon != NULL)
+    bolt.o_launch = weapon->o_which;
+
+  do_motion(&bolt, dy, dx);
+  target = moat(bolt.o_pos.y, bolt.o_pos.x);
+  if (target == NULL)
+    msg("the missle vanishes with a puff of smoke");
+  else if (monster_save_throw(VS_MAGIC, target))
+    msg("the missle missed the %s", set_mname(target));
+  else
+    hit_monster(bolt.o_pos.y, bolt.o_pos.x, &bolt);
+}
+
+
+
+bool
+wand_zap(void)
+{
+
+  THING *tp;
+  int y;
+  int x;
+  THING *obj = pack_get_item("zap with", STICK);
+
+  if (obj == NULL)
+    return false;
+
+  if (obj->o_type != STICK)
+  {
+    msg("you can't zap with that!");
+    return false;
+  }
+
+  if (obj->o_charges == 0)
+  {
+    msg("nothing happens");
+    return true;
+  }
+
+  assert(obj->o_which >= 0 && obj->o_which < MAXSTICKS);
+
+  switch (obj->o_which)
+  {
+    case WS_LIGHT:
+      wands[WS_LIGHT].oi_know = true;
+      wand_spell_light();
+      break;
+
+    case WS_DRAIN:
+      if (player_get_health() > 1)
+        wand_spell_drain_health();
+      else
+      {
+        msg("you are too weak to use it");
+        return true;
+      }
+      break;
+
+    case WS_INVIS:
+      tp = wand_find_target(&y, &x);
+      if (tp != NULL)
+        monster_set_invisible(tp);
+      else
+        msg("You did not hit anything");
+      break;
+
+    case WS_POLYMORPH:
+      tp = wand_find_target(&y, &x);
+      if (tp != NULL)
+        wand_spell_polymorph(tp);
+      else
+        msg("You did not hit anything");
+      break;
+
+    case WS_CANCEL:
+      tp = wand_find_target(&y, &x);
+      if (tp != NULL)
+        wand_spell_cancel(tp);
+      else
+        msg("You did not hit anything");
+      break;
+
+    case WS_TELAWAY:
+      wands[WS_TELAWAY].oi_know = true;
+      player_teleport(NULL);
+      break;
+
+    case WS_TELTO:
+      wands[WS_TELTO].oi_know = true;
+      tp = wand_find_target(&y, &x);
+      if (tp != NULL)
+      {
+        coord new_pos;
+        new_pos.y = y;
+        new_pos.x = x;
+
+        tp->t_dest = player_get_pos();
+        tp->t_flags |= ISRUN;
+
+        player_teleport(&new_pos);
+      }
+      else
+        msg("You did not hit anything");
+      break;
+
+    case WS_MISSILE:
+      wands[WS_MISSILE].oi_know = true;
+      wand_spell_magic_missile(delta.y, delta.x);
+      break;
+
+    case WS_HASTE_M:
+      {
+        coord c;
+        tp = wand_find_target(&c.y, &c.x);
+        if (tp != NULL)
+        {
+          if (on(*tp, ISSLOW))
+            tp->t_flags &= ~ISSLOW;
+          else
+            tp->t_flags |= ISHASTE;
+          monster_start_running(&c);
+          msg("%s became faster", set_mname(tp));
+        }
+        else
+          msg("You did not hit anything");
+      }
+      break;
+
+    case WS_SLOW_M:
+      {
+        coord c;
+        tp = wand_find_target(&c.y, &c.x);
+        if (tp != NULL)
+        {
+          if (on(*tp, ISHASTE))
+            tp->t_flags &= ~ISHASTE;
+          else
+            tp->t_flags |= ISSLOW;
+          tp->t_turn = true;
+          monster_start_running(&c);
+          msg("%s became slower", set_mname(tp));
+        }
+        else
+          msg("You did not hit anything");
+      }
+      break;
+
+    case WS_ELECT:
+      wands[WS_ELECT].oi_know = true;
+      fire_bolt(player_get_pos(), &delta, "bolt");
+      break;
+
+    case WS_FIRE:
+      wands[WS_FIRE].oi_know = true;
+      fire_bolt(player_get_pos(), &delta, "flame");
+      break;
+
+    case WS_COLD:
+      wands[WS_COLD].oi_know = true;
+      fire_bolt(player_get_pos(), &delta, "ice");
+      break;
+
+    case WS_NOP:
+      msg("You are usure if anything happened");
+      break;
+
+    default:
+      msg("what a bizarre schtick!");
+      break;
+    }
+
+    obj->o_charges--;
+    return true;
+}
+
 
 
 void

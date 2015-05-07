@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <assert.h>
 
 #include "potions.h"
 #include "scrolls.h"
@@ -119,16 +120,10 @@ pr_list(void)
   touchwin(stdscr);
   refresh();
 
-  switch (ch)
-  {
-    case POTION: case SCROLL: case FOOD: case WEAPON: case ARMOR: case RING:
-      pr_spec(ch);
-      msg("");
-      msg("--Press any key to continue--");
-      readchar();
-      break;
-    default: break;
-  }
+  pr_spec(ch);
+  msg("");
+  msg("--Press any key to continue--");
+  readchar();
 
   msg("");
   touchwin(stdscr);
@@ -149,88 +144,100 @@ create_obj(void)
   msg("which %c do you want? (0-f)", type);
   which = (isdigit((ch = readchar())) ? ch - '0' : ch - 'a' + 10);
   mpos = 0;
-  if (type == WEAPON || type == ARMOR)
-  {
-    char bless;
-    obj = new_item();
-    obj->o_type = type;
-    obj->o_which = which;
-    obj->o_group = 0;
-    obj->o_count = 1;
-    msg("blessing? (+,-,n)");
-    bless = readchar();
-    mpos = 0;
-    if (bless == '-')
-      obj->o_flags |= ISCURSED;
-    if (obj->o_type == WEAPON)
-    {
-      init_weapon(obj, obj->o_which);
-      if (bless == '-')
-        obj->o_hplus -= rnd(3)+1;
-      if (bless == '+')
-        obj->o_hplus += rnd(3)+1;
-    }
-    else
-    {
-      obj->o_arm = armor_ac(obj->o_which);
-      if (bless == '-')
-        obj->o_arm += rnd(3)+1;
-      if (bless == '+')
-        obj->o_arm -= rnd(3)+1;
-    }
-  }
-  else if (type == RING)
-  {
-    char bless;
-    obj = new_item();
-    obj->o_type = RING;
-    obj->o_which = which;
-    obj->o_group = 0;
-    obj->o_count = 1;
 
-    switch (obj->o_which)
-    {
-      case R_PROTECT:
-      case R_ADDSTR:
-      case R_ADDHIT:
-      case R_ADDDAM:
+  switch (type)
+  {
+    case WEAPON: case ARMOR:
+      {
+        char bless;
+        obj = new_item();
+        obj->o_type = type;
+        obj->o_which = which;
+        obj->o_group = 0;
+        obj->o_count = 1;
         msg("blessing? (+,-,n)");
         bless = readchar();
         mpos = 0;
         if (bless == '-')
           obj->o_flags |= ISCURSED;
-        obj->o_arm = (bless == '-' ? -1 : rnd(2) + 1);
-        break;
-      case R_AGGR: case R_TELEPORT:
-        obj->o_flags |= ISCURSED;
-        break;
-    }
-  }
-  else if (obj->o_type == STICK)
-  {
-    obj = wand_create(which);
-  }
-  else if (obj->o_type == GOLD)
-  {
-    char buf[MAXSTR] = { '\0' };
-    obj = new_item();
-    obj->o_type = GOLD;
-    obj->o_which = which;
-    obj->o_group = 0;
-    obj->o_count = 1;
-    msg("how much?");
-    if (readstr(buf) == 0)
-      obj->o_goldval = (short) atoi(buf);
-  }
-  else
-  {
-    obj = new_item();
-    obj->o_type = type;
-    obj->o_which = which;
-    obj->o_group = 0;
-    obj->o_count = 1;
+        if (obj->o_type == WEAPON)
+        {
+          init_weapon(obj, obj->o_which);
+          if (bless == '-')
+            obj->o_hplus -= rnd(3)+1;
+          if (bless == '+')
+            obj->o_hplus += rnd(3)+1;
+        }
+        else
+        {
+          obj->o_arm = armor_ac(obj->o_which);
+          if (bless == '-')
+            obj->o_arm += rnd(3)+1;
+          if (bless == '+')
+            obj->o_arm -= rnd(3)+1;
+        }
+      }
+      break;
+
+    case RING:
+      {
+        char bless;
+        obj = new_item();
+        obj->o_type = RING;
+        obj->o_which = which;
+        obj->o_group = 0;
+        obj->o_count = 1;
+
+        switch (obj->o_which)
+        {
+          case R_PROTECT:
+          case R_ADDSTR:
+          case R_ADDHIT:
+          case R_ADDDAM:
+            msg("blessing? (+,-,n)");
+            bless = readchar();
+            mpos = 0;
+            if (bless == '-')
+              obj->o_flags |= ISCURSED;
+            obj->o_arm = (bless == '-' ? -1 : rnd(2) + 1);
+            break;
+          case R_AGGR: case R_TELEPORT:
+            obj->o_flags |= ISCURSED;
+            break;
+        }
+      }
+      break;
+
+    case STICK:
+      obj = wand_create(which);
+      break;
+
+    case GOLD:
+      {
+        char buf[MAXSTR] = { '\0' };
+        obj = new_item();
+        obj->o_type = GOLD;
+        obj->o_which = which;
+        obj->o_group = 0;
+        obj->o_count = 1;
+        msg("how much?");
+        if (readstr(buf) == 0)
+          obj->o_goldval = (short) atoi(buf);
+      }
+      break;
+
+    default:
+      {
+        obj = new_item();
+        obj->o_type = type;
+        obj->o_which = which;
+        obj->o_group = 0;
+        obj->o_count = 1;
+      }
+      break;
   }
 
+  assert(obj != NULL);
   pack_add(obj, false);
 }
 
