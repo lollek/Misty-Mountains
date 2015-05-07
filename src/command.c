@@ -218,7 +218,7 @@ command_do(char ch)
     case 'm': move_on = true; return get_dir() ? command_do(dir_ch) : false;
     case 'o': return option();
     case 'q': return potion_quaff_something();
-    case 'r': read_scroll(); return true;
+    case 'r': return read_scroll();
     case 's': return command_search();
     case 't': return get_dir() ? missile(delta.y, delta.x) : false;
     case 'w': return command_wield();

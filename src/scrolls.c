@@ -333,7 +333,7 @@ identify(void)
   msg(inv_name(obj, false));
 }
 
-void
+bool
 read_scroll(void)
 {
   THING *obj = pack_get_item("read", SCROLL);
@@ -341,14 +341,14 @@ read_scroll(void)
   bool discardit = false;
 
   if (obj == NULL)
-    return;
+    return false;
 
   if (obj->o_type != SCROLL)
   {
     msg(terse
       ? "nothing to read"
       : "there is nothing on it to read");
-    return;
+    return false;
   }
 
   /* Get rid of the thing */
@@ -416,7 +416,7 @@ read_scroll(void)
       break;
     default:
       msg("what a puzzling scroll!");
-      return;
+      return true;
   }
   obj = orig_obj;
   look(true);	/* put the result of the scroll on the screen */
@@ -426,6 +426,8 @@ read_scroll(void)
 
   if (discardit)
     discard(obj);
+
+  return true;
 }
 
 

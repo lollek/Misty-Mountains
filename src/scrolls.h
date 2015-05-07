@@ -29,7 +29,7 @@ extern struct obj_info scr_info[NSCROLLS]; /* Scroll info */
 
 /* Functions */
 void identify(void);        /* Identify something from player's pack */
-void read_scroll(void);     /* Read a scroll from the pack and do the needful */
+bool read_scroll(void);     /* Read a scroll from the pack and do the needful */
 #define learn_scroll(_s) (scr_info[_s].oi_know = true) /* Learn scroll info */
 #define knows_scroll(_s) (scr_info[_s].oi_know) /* Knows what scroll does? */
 
