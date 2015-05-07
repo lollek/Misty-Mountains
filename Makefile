@@ -11,7 +11,7 @@
 
 
 PROGRAM  = rogue14
-VERSION  = 1.2.5
+VERSION  = 1.2.6
 PREFIX   = /usr/local
 SCOREDIR = $(PREFIX)/share/$(PROGRAM)/
 
