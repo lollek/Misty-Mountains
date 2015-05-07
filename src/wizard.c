@@ -36,7 +36,6 @@ void
 pr_spec(char ch)
 {
   WINDOW *printscr = dupwin(stdscr);
-  int lastprob = 0;
   coord orig_pos;
   int i;
   int max;
@@ -64,14 +63,12 @@ pr_spec(char ch)
     if (ptr == __armors_ptr())
     {
       name = ((struct armor_info_t *)ptr)[i].name;
-      prob = ((struct armor_info_t *)ptr)[i].prob - lastprob;
-      lastprob = ((struct armor_info_t *)ptr)[i].prob;
+      prob = ((struct armor_info_t *)ptr)[i].prob;
     }
     else
     {
       name = ((struct obj_info *)ptr)[i].oi_name;
-      prob = ((struct obj_info *)ptr)[i].oi_prob - lastprob;
-      lastprob = ((struct obj_info *)ptr)[i].oi_prob;
+      prob = ((struct obj_info *)ptr)[i].oi_prob;
     }
     wprintw(printscr, "%c: %s (%d%%)", ch, name, prob);
     ch = ch == '9' ? 'a' : (ch + 1);
