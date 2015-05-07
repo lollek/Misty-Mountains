@@ -59,7 +59,6 @@ pr_spec(char ch)
   {
     const char *name;
     int prob;
-    ch = ch == '9' ? 'a' : (ch + 1);
     wmove(printscr, i + 1, 1);
 
     if (ptr == __armors_ptr())
@@ -75,6 +74,7 @@ pr_spec(char ch)
       lastprob = ((struct obj_info *)ptr)[i].oi_prob;
     }
     wprintw(printscr, "%c: %s (%d%%)", ch, name, prob);
+    ch = ch == '9' ? 'a' : (ch + 1);
   }
   wmove(stdscr, orig_pos.y, orig_pos.x);
   wrefresh(printscr);
@@ -141,20 +141,34 @@ create_obj(void)
   msg("type of item: ");
   type = readchar();
   mpos = 0;
+
+  if (!(type == WEAPON || type == ARMOR || type == RING || type == STICK
+      || type == GOLD || type == POTION || type == SCROLL))
+  {
+    msg("Bad pick");
+    return;
+  }
+
   msg("which %c do you want? (0-f)", type);
   which = (isdigit((ch = readchar())) ? ch - '0' : ch - 'a' + 10);
   mpos = 0;
+
+  if (type == STICK)
+    obj = wand_create(which);
+  else
+  {
+    obj = new_item();
+    obj->o_type = type;
+    obj->o_which = which;
+    obj->o_group = 0;
+    obj->o_count = 1;
+  }
 
   switch (type)
   {
     case WEAPON: case ARMOR:
       {
         char bless;
-        obj = new_item();
-        obj->o_type = type;
-        obj->o_which = which;
-        obj->o_group = 0;
-        obj->o_count = 1;
         msg("blessing? (+,-,n)");
         bless = readchar();
         mpos = 0;
@@ -182,12 +196,6 @@ create_obj(void)
     case RING:
       {
         char bless;
-        obj = new_item();
-        obj->o_type = RING;
-        obj->o_which = which;
-        obj->o_group = 0;
-        obj->o_count = 1;
-
         switch (obj->o_which)
         {
           case R_PROTECT:
@@ -208,31 +216,13 @@ create_obj(void)
       }
       break;
 
-    case STICK:
-      obj = wand_create(which);
-      break;
 
     case GOLD:
       {
         char buf[MAXSTR] = { '\0' };
-        obj = new_item();
-        obj->o_type = GOLD;
-        obj->o_which = which;
-        obj->o_group = 0;
-        obj->o_count = 1;
         msg("how much?");
         if (readstr(buf) == 0)
           obj->o_goldval = (short) atoi(buf);
-      }
-      break;
-
-    default:
-      {
-        obj = new_item();
-        obj->o_type = type;
-        obj->o_which = which;
-        obj->o_group = 0;
-        obj->o_count = 1;
       }
       break;
   }
