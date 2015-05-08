@@ -11,6 +11,8 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#include <assert.h>
+
 #include "io.h"
 #include "pack.h"
 #include "command.h"
@@ -335,13 +337,19 @@ daemon_runners_move(void)
       if (!monster_chase(tp))
         continue;
 
+      assert(tp != NULL);
+
       if (on(*tp, ISFLY) && dist_cp(player_get_pos(), &tp->t_pos) >= 3)
         monster_chase(tp);
 
-      if (wastarget && !same_coords(orig_pos, tp->t_pos))
+      if (wastarget)
       {
-        tp->t_flags &= ~ISTARGET;
-        to_death = false;
+        assert (tp != NULL);
+        if (!same_coords(orig_pos, tp->t_pos))
+        {
+          tp->t_flags &= ~ISTARGET;
+          to_death = false;
+        }
       }
     }
   }

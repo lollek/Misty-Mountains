@@ -10,6 +10,7 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#include <assert.h>
 #include <stdlib.h>
 
 #include "scrolls.h"
@@ -32,6 +33,23 @@
 #define DRAGONSHOT  5  /* one chance in DRAGONSHOT that a dragon will flame */
 static coord ch_ret;   /* Where chasing takes you */
 
+static bool
+chase_as_confused(THING *tp, coord *ee)
+{
+  int curdist;
+
+  /* get a valid random move */
+  move_random(tp, &ch_ret);
+  curdist = dist_cp(&ch_ret, ee);
+
+  /* Small chance that it will become un-confused */
+  if (rnd(20) == 0)
+    monster_remove_confused(tp);
+
+  return curdist != 0 && !same_coords(ch_ret, *player_get_pos());
+}
+
+
 /** Chase
  * Find the spot for the chaser(er) to move closer to the chasee(ee). 
  * Returns true if we want to keep on chasing later 
@@ -39,108 +57,93 @@ static coord ch_ret;   /* Where chasing takes you */
 static bool
 chase(THING *tp, coord *ee)
 {
-    THING *obj;
-    int x, y;
-    int curdist, thisdist;
-    coord *er = &tp->t_pos;
-    char ch;
-    int plcnt = 1;
-    static coord tryp;
+  THING *obj;
+  int x;
+  int y;
+  int curdist;
+  int thisdist;
+  coord *er = &tp->t_pos;
+  char ch;
+  int plcnt = 1;
+  static coord tryp;
+  int ey;
+  int ex;
 
-    /*
-     * If the thing is confused, let it move randomly. Invisible
-     * Stalkers are slightly confused all of the time, and bats are
-     * quite confused all the time
-     */
-    if ((monster_is_confused(tp) && rnd(5) != 0)
-        || (tp->t_type == 'P' && rnd(5) == 0)
-	|| (tp->t_type == 'B' && rnd(2) == 0))
+  /* If the thing is confused, let it move randomly. Invisible
+   * Stalkers are slightly confused all of the time, and bats are
+   * quite confused all the time */
+  if ((monster_is_confused(tp) && rnd(5) != 0)
+      || (tp->t_type == 'P' && rnd(5) == 0)
+      || (tp->t_type == 'B' && rnd(2) == 0))
+    return chase_as_confused(tp, ee);
+
+
+
+  /* Otherwise, find the empty spot next to the chaser that is
+   * closest to the chasee. This will eventually hold where we
+   * move to get closer. If we can't find an empty spot,
+   * we stay where we are */
+  curdist = dist_cp(er, ee);
+  ch_ret = *er;
+
+  ey = er->y + 1;
+  if (ey >= NUMLINES - 1)
+    ey = NUMLINES - 2;
+
+  ex = er->x + 1;
+  if (ex >= NUMCOLS)
+    ex = NUMCOLS - 1;
+
+  for (x = er->x - 1; x <= ex; x++)
+  {
+    if (x < 0)
+      continue;
+
+    tryp.x = x;
+    for (y = er->y - 1; y <= ey; y++)
     {
-	/*
-	 * get a valid random move
-	 */
-	move_random(tp, &ch_ret);
-	curdist = dist_cp(&ch_ret, ee);
-	/*
-	 * Small chance that it will become un-confused 
-	 */
-	if (rnd(20) == 0)
-	    monster_remove_confused(tp);
-    }
-    /*
-     * Otherwise, find the empty spot next to the chaser that is
-     * closest to the chasee.
-     */
-    else
-    {
-	int ey, ex;
-	/*
-	 * This will eventually hold where we move to get closer
-	 * If we can't find an empty spot, we stay where we are.
-	 */
-	curdist = dist_cp(er, ee);
-	ch_ret = *er;
+      tryp.y = y;
 
-	ey = er->y + 1;
-	if (ey >= NUMLINES - 1)
-	    ey = NUMLINES - 2;
-	ex = er->x + 1;
-	if (ex >= NUMCOLS)
-	    ex = NUMCOLS - 1;
+      if (!diag_ok(er, &tryp))
+        continue;
 
-	for (x = er->x - 1; x <= ex; x++)
-	{
-	    if (x < 0)
-		continue;
-	    tryp.x = x;
-	    for (y = er->y - 1; y <= ey; y++)
-	    {
-		tryp.y = y;
-		if (!diag_ok(er, &tryp))
-		    continue;
-		ch = winat(y, x);
-		if (step_ok(ch))
-		{
-		    /*
-		     * If it is a scroll, it might be a scare monster scroll
-		     * so we need to look it up to see what type it is.
-		     */
-		    if (ch == SCROLL)
-		    {
-			for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
-			{
-			    if (y == obj->o_pos.y && x == obj->o_pos.x)
-				break;
-			}
-			if (obj != NULL && obj->o_which == S_SCARE)
-			    continue;
-		    }
-		    /*
-		     * It can also be a Xeroc, which we shouldn't step on
-		     */
-		    if ((obj = moat(y, x)) != NULL && obj->t_type == 'X')
-			continue;
-		    /*
-		     * If we didn't find any scrolls at this place or it
-		     * wasn't a scare scroll, then this place counts
-		     */
-		    thisdist = dist(y, x, ee->y, ee->x);
-		    if (thisdist < curdist)
-		    {
-			plcnt = 1;
-			ch_ret = tryp;
-			curdist = thisdist;
-		    }
-		    else if (thisdist == curdist && rnd(++plcnt) == 0)
-		    {
-			ch_ret = tryp;
-			curdist = thisdist;
-		    }
-		}
-	    }
-	}
+      ch = winat(y, x);
+      if (step_ok(ch))
+      {
+        /* If it is a scroll, it might be a scare monster scroll
+         * so we need to look it up to see what type it is */
+        if (ch == SCROLL)
+        {
+          for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
+          {
+            if (y == obj->o_pos.y && x == obj->o_pos.x)
+              break;
+          }
+          if (obj != NULL && obj->o_which == S_SCARE)
+            continue;
+        }
+        /* It can also be a Xeroc, which we shouldn't step on */
+        if ((obj = moat(y, x)) != NULL && obj->t_type == 'X')
+          continue;
+
+        /* If we didn't find any scrolls at this place or it
+         * wasn't a scare scroll, then this place counts */
+        thisdist = dist(y, x, ee->y, ee->x);
+        if (thisdist < curdist)
+        {
+          plcnt = 1;
+          ch_ret = tryp;
+          curdist = thisdist;
+        }
+        else if (thisdist == curdist && rnd(++plcnt) == 0)
+        {
+          ch_ret = tryp;
+          curdist = thisdist;
+        }
+      }
     }
-    return (bool)(curdist != 0 && !same_coords(ch_ret, *player_get_pos()));
+  }
+  return (bool)(curdist != 0 && !same_coords(ch_ret, *player_get_pos()));
 }
 
 
@@ -255,11 +258,24 @@ over:
     if (!same_coords(ch_ret, th->t_pos))
     {
       struct room *oroom;
+      char ch;
+      char fl;
       mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
       th->t_room = roomin(&ch_ret);
       set_oldch(th, &ch_ret);
       oroom = th->t_room;
       moat(th->t_pos.y, th->t_pos.x) = NULL;
+
+      fl = flat(ch_ret.y, ch_ret.x);
+      ch = winat(ch_ret.y, ch_ret.x);
+
+      /* Check if we stepped in a trap */
+      if (!(fl & F_REAL) && ch == FLOOR)
+        ch = TRAP;
+
+      if (ch == TRAP)
+        if (be_trapped(th, &ch_ret) == T_DOOR)
+          return -1;
 
       if (oroom != th->t_room)
         th->t_dest = monster_destination(th);
@@ -276,19 +292,26 @@ over:
     /* And stop running if need be */
     if (stoprun && same_coords(th->t_pos, *(th->t_dest)))
       th->t_flags &= ~ISRUN;
+
     return(0);
 }
 
 bool
 monster_chase(THING *tp)
 {
+  assert(tp != NULL);
+
   if (!on(*tp, ISSLOW) || tp->t_turn)
     if (chase_do(tp) == -1)
       return false;
 
+  assert(tp != NULL);
+
   if (on(*tp, ISHASTE))
     if (chase_do(tp) == -1)
       return false;
+
+  assert(tp != NULL);
 
   tp->t_turn ^= true;
   return true;

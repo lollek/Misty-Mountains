@@ -17,7 +17,9 @@ enum trap_t
   NTRAPS
 };
 
-enum trap_t be_trapped(coord *tc);
+/* Trap victim with trap at position (since it has not yet moved there).
+ * if player, victim should be NULL */
+enum trap_t be_trapped(THING *victim, coord *trap_coord);
 extern const char *trap_names[NTRAPS];
 
 

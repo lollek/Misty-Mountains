@@ -222,7 +222,7 @@ hit_bound:
 	case TRAP:
           {
             coord *player_pos = player_get_pos();
-	    ch = be_trapped(&nh);
+	    ch = be_trapped(NULL, &nh);
 	    if (ch == T_DOOR || ch == T_TELEP)
 		return after;
 	    mvaddcch(player_pos->y, player_pos->x, floor_at());
@@ -251,7 +251,7 @@ hit_bound:
           {
             coord *player_pos = player_get_pos();
 	    if (!(fl & F_REAL))
-		be_trapped(player_pos);
+		be_trapped(NULL, &nh);
 		mvaddcch(player_pos->y, player_pos->x, floor_at());
 		if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
 		    room_leave(&nh);

@@ -1,4 +1,6 @@
 
+#include <assert.h>
+
 #include "command.h"
 #include "io.h"
 #include "armor.h"
@@ -9,6 +11,7 @@
 #include "rings.h"
 #include "misc.h"
 #include "weapons.h"
+#include "monster.h"
 #include "player.h"
 
 #include "traps.h"
@@ -26,18 +29,29 @@ const char *trap_names[NTRAPS] = {
 };
 
 enum trap_t
-be_trapped(coord *tc)
+be_trapped(THING *victim, coord *trap_coord)
 {
-  PLACE *pp = INDEX(tc->y, tc->x);
-  char tr = pp->p_flags & F_TMASK;
+  bool player = victim == NULL;
+  PLACE *pp;
+  char tr;
 
-  /* If we're levitating, we won't trigger the trap */
-  if (player_is_levitating())
-    return T_RUST; /* this needs to be neither T_DOOR nor T_TELEP */
+  assert(trap_coord != NULL);
+  pp = INDEX(trap_coord->y, trap_coord->x);
+  tr = pp->p_flags & F_TMASK;
 
-  pp->p_ch = TRAP;
-  pp->p_flags |= F_SEEN;
-  command_stop(true);
+  if (player)
+  {
+    /* If we're levitating, we won't trigger the trap */
+    if (player_is_levitating())
+      return T_RUST; /* this needs to be neither T_DOOR nor T_TELEP */
+    command_stop(true);
+  }
+
+  if (victim == NULL || see_monst(victim))
+  {
+    pp->p_ch = TRAP;
+    pp->p_flags |= F_SEEN;
+  }
 
   switch (tr)
   {
@@ -94,7 +108,7 @@ be_trapped(coord *tc)
       break;
     case T_TELEP: /* Works for monsters */
       player_teleport(NULL);
-      mvaddcch(tc->y, tc->x, TRAP); /* Mark trap before we leave */
+      mvaddcch(trap_coord->y, trap_coord->x, TRAP); /* Mark trap before we leave */
       break;
     case T_DART:
       if (!fight_swing_hits(player_get_level() + 1, player_get_armor(), 1))
