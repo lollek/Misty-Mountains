@@ -30,6 +30,7 @@
 #include "weapons.h"
 #include "player.h"
 #include "wand.h"
+#include "traps.h"
 #include "rogue.h"
 
 void
@@ -138,6 +139,15 @@ create_obj(void)
   msg("type of item: ");
   type = readchar();
   mpos = 0;
+
+  if (type == TRAP)
+  {
+    coord *player_pos = player_get_pos();
+    char *ptr = &flat(player_pos->y, player_pos->x);
+    *ptr &= ~F_REAL;
+    *ptr |= rnd(NTRAPS);
+    return;
+  }
 
   if (!(type == WEAPON || type == ARMOR || type == RING || type == STICK
       || type == GOLD || type == POTION || type == SCROLL))
