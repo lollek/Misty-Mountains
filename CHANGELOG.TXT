@@ -3,6 +3,7 @@ v1.2.6
   Can now uncurse items again
   Can now use space as escape when selecting items
   Canceling reading a scroll no longer counts as a move
+  Traps now affect monster as well
 
 v1.2.5
   Wandering monsters no longer appear
