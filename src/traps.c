@@ -91,6 +91,23 @@ trap_myst_monster(THING *victim)
   return T_MYST;
 }
 
+static enum trap_t
+trap_sleep_player(void)
+{
+  player_fall_asleep();
+  addmsg("a strange white mist envelops you and ");
+  return T_SLEEP;
+}
+
+static enum trap_t
+trap_sleep_monster(THING *victim)
+{
+  if (see_monst(victim))
+    msg("%s collapsed to the ground", set_mname(victim));
+  monster_become_held(victim);
+  return T_SLEEP;
+}
+
 enum trap_t
 be_trapped(THING *victim, coord *trap_coord)
 {
@@ -131,9 +148,9 @@ be_trapped(THING *victim, coord *trap_coord)
       else        return trap_myst_monster(victim);
 
     case T_SLEEP:
-      player_fall_asleep();
-      addmsg("a strange white mist envelops you and ");
-      break;
+      if (player) return trap_sleep_player();
+      else        return trap_sleep_monster(victim);
+
     case T_ARROW:
       if (fight_swing_hits(player_get_level() - 1, player_get_armor(), 1))
       {
