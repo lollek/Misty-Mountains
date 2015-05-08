@@ -40,6 +40,8 @@ trap_door_player(void)
 static enum trap_t
 trap_door_monster(THING *victim)
 {
+  assert_monster(victim);
+
   if (see_monst(victim))
     msg("%s fell through the floor", set_mname(victim));
   monster_remove_from_screen(&victim->t_pos, victim, false);
@@ -57,6 +59,8 @@ trap_bear_player(void)
 static enum trap_t
 trap_bear_monster(THING *victim)
 {
+  assert_monster(victim);
+
   if (see_monst(victim))
     msg("%s was caught in a bear trap", set_mname(victim));
   monster_become_stuck(victim);
@@ -86,6 +90,8 @@ trap_myst_player(void)
 static enum trap_t
 trap_myst_monster(THING *victim)
 {
+  assert_monster(victim);
+
   if (see_monst(victim))
     msg("%s seems to have stepped on something", set_mname(victim));
   return T_MYST;
@@ -102,6 +108,8 @@ trap_sleep_player(void)
 static enum trap_t
 trap_sleep_monster(THING *victim)
 {
+  assert_monster(victim);
+
   if (see_monst(victim))
     msg("%s collapsed to the ground", set_mname(victim));
   monster_become_held(victim);
@@ -137,7 +145,7 @@ trap_arrow_player(void)
 static enum trap_t
 trap_arrow_monster(THING *victim)
 {
-  assert(victim != NULL);
+  assert_monster(victim);
 
   if (fight_swing_hits(victim->t_stats.s_lvl -1, armor_for_thing(victim), 1))
   {
@@ -162,6 +170,40 @@ trap_arrow_monster(THING *victim)
       msg("An arrow barely missed %s", set_mname(victim));
   }
   return T_ARROW;
+}
+
+static enum trap_t
+trap_telep_player(coord *trap_coord)
+{
+  player_teleport(NULL);
+  mvaddcch(trap_coord->y, trap_coord->x, TRAP); /* Mark trap before we leave */
+  return T_TELEP;
+}
+
+static enum trap_t
+trap_telep_monster(THING *victim)
+{
+  bool was_seen;
+
+  assert_monster(victim);
+
+  was_seen = see_monst(victim);
+  if (was_seen)
+    addmsg("%s ", set_mname(victim));
+
+  monster_teleport(victim, NULL);
+  if (was_seen)
+  {
+    if (see_monst(victim))
+      msg("teleported a short distance");
+    else
+      msg("disappeared");
+  }
+
+  if (!was_seen && see_monst(victim))
+    msg("%s appeared out of thin air", set_mname(victim));
+
+  return T_TELEP;
 }
 
 enum trap_t
@@ -194,27 +236,23 @@ be_trapped(THING *victim, coord *trap_coord)
     case T_DOOR:
       if (player) return trap_door_player();
       else        return trap_door_monster(victim);
-
     case T_BEAR:
       if (player) return trap_bear_player();
       else        return trap_bear_monster(victim);
-
     case T_MYST:
       if (player) return trap_myst_player();
       else        return trap_myst_monster(victim);
-
     case T_SLEEP:
       if (player) return trap_sleep_player();
       else        return trap_sleep_monster(victim);
-
     case T_ARROW:
       if (player) return trap_arrow_player();
       else        return trap_arrow_monster(victim);
 
-    case T_TELEP: /* Works for monsters */
-      player_teleport(NULL);
-      mvaddcch(trap_coord->y, trap_coord->x, TRAP); /* Mark trap before we leave */
-      break;
+    case T_TELEP:
+      if (player) return trap_telep_player(trap_coord);
+      else        return trap_telep_monster(victim);
+
     case T_DART:
       if (!fight_swing_hits(player_get_level() + 1, player_get_armor(), 1))
         msg("a small dart whizzes by your ear and vanishes");

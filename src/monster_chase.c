@@ -264,33 +264,32 @@ over:
 
     if (!same_coords(ch_ret, th->t_pos))
     {
-      struct room *oroom;
-      char ch;
-      char fl;
+      char ch = winat(ch_ret.y, ch_ret.x);
+      char fl = flat(ch_ret.y, ch_ret.x);
+
+      /* Remove monster from old position */
       mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
-      th->t_room = roomin(&ch_ret);
-      set_oldch(th, &ch_ret);
-      oroom = th->t_room;
       moat(th->t_pos.y, th->t_pos.x) = NULL;
 
-      fl = flat(ch_ret.y, ch_ret.x);
-      ch = winat(ch_ret.y, ch_ret.x);
-
       /* Check if we stepped in a trap */
-      if (!(fl & F_REAL) && ch == FLOOR)
-        ch = TRAP;
-
-      if (ch == TRAP)
+      if (ch == TRAP || (!(fl & F_REAL) && ch == FLOOR))
       {
+        coord orig_pos = th->t_pos;
+
         be_trapped(th, &ch_ret);
         if (monster_is_dead(th))
           return -1;
+
+        /* If we've been mysteriously misplaced, let's not touch anything */
+        if (!same_coords(orig_pos, th->t_pos))
+          return 0;
       }
 
       assert_attached(mlist, th);
 
-      if (oroom != th->t_room)
-        th->t_dest = monster_destination(th);
+      /* Put monster in new position */
+      set_oldch(th, &ch_ret);
+      th->t_room = roomin(&ch_ret);
       th->t_pos = ch_ret;
       moat(ch_ret.y, ch_ret.x) = th;
     }

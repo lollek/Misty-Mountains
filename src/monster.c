@@ -86,6 +86,14 @@ void monster_set_invisible(THING *mon)
 }
 void monster_set_levitating(THING *mon)   { mon->t_flags |= ISLEVIT; }
 void monster_set_true_seeing(THING *mon)  { mon->t_flags |= CANSEE; }
+void monster_become_held(THING *mon)
+{
+  mon->t_flags &= ~ISRUN;
+  mon->t_flags |= ISHELD;
+}
+void monster_become_stuck(THING *mon)      { mon->t_flags |= ISSTUCK; }
+
+
 
 void monster_remove_blind(THING *mon)        { mon->t_flags &= ~ISBLIND; }
 void monster_remove_cancelled(THING *mon)    { mon->t_flags &= ~ISCANC; }
@@ -96,6 +104,7 @@ void monster_remove_hallucinating(THING *mon){ mon->t_flags &= ~ISHALU; }
 void monster_remove_invisible(THING *mon)    { mon->t_flags &= ~ISINVIS; }
 void monster_remove_levitating(THING *mon)   { mon->t_flags &= ~ISLEVIT; }
 void monster_remove_true_seeing(THING *mon)  { mon->t_flags &= ~CANSEE; }
+void monster_remove_held(THING *mon)         { mon->t_flags &= ~ISHELD; }
 
 
 
@@ -420,14 +429,35 @@ monster_is_dead(THING *monster)
 }
 
 void
-monster_become_held(THING *monster)
+monster_teleport(THING *monster, coord *destination)
 {
-  monster->t_flags &= ~ISRUN;
-  monster->t_flags |= ISHELD;
-}
+  coord new_pos;
 
-void
-monster_become_stuck(THING *monster)
-{
-  monster->t_flags |= ISSTUCK;
+  /* Select destination */
+  if (destination == NULL)
+    do
+      room_find_floor(NULL, &new_pos, false, true);
+    while (same_coords(new_pos, monster->t_pos));
+  else
+  {
+    new_pos.y = destination->y;
+    new_pos.x = destination->x;
+  }
+  destination = NULL; /* Past this point, use new_pos instead of destination */
+
+  /* Remove monster */
+  if (see_monst(monster))
+    mvaddcch(monster->t_pos.y, monster->t_pos.x, monster->t_oldch);
+  set_oldch(monster, &new_pos);
+  moat(monster->t_pos.y, monster->t_pos.x) = NULL;
+
+  /* Add monster */
+  monster->t_room = roomin(&new_pos);
+  monster->t_pos = new_pos;
+  monster_remove_held(monster);
+
+  if (see_monst(monster))
+    mvaddcch(new_pos.y, new_pos.x, monster->t_disguise);
+  else if (player_can_sense_monsters())
+    mvaddcch(new_pos.y, new_pos.x, monster->t_type | A_STANDOUT);
 }

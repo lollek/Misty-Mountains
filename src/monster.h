@@ -49,6 +49,7 @@ void monster_remove_hallucinating(THING *mon);
 void monster_remove_invisible(THING *mon);
 void monster_remove_levitating(THING *mon);
 void monster_remove_true_seeing(THING *mon);
+void monster_remove_held(THING *mon);
 
 /* Pick a monster to show up.  The lower the level, the meaner the monster. */
 char monster_random(bool wander);
@@ -81,6 +82,8 @@ void monster_on_death(THING *tp, bool pr);
 void monster_remove_from_screen(coord *mp, THING *tp, bool waskill);
 
 bool monster_is_dead(THING *monster);
+
+void monster_teleport(THING *monster, coord *destination);
 
 /** monster_chase.c **/
 bool monster_chase(THING *tp); /* Make a monster chase */
