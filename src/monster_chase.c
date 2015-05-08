@@ -311,18 +311,18 @@ over:
 bool
 monster_chase(THING *tp)
 {
-  assert(tp != NULL);
+  assert_attached(mlist, tp);
 
   if (!on(*tp, ISSLOW) || tp->t_turn)
     if (chase_do(tp) == -1)
       return false;
 
-  assert(tp != NULL);
+  assert_attached(mlist, tp);
   if (on(*tp, ISHASTE))
     if (chase_do(tp) == -1)
       return false;
 
-  assert(tp != NULL);
+  assert_attached(mlist, tp);
   tp->t_turn ^= true;
   return true;
 }

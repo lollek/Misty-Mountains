@@ -217,7 +217,7 @@ monster_notice_player(int y, int x)
   THING *tp = moat(y, x);
   char ch;
 
-  assert(tp != NULL);
+  assert_attached(mlist, tp);
   ch = tp->t_type;
 
   /* Every time he sees mean monster, it might start chasing him */
@@ -279,7 +279,7 @@ void
 monster_start_running(coord *runner)
 {
   THING *tp = moat(runner->y, runner->x);
-  assert(tp != NULL);
+  assert_attached(mlist, tp);
 
   tp->t_dest = monster_destination(tp);
 

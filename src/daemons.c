@@ -20,6 +20,7 @@
 #include "rings.h"
 #include "misc.h"
 #include "player.h"
+#include "list.h"
 #include "rogue.h"
 
 #include "daemons.h"
@@ -337,12 +338,12 @@ daemon_runners_move(void)
       if (!monster_chase(tp))
         continue;
 
-      assert(tp != NULL);
+      assert_attached(mlist, tp);
 
       if (on(*tp, ISFLY) && dist_cp(player_get_pos(), &tp->t_pos) >= 3)
         monster_chase(tp);
 
-      assert(tp != NULL);
+      assert_attached(mlist, tp);
 
       if (wastarget && !same_coords(orig_pos, tp->t_pos))
       {
