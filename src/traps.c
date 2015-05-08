@@ -206,6 +206,66 @@ trap_telep_monster(THING *victim)
   return T_TELEP;
 }
 
+static enum trap_t
+trap_dart_player(void)
+{
+  if (!fight_swing_hits(player_get_level() + 1, player_get_armor(), 1))
+    msg("a small dart whizzes by your ear and vanishes");
+  else
+  {
+    player_lose_health(roll(1, 4));
+    if (player_get_health() <= 0)
+    {
+      msg("a poisoned dart killed you");
+      death('d');
+    }
+    if (!player_has_ring_with_ability(R_SUSTSTR) && !player_save_throw(VS_POISON))
+      player_modify_strength(-1);
+    msg("a small dart just hit you in the shoulder");
+  }
+  return T_DART;
+}
+
+static enum trap_t
+trap_dart_monster(THING *victim)
+{
+  assert_monster(victim);
+
+  /* TODO: In the future this should probably weaken the monster */
+  if (fight_swing_hits(victim->t_stats.s_lvl + 1, armor_for_thing(victim), 1))
+  {
+    victim->t_stats.s_hpt -= roll(1,4);
+    if (victim->t_stats.s_hpt <= 0)
+    {
+      monster_on_death(victim, false);
+      if (see_monst(victim))
+        msg("A poisoned dart killed %s", set_mname(victim));
+    }
+    else if (see_monst(victim))
+      msg("An dart hit %s", set_mname(victim));
+  }
+  else if (see_monst(victim))
+    msg("A dart barely missed %s", set_mname(victim));
+  return T_DART;
+}
+
+static enum trap_t
+trap_rust_player(void)
+{
+  msg("a gush of water hits you on the head");
+  armor_rust();
+  return T_RUST;
+}
+
+static enum trap_t
+trap_rust_monster(THING *victim)
+{
+  assert_monster(victim);
+  if (see_monst(victim))
+    msg("a gush of water hits %s", set_mname(victim));
+  return T_RUST;
+}
+
 enum trap_t
 be_trapped(THING *victim, coord *trap_coord)
 {
@@ -248,35 +308,19 @@ be_trapped(THING *victim, coord *trap_coord)
     case T_ARROW:
       if (player) return trap_arrow_player();
       else        return trap_arrow_monster(victim);
-
     case T_TELEP:
       if (player) return trap_telep_player(trap_coord);
       else        return trap_telep_monster(victim);
-
     case T_DART:
-      if (!fight_swing_hits(player_get_level() + 1, player_get_armor(), 1))
-        msg("a small dart whizzes by your ear and vanishes");
-      else
-      {
-        player_lose_health(roll(1, 4));
-        if (player_get_health() <= 0)
-        {
-          msg("a poisoned dart killed you");
-          death('d');
-        }
-        if (!player_has_ring_with_ability(R_SUSTSTR) && !player_save_throw(VS_POISON))
-          player_modify_strength(-1);
-        msg("a small dart just hit you in the shoulder");
-      }
-      break;
+      if (player) return trap_dart_player();
+      else        return trap_dart_monster(victim);
     case T_RUST:
-      msg("a gush of water hits you on the head");
-      armor_rust();
-      break;
+      if (player) return trap_rust_player();
+      else        return trap_rust_monster(victim);
+    default:
+      assert(0);
+      return T_MYST;
   }
-
-  flushinp();
-  return tr;
 }
 
 
