@@ -140,17 +140,8 @@ create_obj(void)
   type = readchar();
   mpos = 0;
 
-  if (type == TRAP)
-  {
-    coord *player_pos = player_get_pos();
-    char *ptr = &flat(player_pos->y, player_pos->x);
-    *ptr &= ~F_REAL;
-    *ptr |= rnd(NTRAPS);
-    return;
-  }
-
   if (!(type == WEAPON || type == ARMOR || type == RING || type == STICK
-      || type == GOLD || type == POTION || type == SCROLL))
+      || type == GOLD || type == POTION || type == SCROLL || type == TRAP))
   {
     msg("Bad pick");
     return;
@@ -159,6 +150,19 @@ create_obj(void)
   msg("which %c do you want? (0-f)", type);
   which = (isdigit((ch = readchar())) ? ch - '0' : ch - 'a' + 10);
   mpos = 0;
+
+  if (type == TRAP)
+  {
+    coord *player_pos = player_get_pos();
+    char *ptr = &flat(player_pos->y, player_pos->x);
+
+    if (which < 0 || which >= NTRAPS)
+      msg("Bad trap id");
+
+    *ptr &= ~F_REAL;
+    *ptr |= which;
+    return;
+  }
 
   if (type == STICK)
     obj = wand_create(which);
