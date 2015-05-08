@@ -28,6 +28,24 @@ const char *trap_names[NTRAPS] = {
   "a mysterious trap"
 };
 
+static enum trap_t
+trap_door_player(void)
+{
+  level++;
+  level_new();
+  msg("you fell into a trap!");
+  return T_DOOR;
+}
+
+static enum trap_t
+trap_door_monster(THING *victim)
+{
+  if (see_monst(victim))
+    msg("%s fell through the floor", set_mname(victim));
+  monster_remove_from_screen(&victim->t_pos, victim, false);
+  return T_DOOR;
+}
+
 enum trap_t
 be_trapped(THING *victim, coord *trap_coord)
 {
@@ -56,10 +74,9 @@ be_trapped(THING *victim, coord *trap_coord)
   switch (tr)
   {
     case T_DOOR:
-      level++;
-      level_new();
-      msg("you fell into a trap!");
-      break;
+      if (player) return trap_door_player();
+      else        return trap_door_monster(victim);
+
     case T_BEAR:
       player_become_stuck();
       msg("you are caught in a bear trap");
