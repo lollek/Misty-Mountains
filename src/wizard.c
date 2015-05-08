@@ -158,9 +158,11 @@ create_obj(void)
 
     if (which < 0 || which >= NTRAPS)
       msg("Bad trap id");
-
-    *ptr &= ~F_REAL;
-    *ptr |= which;
+    else
+    {
+      *ptr &= ~F_REAL;
+      *ptr |= which;
+    }
     return;
   }
 
