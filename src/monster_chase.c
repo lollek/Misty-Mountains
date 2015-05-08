@@ -152,7 +152,7 @@ static int
 chase_do(THING *th)
 {
     coord *cp;
-    struct room *rer = th->t_room; /* room of chaser, */
+    struct room *rer; /* room of chaser, */
     struct room *ree; /* room of chasee */
     int mindist = 32767;
     int curdist;
@@ -161,6 +161,9 @@ chase_do(THING *th)
     THING *obj;
     static coord this; /* Temporary destination for chaser */
     coord *player_pos = player_get_pos();
+
+    assert_attached(mlist, th);
+    rer = th->t_room;
 
     if (on(*th, ISGREED) && rer->r_goldval == 0)
 	th->t_dest = player_pos;	/* If gold has been taken, run after hero */
@@ -224,6 +227,7 @@ over:
 	    return(0);
 	}
     }
+
     /*
      * This now contains what we want to run to this time
      * so we run to it.  If we hit it we either want to fight it
@@ -277,8 +281,13 @@ over:
         ch = TRAP;
 
       if (ch == TRAP)
-        if (be_trapped(th, &ch_ret) == T_DOOR)
+      {
+        be_trapped(th, &ch_ret);
+        if (monster_is_dead(th))
           return -1;
+      }
+
+      assert_attached(mlist, th);
 
       if (oroom != th->t_room)
         th->t_dest = monster_destination(th);
@@ -309,13 +318,11 @@ monster_chase(THING *tp)
       return false;
 
   assert(tp != NULL);
-
   if (on(*tp, ISHASTE))
     if (chase_do(tp) == -1)
       return false;
 
   assert(tp != NULL);
-
   tp->t_turn ^= true;
   return true;
 }

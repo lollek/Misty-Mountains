@@ -108,6 +108,62 @@ trap_sleep_monster(THING *victim)
   return T_SLEEP;
 }
 
+static enum trap_t
+trap_arrow_player(void)
+{
+  if (fight_swing_hits(player_get_level() - 1, player_get_armor(), 1))
+  {
+    player_lose_health(roll(1, 6));
+    if (player_get_health() <= 0)
+    {
+      msg("an arrow killed you");
+      death('a');
+    }
+    else
+      msg("oh no! An arrow shot you");
+  }
+  else
+  {
+    THING *arrow = new_item();
+    init_weapon(arrow, ARROW);
+    arrow->o_count = 1;
+    arrow->o_pos = *player_get_pos();
+    fall(arrow, false);
+    msg("an arrow shoots past you");
+  }
+  return T_ARROW;
+}
+
+static enum trap_t
+trap_arrow_monster(THING *victim)
+{
+  assert(victim != NULL);
+
+  if (fight_swing_hits(victim->t_stats.s_lvl -1, armor_for_thing(victim), 1))
+  {
+    victim->t_stats.s_hpt -= roll(1,6);
+    if (victim->t_stats.s_hpt <= 0)
+    {
+      monster_on_death(victim, false);
+      if (see_monst(victim))
+        msg("An arrow killed %s", set_mname(victim));
+    }
+    else if (see_monst(victim))
+      msg("An arrow shot %s", set_mname(victim));
+  }
+  else
+  {
+    THING *arrow = new_item();
+    init_weapon(arrow, ARROW);
+    arrow->o_count = 1;
+    arrow->o_pos = victim->t_pos;
+    fall(arrow, false);
+    if (see_monst(victim))
+      msg("An arrow barely missed %s", set_mname(victim));
+  }
+  return T_ARROW;
+}
+
 enum trap_t
 be_trapped(THING *victim, coord *trap_coord)
 {
@@ -152,27 +208,9 @@ be_trapped(THING *victim, coord *trap_coord)
       else        return trap_sleep_monster(victim);
 
     case T_ARROW:
-      if (fight_swing_hits(player_get_level() - 1, player_get_armor(), 1))
-      {
-        player_lose_health(roll(1, 6));
-        if (player_get_health() <= 0)
-        {
-          msg("an arrow killed you");
-          death('a');
-        }
-        else
-          msg("oh no! An arrow shot you");
-      }
-      else
-      {
-        THING *arrow = new_item();
-        init_weapon(arrow, ARROW);
-        arrow->o_count = 1;
-        arrow->o_pos = *player_get_pos();
-        fall(arrow, false);
-        msg("an arrow shoots past you");
-      }
-      break;
+      if (player) return trap_arrow_player();
+      else        return trap_arrow_monster(victim);
+
     case T_TELEP: /* Works for monsters */
       player_teleport(NULL);
       mvaddcch(trap_coord->y, trap_coord->x, TRAP); /* Mark trap before we leave */

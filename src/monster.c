@@ -405,6 +405,20 @@ monster_remove_from_screen(coord *mp, THING *tp, bool waskill)
   discard(tp);
 }
 
+bool
+monster_is_dead(THING *monster)
+{
+  THING *ptr = mlist;
+
+  if (monster == NULL)
+    return true;
+
+  while (ptr != NULL && ptr != monster)
+    ptr = ptr->l_next;
+
+  return ptr != monster;
+}
+
 void
 monster_become_held(THING *monster)
 {

@@ -342,14 +342,12 @@ daemon_runners_move(void)
       if (on(*tp, ISFLY) && dist_cp(player_get_pos(), &tp->t_pos) >= 3)
         monster_chase(tp);
 
-      if (wastarget)
+      assert(tp != NULL);
+
+      if (wastarget && !same_coords(orig_pos, tp->t_pos))
       {
-        assert (tp != NULL);
-        if (!same_coords(orig_pos, tp->t_pos))
-        {
-          tp->t_flags &= ~ISTARGET;
-          to_death = false;
-        }
+        tp->t_flags &= ~ISTARGET;
+        to_death = false;
       }
     }
   }

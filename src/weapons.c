@@ -12,6 +12,7 @@
 
 #include <string.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include "io.h"
 #include "pack.h"
@@ -212,6 +213,8 @@ int
 hit_monster(int y, int x, THING *obj)
 {
   static coord mp;
+
+  assert(obj != NULL);
 
   mp.y = y;
   mp.x = x;

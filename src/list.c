@@ -10,12 +10,26 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#include <assert.h>
 #include <stdlib.h>
 
 #include "io.h"
 #include "rogue.h"
 
 #include "list.h"
+
+#ifndef NDEBUG
+void
+_assert_attached(THING *list, THING *item)
+{
+  assert(list != NULL);
+
+  while (list != NULL && list != item)
+    list = list->l_next;
+
+  assert(list == item);
+}
+#endif
 
 void
 _detach(THING **list, THING *item)

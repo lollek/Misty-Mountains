@@ -80,6 +80,8 @@ void monster_on_death(THING *tp, bool pr);
 /* Remove a monster from the screen */
 void monster_remove_from_screen(coord *mp, THING *tp, bool waskill);
 
+bool monster_is_dead(THING *monster);
+
 /** monster_chase.c **/
 bool monster_chase(THING *tp); /* Make a monster chase */
 

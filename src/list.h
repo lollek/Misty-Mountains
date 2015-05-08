@@ -1,6 +1,13 @@
 #ifndef _ROGUE14_LIST_H_
 #define _ROGUE14_LIST_H_
 
+#ifndef NDEBUG
+#define assert_attached(a, b) _assert_attached(a, b)
+void _assert_attached(THING *list, THING *item);
+#else
+#define assert_attached(a, b) (void)
+#endif
+
 /* takes an item out of whatever linked list it might be in */
 #define detach(a,b) _detach(&a,b)
 void _detach(THING **list, THING *item);
