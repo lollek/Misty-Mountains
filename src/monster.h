@@ -48,26 +48,6 @@ void monster_remove_invisible(THING *mon);
 void monster_remove_levitating(THING *mon);
 void monster_remove_true_seeing(THING *mon);
 
-bool monster_is_confused(THING *mon);
-bool monster_is_cancelled(THING *mon);
-bool monster_is_blind(THING *mon);
-bool monster_is_confusing(THING *mon);
-bool monster_is_found(THING *mon);
-bool monster_is_hallucinating(THING *mon);
-bool monster_is_invisible(THING *mon);
-bool monster_is_levitating(THING *mon);
-bool monster_is_true_seeing(THING *mon);
-
-void monster_set_confused(THING *mon);
-void monster_set_cancelled(THING *mon);
-void monster_set_blind(THING *mon);
-void monster_set_confusing(THING *mon);
-void monster_set_found(THING *mon);
-void monster_set_hallucinating(THING *mon);
-void monster_set_invisible(THING *mon);
-void monster_set_levitating(THING *mon);
-void monster_set_true_seeing(THING *mon);
-
 /* Pick a monster to show up.  The lower the level, the meaner the monster. */
 char monster_random(bool wander);
 
