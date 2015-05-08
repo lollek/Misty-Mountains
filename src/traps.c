@@ -63,6 +63,34 @@ trap_bear_monster(THING *victim)
   return T_BEAR;
 }
 
+static enum trap_t
+trap_myst_player(void)
+{
+  switch(rnd(11))
+  {
+    case 0: msg("you are suddenly in a parallel dimension"); break;
+    case 1: msg("the light in here suddenly seems %s", colors_random()); break;
+    case 2: msg("you feel a sting in the side of your neck"); break;
+    case 3: msg("multi-colored lines swirl around you, then fade"); break;
+    case 4: msg("a %s light flashes in your eyes", colors_random()); break;
+    case 5: msg("a spike shoots past your ear!"); break;
+    case 6: msg("%s sparks dance across your armor", colors_random()); break;
+    case 7: msg("you suddenly feel very thirsty"); break;
+    case 8: msg("you feel time speed up suddenly"); break;
+    case 9: msg("time now seems to be going slower"); break;
+    case 10: msg("you pack turns %s!", colors_random()); break;
+  }
+  return T_MYST;
+}
+
+static enum trap_t
+trap_myst_monster(THING *victim)
+{
+  if (see_monst(victim))
+    msg("%s seems to have stepped on something", set_mname(victim));
+  return T_MYST;
+}
+
 enum trap_t
 be_trapped(THING *victim, coord *trap_coord)
 {
@@ -99,21 +127,9 @@ be_trapped(THING *victim, coord *trap_coord)
       else        return trap_bear_monster(victim);
 
     case T_MYST:
-      switch(rnd(11))
-      {
-        case 0: msg("you are suddenly in a parallel dimension"); break;
-        case 1: msg("the light in here suddenly seems %s", colors_random()); break;
-        case 2: msg("you feel a sting in the side of your neck"); break;
-        case 3: msg("multi-colored lines swirl around you, then fade"); break;
-        case 4: msg("a %s light flashes in your eyes", colors_random()); break;
-        case 5: msg("a spike shoots past your ear!"); break;
-        case 6: msg("%s sparks dance across your armor", colors_random()); break;
-        case 7: msg("you suddenly feel very thirsty"); break;
-        case 8: msg("you feel time speed up suddenly"); break;
-        case 9: msg("time now seems to be going slower"); break;
-        case 10: msg("you pack turns %s!", colors_random()); break;
-      }
-      break;
+      if (player) return trap_myst_player();
+      else        return trap_myst_monster(victim);
+
     case T_SLEEP:
       player_fall_asleep();
       addmsg("a strange white mist envelops you and ");
