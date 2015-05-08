@@ -217,7 +217,7 @@ monster_notice_player(int y, int x)
   THING *tp = moat(y, x);
   char ch;
 
-  assert_or_die(tp != NULL, "can't find monster in monster_notice_player");
+  assert(tp != NULL);
   ch = tp->t_type;
 
   /* Every time he sees mean monster, it might start chasing him */
@@ -225,7 +225,8 @@ monster_notice_player(int y, int x)
       && !player_has_ring_with_ability(R_STEALTH) && !player_is_levitating())
   {
     tp->t_dest = player_pos;
-    tp->t_flags |= ISRUN;
+    if (!on(*tp, ISSTUCK))
+      tp->t_flags |= ISRUN;
   }
 
   if (ch == 'M' && !player_is_blind() && !player_is_hallucinating()
@@ -278,12 +279,16 @@ void
 monster_start_running(coord *runner)
 {
   THING *tp = moat(runner->y, runner->x);
-  assert_or_die (tp != NULL, "couldn't find monster in monster_start_running");
+  assert(tp != NULL);
+
+  tp->t_dest = monster_destination(tp);
+
+  if (tp->t_flags & ISSTUCK)
+    return;
 
   /* Start the beastie running */
   tp->t_flags |= ISRUN;
   tp->t_flags &= ~ISHELD;
-  tp->t_dest = monster_destination(tp);
 }
 
 coord *
@@ -400,3 +405,15 @@ monster_remove_from_screen(coord *mp, THING *tp, bool waskill)
   discard(tp);
 }
 
+void
+monster_become_held(THING *monster)
+{
+  monster->t_flags &= ~ISRUN;
+  monster->t_flags |= ISHELD;
+}
+
+void
+monster_become_stuck(THING *monster)
+{
+  monster->t_flags |= ISSTUCK;
+}

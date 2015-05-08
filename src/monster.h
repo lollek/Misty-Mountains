@@ -36,6 +36,8 @@ void monster_set_hallucinating(THING *mon);
 void monster_set_invisible(THING *mon);
 void monster_set_levitating(THING *mon);
 void monster_set_true_seeing(THING *mon);
+void monster_become_stuck(THING *monster);
+void monster_become_held(THING *monster);
 
 void monster_remove_blind(THING *mon);
 void monster_remove_cancelled(THING *mon);
@@ -80,5 +82,6 @@ void monster_remove_from_screen(coord *mp, THING *tp, bool waskill);
 
 /** monster_chase.c **/
 bool monster_chase(THING *tp); /* Make a monster chase */
+
 
 #endif /* _ROGUE14_MONSTER_H_ */

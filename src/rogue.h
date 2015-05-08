@@ -142,6 +142,7 @@ extern enum rogue_game_t
 #define SEEMONST 040000		/* hero can detect unseen monsters */
 #define ISFLY	0040000		/* creature can fly */
 #define ISSLOW	0100000		/* creature has been slowed */
+#define ISSTUCK	0200000		/* creature cannot move its feet */
 
 /*
  * Flags for level map
@@ -228,7 +229,7 @@ union thing {
 	char _t_disguise;		/* What mimic looks like */
 	char _t_oldch;			/* Character that was where it was */
 	coord *_t_dest;			/* Where it is running to */
-	short _t_flags;			/* State word */
+	unsigned _t_flags;		/* State word */
 	struct stats _t_stats;		/* Physical description */
 	struct room *_t_room;		/* Current room for thing */
 	union thing *_t_pack;		/* What the thing is carrying */

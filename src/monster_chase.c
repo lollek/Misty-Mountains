@@ -255,6 +255,9 @@ over:
 	    return(0);
     }
 
+    if (on(*th, ISSTUCK))
+      return 1;
+
     if (!same_coords(ch_ret, th->t_pos))
     {
       struct room *oroom;

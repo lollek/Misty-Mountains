@@ -97,8 +97,7 @@ hold_monsters(void)
           monster = moat(y, x);
           if (monster != NULL && on(*monster, ISRUN))
           {
-            monster->t_flags &= ~ISRUN;
-            monster->t_flags |= ISHELD;
+            monster_become_held(monster);
             monsters_affected++;
           }
         }

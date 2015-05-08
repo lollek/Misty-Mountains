@@ -46,6 +46,23 @@ trap_door_monster(THING *victim)
   return T_DOOR;
 }
 
+static enum trap_t
+trap_bear_player(void)
+{
+  player_become_stuck();
+  msg("you are caught in a bear trap");
+  return T_BEAR;
+}
+
+static enum trap_t
+trap_bear_monster(THING *victim)
+{
+  if (see_monst(victim))
+    msg("%s was caught in a bear trap", set_mname(victim));
+  monster_become_stuck(victim);
+  return T_BEAR;
+}
+
 enum trap_t
 be_trapped(THING *victim, coord *trap_coord)
 {
@@ -78,9 +95,9 @@ be_trapped(THING *victim, coord *trap_coord)
       else        return trap_door_monster(victim);
 
     case T_BEAR:
-      player_become_stuck();
-      msg("you are caught in a bear trap");
-      break;
+      if (player) return trap_bear_player();
+      else        return trap_bear_monster(victim);
+
     case T_MYST:
       switch(rnd(11))
       {
