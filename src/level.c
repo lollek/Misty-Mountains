@@ -37,6 +37,7 @@
 #define MAXTRAPS	10
 
 THING *lvl_obj = NULL;
+coord stairs;
 
 
 /** treas_room:

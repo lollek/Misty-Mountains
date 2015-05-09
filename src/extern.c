@@ -55,7 +55,6 @@ unsigned seed;				/* Random number seed */
 
 coord delta;				/* Change indicated to get_dir() */
 coord oldpos;				/* Position before last look() call */
-coord stairs;				/* Location of staircase */
 
 THING *l_last_pick = NULL;		/* Last last_pick */
 THING *last_pick = NULL;		/* Last object picked in pack_get_item() */
