@@ -19,6 +19,7 @@
 #include "score.h"
 #include "options.h"
 #include "io.h"
+#include "state.h"
 #include "rogue.h"
 
 #include "save.h"

@@ -33,6 +33,7 @@
 #include "player.h"
 #include "weapons.h"
 #include "wand.h"
+#include "state.h"
 #include "rogue.h"
 
 #include "init.h"
@@ -338,7 +339,7 @@ init_old_game(void)
   if (init_graphics() != 0)
     return false;
 
-  if (rs_restore_file(inf) != 0)
+  if (state_restore_file(inf) != 0)
   {
     endwin();
     printf(": Corrupted save game\n");

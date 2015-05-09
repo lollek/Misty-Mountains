@@ -344,8 +344,6 @@ extern struct obj_info things[];
  */
 
 
-int	rs_save_file(FILE *savef);
-int	rs_restore_file(FILE *inf);
 
 
 
