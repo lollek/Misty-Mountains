@@ -27,6 +27,7 @@
 #include "player.h"
 #include "weapons.h"
 #include "things.h"
+#include "rip.h"
 #include "rogue.h"
 
 #include "fight.h"

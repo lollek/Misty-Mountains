@@ -34,6 +34,7 @@
 #include "weapons.h"
 #include "wand.h"
 #include "things.h"
+#include "rip.h"
 #include "rogue.h"
 
 #include "command.h"

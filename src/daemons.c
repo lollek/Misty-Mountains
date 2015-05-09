@@ -21,6 +21,7 @@
 #include "misc.h"
 #include "player.h"
 #include "list.h"
+#include "rip.h"
 #include "rogue.h"
 
 #include "daemons.h"

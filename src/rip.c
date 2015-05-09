@@ -30,6 +30,8 @@
 #include "command.h"
 #include "rogue.h"
 
+#include "rip.h"
+
 static char *rip[] = {
 "                       __________\n",
 "                      /          \\\n",
@@ -98,14 +100,6 @@ killname(char monst, bool doart)
   strcat(prbuf, sp);
   return prbuf;
 }
-
-
-
-/*
- * score:
- *	Figure score and post it.
- */
-/* VARARGS2 */
 
 void
 score(int amount, int flags, char monst)
@@ -235,11 +229,6 @@ score(int amount, int flags, char monst)
       score_write(top_ten);
 }
 
-/*
- * death:
- *	Do something really fun when he dies
- */
-
 void
 death(char monst)
 {
@@ -289,10 +278,6 @@ death(char monst)
     exit(0);
 }
 
-/*
- * total_winner:
- *	Code for a winner
- */
 
 void
 total_winner(void)

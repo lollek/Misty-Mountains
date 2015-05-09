@@ -24,6 +24,7 @@
 #include "misc.h"
 #include "rooms.h"
 #include "player.h"
+#include "rip.h"
 #include "rogue.h"
 
 enum game_mode_t

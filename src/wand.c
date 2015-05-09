@@ -27,6 +27,7 @@
 #include "weapons.h"
 #include "state.h"
 #include "things.h"
+#include "rip.h"
 #include "rogue.h"
 
 #include "wand.h"

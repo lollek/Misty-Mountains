@@ -344,11 +344,8 @@ extern struct obj_info things[];
  */
 
 
-void	death(char monst);
 int	rs_save_file(FILE *savef);
 int	rs_restore_file(FILE *inf);
-void	score(int amount, int flags, char monst);
-void	total_winner(void);
 
 
 
