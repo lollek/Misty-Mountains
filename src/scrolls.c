@@ -12,7 +12,6 @@
 
 #include <stdlib.h>
 
-#include "scrolls.h"
 #include "io.h"
 #include "pack.h"
 #include "list.h"
@@ -24,7 +23,10 @@
 #include "rings.h"
 #include "weapons.h"
 #include "wand.h"
+#include "things.h"
 #include "rogue.h"
+
+#include "scrolls.h"
 
 char *s_names[NSCROLLS];
 struct obj_info scr_info[NSCROLLS] = {

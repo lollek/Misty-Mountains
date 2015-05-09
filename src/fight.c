@@ -26,6 +26,7 @@
 #include "level.h"
 #include "player.h"
 #include "weapons.h"
+#include "things.h"
 #include "rogue.h"
 
 #include "fight.h"

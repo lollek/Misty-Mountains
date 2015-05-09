@@ -30,6 +30,8 @@
 #include "wand.h"
 #include "rogue.h"
 
+#include "things.h"
+
 /* Only oi_prob is used
  *    oi_name  oi_prob oi_worth oi_guess oi_know */
 struct obj_info things[] = {
@@ -42,11 +44,40 @@ struct obj_info things[] = {
     { "stick",	 4,	0,	NULL,	false },	/* stick */
 };
 
-static void nameit(THING *obj, const char *type, const char *which,
-                   struct obj_info *op, char *(*prfunc)(THING *));
-static char *nullstr(THING *ignored);
-static void discovered_by_type(char type, struct obj_info *info,
-                               int max_items);
+/** nameit:
+ * Give the proper name to a potion, stick, or ring */
+static void
+nameit(THING *obj, const char *type, const char *which, struct obj_info *op,
+    char *(*prfunc)(THING *))
+{
+    char *pb;
+
+    if (op->oi_know || op->oi_guess)
+    {
+	if (obj->o_count == 1)
+	    sprintf(prbuf, "A %s ", type);
+	else
+	    sprintf(prbuf, "%d %ss ", obj->o_count, type);
+	pb = &prbuf[strlen(prbuf)];
+	if (op->oi_know)
+	    sprintf(pb, "of %s%s(%s)", op->oi_name, (*prfunc)(obj), which);
+	else if (op->oi_guess)
+	    sprintf(pb, "called %s%s(%s)", op->oi_guess, (*prfunc)(obj), which);
+    }
+    else if (obj->o_count == 1)
+	sprintf(prbuf, "A%s %s %s", vowelstr(which), which, type);
+    else
+	sprintf(prbuf, "%d %s %ss", obj->o_count, which, type);
+}
+
+/** nullstr:
+ * Return a pointer to a null-length string */
+static char *
+nullstr(THING *ignored)
+{
+    (void)ignored;
+    return "";
+}
 
 static const char *
 type_to_string(int type, int which)
@@ -75,8 +106,6 @@ add_num_type_to_string(char *ptr, int type, int which, int num)
     return sprintf(ptr, "%d %ss", num, obj_type);
 }
 
-/** inv_name:
- * Return the name of something as it would appear in an inventory. */
 char *
 inv_name(THING *obj, bool drop)
 {
@@ -171,9 +200,6 @@ inv_name(THING *obj, bool drop)
   return prbuf;
 }
 
-/** drop:
- * Put something down */
-/* TODO: Maybe move this to command.c */
 bool
 drop(void)
 {
@@ -222,8 +248,6 @@ new_generic_thing(void)
   return cur;
 }
 
-/** new_thing:
- * Return a new thing */
 THING *
 new_thing(void)
 {
@@ -314,8 +338,6 @@ new_thing(void)
   return cur;
 }
 
-/** pick_one:
- * Pick an item out of a list of nitems possible objects */
 unsigned
 pick_one(struct obj_info *start, int nitems)
 {
@@ -343,8 +365,7 @@ pick_one(struct obj_info *start, int nitems)
   }
 }
 
-/** discovered_by_type
- * list what the player has discovered of this type */
+/* list what the player has discovered of this type */
 static void
 discovered_by_type(char type, struct obj_info *info, int max_items)
 {
@@ -389,8 +410,6 @@ discovered_by_type(char type, struct obj_info *info, int max_items)
   delwin(printscr);
 }
 
-/** discovered:
- * list what the player has discovered in this game of a certain type */
 void
 discovered(void)
 {
@@ -415,40 +434,5 @@ discovered(void)
 
   touchwin(stdscr);
   msg("");
-}
-
-/** nameit:
- * Give the proper name to a potion, stick, or ring */
-static void
-nameit(THING *obj, const char *type, const char *which, struct obj_info *op,
-    char *(*prfunc)(THING *))
-{
-    char *pb;
-
-    if (op->oi_know || op->oi_guess)
-    {
-	if (obj->o_count == 1)
-	    sprintf(prbuf, "A %s ", type);
-	else
-	    sprintf(prbuf, "%d %ss ", obj->o_count, type);
-	pb = &prbuf[strlen(prbuf)];
-	if (op->oi_know)
-	    sprintf(pb, "of %s%s(%s)", op->oi_name, (*prfunc)(obj), which);
-	else if (op->oi_guess)
-	    sprintf(pb, "called %s%s(%s)", op->oi_guess, (*prfunc)(obj), which);
-    }
-    else if (obj->o_count == 1)
-	sprintf(prbuf, "A%s %s %s", vowelstr(which), which, type);
-    else
-	sprintf(prbuf, "%d %s %ss", obj->o_count, which, type);
-}
-
-/** nullstr:
- * Return a pointer to a null-length string */
-static char *
-nullstr(THING *ignored)
-{
-    (void)ignored;
-    return "";
 }
 

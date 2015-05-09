@@ -345,26 +345,21 @@ extern struct obj_info things[];
 
 
 void	death(char monst);
-void	discovered(void);
-bool	drop(void);
 int	rs_save_file(FILE *savef);
 int	rs_restore_file(FILE *inf);
 void	score(int amount, int flags, char monst);
 void	shell(void);
 void	total_winner(void);
 
-char	*inv_name(THING *obj, bool drop);
 
 void leave(int);
 void quit(int);
 
-THING	*new_thing(void);
 
 typedef struct {
     char	*st_name;
     int		st_value;
 } STONE;
 
-unsigned pick_one(struct obj_info *start, int nitems);
 
 #endif /* _ROGUE14_ROGUE_H_ */

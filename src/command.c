@@ -32,6 +32,7 @@
 #include "wizard.h"
 #include "weapons.h"
 #include "wand.h"
+#include "things.h"
 #include "rogue.h"
 
 #include "command_private.h"

@@ -16,6 +16,7 @@
 #include "rings.h"
 #include "misc.h"
 #include "wizard.h"
+#include "things.h"
 #include "rogue.h"
 
 #include "armor.h"

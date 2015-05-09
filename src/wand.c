@@ -26,6 +26,7 @@
 #include "player.h"
 #include "weapons.h"
 #include "state.h"
+#include "things.h"
 #include "rogue.h"
 
 #include "wand.h"

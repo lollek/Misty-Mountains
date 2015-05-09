@@ -23,6 +23,7 @@
 #include "misc.h"
 #include "player.h"
 #include "rooms.h"
+#include "things.h"
 #include "rogue.h"
 
 #include "level.h"
