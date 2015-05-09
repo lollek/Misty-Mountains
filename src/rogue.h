@@ -331,7 +331,7 @@ extern WINDOW	*hw;
 extern coord	delta, oldpos, stairs;
 
 
-extern THING	*l_last_pick, *last_pick, *lvl_obj, *mlist;
+extern THING	*l_last_pick, *last_pick, *mlist;
 
 
 

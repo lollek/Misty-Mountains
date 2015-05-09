@@ -14,6 +14,7 @@ struct monster {
 };
 
 extern struct monster monsters[];
+THING *mlist;  /* List of monsters on the level */
 
 bool monster_is_blind(THING *mon);
 bool monster_is_cancelled(THING *mon);

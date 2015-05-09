@@ -29,6 +29,7 @@
 
 #include "monster.h"
 
+THING *mlist = NULL;
 struct monster monsters[26] =
     {
 /* Name		 CARRY	FLAG    str, exp, lvl, amr, hpt, dmg,      ,maxhp */

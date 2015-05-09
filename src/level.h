@@ -8,6 +8,8 @@
 #define moat(y,x)	(places[((x) << 5) + (y)].p_monst)
 PLACE places[MAXLINES*MAXCOLS];  /* level map */
 
+THING *lvl_obj; /* List of objects on this level */
+
 void level_new(void);
 
 #endif /* _ROGUE14_LEVEL_H_ */

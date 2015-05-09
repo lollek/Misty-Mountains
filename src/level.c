@@ -36,6 +36,8 @@
 #define MAXTRIES	10 /* max number of tries to put down a monster */
 #define MAXTRAPS	10
 
+THING *lvl_obj = NULL;
+
 
 /** treas_room:
  * Add a treasure room */
