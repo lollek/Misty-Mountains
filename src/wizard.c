@@ -31,6 +31,7 @@
 #include "player.h"
 #include "wand.h"
 #include "traps.h"
+#include "things.h"
 #include "rogue.h"
 
 void

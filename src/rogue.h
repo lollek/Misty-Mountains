@@ -38,7 +38,6 @@
 #define UNCTRL(c) (c + 'A' - CTRL('A'))
 
 /* Maximum number of different things */
-#define NUMTHINGS	7	/* number of types of things */
 
 extern enum rogue_game_t
 {
@@ -335,16 +334,6 @@ extern coord	delta, oldpos, stairs;
 extern THING	*l_last_pick, *last_pick, *lvl_obj, *mlist;
 
 extern struct stats	max_stats;
-
-
-extern struct obj_info things[];
-
-/*
- * Function types
- */
-
-
-
 
 
 
