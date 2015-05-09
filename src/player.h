@@ -6,6 +6,7 @@
 #include "rogue.h"
 
 void *__player_ptr(void);
+struct stats max_stats;
 
 /* General */
 void player_init(void);

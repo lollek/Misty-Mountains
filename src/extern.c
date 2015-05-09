@@ -65,6 +65,4 @@ THING *mlist = NULL;			/* List of monsters on the level */
 
 WINDOW *hw = NULL;			/* used as a scratch window */
 
-/* The maximum for the player */
-struct stats max_stats = { 16, 0, 1, 10, 12, "1x4", 12 };
 

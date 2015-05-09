@@ -30,6 +30,8 @@ static const int player_max_strength = 31;
 #define SLEEPTIME       spread(7)   /* Sleep */
 #define STUCKTIME       spread(3)   /* Stuck */
 
+/* The maximum for the player */
+struct stats max_stats = { 16, 0, 1, 10, 12, "1x4", 12 };
 
 void *__player_ptr(void) { return &player; }
 
