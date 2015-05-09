@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <ctype.h>
 
 #include "potions.h"
@@ -35,6 +36,7 @@
 #include "things.h"
 #include "rogue.h"
 
+#include "command.h"
 #include "command_private.h"
 
 void
@@ -246,7 +248,7 @@ command_do(char ch)
       return move_do_run(UNCTRL(ch), true);
     case CTRL('P'): msg(huh); return false;
     case CTRL('R'): clearok(curscr, true); wrefresh(curscr); return false;
-    case CTRL('Z'): shell(); return false;
+    case CTRL('Z'): command_shell(); return false;
 
     default:
       if (wizard)
@@ -308,5 +310,60 @@ command_wizard_do(char ch)
       break;
   }
   return false;
+}
+
+void
+command_signal_endit(int sig)
+{
+  (void)sig;
+  endwin();
+  puts("Okay, bye bye!\n");
+  exit(0);
+}
+
+void
+command_signal_quit(int sig)
+{
+  int oy, ox;
+  (void) sig;
+
+  getyx(curscr, oy, ox);
+  msg("");
+  msg("really quit? ");
+
+  if (getch() == 'y')
+  {
+  /* Reset the signal in case we got here via an interrupt */
+    signal(SIGINT, command_signal_leave);
+    pack_evaluate();
+    score(purse, 1, 0);
+    exit(0);
+  }
+  else
+  {
+    status();
+    msg("");
+    move(oy, ox);
+    refresh();
+    command_stop(true);
+  }
+}
+
+void
+command_signal_leave(int sig)
+{
+  static char buf[BUFSIZ];
+  (void)sig;
+
+  setbuf(stdout, buf);	/* throw away pending output */
+
+  if (!isendwin())
+  {
+    mvcur(0, COLS - 1, LINES - 1, 0);
+    endwin();
+  }
+
+  putchar('\n');
+  exit(0);
 }
 

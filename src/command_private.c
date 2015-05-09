@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <signal.h>
 
 #include "potions.h"
 #include "scrolls.h"
@@ -249,7 +250,7 @@ command_identify_trap(void)
 bool
 command_quit(void)
 {
-  quit(0);
+  command_signal_quit(0);
   return false;
 }
 
@@ -477,6 +478,27 @@ command_search(void)
   return true;
 }
 
+/* Let them escape for a while */
+void
+command_shell(void)
+{
+  /* Set the terminal back to original mode */
+  move(LINES-1, 0);
+  refresh();
+  endwin();
+  putchar('\n');
+  fflush(stdout);
+
+  /* Return to shell */
+  raise(SIGSTOP);
+
+  /* Set the terminal to gaming mode */
+  fflush(stdout);
+  noecho();
+  raw();
+  clearok(stdscr, true);
+}
+
 bool
 command_show_inventory(void)
 {
@@ -539,3 +561,4 @@ command_wield(void)
   return weapon_wield(obj);
 
 }
+

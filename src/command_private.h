@@ -20,6 +20,7 @@ bool command_pick_up(void);               /* Pick up something at her feet */
 bool command_help(void);                  /* Give command help */
 bool command_again(void);                 /* Repeat last command */
 bool command_search(void);                /* Search for hidden things */
+void command_shell(void);                 /* Let them escape for a while */
 bool command_show_inventory(void);        /* Print player inventory */
 bool command_take_off(enum equipment_pos pos); /* Unequip something */
 bool command_toggle_wizard(void);         /* Toggle wizard-mode on or off     */

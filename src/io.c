@@ -15,6 +15,7 @@
 #include "armor.h"
 #include "misc.h"
 #include "player.h"
+#include "command.h"
 #include "rogue.h"
 
 #include "io.h"
@@ -179,7 +180,7 @@ readchar(void)
 
   if (ch == 3)
   {
-    quit(0);
+    command_signal_quit(0);
     return(KEY_ESCAPE);
   }
   else

@@ -32,156 +32,10 @@ enum game_mode_t
   NEW_GAME = 1
 };
 
-static bool playit();
-static enum game_mode_t parse_args(int argc, char * const *argv);
-static void endit(int sig);
-
-/** main:
- * The main program, of course */
-int
-main(int argc, char **argv)
-{
-  bool retval = false;
-
-  /* Open scoreboard and drop setuid/getgid, so we can modify the score later */
-  if (open_score_and_drop_setuid_setgid() != 0)
-    return 1;
-
-  /* Parse args and then init new (or old) game */
-  switch (parse_args(argc, argv))
-  {
-    case LOAD_GAME: retval = init_old_game(); break;
-    case NEW_GAME:  retval = init_new_game(); break;
-    default:
-      printf("Error: Failed while parsing arguments\n");
-      return 1;
-  }
-
-  if (retval == false)
-    return 1;
-
-  /* Play game! */
-  return playit();
-}
-
-/** endit:
- * Exit the program abnormally.  */
-void
-endit(int sig)
-{
-  (void)sig;
-  endwin();
-  puts("Okay, bye bye!\n");
-  exit(0);
-}
-
-/** playit:
- * The main loop of the program.  Loop until the game is over,
- * refreshing things and looking at the proper times.
- */
-bool
-playit(void)
-{
-  /* Try to crash cleanly, and autosave if possible */
-  signal(SIGHUP, auto_save);
-  signal(SIGQUIT, endit);
-  signal(SIGILL, auto_save);
-  signal(SIGTRAP, auto_save);
-  signal(SIGIOT, auto_save);
-  signal(SIGFPE, auto_save);
-  signal(SIGBUS, auto_save);
-  signal(SIGSEGV, auto_save);
-  signal(SIGSYS, auto_save);
-  signal(SIGTERM, auto_save);
-  signal(SIGINT, quit);
-
-  oldpos = *player_get_pos();
-  oldrp = roomin(player_get_pos());
-  while (command() != 1)
-    /* Main Loop */;
-  endit(0);
-  return 0;
-}
-
-/** quit:
- * Have player make certain, then exit.
- */
-void
-quit(int sig)
-{
-  int oy, ox;
-  (void) sig;
-
-  /* Reset the signal in case we got here via an interrupt */
-  getyx(curscr, oy, ox);
-  msg("");
-  msg("really quit? ");
-
-  if (getch() == 'y')
-  {
-    signal(SIGINT, leave);
-    pack_evaluate();
-    score(purse, 1, 0);
-    exit(0);
-  }
-  else
-  {
-    status();
-    msg("");
-    move(oy, ox);
-    refresh();
-    command_stop(true);
-  }
-}
-
-/** leave:
- * Leave quickly, but curteously
- */
-void
-leave(int sig)
-{
-  static char buf[BUFSIZ];
-  (void)sig;
-
-  setbuf(stdout, buf);	/* throw away pending output */
-
-  if (!isendwin())
-  {
-    mvcur(0, COLS - 1, LINES - 1, 0);
-    endwin();
-  }
-
-  putchar('\n');
-  exit(0);
-}
-
-/** shell:
- * Let them escape for a while
- */
-void
-shell(void)
-{
-  /* Set the terminal back to original mode */
-  move(LINES-1, 0);
-  refresh();
-  endwin();
-  putchar('\n');
-  fflush(stdout);
-
-  /* Return to shell */
-  raise(SIGSTOP);
-
-  /* Set the terminal to gaming mode */
-  fflush(stdout);
-  noecho();
-  raw();
-  clearok(stdscr, true);
-}
-
 /** parse_args
  * Parse command-line arguments
  */
-enum game_mode_t
+static enum game_mode_t
 parse_args(int argc, char * const *argv)
 {
   enum game_mode_t game_mode = NEW_GAME;
@@ -297,5 +151,50 @@ parse_args(int argc, char * const *argv)
   }
 
   return game_mode;
+}
+
+/** main:
+ * The main program, of course */
+int
+main(int argc, char **argv)
+{
+  bool retval = false;
+
+  /* Open scoreboard and drop setuid/getgid, so we can modify the score later */
+  if (open_score_and_drop_setuid_setgid() != 0)
+    return 1;
+
+  /* Parse args and then init new (or old) game */
+  switch (parse_args(argc, argv))
+  {
+    case LOAD_GAME: retval = init_old_game(); break;
+    case NEW_GAME:  retval = init_new_game(); break;
+    default:
+      printf("Error: Failed while parsing arguments\n");
+      return 1;
+  }
+
+  if (retval == false)
+    return 1;
+
+  /* Try to crash cleanly, and autosave if possible */
+  signal(SIGHUP, auto_save);
+  signal(SIGQUIT, command_signal_endit);
+  signal(SIGILL, auto_save);
+  signal(SIGTRAP, auto_save);
+  signal(SIGIOT, auto_save);
+  signal(SIGFPE, auto_save);
+  signal(SIGBUS, auto_save);
+  signal(SIGSEGV, auto_save);
+  signal(SIGSYS, auto_save);
+  signal(SIGTERM, auto_save);
+  signal(SIGINT, command_signal_quit);
+
+  oldpos = *player_get_pos();
+  oldrp = roomin(player_get_pos());
+  while (command() != 1)
+    /* Main Loop */;
+  command_signal_endit(0);
+  return 0;
 }
 

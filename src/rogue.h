@@ -348,12 +348,9 @@ void	death(char monst);
 int	rs_save_file(FILE *savef);
 int	rs_restore_file(FILE *inf);
 void	score(int amount, int flags, char monst);
-void	shell(void);
 void	total_winner(void);
 
 
-void leave(int);
-void quit(int);
 
 
 typedef struct {

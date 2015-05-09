@@ -27,6 +27,7 @@
 #include "misc.h"
 #include "monster.h"
 #include "os.h"
+#include "command.h"
 #include "rogue.h"
 
 static char *rip[] = {
@@ -249,7 +250,7 @@ death(char monst)
 
     signal(SIGINT, SIG_IGN);
     purse -= purse / 10;
-    signal(SIGINT, leave);
+    signal(SIGINT, command_signal_leave);
     clear();
     killer = killname(monst, false);
     if (!tombstone)
