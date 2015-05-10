@@ -1,3 +1,6 @@
+v1.2.7
+  Made -j flag automatically set
+
 v1.2.6
   Nymphs are now green
   Can now uncurse items again
