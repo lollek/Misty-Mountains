@@ -79,7 +79,7 @@ extern int group;
 #define rs_write_short(_f, _c)   rs_write(_f, (char *)&_c, 2)
 #define rs_write_int(_f, _c)     rs_write(_f, (char *)&_c, 4)
 #define rs_write_marker          rs_write_int
-#define rs_write_str_t           rs_write_int
+#define rs_write_unsigned           rs_write_int
 #define rs_write_coord(_f, _c) \
   (rs_write_int(_f, (_c).x) || \
    rs_write_int(_f, (_c).y))
@@ -116,7 +116,7 @@ extern int group;
 #define rs_read_char(_f, _c)    rs_read(_f, (char *)_c, 1)
 #define rs_read_short(_f, _i)   rs_read(_f, (char *)_i, 2)
 #define rs_read_int(_f, _i)     rs_read(_f, (char *)_i, 4)
-#define rs_read_str_t           rs_read_int
+#define rs_read_unsigned           rs_read_int
 #define rs_read_coord(_f, _c) \
   (rs_read_int(_f, &(_c)->x) || \
    rs_read_int(_f, &(_c)->y))
@@ -128,7 +128,7 @@ extern int group;
    _i != temp_i)
 #define rs_read_stats(_f, _s) \
   (rs_read_marker(_f, RSID_STATS) || \
-   rs_read_str_t(_f, &(_s)->s_str) || \
+   rs_read_unsigned(_f, &(_s)->s_str) || \
    rs_read_int(_f, &(_s)->s_exp) || \
    rs_read_int(_f, &(_s)->s_lvl) || \
    rs_read_int(_f, &(_s)->s_arm) || \
@@ -332,7 +332,7 @@ rs_write_stats(FILE *savef, const struct stats *s)
 {
   size_t dmgsize = sizeof(s->s_dmg);
   if (rs_write_marker(savef, RSID_STATS) ||
-      rs_write_str_t(savef, s->s_str) ||
+      rs_write_unsigned(savef, s->s_str) ||
       rs_write_int(savef, s->s_exp) ||
       rs_write_int(savef, s->s_lvl) ||
       rs_write_int(savef, s->s_arm) ||

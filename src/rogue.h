@@ -15,6 +15,8 @@
 #include <stdbool.h>
 #include <ncurses.h>
 
+#include "coord.h"
+
 /* Version */
 #define GAME_VERSION "Rogue14 " VERSION " - Based on Rogue5.4.4"
 
@@ -37,8 +39,6 @@
 #define CTRL(c) (c & 037)
 #define UNCTRL(c) (c + 'A' - CTRL('A'))
 
-/* Maximum number of different things */
-
 extern enum rogue_game_t
 {
   DEFAULT,
@@ -47,7 +47,6 @@ extern enum rogue_game_t
 
 /* All the fun defines */
 #define winat(y,x)	(moat(y,x) != NULL ? moat(y,x)->t_disguise : chat(y,x))
-#define same_coords(a,b)	((a).x == (b).x && (a).y == (b).y)
 #define max(a,b)	((a) > (b) ? (a) : (b))
 #define on(thing,flag)	((bool)(((thing).t_flags & (flag)) != 0))
 #define GOLDCALC	(rnd(50 + 10 * level) + 2)
@@ -170,16 +169,6 @@ struct h_list {
 };
 
 /*
- * Coordinate data type
- */
-typedef struct {
-    int x;
-    int y;
-} coord;
-
-typedef unsigned int str_t;
-
-/*
  * Stuff about objects
  */
 struct obj_info {
@@ -207,7 +196,7 @@ struct room {
  * Structure describing a fighting being
  */
 struct stats {
-    str_t s_str;			/* Strength */
+    unsigned s_str;			/* Strength */
     int s_exp;				/* Experience */
     int s_lvl;				/* level of mastery */
     int s_arm;				/* Armor class */

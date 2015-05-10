@@ -60,11 +60,11 @@ static int e_levels[] = {
 };
 
 
-static str_t
+static unsigned
 player_get_strength_bonuses(void)
 {
   int i;
-  str_t bonuses = 0;
+  unsigned bonuses = 0;
   for (i = 0; i < RING_SLOTS_SIZE; ++i)
   {
     THING *ring = pack_equipped_item(ring_slots[i]);
@@ -77,7 +77,7 @@ player_get_strength_bonuses(void)
 static void
 player_update_max_strength(void)
 {
-  str_t bonuses = player_get_strength_bonuses();
+  unsigned bonuses = player_get_strength_bonuses();
   if (player.t_stats.s_str - bonuses > max_stats.s_str)
     max_stats.s_str = player.t_stats.s_str - bonuses;
 }
