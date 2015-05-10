@@ -46,7 +46,7 @@ parse_args(int argc, char * const *argv)
     {"escdelay",  optional_argument, 0, 'E'},
     {"flush",     no_argument,       0, 'f'},
     {"hide-floor",no_argument,       0, 'F'},
-    {"jump",      no_argument,       0, 'j'},
+    {"no-jump",   no_argument,       0, 'j'},
     {"name",      required_argument, 0, 'n'},
     {"passgo",    no_argument,       0, 'p'},
     {"restore",   no_argument,       0, 'r'},
@@ -65,7 +65,7 @@ parse_args(int argc, char * const *argv)
   ESCDELAY = 0;                 /* Set the delay before ESC cancels */
   terse = false;                /* Terse output */
   fight_flush = false;          /* Flush typeahead during battle */
-  jump = false;                 /* Show running as a series of jumps */
+  jump = true;                  /* Show running as a series of jumps */
   see_floor = true;             /* Show the lamp-illuminated floor */
   passgo = false;               /* Follow the turnings in passageways */
   tombstone = true;             /* Print out tombstone when killed */
@@ -92,7 +92,7 @@ parse_args(int argc, char * const *argv)
       case 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg); break;
       case 'f': fight_flush = true; break;
       case 'F': see_floor = false; break;
-      case 'j': jump = true; break;
+      case 'j': jump = false; break;
       case 'n': if (strlen(optarg))
                   strucpy(whoami, optarg, strlen(optarg));
                 break;
@@ -115,7 +115,7 @@ parse_args(int argc, char * const *argv)
                "                       argument, it's set to 64 (old standard)\n"
                "  -f, --flush          flush typeahead during battle\n"
                "  -F, --hide-floor     hide the lamp-illuminated floor\n"
-               "  -j, --jump           show running as a series of jumps\n"
+               "  -j, --no-jump        draw each player step separately\n"
                , argv[0]); printf(
                "  -n, --name=NAME      set highscore name\n"
                "  -p, --passgo         Follow the turnings in passageways\n"
