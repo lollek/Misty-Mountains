@@ -193,9 +193,11 @@ main(int argc, char **argv)
 
   oldpos = *player_get_pos();
   oldrp = roomin(player_get_pos());
-  while (command() != 1)
-    /* Main Loop */;
+
+  for (;;) command();
+
+  /* CODE NOT REACHED */;
   command_signal_endit(0);
-  return 0;
+  return 1;
 }
 

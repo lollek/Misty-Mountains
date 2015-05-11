@@ -153,7 +153,7 @@ command(void)
     }
   }
 
-  return 0; /* Restart from top */
+  return 0;
 }
 
 bool
