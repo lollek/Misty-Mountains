@@ -316,11 +316,12 @@ vowelstr(const char *str)
   }
 }
 
-bool
+const coord *
 get_dir(void)
 {
   const char *prompt = terse ? "direction? " : "which direction? ";
   bool gotit;
+  static coord delta;
   static coord last_delt= {0,0};
 
   if (again && last_dir != '\0')
@@ -350,7 +351,7 @@ get_dir(void)
           last_dir = '\0';
           reset_last();
           msg("");
-          return false;
+          return NULL;
 
         default:
           mpos = 0;
@@ -375,7 +376,7 @@ get_dir(void)
     } while (delta.y == 0 && delta.x == 0);
 
   mpos = 0;
-  return true;
+  return &delta;
 }
 
 int

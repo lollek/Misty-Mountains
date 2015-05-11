@@ -53,7 +53,6 @@ int purse = 0;				/* How much gold he has */
 int vf_hit = 0;				/* Number of time flytrap has hit */
 unsigned seed;				/* Random number seed */
 
-coord delta;				/* Change indicated to get_dir() */
 coord oldpos;				/* Position before last look() call */
 
 THING *l_last_pick = NULL;		/* Last last_pick */

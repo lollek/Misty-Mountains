@@ -317,7 +317,7 @@ extern unsigned int	seed;
 
 extern WINDOW	*hw;
 
-extern coord	delta, oldpos;
+extern coord oldpos;
 
 
 extern THING	*l_last_pick, *last_pick, *mlist;

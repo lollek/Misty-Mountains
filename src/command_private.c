@@ -61,12 +61,18 @@ command_use_stairs(char up_or_down)
 bool
 command_attack(bool fight_to_death)
 {
-  THING *mp;
+  const coord *dir = get_dir();
   coord *player_pos = player_get_pos();
+  THING *mp;
+  coord delta;
+
+  if (dir == NULL)
+    return false;
 
   kamikaze = fight_to_death;
-  if (!get_dir())
-    return false;
+  player_pos = player_get_pos();
+  delta = *dir;
+
   delta.y += player_pos->y;
   delta.x += player_pos->x;
 
@@ -226,10 +232,13 @@ command_identify_character(void)
 bool
 command_identify_trap(void)
 {
-  if (get_dir())
+  const coord *dir = get_dir();
+  if (dir != NULL)
   {
-    char *fp;
     coord *player_pos = player_get_pos();
+    coord delta = *dir;
+    char *fp;
+
     delta.y += player_pos->y;
     delta.x += player_pos->x;
     fp = &flat(delta.y, delta.x);
@@ -523,6 +532,12 @@ command_take_off(enum equipment_pos pos)
     return false;
   pack_unequip(pos, false);
   return pack_equipped_item(pos) != NULL;
+}
+
+bool command_throw(void)
+{
+  const coord *dir = get_dir();
+  return dir == NULL ? false : missile(dir->y, dir->x);
 }
 
 bool

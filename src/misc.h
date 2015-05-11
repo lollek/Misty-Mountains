@@ -14,7 +14,7 @@ THING *find_obj(int y, int x); /* Find the unclaimed object at y, x */
 bool eat(void); /* She wants to eat something, so let her try */
 void aggravate(void); /* Aggravate all the monsters on this level */
 const char *vowelstr(const char *str); /* For printfs: if string starts with a vowel, return "n" for an "an" */
-bool get_dir(void); /* Set up the direction co_ordinate for use in varios "prefix" commands */
+const coord *get_dir(void); /* Set up the direction co_ordinate for use in varios "prefix" commands */
 int sign(int nm); /* Return the sign of the number */
 int spread(int nm); /* Give a spread around a given number (+/- 20%) */
 void call_it(const char *what, struct obj_info *info); /* Call an object something after use */

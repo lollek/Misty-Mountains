@@ -161,6 +161,7 @@ chase_do(THING *th)
     THING *obj;
     static coord this; /* Temporary destination for chaser */
     coord *player_pos = player_get_pos();
+    coord delta;
 
     assert_attached(mlist, th);
     rer = th->t_room;

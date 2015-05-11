@@ -169,7 +169,7 @@ wand_create(int wand)
 
 /* This can only be used inside the wand_zap() function */
 static THING *
-wand_find_target(int *y, int *x)
+wand_find_target(int *y, int *x, int dy, int dx)
 {
   coord *player_pos = player_get_pos();
   *x = player_pos->x;
@@ -178,8 +178,8 @@ wand_find_target(int *y, int *x)
   /* "walk" in the zap direction until we find a target */
   while (step_ok(winat(*y, *x)))
   {
-    *y += delta.y;
-    *x += delta.x;
+    *y += dy;
+    *x += dx;
   }
 
   return moat(*y, *x);
@@ -257,6 +257,7 @@ static void
 wand_spell_polymorph(THING *target)
 {
   THING *target_pack;
+  coord pos;
   int x;
   int y;
   char monster;
@@ -282,12 +283,12 @@ wand_spell_polymorph(THING *target)
   }
   oldch = target->t_oldch;
 
-  delta.y = y;
-  delta.x = x;
+  pos.y = y;
+  pos.x = x;
   monster = rnd(26) + 'A';
   same_monster = monster == target->t_type;
 
-  monster_new(target, monster, &delta);
+  monster_new(target, monster, &pos);
   if (see_monst(target))
   {
     mvaddcch(y, x, monster);
@@ -353,12 +354,18 @@ wand_spell_magic_missile(int dy, int dx)
 bool
 wand_zap(void)
 {
-
+  const coord *dir = get_dir();
+  coord delta;
+  THING *obj;
   THING *tp;
   int y;
   int x;
-  THING *obj = pack_get_item("zap with", STICK);
 
+  if (dir == NULL)
+    return false;
+  delta = *dir;
+
+  obj = pack_get_item("zap with", STICK);
   if (obj == NULL)
     return false;
 
@@ -394,7 +401,7 @@ wand_zap(void)
       break;
 
     case WS_INVIS:
-      tp = wand_find_target(&y, &x);
+      tp = wand_find_target(&y, &x, delta.y, delta.x);
       if (tp != NULL)
         monster_set_invisible(tp);
       else
@@ -402,7 +409,7 @@ wand_zap(void)
       break;
 
     case WS_POLYMORPH:
-      tp = wand_find_target(&y, &x);
+      tp = wand_find_target(&y, &x, delta.y, delta.x);
       if (tp != NULL)
         wand_spell_polymorph(tp);
       else
@@ -410,7 +417,7 @@ wand_zap(void)
       break;
 
     case WS_CANCEL:
-      tp = wand_find_target(&y, &x);
+      tp = wand_find_target(&y, &x, delta.y, delta.x);
       if (tp != NULL)
         wand_spell_cancel(tp);
       else
@@ -424,7 +431,7 @@ wand_zap(void)
 
     case WS_TELTO:
       wands[WS_TELTO].oi_know = true;
-      tp = wand_find_target(&y, &x);
+      tp = wand_find_target(&y, &x, delta.y, delta.x);
       if (tp != NULL)
       {
         coord new_pos;
@@ -448,7 +455,7 @@ wand_zap(void)
     case WS_HASTE_M:
       {
         coord c;
-        tp = wand_find_target(&c.y, &c.x);
+        tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
         {
           if (on(*tp, ISSLOW))
@@ -466,7 +473,7 @@ wand_zap(void)
     case WS_SLOW_M:
       {
         coord c;
-        tp = wand_find_target(&c.y, &c.x);
+        tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
         {
           if (on(*tp, ISHASTE))

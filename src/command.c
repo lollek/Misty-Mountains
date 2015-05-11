@@ -224,10 +224,10 @@ command_do(char ch)
     case 'q': return potion_quaff_something();
     case 'r': return read_scroll();
     case 's': return command_search();
-    case 't': return get_dir() ? missile(delta.y, delta.x) : false;
+    case 't': return command_throw();
     case 'w': return command_wield();
     case 'x': return last_weapon();
-    case 'z': return get_dir() ? wand_zap() : false;
+    case 'z': return wand_zap();
 
     /* Upper case */
     case 'H': case 'J': case 'K': case 'L':
