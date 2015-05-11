@@ -10,8 +10,9 @@
 #define moat(y,x)	(places[((x) << 5) + (y)].p_monst)
 
 PLACE places[MAXLINES*MAXCOLS];  /* level map */
-coord stairs;    /* Location of staircase */
+coord stairs;   /* Location of staircase */
 THING *lvl_obj; /* List of objects on this level */
+int level;      /* What level she is on */
 
 void level_new(void);
 

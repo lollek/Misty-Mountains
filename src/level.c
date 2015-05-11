@@ -38,6 +38,7 @@
 
 THING *lvl_obj = NULL;
 coord stairs;
+int level = 1;
 
 
 /** treas_room:
