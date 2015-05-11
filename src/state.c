@@ -46,6 +46,7 @@
 #include "level.h"
 #include "player.h"
 #include "wand.h"
+#include "monster.h"
 #include "rogue.h"
 
 static const size_t RSID_STATS        = 0xABCD0001;

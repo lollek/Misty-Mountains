@@ -16,6 +16,7 @@
 #include "level.h"
 #include "misc.h"
 #include "player.h"
+#include "monster.h"
 #include "rogue.h"
 
 #include "potions.h"

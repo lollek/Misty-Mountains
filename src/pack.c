@@ -25,6 +25,7 @@
 #include "weapons.h"
 #include "wand.h"
 #include "things.h"
+#include "monster.h"
 #include "rogue.h"
 
 #include "pack.h"

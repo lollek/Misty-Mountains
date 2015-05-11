@@ -320,7 +320,7 @@ extern WINDOW	*hw;
 extern coord oldpos;
 
 
-extern THING	*l_last_pick, *last_pick, *mlist;
+extern THING	*l_last_pick, *last_pick;
 
 
 
