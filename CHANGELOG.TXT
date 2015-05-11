@@ -1,5 +1,6 @@
 v1.2.7
   Made -j flag automatically set
+  Can no longer do several commands in a row
 
 v1.2.6
   Nymphs are now green
