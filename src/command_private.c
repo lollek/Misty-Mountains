@@ -540,27 +540,6 @@ bool command_throw(void)
 }
 
 bool
-command_toggle_wizard(void)
-{
-  /* TODO: Add a query here, so you always can become a wiz */
-  if (potential_wizard)
-  {
-    wizard = !wizard;
-    if (wizard)
-    {
-      player_add_sense_monsters(true);
-      msg("You are one with the force (seed: #%d)", seed);
-    }
-    else
-    {
-      player_remove_sense_monsters();
-      msg("not wizard any more");
-    }
-  }
-  return false;
-}
-
-bool
 command_wield(void)
 {
   THING *obj = pack_get_item("wield", WEAPON);

@@ -37,7 +37,7 @@ save_file(FILE *savef)
   chmod(file_name, 0400);
 
 #ifdef NDEBUG
-  if (wizard || potential_wizard)
+  if (wizard)
   {
     mpos = 0;
     msg("Cannot save as a wizard");

@@ -311,7 +311,7 @@ extern char	dir_ch, file_name[], huh[], prbuf[], whoami[],
 extern int	food_left, hungry_state,
 		level, max_hit, max_level, mpos,
 		no_command, no_food, no_move, purse,
-		vf_hit, potential_wizard, wizard;
+		vf_hit, wizard;
 
 extern unsigned int	seed;
 

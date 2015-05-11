@@ -156,7 +156,7 @@ score(int amount, int flags, char monst)
      * Insert her in list if need be
      */
     sc2 = NULL;
-    if (!potential_wizard)
+    if (!wizard)
     {
 	uid = getuid();
 	for (scp = top_ten; scp < endp; scp++)

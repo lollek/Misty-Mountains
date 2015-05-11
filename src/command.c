@@ -172,7 +172,6 @@ command_do(char ch)
     case '?': return command_help();
     case '!': msg("Shell has been removed, use ^Z instead"); return false;
     case '^': return command_identify_trap();
-    case '+': return command_toggle_wizard();
 
     /* Lower case */
     case 'h': case 'j': case 'k': case 'l':

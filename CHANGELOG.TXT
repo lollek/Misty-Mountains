@@ -1,6 +1,8 @@
 v1.2.7
   Made -j flag automatically set
-  Can no longer do several commands in a row
+  Can no longer do x commands in a row
+  Can no longer switch to and from wizard-mode with +
+  Starting the game with a seed is no longer counted as cheating
 
 v1.2.6
   Nymphs are now green

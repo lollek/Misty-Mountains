@@ -98,14 +98,13 @@ parse_args(int argc, char * const *argv)
                 break;
       case 'p': passgo = true; break;
       case 'r': game_mode = LOAD_GAME; break;
-      case 's': potential_wizard = true;
-                score(0, -1, 0);
+      case 's': score(0, -1, 0);
                 exit(0);
       case 'S': seed = atoi(optarg); break;
       case 't': terse = true; break;
       case 'T': tombstone = false; break;
       case 'Q': game_type = QUICK; break;
-      case 'W': potential_wizard = wizard = true; break;
+      case 'W': wizard = true; break;
       case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
                "Run Rogue14 with selected options or a savefile\n\n"
