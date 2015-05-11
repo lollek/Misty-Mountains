@@ -482,7 +482,6 @@ command_search(void)
   if (found)
   {
     look(false);
-    count = false;
     running = false;
   }
   return true;

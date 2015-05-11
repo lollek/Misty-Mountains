@@ -44,7 +44,6 @@ int max_level;				/* Deepest player has gone */
 int mpos = 0;				/* Where cursor is on top line */
 int no_food = 0;			/* Number of levels without food */
 
-int count = 0;				/* Number of times to repeat command */
 int food_left;				/* Amount of food in hero's stomach */
 int no_command = 0;			/* Number of turns asleep */
 int no_move = 0;			/* Number of turns held in place */

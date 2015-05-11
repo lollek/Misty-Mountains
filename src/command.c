@@ -44,7 +44,6 @@ void
 command_stop(bool stop_fighting)
 {
   player_stop_running();
-  count = 0;
   door_stop = false;
   again = false;
   running = false;
@@ -57,14 +56,18 @@ int
 command(void)
 {
   static char ch;
-  int player_moves = player_is_hasted() ? 2 : 1;
+  int num_moves;
 
   /* Let the daemons start up */
   daemon_run_all(BEFORE);
   daemon_run_fuses(BEFORE);
-  for (; player_moves > 0; --player_moves)
+
+  for (num_moves = 1; num_moves > 0; --num_moves)
   {
     coord *player_pos = player_get_pos();
+
+    if (player_is_hasted())
+      num_moves++;
 
     /* TODO: Try to remove this */
     if (has_hit)
@@ -79,7 +82,7 @@ command(void)
       door_stop = false;
     status();
     move(player_pos->y, player_pos->x);
-    if (!((running || count) && jump))
+    if (!((running) && jump))
       refresh();
     take = 0;
     after = true;
@@ -99,7 +102,7 @@ command(void)
     {
       if (running || to_death)
         ch = runch;
-      else if (!count)
+      else
       {
         ch = readchar();
         move_on = false;
@@ -107,45 +110,7 @@ command(void)
           msg("");
       }
 
-      /* check for prefixes */
-      if (isdigit(ch))
-      {
-        count = 0;
-        while (isdigit(ch))
-        {
-          count = count * 10 + (ch - '0');
-          if (count > 255)
-            count = 255;
-          ch = readchar();
-        }
-
-        /* turn off count for commands which don't make sense to repeat */
-        switch (ch)
-        {
-          case CTRL('B'): case CTRL('H'): case CTRL('J'):
-          case CTRL('K'): case CTRL('L'): case CTRL('N'):
-          case CTRL('U'): case CTRL('Y'):
-          case '.': case 'a': case 'b': case 'h': case 'j':
-          case 'k': case 'l': case 'm': case 'n': case 'q':
-          case 'r': case 's': case 't': case 'u': case 'y':
-          case 'z': case 'B': case 'C': case 'H': case 'I':
-          case 'J': case 'K': case 'L': case 'N': case 'U':
-          case 'Y':
-          case CTRL('D'): case CTRL('A'):
-            break;
-          default:
-            count = 0;
-        }
-      }
-
-      /* execute a command */
-      if (count && !running)
-      {
-        msg("Count remaining: %d", --count);
-        mpos = 0;
-      }
-
-      if (ch != 'a' && ch != KEY_ESCAPE && !(running || count || to_death))
+      if (ch != 'a' && ch != KEY_ESCAPE && !(running || to_death))
       {
         l_last_comm = last_comm;
         l_last_dir = last_dir;
@@ -167,7 +132,7 @@ command(void)
     if (!running)
       door_stop = false;
     if (!after)
-      player_moves++;
+      num_moves++;
   }
 
   daemon_run_all(AFTER);
@@ -258,7 +223,6 @@ command_do(char ch)
       {
         char buf[MAXSTR];
         /* Message the player, but don't save it to ^P */
-        count = 0;
         strcpy(buf, huh);
         msg("illegal command '%s'", unctrl(ch));
         strcpy(huh, buf);
@@ -303,7 +267,6 @@ command_wizard_do(char ch)
       {
         char buf[MAXSTR];
         /* Message the player, but don't save it to ^P */
-        count = 0;
         strcpy(buf, huh);
         msg("illegal command '%s'", unctrl(ch));
         strcpy(huh, buf);
