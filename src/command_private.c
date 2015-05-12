@@ -18,6 +18,7 @@
 #include "weapons.h"
 #include "wand.h"
 #include "rip.h"
+#include "daemons.h"
 #include "rogue.h"
 
 #include "command_private.h"
@@ -327,6 +328,7 @@ command_help(void)
     {'>',	"	go down a staircase",			true},
     {'<',	"	go up a staircase",			true},
     {'.',	"	rest for a turn",			true},
+    {'Z',	"	rest until healed",			true},
     {',',	"	pick something up",			true},
     {'i',	"	inventory",				true},
     {'I',	"	equipment",				true},
@@ -334,6 +336,7 @@ command_help(void)
     {'r',	"	read scroll",				true},
     {'e',	"	eat food",				true},
     {'w',	"	wield a weapon",			true},
+    {'x',	"	wield last used weapon",		true},
     {'W',	"	wear armor",				true},
     {'T',	"	take armor off",			true},
     {'P',	"	put on ring",				true},
@@ -500,11 +503,23 @@ bool command_rest(void)
   for (mon = mlist; mon != NULL; mon = mon->l_next)
     if (see_monst(mon))
     {
-      msg("cannot rest with monsters nearby!");
+      msg("cannot rest with monsters nearby");
       return false;
     }
 
+  if (!player_is_hurt())
+  {
+    msg("you don't feel the least bit tired");
+    return false;
+  }
+
   msg("you rest for a while");
+  again = true;
+  while (again && player_is_hurt())
+  {
+    daemon_run_before();
+    daemon_run_after();
+  }
   return true;
 }
 

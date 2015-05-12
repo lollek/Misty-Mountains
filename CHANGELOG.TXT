@@ -4,6 +4,7 @@ v1.2.7
   Can no longer switch to and from wizard-mode with +
   Starting the game with a seed is no longer counted as cheating
   All status effects now save properly
+  Can now rest with Z to recover health
 
 v1.2.6
   Nymphs are now green
