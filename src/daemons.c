@@ -33,12 +33,7 @@
 
 static int quiet_rounds = 0;
 
-static struct delayed_action d_list[MAXDAEMONS] = {
-    { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY },
-    { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY },
-    { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY },
-    { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY }, { EMPTY },
-};
+static struct delayed_action d_list[MAXDAEMONS];
 
 void *__daemons_ptr(void) { return d_list; }
 
