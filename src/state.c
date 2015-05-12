@@ -439,28 +439,22 @@ rs_write_daemons(FILE *savef, const struct delayed_action *d_list, int count)
   for (i = 0; i < count; i++)
   {
     int func;
-    if (d_list[i].d_func == daemon_rollwand)
-      func = 1;
-    else if (d_list[i].d_func == daemon_doctor)
-      func = 2;
-    else if (d_list[i].d_func == daemon_digest_food)
-      func = 3;
-    else if (d_list[i].d_func == daemon_runners_move)
-      func = 4;
-    else if (d_list[i].d_func == daemon_start_wanderer)
-      func = 5;
-    else if (d_list[i].d_func == player_remove_hasted)
-      func = 6;
-    else if (d_list[i].d_func == player_remove_confused)
-      func = 7;
-    else if (d_list[i].d_func == player_remove_true_sight)
-      func = 8;
-    else if (d_list[i].d_func == player_remove_blind)
-      func = 9;
-    else if (d_list[i].d_func == daemon_ring_abilities)
-      func = 10;
-    else if (d_list[i].d_func == NULL)
-      func = 0;
+    if (d_list[i].d_func == NULL)                              func = 0;
+    else if (d_list[i].d_func == daemon_rollwand)              func = 1;
+    else if (d_list[i].d_func == daemon_doctor)                func = 2;
+    else if (d_list[i].d_func == daemon_digest_food)           func = 3;
+    else if (d_list[i].d_func == daemon_runners_move)          func = 4;
+    else if (d_list[i].d_func == daemon_start_wanderer)        func = 5;
+    else if (d_list[i].d_func == player_remove_hasted)         func = 6;
+    else if (d_list[i].d_func == player_remove_confused)       func = 7;
+    else if (d_list[i].d_func == player_remove_true_sight)     func = 8;
+    else if (d_list[i].d_func == player_remove_blind)          func = 9;
+    else if (d_list[i].d_func == daemon_ring_abilities)        func = 10;
+    else if (d_list[i].d_func == player_remove_confused)       func = 11;
+    else if (d_list[i].d_func == player_remove_sense_monsters) func = 12;
+    else if (d_list[i].d_func == player_remove_hallucinating)  func = 13;
+    else if (d_list[i].d_func == player_stop_levitating)       func = 14;
+    else if (d_list[i].d_func == daemon_change_visuals)        func = 15;
     else
     {
       msg("Unknown daemon @ %p", d_list[i].d_func);
@@ -512,6 +506,11 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
       case 8:    d_list[i].d_func = player_remove_true_sight; break;
       case 9:    d_list[i].d_func = player_remove_blind; break;
       case 10:   d_list[i].d_func = daemon_ring_abilities; break;
+      case 11:   d_list[i].d_func = player_remove_confused; break;
+      case 12:   d_list[i].d_func = player_remove_sense_monsters; break;
+      case 13:   d_list[i].d_func = player_remove_hallucinating; break;
+      case 14:   d_list[i].d_func = player_stop_levitating; break;
+      case 15:   d_list[i].d_func = daemon_change_visuals; break;
       default:   msg("Unknown daemon by id %d", func); return 1;
     }
   }
