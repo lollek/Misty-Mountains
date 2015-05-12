@@ -3,6 +3,7 @@ v1.2.7
   Can no longer do x commands in a row
   Can no longer switch to and from wizard-mode with +
   Starting the game with a seed is no longer counted as cheating
+  All status effects now save properly
 
 v1.2.6
   Nymphs are now green
