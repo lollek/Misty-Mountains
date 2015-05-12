@@ -457,10 +457,15 @@ rs_write_daemons(FILE *savef, const struct delayed_action *d_list, int count)
       func = 8;
     else if (d_list[i].d_func == player_remove_blind)
       func = 9;
+    else if (d_list[i].d_func == daemon_ring_abilities)
+      func = 10;
     else if (d_list[i].d_func == NULL)
       func = 0;
     else
-      func = -1;
+    {
+      msg("Unknown daemon @ %p", d_list[i].d_func);
+      return 1;
+    }
 
     if (rs_write_int(savef, d_list[i].d_type) ||
         rs_write_int(savef, func) ||
@@ -496,6 +501,7 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
 
     switch(func)
     {
+      case 0:    d_list[i].d_func = NULL; break;
       case 1:    d_list[i].d_func = daemon_rollwand; break;
       case 2:    d_list[i].d_func = daemon_doctor; break;
       case 3:    d_list[i].d_func = daemon_digest_food; break;
@@ -505,7 +511,8 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
       case 7:    d_list[i].d_func = player_remove_confused; break;
       case 8:    d_list[i].d_func = player_remove_true_sight; break;
       case 9:    d_list[i].d_func = player_remove_blind; break;
-      default:   d_list[i].d_func = NULL; break;
+      case 10:   d_list[i].d_func = daemon_ring_abilities; break;
+      default:   msg("Unknown daemon by id %d", func); return 1;
     }
   }
 
