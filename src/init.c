@@ -311,6 +311,7 @@ init_new_game(void)
   daemon_start(daemon_runners_move, 0, AFTER);
   daemon_start(daemon_doctor, 0, AFTER);
   daemon_start(daemon_digest_food, 0, AFTER);
+  daemon_start(daemon_ring_abilities, 0, AFTER);
 
   return true;
 }

@@ -424,68 +424,6 @@ command_again(void)
   return false;
 }
 
-bool
-command_search(void)
-{
-  int y, x;
-  int probinc = (player_is_hallucinating() ? 3:0) + player_is_blind() ? 2:0;
-  bool found = false;
-  coord *player_pos = player_get_pos();
-
-  for (y = player_pos->y - 1; y <= player_pos->y + 1; y++)
-    for (x = player_pos->x - 1; x <= player_pos->x + 1; x++)
-    {
-      char *fp = &flat(y, x);
-      char chatyx = chat(y, x);
-
-      /* Real wall/floor/shadow */
-      if (*fp & F_REAL)
-        continue;
-
-      /* Wall */
-      if ((chatyx == VWALL || chatyx == HWALL) &&
-          rnd(5 + probinc) == 0)
-      {
-        chat(y, x) = DOOR;
-        msg("a secret door");
-        found = true;
-        *fp |= F_REAL;
-      }
-
-      /* Floor */
-      if (chatyx == FLOOR && rnd(2 + probinc) == 0)
-      {
-        chat(y, x) = TRAP;
-
-        if (!terse)
-          addmsg("you found ");
-
-        if (player_is_hallucinating())
-          msg(trap_names[rnd(NTRAPS)]);
-        else {
-          msg(trap_names[*fp & F_TMASK]);
-          *fp |= F_SEEN;
-        }
-
-        found = true;
-        *fp |= F_REAL;
-      }
-
-      /* Shadow */
-      if (chatyx == SHADOW && rnd(3 + probinc) == 0)
-      {
-        chat(y, x) = PASSAGE;
-        found = true;
-        *fp |= F_REAL;
-      }
-    }
-  if (found)
-  {
-    look(false);
-    running = false;
-  }
-  return true;
-}
 
 /* Let them escape for a while */
 void
@@ -554,5 +492,19 @@ command_wield(void)
   }
   return weapon_wield(obj);
 
+}
+
+bool command_rest(void)
+{
+  THING *mon;
+  for (mon = mlist; mon != NULL; mon = mon->l_next)
+    if (see_monst(mon))
+    {
+      msg("cannot rest with monsters nearby!");
+      return false;
+    }
+
+  msg("you rest for a while");
+  return true;
 }
 

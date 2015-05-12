@@ -508,10 +508,8 @@ waste_time(int rounds)
 {
   while (rounds--)
   {
-    daemon_run_all(BEFORE);
-    daemon_run_fuses(BEFORE);
-    daemon_run_all(AFTER);
-    daemon_run_fuses(AFTER);
+    daemon_run_before();
+    daemon_run_after();
   }
 }
 

@@ -58,6 +58,7 @@ void player_fall_asleep(void);
 void player_become_stuck(void);
 void player_become_poisoned(void);
 void player_teleport(coord *target);
+bool player_search(void);
 
 /* Position */
 coord *player_get_pos(void);

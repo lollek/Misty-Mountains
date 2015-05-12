@@ -58,9 +58,7 @@ command(void)
   static char ch;
   int num_moves;
 
-  /* Let the daemons start up */
-  daemon_run_all(BEFORE);
-  daemon_run_fuses(BEFORE);
+  daemon_run_before();
 
   for (num_moves = 1; num_moves > 0; --num_moves)
   {
@@ -82,7 +80,7 @@ command(void)
       door_stop = false;
     status();
     move(player_pos->y, player_pos->x);
-    if (!((running) && jump))
+    if (!(running && jump))
       refresh();
     take = 0;
     after = true;
@@ -135,24 +133,7 @@ command(void)
       num_moves++;
   }
 
-  daemon_run_all(AFTER);
-  daemon_run_fuses(AFTER);
-
-  /* Do ring abilities */
-  {
-    int i;
-    for (i = 0; i < RING_SLOTS_SIZE; ++i)
-    {
-      THING *obj = pack_equipped_item(ring_slots[i]);
-      if (obj == NULL)
-        continue;
-      else if (obj->o_which == R_SEARCH)
-        command_search();
-      else if (obj->o_which == R_TELEPORT && rnd(50) == 0)
-        player_teleport(NULL);
-    }
-  }
-
+  daemon_run_after();
   return 0;
 }
 
@@ -187,7 +168,7 @@ command_do(char ch)
     case 'o': return option();
     case 'q': return potion_quaff_something();
     case 'r': return read_scroll();
-    case 's': return command_search();
+    case 's': return player_search();
     case 't': return command_throw();
     case 'w': return command_wield();
     case 'x': return last_weapon();
@@ -201,11 +182,12 @@ command_do(char ch)
     case 'F': return command_attack(true);
     case 'I': return pack_print_equipment();
     case 'P': return ring_put_on();
+    case 'Q': return command_quit();
     case 'R': return ring_take_off();
     case 'S': return save_game();
     case 'T': return command_take_off(EQUIPMENT_ARMOR);
     case 'W': return armor_command_wear();
-    case 'Q': return command_quit();
+    case 'Z': return command_rest();
 
     /* Ctrl case */
     case CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):

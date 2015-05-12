@@ -71,6 +71,47 @@ daemon_find_slot(void (*func)())
   return NULL;
 }
 
+/** daemon_run_all:
+ * Run all the daemons that are active with the current flag,
+ * passing the argument to the function. */
+static void
+daemon_run_all(int flag)
+{
+  struct delayed_action *dev;
+
+  for (dev = d_list; dev <= &d_list[MAXDAEMONS-1]; dev++)
+    if (dev->d_type == flag && dev->d_time == DAEMON)
+      (*dev->d_func)(dev->d_arg);
+}
+
+/** daemon_run_fuses:
+ * Decrement counters and start needed fuses */
+static void
+daemon_run_fuses(int flag)
+{
+  struct delayed_action *wire;
+
+  for (wire = d_list; wire <= &d_list[MAXDAEMONS-1]; wire++)
+    if (flag == wire->d_type && wire->d_time > 0 && --wire->d_time == 0)
+    {
+      wire->d_type = EMPTY;
+      (*wire->d_func)(wire->d_arg);
+    }
+}
+
+void daemon_run_before(void)
+{
+  daemon_run_all(BEFORE);
+  daemon_run_fuses(BEFORE);
+}
+
+void daemon_run_after(void)
+{
+  daemon_run_all(AFTER);
+  daemon_run_fuses(AFTER);
+}
+
+
 /** daemon_start:
  * Start a daemon, takes a function. */
 void
@@ -96,18 +137,6 @@ daemon_kill(void (*func)())
     dev->d_type = EMPTY;
 }
 
-/** daemon_run_all:
- * Run all the daemons that are active with the current flag,
- * passing the argument to the function. */
-void
-daemon_run_all(int flag)
-{
-  struct delayed_action *dev;
-
-  for (dev = d_list; dev <= &d_list[MAXDAEMONS-1]; dev++)
-    if (dev->d_type == flag && dev->d_time == DAEMON)
-      (*dev->d_func)(dev->d_arg);
-}
 
 /** fuse:
  * Start a fuse to go off in a certain number of turns */
@@ -144,20 +173,6 @@ daemon_extinguish_fuse(void (*func)())
     wire->d_type = EMPTY;
 }
 
-/** daemon_run_fuses:
- * Decrement counters and start needed fuses */
-void
-daemon_run_fuses(int flag)
-{
-  struct delayed_action *wire;
-
-  for (wire = d_list; wire <= &d_list[MAXDAEMONS-1]; wire++)
-    if (flag == wire->d_type && wire->d_time > 0 && --wire->d_time == 0)
-    {
-      wire->d_type = EMPTY;
-      (*wire->d_func)(wire->d_arg);
-    }
-}
 
 /** daemon_reset_doctor
  * Stop the daemon doctor from healing */
@@ -359,5 +374,20 @@ daemon_runners_move(void)
   {
     endmsg();
     has_hit = false;
+  }
+}
+
+void daemon_ring_abilities(void)
+{
+  int i;
+  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  {
+    THING *obj = pack_equipped_item(ring_slots[i]);
+    if (obj == NULL)
+      continue;
+    else if (obj->o_which == R_SEARCH)
+      player_search();
+    else if (obj->o_which == R_TELEPORT && rnd(50) == 0)
+      player_teleport(NULL);
   }
 }
