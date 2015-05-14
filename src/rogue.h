@@ -36,10 +36,6 @@
 #define PACKSIZE 22 /* How many items we can have in our pack */
 #define STATLINE (NUMLINES - 1)
 
-#undef CTRL
-#define CTRL(c) (c & 037)
-#define UNCTRL(c) (c + 'A' - CTRL('A'))
-
 extern enum rogue_game_t
 {
   DEFAULT,

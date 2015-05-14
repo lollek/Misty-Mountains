@@ -4,6 +4,10 @@
 #include <stdbool.h>
 #include <curses.h>
 
+#undef CTRL
+#define CTRL(c) (c & 037)
+#define UNCTRL(c) (c + 'A' - CTRL('A'))
+
 /* Extra named keys for curses */
 #define KEY_SPACE	' '
 #define KEY_ESCAPE	27
