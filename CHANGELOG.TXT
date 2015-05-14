@@ -6,6 +6,7 @@ v1.2.7
   All status effects now save properly
   Can now rest with Z to recover health
   Last wielded weapon is now saved
+  Stairs is no longer discovered due to tripping
 
 v1.2.6
   Nymphs are now green
