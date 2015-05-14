@@ -172,7 +172,7 @@ static void
 pack_remove_from_floor(THING *obj)
 {
   coord *player_pos = player_get_pos();
-  detach(lvl_obj, obj);
+  list_detach(&lvl_obj, obj);
   mvaddcch(player_pos->y, player_pos->x, floor_ch());
   chat(player_pos->y, player_pos->x) = (player_get_room()->r_flags & ISGONE)
     ? PASSAGE : FLOOR;
@@ -197,7 +197,7 @@ pack_add(THING *obj, bool silent)
   if (obj->o_type == SCROLL && obj->o_which == S_SCARE &&
       obj->o_flags & ISFOUND)
   {
-    detach(lvl_obj, obj);
+    list_detach(&lvl_obj, obj);
     mvaddcch(player_pos->y, player_pos->x, floor_ch());
     chat(player_pos->y, player_pos->x) = (player_get_room()->r_flags & ISGONE)
       ? PASSAGE : FLOOR;
@@ -220,7 +220,7 @@ pack_add(THING *obj, bool silent)
   {
     if (from_floor)
       pack_remove_from_floor(obj);
-    attach(player_pack, obj);
+    _attach(&player_pack, obj);
     obj->o_packch = pack_char();
   }
   else
@@ -340,7 +340,7 @@ pack_remove(THING *obj, bool newobj, bool all)
   {
     last_pick = NULL;
     pack_used[obj->o_packch - 'a'] = false;
-    detach(player_pack, obj);
+    list_detach(&player_pack, obj);
   }
   return nobj;
 }
@@ -365,7 +365,7 @@ pack_pick_up(char ch)
         if (obj != NULL)
         {
           pack_add_money(obj->o_goldval);
-          detach(lvl_obj, obj);
+          list_detach(&lvl_obj, obj);
           _discard(&obj);
           player_get_room()->r_goldval = 0;
         }
@@ -638,7 +638,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   if (!pack_add(obj, true))
   {
     coord *player_pos = player_get_pos();
-    attach(lvl_obj, obj);
+    _attach(&lvl_obj, obj);
     chat(player_pos->y, player_pos->x) = (char) obj->o_type;
     flat(player_pos->y, player_pos->x) |= F_DROPPED;
     obj->o_pos = *player_pos;

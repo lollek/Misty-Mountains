@@ -243,8 +243,8 @@ over:
 	    for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
 		if (th->t_dest == &obj->o_pos)
 		{
-		    detach(lvl_obj, obj);
-		    attach(th->t_pack, obj);
+		    list_detach(&lvl_obj, obj);
+		    _attach(&th->t_pack, obj);
 		    chat(obj->o_pos.y, obj->o_pos.x) =
 			(th->t_room->r_flags & ISGONE) ? PASSAGE : FLOOR;
 		    th->t_dest = monster_destination(th);

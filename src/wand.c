@@ -274,7 +274,7 @@ wand_spell_polymorph(THING *target)
     player_remove_held();
 
   target_pack = target->t_pack;
-  detach(mlist, target);
+  list_detach(&mlist, target);
   was_seen = see_monst(target);
   if (was_seen)
   {

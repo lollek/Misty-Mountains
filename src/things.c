@@ -220,7 +220,7 @@ drop(void)
         obj->o_type == SCROLL || obj->o_type == FOOD));
 
   /* Link it into the level object list */
-  attach(lvl_obj, obj);
+  _attach(&lvl_obj, obj);
   chat(player_pos->y, player_pos->x) = (char) obj->o_type;
   flat(player_pos->y, player_pos->x) |= F_DROPPED;
   obj->o_pos = *player_pos;

@@ -168,7 +168,7 @@ monster_new(THING *tp, char type, coord *cp)
   if (lev_add < 0)
     lev_add = 0;
 
-  attach(mlist, tp);
+  _attach(&mlist, tp);
   tp->t_type = type;
   tp->t_disguise = type;
   tp->t_pos = *cp;
@@ -276,7 +276,7 @@ void
 monster_give_pack(THING *tp)
 {
   if (level >= max_level && rnd(100) < monsters[tp->t_type-'A'].m_carry)
-    attach(tp->t_pack, new_thing());
+    _attach(&tp->t_pack, new_thing());
 }
 
 int
@@ -357,7 +357,7 @@ monster_on_death(THING *tp, bool pr)
           gold->o_goldval = GOLDCALC;
           if (player_save_throw(VS_MAGIC))
             gold->o_goldval += GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
-          attach(tp->t_pack, gold);
+          _attach(&tp->t_pack, gold);
         }
       }
   }
@@ -394,7 +394,7 @@ monster_remove_from_screen(coord *mp, THING *tp, bool waskill)
   {
     nexti = obj->l_next;
     obj->o_pos = tp->t_pos;
-    detach(tp->t_pack, obj);
+    list_detach(&tp->t_pack, obj);
     if (waskill)
       fall(obj, false);
     else
@@ -403,7 +403,7 @@ monster_remove_from_screen(coord *mp, THING *tp, bool waskill)
 
   moat(mp->y, mp->x) = NULL;
   mvaddcch(mp->y, mp->x, tp->t_oldch);
-  detach(mlist, tp);
+  list_detach(&mlist, tp);
 
   if (on(*tp, ISTARGET))
   {

@@ -32,8 +32,12 @@ _assert_attached(THING *list, THING *item)
 #endif
 
 void
-_detach(THING **list, THING *item)
+list_detach(THING **list, THING *item)
 {
+  assert(list != NULL);
+  assert(*list != NULL);
+  assert(item != NULL);
+
   if (*list == item)
     *list = item->l_next;
 

@@ -291,7 +291,7 @@ rooms_create(void)
       gold->o_flags = ISMANY;
       gold->o_group = GOLDGRP;
       gold->o_type = GOLD;
-      attach(lvl_obj, gold);
+      _attach(&lvl_obj, gold);
     }
 
     /* Put the monster in */
