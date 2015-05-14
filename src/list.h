@@ -22,7 +22,4 @@ void list_free_all(THING **ptr);
 /* Free up an item */
 void _discard(THING **item);
 
-/* Get a new item with a specified size */
-THING * new_item(void);
-
 #endif /* _ROGUE14_LIST_H_ */

@@ -93,15 +93,3 @@ _discard(THING **item)
   *item = NULL;
 }
 
-THING *
-new_item(void)
-{
-  THING *item = calloc(1, sizeof *item);
-
-  if (item == NULL)
-    fatal("No virtual memory available!\n");
-
-  item->l_next = NULL;
-  item->l_prev = NULL;
-  return item;
-}

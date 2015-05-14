@@ -14,6 +14,7 @@
 #include "monster.h"
 #include "rip.h"
 #include "list.h"
+#include "os.h"
 #include "player.h"
 
 #include "traps.h"
@@ -134,7 +135,7 @@ trap_arrow_player(void)
   }
   else
   {
-    THING *arrow = new_item();
+    THING *arrow = allocate_new_item();
     init_weapon(arrow, ARROW);
     arrow->o_count = 1;
     arrow->o_pos = *player_get_pos();
@@ -163,7 +164,7 @@ trap_arrow_monster(THING *victim)
   }
   else
   {
-    THING *arrow = new_item();
+    THING *arrow = allocate_new_item();
     init_weapon(arrow, ARROW);
     arrow->o_count = 1;
     arrow->o_pos = victim->t_pos;

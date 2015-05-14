@@ -32,6 +32,7 @@
 #include "wand.h"
 #include "traps.h"
 #include "things.h"
+#include "os.h"
 #include "rogue.h"
 
 void
@@ -171,7 +172,7 @@ create_obj(void)
     obj = wand_create(which);
   else
   {
-    obj = new_item();
+    obj = allocate_new_item();
     obj->o_type = type;
     obj->o_which = which;
     obj->o_group = 0;
@@ -278,7 +279,7 @@ wizard_levels_and_gear(void)
   /* Give him a sword (+1,+1) */
   if (pack_equipped_item(EQUIPMENT_RHAND) == NULL)
   {
-    obj = new_item();
+    obj = allocate_new_item();
     init_weapon(obj, TWOSWORD);
     obj->o_hplus = 1;
     obj->o_dplus = 1;
@@ -288,7 +289,7 @@ wizard_levels_and_gear(void)
   /* And his suit of armor */
   if (pack_equipped_item(EQUIPMENT_ARMOR) == NULL)
   {
-    obj = new_item();
+    obj = allocate_new_item();
     obj->o_type = ARMOR;
     obj->o_which = PLATE_MAIL;
     obj->o_arm = -5;

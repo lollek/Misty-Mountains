@@ -28,6 +28,7 @@
 #include "state.h"
 #include "things.h"
 #include "rip.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "wand.h"
@@ -138,7 +139,7 @@ wand_material(enum wand wand)
 THING *
 wand_create(int wand)
 {
-  THING *new_wand = new_item();
+  THING *new_wand = allocate_new_item();
 
   assert(sizeof("1x1") <= sizeof(new_wand->o_damage));
   assert(sizeof("1x1") <= sizeof(new_wand->o_hurldmg));

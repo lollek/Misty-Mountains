@@ -25,6 +25,7 @@
 #include "player.h"
 #include "weapons.h"
 #include "things.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "monster.h"
@@ -202,7 +203,7 @@ monster_new(THING *tp, char type, coord *cp)
 void
 monster_new_random_wanderer(void)
 {
-  THING *tp = new_item();
+  THING *tp = allocate_new_item();
   static coord cp;
 
   do
@@ -352,7 +353,7 @@ monster_on_death(THING *tp, bool pr)
 
         if (fallpos(&tp->t_pos, &tp->t_room->r_gold) && level >= max_level)
         {
-          gold = new_item();
+          gold = allocate_new_item();
           gold->o_type = GOLD;
           gold->o_goldval = GOLDCALC;
           if (player_save_throw(VS_MAGIC))

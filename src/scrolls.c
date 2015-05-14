@@ -24,6 +24,7 @@
 #include "weapons.h"
 #include "wand.h"
 #include "things.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "scrolls.h"
@@ -152,7 +153,7 @@ create_monster(void)
     }
   else
   {
-    obj = new_item();
+    obj = allocate_new_item();
     monster_new(obj, monster_random(false), &mp);
     msg("A %s appears out of thin air", monsters[obj->t_type - 'A'].m_name);
   }

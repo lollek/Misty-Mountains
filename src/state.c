@@ -47,6 +47,7 @@
 #include "player.h"
 #include "wand.h"
 #include "monster.h"
+#include "os.h"
 #include "rogue.h"
 
 static const size_t RSID_STATS        = 0xABCD0001;
@@ -679,7 +680,7 @@ rs_read_equipment(FILE *inf, size_t marker)
 
   if (rs_read_marker(inf, marker))
     return 0;
-  item = new_item();
+  item = allocate_new_item();
   if (rs_read_object(inf, item))
     return 1;
   pack_equip_item(item);
@@ -716,7 +717,7 @@ rs_read_object_list(FILE *inf, THING **list)
 
   for (i = 0; i < cnt; i++)
   {
-    l = new_item();
+    l = allocate_new_item();
     l->l_prev = previous;
 
     if (previous != NULL)
@@ -1017,7 +1018,7 @@ rs_read_thing_list(FILE *inf, THING **list)
 
   for (i = 0; i < cnt; i++)
   {
-    l = new_item();
+    l = allocate_new_item();
     l->l_prev = previous;
 
     if (previous != NULL)

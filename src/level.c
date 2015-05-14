@@ -24,6 +24,7 @@
 #include "player.h"
 #include "rooms.h"
 #include "things.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "level.h"
@@ -78,7 +79,7 @@ treas_room(void)
     spots = 0;
     if (room_find_floor(rp, &mp, MAXTRIES, true))
     {
-      tp = new_item();
+      tp = allocate_new_item();
       monster_new(tp, monster_random(false), &mp);
       tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
       monster_give_pack(tp);
@@ -120,7 +121,7 @@ put_things(void)
    * amulet yet, put it somewhere on the ground */
   if (level >= AMULETLEVEL && !pack_contains_amulet())
   {
-    THING *obj = new_item();
+    THING *obj = allocate_new_item();
     list_attach(&lvl_obj, obj);
     obj->o_hplus = 0;
     obj->o_dplus = 0;

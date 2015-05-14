@@ -283,7 +283,7 @@ rooms_create(void)
     {
       THING *gold;
 
-      gold = new_item();
+      gold = allocate_new_item();
       gold->o_goldval = rp->r_goldval = GOLDCALC;
       room_find_floor(rp, &rp->r_gold, false, false);
       gold->o_pos = rp->r_gold;
@@ -298,7 +298,7 @@ rooms_create(void)
     if (rnd(100) < (rp->r_goldval > 0 ? 80 : 25))
     {
       coord mp;
-      THING *tp = new_item();
+      THING *tp = allocate_new_item();
       room_find_floor(rp, &mp, false, true);
       monster_new(tp, monster_random(false), &mp);
       monster_give_pack(tp);

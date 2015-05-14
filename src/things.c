@@ -28,6 +28,7 @@
 #include "player.h"
 #include "weapons.h"
 #include "wand.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "things.h"
@@ -231,7 +232,7 @@ drop(void)
 static THING *
 new_generic_thing(void)
 {
-  THING *cur = new_item();
+  THING *cur = allocate_new_item();
 
   assert (sizeof(cur->o_damage) >= sizeof("0x0"));
   assert (sizeof(cur->o_hurldmg) >= sizeof("0x0"));

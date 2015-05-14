@@ -26,6 +26,7 @@
 #include "wand.h"
 #include "things.h"
 #include "monster.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "pack.h"
@@ -329,7 +330,7 @@ pack_remove(THING *obj, bool newobj, bool all)
     obj->o_count--;
     if (newobj)
     {
-      nobj = new_item();
+      nobj = allocate_new_item();
       *nobj = *obj;
       nobj->l_next = NULL;
       nobj->l_prev = NULL;

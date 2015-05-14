@@ -13,6 +13,7 @@
 #include "command.h"
 #include "weapons.h"
 #include "traps.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "player.h"
@@ -98,13 +99,13 @@ player_init(void)
   food_left = HUNGERTIME;
 
   /* Give him some food */
-  obj = new_item();
+  obj = allocate_new_item();
   obj->o_type = FOOD;
   obj->o_count = 1;
   pack_add(obj, true);
 
   /* And his suit of armor */
-  obj = new_item();
+  obj = allocate_new_item();
   obj->o_type = ARMOR;
   obj->o_which = RING_MAIL;
   obj->o_arm = armor_ac(RING_MAIL) - 1;
@@ -113,7 +114,7 @@ player_init(void)
   pack_equip_item(obj);
 
   /* Give him his weaponry.  First a mace. */
-  obj = new_item();
+  obj = allocate_new_item();
   init_weapon(obj, MACE);
   obj->o_hplus = 1;
   obj->o_dplus = 1;
@@ -121,7 +122,7 @@ player_init(void)
   pack_equip_item(obj);
 
   /* Now a +1 bow */
-  obj = new_item();
+  obj = allocate_new_item();
   init_weapon(obj, BOW);
   obj->o_hplus = 1;
   obj->o_flags |= ISKNOW;
@@ -129,7 +130,7 @@ player_init(void)
   set_last_weapon(obj);
 
   /* Now some arrows */
-  obj = new_item();
+  obj = allocate_new_item();
   init_weapon(obj, ARROW);
   obj->o_count = rnd(15) + 25;
   obj->o_flags |= ISKNOW;
