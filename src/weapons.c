@@ -23,6 +23,7 @@
 #include "player.h"
 #include "os.h"
 #include "things.h"
+#include "state.h"
 #include "rogue.h"
 
 #include "weapons.h"
@@ -63,6 +64,52 @@ struct obj_info weap_info[] = {
     /* DO NOT REMOVE: fake entry for dragon's breath */
     { NULL,				0,    0, NULL, false },	
 };
+
+bool weapons_save_state(void *fd)
+{
+  THING * player_pack = *(THING **)__pack_ptr();
+  THING * ptr = NULL;
+  int8_t i = 0;
+
+  if (last_wielded_weapon != NULL)
+    for (ptr = player_pack; ptr != NULL; ptr = ptr->l_next, ++i)
+      if (ptr == last_wielded_weapon)
+        break;
+
+  assert(i >= 0);
+  assert(i < PACKSIZE);
+
+  return state_save_int8(fd, ptr == NULL ? -1 : i);
+}
+
+bool weapons_load_state(void *fd)
+{
+  THING * player_pack = *(THING **)__pack_ptr();
+  THING * ptr = NULL;
+  int8_t i = 0;
+  bool status = state_load_int8(fd, &i);
+
+  assert(i >= -1);
+  assert(i < PACKSIZE);
+  assert(!(*(THING **)__pack_ptr() == NULL && i > -1));
+
+  if (i == -1)
+    return status;
+
+  assert(i >= 0);
+
+  if (i >= 0)
+    for (ptr = player_pack; ptr != NULL; ptr = ptr->l_next)
+      if (i-- == 0)
+      {
+        last_wielded_weapon = ptr;
+        break;
+      }
+
+  assert(ptr != NULL);
+
+  return status;
+}
 
 bool
 missile(int ydelta, int xdelta)

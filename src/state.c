@@ -29,6 +29,7 @@
     SUCH DAMAGE.
 */
 
+#include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -48,6 +49,7 @@
 #include "wand.h"
 #include "monster.h"
 #include "os.h"
+#include "weapons.h"
 #include "rogue.h"
 
 static const size_t RSID_STATS        = 0xABCD0001;
@@ -71,9 +73,7 @@ extern STONE stones[];
 extern int cNSTONES;
 extern int group;
 
-
 #define rs_assert(_a) if (_a) { return printf("L%d@%s", __LINE__, __FILE__); }
-
 
 #define rs_write(_f, _p, _s)     (encwrite(_p, _s, _f) != _s)
 #define rs_write_boolean(_f, _c) rs_write(_f, (char *)&_c, 1)
@@ -161,6 +161,18 @@ extern int group;
     rs_assert(rs_read_char(_f,&(_p)[temp_i].p_ch) || \
               rs_read_char(_f,&(_p)[temp_i].p_flags) || \
               rs_read_thing_reference(_f, mlist, &(_p)[temp_i].p_monst))
+
+bool
+state_save_int8(void *fd, int8_t data)
+{
+  return rs_write(fd, (char *)&data, 1);
+}
+
+bool
+state_load_int8(void *fd, int8_t *data)
+{
+  return rs_read(fd, (char *)data, 1);
+}
 
 
 static int
@@ -694,7 +706,6 @@ rs_write_object_list(FILE *savef, const THING *l)
   if (rs_write_marker(savef, RSID_OBJECTLIST) ||
       rs_write_int(savef, listsize))
     return 1;
-
   for(; l != NULL; l = l->l_next)
     if (rs_write_object(savef, l))
       return 1;
@@ -1121,6 +1132,7 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_object_reference(savef, __pack_ptr(), last_pick))
   rs_assert(rs_write_object_list(savef, lvl_obj))
   rs_assert(rs_write_thing_list(savef, mlist))
+  rs_assert(weapons_save_state(savef));
   rs_assert_write_places(savef,places,MAXLINES*MAXCOLS)
   rs_assert(rs_write_stats(savef,&max_stats))
   rs_assert(rs_write_rooms(savef, rooms, MAXROOMS))
@@ -1172,6 +1184,11 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_object_list(inf, &lvl_obj))
   rs_assert(rs_read_thing_list(inf, &mlist))
   rs_assert(rs_fix_thing(__player_ptr()))
+
+  /* TODO: Fix a better way to save pack */
+  *((THING **)__pack_ptr()) = ((THING *)__player_ptr())->t_pack;
+
+  rs_assert(weapons_load_state(inf));
   rs_assert(rs_fix_thing_list(mlist))
   rs_assert_read_places(inf,places,MAXLINES*MAXCOLS)
   rs_assert(rs_read_stats(inf, &max_stats))
@@ -1185,8 +1202,6 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_int(inf,&group))
   rs_assert(rs_read_window(inf,stdscr))
 
-  /* TODO: Fix a better way to save pack */
-  *((THING **)__pack_ptr()) = ((THING *)__player_ptr())->t_pack;
 
   return 0;
 }
