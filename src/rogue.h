@@ -52,12 +52,6 @@ extern enum rogue_game_t
 #define on(thing,flag)	((bool)(((thing).t_flags & (flag)) != 0))
 #define GOLDCALC	(rnd(50 + 10 * level) + 2)
 
-#define fatal(msg) do { fprintf(stderr, msg); abort(); } while (0)
-
-/* for curses */
-#define KEY_SPACE	' '
-#define KEY_ESCAPE	27
-
 /* things that appear on the screens */
 #define SHADOW		' '
 #define VWALL		'|'

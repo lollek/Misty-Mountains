@@ -4,6 +4,12 @@
 #include <stdbool.h>
 #include <curses.h>
 
+/* Extra named keys for curses */
+#define KEY_SPACE	' '
+#define KEY_ESCAPE	27
+
+void fatal(const char *msg); /* Kill program with an error message */
+
 const char *get_homedir(void); /* returns e.g. /home/user/ */
 
 bool step_ok(int ch);  /* True of it's OK to step on ch */

@@ -1,6 +1,10 @@
 #ifndef _ROGUE14_THINGS_H_
 #define _ROGUE14_THINGS_H_
 
+#include <stdbool.h>
+
+#include "coord.h"
+
 /* Stuff about objects */
 struct obj_info {
   char *oi_name;

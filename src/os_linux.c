@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "rogue.h"
+#include "things.h"
+#include "io.h"
 
 THING *
 allocate_new_item(void)

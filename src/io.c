@@ -22,6 +22,13 @@
 
 static void doadd(const char *fmt, va_list args); /* Add things to msgbuf */
 
+void
+fatal(const char *msg)
+{
+  fprintf(stderr, msg);
+  abort();
+}
+
 const char *
 get_homedir(void)
 {
