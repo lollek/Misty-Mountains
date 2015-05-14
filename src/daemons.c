@@ -310,7 +310,7 @@ daemon_change_visuals(void)
       mvaddcch(tp->o_pos.y, tp->o_pos.x, rnd_thing());
 
   /* change the stairs */
-  if (!seen_stairs())
+  if (seen_stairs())
     mvaddcch(stairs.y, stairs.x, rnd_thing());
 
   /* change the monsters */
