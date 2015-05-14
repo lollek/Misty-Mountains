@@ -13,6 +13,7 @@
 #include "weapons.h"
 #include "monster.h"
 #include "rip.h"
+#include "list.h"
 #include "player.h"
 
 #include "traps.h"

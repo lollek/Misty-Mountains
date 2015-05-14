@@ -1,12 +1,13 @@
 #ifndef _ROGUE14_LIST_H_
 #define _ROGUE14_LIST_H_
 
+#define assert_monster(a) assert_attached(mlist, a)
+
 #ifndef NDEBUG
-#define assert_monster(a) _assert_attached(mlist, a)
 #define assert_attached(a, b) _assert_attached(a, b)
 void _assert_attached(THING *list, THING *item);
 #else
-#define assert_attached(a, b) (void)
+#define assert_attached(a, b)
 #endif
 
 /* takes an item out of whatever linked list it might be in */
