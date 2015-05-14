@@ -27,6 +27,7 @@
 #include "things.h"
 #include "monster.h"
 #include "os.h"
+#include "rooms.h"
 #include "rogue.h"
 
 #include "pack.h"

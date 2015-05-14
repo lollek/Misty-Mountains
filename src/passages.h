@@ -1,7 +1,8 @@
 #ifndef _ROGUE14_PASSAGES_H_
 #define _ROGUE14_PASSAGES_H_
 
-#include "rogue.h"
+#include "coord.h"
+#include "rooms.h"
 
 #define MAXPASS		13	/* upper limit on number of passages */
 struct room passages[MAXPASS];
