@@ -434,7 +434,7 @@ fight_against_player(THING *mp)
 			mp=NULL;
 			pack_remove(steal, false, false);
 			msg("she stole %s!", inv_name(steal, true));
-			discard(steal);
+			_discard(&steal);
 		    }
 		}
                 break;

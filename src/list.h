@@ -23,7 +23,7 @@ void _attach(THING **list, THING *item);
 void _free_list(THING **ptr);
 
 /* Free up an item */
-void discard(THING *item);
+void _discard(THING **item);
 
 /* Get a new item with a specified size */
 THING * new_item(void);

@@ -204,7 +204,7 @@ potion_quaff_something(void)
   call_it("potion", &pot_info[obj->o_which]);
 
   if (discardit)
-    discard(obj);
+    _discard(&obj);
   return true;
 }
 

@@ -398,7 +398,7 @@ monster_remove_from_screen(coord *mp, THING *tp, bool waskill)
     if (waskill)
       fall(obj, false);
     else
-      discard(obj);
+      _discard(&obj);
   }
 
   moat(mp->y, mp->x) = NULL;
@@ -413,7 +413,7 @@ monster_remove_from_screen(coord *mp, THING *tp, bool waskill)
       flushinp();
   }
 
-  discard(tp);
+  _discard(&tp);
 }
 
 bool

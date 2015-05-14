@@ -73,14 +73,15 @@ _free_list(THING **ptr)
   {
     item = *ptr;
     *ptr = item->l_next;
-    discard(item);
+    _discard(&item);
   }
 }
 
 void
-discard(THING *item)
+_discard(THING **item)
 {
-  free((char *) item);
+  free(*item);
+  *item = NULL;
 }
 
 THING *

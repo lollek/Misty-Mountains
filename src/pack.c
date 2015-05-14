@@ -201,7 +201,7 @@ pack_add(THING *obj, bool silent)
     mvaddcch(player_pos->y, player_pos->x, floor_ch());
     chat(player_pos->y, player_pos->x) = (player_get_room()->r_flags & ISGONE)
       ? PASSAGE : FLOOR;
-    discard(obj);
+    _discard(&obj);
     msg("the scroll turns to dust as you pick it up");
     return false;
   }
@@ -248,7 +248,7 @@ pack_add(THING *obj, bool silent)
             if (from_floor)
               pack_remove_from_floor(obj);
             op->o_count++;
-            discard(obj);
+            _discard(&obj);
             obj = op;
             lp = NULL;
             break;
@@ -273,7 +273,7 @@ pack_add(THING *obj, bool silent)
               op->o_count += obj->o_count;
               if (from_floor)
                 pack_remove_from_floor(obj);
-              discard(obj);
+              _discard(&obj);
               obj = op;
               lp = NULL;
               break;
@@ -366,7 +366,7 @@ pack_pick_up(char ch)
         {
           pack_add_money(obj->o_goldval);
           detach(lvl_obj, obj);
-          discard(obj);
+          _discard(&obj);
           player_get_room()->r_goldval = 0;
         }
         break;

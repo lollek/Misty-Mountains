@@ -171,7 +171,7 @@ fall(THING *obj, bool pr)
     msg("the %s vanishes as it hits the ground",
         weap_info[obj->o_which].oi_name);
   }
-  discard(obj);
+  _discard(&obj);
 }
 
 void
