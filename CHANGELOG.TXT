@@ -5,6 +5,7 @@ v1.2.7
   Starting the game with a seed is no longer counted as cheating
   All status effects now save properly
   Can now rest with Z to recover health
+  Last wielded weapon is now saved
 
 v1.2.6
   Nymphs are now green
