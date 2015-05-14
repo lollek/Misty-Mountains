@@ -72,13 +72,13 @@ list_attach(THING **list, THING *item)
 }
 
 void
-_free_list(THING **ptr)
+list_free_all(THING **ptr)
 {
-  THING *item;
+  assert (ptr != NULL);
 
   while (*ptr != NULL)
   {
-    item = *ptr;
+    THING *item = *ptr;
     *ptr = item->l_next;
     _discard(&item);
   }

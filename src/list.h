@@ -17,7 +17,7 @@ void list_detach(THING **list, THING *item);
 void list_attach(THING **list, THING *item);
 
 /* Throw the whole blamed thing away */
-void _free_list(THING **ptr);
+void list_free_all(THING **ptr);
 
 /* Free up an item */
 void _discard(THING **item);

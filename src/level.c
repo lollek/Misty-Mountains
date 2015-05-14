@@ -161,12 +161,12 @@ level_new(void)
      * Free up the monsters on the last level
      */
     for (tp = mlist; tp != NULL; tp = tp->l_next)
-	_free_list(&tp->t_pack);
-    _free_list(&mlist);
+	list_free_all(&tp->t_pack);
+    list_free_all(&mlist);
     /*
      * Throw away stuff left on the previous level (if anything)
      */
-    _free_list(&lvl_obj);
+    list_free_all(&lvl_obj);
     rooms_create();			/* Draw rooms */
     passages_do();			/* Draw passages */
     no_food++;
