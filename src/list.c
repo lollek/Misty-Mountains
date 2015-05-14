@@ -87,6 +87,8 @@ list_free_all(THING **ptr)
 void
 _discard(THING **item)
 {
+  assert (item != NULL);
+
   free(*item);
   *item = NULL;
 }
@@ -96,7 +98,9 @@ new_item(void)
 {
   THING *item = calloc(1, sizeof *item);
 
-  assert_or_die(item != NULL, "ran out of memory!");
+  if (item == NULL)
+    fatal("No virtual memory available!\n");
+
   item->l_next = NULL;
   item->l_prev = NULL;
   return item;
