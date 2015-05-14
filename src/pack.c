@@ -220,7 +220,7 @@ pack_add(THING *obj, bool silent)
   {
     if (from_floor)
       pack_remove_from_floor(obj);
-    _attach(&player_pack, obj);
+    list_attach(&player_pack, obj);
     obj->o_packch = pack_char();
   }
   else
@@ -638,7 +638,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   if (!pack_add(obj, true))
   {
     coord *player_pos = player_get_pos();
-    _attach(&lvl_obj, obj);
+    list_attach(&lvl_obj, obj);
     chat(player_pos->y, player_pos->x) = (char) obj->o_type;
     flat(player_pos->y, player_pos->x) |= F_DROPPED;
     obj->o_pos = *player_pos;

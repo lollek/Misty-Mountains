@@ -52,8 +52,11 @@ list_detach(THING **list, THING *item)
 }
 
 void
-_attach(THING **list, THING *item)
+list_attach(THING **list, THING *item)
 {
+  assert(list != NULL);
+  assert(item != NULL);
+
   if (*list != NULL)
   {
     item->l_next = *list;

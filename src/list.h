@@ -14,7 +14,7 @@ void _assert_attached(THING *list, THING *item);
 void list_detach(THING **list, THING *item);
 
 /* add an item to the head of a list */
-void _attach(THING **list, THING *item);
+void list_attach(THING **list, THING *item);
 
 /* Throw the whole blamed thing away */
 void _free_list(THING **ptr);

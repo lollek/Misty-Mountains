@@ -168,7 +168,7 @@ monster_new(THING *tp, char type, coord *cp)
   if (lev_add < 0)
     lev_add = 0;
 
-  _attach(&mlist, tp);
+  list_attach(&mlist, tp);
   tp->t_type = type;
   tp->t_disguise = type;
   tp->t_pos = *cp;
@@ -276,7 +276,7 @@ void
 monster_give_pack(THING *tp)
 {
   if (level >= max_level && rnd(100) < monsters[tp->t_type-'A'].m_carry)
-    _attach(&tp->t_pack, new_thing());
+    list_attach(&tp->t_pack, new_thing());
 }
 
 int
@@ -357,7 +357,7 @@ monster_on_death(THING *tp, bool pr)
           gold->o_goldval = GOLDCALC;
           if (player_save_throw(VS_MAGIC))
             gold->o_goldval += GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
-          _attach(&tp->t_pack, gold);
+          list_attach(&tp->t_pack, gold);
         }
       }
   }

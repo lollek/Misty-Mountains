@@ -157,7 +157,7 @@ fall(THING *obj, bool pr)
       else
         mvaddcch(fpos.y, fpos.x, obj->o_type);
     }
-    _attach(&lvl_obj, obj);
+    list_attach(&lvl_obj, obj);
     return;
   }
 

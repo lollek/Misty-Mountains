@@ -244,7 +244,7 @@ over:
 		if (th->t_dest == &obj->o_pos)
 		{
 		    list_detach(&lvl_obj, obj);
-		    _attach(&th->t_pack, obj);
+		    list_attach(&th->t_pack, obj);
 		    chat(obj->o_pos.y, obj->o_pos.x) =
 			(th->t_room->r_flags & ISGONE) ? PASSAGE : FLOOR;
 		    th->t_dest = monster_destination(th);

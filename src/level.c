@@ -62,7 +62,7 @@ treas_room(void)
     room_find_floor(rp, &mp, 2 * MAXTRIES, false);
     tp = new_thing();
     tp->o_pos = mp;
-    _attach(&lvl_obj, tp);
+    list_attach(&lvl_obj, tp);
     chat(mp.y, mp.x) = (char) tp->o_type;
   }
 
@@ -109,7 +109,7 @@ put_things(void)
     {
       /* Pick a new object and link it in the list */
       THING *obj = new_thing();
-      _attach(&lvl_obj, obj);
+      list_attach(&lvl_obj, obj);
 
       /* Put it somewhere */
       room_find_floor((struct room *) NULL, &obj->o_pos, false, false);
@@ -121,7 +121,7 @@ put_things(void)
   if (level >= AMULETLEVEL && !pack_contains_amulet())
   {
     THING *obj = new_item();
-    _attach(&lvl_obj, obj);
+    list_attach(&lvl_obj, obj);
     obj->o_hplus = 0;
     obj->o_dplus = 0;
     strncpy(obj->o_damage,"0x0",sizeof(obj->o_damage));
