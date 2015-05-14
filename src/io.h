@@ -12,6 +12,8 @@
 #define KEY_SPACE	' '
 #define KEY_ESCAPE	27
 
+extern WINDOW *hw;
+
 void fatal(const char *msg); /* Kill program with an error message */
 
 const char *get_homedir(void); /* returns e.g. /home/user/ */

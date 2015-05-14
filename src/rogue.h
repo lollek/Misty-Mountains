@@ -28,9 +28,9 @@
 
 /* Try not to change these */
 #define MAXSTR 1024 /* maximum length of strings */
-#define MAXCOLS  80 /* maximum number of screen columns used */
 #define MAXINP   50 /* max string to read from terminal or environment */
 #define MAXLINES 32 /* maximum number of screen lines used */
+#define MAXCOLS  80 /* maximum number of screen columns used */
 #define NUMLINES 24
 #define NUMCOLS  80
 #define PACKSIZE 22 /* How many items we can have in our pack */
@@ -85,7 +85,6 @@ extern enum rogue_game_t
 #define RIGHT		1
 #define BOLT_LENGTH	6
 #define LAMPDIST	3
-#define CONCURRENT_RINGS	2	/* How many rings we can wield */
 
 /* Save against things */
 #define VS_POISON	00
@@ -174,7 +173,6 @@ bool use_colors;  /* Use ncurses colors */
  * External variables
  */
 
-
 extern bool	after, again, door_stop,
 		firstmove, has_hit, kamikaze,
 		move_on, running, to_death;
@@ -191,15 +189,9 @@ extern int	food_left, hungry_state,
 
 extern unsigned int	seed;
 
-extern WINDOW	*hw;
-
 extern coord oldpos;
 
-
 extern THING	*l_last_pick, *last_pick;
-
-
-
 
 typedef struct {
     char	*st_name;

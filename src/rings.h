@@ -1,6 +1,9 @@
 #ifndef _ROGUE14_RINGS_H_
 #define _ROGUE14_RINGS_H_
 
+/* How many rings we can wield */
+#define CONCURRENT_RINGS 2
+
 enum ring_t {
   R_PROTECT = 0,
   R_ADDSTR = 1,
