@@ -21,4 +21,9 @@ int state_restore_file(FILE *inf);
 bool state_save_int8(void *fd, int8_t data);
 bool state_load_int8(void *fd, int8_t *data);
 
+#define state_save_list rs_write_object_list
+int state_save_list(void *fd, const THING *list);
+#define state_load_list rs_read_object_list
+int state_load_list(void *fd, THING **list);
+
 #endif /* _ROGUE14_STATE_H_ */

@@ -60,20 +60,16 @@ enum equipment_pos ring_slots[RING_SLOTS_SIZE] = {
   EQUIPMENT_LRING
 };
 
-void *__pack_ptr(void) { return &player_pack; }
-
 bool
 pack_save_state(void *fd)
 {
-  (void)fd;
-  return 0;
+  return state_save_list(fd, player_pack);
 }
 
 bool
 pack_load_state(void *fd)
 {
-  (void)fd;
-  return 0;
+  return state_load_list(fd, &player_pack);
 }
 
 int8_t

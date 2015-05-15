@@ -699,7 +699,7 @@ rs_read_equipment(FILE *inf, size_t marker)
   return 0;
 }
 
-static int
+int
 rs_write_object_list(FILE *savef, const THING *l)
 {
   size_t listsize = list_size(l);
@@ -712,7 +712,7 @@ rs_write_object_list(FILE *savef, const THING *l)
   return 0;
 }
 
-static int
+int
 rs_read_object_list(FILE *inf, THING **list)
 {
   size_t temp_i = 0; /* Used by rs_read_marker */
@@ -1080,9 +1080,7 @@ rs_save_file(FILE *savef)
   size_t maxstr = MAXSTR;
   size_t two_x_maxstr = 2 * MAXSTR;
 
-  /* TODO: Fix a better way to save pack */
-  ((THING *)__player_ptr())->t_pack = *((THING **)__pack_ptr());
-
+  rs_assert(pack_save_state(savef));
   rs_assert(rs_write_boolean(savef, firstmove))
   rs_assert(rs_write_booleans(savef, pack_used, pack_used_size))
   rs_assert(rs_write_chars(savef, file_name, maxstr))
@@ -1111,7 +1109,6 @@ rs_save_file(FILE *savef)
   rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_LRING), RSID_LRING);
   rs_assert(rs_write_object_list(savef, lvl_obj))
   rs_assert(rs_write_thing_list(savef, mlist))
-  rs_assert(pack_save_state(savef));
   rs_assert(weapons_save_state(savef));
   rs_assert_write_places(savef,places,MAXLINES*MAXCOLS)
   rs_assert(rs_write_stats(savef,&max_stats))
@@ -1133,6 +1130,7 @@ rs_restore_file(FILE *inf)
 {
   size_t temp_i = 0; /* Used as buffer for macros */
 
+  rs_assert(pack_load_state(inf));
   rs_assert(rs_read_boolean(inf, &firstmove))
   rs_assert(rs_read_booleans(inf, pack_used, 26))
   rs_assert(rs_read_chars(inf, file_name, MAXSTR))
@@ -1162,11 +1160,6 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_object_list(inf, &lvl_obj))
   rs_assert(rs_read_thing_list(inf, &mlist))
   rs_assert(rs_fix_thing(__player_ptr()))
-
-  /* TODO: Fix a better way to save pack */
-  *((THING **)__pack_ptr()) = ((THING *)__player_ptr())->t_pack;
-
-  rs_assert(pack_load_state(inf));
   rs_assert(weapons_load_state(inf));
   rs_assert(rs_fix_thing_list(mlist))
   rs_assert_read_places(inf,places,MAXLINES*MAXCOLS)

@@ -1,6 +1,7 @@
 #ifndef _ROGUE14_PACK_H_
 #define _ROGUE14_PACK_H_
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -17,7 +18,6 @@ enum equipment_pos
 
 /* Variables. TODO: Move these */
 #define RING_SLOTS_SIZE 2
-void *__pack_ptr(void);
 enum equipment_pos ring_slots[RING_SLOTS_SIZE];
 bool pack_used[26];
 
