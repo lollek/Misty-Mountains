@@ -52,9 +52,6 @@ unsigned seed;				/* Random number seed */
 
 coord oldpos;				/* Position before last look() call */
 
-THING *l_last_pick = NULL;		/* Last last_pick */
-THING *last_pick = NULL;		/* Last object picked in pack_get_item() */
-
 WINDOW *hw = NULL;			/* used as a scratch window */
 
 

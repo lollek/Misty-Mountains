@@ -111,12 +111,11 @@ command(void)
 
       if (ch != 'a' && ch != KEY_ESCAPE && !(running || to_death))
       {
+        pack_set_last_picked_item(NULL);
         l_last_comm = last_comm;
         l_last_dir = last_dir;
-        l_last_pick = last_pick;
         last_comm = ch;
         last_dir = '\0';
-        last_pick = NULL;
       }
       after = command_do(ch);
 

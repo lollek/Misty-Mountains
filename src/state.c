@@ -752,25 +752,6 @@ rs_read_object_list(FILE *inf, THING **list)
 }
 
 static int
-rs_write_object_reference(FILE *savef, const THING *list, const THING *item)
-{
-  int i = find_list_ptr(list, item);
-  return rs_write_int(savef, i);
-}
-
-static int
-rs_read_object_reference(FILE *inf, THING *list, THING **item)
-{
-  int i;
-  if (rs_read_int(inf, &i))
-    return 1;
-
-  *item = get_list_item(list,i);
-
-  return 0;
-}
-
-static int
 find_room_coord(struct room *rmlist, coord *c, int n)
 {
   int i = 0;
@@ -1128,10 +1109,9 @@ rs_save_file(FILE *savef)
   rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_RHAND), RSID_RHAND);
   rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_RRING), RSID_RRING);
   rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_LRING), RSID_LRING);
-  rs_assert(rs_write_object_reference(savef, __pack_ptr(), l_last_pick))
-  rs_assert(rs_write_object_reference(savef, __pack_ptr(), last_pick))
   rs_assert(rs_write_object_list(savef, lvl_obj))
   rs_assert(rs_write_thing_list(savef, mlist))
+  rs_assert(pack_save_state(savef));
   rs_assert(weapons_save_state(savef));
   rs_assert_write_places(savef,places,MAXLINES*MAXCOLS)
   rs_assert(rs_write_stats(savef,&max_stats))
@@ -1179,8 +1159,6 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_equipment(inf, RSID_RHAND))
   rs_assert(rs_read_equipment(inf, RSID_RRING))
   rs_assert(rs_read_equipment(inf, RSID_LRING))
-  rs_assert(rs_read_object_reference(inf, __pack_ptr(), &l_last_pick))
-  rs_assert(rs_read_object_reference(inf, __pack_ptr(), &last_pick))
   rs_assert(rs_read_object_list(inf, &lvl_obj))
   rs_assert(rs_read_thing_list(inf, &mlist))
   rs_assert(rs_fix_thing(__player_ptr()))
@@ -1188,6 +1166,7 @@ rs_restore_file(FILE *inf)
   /* TODO: Fix a better way to save pack */
   *((THING **)__pack_ptr()) = ((THING *)__player_ptr())->t_pack;
 
+  rs_assert(pack_load_state(inf));
   rs_assert(weapons_load_state(inf));
   rs_assert(rs_fix_thing_list(mlist))
   rs_assert_read_places(inf,places,MAXLINES*MAXCOLS)

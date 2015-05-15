@@ -28,11 +28,15 @@
 #include "monster.h"
 #include "os.h"
 #include "rooms.h"
+#include "state.h"
 #include "rogue.h"
 
 #include "pack.h"
 
 static THING *player_pack;
+
+static THING *last_picked_item;
+static THING *last_last_picked_item;
 
 static struct equipment_t
 {
@@ -57,6 +61,33 @@ enum equipment_pos ring_slots[RING_SLOTS_SIZE] = {
 };
 
 void *__pack_ptr(void) { return &player_pack; }
+
+bool
+pack_save_state(void *fd)
+{
+  (void)fd;
+  return 0;
+}
+
+bool
+pack_load_state(void *fd)
+{
+  (void)fd;
+  return 0;
+}
+
+void
+pack_set_last_picked_item(THING *ptr)
+{
+  last_last_picked_item = last_picked_item;
+  last_picked_item = ptr;
+}
+
+void
+pack_reset_last_picked_item(void)
+{
+  last_picked_item = last_last_picked_item;
+}
 
 static size_t
 pack_print_evaluate_item(THING *obj)
@@ -327,7 +358,7 @@ pack_remove(THING *obj, bool newobj, bool all)
   THING *nobj = obj;
   if (obj->o_count > 1 && !all)
   {
-    last_pick = obj;
+    last_picked_item = obj;
     obj->o_count--;
     if (newobj)
     {
@@ -340,7 +371,7 @@ pack_remove(THING *obj, bool newobj, bool all)
   }
   else
   {
-    last_pick = NULL;
+    last_picked_item = NULL;
     pack_used[obj->o_packch - 'a'] = false;
     list_detach(&player_pack, obj);
   }
@@ -402,8 +433,8 @@ pack_get_item(const char *purpose, int type)
   char ch;
 
   if (again)
-    if (last_pick)
-      return last_pick;
+    if (last_picked_item != NULL)
+      return last_picked_item;
     else
     {
       msg("you ran out");

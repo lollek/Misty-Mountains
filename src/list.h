@@ -1,6 +1,10 @@
 #ifndef _ROGUE14_LIST_H_
 #define _ROGUE14_LIST_H_
 
+#include <stdint.h>
+
+#include "things.h"
+
 #define assert_monster(a) assert_attached(mlist, a)
 
 #ifndef NDEBUG
@@ -15,6 +19,12 @@ void list_detach(THING **list, THING *item);
 
 /* add an item to the head of a list */
 void list_attach(THING **list, THING *item);
+
+/* Find index of thing in list */
+int8_t list_find(THING *list, THING *thing);
+
+/* Returns item with index i */
+THING *list_element(THING *list, int8_t i);
 
 /* Throw the whole blamed thing away */
 void list_free_all(THING **ptr);

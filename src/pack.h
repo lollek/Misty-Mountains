@@ -18,6 +18,9 @@ void *__pack_ptr(void);
 enum equipment_pos ring_slots[RING_SLOTS_SIZE];
 bool pack_used[26];
 
+bool pack_save_state(void *fd);
+bool pack_load_state(void *fd);
+
 /* Pick up an object and add it to the pack.  If the argument is
  * non-null use it as the linked_list pointer instead of gettting
  * it off the ground. */
@@ -49,6 +52,9 @@ bool pack_contains(THING *item);
 bool pack_print_equipment(void);
 bool pack_print_inventory(int type);
 void pack_clear_inventory(void);
+
+void pack_set_last_picked_item(THING *ptr);
+void pack_reset_last_picked_item(void);
 
 size_t pack_evaluate(void);
 

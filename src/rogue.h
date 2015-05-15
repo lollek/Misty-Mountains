@@ -191,8 +191,6 @@ extern unsigned int	seed;
 
 extern coord oldpos;
 
-extern THING	*l_last_pick, *last_pick;
-
 typedef struct {
     char	*st_name;
     int		st_value;

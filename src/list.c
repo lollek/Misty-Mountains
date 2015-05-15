@@ -12,6 +12,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "io.h"
 #include "rogue.h"
@@ -69,6 +70,39 @@ list_attach(THING **list, THING *item)
     item->l_prev = NULL;
   }
   *list = item;
+}
+
+int8_t
+list_find(THING *list, THING *thing)
+{
+  THING *ptr;
+  int8_t i;
+
+  assert(thing != NULL);
+
+  for (ptr = list, i = 0; ptr != NULL; ptr = ptr->l_next, ++i)
+  {
+    assert(i >= 0);
+    if (ptr == thing)
+      return i;
+  }
+
+  return -1;
+}
+
+THING *
+list_element(THING *list, int8_t i)
+{
+  THING *ptr;
+
+  if (i < 0)
+    return NULL;
+
+  for (ptr = list; ptr != NULL; ptr = ptr->l_next)
+    if (i-- == 0)
+      return ptr;
+
+  return NULL;
 }
 
 void

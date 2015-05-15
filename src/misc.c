@@ -671,7 +671,7 @@ reset_last(void)
 {
   last_comm = l_last_comm;
   last_dir = l_last_dir;
-  last_pick = l_last_pick;
+  pack_reset_last_picked_item();
 }
 
 bool
