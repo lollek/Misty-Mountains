@@ -79,7 +79,6 @@ command(void)
     if (!running)
       door_stop = false;
     status();
-    move(player_pos->y, player_pos->x);
     if (!(running && jump))
       refresh();
     take = 0;
@@ -95,6 +94,8 @@ command(void)
         msg("you can move again");
       }
     }
+
+    move(player_pos->y, player_pos->x);
 
     if (!no_command)
     {
