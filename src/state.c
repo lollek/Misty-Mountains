@@ -78,7 +78,7 @@ extern STONE stones[];
 extern int cNSTONES;
 extern int group;
 
-#define rs_assert(_a) if (_a) { return printf("L%d@%s", __LINE__, __FILE__); }
+#define rs_assert(_a) if (_a) { return printf("Error (#%d)", __LINE__); }
 
 #define rs_write(_f, _p, _s)     (encwrite(_p, _s, _f) != _s)
 #define rs_write_boolean(_f, _c) rs_write(_f, (char *)&_c, 1)
