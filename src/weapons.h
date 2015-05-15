@@ -23,8 +23,8 @@ enum weapon_type
 /* TODO: Remove vars */
 struct obj_info weap_info[MAXWEAPONS +1];
 
-bool weapons_save_state(void *fd);
-bool weapons_load_state(void *fd);
+bool weapons_save_state(void);
+bool weapons_load_state(void);
 
 /* Fire a missile in a given direction */
 bool missile(int ydelta, int xdelta);

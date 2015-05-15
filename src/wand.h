@@ -30,10 +30,10 @@ void *__wands_ptr(void);
 /* Sets up wands for use
  * wand_init or wand_load_state should run before wands are used */
 void wand_init(void);
-bool wand_load_state(void *fd);
+bool wand_load_state(void);
 
 /* Save wand state to file */
-bool wand_save_state(void *fd);
+bool wand_save_state(void);
 
 /* Returns the wand's material as a string */
 const char *wand_material(enum wand wand);

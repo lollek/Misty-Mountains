@@ -21,8 +21,8 @@ enum equipment_pos
 enum equipment_pos ring_slots[RING_SLOTS_SIZE];
 bool pack_used[26];
 
-bool pack_save_state(void *fd);
-bool pack_load_state(void *fd);
+bool pack_save_state(void);
+bool pack_load_state(void);
 
 int8_t pack_list_index(THING *thing);
 THING *pack_list_element(int8_t i);

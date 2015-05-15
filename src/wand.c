@@ -92,7 +92,7 @@ void wand_init(void)
   }
 }
 
-bool wand_save_state(void *fd)
+bool wand_save_state(void)
 {
   int i;
 
@@ -102,15 +102,15 @@ bool wand_save_state(void *fd)
 
   /* Save material */
   for (i = 0; i < MAXSTICKS; i++)
-    if (state_save_index(fd, material, NMATERIAL, _wand_material[i]))
+    if (state_save_index(material, NMATERIAL, _wand_material[i]))
       return 1;
 
   /* Save obj_info data */
-  state_save_obj_info(fd, wands, MAXSTICKS);
+  state_save_obj_info(wands, MAXSTICKS);
   return 0;
 }
 
-bool wand_load_state(void *fd)
+bool wand_load_state(void)
 {
   int i;
 
@@ -120,11 +120,11 @@ bool wand_load_state(void *fd)
 
   /* Load material */
   for (i = 0; i < MAXSTICKS; i++)
-    if (state_load_index(fd, material, NMATERIAL, &_wand_material[i]))
+    if (state_load_index(material, NMATERIAL, &_wand_material[i]))
       return 1;
 
   /* Load obj_info data */
-  state_load_obj_info(fd, wands, MAXSTICKS);
+  state_load_obj_info(wands, MAXSTICKS);
   return 0;
 
 }

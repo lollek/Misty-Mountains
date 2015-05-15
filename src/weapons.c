@@ -65,20 +65,20 @@ struct obj_info weap_info[] = {
     { NULL,				0,    0, NULL, false },	
 };
 
-bool weapons_save_state(void *fd)
+bool weapons_save_state(void)
 {
   int8_t i = pack_list_index(last_wielded_weapon);
 
   assert(i >= -1);
   assert(i < PACKSIZE);
 
-  return state_save_int8(fd, i);
+  return state_save_int8(i);
 }
 
-bool weapons_load_state(void *fd)
+bool weapons_load_state(void)
 {
   int8_t i = 0;
-  bool status = state_load_int8(fd, &i);
+  bool status = state_load_int8(&i);
 
   assert(i >= -1);
   assert(i < PACKSIZE);
