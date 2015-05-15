@@ -76,6 +76,36 @@ pack_load_state(void *fd)
   return 0;
 }
 
+int8_t
+pack_list_index(THING *thing)
+{
+  THING *ptr;
+  int8_t i;
+
+  if (thing == NULL)
+    return -1;
+
+  for (ptr = player_pack, i = 0; ptr != NULL; ptr = ptr->l_next, ++i)
+    if (ptr == thing)
+      return i;
+  return -1;
+}
+
+THING *
+pack_list_element(int8_t i)
+{
+  THING *ptr;
+
+  if (i < 0)
+    return NULL;
+
+  for (ptr = player_pack; ptr != NULL; ptr = ptr->l_next)
+    if (i-- == 0)
+      return ptr;
+
+  return NULL;
+}
+
 void
 pack_set_last_picked_item(THING *ptr)
 {

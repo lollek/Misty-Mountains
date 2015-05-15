@@ -1,7 +1,10 @@
 #ifndef _ROGUE14_PACK_H_
 #define _ROGUE14_PACK_H_
 
-#include "rogue.h"
+#include <stdint.h>
+#include <stdbool.h>
+
+#include "things.h"
 
 enum equipment_pos
 {
@@ -20,6 +23,9 @@ bool pack_used[26];
 
 bool pack_save_state(void *fd);
 bool pack_load_state(void *fd);
+
+int8_t pack_list_index(THING *thing);
+THING *pack_list_element(int8_t i);
 
 /* Pick up an object and add it to the pack.  If the argument is
  * non-null use it as the linked_list pointer instead of gettting

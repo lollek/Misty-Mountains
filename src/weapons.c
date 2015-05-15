@@ -67,46 +67,23 @@ struct obj_info weap_info[] = {
 
 bool weapons_save_state(void *fd)
 {
-  THING * player_pack = *(THING **)__pack_ptr();
-  THING * ptr = NULL;
-  int8_t i = 0;
+  int8_t i = pack_list_index(last_wielded_weapon);
 
-  if (last_wielded_weapon != NULL)
-    for (ptr = player_pack; ptr != NULL; ptr = ptr->l_next, ++i)
-      if (ptr == last_wielded_weapon)
-        break;
-
-  assert(i >= 0);
+  assert(i >= -1);
   assert(i < PACKSIZE);
 
-  return state_save_int8(fd, ptr == NULL ? -1 : i);
+  return state_save_int8(fd, i);
 }
 
 bool weapons_load_state(void *fd)
 {
-  THING * player_pack = *(THING **)__pack_ptr();
-  THING * ptr = NULL;
   int8_t i = 0;
   bool status = state_load_int8(fd, &i);
 
   assert(i >= -1);
   assert(i < PACKSIZE);
-  assert(!(*(THING **)__pack_ptr() == NULL && i > -1));
 
-  if (i == -1)
-    return status;
-
-  assert(i >= 0);
-
-  if (i >= 0)
-    for (ptr = player_pack; ptr != NULL; ptr = ptr->l_next)
-      if (i-- == 0)
-      {
-        last_wielded_weapon = ptr;
-        break;
-      }
-
-  assert(ptr != NULL);
+  last_wielded_weapon = pack_list_element(i);
 
   return status;
 }
