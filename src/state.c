@@ -236,7 +236,7 @@ rs_read_new_string(FILE *inf, char **s)
 }
 
 int
-rs_write_string_index(FILE *savef, const char **master, int max, const char *str)
+state_save_index(FILE *savef, const char **master, int max, const char *str)
 {
   int i;
   for(i = 0; i < max; i++)
@@ -248,7 +248,7 @@ rs_write_string_index(FILE *savef, const char **master, int max, const char *str
 }
 
 int
-rs_read_string_index(FILE *inf, const char **master, int max, const char **str)
+state_load_index(FILE *inf, const char **master, int max, const char **str)
 {
   int i;
 
@@ -405,7 +405,7 @@ rs_write_potions(FILE *savef)
 {
   int i;
   for (i = 0; i < NPOTIONS; i++)
-    if (rs_write_string_index(savef, __colors_ptr(), __colors_size(), p_colors[i]))
+    if (state_save_index(savef, __colors_ptr(), __colors_size(), p_colors[i]))
       return 1;
   return 0;
 }
@@ -415,7 +415,7 @@ rs_read_potions(FILE *inf)
 {
   int i;
   for (i = 0; i < NPOTIONS; i++)
-    if (rs_read_string_index(inf, __colors_ptr(), __colors_size(), &p_colors[i]))
+    if (state_load_index(inf, __colors_ptr(), __colors_size(), &p_colors[i]))
       return 1;
   return 0;
 }
@@ -538,7 +538,7 @@ rs_read_daemons(FILE *inf, struct delayed_action *d_list, int count)
 }
 
 int
-rs_write_obj_info(FILE *savef, const struct obj_info *i, int count)
+state_save_obj_info(FILE *savef, const struct obj_info *i, int count)
 {
   int n;
 
@@ -556,7 +556,7 @@ rs_write_obj_info(FILE *savef, const struct obj_info *i, int count)
 }
 
 int
-rs_read_obj_info(FILE *inf, struct obj_info *mi, int count)
+state_load_obj_info(FILE *inf, struct obj_info *mi, int count)
 {
   size_t temp_i; /* Used by rs_read_marker */
   int n;
@@ -700,7 +700,7 @@ rs_read_equipment(FILE *inf, size_t marker)
 }
 
 int
-rs_write_object_list(FILE *savef, const THING *l)
+state_save_list(FILE *savef, const THING *l)
 {
   size_t listsize = list_size(l);
   if (rs_write_marker(savef, RSID_OBJECTLIST) ||
@@ -713,7 +713,7 @@ rs_write_object_list(FILE *savef, const THING *l)
 }
 
 int
-rs_read_object_list(FILE *inf, THING **list)
+state_load_list(FILE *inf, THING **list)
 {
   size_t temp_i = 0; /* Used by rs_read_marker */
   int i;
@@ -882,7 +882,7 @@ rs_write_thing(FILE *savef, const THING *t)
   if (rs_write_short(savef, t->_t._t_flags) ||
       rs_write_stats(savef, &t->_t._t_stats) ||
       rs_write_room_reference(savef, t->_t._t_room) ||
-      rs_write_object_list(savef, t->_t._t_pack))
+      state_save_list(savef, t->_t._t_pack))
     return 1;
   return 0;
 }
@@ -953,7 +953,7 @@ rs_read_thing(FILE *inf, THING *t)
   if (rs_read_short(inf,&t->_t._t_flags) ||
       rs_read_stats(inf,&t->_t._t_stats) ||
       rs_read_room_reference(inf, &t->_t._t_room) ||
-      rs_read_object_list(inf,&t->_t._t_pack))
+      state_load_list(inf,&t->_t._t_pack))
     return 1;
   return 0;
 }
@@ -1073,7 +1073,7 @@ rs_read_thing_reference(FILE *inf, THING *list, THING **item)
 }
 
 int
-rs_save_file(FILE *savef)
+state_save_file(FILE *savef)
 {
   size_t temp_i = 0; /* Used as buffer for macros */
   size_t pack_used_size = 26;
@@ -1107,7 +1107,7 @@ rs_save_file(FILE *savef)
   rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_RHAND), RSID_RHAND);
   rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_RRING), RSID_RRING);
   rs_write_equipment(savef, pack_equipped_item(EQUIPMENT_LRING), RSID_LRING);
-  rs_assert(rs_write_object_list(savef, lvl_obj))
+  rs_assert(state_save_list(savef, lvl_obj))
   rs_assert(rs_write_thing_list(savef, mlist))
   rs_assert(weapons_save_state(savef));
   rs_assert_write_places(savef,places,MAXLINES*MAXCOLS)
@@ -1115,9 +1115,9 @@ rs_save_file(FILE *savef)
   rs_assert(rs_write_rooms(savef, rooms, MAXROOMS))
   rs_assert(rs_write_room_reference(savef, oldrp))
   rs_assert(rs_write_rooms(savef, passages, MAXPASS))
-  rs_assert(rs_write_obj_info(savef, pot_info,  NPOTIONS))
-  rs_assert(rs_write_obj_info(savef, ring_info,  NRINGS))
-  rs_assert(rs_write_obj_info(savef, scr_info,  NSCROLLS))
+  rs_assert(state_save_obj_info(savef, pot_info,  NPOTIONS))
+  rs_assert(state_save_obj_info(savef, ring_info,  NRINGS))
+  rs_assert(state_save_obj_info(savef, scr_info,  NSCROLLS))
   rs_assert(rs_write_daemons(savef, __daemons_ptr(), 20))
   rs_assert(rs_write_int(savef, group))
   rs_assert(rs_write_window(savef,stdscr))
@@ -1126,7 +1126,7 @@ rs_save_file(FILE *savef)
 }
 
 int
-rs_restore_file(FILE *inf)
+state_load_file(FILE *inf)
 {
   size_t temp_i = 0; /* Used as buffer for macros */
 
@@ -1157,7 +1157,7 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_equipment(inf, RSID_RHAND))
   rs_assert(rs_read_equipment(inf, RSID_RRING))
   rs_assert(rs_read_equipment(inf, RSID_LRING))
-  rs_assert(rs_read_object_list(inf, &lvl_obj))
+  rs_assert(state_load_list(inf, &lvl_obj))
   rs_assert(rs_read_thing_list(inf, &mlist))
   rs_assert(rs_fix_thing(__player_ptr()))
   rs_assert(weapons_load_state(inf));
@@ -1167,9 +1167,9 @@ rs_restore_file(FILE *inf)
   rs_assert(rs_read_rooms(inf, rooms, MAXROOMS))
   rs_assert(rs_read_room_reference(inf, &oldrp))
   rs_assert(rs_read_rooms(inf, passages, MAXPASS))
-  rs_assert(rs_read_obj_info(inf, pot_info,  NPOTIONS))
-  rs_assert(rs_read_obj_info(inf, ring_info,  NRINGS))
-  rs_assert(rs_read_obj_info(inf, scr_info,  NSCROLLS))
+  rs_assert(state_load_obj_info(inf, pot_info,  NPOTIONS))
+  rs_assert(state_load_obj_info(inf, ring_info,  NRINGS))
+  rs_assert(state_load_obj_info(inf, scr_info,  NSCROLLS))
   rs_assert(rs_read_daemons(inf, __daemons_ptr(), 20))
   rs_assert(rs_read_int(inf,&group))
   rs_assert(rs_read_window(inf,stdscr))

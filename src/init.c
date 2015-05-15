@@ -341,7 +341,7 @@ init_old_game(void)
   if (init_graphics() != 0)
     return false;
 
-  if (state_restore_file(inf) != 0)
+  if (state_load_file(inf) != 0)
   {
     endwin();
     printf(": Corrupted save game\n");

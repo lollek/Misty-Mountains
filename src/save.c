@@ -48,7 +48,7 @@ save_file(FILE *savef)
   encwrite(GAME_VERSION, strlen(GAME_VERSION)+1, savef);
   sprintf(buf,"%d x %d\n", LINES, COLS);
   encwrite(buf,80,savef);
-  error = rs_save_file(savef);
+  error = state_save_file(savef);
 
   fflush(savef);
   fclose(savef);
