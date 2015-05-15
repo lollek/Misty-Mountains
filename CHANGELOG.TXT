@@ -1,3 +1,5 @@
+v1.2.8
+
 v1.2.7
   Made -j flag automatically set
   Can no longer do x commands in a row
