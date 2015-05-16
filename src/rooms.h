@@ -8,7 +8,7 @@ struct room {
   coord r_max;      /* Size of room */
   coord r_gold;     /* Where the gold is */
   int r_goldval;    /* How much the gold is worth */
-  short r_flags;    /* info about the room */
+  int r_flags;      /* info about the room */
   int r_nexits;     /* Number of exits */
   coord r_exit[12]; /* Where the exits are */
 };

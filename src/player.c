@@ -79,7 +79,7 @@ player_get_strength_bonuses(void)
 static void
 player_update_max_strength(void)
 {
-  unsigned bonuses = player_get_strength_bonuses();
+  int bonuses = player_get_strength_bonuses();
   if (player.t_stats.s_str - bonuses > max_stats.s_str)
     max_stats.s_str = player.t_stats.s_str - bonuses;
 }

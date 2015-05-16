@@ -21,7 +21,7 @@ void list_detach(THING **list, THING *item);
 void list_attach(THING **list, THING *item);
 
 /* Find index of thing in list */
-int8_t list_find(THING *list, THING *thing);
+int8_t list_find(THING const* list, THING const* thing);
 
 /* Returns item with index i */
 THING *list_element(THING *list, int8_t i);

@@ -26,6 +26,7 @@
 #include "weapons.h"
 #include "things.h"
 #include "os.h"
+#include "state.h"
 #include "rogue.h"
 
 #include "monster.h"
@@ -61,6 +62,26 @@ struct monster monsters[26] =
 { "yeti",	  30,	0,	{ 10, 50,   4,   6,  1, "1x6/1x6", 0 } },
 { "zombie",	   0,	ISMEAN,	{ 10,  6,   2,   8,  1, "1x8", 0 } }
 };
+
+bool
+monsters_save_state(void)
+{
+  THING *ptr;
+  int length;
+
+  for (ptr = mlist, length = 0; ptr != NULL; ptr = ptr->l_next)
+    ++length;
+
+  if (state_save_int32(RSID_MONSTERLIST) ||
+      state_save_int32(length))
+    return 1;
+
+  for (ptr = mlist; ptr != NULL; ptr = ptr->l_next)
+    if (state_save_thing(ptr))
+      return 1;
+
+  return 0;
+}
 
 bool monster_is_blind(THING *mon)         { return mon->t_flags & ISBLIND; }
 bool monster_is_cancelled(THING *mon)     { return mon->t_flags & ISCANC; }

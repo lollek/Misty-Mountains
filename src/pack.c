@@ -63,13 +63,15 @@ enum equipment_pos ring_slots[RING_SLOTS_SIZE] = {
 bool
 pack_save_state(void)
 {
-  return state_save_list(player_pack);
+  return state_save_list(player_pack)
+    || state_save_bools(pack_used, sizeof(pack_used)/sizeof(*pack_used));
 }
 
 bool
 pack_load_state(void)
 {
-  return state_load_list(&player_pack);
+  return state_load_list(&player_pack)
+    || state_load_bools(pack_used, sizeof(pack_used)/sizeof(*pack_used));
 }
 
 int8_t

@@ -25,6 +25,7 @@
 #include "wand.h"
 #include "things.h"
 #include "os.h"
+#include "state.h"
 #include "rogue.h"
 
 #include "scrolls.h"
@@ -46,6 +47,29 @@ struct obj_info scr_info[NSCROLLS] = {
     { "aggravate monsters",		 3,  20, NULL, false },
     { "protect armor",			 2, 250, NULL, false },
 };
+
+bool
+scroll_save_state(void)
+{
+  int i;
+
+  for (i = 0; i < NSCROLLS; i++)
+    if (state_save_string(s_names[i]))
+      return 1;
+  return 0;
+}
+
+bool
+scroll_load_state(void)
+{
+  int i;
+
+  for (i = 0; i < NSCROLLS; i++)
+    if (state_load_string(&s_names[i]))
+      return 1;
+
+  return 0;
+}
 
 static void
 set_know(THING *obj, struct obj_info *info)

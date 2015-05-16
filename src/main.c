@@ -177,7 +177,9 @@ main(int argc, char **argv)
   if (retval == false)
     return 1;
 
-  /* Try to crash cleanly, and autosave if possible */
+  /* Try to crash cleanly, and autosave if possible
+   * Unless we are debugging, since that messes with gdb */
+#ifdef NDEBUG
   signal(SIGHUP, auto_save);
   signal(SIGQUIT, command_signal_endit);
   signal(SIGILL, auto_save);
@@ -189,6 +191,7 @@ main(int argc, char **argv)
   signal(SIGSYS, auto_save);
   signal(SIGTERM, auto_save);
   signal(SIGINT, command_signal_quit);
+#endif
 
   oldpos = *player_get_pos();
   oldrp = roomin(player_get_pos());

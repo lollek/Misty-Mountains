@@ -1,6 +1,8 @@
 #ifndef _ROGUE14_RINGS_H_
 #define _ROGUE14_RINGS_H_
 
+#include <stdbool.h>
+
 /* How many rings we can wield */
 #define CONCURRENT_RINGS 2
 
@@ -25,6 +27,9 @@ enum ring_t {
 /* Variables: TODO: Make these private */
 char *r_stones[NRINGS];
 struct obj_info ring_info[NRINGS];
+
+bool ring_save_state(void);
+bool ring_load_state(void);
 
 bool ring_put_on(void);
 bool ring_take_off(void);

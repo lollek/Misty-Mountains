@@ -1,6 +1,8 @@
 #ifndef _ROGUE14_POTIONS_H_
 #define _ROGUE14_POTIONS_H_
 
+#include <stdbool.h>
+
 #include "rogue.h" /* struct obj_info */
 
 /* Potion types */
@@ -26,6 +28,9 @@ enum potion_t
 /* Variables, TODO: Make these private */
 const char *p_colors[NPOTIONS];           /* Colors of the potions */
 struct obj_info pot_info[NPOTIONS]; /* A list of potions and info */
+
+bool potion_save_state(void);
+bool potion_load_state(void);
 
 /* Functions */
 bool potion_quaff_something(void);  /* Quaff a potion from the pack */

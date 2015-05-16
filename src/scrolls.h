@@ -27,6 +27,9 @@ enum scroll_t
 extern char *s_names[NSCROLLS];            /* Names of the scrolls */
 extern struct obj_info scr_info[NSCROLLS]; /* Scroll info */
 
+bool scroll_save_state(void);
+bool scroll_load_state(void);
+
 /* Functions */
 void identify(void);        /* Identify something from player's pack */
 bool read_scroll(void);     /* Read a scroll from the pack and do the needful */

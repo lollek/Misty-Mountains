@@ -98,6 +98,16 @@ colorize(const chtype ch)
   }
 }
 
+bool
+fail(const char *fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  vprintf(fmt, args);
+  va_end(args);
+  return 1;
+}
+
 int
 msg(const char *fmt, ...)
 {

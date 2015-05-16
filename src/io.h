@@ -29,6 +29,7 @@ char readchar(void);   /* Interruptable getch() */
 void wait_for(int ch); /* Wait for the specified key */
 
 /* Message player */
+bool fail(const char *fmt, ...);
 int msg(const char *fmt, ...); /* Display a message at the top of the screen. */
 void addmsg(const char *fmt, ...);       /* Add things to the current message */
 int endmsg(void); /* Flush message */

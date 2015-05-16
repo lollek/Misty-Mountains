@@ -73,9 +73,9 @@ list_attach(THING **list, THING *item)
 }
 
 int8_t
-list_find(THING *list, THING *thing)
+list_find(THING const* list, THING const* thing)
 {
-  THING *ptr;
+  THING const* ptr;
   int8_t i;
 
   assert(thing != NULL);

@@ -17,6 +17,7 @@
 #include "player.h"
 #include "weapons.h"
 #include "things.h"
+#include "state.h"
 #include "rogue.h"
 
 #include "rings.h"
@@ -37,6 +38,51 @@ struct obj_info ring_info[] = {
   { "stealth",			 7, 470, NULL, false },
   { "maintain armor",		 5, 380, NULL, false },
 };
+
+bool
+ring_save_state(void)
+{
+  int i;
+  int j;
+
+  /* init.c */
+  extern STONE stones[];
+  extern int cNSTONES;
+
+  for (i = 0; i < NRINGS; i++)
+  {
+    for (j = 0; j < cNSTONES; ++j)
+      if (r_stones[i] == stones[j].st_name)
+        break;
+
+    if (state_save_int32(j == NRINGS ? -1 : j))
+      return 1;
+  }
+  return 0;
+}
+
+bool
+ring_load_state(void)
+{
+  int i;
+
+  /* init.c */
+  extern STONE stones[];
+  extern int cNSTONES;
+
+  for (i = 0; i < NRINGS; i++)
+  {
+    int32_t j = 0;
+    if (state_load_int32(&j) || j >= cNSTONES || j < -1)
+      return fail("rs_read_rings()\r\n", 1);
+
+    r_stones[i] = j >= 0 ? stones[j].st_name : NULL;
+  }
+
+  return 0;
+}
+
+
 
 bool
 ring_put_on(void)

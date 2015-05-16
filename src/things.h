@@ -16,7 +16,7 @@ struct obj_info {
 
 /* Structure describing a fighting being */
 struct stats {
-  unsigned s_str;   /* Strength */
+  int s_str;   /* Strength */
   int s_exp;        /* Experience */
   int s_lvl;        /* level of mastery */
   int s_arm;        /* Armor class */
@@ -35,7 +35,7 @@ typedef union thing {
 	char _t_disguise;		/* What mimic looks like */
 	char _t_oldch;			/* Character that was where it was */
 	coord *_t_dest;			/* Where it is running to */
-	unsigned _t_flags;		/* State word */
+	int _t_flags;			/* State word */
 	struct stats _t_stats;		/* Physical description */
 	struct room *_t_room;		/* Current room for thing */
 	union thing *_t_pack;		/* What the thing is carrying */

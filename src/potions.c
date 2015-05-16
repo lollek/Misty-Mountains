@@ -17,6 +17,8 @@
 #include "misc.h"
 #include "player.h"
 #include "monster.h"
+#include "state.h"
+#include "colors.h"
 #include "rogue.h"
 
 #include "potions.h"
@@ -38,6 +40,29 @@ struct obj_info pot_info[NPOTIONS] = {
   { "blindness",         5,        5,     NULL, false },
   { "levitation",        6,       75,     NULL, false },
 };
+
+bool
+potion_save_state(void)
+{
+  int i;
+
+  for (i = 0; i < NPOTIONS; i++)
+    if (state_save_index(__colors_ptr(), __colors_size(), p_colors[i]))
+      return 1;
+
+  return 0;
+}
+
+bool potion_load_state(void)
+{
+  int i;
+
+  for (i = 0; i < NPOTIONS; i++)
+    if (state_load_index( __colors_ptr(), __colors_size(), &p_colors[i]))
+      return 1;
+
+  return 0;
+}
 
 /** is_quaffable
  * Can we dring thing? */
