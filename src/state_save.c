@@ -29,10 +29,6 @@
 
 #define rs_assert(_a) if (_a) { return msg("Error (#%d)", __LINE__); }
 
-#ifdef NDEBUG
-#define fail(err, ...) ERROR
-#endif /* NDEBUG */
-
 extern int group;
 
 static FILE* file;
@@ -40,9 +36,12 @@ static FILE* file;
 static bool
 state_write(void const* buf, int32_t length)
 {
-  assert(file != NULL);
-  assert(buf != NULL);
-  assert(length > 0);
+  if (file == NULL)
+    return fail("rs_write(%p, %d) File is NULL\r\n", buf, length);
+  if (buf == NULL)
+    return fail("rs_write(%p, %d) Buffer is NULL\r\n", buf, length);
+  if (length <= 0)
+    return fail("rs_write(%p, %d) Length is too small%d\r\n", buf, length);
 
   return(int32_t)encwrite(buf, length, file) == length
     ? SUCCESS
@@ -74,12 +73,10 @@ state_save_bool(bool b)
 bool
 state_save_bools(bool const* c, int32_t count)
 {
-  int32_t n;
-
   if (state_save_int32(count))
     return fail("state_save_bools(%p, %d)\r\n", c, count);
 
-  for (n = 0; n < count; n++)
+  for (int32_t n = 0; n < count; n++)
     if (state_save_int8(c[n]))
       return fail("state_save_bools(%p, %d)\r\n", c, count);
 
@@ -100,6 +97,7 @@ state_save_chars(char const* c, int32_t len)
     return state_save_int32(0)
       ? fail("state_save_chars(%p, %d)\r\n", c, len)
       : SUCCESS;
+
   return state_save_int32(len) || state_write(c, len)
     ? fail("state_save_chars(%p, %d)\r\n", c, len)
     : SUCCESS;
@@ -443,18 +441,13 @@ state_save_list(const THING *l)
 bool
 state_save_index(const char **master, int max, const char *str)
 {
-  int i;
-
-  assert(file != NULL);
-
-  for(i = 0; i < max; i++)
+  for(int32_t i = 0; i < max; i++)
     if (str == master[i])
       return state_save_int32(i)
       ?  fail("state_save_index(%p[%p], %d, %p)\r\n", master, *master, max, str)
       : SUCCESS;
 
-  i = -1;
-  return state_save_int32(i)
+  return state_save_int32(-1)
     ?  fail("state_save_index(%p[%p], %d, %p)\r\n", master, *master, max, str)
     : SUCCESS;
 }
@@ -475,6 +468,7 @@ state_save_file(FILE* savef)
   rs_assert(state_save_int32(RSID_RINGS)   ||   ring_save_state());
   rs_assert(state_save_int32(RSID_SCROLLS) || scroll_save_state());
   rs_assert(state_save_int32(RSID_WANDS)   ||   wand_save_state());
+  rs_assert(state_save_int32(RSID_PLAYER)  || player_save_state());
 
   rs_assert(state_save_bool(firstmove))
   rs_assert(state_save_chars(file_name, maxstr))
@@ -491,11 +485,12 @@ state_save_file(FILE* savef)
   rs_assert(state_save_int32(vf_hit))
   rs_assert(state_save_int32(seed))
   rs_assert(state_save_coord(&stairs))
-  rs_assert(state_save_thing(__player_ptr()))
+
   rs_assert(state_save_equipment(EQUIPMENT_ARMOR, RSID_ARMOR))
   rs_assert(state_save_equipment(EQUIPMENT_RHAND, RSID_RHAND))
   rs_assert(state_save_equipment(EQUIPMENT_RRING, RSID_RRING))
   rs_assert(state_save_equipment(EQUIPMENT_LRING, RSID_LRING))
+
   rs_assert(state_save_list(lvl_obj))
   rs_assert(monsters_save_state());
   rs_assert(weapons_save_state());

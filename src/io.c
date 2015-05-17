@@ -98,6 +98,7 @@ colorize(const chtype ch)
   }
 }
 
+#ifndef NDEBUG
 bool
 fail(const char *fmt, ...)
 {
@@ -107,6 +108,7 @@ fail(const char *fmt, ...)
   va_end(args);
   return 1;
 }
+#endif
 
 int
 msg(const char *fmt, ...)

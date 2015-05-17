@@ -29,10 +29,6 @@
 
 #define rs_assert(_a) if (_a) { return printf("Error (#%d)", __LINE__); }
 
-#ifdef NDEBUG
-#define fail(err, ...) ERROR
-#endif /* NDEBUG */
-
 static FILE* file;
 
 extern int group;
@@ -428,8 +424,8 @@ state_load_list(THING **list)
   return 0;
 }
 
-static int
-rs_read_thing(THING *t)
+bool
+state_load_thing(THING *t)
 {
   int32_t listid = 0;
   int32_t index = -1;
@@ -438,7 +434,7 @@ rs_read_thing(THING *t)
 
   if (state_assert_int32(RSID_THING) ||
       state_load_int32(&index))
-    return fail("rs_read_thing(%p)\r\n", t);
+    return fail("state_load_thing(%p)\r\n", t);
 
   if (index == 0)
     return 0;
@@ -542,7 +538,7 @@ rs_read_thing_list(THING **list)
     if (previous != NULL)
       previous->l_next = l;
 
-    if (rs_read_thing(l))
+    if (state_load_thing(l))
       return 1;
 
     if (previous == NULL)
@@ -596,6 +592,7 @@ state_load_file(FILE *inf)
   rs_assert(state_assert_int32(RSID_RINGS)   ||   ring_load_state());
   rs_assert(state_assert_int32(RSID_SCROLLS) || scroll_load_state());
   rs_assert(state_assert_int32(RSID_WANDS)   ||   wand_load_state());
+  rs_assert(state_assert_int32(RSID_PLAYER)  || player_load_state());
 
   rs_assert(state_load_bool(&firstmove))
   rs_assert(state_load_chars(file_name, MAXSTR))
@@ -612,11 +609,12 @@ state_load_file(FILE *inf)
   rs_assert(state_load_int32(&vf_hit))
   rs_assert(state_load_int32((int32_t*) &seed))
   rs_assert(state_load_coord(&stairs))
-  rs_assert(rs_read_thing(__player_ptr()))
+
   rs_assert(rs_read_equipment(RSID_ARMOR))
   rs_assert(rs_read_equipment(RSID_RHAND))
   rs_assert(rs_read_equipment(RSID_RRING))
   rs_assert(rs_read_equipment(RSID_LRING))
+
   rs_assert(state_load_list(&lvl_obj))
   rs_assert(rs_read_thing_list(&mlist))
   rs_assert(rs_fix_thing(__player_ptr()))

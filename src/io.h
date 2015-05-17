@@ -28,8 +28,13 @@ bool wreadstr(WINDOW *win, char *buf);   /* interruptable string from user */
 char readchar(void);   /* Interruptable getch() */
 void wait_for(int ch); /* Wait for the specified key */
 
-/* Message player */
+#ifdef NDEBUG
+#define fail(err, ...) 1
+#else
 bool fail(const char *fmt, ...);
+#endif /* NDEBUG */
+
+/* Message player */
 int msg(const char *fmt, ...); /* Display a message at the top of the screen. */
 void addmsg(const char *fmt, ...);       /* Add things to the current message */
 int endmsg(void); /* Flush message */

@@ -14,6 +14,7 @@
 #include "weapons.h"
 #include "traps.h"
 #include "os.h"
+#include "state.h"
 #include "rogue.h"
 
 #include "player.h"
@@ -135,6 +136,18 @@ player_init(void)
   obj->o_count = rnd(15) + 25;
   obj->o_flags |= ISKNOW;
   pack_add(obj, true);
+}
+
+bool
+player_load_state(void)
+{
+  return state_load_thing(&player);
+}
+
+bool
+player_save_state(void)
+{
+  return state_save_thing(&player);
 }
 
 bool

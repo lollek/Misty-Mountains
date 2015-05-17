@@ -6,8 +6,6 @@
 bool state_save_string(char const* s);
 bool state_load_string(char** s);
 
-bool state_save_thing(THING const* t);
-
 bool state_save_index(char const** start, int max, char const* str);
 bool state_load_index(char const** start, int max, char const** str);
 
@@ -25,10 +23,13 @@ bool state_load_int32(int32_t* data);
 bool state_assert_int32(int32_t data);
 
 bool state_save_bools(bool const* c, int32_t count);
-bool state_load_bools(bool * c, int32_t count);
+bool state_load_bools(bool* c, int32_t count);
 
 bool state_save_list(THING const* list);
 bool state_load_list(THING** list);
+
+bool state_save_thing(THING const* thing);
+bool state_load_thing(THING* thing);
 
 static int32_t const RSID_PACK         = 0x1011E001;
 static int32_t const RSID_POTIONS      = 0x1011E002;
@@ -37,6 +38,7 @@ static int32_t const RSID_SCROLLS      = 0x1011E004;
 static int32_t const RSID_WANDS        = 0x1011E005;
 static int32_t const RSID_START        = 0x1011E006;
 static int32_t const RSID_END          = 0x1011E007;
+static int32_t const RSID_PLAYER       = 0x1011E008;
 
 static int32_t const RSID_STATS        = 0x1011EA01;
 static int32_t const RSID_THING        = 0x1011EA02;

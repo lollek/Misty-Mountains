@@ -55,8 +55,8 @@ ring_save_state(void)
       if (r_stones[i] == stones[j].st_name)
         break;
 
-    if (state_save_int32(j == NRINGS ? -1 : j))
-      return 1;
+    if (state_save_int32(j == cNSTONES ? -1 : j))
+      return fail("ring_save_state(), i=%d,j=%d\r\n", i, j);
   }
   return 0;
 }
@@ -73,8 +73,14 @@ ring_load_state(void)
   for (i = 0; i < NRINGS; i++)
   {
     int32_t j = 0;
-    if (state_load_int32(&j) || j >= cNSTONES || j < -1)
-      return fail("rs_read_rings()\r\n", 1);
+    if (state_load_int32(&j))
+      return fail("ring_load_state(), i=%d,j=%d, max=%d\r\n", i, j, cNSTONES);
+    else if (j >= cNSTONES)
+      return fail("ring_load_state(), i=%d,j=%d, max=%d, j >= cNSTONES\r\n",
+                  i, j, cNSTONES);
+    else if (j < -1)
+      return fail("ring_load_state(), i=%d,j=%d, max=%d, j < -1\r\n",
+                  i, j, cNSTONES);
 
     r_stones[i] = j >= 0 ? stones[j].st_name : NULL;
   }

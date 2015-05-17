@@ -10,6 +10,9 @@ struct stats max_stats;
 
 /* General */
 void player_init(void);
+bool player_save_state(void);
+bool player_load_state(void);
+
 bool is_player(THING *thing);
 int player_save_throw(int which);
 
