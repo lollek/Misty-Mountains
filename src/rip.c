@@ -29,6 +29,7 @@
 #include "os.h"
 #include "command.h"
 #include "rogue.h"
+#include "level.h"
 
 #include "rip.h"
 

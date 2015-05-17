@@ -22,6 +22,9 @@ bool state_save_int32(int32_t data);
 bool state_load_int32(int32_t* data);
 bool state_assert_int32(int32_t data);
 
+bool state_load_coord(coord* c);
+bool state_save_coord(coord const* c);
+
 bool state_save_bools(bool const* c, int32_t count);
 bool state_load_bools(bool* c, int32_t count);
 
@@ -39,6 +42,7 @@ static int32_t const RSID_WANDS        = 0x1011E005;
 static int32_t const RSID_START        = 0x1011E006;
 static int32_t const RSID_END          = 0x1011E007;
 static int32_t const RSID_PLAYER       = 0x1011E008;
+static int32_t const RSID_LEVEL        = 0x1011E009;
 
 static int32_t const RSID_STATS        = 0x1011EA01;
 static int32_t const RSID_THING        = 0x1011EA02;

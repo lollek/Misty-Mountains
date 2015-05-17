@@ -183,7 +183,7 @@ extern char	dir_ch, file_name[], huh[], prbuf[], whoami[],
 		take, *tr_name[];
 
 extern int	food_left, hungry_state,
-		level, max_hit, max_level, mpos,
+		level, max_hit, mpos,
 		no_command, no_food, no_move, purse,
 		vf_hit, wizard;
 

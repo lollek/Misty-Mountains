@@ -118,7 +118,7 @@ state_save_string(char const* s)
       : SUCCESS;
 }
 
-static bool
+bool
 state_save_coord(coord const* c)
 {
   return state_save_int32(c->y) || state_save_int32(c->x)
@@ -469,6 +469,7 @@ state_save_file(FILE* savef)
   rs_assert(state_save_int32(RSID_SCROLLS) || scroll_save_state());
   rs_assert(state_save_int32(RSID_WANDS)   ||   wand_save_state());
   rs_assert(state_save_int32(RSID_PLAYER)  || player_save_state());
+  rs_assert(state_save_int32(RSID_LEVEL)   ||  level_save_state());
 
   rs_assert(state_save_bool(firstmove))
   rs_assert(state_save_chars(file_name, maxstr))
@@ -476,22 +477,18 @@ state_save_file(FILE* savef)
   rs_assert(state_save_int8(take))
   rs_assert(state_save_chars(whoami, maxstr))
   rs_assert(state_save_int32(hungry_state))
-  rs_assert(state_save_int32(level))
-  rs_assert(state_save_int32(max_level))
   rs_assert(state_save_int32(no_food))
   rs_assert(state_save_int32(food_left))
   rs_assert(state_save_int32(no_move))
   rs_assert(state_save_int32(purse))
   rs_assert(state_save_int32(vf_hit))
   rs_assert(state_save_int32(seed))
-  rs_assert(state_save_coord(&stairs))
 
   rs_assert(state_save_equipment(EQUIPMENT_ARMOR, RSID_ARMOR))
   rs_assert(state_save_equipment(EQUIPMENT_RHAND, RSID_RHAND))
   rs_assert(state_save_equipment(EQUIPMENT_RRING, RSID_RRING))
   rs_assert(state_save_equipment(EQUIPMENT_LRING, RSID_LRING))
 
-  rs_assert(state_save_list(lvl_obj))
   rs_assert(monsters_save_state());
   rs_assert(weapons_save_state());
   rs_assert(state_save_places());

@@ -13,7 +13,10 @@ PLACE places[MAXLINES*MAXCOLS];  /* level map */
 coord stairs;   /* Location of staircase */
 THING *lvl_obj; /* List of objects on this level */
 int level;      /* What level she is on */
+int max_level;  /* Deepest player has gone */
 
 void level_new(void);
+bool level_save_state(void);
+bool level_load_state(void);
 
 #endif /* _ROGUE14_LEVEL_H_ */

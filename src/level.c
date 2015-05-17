@@ -12,6 +12,7 @@
  */
 
 #include <string.h>
+#include <stdbool.h>
 
 #include "traps.h"
 #include "io.h"
@@ -25,6 +26,7 @@
 #include "rooms.h"
 #include "things.h"
 #include "os.h"
+#include "state.h"
 #include "rogue.h"
 
 #include "level.h"
@@ -40,6 +42,7 @@
 THING *lvl_obj = NULL;
 coord stairs;
 int level = 1;
+int max_level = 1;
 
 
 /** treas_room:
@@ -220,5 +223,23 @@ level_new(void)
 
     if (game_type == QUICK && level > 1 && level <= 20)
       player_raise_level();
+}
+
+bool
+level_save_state(void)
+{
+  return state_save_list(lvl_obj)
+    || state_save_int32(level)
+    || state_save_int32(max_level)
+    || state_save_coord(&stairs);
+}
+
+bool
+level_load_state(void)
+{
+  return state_load_list(&lvl_obj)
+    || state_load_int32(&level)
+    || state_load_int32(&max_level)
+    || state_load_coord(&stairs);
 }
 
