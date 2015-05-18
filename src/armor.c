@@ -33,13 +33,13 @@ static struct armor_info_t armors[NARMORS] = {
  { "plate mail",            3,  5,  150,  false },
 };
 
-const char * armor_name(enum armor_t i) { return armors[i].name; }
+char const* armor_name(enum armor_t i)  { return armors[i].name; }
 int armor_ac(enum armor_t i)            { return armors[i].ac; }
 int armor_value(enum armor_t i)         { return armors[i].value; }
 int armor_probability(enum armor_t i)   { return armors[i].prob; }
 
 int
-armor_for_thing(THING *thing)
+armor_for_thing(THING* thing)
 {
   return 20 - thing->t_stats.s_arm;
 }
@@ -47,7 +47,7 @@ armor_for_thing(THING *thing)
 bool
 armor_command_wear(void)
 {
-  THING *obj = pack_get_item("wear", ARMOR);
+  THING* obj = pack_get_item("wear", ARMOR);
 
   if (obj == NULL)
     return false;
@@ -66,9 +66,7 @@ armor_command_wear(void)
   pack_remove(obj, false, true);
   pack_equip_item(obj);
 
-  if (!terse)
-    addmsg("you are now ");
-  msg("wearing %s", inv_name(obj, true));
+  msg("now wearing %s", inv_name(obj, true));
   return true;
 }
 
@@ -76,8 +74,7 @@ enum armor_t
 armor_type_random(void)
 {
   int value = rnd(100);
-  enum armor_t i;
-  for (i = 0; i < NARMORS; ++i)
+  for (enum armor_t i = 0; i < NARMORS; ++i)
   {
     if (value < armors[i].prob)
       return i;
@@ -97,7 +94,7 @@ armor_type_random(void)
 void
 armor_rust(void)
 {
-  THING *arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  THING* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == NULL || arm->o_type != ARMOR || arm->o_which == LEATHER ||
       arm->o_arm >= 9)
     return;
