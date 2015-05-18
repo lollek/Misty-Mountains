@@ -18,25 +18,6 @@ static char const* rainbow[] = {
 
 #define NCOLORS (sizeof(rainbow) / sizeof(*rainbow))
 
-void
-colors_init(void)
-{
-  bool used[NCOLORS];
-
-  for (size_t i = 0; i < NCOLORS; i++)
-    used[i] = false;
-
-  for (size_t i = 0; i < NPOTIONS; i++)
-  {
-    size_t j;
-    do
-      j = rnd(NCOLORS);
-    while (used[j]);
-    used[j] = true;
-    p_colors[i] = rainbow[j];
-  }
-}
-
 int
 color_max(void)
 {

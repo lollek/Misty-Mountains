@@ -295,7 +295,7 @@ init_new_game(void)
   init_probs();                         /* Set up prob tables for objects */
   player_init();                        /* Set up initial player stats */
   init_names();                         /* Set up names of scrolls */
-  colors_init();                        /* Set up colors of potions */
+  potions_init();                       /* Set up colors of potions */
   init_stones();                        /* Set up stone settings of rings */
   wand_init();                          /* Set up materials of wands */
 

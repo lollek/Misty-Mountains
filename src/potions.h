@@ -29,6 +29,8 @@ enum potion_t
 const char *p_colors[NPOTIONS];           /* Colors of the potions */
 struct obj_info pot_info[NPOTIONS]; /* A list of potions and info */
 
+void potions_init(void);
+
 bool potion_save_state(void);
 bool potion_load_state(void);
 

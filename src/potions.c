@@ -10,6 +10,8 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#include <stdbool.h>
+
 #include "io.h"
 #include "pack.h"
 #include "list.h"
@@ -40,6 +42,26 @@ struct obj_info pot_info[NPOTIONS] = {
   { "blindness",         5,        5,     NULL, false },
   { "levitation",        6,       75,     NULL, false },
 };
+
+void
+potions_init(void)
+{
+  bool used[color_max()];
+
+  for (int i = 0; i < color_max(); i++)
+    used[i] = false;
+
+  for (int i = 0; i < NPOTIONS; i++)
+  {
+    int j;
+    do
+      j = rnd(color_max());
+    while (used[j]);
+    used[j] = true;
+    p_colors[i] = color_get(j);
+  }
+}
+
 
 bool
 potion_save_state(void)
