@@ -83,15 +83,17 @@ monsters_save_state(void)
   return 0;
 }
 
-bool monster_is_blind(THING *mon)         { return mon->t_flags & ISBLIND; }
-bool monster_is_cancelled(THING *mon)     { return mon->t_flags & ISCANC; }
-bool monster_is_confused(THING *mon)      { return mon->t_flags & ISHUH; }
-bool monster_is_confusing(THING *mon)     { return mon->t_flags & CANHUH; }
-bool monster_is_found(THING *mon)         { return mon->t_flags & ISFOUND; }
-bool monster_is_hallucinating(THING *mon) { return mon->t_flags & ISHALU; }
-bool monster_is_invisible(THING *mon)     { return mon->t_flags & ISINVIS; }
-bool monster_is_levitating(THING *mon)    { return mon->t_flags & ISLEVIT; }
-bool monster_is_true_seeing(THING *mon)   { return mon->t_flags & CANSEE; }
+bool monster_is_blind(THING const* mon)         { return mon->t_flags & ISBLIND; }
+bool monster_is_cancelled(THING const* mon)     { return mon->t_flags & ISCANC; }
+bool monster_is_confused(THING const* mon)      { return mon->t_flags & ISHUH; }
+bool monster_is_confusing(THING const* mon)     { return mon->t_flags & CANHUH; }
+bool monster_is_found(THING const* mon)         { return mon->t_flags & ISFOUND; }
+bool monster_is_hallucinating(THING const* mon) { return mon->t_flags & ISHALU; }
+bool monster_is_invisible(THING const* mon)     { return mon->t_flags & ISINVIS; }
+bool monster_is_levitating(THING const* mon)    { return mon->t_flags & ISLEVIT; }
+bool monster_is_true_seeing(THING const* mon)   { return mon->t_flags & CANSEE; }
+bool monster_is_held(THING const* mon)          { return mon->t_flags & ISHELD; }
+bool monster_is_running(THING const* mon)       { return mon->t_flags & ISRUN; }
 
 void monster_set_blind(THING *mon)        { mon->t_flags |= ISBLIND; }
 void monster_set_cancelled(THING *mon)    { mon->t_flags |= ISCANC; }

@@ -18,16 +18,18 @@ THING *mlist;  /* List of monsters on the level */
 
 bool monsters_save_state(void);
 
-bool monster_is_blind(THING *mon);
-bool monster_is_cancelled(THING *mon);
-bool monster_is_confused(THING *mon);
-bool monster_is_confusing(THING *mon);
-bool monster_is_cursed(THING *mon);
-bool monster_is_found(THING *mon);
-bool monster_is_hallucinating(THING *mon);
-bool monster_is_invisible(THING *mon);
-bool monster_is_levitating(THING *mon);
-bool monster_is_true_seeing(THING *mon);
+bool monster_is_blind(THING const* mon);
+bool monster_is_cancelled(THING const* mon);
+bool monster_is_confused(THING const* mon);
+bool monster_is_confusing(THING const* mon);
+bool monster_is_cursed(THING const* mon);
+bool monster_is_found(THING const* mon);
+bool monster_is_hallucinating(THING const* mon);
+bool monster_is_invisible(THING const* mon);
+bool monster_is_levitating(THING const* mon);
+bool monster_is_true_seeing(THING const* mon);
+bool monster_is_held(THING const* mon);
+bool monster_is_running(THING const* mon);
 
 void monster_set_blind(THING *mon);
 void monster_set_cancelled(THING *mon);

@@ -78,7 +78,6 @@ extern enum rogue_game_t
 #define BEFORE		spread(1)
 #define AFTER		spread(2)
 #define HUNGERTIME	1300
-#define MORETIME	150
 #define STOMACHSIZE	2000
 #define STARVETIME	850
 #define LEFT		0

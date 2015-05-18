@@ -33,20 +33,18 @@
 
 static int quiet_rounds = 0;
 
-static struct delayed_action d_list[MAXDAEMONS];
+static struct delayed_action daemons[MAXDAEMONS];
 
-void *__daemons_ptr(void) { return d_list; }
+void *__daemons_ptr(void) { return daemons; }
 
 /** daemon_empty_slot:
  * Find an empty slot in the daemon/fuse list */
-static struct delayed_action *
+static struct delayed_action*
 daemon_empty_slot(void)
 {
-  struct delayed_action *dev;
-
-  for (dev = d_list; dev <= &d_list[MAXDAEMONS-1]; dev++)
-    if (dev->d_type == EMPTY)
-      return dev;
+  for (int i = 0; i < MAXDAEMONS; ++i)
+    if (daemons[i].d_type == EMPTY)
+      return &daemons[i];
 
   msg("DEBUG: Ran out of fuse slots :(");
   return NULL;
@@ -54,14 +52,12 @@ daemon_empty_slot(void)
 
 /** daemon_find_slot:
  * Find a particular slot in the table */
-static struct delayed_action *
+static struct delayed_action*
 daemon_find_slot(void (*func)())
 {
-  struct delayed_action *dev;
-
-  for (dev = d_list; dev <= &d_list[MAXDAEMONS-1]; dev++)
-    if (dev->d_type != EMPTY && func == dev->d_func)
-      return dev;
+  for (int i = 0; i < MAXDAEMONS; ++i)
+    if (daemons[i].d_type != EMPTY && daemons[i].d_func == func)
+      return &daemons[i];
 
   return NULL;
 }
@@ -72,11 +68,9 @@ daemon_find_slot(void (*func)())
 static void
 daemon_run_all(int flag)
 {
-  struct delayed_action *dev;
-
-  for (dev = d_list; dev <= &d_list[MAXDAEMONS-1]; dev++)
-    if (dev->d_type == flag && dev->d_time == DAEMON)
-      (*dev->d_func)(dev->d_arg);
+  for (int i = 0; i < MAXDAEMONS; ++i)
+    if (daemons[i].d_type == flag && daemons[i].d_time == DAEMON)
+      (*daemons[i].d_func)(daemons[i].d_arg);
 }
 
 /** daemon_run_fuses:
@@ -84,13 +78,12 @@ daemon_run_all(int flag)
 static void
 daemon_run_fuses(int flag)
 {
-  struct delayed_action *wire;
-
-  for (wire = d_list; wire <= &d_list[MAXDAEMONS-1]; wire++)
-    if (flag == wire->d_type && wire->d_time > 0 && --wire->d_time == 0)
+  for (int i = 0; i < MAXDAEMONS; ++i)
+    if (daemons[i].d_type == flag && daemons[i].d_time > 0
+        && --daemons[i].d_time == 0)
     {
-      wire->d_type = EMPTY;
-      (*wire->d_func)(wire->d_arg);
+      daemons[i].d_type = EMPTY;
+      (*daemons[i].d_func)(daemons[i].d_arg);
     }
 }
 
@@ -112,7 +105,7 @@ void daemon_run_after(void)
 void
 daemon_start(void (*func)(), int arg, int type)
 {
-  struct delayed_action *dev = daemon_empty_slot();
+  struct delayed_action* dev = daemon_empty_slot();
   if (dev != NULL)
   {
     dev->d_type = type;
@@ -127,7 +120,7 @@ daemon_start(void (*func)(), int arg, int type)
 void
 daemon_kill(void (*func)())
 {
-  struct delayed_action *dev = daemon_find_slot(func);
+  struct delayed_action* dev = daemon_find_slot(func);
   if (dev != NULL)
     dev->d_type = EMPTY;
 }
@@ -138,7 +131,7 @@ daemon_kill(void (*func)())
 void
 daemon_start_fuse(void (*func)(), int arg, int time, int type)
 {
-  struct delayed_action *wire = daemon_empty_slot();
+  struct delayed_action* wire = daemon_empty_slot();
   if (wire != NULL)
   {
     wire->d_type = type;
@@ -153,7 +146,7 @@ daemon_start_fuse(void (*func)(), int arg, int time, int type)
 void
 daemon_lengthen_fuse(void (*func)(), int xtime)
 {
-  struct delayed_action *wire = daemon_find_slot(func);
+  struct delayed_action* wire = daemon_find_slot(func);
   if (wire != NULL)
     wire->d_time += xtime;
 }
@@ -163,7 +156,7 @@ daemon_lengthen_fuse(void (*func)(), int xtime)
 void
 daemon_extinguish_fuse(void (*func)())
 {
-  struct delayed_action *wire = daemon_find_slot(func);
+  struct delayed_action* wire = daemon_find_slot(func);
   if (wire != NULL)
     wire->d_type = EMPTY;
 }
@@ -182,23 +175,20 @@ daemon_reset_doctor(void)
 void
 daemon_doctor(void)
 {
-  int lv = player_get_level();
   int ohp = player_get_health();
-  int i;
-
   if (ohp == player_get_max_health())
     return;
 
   quiet_rounds++;
-  if (lv < 8)
+  if (player_get_level() < 8)
   {
-    if (quiet_rounds + (lv << 1) > 20)
+    if (quiet_rounds + (player_get_level() << 1) > 20)
       player_restore_health(1, false);
   }
   else if (quiet_rounds >= 3)
-    player_restore_health(rnd(lv - 7) + 1, false);
+    player_restore_health(rnd(player_get_level() - 7) + 1, false);
 
-  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  for (int i = 0; i < RING_SLOTS_SIZE; ++i)
   {
     THING *ring = pack_equipped_item(ring_slots[i]);
     if (ring != NULL && ring->o_which == R_REGEN)
@@ -241,9 +231,10 @@ daemon_rollwand(void)
 void
 daemon_digest_food(void)
 {
-  int oldfood;
-  int orig_hungry = hungry_state;
+  int const hungry_time = 300;
+  int const starving_time = 150;
 
+  /* Player is dying from lack of food */
   if (food_left <= 0)
   {
     if (food_left-- < -STARVETIME)
@@ -255,41 +246,30 @@ daemon_digest_food(void)
 
     no_command += rnd(8) + 4;
     hungry_state = 3;
-    if (!terse)
-      addmsg(player_is_hallucinating()
-          ? "the munchies overpower your motor capabilities.  "
-          : "you feel too weak from lack of food.  ");
-    msg(player_is_hallucinating()
-        ? "You freak out"
-        : "You faint");
-  }
-  else
-  {
-    oldfood = food_left;
-    food_left -= ring_drain_amount() + 1 - pack_contains_amulet();
-
-    if (food_left < MORETIME && oldfood >= MORETIME)
-    {
-      hungry_state = 2;
-      msg(player_is_hallucinating()
-          ? "the munchies are interfering with your motor capabilites"
-          : "you are starting to feel weak");
-    }
-    else if (food_left < 2 * MORETIME && oldfood >= 2 * MORETIME)
-    {
-      hungry_state = 1;
-      if (terse)
-        msg(player_is_hallucinating()
-            ? "getting the munchies"
-            : "getting hungry");
-      else
-        msg(player_is_hallucinating()
-            ? "you are getting the munchies"
-            : "you are starting to get hungry");
-    }
-  }
-  if (hungry_state != orig_hungry)
+    msg("you faint from lack of food");
     command_stop(true);
+    return;
+  }
+
+
+  int oldfood = food_left;
+  food_left -= ring_drain_amount() + 1 - pack_contains_amulet();
+
+  if (food_left < starving_time && oldfood >= starving_time)
+  {
+    hungry_state = 2;
+    msg("you feel weak from lack of food");
+    command_stop(true);
+    return;
+  }
+
+  if (food_left < hungry_time && oldfood >= hungry_time)
+  {
+    hungry_state = 1;
+    msg("you are starting to get hungry");
+    command_stop(true);
+    return;
+  }
 }
 
 
@@ -298,14 +278,11 @@ daemon_digest_food(void)
 void
 daemon_change_visuals(void)
 {
-  THING *tp;
-  bool seemonst;
-
   if (!after || (running && jump))
     return;
 
   /* change the things */
-  for (tp = lvl_obj; tp != NULL; tp = tp->l_next)
+  for (THING* tp = lvl_obj; tp != NULL; tp = tp->l_next)
     if (cansee(tp->o_pos.y, tp->o_pos.x))
       mvaddcch(tp->o_pos.y, tp->o_pos.x, rnd_thing());
 
@@ -314,19 +291,18 @@ daemon_change_visuals(void)
     mvaddcch(stairs.y, stairs.x, rnd_thing());
 
   /* change the monsters */
-  seemonst = player_can_sense_monsters();
-  for (tp = mlist; tp != NULL; tp = tp->l_next)
+  bool seemonst = player_can_sense_monsters();
+  for (THING* tp = mlist; tp != NULL; tp = tp->l_next)
   {
-    move(tp->t_pos.y, tp->t_pos.x);
     if (see_monst(tp))
     {
       if (tp->t_type == 'X' && tp->t_disguise != 'X')
-        addcch(rnd_thing());
+        mvaddcch(tp->t_pos.y, tp->t_pos.x, rnd_thing());
       else
-        addcch(rnd(26) + 'A');
+        mvaddcch(tp->t_pos.y, tp->t_pos.x, rnd(26) + 'A');
     }
     else if (seemonst)
-      addcch((rnd(26) + 'A') | A_STANDOUT);
+      mvaddcch(tp->t_pos.y, tp->t_pos.x, (rnd(26) + 'A') | A_STANDOUT);
   }
 }
 
@@ -335,15 +311,14 @@ daemon_change_visuals(void)
 void
 daemon_runners_move(void)
 {
-  THING *tp;
-  THING *next;
+  THING* next;
 
-  for (tp = mlist; tp != NULL; tp = next)
+  for (THING* tp = mlist; tp != NULL; tp = next)
   {
     /* remember this in case the monster's "next" is changed */
     next = tp->l_next;
 
-    if (!on(*tp, ISHELD) && on(*tp, ISRUN))
+    if (!monster_is_held(tp) && monster_is_running(tp))
     {
       bool wastarget = on(*tp, ISTARGET);
       coord orig_pos = tp->t_pos;
@@ -374,12 +349,12 @@ daemon_runners_move(void)
 
 void daemon_ring_abilities(void)
 {
-  int i;
-  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  for (int i = 0; i < RING_SLOTS_SIZE; ++i)
   {
-    THING *obj = pack_equipped_item(ring_slots[i]);
+    THING* obj = pack_equipped_item(ring_slots[i]);
     if (obj == NULL)
       continue;
+
     else if (obj->o_which == R_SEARCH)
       player_search();
     else if (obj->o_which == R_TELEPORT && rnd(50) == 0)
