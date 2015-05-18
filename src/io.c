@@ -20,7 +20,7 @@
 
 #include "io.h"
 
-#define MAXMSG	(NUMCOLS - sizeof "--More--")
+#define MAXMSG	(NUMCOLS - sizeof " --More--")
 static char msgbuf[2*MAXMSG+1];
 static int newpos = 0;
 
@@ -38,7 +38,7 @@ flushmsg(void)
   if (mpos)
   {
     look(false);
-    mvaddstr(0, mpos, "--More--");
+    mvaddstr(0, mpos, " --More--");
     refresh();
 
     int ch = getch();
@@ -298,6 +298,7 @@ wreadstr(WINDOW *win, char *dest)
   unsigned i = strlen(dest);
   int oy, ox;
 
+  flushmsg();
   getyx(win, oy, ox);
 
   strucpy(buf, dest, i);
