@@ -70,10 +70,12 @@ command(void)
 {
   daemon_run_before();
 
-  for (int num_moves = 1; num_moves > 0; --num_moves)
+  int num_moves = 1;
+  if (player_is_hasted())
+    num_moves++;
+
+  while (num_moves--)
   {
-    if (player_is_hasted())
-      num_moves++;
 
 
     again = false;
