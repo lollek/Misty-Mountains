@@ -166,7 +166,7 @@ bool
 command_identify_character(void)
 {
   msg("what do you want identified? ");
-  int ch = readchar();
+  int ch = readchar(true);
   mpos = 0;
 
   if (ch == KEY_ESCAPE)
@@ -335,7 +335,7 @@ command_help(void)
   int const helpstrsize = sizeof(helpstr) / sizeof(*helpstr);
 
   msg("character you want help for (* for all): ");
-  char helpch = readchar();
+  char helpch = readchar(true);
   mpos = 0;
 
   /* If its not a *, print the right help string
@@ -437,7 +437,7 @@ command_show_inventory(void)
 
   pack_print_inventory(0);
   msg("--Press any key to continue--");
-  getch();
+  readchar(false);
   pack_clear_inventory();
   clearmsg();
   return false;

@@ -420,7 +420,7 @@ discovered(void)
       POTION, SCROLL, RING, STICK);
   while (true)
   {
-    int ch = readchar();
+    int ch = readchar(true);
     touchwin(stdscr);
     refresh();
     switch (ch)

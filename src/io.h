@@ -25,7 +25,7 @@ void show_win(const char *message); /* Show window and wait before returning */
 /* get input */
 bool wreadstr(WINDOW *win, char *buf);   /* interruptable string from user */
 #define readstr(_b) wreadstr(stdscr, _b) /* wreadstr for stdscr */
-char readchar(void);   /* Interruptable getch() */
+char readchar(bool is_question);   /* Interruptable getch() */
 void wait_for(int ch); /* Wait for the specified key */
 
 #ifdef NDEBUG
@@ -38,7 +38,6 @@ bool fail(const char *fmt, ...);
 int clearmsg(void);           /* Remove displayed text */
 int msg(const char *fmt, ...); /* Display a message at the top of the screen. */
 void addmsg(const char *fmt, ...);       /* Add things to the current message */
-int flushmsg(void);
 
 /* Helper function to colorize chars before outputting them */
 chtype colorize(const chtype ch);

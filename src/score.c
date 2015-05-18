@@ -5,6 +5,7 @@
 #include <time.h>
 
 #include "save.h"
+#include "io.h"
 #include "os.h"
 
 #include "score.h"
@@ -48,7 +49,7 @@ lock_sc(void)
          "for it to become free so your score can get posted?\n"
          "If so, type \"y\"\n");
 
-  return getch() == 'y'
+  return readchar(true) == 'y'
     ? lock_sc()
     : false;
 }

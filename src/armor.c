@@ -85,7 +85,7 @@ armor_type_random(void)
   /* Error! Sum of probs was not 100 */
   msg("Error! Sum of probabilities is not 100%");
   pr_spec(ARMOR);
-  readchar();
+  readchar(false);
   endwin();
   exit(1);
   return 0;

@@ -80,7 +80,7 @@ save_game(void)
     {
       int c;
       msg("File exists.  Do you wish to overwrite it? ");
-      while ((c = readchar()) != 'y' && c != 'Y')
+      while ((c = readchar(true)) != 'y' && c != 'Y')
       {
         if (c == KEY_ESCAPE || c == 'n' || c == 'N')
         {

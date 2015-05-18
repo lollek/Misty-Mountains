@@ -27,7 +27,7 @@ static bool
 get_bool(void *vp, WINDOW *win)
 {
   wrefresh(win);
-  switch (readchar())
+  switch (readchar(true))
   {
     case 't': case 'T':
       *(bool *)vp = true;
@@ -99,9 +99,11 @@ option(void)
   WINDOW *optscr = NULL;
   coord msg_pos;
   unsigned i;
+  char const* query = "Which value do you want to change? (ESC to exit) ";
 
-  msg("Which value do you want to change? (ESC to exit) ");
-  getyx(stdscr, msg_pos.y, msg_pos.x);
+  msg(query);
+  msg_pos.y = 0;
+  msg_pos.x = strlen(query);
   optscr = dupwin(stdscr);
 
   /* Display current values of options */
@@ -120,7 +122,7 @@ option(void)
   {
     wmove(optscr, msg_pos.y, msg_pos.x);
     wrefresh(optscr);
-    c = readchar();
+    c = readchar(true);
     if (c > '0' && c <= '0' + NOPTS)
     {
       i = c - '0' - 1;

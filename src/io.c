@@ -20,13 +20,73 @@
 
 #include "io.h"
 
-static void doadd(const char *fmt, va_list args, bool end_of_command);
+#define MAXMSG	(NUMCOLS - sizeof "--More--")
+static char msgbuf[2*MAXMSG+1];
+static int newpos = 0;
 
-void
-fatal(const char *msg)
+int
+flushmsg(void)
 {
-  fprintf(stderr, msg);
-  abort();
+  /* Nothing to show */
+  if (msgbuf[0] == '\0')
+    return ~KEY_ESCAPE;
+
+  /* Save message in case player missed it */
+  strcpy(huh, msgbuf);
+
+  /* TODO: Remove mpos by replacing mpos = 0 with a clearmsg() */
+  if (mpos)
+  {
+    look(false);
+    mvaddstr(0, mpos, "--More--");
+    refresh();
+
+    int ch = getch();
+    while (ch != KEY_SPACE && ch != '\n' && ch != '\r' && ch != KEY_ESCAPE)
+      ch = getch();
+  }
+
+  /* All messages should start with uppercase, except ones that
+   * start with a pack addressing character */
+  if (islower(msgbuf[0]) && msgbuf[1] != ')')
+    msgbuf[0] = (char) toupper(msgbuf[0]);
+  mvaddstr(0, 0, msgbuf);
+  clrtoeol();
+  mpos = newpos;
+  newpos = 0;
+  msgbuf[0] = '\0';
+  refresh();
+  return ~KEY_ESCAPE;
+}
+
+static void
+doadd(const char *fmt, va_list args, bool end_of_command)
+{
+  static bool new_sentence = false;
+  char const* separator = ". ";
+  size_t separatorlen = strlen(separator);
+
+  char buf[MAXSTR];
+  vsprintf(buf, fmt, args);
+
+  unsigned msgsize = newpos + strlen(buf);
+  if (new_sentence)
+    msgsize += separatorlen;
+
+  if (msgsize >= MAXMSG)
+    flushmsg();
+
+  if (new_sentence && newpos != 0)
+  {
+    strcpy(&msgbuf[newpos], separator);
+    newpos += separatorlen;
+    buf[0] = (char) toupper(buf[0]);
+    new_sentence = false;
+  }
+
+  strcpy(&msgbuf[newpos], buf);
+  newpos = (int) strlen(msgbuf);
+  new_sentence = end_of_command;
 }
 
 const char *
@@ -145,71 +205,7 @@ addmsg(const char *fmt, ...)
     va_end(args);
 }
 
-#define MAXMSG	(NUMCOLS - sizeof "--More--")
-static char msgbuf[2*MAXMSG+1];
-static int newpos = 0;
 
-int
-flushmsg(void)
-{
-  /* Nothing to show */
-  if (msgbuf[0] == '\0')
-    return ~KEY_ESCAPE;
-
-  /* Save message in case player missed it */
-  strcpy(huh, msgbuf);
-
-  /* TODO: Remove mpos by replacing mpos = 0 with a clearmsg() */
-  if (mpos)
-  {
-    look(false);
-    mvaddstr(0, mpos, "--More--");
-    refresh();
-    wait_for(KEY_SPACE);
-  }
-
-  /* All messages should start with uppercase, except ones that
-   * start with a pack addressing character */
-  if (islower(msgbuf[0]) && msgbuf[1] != ')')
-    msgbuf[0] = (char) toupper(msgbuf[0]);
-  mvaddstr(0, 0, msgbuf);
-  clrtoeol();
-  mpos = newpos;
-  newpos = 0;
-  msgbuf[0] = '\0';
-  refresh();
-  return ~KEY_ESCAPE;
-}
-
-static void
-doadd(const char *fmt, va_list args, bool end_of_command)
-{
-  static bool new_sentence = false;
-  char const* separator = ". ";
-  size_t separatorlen = strlen(separator);
-
-  char buf[MAXSTR];
-  vsprintf(buf, fmt, args);
-
-  unsigned msgsize = newpos + strlen(buf);
-  if (new_sentence)
-    msgsize += separatorlen;
-
-  if (msgsize >= MAXMSG)
-    flushmsg();
-
-  if (new_sentence && newpos != 0)
-  {
-    strcpy(&msgbuf[newpos], separator);
-    newpos += separatorlen;
-    buf[0] = (char) toupper(buf[0]);
-    new_sentence = false;
-  }
-
-  strcpy(&msgbuf[newpos], buf);
-  newpos = (int) strlen(msgbuf);
-  new_sentence = end_of_command;
-}
 
 bool
 step_ok(int ch)
@@ -220,17 +216,20 @@ step_ok(int ch)
 }
 
 char
-readchar(void)
+readchar(bool is_question)
 {
+  flushmsg();
+  if (!is_question)
+    move(player_y(), player_x());
   char ch = (char) getch();
 
   if (ch == 3)
   {
     command_signal_quit(0);
-    return(KEY_ESCAPE);
+    return KEY_ESCAPE;
   }
   else
-    return(ch);
+    return ch;
 }
 
 void
@@ -269,11 +268,11 @@ wait_for(int ch)
   if (ch == '\n')
   {
     char c;
-    while ((c = readchar()) != '\n' && c != '\r')
+    while ((c = readchar(true)) != '\n' && c != '\r')
       ;
   }
   else
-    while (readchar() != ch)
+    while (readchar(true) != ch)
       ;
 }
 
@@ -308,7 +307,7 @@ wreadstr(WINDOW *win, char *dest)
   while (c != KEY_ESCAPE)
   {
     wrefresh(win);
-    c = readchar();
+    c = readchar(true);
 
     if (c == '\n' || c == '\r' || c == -1)
       break;
@@ -353,3 +352,9 @@ wreadstr(WINDOW *win, char *dest)
   return c == KEY_ESCAPE ? 1 : 0;
 }
 
+void
+fatal(const char *msg)
+{
+  fprintf(stderr, msg);
+  abort();
+}

@@ -93,7 +93,6 @@ command(void)
       msg("you can move again");
     }
 
-    flushmsg();
     coord *player_pos = player_get_pos();
     move(player_pos->y, player_pos->x);
 
@@ -105,7 +104,7 @@ command(void)
         ch = runch;
       else
       {
-        ch = readchar();
+        ch = readchar(false);
         move_on = false;
         if (mpos != 0)
           clearmsg();
@@ -261,9 +260,8 @@ command_signal_quit(int sig)
   getyx(curscr, oy, ox);
   clearmsg();
   msg("really quit? ");
-  flushmsg();
 
-  if (getch() == 'y')
+  if (readchar(true) == 'y')
   {
   /* Reset the signal in case we got here via an interrupt */
     signal(SIGINT, command_signal_leave);

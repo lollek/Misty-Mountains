@@ -337,7 +337,7 @@ get_dir(void)
     do
     {
       gotit = true;
-      switch (dir_ch = readchar())
+      switch (dir_ch = readchar(false))
       {
         case 'h': case'H': delta.y =  0; delta.x = -1; break;
         case 'j': case'J': delta.y =  1; delta.x =  0; break;

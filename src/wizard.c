@@ -117,14 +117,14 @@ pr_list(void)
   msg("for what type of object do you want a list? ");
   print_things();
 
-  ch = readchar();
+  ch = readchar(true);
   touchwin(stdscr);
   refresh();
 
   pr_spec(ch);
   clearmsg();
   msg("--Press any key to continue--");
-  readchar();
+  readchar(false);
 
   clearmsg();
   touchwin(stdscr);
@@ -140,7 +140,7 @@ create_obj(void)
   int which;
 
   msg("type of item: ");
-  type = readchar();
+  type = readchar(true);
   mpos = 0;
 
   if (!(type == WEAPON || type == ARMOR || type == RING || type == STICK
@@ -151,7 +151,7 @@ create_obj(void)
   }
 
   msg("which %c do you want? (0-f)", type);
-  which = (isdigit((ch = readchar())) ? ch - '0' : ch - 'a' + 10);
+  which = (isdigit((ch = readchar(true))) ? ch - '0' : ch - 'a' + 10);
   mpos = 0;
 
   if (type == TRAP)
@@ -186,7 +186,7 @@ create_obj(void)
       {
         char bless;
         msg("blessing? (+,-,n)");
-        bless = readchar();
+        bless = readchar(true);
         mpos = 0;
         if (bless == '-')
           obj->o_flags |= ISCURSED;
@@ -219,7 +219,7 @@ create_obj(void)
           case R_ADDHIT:
           case R_ADDDAM:
             msg("blessing? (+,-,n)");
-            bless = readchar();
+            bless = readchar(true);
             mpos = 0;
             if (bless == '-')
               obj->o_flags |= ISCURSED;

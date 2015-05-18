@@ -481,7 +481,7 @@ pack_get_item(const char *purpose, int type)
       : "which object do you want to %s? ",
       purpose);
   pack_print_inventory(type);
-  ch = readchar();
+  ch = readchar(true);
   mpos = 0;
 
   pack_clear_inventory();
@@ -573,7 +573,7 @@ pack_print_equipment(void)
   wrefresh(equipscr);
   delwin(equipscr);
   msg("--Press any key to continue--");
-  readchar();
+  readchar(false);
   touchwin(stdscr);
   clearmsg();
   return false;
