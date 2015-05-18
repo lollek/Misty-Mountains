@@ -71,10 +71,9 @@ command(void)
   daemon_run_before();
 
   int num_moves = 1;
-  if (player_is_hasted())
-    num_moves++;
+  num_moves += player_get_speed();
 
-  while (num_moves--)
+  while (num_moves-- > 0)
   {
 
 

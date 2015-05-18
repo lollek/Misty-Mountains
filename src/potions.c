@@ -227,7 +227,7 @@ potion_quaff_something(void)
       break;
     case P_HASTE:
       potion_learn(obj->o_which);
-      player_set_hasted(false);
+      player_increase_speed(false);
       break;
     case P_RESTORE:
       if (player_strength_is_weakened())

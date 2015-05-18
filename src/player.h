@@ -37,9 +37,9 @@ bool player_is_hallucinating(void);
 void player_set_hallucinating(bool permanent);
 void player_remove_hallucinating(void);
 
-bool player_is_hasted(void);
-void player_set_hasted(bool permanent);
-void player_remove_hasted(void);
+int player_get_speed(void);
+void player_increase_speed(bool permanent);
+void player_decrease_speed(void);
 
 bool player_is_running(void);
 void player_start_running(void);

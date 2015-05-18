@@ -20,6 +20,7 @@
 #include "player.h"
 
 static THING player;
+static int player_speed = 0;
 
 static const int player_min_strength = 3;
 static const int player_max_strength = 31;
@@ -141,13 +142,15 @@ player_init(void)
 bool
 player_load_state(void)
 {
-  return state_load_thing(&player);
+  return state_load_thing(&player)
+    || state_load_int32(&player_speed);
 }
 
 bool
 player_save_state(void)
 {
-  return state_save_thing(&player);
+  return state_save_thing(&player)
+    || state_save_int32(player_speed);
 }
 
 bool
@@ -312,32 +315,17 @@ void player_remove_hallucinating(void)
   msg("Everything looks SO boring now.");
 }
 
-bool player_is_hasted(void)    { return player.t_flags & ISHASTE; }
-void player_set_hasted(bool permanent)
+int player_get_speed(void)    { return player_speed; }
+void player_increase_speed(bool permanent)
 {
-  if (player_is_hasted())
-  {
-    no_command += rnd(8);
-    player_stop_running();
-    player_remove_hasted();
-    daemon_extinguish_fuse(player_remove_hasted);
-    msg("you faint from exhaustion");
-  }
-  else
-  {
-    player.t_flags |= ISHASTE;
-    if (!permanent)
-      daemon_start_fuse(player_remove_hasted, 0, HASTEDURATION, AFTER);
-    msg("you feel yourself moving much faster");
-  }
-
+  player_speed++;
+  if (!permanent)
+    daemon_start_fuse(player_decrease_speed, 1, HASTEDURATION, AFTER);
+  msg("you feel yourself moving much faster");
 }
-void player_remove_hasted(void)
+void player_decrease_speed(void)
 {
-  if (!player_is_hasted())
-    return;
-
-  player.t_flags &= ~ISHASTE;
+  player_speed--;
   msg("you feel yourself slowing down");
 }
 

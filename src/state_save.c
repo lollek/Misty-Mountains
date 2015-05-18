@@ -352,7 +352,7 @@ state_save_daemons(struct delayed_action const* d_list, int32_t count)
     else if (d_list[i].d_func == daemon_digest_food)           func = 3;
     else if (d_list[i].d_func == daemon_runners_move)          func = 4;
     else if (d_list[i].d_func == daemon_start_wanderer)        func = 5;
-    else if (d_list[i].d_func == player_remove_hasted)         func = 6;
+    else if (d_list[i].d_func == player_decrease_speed)        func = 6;
     else if (d_list[i].d_func == player_remove_confused)       func = 7;
     else if (d_list[i].d_func == player_remove_true_sight)     func = 8;
     else if (d_list[i].d_func == player_remove_blind)          func = 9;

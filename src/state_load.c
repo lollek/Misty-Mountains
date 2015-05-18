@@ -268,7 +268,7 @@ rs_read_daemons(struct delayed_action *d_list, int count)
       case 3:    d_list[i].d_func = daemon_digest_food; break;
       case 4:    d_list[i].d_func = daemon_runners_move; break;
       case 5:    d_list[i].d_func = daemon_start_wanderer; break;
-      case 6:    d_list[i].d_func = player_remove_hasted; break;
+      case 6:    d_list[i].d_func = player_decrease_speed; break;
       case 7:    d_list[i].d_func = player_remove_confused; break;
       case 8:    d_list[i].d_func = player_remove_true_sight; break;
       case 9:    d_list[i].d_func = player_remove_blind; break;
