@@ -70,7 +70,7 @@ save_game(void)
     msg("save to file? ");
     if (readstr(file_name) != 0)
     {
-      msg("");
+      clearmsg();
       return false;
     }
     mpos = 0;
@@ -84,7 +84,7 @@ save_game(void)
       {
         if (c == KEY_ESCAPE || c == 'n' || c == 'N')
         {
-          msg("");
+          clearmsg();
           return false;
         }
       }

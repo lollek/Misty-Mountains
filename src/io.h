@@ -35,6 +35,7 @@ bool fail(const char *fmt, ...);
 #endif /* NDEBUG */
 
 /* Message player */
+int clearmsg(void);           /* Remove displayed text */
 int msg(const char *fmt, ...); /* Display a message at the top of the screen. */
 void addmsg(const char *fmt, ...);       /* Add things to the current message */
 int flushmsg(void);

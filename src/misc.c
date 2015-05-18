@@ -350,7 +350,7 @@ get_dir(void)
         case KEY_ESCAPE:
           last_dir = '\0';
           reset_last();
-          msg("");
+          clearmsg();
           return NULL;
 
         default:

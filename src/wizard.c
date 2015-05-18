@@ -122,11 +122,11 @@ pr_list(void)
   refresh();
 
   pr_spec(ch);
-  msg("");
+  clearmsg();
   msg("--Press any key to continue--");
   readchar();
 
-  msg("");
+  clearmsg();
   touchwin(stdscr);
   return 0;
 }

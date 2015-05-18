@@ -134,7 +134,7 @@ option(void)
   delwin(optscr);
   clearok(curscr, true);
   touchwin(stdscr);
-  msg("");
+  clearmsg();
   return false;
 }
 

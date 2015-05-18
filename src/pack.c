@@ -489,7 +489,7 @@ pack_get_item(const char *purpose, int type)
   if (ch == KEY_ESCAPE || ch == KEY_SPACE)
   {
     reset_last();
-    msg("");
+    clearmsg();
     return NULL;
   }
 
@@ -575,7 +575,7 @@ pack_print_equipment(void)
   msg("--Press any key to continue--");
   readchar();
   touchwin(stdscr);
-  msg("");
+  clearmsg();
   return false;
 }
 

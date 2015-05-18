@@ -111,18 +111,22 @@ fail(const char *fmt, ...)
 #endif
 
 int
+clearmsg(void)
+{
+  move(0, 0);
+  clrtoeol();
+  mpos = 0;
+  return ~KEY_ESCAPE;
+}
+
+int
 msg(const char *fmt, ...)
 {
   va_list args;
 
   /* if the string is "", just clear the line */
   if (*fmt == '\0')
-  {
-    move(0, 0);
-    clrtoeol();
-    mpos = 0;
-    return ~KEY_ESCAPE;
-  }
+    clearmsg();
 
   /* otherwise add to the message */
   va_start(args, fmt);

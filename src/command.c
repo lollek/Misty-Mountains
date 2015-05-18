@@ -75,7 +75,6 @@ command(void)
     if (player_is_hasted())
       num_moves++;
 
-    flushmsg();
 
     again = false;
     look(true);
@@ -94,6 +93,7 @@ command(void)
       msg("you can move again");
     }
 
+    flushmsg();
     coord *player_pos = player_get_pos();
     move(player_pos->y, player_pos->x);
 
@@ -108,7 +108,7 @@ command(void)
         ch = readchar();
         move_on = false;
         if (mpos != 0)
-          msg("");
+          clearmsg();
       }
 
       if (ch != 'a' && ch != KEY_ESCAPE && !(running || to_death))
@@ -259,8 +259,9 @@ command_signal_quit(int sig)
   (void) sig;
 
   getyx(curscr, oy, ox);
-  msg("");
+  clearmsg();
   msg("really quit? ");
+  flushmsg();
 
   if (getch() == 'y')
   {
@@ -273,7 +274,7 @@ command_signal_quit(int sig)
   else
   {
     status();
-    msg("");
+    clearmsg();
     move(oy, ox);
     refresh();
     command_stop(true);

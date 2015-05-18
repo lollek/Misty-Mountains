@@ -429,11 +429,11 @@ discovered(void)
       case SCROLL: discovered_by_type(ch, scr_info, NSCROLLS); break;
       case RING: discovered_by_type(ch, ring_info, NRINGS); break;
       case STICK: discovered_by_type(ch, __wands_ptr(), MAXSTICKS); break;
-      default: msg(""); return;
+      default: clearmsg(); return;
     }
   }
 
   touchwin(stdscr);
-  msg("");
+  clearmsg();
 }
 

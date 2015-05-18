@@ -158,7 +158,7 @@ command_name_item(void)
     }
   }
 
-  msg("");
+  clearmsg();
   return false;
 }
 
@@ -171,7 +171,7 @@ command_identify_character(void)
 
   if (ch == KEY_ESCAPE)
   {
-    msg("");
+    clearmsg();
     return false;
   }
 
@@ -387,7 +387,7 @@ command_help(void)
   wait_for(KEY_SPACE);
   clearok(stdscr, true);
 
-  msg("");
+  clearmsg();
   touchwin(stdscr);
   wrefresh(stdscr);
   return false;
@@ -439,7 +439,7 @@ command_show_inventory(void)
   msg("--Press any key to continue--");
   getch();
   pack_clear_inventory();
-  msg("");
+  clearmsg();
   return false;
 }
 
