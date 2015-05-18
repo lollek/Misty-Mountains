@@ -44,23 +44,29 @@ struct obj_info pot_info[NPOTIONS] = {
 bool
 potion_save_state(void)
 {
-  int i;
+  for (int32_t i = 0; i < NPOTIONS; ++i)
+  {
+    int32_t j;
+    for (j = 0; j < color_max(); ++j)
+      if (p_colors[i] == color_get(j))
+        break;
 
-  for (i = 0; i < NPOTIONS; i++)
-    if (state_save_index(__colors_ptr(), __colors_size(), p_colors[i]))
-      return 1;
-
+    if (state_save_int32(j == color_max() ? -1 : j))
+      return fail("potion_save_state() i=%d, j=%d\r\n", i, j);
+  }
   return 0;
 }
 
 bool potion_load_state(void)
 {
-  int i;
+  for (int32_t i = 0; i < NPOTIONS; ++i)
+  {
+    int32_t tmp;
+    if (state_load_int32(&tmp) || tmp < -1 || tmp > color_max())
+      return fail("potion_load_state() i=%d, tmp=%d\r\n", i, tmp);
 
-  for (i = 0; i < NPOTIONS; i++)
-    if (state_load_index( __colors_ptr(), __colors_size(), &p_colors[i]))
-      return 1;
-
+    p_colors[i] = i >= 0 ? color_get(tmp) : NULL;
+  }
   return 0;
 }
 

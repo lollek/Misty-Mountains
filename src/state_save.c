@@ -441,13 +441,12 @@ state_save_list(const THING *l)
 bool
 state_save_index(const char **master, int max, const char *str)
 {
-  for(int32_t i = 0; i < max; i++)
+  int32_t i;
+  for(i = 0; i < max; i++)
     if (str == master[i])
-      return state_save_int32(i)
-      ?  fail("state_save_index(%p[%p], %d, %p)\r\n", master, *master, max, str)
-      : SUCCESS;
+      break;
 
-  return state_save_int32(-1)
+  return state_save_int32(i == max ? -1 : i)
     ?  fail("state_save_index(%p[%p], %d, %p)\r\n", master, *master, max, str)
     : SUCCESS;
 }

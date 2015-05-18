@@ -646,7 +646,7 @@ set_mname(THING *tp)
 const char *
 pick_color(const char *col)
 {
-  return player_is_hallucinating() ? colors_random() : col;
+  return player_is_hallucinating() ? color_random() : col;
 }
 
 char

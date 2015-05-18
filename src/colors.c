@@ -7,7 +7,7 @@
 
 #include "colors.h"
 
-static char *rainbow[] = {
+static char const* rainbow[] = {
     "amber",     "aquamarine", "black",      "blue",       "brown",
     "clear",     "crimson",    "cyan",       "ecru",       "gold",
     "green",     "grey",       "magenta",    "orange",     "pink",
@@ -18,20 +18,15 @@ static char *rainbow[] = {
 
 #define NCOLORS (sizeof(rainbow) / sizeof(*rainbow))
 
-void *__colors_ptr(void) { return rainbow; }
-size_t __colors_size(void) { return NCOLORS; }
-
-
 void
 colors_init(void)
 {
-  size_t i;
   bool used[NCOLORS];
 
-  for (i = 0; i < NCOLORS; i++)
+  for (size_t i = 0; i < NCOLORS; i++)
     used[i] = false;
 
-  for (i = 0; i < NPOTIONS; i++)
+  for (size_t i = 0; i < NPOTIONS; i++)
   {
     size_t j;
     do
@@ -42,7 +37,20 @@ colors_init(void)
   }
 }
 
-char *colors_random(void)
+int
+color_max(void)
+{
+  return NCOLORS;
+}
+
+char const*
+color_get(int i)
+{
+  return rainbow[i];
+}
+
+char const*
+color_random(void)
 {
   return rainbow[rnd(NCOLORS)];
 }
