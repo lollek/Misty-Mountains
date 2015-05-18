@@ -59,21 +59,15 @@ sumprobs(char ch)
     case RING:   ptr = ring_info;      max = NRINGS;     str = "rings"; break;
     case STICK:  ptr = __wands_ptr();  max = MAXSTICKS;  str = "wands"; break;
     case WEAPON: ptr = weap_info;      max = MAXWEAPONS; str = "weapons"; break;
-    case ARMOR:  ptr = __armors_ptr(); max = NARMORS;    str = "armor"; break;
+    case ARMOR:  ptr = NULL;           max = NARMORS;    str = "armor"; break;
     default:     ptr = NULL;           max = 0;          str = "error"; break;
   }
 
   /* Add upp percentage */
   for (i = 0; i < max; ++i)
   {
-    int prob;
-
-    if (ptr == __armors_ptr())
-      prob = ((struct armor_info_t *)ptr)[i].prob;
-    else
-      prob = ((struct obj_info *)ptr)[i].oi_prob;
-
-    sum += prob;
+    if (ch == ARMOR) sum += armor_probability(i);
+    else             sum += ((struct obj_info *)ptr)[i].oi_prob;
   }
 
   /* Make sure it adds up to 100 */
@@ -87,10 +81,10 @@ sumprobs(char ch)
   {
     int prob;
     const char *name;
-    if (ptr == __armors_ptr())
+    if (ch == ARMOR)
     {
-      prob = ((struct armor_info_t *)ptr)[i].prob;
-      name = ((struct armor_info_t *)ptr)[i].name;
+      prob = armor_probability(i);
+      name = armor_name(i);
     }
     else
     {

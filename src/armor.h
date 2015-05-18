@@ -25,12 +25,10 @@ struct armor_info_t
   int known; /* Is it known by player? */
 };
 
-/* This function is only for init and debugging */
-void *__armors_ptr(void);
-
 const char *armor_name(enum armor_t armor);
 int armor_ac(enum armor_t armor);
 int armor_value(enum armor_t armor);
+int armor_probability(enum armor_t i);
 enum armor_t armor_type_random(void);
 
 int armor_for_thing(THING *thing); /* Returns the AC of a creature */

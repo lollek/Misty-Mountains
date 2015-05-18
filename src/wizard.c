@@ -36,37 +36,37 @@
 #include "rogue.h"
 
 void
-pr_spec(char ch)
+pr_spec(char type)
 {
-  WINDOW *printscr = dupwin(stdscr);
-  coord orig_pos;
-  int i;
-  int max;
-  void *ptr;
+  WINDOW* printscr = dupwin(stdscr);
 
+  coord orig_pos;
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
-  switch (ch)
+  void* ptr;
+  int max;
+  switch (type)
   {
     case POTION: ptr = pot_info;          max = NPOTIONS;  break;
     case SCROLL: ptr = scr_info;          max = NSCROLLS;  break;
     case RING:   ptr = ring_info;         max = NRINGS;    break;
     case STICK:  ptr = __wands_ptr();     max = MAXSTICKS; break;
-    case ARMOR:  ptr = __armors_ptr();    max = NARMORS;   break;
+    case ARMOR:  ptr = NULL;              max = NARMORS;   break;
     case WEAPON: ptr = weap_info;         max = MAXWEAPONS;break;
     default:     ptr = NULL;              max = 0;         break;
   }
 
-  for (i = 0, ch = '0'; i < max; ++i)
+  char ch = '0';
+  for (int i = 0; i < max; ++i)
   {
     const char *name;
     int prob;
     wmove(printscr, i + 1, 1);
 
-    if (ptr == __armors_ptr())
+    if (type == ARMOR)
     {
-      name = ((struct armor_info_t *)ptr)[i].name;
-      prob = ((struct armor_info_t *)ptr)[i].prob;
+      name = armor_name(i);
+      prob = armor_probability(i);
     }
     else
     {
@@ -76,6 +76,7 @@ pr_spec(char ch)
     wprintw(printscr, "%c: %s (%d%%)", ch, name, prob);
     ch = ch == '9' ? 'a' : (ch + 1);
   }
+
   wmove(stdscr, orig_pos.y, orig_pos.x);
   wrefresh(printscr);
   delwin(printscr);

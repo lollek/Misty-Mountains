@@ -32,11 +32,11 @@ static struct armor_info_t armors[NARMORS] = {
  { "banded mail",           4, 10,   90,  false },
  { "plate mail",            3,  5,  150,  false },
 };
-void *__armors_ptr(void) { return armors; }
 
 const char * armor_name(enum armor_t i) { return armors[i].name; }
-int armor_ac(enum armor_t i) { return armors[i].ac; }
-int armor_value(enum armor_t i) { return armors[i].value; }
+int armor_ac(enum armor_t i)            { return armors[i].ac; }
+int armor_value(enum armor_t i)         { return armors[i].value; }
+int armor_probability(enum armor_t i)   { return armors[i].prob; }
 
 int
 armor_for_thing(THING *thing)
