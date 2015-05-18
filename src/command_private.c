@@ -26,13 +26,12 @@
 bool
 command_use_stairs(char up_or_down)
 {
-  coord *player_pos = player_get_pos();
+  coord* player_pos = player_get_pos();
 
   assert (up_or_down == '>' || up_or_down == '<');
 
   if (player_is_levitating())
     msg("You can't. You're floating off the ground!");
-
   else if (chat(player_pos->y, player_pos->x) != STAIRS)
     msg("You're not standing on any stairs");
 
@@ -62,27 +61,23 @@ command_use_stairs(char up_or_down)
 bool
 command_attack(bool fight_to_death)
 {
-  const coord *dir = get_dir();
-  coord *player_pos = player_get_pos();
-  THING *mp;
-  coord delta;
+  const coord* dir = get_dir();
+  coord* player_pos = player_get_pos();
 
   if (dir == NULL)
     return false;
 
+  coord delta = {
+    .y = player_pos->y + dir->y,
+    .x = player_pos->x + dir->x
+  };
+
   kamikaze = fight_to_death;
-  player_pos = player_get_pos();
-  delta = *dir;
 
-  delta.y += player_pos->y;
-  delta.x += player_pos->x;
-
-  mp = moat(delta.y, delta.x);
+  THING* mp = moat(delta.y, delta.x);
   if (mp == NULL || (!see_monst(mp) && !player_can_sense_monsters()))
   {
-    msg(terse
-        ? "no monster there"
-        : "I see no monster there");
+    msg("no monster there");
     return false;
   }
   else if (diag_ok(player_pos, &delta))
@@ -100,43 +95,39 @@ command_attack(bool fight_to_death)
 bool
 command_name_item(void)
 {
-  THING *obj = pack_get_item("rename", RENAMEABLE);
-  char **guess = NULL;
-  bool already_known = false;
-  char tmpbuf[MAXSTR] = { '\0' };
+  THING* obj = pack_get_item("rename", RENAMEABLE);
 
   if (obj == NULL)
     return false;
 
+  bool already_known;
+  char** guess;
   switch (obj->o_type)
   {
-    struct obj_info *op = NULL;
-
     case FOOD: msg("Don't play with your food!"); return false;
 
     case RING:
-      op = &ring_info[obj->o_which];
-      already_known = op->oi_know;
-      guess = &op->oi_guess;
+      already_known = ring_is_known(obj->o_which);
+      guess =        &ring_info[obj->o_which].oi_guess;
       break;
 
     case POTION:
-      op = &pot_info[obj->o_which];
-      already_known = op->oi_know;
-      guess = &op->oi_guess;
+      already_known = pot_info[obj->o_which].oi_know;
+      guess =        &pot_info[obj->o_which].oi_guess;
       break;
 
     case SCROLL:
-      op = &scr_info[obj->o_which];
-      already_known = op->oi_know;
-      guess = &op->oi_guess;
+      already_known = scr_info[obj->o_which].oi_know;
+      guess =        &scr_info[obj->o_which].oi_guess;
       break;
 
     case STICK:
       already_known = wand_is_known(obj->o_which);
+      guess =         NULL;
       break;
 
     default:
+      already_known = false;
       guess = &obj->o_label;
       break;
   }
@@ -147,10 +138,9 @@ command_name_item(void)
     return false;
   }
 
-  msg(terse
-      ? "call it? "
-      : "What do you want to call it? ");
+  msg("what do you want to call it? ");
 
+  char tmpbuf[MAXSTR] = { '\0' };
   if (readstr(tmpbuf) == 0)
   {
     if (obj->o_type == STICK)
@@ -176,31 +166,8 @@ command_name_item(void)
 bool
 command_identify_character(void)
 {
-  int ch;
-  const struct h_list ident_list[] = {
-    {VWALL,	"wall of a room",	false},
-    {HWALL,	"wall of a room",	false},
-    {GOLD,	"gold",			false},
-    {STAIRS,	"a staircase",		false},
-    {DOOR,	"door",			false},
-    {FLOOR,	"room floor",		false},
-    {PLAYER,	"you",			false},
-    {PASSAGE,	"passage",		false},
-    {TRAP,	"trap",			false},
-    {POTION,	"potion",		false},
-    {SCROLL,	"scroll",		false},
-    {FOOD,	"food",			false},
-    {WEAPON,	"weapon",		false},
-    {SHADOW,	"solid rock",		false},
-    {ARMOR,	"armor",		false},
-    {AMULET,	"the Amulet of Yendor",	false},
-    {RING,	"ring",			false},
-    {STICK,	"wand or staff",	false},
-    {'\0'}
-  };
-
   msg("what do you want identified? ");
-  ch = readchar();
+  int ch = readchar();
   mpos = 0;
 
   if (ch == KEY_ESCAPE)
@@ -215,16 +182,29 @@ command_identify_character(void)
     msg("'%s': %s", unctrl(ch), monsters[ch - 'A'].m_name);
     return false;
   }
-  else
+
+  struct character_list
   {
-    const struct h_list *hp;
-    for (hp = ident_list; hp->h_ch != '\0'; hp++)
-      if (hp->h_ch == ch)
-      {
-        msg("'%s': %s", unctrl(ch), hp->h_desc);
-        return false;
-      }
-  }
+    char ch;
+    char *description;
+  } const ident_list[] = {
+    {VWALL,   "wall of a room"}, {HWALL,   "wall of a room"},
+    {GOLD,    "gold"},           {STAIRS,  "a staircase"},
+    {DOOR,    "door"},           {FLOOR,   "room floor"},
+    {PLAYER,  "you"},            {PASSAGE, "passage"},
+    {TRAP,    "trap"},           {POTION,  "potion"},
+    {SCROLL,  "scroll"},         {FOOD,    "food"},
+    {WEAPON,  "weapon"},         {SHADOW,  "solid rock"},
+    {ARMOR,   "armor"},          {AMULET,  "the Amulet of Yendor"},
+    {RING,    "ring"},           {STICK,   "wand or staff"},
+    {'\0', ""}
+  };
+  for (struct character_list const* ptr = ident_list; ptr->ch != '\0'; ++ptr)
+    if (ptr->ch == ch)
+    {
+      msg("'%s': %s", unctrl(ch), ptr->description);
+      return false;
+    }
 
   msg("'%s': %s", unctrl(ch), "unknown character");
   return false;
@@ -233,27 +213,25 @@ command_identify_character(void)
 bool
 command_identify_trap(void)
 {
-  const coord *dir = get_dir();
-  if (dir != NULL)
-  {
-    coord *player_pos = player_get_pos();
-    coord delta = *dir;
-    char *fp;
+  const coord* dir = get_dir();
+  if (dir == NULL)
+    return false;
 
-    delta.y += player_pos->y;
-    delta.x += player_pos->x;
-    fp = &flat(delta.y, delta.x);
-    if (!terse)
-      addmsg("You have found ");
-    if (chat(delta.y, delta.x) != TRAP)
-      msg("no trap there");
-    else if (player_has_confusing_attack())
-      msg(trap_names[rnd(NTRAPS)]);
-    else
-    {
-      msg(trap_names[*fp & F_TMASK]);
-      *fp |= F_SEEN;
-    }
+  coord delta = {
+    .y = player_y() + dir->y,
+    .x = player_x() + dir->x
+  };
+
+  char* fp = &flat(delta.y, delta.x);
+
+  if (chat(delta.y, delta.x) != TRAP)
+    msg("no trap there");
+  else if (player_has_confusing_attack())
+    msg(trap_names[rnd(NTRAPS)]);
+  else
+  {
+    msg(trap_names[*fp & F_TMASK]);
+    *fp |= F_SEEN;
   }
   return false;
 }
@@ -268,29 +246,30 @@ command_quit(void)
 bool
 command_pick_up(void)
 {
-  const THING *obj = NULL;
-  coord *player_pos = player_get_pos();
-
   if (player_is_levitating())
     msg("You can't. You're floating off the ground!");
 
-  for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
-    if (obj->o_pos.y == player_pos->y && obj->o_pos.x == player_pos->x)
+  coord const player_pos = *player_get_pos();
+  for (THING const* obj = lvl_obj; obj != NULL; obj = obj->l_next)
+    if (same_coords(obj->o_pos, player_pos))
     {
       pack_pick_up(obj->o_type);
       return true;
     }
 
-  msg(terse
-      ? "nothing here"
-      : "there is nothing here to pick up");
+  msg("nothing to pick up");
   return false;
 }
 
 bool
 command_help(void)
 {
-  const struct h_list helpstr[] = {
+  struct list
+  {
+    char sym;
+    char *description;
+    bool print;
+  } const helpstr[] = {
     {'?',	"	prints help",				true},
     {'/',	"	identify object",			true},
     {'h',	"	left",					true},
@@ -353,15 +332,11 @@ command_help(void)
     {'Q',	"	quit",					true},
     {CTRL('Z'),	"	shell escape",				true},
     {'F',	"	fight till either of you dies",		true},
-    { 0 ,		NULL,					false}
   };
-  const struct h_list *strp;
-  char helpch;
-  int numprint;
-  int cnt;
+  int const helpstrsize = sizeof(helpstr) / sizeof(*helpstr);
 
   msg("character you want help for (* for all): ");
-  helpch = readchar();
+  char helpch = readchar();
   mpos = 0;
 
   /* If its not a *, print the right help string
@@ -369,10 +344,10 @@ command_help(void)
   if (helpch != '*')
   {
     move(0, 0);
-    for (strp = helpstr; strp->h_desc != NULL; strp++)
-      if (strp->h_ch == helpch)
+    for (int i = 0; i < helpstrsize; ++i)
+      if (helpstr[i].sym == helpch)
       {
-        msg("%s)%s", unctrl(strp->h_ch), strp->h_desc);
+        msg("%s)%s", unctrl(helpstr[i].sym), helpstr[i].description);
         return false;
       }
     msg("unknown character '%s'", unctrl(helpch));
@@ -382,28 +357,31 @@ command_help(void)
   /* Here we print help for everything.
    * Then wait before we return to command mode */
 
-  numprint = 0;
-  for (strp = helpstr; strp->h_desc != NULL; strp++)
-    if (strp->h_print)
-      numprint++;
-  if (numprint & 01)		/* round odd numbers up */
-    numprint++;
+  int numprint = 0;
+  for (int i = 0; i < helpstrsize; ++i)
+    if (helpstr[i].print)
+      ++numprint;
+
   numprint /= 2;
   if (numprint > LINES - 1)
     numprint = LINES - 1;
 
   wclear(hw);
-  cnt = 0;
-  for (strp = helpstr; strp->h_desc != NULL; strp++)
-    if (strp->h_print)
-    {
-      wmove(hw, cnt % numprint, cnt >= numprint ? COLS / 2 : 0);
-      if (strp->h_ch)
-        waddstr(hw, unctrl(strp->h_ch));
-      waddstr(hw, strp->h_desc);
-      if (++cnt >= numprint * 2)
-        break;
-    }
+  int print_i = 0;
+  for (int i = 0; i < helpstrsize; ++i)
+  {
+    if (!helpstr[i].print)
+      continue;
+
+    wmove(hw, print_i % numprint, print_i >= numprint ? COLS / 2 : 0);
+    if (helpstr[i].sym)
+      waddstr(hw, unctrl(helpstr[i].sym));
+    waddstr(hw, helpstr[i].description);
+
+    if (++print_i >= numprint * 2)
+      break;
+  }
+
   wmove(hw, LINES - 1, 0);
   waddstr(hw, "--Press space to continue--");
   wrefresh(hw);
@@ -457,6 +435,7 @@ command_show_inventory(void)
     msg("You inventory is empty");
     return false;
   }
+
   pack_print_inventory(0);
   msg("--Press any key to continue--");
   getch();
@@ -470,20 +449,21 @@ command_take_off(enum equipment_pos pos)
 {
   if (pack_equipped_item(pos) == NULL)
     return false;
+
   pack_unequip(pos, false);
   return pack_equipped_item(pos) != NULL;
 }
 
 bool command_throw(void)
 {
-  const coord *dir = get_dir();
+  const coord* dir = get_dir();
   return dir == NULL ? false : missile(dir->y, dir->x);
 }
 
 bool
 command_wield(void)
 {
-  THING *obj = pack_get_item("wield", WEAPON);
+  THING* obj = pack_get_item("wield", WEAPON);
 
   if (obj == NULL)
     return false;
@@ -493,14 +473,13 @@ command_wield(void)
     msg("you can't wield armor");
     return command_wield();
   }
-  return weapon_wield(obj);
 
+  return weapon_wield(obj);
 }
 
 bool command_rest(void)
 {
-  THING *mon;
-  for (mon = mlist; mon != NULL; mon = mon->l_next)
+  for (THING* mon = mlist; mon != NULL; mon = mon->l_next)
     if (see_monst(mon))
     {
       msg("cannot rest with monsters nearby");

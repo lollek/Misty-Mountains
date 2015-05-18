@@ -37,4 +37,6 @@ bool ring_take_off(void);
 int ring_drain_amount(void); /* How much food the player's rings drain */
 char *ring_bonus(THING *obj);
 
+bool ring_is_known(enum ring_t ring);
+
 #endif /* _ROGUE14_RINGS_H_ */

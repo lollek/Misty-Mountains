@@ -64,6 +64,8 @@ void player_teleport(coord *target);
 bool player_search(void);
 
 /* Position */
+int player_y(void);
+int player_x(void);
 coord *player_get_pos(void);
 void player_set_pos(coord *new_pos);
 

@@ -540,7 +540,10 @@ player_search(void)
   return true;
 }
 
-coord * player_get_pos(void) { return &player.t_pos; }
+coord* player_get_pos(void) { return &player.t_pos; }
+int player_y(void)          { return player.t_pos.y; }
+int player_x(void)          { return player.t_pos.x; }
+
 void
 player_set_pos(coord *new_pos)
 {

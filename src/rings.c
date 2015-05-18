@@ -211,3 +211,9 @@ ring_bonus(THING *obj)
   }
   return buf;
 }
+
+bool
+ring_is_known(enum ring_t ring)
+{
+  return ring_info[ring].oi_know;
+}
