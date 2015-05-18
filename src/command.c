@@ -40,7 +40,18 @@
 #include "command.h"
 #include "command_private.h"
 
-void
+static bool
+unknown_command(char ch)
+{
+  char buf[MAXSTR];
+  /* Message the player, but don't save it to ^P */
+  strcpy(buf, huh);
+  msg("illegal command '%s'", unctrl(ch));
+  strcpy(huh, buf);
+  return false;
+}
+
+bool
 command_stop(bool stop_fighting)
 {
   player_stop_running();
@@ -50,20 +61,17 @@ command_stop(bool stop_fighting)
 
   if (stop_fighting)
     to_death = false;
+
+  return false;
 }
 
 int
 command(void)
 {
-  static char ch;
-  int num_moves;
-
   daemon_run_before();
 
-  for (num_moves = 1; num_moves > 0; --num_moves)
+  for (int num_moves = 1; num_moves > 0; --num_moves)
   {
-    coord *player_pos = player_get_pos();
-
     if (player_is_hasted())
       num_moves++;
 
@@ -85,20 +93,19 @@ command(void)
     after = true;
 
 
-    if (no_command)
+    if (no_command && --no_command == 0)
     {
-      ch = '.';
-      if (--no_command == 0)
-      {
-        player_start_running();
-        msg("you can move again");
-      }
+      player_start_running();
+      msg("you can move again");
     }
 
+    coord *player_pos = player_get_pos();
     move(player_pos->y, player_pos->x);
 
     if (!no_command)
     {
+      char ch;
+
       if (running || to_death)
         ch = runch;
       else
@@ -144,7 +151,7 @@ command_do(char ch)
   {
     /* Funny symbols */
     case KEY_SPACE: return false;
-    case KEY_ESCAPE: command_stop(true); return false;
+    case KEY_ESCAPE: return command_stop(true);
     case '.': return true;
     case ',': return command_pick_up();
     case '/': return command_identify_character();
@@ -198,17 +205,9 @@ command_do(char ch)
     case CTRL('Z'): command_shell(); return false;
 
     default:
-      if (wizard)
-        return command_wizard_do(ch);
-      else
-      {
-        char buf[MAXSTR];
-        /* Message the player, but don't save it to ^P */
-        strcpy(buf, huh);
-        msg("illegal command '%s'", unctrl(ch));
-        strcpy(huh, buf);
-        return false;
-      }
+      return wizard
+        ? command_wizard_do(ch)
+        : unknown_command(ch);
   }
 }
 
@@ -237,22 +236,14 @@ command_wizard_do(char ch)
 
     case CTRL('~'):
      {
-       THING *item;
-
-       if ((item = pack_get_item("charge", STICK)) != NULL)
+       THING* item = pack_get_item("charge", STICK);
+       if (item != NULL)
          item->o_charges = 10000;
      }
      break;
 
     default:
-      {
-        char buf[MAXSTR];
-        /* Message the player, but don't save it to ^P */
-        strcpy(buf, huh);
-        msg("illegal command '%s'", unctrl(ch));
-        strcpy(huh, buf);
-      }
-      break;
+     return unknown_command(ch);
   }
   return false;
 }
