@@ -1,4 +1,8 @@
 v1.2.8
+  Change some in game messages / texts
+  Did some balancing (which might be way off)
+  f-fighting now does the same as F-fighting
+  You can now stack haste (from potions)
 
 v1.2.7
   Made -j flag automatically set
