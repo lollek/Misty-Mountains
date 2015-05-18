@@ -397,10 +397,7 @@ monster_on_death(THING *tp, bool pr)
       has_hit = false;
     }
     else
-      msg("%s %s", terse
-            ? "defeated"
-            : "you have defeated",
-          mname);
+      msg("you have slain %s", mname);
   }
 
   /* Do adjustments if he went up a level */

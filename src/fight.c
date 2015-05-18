@@ -133,9 +133,16 @@ calculate_attacker(THING* attacker, THING* weapon, bool thrown,
   }
 }
 
+/* Roll attackers attack vs defenders defense and then take damage if it hits
+ *
+ * Attacker or defender can be NULL, in that case it's the player */
 static bool
 roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
 {
+  /* TODO: remove __player_ptr reference */
+       if (attacker == NULL) attacker = __player_ptr();
+  else if (defender == NULL) defender = __player_ptr();
+
   struct attack_modifier mod = { 0, 0, attacker->t_stats.s_dmg };
   calculate_attacker(attacker, weapon, thrown, &mod);
 
@@ -207,74 +214,70 @@ print_attack(bool hit, char const* att, char const* def)
 }
 
 int
-fight_against_monster(coord *mp, THING *weap, bool thrown)
+fight_against_monster(coord* monster_pos, THING* weapon, bool thrown)
 {
-    THING *tp = moat(mp->y, mp->x);
-    bool did_hit = true;
-    char *mname, ch;
+  THING* const player = NULL;
+  THING* tp = moat(monster_pos->y, monster_pos->x);
+  if (tp == NULL)
+    return !fail("fight_against_monster(%p, %p, %b) NULL monster\r\n",
+                 monster_pos, weapon, thrown);
 
-    /* Find the monster we want to fight */
-    if (wizard && tp == NULL)
-	msg("Fight what @ %d,%d", mp->y, mp->x);
+  /* Since we are fighting, things are not quiet so no healing takes place */
+  command_stop(false);
+  daemon_reset_doctor();
+  monster_start_running(monster_pos);
 
-    /* Since we are fighting, things are not quiet so no healing takes place */
-    command_stop(false);
-    daemon_reset_doctor();
-    monster_start_running(mp);
+  /* Let him know it was really a xeroc (if it was one) */
+  if (tp->t_type == 'X' && tp->t_disguise != 'X' && !player_is_blind())
+  {
+      tp->t_disguise = 'X';
+      msg("wait!  That's a xeroc!");
+      if (!thrown)
+          return false;
+  }
 
-    /* Let him know it was really a xeroc (if it was one) */
-    ch = '\0';
-    if (tp->t_type == 'X' && tp->t_disguise != 'X' && !player_is_blind())
+  char const* mname = set_mname(tp);
+  if (roll_attacks(player, tp, weapon, thrown))
+  {
+    if (tp->t_stats.s_hpt <= 0)
     {
-	tp->t_disguise = 'X';
-	if (player_is_hallucinating()) {
-	    ch = (char)(rnd(26) + 'A');
-	    mvaddcch(tp->t_pos.y, tp->t_pos.x, ch);
-	}
-	msg(player_is_hallucinating()
-	    ? "heavy!  That's a nasty critter!"
-	    : "wait!  That's a xeroc!");
-	if (!thrown)
-	    return false;
+      monster_on_death(tp, true);
+      return true;
     }
-    mname = set_mname(tp);
-    did_hit = false;
-    has_hit = (terse && !to_death);
-    /* TODO: remove __player_ptr reference */
-    if (roll_attacks(__player_ptr(), tp, weap, thrown)) 
+
+    if (!to_death)
     {
-	did_hit = false;
-	if (thrown && !to_death)
-        {
-          if (weap->o_type == WEAPON)
-            addmsg("the %s hits ", weap_info[weap->o_which].oi_name);
-          else
-            addmsg("you hit ");
-          msg("%s", mname);
-        }
-	else if (!to_death)
-	    print_attack(true, (char *) NULL, mname);
-	if (player_has_confusing_attack())
-	{
-	    did_hit = true;
-	    monster_set_confused(tp);
-            player_remove_confusing_attack();
-	    endmsg();
-	    has_hit = false;
-	    msg("your hands stop glowing %s", pick_color("red"));
-	}
-	if (tp->t_stats.s_hpt <= 0)
-	    monster_on_death(tp, true);
-	else if (did_hit && !player_is_blind())
-	    msg("%s appears confused", mname);
-	did_hit = true;
+      if (thrown)
+      {
+        if (weapon->o_type == WEAPON)
+          addmsg("the %s hits ", weap_info[weapon->o_which].oi_name);
+        else
+          addmsg("you hit ");
+        msg("%s", mname);
+      }
+      else
+        print_attack(true, (char *) NULL, mname);
     }
-    else
-	if (thrown)
-	    fight_missile_miss(weap, mname, terse);
-	else if (!to_death)
-	    print_attack(false, (char *) NULL, mname);
-    return did_hit;
+
+    if (player_has_confusing_attack())
+    {
+      monster_set_confused(tp);
+      player_remove_confusing_attack();
+      if (!player_is_blind())
+      {
+        msg("your hands stop glowing %s", pick_color("red"));
+        msg("%s appears confused", mname);
+      }
+    }
+
+    return true;
+  }
+
+  if (thrown)
+    fight_missile_miss(weapon, mname, terse);
+  else if (!to_death)
+    print_attack(false, (char *) NULL, mname);
+  return false;
 }
 
 int
