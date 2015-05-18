@@ -346,9 +346,7 @@ fight_missile_miss(THING *weap, const char *mname)
     return;
 
   if (weap->o_type == WEAPON)
-    addmsg("the %s misses %s", weap_info[weap->o_which].oi_name);
+    msg("the %s misses %s", weap_info[weap->o_which].oi_name, mname);
   else
-    addmsg("you missed %s");
-
-  msg("%s", mname);
+    msg("you missed %s", mname);
 }
