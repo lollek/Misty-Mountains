@@ -171,43 +171,6 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
 }
 
 /*
- * prname:
- *	The print name of a combatant
- */
-static const char *
-prname(const char *mname, bool upper)
-{
-    static char tbuf[MAXSTR];
-
-    *tbuf = '\0';
-    if (mname == 0)
-	strcpy(tbuf, "you"); 
-    else
-	strcpy(tbuf, mname);
-    if (upper)
-	*tbuf = (char) toupper(*tbuf);
-    return tbuf;
-}
-
-/*
- * thunk:
- *	A missile hits a monster
- */
-static void
-thunk(THING *weap, const char *mname, bool noend)
-{
-    if (to_death)
-	return;
-    if (weap->o_type == WEAPON)
-	addmsg("the %s hits ", weap_info[weap->o_which].oi_name);
-    else
-	addmsg("you hit ");
-    addmsg("%s", mname);
-    if (!noend)
-	endmsg();
-}
-
-/*
  * print_attack:
  *	Print a message to indicate a hit or miss
  */
@@ -239,7 +202,7 @@ print_attack(bool hit, const char *att, const char *def, bool noend)
   if (to_death)
     return;
 
-  addmsg("%s", prname(att, true));
+  addmsg("%s", att == NULL ? "you" : att);
 
   i = terse ? 0 : rnd(4);
   if (att != NULL)
@@ -248,7 +211,7 @@ print_attack(bool hit, const char *att, const char *def, bool noend)
   addmsg("%s", hit ? h_names[i] : m_names[i]);
 
   if (!terse)
-    addmsg("%s", prname(def, false));
+    addmsg("%s", def == NULL ? "you" : def);
 
   if (!noend)
     endmsg();
@@ -292,8 +255,14 @@ fight_against_monster(coord *mp, THING *weap, bool thrown)
     if (roll_attacks(__player_ptr(), tp, weap, thrown)) 
     {
 	did_hit = false;
-	if (thrown)
-	    thunk(weap, mname, terse);
+	if (thrown && !to_death)
+        {
+          if (weap->o_type == WEAPON)
+            addmsg("the %s hits ", weap_info[weap->o_which].oi_name);
+          else
+            addmsg("you hit ");
+          msg("%s", mname);
+        }
 	else
 	    print_attack(true, (char *) NULL, mname, terse);
 	if (player_has_confusing_attack())
