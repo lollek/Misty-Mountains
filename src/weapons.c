@@ -112,7 +112,7 @@ missile(int ydelta, int xdelta)
   if (obj->o_which == ARROW && (weapon == NULL || weapon->o_which != BOW))
   {
     if (monster_at_pos)
-      fight_missile_miss(obj, set_mname(monster_at_pos), terse);
+      fight_missile_miss(obj, set_mname(monster_at_pos));
     fall(obj, true);
     return true;
   }
@@ -186,15 +186,8 @@ fall(THING *obj, bool pr)
   }
 
   if (pr)
-  {
-    if (has_hit)
-    {
-      endmsg();
-      has_hit = false;
-    }
     msg("the %s vanishes as it hits the ground",
         weap_info[obj->o_which].oi_name);
-  }
   _discard(&obj);
 }
 

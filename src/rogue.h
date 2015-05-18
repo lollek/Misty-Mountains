@@ -181,8 +181,7 @@ extern char	dir_ch, file_name[], huh[], prbuf[], whoami[],
 		outbuf[], *r_stones[], runch,
 		take, *tr_name[];
 
-extern int	food_left, hungry_state,
-		level, max_hit, mpos,
+extern int	food_left, hungry_state, level, mpos,
 		no_command, no_food, no_move, purse,
 		vf_hit, wizard;
 

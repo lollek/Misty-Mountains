@@ -38,7 +38,6 @@ char last_comm = '\0';			/* Last command typed */
 char last_dir = '\0';			/* Last direction given */
 
 int hungry_state = 0;			/* How hungry is he */
-int max_hit;				/* Max damage done to her in to_death */
 int mpos = 0;				/* Where cursor is on top line */
 int no_food = 0;			/* Number of levels without food */
 

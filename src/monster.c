@@ -27,6 +27,8 @@
 #include "things.h"
 #include "os.h"
 #include "state.h"
+#include "armor.h"
+#include "rip.h"
 #include "rogue.h"
 
 #include "monster.h"
@@ -483,4 +485,108 @@ monster_teleport(THING *monster, coord *destination)
     mvaddcch(new_pos.y, new_pos.x, monster->t_disguise);
   else if (player_can_sense_monsters())
     mvaddcch(new_pos.y, new_pos.x, monster->t_type | A_STANDOUT);
+}
+
+void
+monster_do_special_ability(THING** monster)
+{
+  if (monster_is_cancelled(*monster))
+    return;
+
+  switch ((*monster)->t_type)
+  {
+    /* If an aquator hits, you can lose armor class */
+    case 'A':
+      armor_rust();
+      return;
+
+    /* Venus Flytrap stops the poor guy from moving */
+    case 'F':
+      player_set_held();
+      ++vf_hit;
+      player_lose_health(1);
+      if (player_get_health() <= 0)
+        death('F');
+      return;
+
+    /* The ice monster freezes you */
+    case 'I':
+      player_stop_running();
+      if (!no_command)
+        msg("you are frozen by the %s", set_mname(*monster));
+      no_command += rnd(2) + 2;
+      if (no_command > 50)
+        death('h');
+      return;
+
+
+    /* Leperachaun steals some gold and disappears */
+    case 'L':
+      monster_remove_from_screen(&(*monster)->t_pos, *monster, false);
+      *monster = NULL;
+
+      purse -= GOLDCALC;
+      if (!player_save_throw(VS_MAGIC))
+        purse -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
+      if (purse < 0)
+        purse = 0;
+      msg("your purse feels lighter");
+      return;
+
+
+    /* Nymph's steal a magic item and disappears */
+    case 'N':;
+      THING* steal = pack_find_magic_item();
+      if (steal != NULL)
+      {
+        monster_remove_from_screen(&(*monster)->t_pos, *monster, false);
+        *monster = NULL;
+        pack_remove(steal, false, false);
+        msg("your pack feels lighter");
+        _discard(&steal);
+      }
+      return;
+
+    /* Rattlesnakes have poisonous bites */
+    case 'R':
+      if (!player_save_throw(VS_POISON)
+          && !player_has_ring_with_ability(R_SUSTSTR))
+      {
+        player_modify_strength(-1);
+        msg("you feel weaker");
+      }
+      return;
+
+    /* Vampires can steal max hp */
+    case 'V':
+      if (rnd(100) < 30)
+      {
+        int fewer = roll(1, 3);
+        player_lose_health(fewer);
+        player_modify_max_health(-fewer);
+        if (player_get_health() <= 0)
+          death('V');
+        msg("you feel weaker");
+      }
+      return;
+
+    /* Wraiths might drain exp */
+    case 'W':
+      if (rnd(100) < 15)
+      {
+        if (player_get_exp() == 0)
+          death('W');  /* Death by no exp */
+        player_lower_level();
+
+        int fewer = roll(1, 10);
+        player_lose_health(fewer);
+        player_modify_max_health(-fewer);
+        if (player_get_health() <= 0)
+          death('W');
+        msg("you feel weaker");
+      }
+      return;
+
+    default: return;
+  }
 }

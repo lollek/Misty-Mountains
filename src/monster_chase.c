@@ -215,8 +215,6 @@ over:
 	{
 	    delta.y = sign(player_pos->y - th->t_pos.y);
 	    delta.x = sign(player_pos->x - th->t_pos.x);
-	    if (has_hit)
-		endmsg();
 	    fire_bolt(&th->t_pos, &delta, "flame");
 	    command_stop(true);
 	    daemon_reset_doctor();

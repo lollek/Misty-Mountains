@@ -75,12 +75,7 @@ command(void)
     if (player_is_hasted())
       num_moves++;
 
-    /* TODO: Try to remove this */
-    if (has_hit)
-    {
-      endmsg();
-      has_hit = false;
-    }
+    flushmsg();
 
     again = false;
     look(true);

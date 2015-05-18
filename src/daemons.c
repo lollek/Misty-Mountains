@@ -339,12 +339,6 @@ daemon_runners_move(void)
       }
     }
   }
-
-  if (has_hit)
-  {
-    endmsg();
-    has_hit = false;
-  }
 }
 
 void daemon_ring_abilities(void)

@@ -37,7 +37,7 @@ bool fail(const char *fmt, ...);
 /* Message player */
 int msg(const char *fmt, ...); /* Display a message at the top of the screen. */
 void addmsg(const char *fmt, ...);       /* Add things to the current message */
-int endmsg(void); /* Flush message */
+int flushmsg(void);
 
 /* Helper function to colorize chars before outputting them */
 chtype colorize(const chtype ch);

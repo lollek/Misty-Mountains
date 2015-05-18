@@ -585,12 +585,7 @@ def:
 			bolt.o_pos = pos;
 			used = true;
 			if (tp->t_type == 'D' && strcmp(name, "flame") == 0)
-			{
-			    addmsg("the flame bounces");
-			    if (!terse)
-				addmsg(" off the dragon");
-			    endmsg();
-			}
+			    msg("the flame bounces off the dragon");
 			else
 			    hit_monster(pos.y, pos.x, &bolt);
 		    }

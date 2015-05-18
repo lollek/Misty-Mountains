@@ -90,6 +90,8 @@ bool monster_is_dead(THING *monster);
 
 void monster_teleport(THING *monster, coord *destination);
 
+void monster_do_special_ability(THING** monster);
+
 /** monster_chase.c **/
 bool monster_chase(THING *tp); /* Make a monster chase */
 

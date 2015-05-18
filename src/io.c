@@ -20,7 +20,7 @@
 
 #include "io.h"
 
-static void doadd(const char *fmt, va_list args); /* Add things to msgbuf */
+static void doadd(const char *fmt, va_list args, bool end_of_command);
 
 void
 fatal(const char *msg)
@@ -124,11 +124,11 @@ msg(const char *fmt, ...)
     return ~KEY_ESCAPE;
   }
 
-  /* otherwise add to the message and flush it out */
+  /* otherwise add to the message */
   va_start(args, fmt);
-  doadd(fmt, args);
+  doadd(fmt, args, true);
   va_end(args);
-  return endmsg();
+  return ~KEY_ESCAPE;
 }
 
 void
@@ -137,7 +137,7 @@ addmsg(const char *fmt, ...)
     va_list args;
 
     va_start(args, fmt);
-    doadd(fmt, args);
+    doadd(fmt, args, false);
     va_end(args);
 }
 
@@ -146,10 +146,15 @@ static char msgbuf[2*MAXMSG+1];
 static int newpos = 0;
 
 int
-endmsg(void)
+flushmsg(void)
 {
+  /* Nothing to show */
+  if (msgbuf[0] == '\0')
+    return ~KEY_ESCAPE;
+
   /* Save message in case player missed it */
   strcpy(huh, msgbuf);
+
   /* TODO: Remove mpos by replacing mpos = 0 with a clearmsg() */
   if (mpos)
   {
@@ -173,15 +178,33 @@ endmsg(void)
 }
 
 static void
-doadd(const char *fmt, va_list args)
+doadd(const char *fmt, va_list args, bool end_of_command)
 {
-  char buf[MAXSTR];
+  static bool new_sentence = false;
+  char const* separator = ". ";
+  size_t separatorlen = strlen(separator);
 
+  char buf[MAXSTR];
   vsprintf(buf, fmt, args);
-  if (strlen(buf) + newpos >= MAXMSG)
-    endmsg();
-  strcat(msgbuf, buf);
+
+  unsigned msgsize = newpos + strlen(buf);
+  if (new_sentence)
+    msgsize += separatorlen;
+
+  if (msgsize >= MAXMSG)
+    flushmsg();
+
+  if (new_sentence && newpos != 0)
+  {
+    strcpy(&msgbuf[newpos], separator);
+    newpos += separatorlen;
+    buf[0] = (char) toupper(buf[0]);
+    new_sentence = false;
+  }
+
+  strcpy(&msgbuf[newpos], buf);
   newpos = (int) strlen(msgbuf);
+  new_sentence = end_of_command;
 }
 
 bool

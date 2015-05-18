@@ -83,7 +83,6 @@ command_attack(bool fight_to_death)
   else if (diag_ok(player_pos, &delta))
   {
     to_death = true;
-    max_hit = 0;
     mp->t_flags |= ISTARGET;
     runch = dir_ch;
     return command_do(dir_ch);

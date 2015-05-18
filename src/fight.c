@@ -274,189 +274,63 @@ fight_against_monster(coord* monster_pos, THING* weapon, bool thrown)
   }
 
   if (thrown)
-    fight_missile_miss(weapon, mname, terse);
+    fight_missile_miss(weapon, mname);
   else if (!to_death)
     print_attack(false, (char *) NULL, mname);
   return false;
 }
 
 int
-fight_against_player(THING *mp)
+fight_against_player(THING* mp)
 {
-    char *mname;
-    int oldhp;
+  /* Since this is an attack, stop running and any healing that was
+   * going on at the time */
+  command_stop(false);
+  daemon_reset_doctor();
 
-    /* Since this is an attack, stop running and any healing that was
-     * going on at the time */
-    command_stop(false);
-    daemon_reset_doctor();
-    if (to_death && !on(*mp, ISTARGET))
-    {
-	to_death = false;
-	kamikaze = false;
-    }
-    if (mp->t_type == 'X' && mp->t_disguise != 'X' && !player_is_blind())
-    {
-	mp->t_disguise = 'X';
-	if (player_is_hallucinating())
-	    mvaddcch(mp->t_pos.y, mp->t_pos.x, rnd(26) + 'A');
-    }
-    mname = set_mname(mp);
-    oldhp = player_get_health();
-    /* TODO: Remove __player_ptr() reference */
-    if (roll_attacks(mp, __player_ptr(), (THING *) NULL, false))
-    {
-	if (mp->t_type != 'I')
-	{
-	    if (has_hit)
-		addmsg(".  ");
-            if (!to_death)
-              print_attack(true, mname, (char *) NULL);
-	}
-	else
-	    if (has_hit)
-		endmsg();
-	has_hit = false;
-	if (player_get_health() <= 0)
-	    death(mp->t_type);	/* Bye bye life ... */
-	else if (!kamikaze)
-	{
-	    oldhp -= player_get_health();
-	    if (oldhp > max_hit)
-		max_hit = oldhp;
-	    if (player_get_health() <= max_hit)
-		to_death = false;
-	}
-	if (!monster_is_cancelled(mp))
-	    switch (mp->t_type)
-	    {
-		case 'A':
-		    /* If an aquator hits, you can lose armor class */
-		    armor_rust();
-                    break;
-		case 'I':
-		    /* The ice monster freezes you */
-		    player_stop_running();
-		    if (!no_command)
-		    {
-			addmsg("you are frozen");
-			if (!terse)
-			    addmsg(" by the %s", mname);
-			endmsg();
-		    }
-		    no_command += rnd(2) + 2;
-		    if (no_command > 50)
-			death('h');
-                    break;
-		case 'R':
-		    /* Rattlesnakes have poisonous bites */
-		    if (!player_save_throw(VS_POISON))
-		    {
-			if (!player_has_ring_with_ability(R_SUSTSTR))
-			{
-			    player_modify_strength(-1);
-			    msg(terse
-			      ? "a bite has weakened you"
-			      : "you feel a bite in your leg and now feel weaker");
-			}
-			else if (!to_death)
-			    msg(terse
-				? "bite has no effect"
-				: "a bite momentarily weakens you");
-		    }
-                    break;
-		case 'W':
-		case 'V':
-		    /* Wraiths might drain energy levels, and Vampires
-		     * can steal max_hp */
-		    if (rnd(100) < (mp->t_type == 'W' ? 15 : 30))
-		    {
-			int fewer;
+  /* If we're fighting something to death and get backstabbed, return command */
+  if (to_death && !on(*mp, ISTARGET))
+  {
+    to_death = false;
+    kamikaze = false;
+  }
 
-			if (mp->t_type == 'W')
-			{
-			    if (player_get_exp() == 0)
-				death('W');		/* All levels gone */
-                            player_lower_level();
-			    fewer = roll(1, 10);
-			}
-			else
-			    fewer = roll(1, 3);
-                        player_lose_health(fewer);
-			player_modify_max_health(-fewer);
-			while (player_get_health() <= 0)
-                            player_restore_health(1, false);
-			if (player_get_max_health() <= 0)
-			    death(mp->t_type);
-			msg("you suddenly feel weaker");
-		    }
-                    break;
-		case 'F':
-		    /* Venus Flytrap stops the poor guy from moving */
-		    player_set_held();
-		    ++vf_hit;
-                    player_lose_health(1);
-		    if (player_get_health() <= 0)
-			death('F');
-                    break;
-		case 'L':
-		{
-		    /* Leperachaun steals some gold */
-		    int lastpurse;
+  /* If it's a xeroc, tag it as known */
+  if (mp->t_type == 'X' && mp->t_disguise != 'X' && !player_is_blind()
+      && !player_is_hallucinating())
+    mp->t_disguise = 'X';
 
-		    lastpurse = purse;
-		    purse -= GOLDCALC;
-		    if (!player_save_throw(VS_MAGIC))
-			purse -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
-		    if (purse < 0)
-			purse = 0;
-		    monster_remove_from_screen(&mp->t_pos, mp, false);
-                    mp=NULL;
-		    if (purse != lastpurse)
-			msg("your purse feels lighter");
-		}
-                break;
-		case 'N':
-		{
-		    /* Nymph's steal a magic item, look through the pack
-		     * and pick out one we like. */
-		    THING *steal = pack_find_magic_item();
-		    if (steal != NULL)
-		    {
-			monster_remove_from_screen(&mp->t_pos, moat(mp->t_pos.y, mp->t_pos.x),
-			           false);
-			mp=NULL;
-			pack_remove(steal, false, false);
-			msg("she stole %s!", inv_name(steal, true));
-			_discard(&steal);
-		    }
-		}
-                break;
-		default:
-                  break;
-	    }
-    }
-    else if (mp->t_type != 'I')
+  char const* mname = set_mname(mp);
+
+  if (roll_attacks(mp, NULL, NULL, false))
+  {
+    if (mp->t_type != 'I' && !to_death)
+      print_attack(true, mname, (char *) NULL);
+
+    if (player_get_health() <= 0)
+      death(mp->t_type);
+
+    monster_do_special_ability(&mp);
+    /* N.B! mp can be null after this point! */
+
+  }
+
+  else if (mp->t_type != 'I')
+  {
+    if (mp->t_type == 'F')
     {
-	if (has_hit)
-	{
-	    addmsg(".  ");
-	    has_hit = false;
-	}
-	if (mp->t_type == 'F')
-	{
-	    player_lose_health(vf_hit);
-	    if (player_get_health() <= 0)
-		death(mp->t_type);	/* Bye bye life ... */
-	}
-        if (!to_death)
-          print_attack(false, mname, (char *) NULL);
+      player_lose_health(vf_hit);
+      if (player_get_health() <= 0)
+        death(mp->t_type);
     }
-    if (fight_flush && !to_death)
-	flushinp();
-    command_stop(false);
-    status();
-    return(mp == NULL ? -1 : 0);
+
+    if (!to_death)
+      print_attack(false, mname, (char *) NULL);
+  }
+
+  command_stop(false);
+  status();
+  return(mp == NULL ? -1 : 0);
 }
 
 int
@@ -466,18 +340,15 @@ fight_swing_hits(int at_lvl, int op_arm, int wplus)
 }
 
 void
-fight_missile_miss(THING *weap, const char *mname, bool noend)
+fight_missile_miss(THING *weap, const char *mname)
 {
   if (to_death)
     return;
 
   if (weap->o_type == WEAPON)
-    addmsg("the %s misses ", weap_info[weap->o_which].oi_name);
+    addmsg("the %s misses %s", weap_info[weap->o_which].oi_name);
   else
-    addmsg("you missed ");
+    addmsg("you missed %s");
 
-  addmsg("%s", mname);
-
-  if (!noend)
-    endmsg();
+  msg("%s", mname);
 }

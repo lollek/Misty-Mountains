@@ -15,6 +15,6 @@ int fight_swing_hits(int at_lvl, int op_arm, int wplus);
 
 /** fight_missile_miss:
  * A missile misses a monster */
-void fight_missile_miss(THING* weap, char const* mname, bool noend);
+void fight_missile_miss(THING* weap, char const* mname);
 
 #endif /* _ROGUE14_FIGHT_H_ */
