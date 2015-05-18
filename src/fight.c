@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <assert.h>
 
 #include "command.h"
 #include "io.h"
@@ -32,106 +33,138 @@
 
 #include "fight.h"
 
+struct attack_modifier
+{
+  int to_hit;
+  int to_dmg;
+  char* damage;
+};
+
 /** add_player_attack_modifiers
  * Add item bonuses to damage and to-hit */
 static void
-add_player_attack_modifiers(int *damage, int *hit)
+add_ring_attack_modifiers(struct attack_modifier* mod)
 {
-  int i;
-  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  for (int i = 0; i < RING_SLOTS_SIZE; ++i)
   {
-    THING *ring = pack_equipped_item(ring_slots[i]);
+    THING* ring = pack_equipped_item(ring_slots[i]);
     if (ring == NULL)
       continue;
 
     else if (ring->o_which == R_ADDDAM)
-      *damage += ring->o_arm;
+      mod->to_dmg += ring->o_arm;
     else if (ring->o_which == R_ADDHIT)
-      *hit += ring->o_arm;
+      mod->to_dmg += ring->o_arm;
   }
 }
 
-/** roll_em:
- * Roll several attacks */
-static bool
-roll_em(THING *thatt, THING *thdef, THING *weap, bool hurl)
+static void
+add_strength_attack_modifiers(int strength, struct attack_modifier* mod)
 {
-  const int strbonus_to_hit[] = {
-    -7, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
-    1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3,
-  };
-  const int strbonus_to_dmg[] = {
-    -7, -6, -5, -4, -3, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3,
-    3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6
-  };
-  const struct stats *att = &thatt->t_stats;
-  const char *cp = weap == NULL ? att->s_dmg : weap->o_damage;
-  const bool attacker_is_player = is_player(thatt);
-
-  int hplus = weap == NULL ? 0 : weap->o_hplus;
-  int dplus = weap == NULL ? 0 : weap->o_dplus;
-  bool did_hit = false;
-  char vf_damage[13];
-
-  /* Venus Flytraps have a different kind of dmg system */
-  if (thatt->o_type == 'F')
+  switch (strength)
   {
-    sprintf(vf_damage, "%dx1", vf_hit);
-    cp = vf_damage;
+    case  0: mod->to_hit -= 7; mod->to_dmg -= 7; return;
+    case  1: mod->to_hit -= 6; mod->to_dmg -= 6; return;
+    case  2: mod->to_hit -= 5; mod->to_dmg -= 5; return;
+    case  3: mod->to_hit -= 4; mod->to_dmg -= 4; return;
+    case  4: mod->to_hit -= 3; mod->to_dmg -= 3; return;
+    case  5: mod->to_hit -= 2; mod->to_dmg -= 2; return;
+    case  6: mod->to_hit -= 1; mod->to_dmg -= 1; return;
+
+    default: return;
+
+    case 16:                   mod->to_dmg += 1; return;
+    case 17: mod->to_hit += 1; mod->to_dmg += 1; return;
+    case 18: mod->to_hit += 1; mod->to_dmg += 2; return;
+    case 19: mod->to_hit += 1; mod->to_dmg += 3; return;
+    case 20: mod->to_hit += 1; mod->to_dmg += 3; return;
+    case 21: mod->to_hit += 2; mod->to_dmg += 4; return;
+    case 22: mod->to_hit += 2; mod->to_dmg += 5; return;
+    case 23: mod->to_hit += 2; mod->to_dmg += 5; return;
+    case 24: mod->to_hit += 2; mod->to_dmg += 5; return;
+    case 25: mod->to_hit += 2; mod->to_dmg += 5; return;
+    case 26: mod->to_hit += 2; mod->to_dmg += 5; return;
+    case 27: mod->to_hit += 2; mod->to_dmg += 5; return;
+    case 28: mod->to_hit += 2; mod->to_dmg += 5; return;
+    case 29: mod->to_hit += 2; mod->to_dmg += 5; return;
+    case 30: mod->to_hit += 2; mod->to_dmg += 5; return;
+    case 31: mod->to_hit += 3; mod->to_dmg += 6; return;
+  }
+}
+
+static void
+calculate_attacker(THING* attacker, THING* weapon, bool thrown,
+                  struct attack_modifier* mod)
+{
+  if (weapon != NULL)
+  {
+    mod->damage  = weapon->o_damage;
+    mod->to_hit += weapon->o_hplus;
+    mod->to_dmg += weapon->o_dplus;
   }
 
-  if (attacker_is_player)
-  {
-    add_player_attack_modifiers(&dplus, &hplus);
+  add_strength_attack_modifiers(attacker->t_stats.s_str, mod);
 
-    if (hurl)
+  /* Player stuff */
+  if (is_player(attacker))
+  {
+    add_ring_attack_modifiers(mod);
+    if (thrown)
     {
-      THING *launcher = pack_equipped_item(EQUIPMENT_RHAND);
-      if ((weap->o_flags & ISMISL) && launcher != NULL &&
-          launcher->o_which == weap->o_launch)
+      THING const* held_weapon = pack_equipped_item(EQUIPMENT_RHAND);
+      if ((weapon->o_flags & ISMISL) && held_weapon != NULL
+          && held_weapon->o_which == weapon->o_launch)
       {
-        cp = weap->o_hurldmg;
-        hplus += launcher->o_hplus;
-        dplus += launcher->o_dplus;
+        mod->damage  = weapon->o_hurldmg;
+        mod->to_hit += held_weapon->o_hplus;
+        mod->to_dmg += held_weapon->o_dplus;
       }
-      else if (weap->o_launch < 0)
-        cp = weap->o_hurldmg;
+      else if (weapon->o_launch == -1)
+        mod->damage = weapon->o_hurldmg;
     }
   }
 
-  /* If the creature being attacked is not running (alseep or held)
-   * then the attacker gets a plus four bonus to hit. */
-  if (!on(*thdef, ISRUN))
-    hplus += 4;
-
-  while (cp != NULL && *cp != '\0')
+  /* Venus Flytraps have a different kind of dmg system */
+  else if (attacker->o_type == 'F')
   {
-    struct stats *def = &thdef->t_stats;
-    int def_arm = armor_for_thing(thdef);
-    int ndice;
-    int nsides;
+    static char f_damage[13];
+    sprintf(f_damage, "%dx1", vf_hit);
+    mod->damage = f_damage;
+  }
+}
 
-    if (sscanf(cp, "%dx%d", &ndice, &nsides) == EOF)
+static bool
+roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
+{
+  struct attack_modifier mod = { 0, 0, attacker->t_stats.s_dmg };
+  calculate_attacker(attacker, weapon, thrown, &mod);
+
+  /* If attacked creature is not running (asleep or held)
+   * the attacker gets a bonus to hit */
+  if (!on(*defender, ISRUN))
+    mod.to_hit += 4;
+
+  assert(mod.damage != NULL);
+  bool did_hit = false;
+
+  while (*mod.damage != '\0')
+  {
+    int defense = armor_for_thing(defender);
+    int dices;
+    int dice_sides;
+    if (sscanf(mod.damage, "%dx%d", &dices, &dice_sides) == EOF)
       break;
 
-    if (fight_swing_hits(att->s_lvl, def_arm, hplus + strbonus_to_hit[att->s_str]))
+    if (fight_swing_hits(attacker->t_stats.s_lvl, defense, mod.to_hit))
     {
-      int proll = roll(ndice, nsides);
-      int damage = dplus + proll + strbonus_to_dmg[att->s_str];
-
-      if (wizard && ndice + nsides > 0 && proll <= 0)
-        msg("Damage for %dx%d came out %d, "
-            "dplus = %d, add_dam = %d, def_arm = %d",
-            ndice, nsides, proll, dplus, strbonus_to_dmg[att->s_str], def_arm);
-
-      def->s_hpt -= max(0, damage);
+      defender->t_stats.s_hpt -= max(0, roll(dices, dice_sides) + mod.to_dmg);
       did_hit = true;
     }
 
-    if ((cp = strchr(cp, '/')) == NULL)
+    mod.damage = strchr(mod.damage, '/');
+    if (mod.damage == NULL)
       break;
-
-    cp++;
+    ++mod.damage;
   }
 
   return did_hit;
@@ -178,7 +211,6 @@ thunk(THING *weap, const char *mname, bool noend)
  * print_attack:
  *	Print a message to indicate a hit or miss
  */
-
 static void
 print_attack(bool hit, const char *att, const char *def, bool noend)
 {
@@ -257,7 +289,7 @@ fight_against_monster(coord *mp, THING *weap, bool thrown)
     did_hit = false;
     has_hit = (terse && !to_death);
     /* TODO: remove __player_ptr reference */
-    if (roll_em(__player_ptr(), tp, weap, thrown)) 
+    if (roll_attacks(__player_ptr(), tp, weap, thrown)) 
     {
 	did_hit = false;
 	if (thrown)
@@ -311,7 +343,7 @@ fight_against_player(THING *mp)
     mname = set_mname(mp);
     oldhp = player_get_health();
     /* TODO: Remove __player_ptr() reference */
-    if (roll_em(mp, __player_ptr(), (THING *) NULL, false))
+    if (roll_attacks(mp, __player_ptr(), (THING *) NULL, false))
     {
 	if (mp->t_type != 'I')
 	{
