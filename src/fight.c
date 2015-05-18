@@ -170,51 +170,40 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
   return did_hit;
 }
 
-/*
- * print_attack:
- *	Print a message to indicate a hit or miss
- */
+/** print_attack:
+ * Print a message to indicate a hit or miss */
 static void
-print_attack(bool hit, const char *att, const char *def, bool noend)
+print_attack(bool hit, char const* att, char const* def)
 {
-  const char *h_names[] = {
-      " hit "
-    , " scored an excellent hit on "
-    , " have injured "
-    , " swing and hit "
-    , " hits "
-    , " scored an excellent hit on "
-    , " has injured "
-    , " swings and hits "
+  char const* h_names[] = {
+      "hit"
+    , "scored an excellent hit on"
+    , "have injured"
+    , "swing and hit"
+    , "hits"
+    , "scored an excellent hit on"
+    , "has injured"
+    , "swings and hits"
   };
-  const char *m_names[] = {
-      " miss "
-    , " swing and miss "
-    , " barely miss "
-    , " don't hit "
-    , " misses "
-    , " swings and misses "
-    , " barely misses "
-    , " doesn't hit "
+  char const* m_names[] = {
+      "miss"
+    , "swing and miss"
+    , "barely miss"
+    , "don't hit"
+    , "misses"
+    , "swings and misses"
+    , "barely misses"
+    , "doesn't hit"
   };
-  int i;
 
-  if (to_death)
-    return;
-
-  addmsg("%s", att == NULL ? "you" : att);
-
-  i = terse ? 0 : rnd(4);
+  int i = terse ? 0 : rnd(4);
   if (att != NULL)
     i += 4;
 
-  addmsg("%s", hit ? h_names[i] : m_names[i]);
-
-  if (!terse)
-    addmsg("%s", def == NULL ? "you" : def);
-
-  if (!noend)
-    endmsg();
+  msg("%s %s %s",
+      att == NULL ? "you" : att,
+      hit ? h_names[i] : m_names[i],
+      def == NULL ? "you" : def);
 }
 
 int
@@ -263,8 +252,8 @@ fight_against_monster(coord *mp, THING *weap, bool thrown)
             addmsg("you hit ");
           msg("%s", mname);
         }
-	else
-	    print_attack(true, (char *) NULL, mname, terse);
+	else if (!to_death)
+	    print_attack(true, (char *) NULL, mname);
 	if (player_has_confusing_attack())
 	{
 	    did_hit = true;
@@ -283,8 +272,8 @@ fight_against_monster(coord *mp, THING *weap, bool thrown)
     else
 	if (thrown)
 	    fight_missile_miss(weap, mname, terse);
-	else
-	    print_attack(false, (char *) NULL, mname, terse);
+	else if (!to_death)
+	    print_attack(false, (char *) NULL, mname);
     return did_hit;
 }
 
@@ -318,7 +307,8 @@ fight_against_player(THING *mp)
 	{
 	    if (has_hit)
 		addmsg(".  ");
-	    print_attack(true, mname, (char *) NULL, false);
+            if (!to_death)
+              print_attack(true, mname, (char *) NULL);
 	}
 	else
 	    if (has_hit)
@@ -456,7 +446,8 @@ fight_against_player(THING *mp)
 	    if (player_get_health() <= 0)
 		death(mp->t_type);	/* Bye bye life ... */
 	}
-	print_attack(false, mname, (char *) NULL, false);
+        if (!to_death)
+          print_attack(false, mname, (char *) NULL);
     }
     if (fight_flush && !to_death)
 	flushinp();
