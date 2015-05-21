@@ -25,9 +25,9 @@ enum ring_t {
 };
 
 /* Variables: TODO: Make these private */
-char *r_stones[NRINGS];
 struct obj_info ring_info[NRINGS];
 
+void ring_init(void);
 bool ring_save_state(void);
 bool ring_load_state(void);
 

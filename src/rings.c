@@ -24,6 +24,37 @@
 
 #include "rings.h"
 
+static char const* r_stones[NRINGS];
+static STONE stones[] = {
+    { "agate",		 25},
+    { "alexandrite",	 40},
+    { "amethyst",	 50},
+    { "carnelian",	 40},
+    { "diamond",	300},
+    { "emerald",	300},
+    { "germanium",	225},
+    { "granite",	  5},
+    { "garnet",		 50},
+    { "jade",		150},
+    { "kryptonite",	300},
+    { "lapis lazuli",	 50},
+    { "moonstone",	 50},
+    { "obsidian",	 15},
+    { "onyx",		 60},
+    { "opal",		200},
+    { "pearl",		220},
+    { "peridot",	 63},
+    { "ruby",		350},
+    { "sapphire",	285},
+    { "stibotantalite",	200},
+    { "tiger eye",	 50},
+    { "topaz",		 60},
+    { "turquoise",	 70},
+    { "taaffeite",	300},
+    { "zircon",	 	 80},
+};
+static int NSTONES = (sizeof(stones) / sizeof(*stones));
+
 struct obj_info ring_info[] = {
   { "protection",		 9, 400, NULL, false },
   { "add strength",		 9, 400, NULL, false },
@@ -41,23 +72,37 @@ struct obj_info ring_info[] = {
   { "maintain armor",		 5, 380, NULL, false },
 };
 
+void
+ring_init(void)
+{
+  bool used[NSTONES];
+
+  for (int i = 0; i < NSTONES; i++)
+    used[i] = false;
+
+  for (int i = 0; i < NRINGS; i++)
+  {
+    size_t j;
+    do
+      j = rnd(NSTONES);
+    while (used[j]);
+    used[j] = true;
+    r_stones[i] = stones[j].st_name;
+    ring_info[i].oi_worth += stones[j].st_value;
+  }
+}
+
 bool
 ring_save_state(void)
 {
-  int i;
-  int j;
-
-  /* init.c */
-  extern STONE stones[];
-  extern int cNSTONES;
-
-  for (i = 0; i < NRINGS; i++)
+  for (int i = 0; i < NRINGS; i++)
   {
-    for (j = 0; j < cNSTONES; ++j)
+    int32_t j;
+    for (j = 0; j < NSTONES; ++j)
       if (r_stones[i] == stones[j].st_name)
         break;
 
-    if (state_save_int32(j == cNSTONES ? -1 : j))
+    if (state_save_int32(j == NSTONES ? -1 : j))
       return fail("ring_save_state(), i=%d,j=%d\r\n", i, j);
   }
   return 0;
@@ -66,27 +111,20 @@ ring_save_state(void)
 bool
 ring_load_state(void)
 {
-  int i;
-
-  /* init.c */
-  extern STONE stones[];
-  extern int cNSTONES;
-
-  for (i = 0; i < NRINGS; i++)
+  for (int i = 0; i < NRINGS; i++)
   {
     int32_t j = 0;
     if (state_load_int32(&j))
-      return fail("ring_load_state(), i=%d,j=%d, max=%d\r\n", i, j, cNSTONES);
-    else if (j >= cNSTONES)
-      return fail("ring_load_state(), i=%d,j=%d, max=%d, j >= cNSTONES\r\n",
-                  i, j, cNSTONES);
+      return fail("ring_load_state(), i=%d,j=%d, max=%d\r\n", i, j, NSTONES);
+    else if (j >= NSTONES)
+      return fail("ring_load_state(), i=%d,j=%d, max=%d, j >= NSTONES\r\n",
+                  i, j, NSTONES);
     else if (j < -1)
       return fail("ring_load_state(), i=%d,j=%d, max=%d, j < -1\r\n",
-                  i, j, cNSTONES);
+                  i, j, NSTONES);
 
     r_stones[i] = j >= 0 ? stones[j].st_name : NULL;
   }
-
   return 0;
 }
 

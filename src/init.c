@@ -164,39 +164,6 @@ static char *sylls[] = {
     "zok", "zon", "zum",
 };
 
-STONE stones[] = {
-    { "agate",		 25},
-    { "alexandrite",	 40},
-    { "amethyst",	 50},
-    { "carnelian",	 40},
-    { "diamond",	300},
-    { "emerald",	300},
-    { "germanium",	225},
-    { "granite",	  5},
-    { "garnet",		 50},
-    { "jade",		150},
-    { "kryptonite",	300},
-    { "lapis lazuli",	 50},
-    { "moonstone",	 50},
-    { "obsidian",	 15},
-    { "onyx",		 60},
-    { "opal",		200},
-    { "pearl",		220},
-    { "peridot",	 63},
-    { "ruby",		350},
-    { "sapphire",	285},
-    { "stibotantalite",	200},
-    { "tiger eye",	 50},
-    { "topaz",		 60},
-    { "turquoise",	 70},
-    { "taaffeite",	300},
-    { "zircon",	 	 80},
-};
-
-#define NSTONES (sizeof stones / sizeof (STONE))
-int cNSTONES = NSTONES;
-
-
 /** init_names:
  * Generate the names of the various scrolls */
 #define MAXNAME	40	/* Max number of characters in a name */
@@ -230,29 +197,6 @@ init_names(void)
     *--cp = '\0';
     s_names[i] = (char *) malloc((unsigned) strlen(tmpbuf)+1);
     strcpy(s_names[i], tmpbuf);
-  }
-}
-
-/** init_stones:
- * Initialize the ring stone setting scheme for this time */
-static void
-init_stones(void)
-{
-  bool used[NSTONES];
-  size_t i;
-
-  for (i = 0; i < NSTONES; i++)
-    used[i] = false;
-
-  for (i = 0; i < NRINGS; i++)
-  {
-    size_t j;
-    do
-      j = rnd(NSTONES);
-    while (used[j]);
-    used[j] = true;
-    r_stones[i] = stones[j].st_name;
-    ring_info[i].oi_worth += stones[j].st_value;
   }
 }
 
@@ -296,7 +240,7 @@ init_new_game(void)
   player_init();                        /* Set up initial player stats */
   init_names();                         /* Set up names of scrolls */
   potions_init();                       /* Set up colors of potions */
-  init_stones();                        /* Set up stone settings of rings */
+  ring_init();                          /* Set up stone settings of rings */
   wand_init();                          /* Set up materials of wands */
 
   level_new();                          /* Draw current level */

@@ -178,7 +178,7 @@ extern bool	after, again, door_stop,
 
 extern char	dir_ch, file_name[], huh[], prbuf[], whoami[],
 		l_last_comm, l_last_dir, last_comm, last_dir,
-		outbuf[], *r_stones[], runch,
+		outbuf[], runch,
 		take, *tr_name[];
 
 extern int	food_left, hungry_state, level, mpos,
