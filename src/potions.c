@@ -261,3 +261,25 @@ potion_quaff_something(void)
   return true;
 }
 
+void
+potion_description(THING const* obj, char buf[])
+{
+  struct obj_info *op = &pot_info[obj->o_which];
+  if (op->oi_know)
+  {
+    if (obj->o_count == 1)
+      buf += sprintf(buf, "A potion of %s", op->oi_name);
+    else
+      buf += sprintf(buf, "%d potions of %s", obj->o_count, op->oi_name);
+  }
+  else
+  {
+    if (obj->o_count == 1)
+      buf += sprintf(buf, "A %s potion", p_colors[obj->o_which]);
+    else
+      buf += sprintf(buf, "%d %s potions", obj->o_count, p_colors[obj->o_which]);
+  }
+  if (op->oi_guess)
+    buf += sprintf(buf, " called %s", op->oi_guess);
+}
+

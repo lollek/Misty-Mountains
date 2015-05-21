@@ -3,6 +3,7 @@ v1.2.8
   Did some balancing (which might be way off)
   f-fighting now does the same as F-fighting
   You can now stack haste (from potions)
+  Some descriptions have changed
 
 v1.2.7
   Made -j flag automatically set

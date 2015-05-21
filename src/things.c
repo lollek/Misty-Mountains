@@ -81,27 +81,7 @@ inv_name(THING *obj, bool drop)
 
   switch (obj->o_type)
   {
-    case POTION:
-      {
-        struct obj_info *op = &pot_info[which];
-        if (op->oi_know)
-        {
-          if (obj->o_count == 1)
-            pb += sprintf(pb, "A potion of %s", op->oi_name);
-          else
-            pb += sprintf(pb, "%d potions of %s", obj->o_count, op->oi_name);
-        }
-        else
-        {
-          if (obj->o_count == 1)
-            pb += sprintf(pb, "A %s potion", p_colors[which]);
-          else
-            pb += sprintf(pb, "%d %s potions", obj->o_count, p_colors[which]);
-        }
-        if (op->oi_guess)
-          pb += sprintf(pb, " called %s", op->oi_guess);
-      }
-      break;
+    case POTION: potion_description(obj, buf); break;
     case RING: ring_description(obj, buf); break;
     case STICK: wand_description(obj, buf); break;
     case SCROLL:
