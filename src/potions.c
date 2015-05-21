@@ -25,6 +25,9 @@
 
 #include "potions.h"
 
+/* Colors of the potions */
+static char const* p_colors[NPOTIONS];
+
 struct obj_info pot_info[NPOTIONS] = {
   /* io_name,      oi_prob, oi_worth, oi_guess, oi_know */
   { "confusion",         7,        5,     NULL, false },
