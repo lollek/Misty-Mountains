@@ -90,7 +90,6 @@ option(void)
     {"Show position only at end of run", &jump,        PUT_BOOL, get_bool},
     {"Show the lamp-illuminated floor",  &see_floor,   PUT_BOOL, get_sf},
     {"Follow turnings in passageways",   &passgo,      PUT_BOOL, get_bool},
-    {"Show tombstone when killed",       &tombstone,   PUT_BOOL, get_bool},
     {"Name",                             whoami,       PUT_STR,  get_str},
     {"Save file",                        file_name,    PUT_STR,  get_str}
   };

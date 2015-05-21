@@ -53,7 +53,6 @@ parse_args(int argc, char * const *argv)
     {"score",     no_argument,       0, 's'},
     {"seed",      required_argument, 0, 'S'},
     {"terse",     no_argument,       0, 't'},
-    {"hide-tomb", no_argument,       0, 'T'},
     {"quick",     no_argument,       0, 'Q'},
     {"wizard",    no_argument,       0, 'W'},
     {"help",      no_argument,       0, '0'},
@@ -68,7 +67,6 @@ parse_args(int argc, char * const *argv)
   jump = true;                  /* Show running as a series of jumps */
   see_floor = true;             /* Show the lamp-illuminated floor */
   passgo = false;               /* Follow the turnings in passageways */
-  tombstone = true;             /* Print out tombstone when killed */
   use_colors = true;            /* Use ncurses colors */
   game_type = DEFAULT;          /* Play a normal game or rogue */
 
@@ -102,7 +100,6 @@ parse_args(int argc, char * const *argv)
                 exit(0);
       case 'S': seed = atoi(optarg); break;
       case 't': terse = true; break;
-      case 'T': tombstone = false; break;
       case 'Q': game_type = QUICK; break;
       case 'W': wizard = true; break;
       case '0':
@@ -122,7 +119,6 @@ parse_args(int argc, char * const *argv)
                "  -s, --score          display the highscore and exit\n"
                "  -S, --seed=NUMBER    set map seed to NUMBER\n"
                "  -t, --terse          terse output\n"
-               "  -T, --hide-tomb      don't print out tombstone when killed\n"
                "  -Q, --quick          Change some rules to make the game take\n"
                "                       less time to play\n"
                ); printf(

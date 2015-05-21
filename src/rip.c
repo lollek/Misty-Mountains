@@ -243,34 +243,24 @@ death(char monst)
     clear();
     killer = killname(buf, monst, false);
 
-    if (!tombstone)
-    {
-	mvprintw(LINES - 2, 0, "Killed by ");
-	killer = killname(buf, monst, false);
-	if (monst != 's' && monst != 'h')
-	    printw("a%s ", vowelstr(killer));
-	printw("%s with %d gold", killer, purse);
-    }
+    time(&date);
+    lt = localtime(&date);
+    move(8, 0);
+    dp = rip;
+    while (*dp)
+        addstr(*dp++);
+    mvaddstr(17, center(killer), killer);
+    if (monst == 's' || monst == 'h')
+        mvaddcch(16, 32, ' ');
     else
-    {
-	time(&date);
-	lt = localtime(&date);
-	move(8, 0);
-	dp = rip;
-	while (*dp)
-	    addstr(*dp++);
-	mvaddstr(17, center(killer), killer);
-	if (monst == 's' || monst == 'h')
-	    mvaddcch(16, 32, ' ');
-	else
-	    mvaddstr(16, 33, vowelstr(killer));
-	mvaddstr(14, center(whoami), whoami);
-	sprintf(buf, "%d Au", purse);
-	move(15, center(buf));
-	addstr(buf);
-	sprintf(buf, "%4d", 1900+lt->tm_year);
-	mvaddstr(18, 26, buf);
-    }
+        mvaddstr(16, 33, vowelstr(killer));
+    mvaddstr(14, center(whoami), whoami);
+    sprintf(buf, "%d Au", purse);
+    move(15, center(buf));
+    addstr(buf);
+    sprintf(buf, "%4d", 1900+lt->tm_year);
+    mvaddstr(18, 26, buf);
+
     mvprintw(LINES -1, 0, "[Press return to continue]");
     refresh();
     wait_for(KEY_ENTER);

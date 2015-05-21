@@ -165,7 +165,6 @@ bool fight_flush; /* Flush typeahead during battle */
 bool jump;        /* Show running as a series of jumps */
 bool see_floor;   /* Show the lamp-illuminated floor */
 bool passgo;      /* Follow the turnings in passageways */
-bool tombstone;   /* Print out tombstone when killed */
 bool use_colors;  /* Use ncurses colors */
 
 /*
