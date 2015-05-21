@@ -191,6 +191,8 @@ main(int argc, char **argv)
   signal(SIGSYS, auto_save);
   signal(SIGTERM, auto_save);
   signal(SIGINT, command_signal_quit);
+#else
+  msg("Seed: #%u", seed);
 #endif
 
   oldpos = *player_get_pos();

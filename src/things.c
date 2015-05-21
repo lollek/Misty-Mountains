@@ -45,41 +45,6 @@ struct obj_info things[] = {
     { "stick",	 4,	0,	NULL,	false },	/* stick */
 };
 
-/** nameit:
- * Give the proper name to a potion, stick, or ring */
-static void
-nameit(THING *obj, const char *type, const char *which, struct obj_info *op,
-    char *(*prfunc)(THING *))
-{
-    char *pb;
-
-    if (op->oi_know || op->oi_guess)
-    {
-	if (obj->o_count == 1)
-	    sprintf(prbuf, "A %s ", type);
-	else
-	    sprintf(prbuf, "%d %ss ", obj->o_count, type);
-	pb = &prbuf[strlen(prbuf)];
-	if (op->oi_know)
-	    sprintf(pb, "of %s%s(%s)", op->oi_name, (*prfunc)(obj), which);
-	else if (op->oi_guess)
-	    sprintf(pb, "called %s%s(%s)", op->oi_guess, (*prfunc)(obj), which);
-    }
-    else if (obj->o_count == 1)
-	sprintf(prbuf, "A%s %s %s", vowelstr(which), which, type);
-    else
-	sprintf(prbuf, "%d %s %ss", obj->o_count, which, type);
-}
-
-/** nullstr:
- * Return a pointer to a null-length string */
-static char *
-nullstr(THING *ignored)
-{
-    (void)ignored;
-    return "";
-}
-
 static const char *
 type_to_string(int type, int which)
 {
@@ -110,18 +75,35 @@ add_num_type_to_string(char *ptr, int type, int which, int num)
 char *
 inv_name(THING *obj, bool drop)
 {
-  char *pb = prbuf;
+  static char buf[2*MAXSTR];
+  char *pb = buf;
   int which = obj->o_which;
 
   switch (obj->o_type)
   {
     case POTION:
-      nameit(obj, "potion", p_colors[which], &pot_info[which], nullstr);
+      {
+        struct obj_info *op = &pot_info[which];
+        if (op->oi_know)
+        {
+          if (obj->o_count == 1)
+            pb += sprintf(pb, "A potion of %s", op->oi_name);
+          else
+            pb += sprintf(pb, "%d potions of %s", obj->o_count, op->oi_name);
+        }
+        else
+        {
+          if (obj->o_count == 1)
+            pb += sprintf(pb, "A %s potion", p_colors[which]);
+          else
+            pb += sprintf(pb, "%d %s potions", obj->o_count, p_colors[which]);
+        }
+        if (op->oi_guess)
+          pb += sprintf(pb, " called %s", op->oi_guess);
+      }
       break;
-    case RING:
-      nameit(obj, "ring", r_stones[which], &ring_info[which], ring_bonus);
-      break;
-    case STICK: wand_description(obj, prbuf); break;
+    case RING: ring_description(obj, buf); break;
+    case STICK: wand_description(obj, buf); break;
     case SCROLL:
       {
         struct obj_info *op = &scr_info[which];
@@ -196,9 +178,9 @@ inv_name(THING *obj, bool drop)
       break;
   }
 
-  prbuf[0] = drop ? tolower(prbuf[0]) : toupper(prbuf[0]);
-  prbuf[MAXSTR-1] = '\0';
-  return prbuf;
+  buf[0] = drop ? tolower(buf[0]) : toupper(buf[0]);
+  buf[MAXSTR-1] = '\0';
+  return buf;
 }
 
 bool

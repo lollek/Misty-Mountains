@@ -10,6 +10,8 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#include <ctype.h>
+
 #include "io.h"
 #include "pack.h"
 #include "daemons.h"
@@ -125,9 +127,10 @@ ring_put_on(void)
     case R_AGGR: aggravate(); break;
     }
 
-  if (!terse)
-    addmsg("you are now wearing ");
-  msg("%s", inv_name(obj, true));
+  char buf[MAXSTR];
+  ring_description(obj, buf);
+  buf[0] = tolower(buf[0]);
+  addmsg("now wearing %s", buf);
   return true;
 }
 
@@ -193,27 +196,32 @@ ring_drain_amount(void)
   return total_eat;
 }
 
-char *
-ring_bonus(THING *obj)
-{
-  static char buf[10];
-
-  if (!(obj->o_flags & ISKNOW))
-    return "";
-
-  switch (obj->o_which)
-  {
-    case R_PROTECT: case R_ADDSTR: case R_ADDDAM: case R_ADDHIT:
-      sprintf(buf, " [%s]", num(obj->o_arm, 0, RING));
-      break;
-    default:
-      return "";
-  }
-  return buf;
-}
-
 bool
 ring_is_known(enum ring_t ring)
 {
   return ring_info[ring].oi_know;
+}
+
+void
+ring_description(THING const* item, char* buf)
+{
+  struct obj_info *op = &ring_info[item->o_which];
+  buf += sprintf(buf, "%s ring", r_stones[item->o_which]);
+
+  if (op->oi_know)
+  {
+    buf += sprintf(buf, " of %s", op->oi_name);
+    switch (item->o_which)
+    {
+      case R_PROTECT: case R_ADDSTR: case R_ADDDAM: case R_ADDHIT:
+        if (item->o_arm > 0)
+          buf += sprintf(buf, " [+%d]", item->o_arm);
+        else
+          buf += sprintf(buf, " [%d]", item->o_arm);
+        break;
+      default: break;
+    }
+  }
+  else if (op->oi_guess)
+    buf += sprintf(buf, " called %s", op->oi_guess);
 }
