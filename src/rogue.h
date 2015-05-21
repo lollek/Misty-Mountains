@@ -176,7 +176,7 @@ extern bool	after, again, door_stop,
 		firstmove, has_hit, kamikaze,
 		move_on, running, to_death;
 
-extern char	dir_ch, file_name[], huh[], prbuf[], whoami[],
+extern char	dir_ch, file_name[], huh[], whoami[],
 		l_last_comm, l_last_dir, last_comm, last_dir,
 		outbuf[], runch,
 		take, *tr_name[];

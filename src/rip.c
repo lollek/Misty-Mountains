@@ -62,7 +62,7 @@ center(const char *str)
 /** killname:
  * Convert a code to a monster name */
 static char *
-killname(char monst, bool doart)
+killname(char buf[], char monst, bool doart)
 {
   char *sp;
   bool article;
@@ -95,11 +95,11 @@ killname(char monst, bool doart)
   }
 
   if (doart && article)
-    sprintf(prbuf, "a%s ", vowelstr(sp));
+    sprintf(buf, "a%s ", vowelstr(sp));
   else
-    prbuf[0] = '\0';
-  strcat(prbuf, sp);
-  return prbuf;
+    buf[0] = '\0';
+  strcat(buf, sp);
+  return buf;
 }
 
 void
@@ -111,6 +111,7 @@ score(int amount, int flags, char monst)
     SCORE *top_ten, *endp;
     int prflags = 0;
     unsigned int uid;
+    char buf[2*MAXSTR];
     static char *reason[] = {
 	"killed",
 	"quit",
@@ -122,12 +123,11 @@ score(int amount, int flags, char monst)
     {
 	mvaddstr(LINES - 1, 0 , "[Press return to continue]");
         refresh();
-        wgetnstr(stdscr,prbuf,80);
+        wgetnstr(stdscr,buf,80);
  	endwin();
         printf("\n");
-	/*
-	 * free up space to "guarantee" there is space for the top_ten
-	 */
+
+	/* free up space to "guarantee" there is space for the top_ten */
 	delwin(stdscr);
 	delwin(curscr);
 	if (hw != NULL)
@@ -149,13 +149,12 @@ score(int amount, int flags, char monst)
 
     signal(SIGINT, SIG_DFL);
 
-    if (wizard && strcmp(prbuf, "edit") == 0)
+    if (wizard && !strcmp(buf, "edit"))
       prflags = 2;
 
     score_read(top_ten);
-    /*
-     * Insert her in list if need be
-     */
+
+    /* Insert her in list if need be */
     sc2 = NULL;
     if (!wizard)
     {
@@ -183,9 +182,8 @@ score(int amount, int flags, char monst)
 	    sc2 = scp;
 	}
     }
-    /*
-     * Print the list
-     */
+
+    /* Print the list */
     if (flags != -1)
 	putchar('\n');
     printf("Top %s %s:\n", NUMNAME, "Scores");
@@ -197,12 +195,12 @@ score(int amount, int flags, char monst)
                 (int) (scp - top_ten + 1), scp->sc_score, scp->sc_name,
                 reason[scp->sc_flags], scp->sc_level);
 	    if (scp->sc_flags == 0 || scp->sc_flags == 3)
-		printf(" by %s", killname((char) scp->sc_monster, true));
+		printf(" by %s", killname(buf, (char) scp->sc_monster, true));
 	    if (prflags == 2)
 	    {
 		fflush(stdout);
-		(void) fgets(prbuf,10,stdin);
-		if (prbuf[0] == 'd')
+		(void) fgets(buf,10,stdin);
+		if (buf[0] == 'd')
 		{
 		    for (sc2 = scp; sc2 < endp - 1; sc2++)
 			*sc2 = *(sc2 + 1);
@@ -236,17 +234,19 @@ death(char monst)
     char **dp, *killer;
     struct tm *lt;
     static time_t date;
+    char buf[2*MAXSTR];
     struct tm *localtime();
 
     signal(SIGINT, SIG_IGN);
     purse -= purse / 10;
     signal(SIGINT, command_signal_leave);
     clear();
-    killer = killname(monst, false);
+    killer = killname(buf, monst, false);
+
     if (!tombstone)
     {
 	mvprintw(LINES - 2, 0, "Killed by ");
-	killer = killname(monst, false);
+	killer = killname(buf, monst, false);
 	if (monst != 's' && monst != 'h')
 	    printw("a%s ", vowelstr(killer));
 	printw("%s with %d gold", killer, purse);
@@ -265,11 +265,11 @@ death(char monst)
 	else
 	    mvaddstr(16, 33, vowelstr(killer));
 	mvaddstr(14, center(whoami), whoami);
-	sprintf(prbuf, "%d Au", purse);
-	move(15, center(prbuf));
-	addstr(prbuf);
-	sprintf(prbuf, "%4d", 1900+lt->tm_year);
-	mvaddstr(18, 26, prbuf);
+	sprintf(buf, "%d Au", purse);
+	move(15, center(buf));
+	addstr(buf);
+	sprintf(buf, "%4d", 1900+lt->tm_year);
+	mvaddstr(18, 26, buf);
     }
     mvprintw(LINES -1, 0, "[Press return to continue]");
     refresh();

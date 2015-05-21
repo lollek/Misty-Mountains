@@ -28,7 +28,6 @@ int wizard = false;			/* True if allows wizard commands */
 char dir_ch;				/* Direction from last get_dir() call */
 char file_name[MAXSTR];			/* Save file name */
 char huh[MAXSTR] = { '\0' };		/* The last message printed */
-char prbuf[2*MAXSTR];			/* buffer for sprintfs */
 char runch;				/* Direction player is running */
 char take;				/* Thing she is taking */
 char whoami[MAXSTR];			/* Name of player */
