@@ -33,6 +33,8 @@
 
 #include "pack.h"
 
+int const RENAMEABLE = -1;
+
 static THING* player_pack;
 static THING* last_picked_item;
 static THING* last_last_picked_item;
@@ -515,8 +517,7 @@ pack_count_items_of_type(int type)
 
   for (THING const* list = player_pack; list != NULL; list = list->l_next)
     if (!type || type == list->o_type ||
-        (type == RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))||
-        (type == R_OR_S && (list->o_type == RING || list->o_type == STICK)))
+        (type == RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET)))
       ++num;
   return num;
 }
@@ -582,8 +583,7 @@ pack_print_inventory(int type)
   for (THING* list = player_pack; list != NULL; list = list->l_next)
   {
     if (!type || type == list->o_type ||
-        (type == RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))||
-        (type == R_OR_S && (list->o_type == RING || list->o_type == STICK)))
+        (type == RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET)))
     {
       /* Print out the item and move to next row */
       wmove(invscr, ++num_items, 1);

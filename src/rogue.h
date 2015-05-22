@@ -48,10 +48,6 @@ extern enum rogue_game_t
 #define on(thing,flag)	((bool)(((thing).t_flags & (flag)) != 0))
 #define GOLDCALC	(rnd(50 + 10 * level) + 2)
 
-/* TODO: Make sure these don't bug as chars are usually unsigned */
-#define RENAMEABLE	-1 /* This means that we can rename it */
-#define R_OR_S		-2 /* This means ring, wand of staff */
-
 /* Various constants */
 #define WANDERTIME	spread(70)
 #define BEFORE		spread(1)

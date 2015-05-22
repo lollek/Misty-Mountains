@@ -7,6 +7,8 @@
 
 #include "things.h"
 
+int const RENAMEABLE; /* Type of item which can be renamed */
+
 enum equipment_pos
 {
   EQUIPMENT_ARMOR = 0,
