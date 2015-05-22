@@ -39,7 +39,7 @@
 #define MAXTRIES	10 /* max number of tries to put down a monster */
 #define MAXTRAPS	10
 
-THING *lvl_obj = NULL;
+THING* lvl_obj = NULL;
 coord stairs;
 int level = 1;
 int max_level = 1;
@@ -50,40 +50,41 @@ int max_level = 1;
 static void
 treas_room(void)
 {
-  int nm;
-  THING *tp;
-  struct room *rp = &rooms[room_random()];
-  int spots = (rp->r_max.y - 2) * (rp->r_max.x - 2) - MINTREAS;
-  int num_monst;
-  static coord mp;
+  struct room* room = &rooms[room_random()];
+  int spots = (room->r_max.y - 2) * (room->r_max.x - 2) - MINTREAS;
 
   if (spots > (MAXTREAS - MINTREAS))
     spots = (MAXTREAS - MINTREAS);
-  num_monst = nm = rnd(spots) + MINTREAS;
+  int num_monsters = rnd(spots) + MINTREAS;
 
-  while (nm--)
+  for (int i = 0; i < num_monsters; ++i)
   {
-    room_find_floor(rp, &mp, 2 * MAXTRIES, false);
-    tp = new_thing();
-    tp->o_pos = mp;
-    list_attach(&lvl_obj, tp);
-    chat(mp.y, mp.x) = (char) tp->o_type;
+    coord monster_pos;
+    THING* monster = new_thing();
+
+    room_find_floor(room, &monster_pos, 2 * MAXTRIES, false);
+    monster->o_pos = monster_pos;
+    list_attach(&lvl_obj, monster);
+    chat(monster_pos.y, monster_pos.x) = (char) monster->o_type;
   }
 
   /* fill up room with monsters from the next level down */
-  if ((nm = rnd(spots) + MINTREAS) < num_monst + 2)
-    nm = num_monst + 2;
-  spots = (rp->r_max.y - 2) * (rp->r_max.x - 2);
+  int nm = rnd(spots) + MINTREAS;
+  if (nm < num_monsters + 2)
+    nm = num_monsters + 2;
+
+  spots = (room->r_max.y - 2) * (room->r_max.x - 2);
   if (nm > spots)
     nm = spots;
   level++;
   while (nm--)
   {
+    coord monster_pos;
     spots = 0;
-    if (room_find_floor(rp, &mp, MAXTRIES, true))
+    if (room_find_floor(room, &monster_pos, MAXTRIES, true))
     {
-      tp = allocate_new_item();
-      monster_new(tp, monster_random(false), &mp);
+      THING* tp = allocate_new_item();
+      monster_new(tp, monster_random(false), &monster_pos);
       tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
       monster_give_pack(tp);
     }
@@ -112,7 +113,7 @@ put_things(void)
     if (rnd(100) < 36)
     {
       /* Pick a new object and link it in the list */
-      THING *obj = new_thing();
+      THING* obj = new_thing();
       list_attach(&lvl_obj, obj);
 
       /* Put it somewhere */
@@ -124,7 +125,7 @@ put_things(void)
    * amulet yet, put it somewhere on the ground */
   if (level >= AMULETLEVEL && !pack_contains_amulet())
   {
-    THING *obj = allocate_new_item();
+    THING* obj = allocate_new_item();
     list_attach(&lvl_obj, obj);
     obj->o_hplus = 0;
     obj->o_dplus = 0;
@@ -140,89 +141,81 @@ put_things(void)
 }
 
 
-/* TODO: This function needs cleanup */
 void
 level_new(void)
 {
-    THING *tp;
-    PLACE *pp;
-    char *sp;
+  /* unhold when you go down just in case */
+  player_remove_held();
 
-    player_remove_held(); /* unhold when you go down just in case */
-    if (level > max_level)
-	max_level = level;
-    /*
-     * Clean things off from last level
-     */
-    for (pp = places; pp < &places[MAXCOLS*MAXLINES]; pp++)
+  /* Set max level we've been to */
+  if (level > max_level)
+    max_level = level;
+
+  /* Clean things off from last level */
+  for (PLACE* pp = places; pp < &places[MAXCOLS*MAXLINES]; pp++)
+  {
+      pp->p_ch = SHADOW;
+      pp->p_flags = F_REAL;
+      pp->p_monst = NULL;
+  }
+  clear();
+
+  /* Free up the monsters on the last level */
+  for (THING* monster = mlist; monster != NULL; monster = monster->l_next)
+    list_free_all(&monster->t_pack);
+  list_free_all(&mlist);
+
+  /* Throw away stuff left on the previous level (if anything) */
+  list_free_all(&lvl_obj);
+
+  rooms_create(); /* Draw rooms */
+  passages_do();  /* Draw passages */
+  no_food++;      /* Levels with no food placed */
+  put_things();   /* Place objects (if any) */
+
+  /* Place the traps */
+  if (rnd(10) < level)
+  {
+    int ntraps = rnd(level / 4) + 1;
+    if (ntraps > MAXTRAPS)
+      ntraps = MAXTRAPS;
+    while (ntraps--)
     {
-	pp->p_ch = SHADOW;
-	pp->p_flags = F_REAL;
-	pp->p_monst = NULL;
+      /*
+       * not only wouldn't it be NICE to have traps in mazes
+       * (not that we care about being nice), since the trap
+       * number is stored where the passage number is, we
+       * can't actually do it.
+       */
+      do
+        room_find_floor((struct room *) NULL, &stairs, false, false);
+      while (chat(stairs.y, stairs.x) != FLOOR);
+
+      char* trap_ptr = &flat(stairs.y, stairs.x);
+      *trap_ptr &= ~F_REAL;
+      *trap_ptr |= rnd(NTRAPS);
     }
-    clear();
-    /*
-     * Free up the monsters on the last level
-     */
-    for (tp = mlist; tp != NULL; tp = tp->l_next)
-	list_free_all(&tp->t_pack);
-    list_free_all(&mlist);
-    /*
-     * Throw away stuff left on the previous level (if anything)
-     */
-    list_free_all(&lvl_obj);
-    rooms_create();			/* Draw rooms */
-    passages_do();			/* Draw passages */
-    no_food++;
-    put_things();			/* Place objects (if any) */
-    /*
-     * Place the traps
-     */
-    if (rnd(10) < level)
-    {
-	int ntraps = rnd(level / 4) + 1;
-	if (ntraps > MAXTRAPS)
-	    ntraps = MAXTRAPS;
-	while (ntraps--)
-	{
-	    /*
-	     * not only wouldn't it be NICE to have traps in mazes
-	     * (not that we care about being nice), since the trap
-	     * number is stored where the passage number is, we
-	     * can't actually do it.
-	     */
-	    do
-	    {
-		room_find_floor((struct room *) NULL, &stairs, false, false);
-	    } while (chat(stairs.y, stairs.x) != FLOOR);
-	    sp = &flat(stairs.y, stairs.x);
-	    *sp &= ~F_REAL;
-	    *sp |= rnd(NTRAPS);
-	}
-    }
-    /*
-     * Place the staircase down.
-     */
-    room_find_floor((struct room *) NULL, &stairs, false, false);
-    chat(stairs.y, stairs.x) = STAIRS;
+  }
 
-    for (tp = mlist; tp != NULL; tp = tp->l_next)
-	tp->t_room = roomin(&tp->t_pos);
+  /* Place the staircase down.  */
+  room_find_floor((struct room *) NULL, &stairs, false, false);
+  chat(stairs.y, stairs.x) = STAIRS;
 
-    {
-      coord *player_pos = player_get_pos();
-      room_find_floor((struct room *) NULL, player_pos, false, true);
-      room_enter(player_pos);
-      mvaddcch(player_pos->y, player_pos->x, PLAYER);
-    }
+  for (THING* monster = mlist; monster != NULL; monster = monster->l_next)
+    monster->t_room = roomin(&monster->t_pos);
 
-    if (player_can_sense_monsters())
-	player_add_sense_monsters(true);
-    if (player_is_hallucinating())
-	daemon_change_visuals();
+  coord* player_pos = player_get_pos();
+  room_find_floor((struct room *) NULL, player_pos, false, true);
+  room_enter(player_pos);
+  mvaddcch(player_pos->y, player_pos->x, PLAYER);
 
-    if (game_type == QUICK && level > 1 && level <= 20)
-      player_raise_level();
+  if (player_can_sense_monsters())
+    player_add_sense_monsters(true);
+  if (player_is_hallucinating())
+    daemon_change_visuals();
+
+  if (game_type == QUICK && level > 1 && level <= 20)
+    player_raise_level();
 }
 
 bool

@@ -11,7 +11,8 @@
 
 PLACE places[MAXLINES*MAXCOLS];  /* level map */
 coord stairs;   /* Location of staircase */
-THING *lvl_obj; /* List of objects on this level */
+THING* lvl_obj; /* List of objects on this level */
+
 int level;      /* What level she is on */
 int max_level;  /* Deepest player has gone */
 
