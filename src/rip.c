@@ -64,13 +64,17 @@ center(char const* str)
 static char *
 killname(char buf[], char monst, bool doart)
 {
-  static struct h_list nlist[] = {
+  struct list
+  {
+    char ch;
+    char const* description;
+    bool print;
+  } nlist[] = {
     {'a',	"arrow",		true},
     {'b',	"bolt",			true},
     {'d',	"dart",			true},
     {'h',	"hypothermia",		false},
     {'s',	"starvation",		false},
-    {'\0'}
   };
 
   char const* sp;
@@ -82,11 +86,11 @@ killname(char buf[], char monst, bool doart)
   {
     sp = "Wally the Wonder Badger";
     article = false;
-    for (struct h_list* hp = nlist; hp->h_ch; hp++)
-      if (hp->h_ch == monst)
+    for (unsigned i = 0; i < sizeof(nlist) / sizeof(*nlist); ++i)
+      if (nlist[i].ch == monst)
       {
-        sp = hp->h_desc;
-        article = hp->h_print;
+        sp = nlist[i].description;
+        article = nlist[i].print;
         break;
       }
   }

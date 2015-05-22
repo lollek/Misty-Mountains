@@ -67,15 +67,6 @@ extern enum rogue_game_t
 #define VS_MAGIC	03
 
 /*
- * Help list
- */
-struct h_list {
-    char h_ch;
-    char* h_desc;
-    bool h_print;
-};
-
-/*
  * describe a place on the level map
  */
 typedef struct {
