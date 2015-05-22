@@ -12,6 +12,27 @@
 #define KEY_SPACE	' '
 #define KEY_ESCAPE	27
 
+/* Chars for things */
+#define SHADOW		' '
+#define VWALL		'|'
+#define HWALL		'-'
+#define PASSAGE		'#'
+#define DOOR		'+'
+#define FLOOR		'.'
+#define PLAYER		'@'
+#define TRAP		'^'
+#define STAIRS		'%'
+#define GOLD		'*'
+#define POTION		'!'
+#define SCROLL		'?'
+#define MAGIC		'$'
+#define FOOD		':'
+#define WEAPON		')'
+#define ARMOR		']'
+#define AMULET		','
+#define RING		'='
+#define STICK		'/'
+
 /* used as a scratch window */
 WINDOW *hw;
 

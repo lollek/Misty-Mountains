@@ -48,27 +48,6 @@ extern enum rogue_game_t
 #define on(thing,flag)	((bool)(((thing).t_flags & (flag)) != 0))
 #define GOLDCALC	(rnd(50 + 10 * level) + 2)
 
-/* things that appear on the screens */
-#define SHADOW		' '
-#define VWALL		'|'
-#define HWALL		'-'
-#define PASSAGE		'#'
-#define DOOR		'+'
-#define FLOOR		'.'
-#define PLAYER		'@'
-#define TRAP		'^'
-#define STAIRS		'%'
-#define GOLD		'*'
-#define POTION		'!'
-#define SCROLL		'?'
-#define MAGIC		'$'
-#define FOOD		':'
-#define WEAPON		')'
-#define ARMOR		']'
-#define AMULET		','
-#define RING		'='
-#define STICK		'/'
-
 /* TODO: Make sure these don't bug as chars are usually unsigned */
 #define RENAMEABLE	-1 /* This means that we can rename it */
 #define R_OR_S		-2 /* This means ring, wand of staff */
@@ -146,7 +125,7 @@ extern enum rogue_game_t
  */
 struct h_list {
     char h_ch;
-    char *h_desc;
+    char* h_desc;
     bool h_print;
 };
 
@@ -156,7 +135,7 @@ struct h_list {
 typedef struct {
     char p_ch;
     char p_flags;
-    THING *p_monst;
+    THING* p_monst;
 } PLACE;
 
 /* Game Options - These are set in main.c */
@@ -171,26 +150,47 @@ bool use_colors;  /* Use ncurses colors */
  * External variables
  */
 
-extern bool	after, again, door_stop,
-		firstmove, has_hit, kamikaze,
-		move_on, running, to_death;
+extern bool after;
+extern bool again;
+extern bool door_stop;
+extern bool firstmove;
+extern bool has_hit;
+extern bool kamikaze;
+extern bool move_on;
+extern bool running;
+extern bool to_death;
 
-extern char	dir_ch, file_name[], huh[], whoami[],
-		l_last_comm, l_last_dir, last_comm, last_dir,
-		outbuf[], runch,
-		take, *tr_name[];
+extern char dir_ch;
+extern char file_name[];
+extern char huh[];
+extern char whoami[];
+extern char l_last_comm;
+extern char l_last_dir;
+extern char last_comm;
+extern char last_dir;
+extern char outbuf[];
+extern char runch;
+extern char take;
+extern char* tr_name[];
 
-extern int	food_left, hungry_state, level, mpos,
-		no_command, no_food, no_move, purse,
-		vf_hit, wizard;
+extern int food_left;
+extern int hungry_state;
+extern int level;
+extern int mpos;
+extern int no_command;
+extern int no_food;
+extern int no_move;
+extern int purse;
+extern int vf_hit;
+extern int wizard;
 
-extern unsigned int	seed;
+extern unsigned seed;
 
 extern coord oldpos;
 
 typedef struct {
-    char	*st_name;
-    int		st_value;
+    char* st_name;
+    int st_value;
 } STONE;
 
 

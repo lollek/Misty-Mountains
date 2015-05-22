@@ -1,10 +1,10 @@
 #include "coord.h"
 #include "things.h"
-
 #include "player.h"
 #include "level.h"
 #include "scrolls.h"
 #include "misc.h"
+#include "io.h"
 
 #include "monster.h"
 #include "monster_private.h"
