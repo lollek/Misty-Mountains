@@ -20,6 +20,8 @@
 
 #include "io.h"
 
+WINDOW* hw = NULL;
+
 #define MAXMSG	(NUMCOLS - sizeof " --More--")
 static char msgbuf[2*MAXMSG+1];
 static int newpos = 0;
@@ -60,7 +62,7 @@ flushmsg(void)
 }
 
 static void
-doadd(const char *fmt, va_list args, bool end_of_command)
+doadd(char const* fmt, va_list args, bool end_of_command)
 {
   static bool new_sentence = false;
   char const* separator = ". ";
@@ -89,7 +91,7 @@ doadd(const char *fmt, va_list args, bool end_of_command)
   new_sentence = end_of_command;
 }
 
-const char *
+char const*
 get_homedir(void)
 {
   static char homedir[PATH_MAX +1] = { '\0' };
@@ -98,8 +100,8 @@ get_homedir(void)
   if (*homedir == '\0')
   {
     size_t len;
-    struct passwd *pw = getpwuid(getuid());
-    char *h = pw == NULL ? NULL : pw->pw_dir;
+    struct passwd const* pw = getpwuid(getuid());
+    char const* h = pw == NULL ? NULL : pw->pw_dir;
 
     if (h == NULL || *h == '\0' || !strcmp(h, "/"))
       h = getenv("HOME");
@@ -160,7 +162,7 @@ colorize(const chtype ch)
 
 #ifndef NDEBUG
 bool
-fail(const char *fmt, ...)
+fail(char const* fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
@@ -180,7 +182,7 @@ clearmsg(void)
 }
 
 int
-msg(const char *fmt, ...)
+msg(char const* fmt, ...)
 {
   va_list args;
 
@@ -196,7 +198,7 @@ msg(const char *fmt, ...)
 }
 
 void
-addmsg(const char *fmt, ...)
+addmsg(char const* fmt, ...)
 {
     va_list args;
 
@@ -221,15 +223,17 @@ readchar(bool is_question)
   flushmsg();
   if (!is_question)
     move(player_y(), player_x());
-  char ch = (char) getch();
 
-  if (ch == 3)
+  char ch = (char) getch();
+  switch (ch)
   {
-    command_signal_quit(0);
-    return KEY_ESCAPE;
+    case 3:
+      command_signal_quit(0);
+      return KEY_ESCAPE;
+
+    default:
+      return ch;
   }
-  else
-    return ch;
 }
 
 void
@@ -237,16 +241,13 @@ status(void)
 {
   int oy, ox;
   int hpwidth = 0;
-  const char *state_name[] = { "", "Hungry", "Weak", "Faint" };
+  char const* state_name[] = { "", "Hungry", "Weak", "Faint" };
 
   getyx(stdscr, oy, ox);
 
   if (player_is_hurt())
-  {
-    int temp;
-    for (temp = player_get_max_health(); temp > 0; temp /= 10, hpwidth++)
+    for (int temp = player_get_max_health(); temp > 0; temp /= 10, hpwidth++)
       ;
-  }
 
   move(STATLINE, 0);
   printw("Level: %d  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  Arm: %-2d  "
@@ -263,27 +264,27 @@ status(void)
 void
 wait_for(int ch)
 {
-  if (ch == KEY_ENTER)
-    ch = '\n';
-  if (ch == '\n')
+  switch (ch)
   {
-    char c;
-    while ((c = readchar(true)) != '\n' && c != '\r')
-      ;
+    case KEY_ENTER: case '\n':
+      for (;;)
+        if ((ch = readchar(true)) == '\n' || ch == '\r')
+          return;
+
+    default:
+      for (;;)
+        if (readchar(true) == ch)
+          return;
   }
-  else
-    while (readchar(true) != ch)
-      ;
 }
 
 void
 show_win(const char *message)
 {
-  coord *player_pos = player_get_pos();
   wmove(hw, 0, 0);
   waddstr(hw, message);
   touchwin(hw);
-  wmove(hw, player_pos->y, player_pos->x);
+  wmove(hw, player_y(), player_x());
   wrefresh(hw);
   wait_for(KEY_SPACE);
   clearok(curscr, true);
@@ -291,7 +292,7 @@ show_win(const char *message)
 }
 
 bool
-wreadstr(WINDOW *win, char *dest)
+wreadstr(WINDOW* win, char* dest)
 {
   char buf[MAXSTR];
   signed char c = ~KEY_ESCAPE;
@@ -354,8 +355,13 @@ wreadstr(WINDOW *win, char *dest)
 }
 
 void
-fatal(const char *msg)
+fatal(char const* msg, ...)
 {
-  fprintf(stderr, msg);
+  va_list args;
+
+  va_start(args, msg);
+  vfprintf(stderr, msg, args);
+  va_end(args);
+
   abort();
 }

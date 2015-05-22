@@ -49,6 +49,3 @@ unsigned seed;				/* Random number seed */
 
 coord oldpos;				/* Position before last look() call */
 
-WINDOW* hw = NULL;			/* used as a scratch window */
-
-

@@ -12,18 +12,19 @@
 #define KEY_SPACE	' '
 #define KEY_ESCAPE	27
 
-extern WINDOW *hw;
+/* used as a scratch window */
+WINDOW *hw;
 
-void fatal(const char *msg); /* Kill program with an error message */
+void fatal(char const* msg, ...); /* Kill program with an error message */
 
-const char *get_homedir(void); /* returns e.g. /home/user/ */
+char const* get_homedir(void); /* returns e.g. /home/user/ */
 
 bool step_ok(int ch);  /* True of it's OK to step on ch */
 void status(void);     /* Print the status line at the bottom of the screen */
-void show_win(const char *message); /* Show window and wait before returning */
+void show_win(char const* message); /* Show window and wait before returning */
 
 /* get input */
-bool wreadstr(WINDOW *win, char *buf);   /* interruptable string from user */
+bool wreadstr(WINDOW* win, char* buf);   /* interruptable string from user */
 #define readstr(_b) wreadstr(stdscr, _b) /* wreadstr for stdscr */
 char readchar(bool is_question);   /* Interruptable getch() */
 void wait_for(int ch); /* Wait for the specified key */
@@ -31,13 +32,13 @@ void wait_for(int ch); /* Wait for the specified key */
 #ifdef NDEBUG
 #define fail(err, ...) 1
 #else
-bool fail(const char *fmt, ...);
+bool fail(char const* fmt, ...);
 #endif /* NDEBUG */
 
 /* Message player */
-int clearmsg(void);           /* Remove displayed text */
-int msg(const char *fmt, ...); /* Display a message at the top of the screen. */
-void addmsg(const char *fmt, ...);       /* Add things to the current message */
+int clearmsg(void);            /* Remove displayed text */
+int msg(char const* fmt, ...); /* Display a message at the top of the screen. */
+void addmsg(char const* fmt, ...);       /* Add things to the current message */
 
 /* Helper function to colorize chars before outputting them */
 chtype colorize(const chtype ch);
