@@ -24,7 +24,7 @@
 #include "options.h"
 
 static bool
-get_bool(void *vp, WINDOW *win)
+get_bool(void* vp, WINDOW* win)
 {
   wrefresh(win);
   switch (readchar(true))
@@ -39,14 +39,16 @@ get_bool(void *vp, WINDOW *win)
       waddstr(win, "False");
       return 0;
 
-    case '\n': case '\r': case KEY_ESCAPE: return 1;
+    case '\n': case '\r': case KEY_ESCAPE:
+      return 1;
 
-    default: return get_bool(vp, win);
+    default:
+      return get_bool(vp, win);
   }
 }
 
 static bool
-get_sf(void *vp, WINDOW *win)
+get_sf(void* vp, WINDOW* win)
 {
   bool was_sf = see_floor;
 
@@ -68,20 +70,19 @@ get_sf(void *vp, WINDOW *win)
 
 
 static bool
-get_str(void *vopt, WINDOW *win)
+get_str(void* vopt, WINDOW* win)
 {
-  return wreadstr(win, (char *)vopt);
+  return wreadstr(win, (char*)vopt);
 }
 
 /** option:
  * Print and then set options from the terminal */
-#define NOPTS (sizeof optlist / sizeof (*optlist))
 bool
 option(void)
 {
   struct option {
-    char *o_prompt;     /* prompt for interactive entry */
-    void *o_opt;        /* pointer to thing to set function to print value */
+    char const* o_prompt;     /* prompt for interactive entry */
+    void* o_opt;        /* pointer to thing to set function to print value */
     enum put_t { PUT_BOOL, PUT_STR } put_type;
     bool (*o_getfunc)(void *opt, WINDOW *win); /* Get value */
   } optlist[] = {
@@ -93,19 +94,20 @@ option(void)
     {"Name",                             whoami,       PUT_STR,  get_str},
     {"Save file",                        file_name,    PUT_STR,  get_str}
   };
-
-  char c = ~KEY_ESCAPE;
-  WINDOW *optscr = NULL;
-  coord msg_pos;
-  unsigned i;
+  int const NOPTS = (sizeof optlist / sizeof (*optlist));
   char const* query = "Which value do you want to change? (ESC to exit) ";
-
+  coord const msg_pos =
+  {
+    .y = 0,
+    .x = strlen(query)
+  };
   msg(query);
-  msg_pos.y = 0;
-  msg_pos.x = strlen(query);
+
+  WINDOW *optscr = NULL;
   optscr = dupwin(stdscr);
 
   /* Display current values of options */
+  int i;
   wmove(optscr, 1, 0);
   for (i = 0; i < NOPTS; ++i)
   {
@@ -117,7 +119,8 @@ option(void)
     waddch(optscr, '\n');
   }
 
-  while (c != KEY_ESCAPE)
+  char c = ~KEY_ESCAPE;
+  do
   {
     wmove(optscr, msg_pos.y, msg_pos.x);
     wrefresh(optscr);
@@ -129,6 +132,7 @@ option(void)
       (*optlist[i].o_getfunc)(optlist[i].o_opt, optscr);
     }
   }
+  while (c != KEY_ESCAPE);
 
   /* Switch back to original screen */
   wmove(optscr, LINES - 1, 0);
