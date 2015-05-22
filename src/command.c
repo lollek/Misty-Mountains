@@ -163,7 +163,7 @@ command_do(char ch)
     case 'a': return command_again();
     case 'c': return command_name_item();
     case 'd': return drop();
-    case 'e': return eat();
+    case 'e': return command_eat();
     case 'f': return command_attack(false);
     case 'i': return command_show_inventory();
     case 'm': move_on = true; return get_dir() ? command_do(dir_ch) : false;

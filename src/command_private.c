@@ -501,3 +501,40 @@ bool command_rest(void)
   return true;
 }
 
+bool
+command_eat(void)
+{
+  THING* obj = pack_get_item("eat", FOOD);
+  if (obj == NULL)
+    return false;
+
+  if (obj->o_type != FOOD)
+  {
+    msg("that's inedible!");
+    return false;
+  }
+
+  food_left = (food_left > 0 ? food_left : 0) + HUNGERTIME - 200 + rnd(400);
+  if (food_left > STOMACHSIZE)
+    food_left = STOMACHSIZE;
+
+  hungry_state = 0;
+
+  if (obj->o_which == 1)
+    msg("my, that was a yummy fruit");
+
+  else if (rnd(100) > 70)
+  {
+    player_earn_exp(1);
+    msg("this food tastes awful");
+    player_check_for_level_up();
+  }
+
+  else
+    msg("that tasted good");
+
+  pack_remove(obj, false, false);
+  return true;
+}
+
+

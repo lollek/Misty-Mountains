@@ -69,157 +69,147 @@ roll(int number, int sides)
 void
 look(bool wakeup)
 {
-  int x, y;
-  coord *player_pos = player_get_pos();
-  PLACE *pp = INDEX(player_pos->y, player_pos->x);
-  char pch = pp->p_ch;
-  char pfl = pp->p_flags;
-  struct room *rp = player_get_room();
-  int passcount = 0;
-  int sumhero = 0, diffhero = 0;
+  coord const* player_pos = player_get_pos();
+  char const player_ch = INDEX(player_pos->y, player_pos->x)->p_ch;
+  char const player_flags = INDEX(player_pos->y, player_pos->x)->p_flags;
 
   if (!same_coords(&oldpos, player_pos))
   {
     erase_lamp(&oldpos, oldrp);
     oldpos = *player_pos;
-    oldrp = rp;
+    oldrp = player_get_room();
   }
 
+  int sumhero = 0;
+  int diffhero = 0;
   if (door_stop && !firstmove && running)
   {
     sumhero = player_pos->y + player_pos->x;
     diffhero = player_pos->y - player_pos->x;
   }
 
-  for (y = player_pos->y - 1; y <= player_pos->y + 1; y++)
-    if (y > 0 && y < NUMLINES - 1)
-      for (x = player_pos->x -1; x <= player_pos->x + 1; x++)
+  int passcount = 0;
+  for (int y = player_pos->y - 1; y <= player_pos->y + 1; y++)
+  {
+    if (y <= 0 || y >= NUMLINES -1)
+      continue;
+
+    for (int x = player_pos->x -1; x <= player_pos->x + 1; x++)
+    {
+      if (x < 0 || x >= NUMCOLS)
+        continue;
+
+      if (!player_is_blind()
+          && y == player_pos->y && x == player_pos->x)
+        continue;
+
+      PLACE const* xy_pos = INDEX(y, x);
+      char xy_ch = xy_pos->p_ch;
+      if (xy_ch == SHADOW)  /* nothing need be done with a ' ' */
+        continue;
+
+      char const xy_flags = xy_pos->p_flags;
+      if (player_ch != DOOR
+          && xy_ch != DOOR
+          && (player_flags & F_PASS) != (xy_flags & F_PASS))
+        continue;
+
+      if (((xy_flags & F_PASS) || xy_ch == DOOR)
+          && ((player_flags & F_PASS) || player_ch == DOOR))
       {
-        char ch;
-        const char *fp;
-        THING *tp;
-
-        if (x < 0 || x >= NUMCOLS)
+        if (player_pos->x != x && player_pos->y != y &&
+            !step_ok(chat(y, player_pos->x)) && !step_ok(chat(player_pos->y, x)))
           continue;
+      }
 
-        if (!player_is_blind() && y == player_pos->y && x == player_pos->x)
-            continue;
-
-        pp = INDEX(y, x);
-        ch = pp->p_ch;
-
-        if (ch == SHADOW)  /* nothing need be done with a ' ' */
-          continue;
-
-        fp = &pp->p_flags;
-
-        if (pch != DOOR && ch != DOOR && (pfl & F_PASS) != (*fp & F_PASS))
-            continue;
-
-        if (((*fp & F_PASS) || ch == DOOR) &&
-            ((pfl & F_PASS) || pch == DOOR))
+      THING* monster = xy_pos->p_monst;
+      if (monster == NULL)
+        xy_ch = trip_ch(y, x, xy_ch);
+      else
+      {
+        if (player_can_sense_monsters() && monster_is_invisible(monster))
         {
-          if (player_pos->x != x && player_pos->y != y &&
-              !step_ok(chat(y, player_pos->x)) && !step_ok(chat(player_pos->y, x)))
-            continue;
+          if (door_stop && !firstmove)
+            running = false;
+          continue;
         }
-
-        if ((tp = pp->p_monst) == NULL)
-          ch = trip_ch(y, x, ch);
         else
         {
-          if (player_can_sense_monsters() && monster_is_invisible(tp))
+          if (wakeup)
+            monster_notice_player(y, x);
+          if (see_monst(monster))
           {
-            if (door_stop && !firstmove)
-              running = false;
-            continue;
-          }
-          else
-          {
-            if (wakeup)
-              monster_notice_player(y, x);
-            if (see_monst(tp))
-            {
-              ch = player_is_hallucinating()
-                ? rnd(26) + 'A'
-                : tp->t_disguise;
-            }
-          }
-        }
-
-        if (player_is_blind() && (y != player_pos->y || x != player_pos->x))
-          continue;
-
-        move(y, x);
-
-        if ((player_get_room()->r_flags & ISDARK) && !see_floor && ch == FLOOR)
-          ch = SHADOW;
-
-        if (tp != NULL || ch != incch())
-          addcch(ch);
-
-        if (door_stop && !firstmove && running)
-        {
-          switch (runch)
-          {
-            case 'h': if (x == player_pos->x + 1)
-                        continue;
-                      break;
-            case 'j': if (y == player_pos->y - 1)
-                        continue;
-                      break;
-            case 'k': if (y == player_pos->y + 1)
-                        continue;
-                      break;
-            case 'l': if (x == player_pos->x - 1)
-                        continue;
-                      break;
-            case 'y': if ((y + x) - sumhero >= 1)
-                        continue;
-                      break;
-            case 'u': if ((y - x) - diffhero >= 1)
-                        continue;
-                      break;
-            case 'n': if ((y + x) - sumhero <= -1)
-                        continue;
-                      break;
-            case 'b': if ((y - x) - diffhero <= -1)
-                        continue;
-                      break;
-          }
-          switch (ch)
-          {
-            case DOOR:    if (x == player_pos->x || y == player_pos->y)
-                            running = false;
-                          break;
-            case PASSAGE: if (x == player_pos->x || y == player_pos->y)
-                            passcount++;
-                          break;
-            case FLOOR: case VWALL: case HWALL: case SHADOW:
-              break;
-            default: running = false;
-                     break;
+            xy_ch = player_is_hallucinating()
+              ? rnd(26) + 'A'
+              : monster->t_disguise;
           }
         }
       }
+
+      if (player_is_blind() && (y != player_pos->y || x != player_pos->x))
+        continue;
+
+      move(y, x);
+
+      if ((player_get_room()->r_flags & ISDARK) && !see_floor && xy_ch == FLOOR)
+        xy_ch = SHADOW;
+
+      if (monster != NULL || xy_ch != incch())
+        addcch(xy_ch);
+
+      if (door_stop && !firstmove && running)
+      {
+        if (   (runch == 'h' && x == player_pos->x + 1)
+            || (runch == 'j' && y == player_pos->y - 1)
+            || (runch == 'k' && y == player_pos->y + 1)
+            || (runch == 'l' && x == player_pos->x - 1)
+            || (runch == 'y' && y + x - sumhero >= 1)
+            || (runch == 'u' && y - x - diffhero >= 1)
+            || (runch == 'n' && y + x - sumhero <= -1)
+            || (runch == 'b' && y - x - diffhero <= -1))
+          continue;
+
+        switch (xy_ch)
+        {
+          case DOOR:
+            if (x == player_pos->x || y == player_pos->y)
+              running = false;
+            break;
+
+          case PASSAGE:
+            if (x == player_pos->x || y == player_pos->y)
+              passcount++;
+            break;
+
+          case FLOOR: case VWALL: case HWALL: case SHADOW:
+            break;
+
+          default:
+            running = false;
+            break;
+        }
+      }
+    }
+  }
+
   if (door_stop && !firstmove && passcount > 1)
     running = false;
+
   if (!running || !jump)
     mvaddcch(player_pos->y, player_pos->x, PLAYER);
 }
 
 void
-erase_lamp(coord *pos, struct room *rp)
+erase_lamp(coord const* pos, struct room const* room)
 {
-  coord *player_pos = player_get_pos();
-  int y, x;
-
-  if (!(see_floor && (rp->r_flags & (ISGONE|ISDARK)) == ISDARK
-        && !player_is_blind()))
+  if (!(see_floor
+       && (room->r_flags & (ISGONE|ISDARK)) == ISDARK
+       && !player_is_blind()))
     return;
 
-  for (x = pos->x -1; x <= pos->x +1; x++)
-    for (y = pos->y -1; y <= pos->y +1; y++)
+  coord const* player_pos = player_get_pos();
+  for (int x = pos->x -1; x <= pos->x +1; x++)
+    for (int y = pos->y -1; y <= pos->y +1; y++)
     {
       if (y == player_pos->y && x == player_pos->x)
         continue;
@@ -240,12 +230,10 @@ show_floor(void)
     : true;
 }
 
-THING *
+THING*
 find_obj(int y, int x)
 {
-  THING *obj;
-
-  for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
+  for (THING* obj = lvl_obj; obj != NULL; obj = obj->l_next)
     if (obj->o_pos.y == y && obj->o_pos.x == x)
       return obj;
 
@@ -254,54 +242,15 @@ find_obj(int y, int x)
   return NULL;
 }
 
-bool
-eat(void)
-{
-    THING *obj = pack_get_item("eat", FOOD);
-
-    if (obj == NULL)
-      return false;
-
-    if (obj->o_type != FOOD)
-    {
-      msg("that's inedible!");
-      return false;
-    }
-
-    food_left = (food_left > 0 ? food_left : 0) + HUNGERTIME - 200 + rnd(400);
-    if (food_left > STOMACHSIZE)
-      food_left = STOMACHSIZE;
-
-    hungry_state = 0;
-
-    if (obj->o_which == 1)
-      msg("my, that was a yummy fruit");
-    else
-      if (rnd(100) > 70)
-      {
-        player_earn_exp(1);
-        msg("%s, this food tastes awful",
-            player_is_hallucinating() ? "bummer" : "yuk");
-        player_check_for_level_up();
-      }
-      else
-        msg("%s, that tasted good",
-            player_is_hallucinating() ? "oh, wow" : "yum");
-
-    pack_remove(obj, false, false);
-    return true;
-}
-
 void
 aggravate(void)
 {
-  THING *mp;
-  for (mp = mlist; mp != NULL; mp = mp->l_next)
+  for (THING* mp = mlist; mp != NULL; mp = mp->l_next)
     monster_start_running(&mp->t_pos);
 }
 
-const char *
-vowelstr(const char *str)
+char const*
+vowelstr(char const* str)
 {
   switch (str[0])
   {
@@ -316,13 +265,14 @@ vowelstr(const char *str)
   }
 }
 
-const coord *
+coord const*
 get_dir(void)
 {
-  const char *prompt = terse ? "direction? " : "which direction? ";
-  bool gotit;
-  static coord delta;
   static coord last_delt= {0,0};
+  static coord delta;
+
+  char const* prompt = "which direction? ";
+  bool gotit;
 
   if (again && last_dir != '\0')
   {
@@ -330,6 +280,7 @@ get_dir(void)
     delta.x = last_delt.x;
     dir_ch = last_dir;
   }
+
   else
   {
     msg(prompt);
@@ -339,14 +290,15 @@ get_dir(void)
       gotit = true;
       switch (dir_ch = readchar(false))
       {
-        case 'h': case'H': delta.y =  0; delta.x = -1; break;
-        case 'j': case'J': delta.y =  1; delta.x =  0; break;
-        case 'k': case'K': delta.y = -1; delta.x =  0; break;
-        case 'l': case'L': delta.y =  0; delta.x =  1; break;
-        case 'y': case'Y': delta.y = -1; delta.x = -1; break;
-        case 'u': case'U': delta.y = -1; delta.x =  1; break;
-        case 'b': case'B': delta.y =  1; delta.x = -1; break;
-        case 'n': case'N': delta.y =  1; delta.x =  1; break;
+        case 'h': case 'H': delta.y =  0; delta.x = -1; break;
+        case 'j': case 'J': delta.y =  1; delta.x =  0; break;
+        case 'k': case 'K': delta.y = -1; delta.x =  0; break;
+        case 'l': case 'L': delta.y =  0; delta.x =  1; break;
+        case 'y': case 'Y': delta.y = -1; delta.x = -1; break;
+        case 'u': case 'U': delta.y = -1; delta.x =  1; break;
+        case 'b': case 'B': delta.y =  1; delta.x = -1; break;
+        case 'n': case 'N': delta.y =  1; delta.x =  1; break;
+
         case KEY_ESCAPE:
           last_dir = '\0';
           reset_last();
@@ -368,6 +320,7 @@ get_dir(void)
     last_delt.y = delta.y;
     last_delt.x = delta.x;
   }
+
   if (player_is_confused() && rnd(5) == 0)
     do
     {
@@ -395,7 +348,7 @@ spread(int nm)
 }
 
 void
-call_it(const char *what, struct obj_info *info)
+call_it(char const* what, struct obj_info *info)
 {
   if (info->oi_know)
   {
@@ -423,20 +376,31 @@ call_it(const char *what, struct obj_info *info)
 char
 rnd_thing(void)
 {
-  char thing_list[] = {
-    POTION, SCROLL, RING, STICK, FOOD, WEAPON, ARMOR, STAIRS, GOLD, AMULET
-  };
-  int i;
+  int i = rnd(level >= AMULETLEVEL ? 10 : 9);
+  switch (i)
+  {
+    case 0: return POTION;
+    case 1: return SCROLL;
+    case 2: return RING;
+    case 3: return STICK;
+    case 4: return FOOD;
+    case 5: return WEAPON;
+    case 6: return ARMOR;
+    case 7: return STAIRS;
+    case 8: return GOLD;
+    case 9:
+      if (level < AMULETLEVEL)
+        fail("rnd_thing: Amulet spawned at a too low level");
+      return AMULET;
 
-  if (level >= AMULETLEVEL)
-    i = rnd(sizeof thing_list / sizeof (char));
-  else
-    i = rnd(sizeof thing_list / sizeof (char) - 1);
-  return thing_list[i];
+    default:
+      fail("rnd_thing got %d, expected value between 0 and 9");
+      return GOLD;
+  }
 }
 
 bool
-is_magic(THING *obj)
+is_magic(THING const* obj)
 {
   switch (obj->o_type)
   {
@@ -456,7 +420,7 @@ is_magic(THING *obj)
 bool
 seen_stairs(void)
 {
-  THING *tp = moat(stairs.y, stairs.x);
+  THING* tp = moat(stairs.y, stairs.x);
 
   move(stairs.y, stairs.x);
   if (incch() == STAIRS)  /* it's on the map */
@@ -480,27 +444,25 @@ seen_stairs(void)
 void
 invis_on(void)
 {
-  THING *mp;
-
   player_add_true_sight(true);
-  for (mp = mlist; mp != NULL; mp = mp->l_next)
+  for (THING* mp = mlist; mp != NULL; mp = mp->l_next)
     if (monster_is_invisible(mp) && see_monst(mp) && !player_is_hallucinating())
       mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
 }
 
 
 void
-strucpy(char *s1, const char *s2, int len)
+strucpy(char* dst, char const* src, int len)
 {
-    if (len > MAXINP)
-	len = MAXINP;
-    while (len--)
-    {
-	if (isprint(*s2) || *s2 == ' ')
-	    *s1++ = *s2;
-	s2++;
-    }
-    *s1 = '\0';
+  if (len > MAXINP)
+    len = MAXINP;
+  while (len--)
+  {
+    if (isprint(*src) || *src == ' ')
+      *dst++ = *src;
+    src++;
+  }
+  *dst = '\0';
 }
 
 void
@@ -514,9 +476,9 @@ waste_time(int rounds)
 }
 
 void
-set_oldch(THING *tp, coord *cp)
+set_oldch(THING* tp, coord* cp)
 {
-  char sch = tp->t_oldch;
+  char old_char = tp->t_oldch;
 
   if (same_coords(&tp->t_pos, cp))
     return;
@@ -524,7 +486,7 @@ set_oldch(THING *tp, coord *cp)
   tp->t_oldch = mvincch(cp->y, cp->x);
   if (!player_is_blind())
   {
-    if ((sch == FLOOR || tp->t_oldch == FLOOR) &&
+    if ((old_char == FLOOR || tp->t_oldch == FLOOR) &&
         (tp->t_room->r_flags & ISDARK))
       tp->t_oldch = SHADOW;
     else if (dist_cp(cp, player_get_pos()) <= LAMPDIST && see_floor)
@@ -533,41 +495,42 @@ set_oldch(THING *tp, coord *cp)
 }
 
 bool
-see_monst(THING *mp)
+see_monst(THING* monster)
 {
-  coord *player_pos = player_get_pos();
-  int y = mp->t_pos.y;
-  int x = mp->t_pos.x;
+  coord const* player_pos = player_get_pos();
+  int monster_y = monster->t_pos.y;
+  int monster_x = monster->t_pos.x;
 
   if (player_is_blind() ||
-      (monster_is_invisible(mp) && !player_has_true_sight()))
+      (monster_is_invisible(monster) && !player_has_true_sight()))
     return false;
 
-  if (dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
+  if (dist(monster_y, monster_x, player_pos->y, player_pos->x) < LAMPDIST)
   {
-    if (y != player_pos->y && x != player_pos->x &&
-        !step_ok(chat(y, player_pos->x)) && !step_ok(chat(player_pos->y, x)))
+    if (monster_y != player_pos->y && monster_x != player_pos->x
+        && !step_ok(chat(monster_y, player_pos->x))
+        && !step_ok(chat(player_pos->y, monster_x)))
       return false;
     return true;
   }
 
-  if (mp->t_room != player_get_room())
+  if (monster->t_room != player_get_room())
     return false;
-  return ((bool)!(mp->t_room->r_flags & ISDARK));
+  return ((bool)!(monster->t_room->r_flags & ISDARK));
 }
 
-struct room *
-roomin(coord *cp)
+struct room*
+roomin(coord* cp)
 {
-  char *fp = &flat(cp->y, cp->x);
-  struct room *rp;
+  char fp = flat(cp->y, cp->x);
+  if (fp & F_PASS)
+    return &passages[fp & F_PNUM];
 
-  if (*fp & F_PASS)
-    return &passages[*fp & F_PNUM];
-
-  for (rp = rooms; rp < &rooms[MAXROOMS]; rp++)
-    if (cp->x <= rp->r_pos.x + rp->r_max.x && rp->r_pos.x <= cp->x
-        && cp->y <= rp->r_pos.y + rp->r_max.y && rp->r_pos.y <= cp->y)
+  for (struct room* rp = rooms; rp < &rooms[MAXROOMS]; rp++)
+    if (cp->x <= rp->r_pos.x + rp->r_max.x
+        && rp->r_pos.x <= cp->x
+        && cp->y <= rp->r_pos.y + rp->r_max.y
+        && rp->r_pos.y <= cp->y)
       return rp;
 
   msg("in some bizarre place (%d, %d)", cp->y, cp->x);
@@ -576,7 +539,7 @@ roomin(coord *cp)
 }
 
 bool
-diag_ok(coord *sp, coord *ep)
+diag_ok(coord const* sp, coord const* ep)
 {
   if (ep->x < 0 || ep->x >= NUMCOLS || ep->y <= 0 || ep->y >= NUMLINES - 1)
     return false;
@@ -588,28 +551,33 @@ diag_ok(coord *sp, coord *ep)
 bool
 cansee(int y, int x)
 {
-    coord *player_pos = player_get_pos();
-    struct room *rer;
-    static coord tp;
+  coord const* player_pos = player_get_pos();
 
-    if (player_is_blind())
-	return false;
-    if (dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
-    {
-	if (flat(y, x) & F_PASS)
-	    if (y != player_pos->y && x != player_pos->x &&
-		!step_ok(chat(y, player_pos->x))
-                && !step_ok(chat(player_pos->y, x)))
-		    return false;
-	return true;
-    }
-    /*
-     * We can only see if the hero in the same room as
-     * the coordinate and the room is lit or if it is close.
-     */
-    tp.y = y;
-    tp.x = x;
-    return (bool)((rer = roomin(&tp)) == player_get_room() && !(rer->r_flags & ISDARK));
+  if (player_is_blind())
+    return false;
+
+  if (dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
+  {
+    if (flat(y, x) & F_PASS)
+      if (y != player_pos->y && x != player_pos->x &&
+          !step_ok(chat(y, player_pos->x))
+          && !step_ok(chat(player_pos->y, x)))
+        return false;
+    return true;
+  }
+
+  /* We can only see if the hero in the same room as
+   * the coordinate and the room is lit or if it is close.  */
+  coord tp =
+  {
+    .y = y,
+    .x = x
+  };
+  struct room const* rer = roomin(&tp);
+  if (rer != player_get_room())
+    return false;
+
+  return !(rer->r_flags & ISDARK);
 }
 
 int
@@ -618,29 +586,29 @@ dist(int y1, int x1, int y2, int x2)
     return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
 
-char *
+char const*
 set_mname(THING *tp)
 {
-    int ch;
-    char *mname;
-    static char tbuf[MAXSTR] = { 't', 'h', 'e', ' ' };
+  char const* mname;
+  static char tbuf[MAXSTR] = { 't', 'h', 'e', ' ' };
 
-    if (!see_monst(tp) && !player_can_sense_monsters())
-	return (terse ? "it" : "something");
-    else if (player_is_hallucinating())
-    {
-	move(tp->t_pos.y, tp->t_pos.x);
-	ch = incch();
-	if (!isupper(ch))
-	    ch = rnd(26);
-	else
-	    ch -= 'A';
-	mname = monsters[ch].m_name;
-    }
+  if (!see_monst(tp) && !player_can_sense_monsters())
+    return "something";
+
+  else if (player_is_hallucinating())
+  {
+    int ch = mvincch(tp->t_pos.y, tp->t_pos.x);
+    if (!isupper(ch))
+      ch = rnd(26);
     else
-	mname = monsters[tp->t_type - 'A'].m_name;
-    strcpy(&tbuf[4], mname);
-    return tbuf;
+      ch -= 'A';
+    mname = monsters[ch].m_name;
+  }
+  else
+    mname = monsters[tp->t_type - 'A'].m_name;
+
+  strcpy(&tbuf[4], mname);
+  return tbuf;
 }
 
 const char *

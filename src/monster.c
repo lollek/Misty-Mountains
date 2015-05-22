@@ -276,7 +276,7 @@ monster_notice_player(int y, int x)
       monster_set_found(tp);
       if (!player_save_throw(VS_MAGIC))
       {
-        char *mname = set_mname(tp);
+        char const* mname = set_mname(tp);
         addmsg("%s", mname);
         if (strcmp(mname, "it") != 0)
           addmsg("'");
@@ -358,7 +358,7 @@ monster_destination(THING *tp)
 void
 monster_on_death(THING *tp, bool pr)
 {
-  char *mname;
+  char const* mname;
 
   if (game_type == DEFAULT)
     player_earn_exp(tp->t_stats.s_exp);
