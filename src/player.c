@@ -426,12 +426,13 @@ void player_become_poisoned(void)
 void player_teleport(coord *target)
 {
   coord new_pos;
+  coord const* player_pos = player_get_pos();
 
   /* Set target location */
   if (target == NULL)
     do
       room_find_floor(NULL, &new_pos, false, true);
-    while (same_coords(new_pos, *player_get_pos()));
+    while (same_coords(&new_pos, player_pos));
   else
   {
     new_pos.y = target->y;

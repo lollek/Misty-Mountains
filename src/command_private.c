@@ -248,9 +248,9 @@ command_pick_up(void)
   if (player_is_levitating())
     msg("You can't. You're floating off the ground!");
 
-  coord const player_pos = *player_get_pos();
+  coord const* player_pos = player_get_pos();
   for (THING const* obj = lvl_obj; obj != NULL; obj = obj->l_next)
-    if (same_coords(obj->o_pos, player_pos))
+    if (same_coords(&obj->o_pos, player_pos))
     {
       pack_pick_up(obj->o_type);
       return true;

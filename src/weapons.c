@@ -136,7 +136,7 @@ do_motion(THING *obj, int ydelta, int xdelta)
   for (;;)
   {
     /* Erase the old one */
-    if (!same_coords(obj->o_pos, *player_pos) &&
+    if (!same_coords(&obj->o_pos, player_pos) &&
         cansee(obj->o_pos.y, obj->o_pos.x) && !terse)
     {
       ch = chat(obj->o_pos.y, obj->o_pos.x);

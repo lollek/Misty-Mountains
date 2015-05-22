@@ -78,7 +78,7 @@ look(bool wakeup)
   int passcount = 0;
   int sumhero = 0, diffhero = 0;
 
-  if (!same_coords(oldpos, *player_pos))
+  if (!same_coords(&oldpos, player_pos))
   {
     erase_lamp(&oldpos, oldrp);
     oldpos = *player_pos;
@@ -461,7 +461,7 @@ seen_stairs(void)
   move(stairs.y, stairs.x);
   if (incch() == STAIRS)  /* it's on the map */
     return true;
-  if (same_coords(*player_get_pos(), stairs)) /* It's under him */
+  if (same_coords(player_get_pos(), &stairs)) /* It's under him */
     return true;
 
   /* if a monster is on the stairs, this gets hairy */
@@ -518,7 +518,7 @@ set_oldch(THING *tp, coord *cp)
 {
   char sch = tp->t_oldch;
 
-  if (same_coords(tp->t_pos, *cp))
+  if (same_coords(&tp->t_pos, cp))
     return;
 
   tp->t_oldch = mvincch(cp->y, cp->x);

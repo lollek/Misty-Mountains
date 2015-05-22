@@ -104,7 +104,7 @@ move_do(char ch)
     {
       /* TODO: Remove __player_ptr() */
 	move_random(__player_ptr(), &nh);
-	if (same_coords(nh, *player_get_pos()))
+	if (same_coords(&nh, player_get_pos()))
 	{
 	    running = false;
 	    to_death = false;
@@ -132,7 +132,7 @@ over:
 	return false;
     }
 
-    if (running && same_coords(*player_get_pos(), nh))
+    if (running && same_coords(player_get_pos(), &nh))
 	after = running = false;
 
     fl = flat(nh.y, nh.x);

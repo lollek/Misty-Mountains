@@ -46,7 +46,7 @@ chase_as_confused(THING *tp, coord *ee)
   if (rnd(20) == 0)
     monster_remove_confused(tp);
 
-  return curdist != 0 && !same_coords(ch_ret, *player_get_pos());
+  return curdist != 0 && !same_coords(&ch_ret, player_get_pos());
 }
 
 
@@ -143,7 +143,7 @@ chase(THING *tp, coord *ee)
       }
     }
   }
-  return (bool)(curdist != 0 && !same_coords(ch_ret, *player_get_pos()));
+  return (bool)(curdist != 0 && !same_coords(&ch_ret, player_get_pos()));
 }
 
 
@@ -234,9 +234,9 @@ over:
      */
     if (!chase(th, &this))
     {
-	if (same_coords(this, *player_pos))
+	if (same_coords(&this, player_pos))
 	    return( fight_against_player(th) );
-	else if (same_coords(this, *th->t_dest))
+	else if (same_coords(&this, th->t_dest))
 	{
 	    for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
 		if (th->t_dest == &obj->o_pos)
@@ -261,7 +261,7 @@ over:
     if (on(*th, ISSTUCK))
       return 1;
 
-    if (!same_coords(ch_ret, th->t_pos))
+    if (!same_coords(&ch_ret, &th->t_pos))
     {
       char ch = winat(ch_ret.y, ch_ret.x);
       char fl = flat(ch_ret.y, ch_ret.x);
@@ -280,7 +280,7 @@ over:
           return -1;
 
         /* If we've been mysteriously misplaced, let's not touch anything */
-        if (!same_coords(orig_pos, th->t_pos))
+        if (!same_coords(&orig_pos, &th->t_pos))
           return 0;
       }
 
@@ -300,7 +300,7 @@ over:
       addcch(th->t_type | A_STANDOUT);
 
     /* And stop running if need be */
-    if (stoprun && same_coords(th->t_pos, *(th->t_dest)))
+    if (stoprun && same_coords(&th->t_pos, th->t_dest))
       th->t_flags &= ~ISRUN;
 
     return(0);

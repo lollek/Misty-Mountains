@@ -561,7 +561,7 @@ fire_bolt(coord *start, coord *dir, char *name)
 		 * and he fires at the wall the door is in, it would
 		 * otherwise loop infinitely
 		 */
-		if (same_coords(*player_get_pos(), pos))
+		if (same_coords(player_get_pos(), &pos))
 		    goto def;
 		/* FALLTHROUGH */
 	    case VWALL: case HWALL: case SHADOW:
@@ -599,7 +599,7 @@ def:
 			    msg("the %s whizzes past %s", name, set_mname(tp));
 		    }
 		}
-		else if (hit_hero && same_coords(pos, *player_get_pos()))
+		else if (hit_hero && same_coords(&pos, player_get_pos()))
 		{
 		    hit_hero = false;
 		    changed = !changed;
