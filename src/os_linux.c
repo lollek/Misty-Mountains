@@ -7,10 +7,10 @@
 #include "things.h"
 #include "io.h"
 
-THING *
+THING*
 allocate_new_item(void)
 {
-  THING *item = calloc(1, sizeof *item);
+  THING* item = calloc(1, sizeof *item);
 
   if (item == NULL)
     fatal("No virtual memory available!\n");
