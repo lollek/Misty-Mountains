@@ -5,7 +5,7 @@
 
 #include "rogue.h"
 
-void *__player_ptr(void);
+void* __player_ptr(void);
 struct stats max_stats;
 
 /* General */
@@ -13,7 +13,7 @@ void player_init(void);
 bool player_save_state(void);
 bool player_load_state(void);
 
-bool is_player(THING *thing);
+bool is_player(THING const* thing);
 int player_save_throw(int which);
 
 /* Status Effects */
@@ -60,7 +60,7 @@ void player_remove_confusing_attack(void);
 void player_fall_asleep(void);
 void player_become_stuck(void);
 void player_become_poisoned(void);
-void player_teleport(coord *target);
+void player_teleport(coord* target);
 bool player_search(void);
 
 bool player_is_stealthy(void);
@@ -68,12 +68,12 @@ bool player_is_stealthy(void);
 /* Position */
 int player_y(void);
 int player_x(void);
-coord *player_get_pos(void);
-void player_set_pos(coord *new_pos);
+coord* player_get_pos(void);
+void player_set_pos(coord* new_pos);
 
 /* Current Room */
-struct room *player_get_room(void);
-void player_set_room(struct room *new_room);
+struct room* player_get_room(void);
+void player_set_room(struct room* new_room);
 
 /* Strength */
 int player_get_strength(void);
