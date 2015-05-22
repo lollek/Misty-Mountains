@@ -4,11 +4,12 @@
 #include "coord.h"
 #include "rooms.h"
 
-#define MAXPASS		13	/* upper limit on number of passages */
+/* upper limit on number of passages */
+#define MAXPASS 13
 struct room passages[MAXPASS];
 
 void passages_add_pass(void);
 void passages_do(void);
-void passages_putpass(coord *cp);
+void passages_putpass(coord* cp);
 
 #endif /* _ROGUE14_PASSAGES_H_ */
