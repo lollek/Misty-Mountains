@@ -124,8 +124,6 @@ void monster_become_held(THING* mon)
   mon->t_flags |= ISHELD;
 }
 void monster_become_stuck(THING* mon)      { mon->t_flags |= ISSTUCK; }
-void monster_start_chasing(THING* mon)     { mon->t_flags |= ISRUN; }
-void monster_set_target(THING* mon, coord* target) { mon->t_dest = target; }
 
 
 

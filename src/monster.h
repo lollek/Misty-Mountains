@@ -46,8 +46,6 @@ void monster_set_levitating(THING* mon);
 void monster_set_true_seeing(THING* mon);
 void monster_become_stuck(THING* monster);
 void monster_become_held(THING* monster);
-void monster_start_chasing(THING* monster);
-void monster_set_target(THING* mon, coord* target);
 
 void monster_remove_blind(THING* mon);
 void monster_remove_cancelled(THING* mon);
@@ -93,9 +91,5 @@ bool monster_is_dead(THING const* monster);
 void monster_teleport(THING* monster, coord* destination);
 
 void monster_do_special_ability(THING** monster);
-
-/** monster_chase.c **/
-bool monster_chase(THING* tp); /* Make a monster chase */
-
 
 #endif /* _ROGUE14_MONSTER_H_ */

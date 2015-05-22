@@ -42,3 +42,14 @@ monster_find_new_target(THING* monster)
   monster_set_target(monster, player_get_pos());
 }
 
+void
+monster_start_chasing(THING* mon)
+{
+  mon->t_flags |= ISRUN;
+}
+
+void
+monster_set_target(THING* mon, coord* target)
+{
+  mon->t_dest = target;
+}
