@@ -44,10 +44,8 @@
 static void
 sumprobs(char ch)
 {
-  int sum = 0;
-  const char *str;
-  void *ptr;
-  int i;
+  char const* str;
+  void const* ptr;
   int max;
 
   /* Ready the pointers */
@@ -64,10 +62,11 @@ sumprobs(char ch)
   }
 
   /* Add upp percentage */
-  for (i = 0; i < max; ++i)
+  int sum = 0;
+  for (int i = 0; i < max; ++i)
   {
     if (ch == ARMOR) sum += armor_probability(i);
-    else             sum += ((struct obj_info *)ptr)[i].oi_prob;
+    else             sum += ((struct obj_info*)ptr)[i].oi_prob;
   }
 
   /* Make sure it adds up to 100 */
@@ -77,10 +76,10 @@ sumprobs(char ch)
   /* Woops, error error! */
   endwin();
   printf("\nBad percentages for %s (bound = %d): %d%%\n", str, max, sum);
-  for (i = 0; i < max; ++i)
+  for (int i = 0; i < max; ++i)
   {
     int prob;
-    const char *name;
+    char const* name;
     if (ch == ARMOR)
     {
       prob = armor_probability(i);
@@ -88,8 +87,8 @@ sumprobs(char ch)
     }
     else
     {
-      prob = ((struct obj_info *)ptr)[i].oi_prob;
-      name = ((struct obj_info *)ptr)[i].oi_name;
+      prob = ((struct obj_info*)ptr)[i].oi_prob;
+      name = ((struct obj_info*)ptr)[i].oi_name;
     }
     printf("%3d%% %s\n", prob, name);
   }
@@ -175,7 +174,7 @@ init_names(void)
   for (i = 0; i < NSCROLLS; i++)
   {
     char tmpbuf[MAXSTR*2];
-    char *cp = tmpbuf;
+    char* cp = tmpbuf;
     int nwords;
 
     for (nwords = rnd(3)+2; nwords > 0; nwords--)
@@ -220,8 +219,8 @@ init_new_game(void)
   /* Parse environment opts */
   if (whoami[0] == '\0')
   {
-    const struct passwd *pw = getpwuid(getuid());
-    const char *name = pw ? pw->pw_name : "nobody";
+    struct passwd const* pw = getpwuid(getuid());
+    char const* name = pw ? pw->pw_name : "nobody";
 
     strucpy(whoami, name, strlen(name));
   }
@@ -257,7 +256,7 @@ init_new_game(void)
 bool
 init_old_game(void)
 {
-  FILE *inf = fopen(file_name, "r");
+  FILE* inf = fopen(file_name, "r");
   char buf[MAXSTR];
 
   if (inf == NULL)
