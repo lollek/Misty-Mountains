@@ -133,7 +133,7 @@ ring_load_state(void)
 bool
 ring_put_on(void)
 {
-  THING *obj = pack_get_item("put on", RING);
+  THING* obj = pack_get_item("put on", RING);
 
   /* Make certain that it is somethings that we want to wear */
   if (obj == NULL)
@@ -176,7 +176,6 @@ bool
 ring_take_off(void)
 {
   enum equipment_pos ring;
-  THING *obj;
 
   /* Try right, then left */
   if (pack_equipped_item(EQUIPMENT_RRING) != NULL)
@@ -184,7 +183,7 @@ ring_take_off(void)
   else
     ring = EQUIPMENT_LRING;
 
-  obj = pack_equipped_item(ring);
+  THING* obj = pack_equipped_item(ring);
 
   if (!pack_unequip(ring, false))
     return false;
@@ -194,12 +193,12 @@ ring_take_off(void)
     case R_ADDSTR:
       player_modify_strength(-obj->o_arm);
       break;
+
     case R_SEEINVIS:
       player_remove_true_sight();
       daemon_extinguish_fuse(player_remove_true_sight);
       break;
   }
-
   return true;
 }
 
@@ -216,9 +215,8 @@ ring_drain_amount(void)
    -2, /* R_DIGEST */   0, /* R_TELEPORT */
     1, /* R_STEALTH */  1  /* R_SUSTARM */
   };
-  int i;
 
-  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  for (int i = 0; i < RING_SLOTS_SIZE; ++i)
   {
     THING *ring = pack_equipped_item(ring_slots[i]);
     if (ring != NULL)
@@ -231,6 +229,7 @@ ring_drain_amount(void)
       total_eat += eat;
     }
   }
+
   return total_eat;
 }
 
@@ -243,7 +242,7 @@ ring_is_known(enum ring_t ring)
 void
 ring_description(THING const* item, char* buf)
 {
-  struct obj_info *op = &ring_info[item->o_which];
+  struct obj_info* op = &ring_info[item->o_which];
   buf += sprintf(buf, "%s ring", r_stones[item->o_which]);
 
   if (op->oi_know)
