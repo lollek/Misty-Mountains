@@ -157,7 +157,7 @@ monster_random(bool wander)
     if (d > 25)
       d = rnd(5) + 21;
   }
-  while (mons[d] != 0);
+  while (mons[d] == 0);
 
   return mons[d];
 }
