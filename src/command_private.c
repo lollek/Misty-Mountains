@@ -185,7 +185,7 @@ command_identify_character(void)
   struct character_list
   {
     char ch;
-    char *description;
+    char const* description;
   } const ident_list[] = {
     {VWALL,   "wall of a room"}, {HWALL,   "wall of a room"},
     {GOLD,    "gold"},           {STAIRS,  "a staircase"},
