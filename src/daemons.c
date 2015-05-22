@@ -35,7 +35,7 @@ static int quiet_rounds = 0;
 
 static struct delayed_action daemons[MAXDAEMONS];
 
-void *__daemons_ptr(void) { return daemons; }
+void* __daemons_ptr(void) { return daemons; }
 
 /** daemon_empty_slot:
  * Find an empty slot in the daemon/fuse list */

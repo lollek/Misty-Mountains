@@ -8,7 +8,7 @@ struct delayed_action {
     int d_time;
 };
 
-void *__daemons_ptr(void);
+void* __daemons_ptr(void);
 
 /* API */
 void daemon_run_before(void);
