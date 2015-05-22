@@ -94,7 +94,7 @@ command(void)
       msg("you can move again");
     }
 
-    coord *player_pos = player_get_pos();
+    coord* player_pos = player_get_pos();
     move(player_pos->y, player_pos->x);
 
     if (!no_command)
