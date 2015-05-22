@@ -36,6 +36,7 @@
 
 int const RENAMEABLE = -1;
 
+int purse = 0;
 static THING* player_pack;
 static THING* last_picked_item;
 static THING* last_last_picked_item;

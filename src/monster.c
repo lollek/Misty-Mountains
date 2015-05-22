@@ -35,6 +35,7 @@
 #include "monster.h"
 #include "monster_private.h"
 
+int vf_hit = 0; /* Number of time flytrap has hit */
 THING* mlist = NULL;
 struct monster monsters[26] =
     {

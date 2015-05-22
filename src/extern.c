@@ -34,15 +34,6 @@ char l_last_dir = '\0';			/* Last last_dir */
 char last_comm = '\0';			/* Last command typed */
 char last_dir = '\0';			/* Last direction given */
 
-int hungry_state = 0;			/* How hungry is he */
-int mpos = 0;				/* Where cursor is on top line */
-int no_food = 0;			/* Number of levels without food */
-
-int food_left;				/* Amount of food in hero's stomach */
-int no_command = 0;			/* Number of turns asleep */
-int no_move = 0;			/* Number of turns held in place */
-int purse = 0;				/* How much gold he has */
-int vf_hit = 0;				/* Number of time flytrap has hit */
 unsigned seed;				/* Random number seed */
 
 coord oldpos;				/* Position before last look() call */

@@ -25,6 +25,12 @@ static int player_speed = 0;
 static const int player_min_strength = 3;
 static const int player_max_strength = 31;
 
+int food_left;      /* Amount of food in hero's stomach */
+int hungry_state = 0;/* How hungry is he */
+int no_food = 0;    /* Number of levels without food */
+int no_command = 0; /* Number of turns asleep */
+int no_move = 0;    /* Number of turns held in place */
+
 /* Duration of effects */
 #define HUHDURATION     spread(20)  /* Confusion */
 #define MFINDDURATION   spread(20)  /* Monster find */

@@ -86,15 +86,6 @@ extern char runch;
 extern char take;
 extern char* tr_name[];
 
-extern int food_left;
-extern int hungry_state;
-extern int level;
-extern int mpos;
-extern int no_command;
-extern int no_food;
-extern int no_move;
-extern int purse;
-extern int vf_hit;
 extern int wizard;
 
 extern unsigned seed;

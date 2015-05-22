@@ -21,6 +21,7 @@ enum equipment_pos
 /* Variables. TODO: Move these */
 #define RING_SLOTS_SIZE 2
 enum equipment_pos ring_slots[RING_SLOTS_SIZE];
+int purse;
 
 bool pack_save_state(void);
 bool pack_load_state(void);

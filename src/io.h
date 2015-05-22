@@ -33,8 +33,9 @@
 #define RING		'='
 #define STICK		'/'
 
-/* used as a scratch window */
-WINDOW *hw;
+/* Variables, TODO: Remove these */
+WINDOW* hw;/* used as a scratch window */
+int mpos;
 
 void fatal(char const* msg, ...); /* Kill program with an error message */
 

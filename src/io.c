@@ -18,9 +18,12 @@
 #include "command.h"
 #include "rogue.h"
 #include "options.h"
+#include "level.h"
+#include "pack.h"
 
 #include "io.h"
 
+int mpos = 0;				/* Where cursor is on top line */
 WINDOW* hw = NULL;
 
 #define MAXMSG	(NUMCOLS - sizeof " --More--")
