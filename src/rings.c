@@ -25,34 +25,38 @@
 
 #include "rings.h"
 
+
 static char const* r_stones[NRINGS];
-static STONE stones[] = {
-    { "agate",		 25},
-    { "alexandrite",	 40},
-    { "amethyst",	 50},
-    { "carnelian",	 40},
-    { "diamond",	300},
-    { "emerald",	300},
-    { "germanium",	225},
-    { "granite",	  5},
-    { "garnet",		 50},
-    { "jade",		150},
-    { "kryptonite",	300},
-    { "lapis lazuli",	 50},
-    { "moonstone",	 50},
-    { "obsidian",	 15},
-    { "onyx",		 60},
-    { "opal",		200},
-    { "pearl",		220},
-    { "peridot",	 63},
-    { "ruby",		350},
-    { "sapphire",	285},
-    { "stibotantalite",	200},
-    { "tiger eye",	 50},
-    { "topaz",		 60},
-    { "turquoise",	 70},
-    { "taaffeite",	300},
-    { "zircon",	 	 80},
+static struct stone {
+    char* st_name;
+    int st_value;
+} stones[] = {
+  { "agate",		 25},
+  { "alexandrite",	 40},
+  { "amethyst",	 50},
+  { "carnelian",	 40},
+  { "diamond",	300},
+  { "emerald",	300},
+  { "germanium",	225},
+  { "granite",	  5},
+  { "garnet",		 50},
+  { "jade",		150},
+  { "kryptonite",	300},
+  { "lapis lazuli",	 50},
+  { "moonstone",	 50},
+  { "obsidian",	 15},
+  { "onyx",		 60},
+  { "opal",		200},
+  { "pearl",		220},
+  { "peridot",	 63},
+  { "ruby",		350},
+  { "sapphire",	285},
+  { "stibotantalite",	200},
+  { "tiger eye",	 50},
+  { "topaz",		 60},
+  { "turquoise",	 70},
+  { "taaffeite",	300},
+  { "zircon",	 	 80},
 };
 static int NSTONES = (sizeof(stones) / sizeof(*stones));
 

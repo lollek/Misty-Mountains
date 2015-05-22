@@ -67,9 +67,7 @@ extern enum rogue_game_t
 #define VS_MAGIC	03
 
 
-/*
- * External variables
- */
+/* External variables */
 
 extern bool after;
 extern bool again;
@@ -108,11 +106,5 @@ extern int wizard;
 extern unsigned seed;
 
 extern coord oldpos;
-
-typedef struct {
-    char* st_name;
-    int st_value;
-} STONE;
-
 
 #endif /* _ROGUE14_ROGUE_H_ */
