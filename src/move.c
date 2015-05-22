@@ -267,17 +267,14 @@ hit_bound:
 /** move_random:
  * Move in a random direction if the monster/person is confused */
 void
-move_random(THING *who, coord *ret)
+move_random(THING* who, coord* ret)
 {
-  THING *obj;
-  int x = ret->x = who->t_pos.x + rnd(3) - 1;
-  int y = ret->y = who->t_pos.y + rnd(3) - 1;
-  char ch;
-
   assert(who != NULL);
 
   /* Now check to see if that's a legal move.
    * If not, don't move.(I.e., bump into the wall or whatever) */
+  int x = ret->x = who->t_pos.x + rnd(3) - 1;
+  int y = ret->y = who->t_pos.y + rnd(3) - 1;
   if (y == who->t_pos.y && x == who->t_pos.x)
     return;
 
@@ -288,7 +285,7 @@ move_random(THING *who, coord *ret)
     return;
   }
 
-  ch = winat(y, x);
+  char ch = winat(y, x);
   if (!step_ok(ch))
   {
     ret->x = who->t_pos.x;
@@ -298,6 +295,7 @@ move_random(THING *who, coord *ret)
 
   if (ch == SCROLL)
   {
+    THING* obj;
     for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
       if (y == obj->o_pos.y && x == obj->o_pos.x)
         break;

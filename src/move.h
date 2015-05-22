@@ -3,7 +3,7 @@
 
 #include "rogue.h"
 
-void move_random(THING *who, coord *ret);
+void move_random(THING* who, coord* ret);
 
 /* Check to see that a move is legal.  If it is handle the 
  * consequences (fighting, picking up, etc.) */
