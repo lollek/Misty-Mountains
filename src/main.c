@@ -37,11 +37,11 @@ enum game_mode_t
  * Parse command-line arguments
  */
 static enum game_mode_t
-parse_args(int argc, char * const *argv)
+parse_args(int argc, char* const* argv)
 {
   enum game_mode_t game_mode = NEW_GAME;
   int option_index = 0;
-  struct option long_options[] = {
+  struct option const long_options[] = {
     {"no-colors", no_argument,       0, 'c'},
     {"escdelay",  optional_argument, 0, 'E'},
     {"flush",     no_argument,       0, 'f'},
@@ -152,7 +152,7 @@ parse_args(int argc, char * const *argv)
 /** main:
  * The main program, of course */
 int
-main(int argc, char **argv)
+main(int argc, char** argv)
 {
   bool retval = false;
 
