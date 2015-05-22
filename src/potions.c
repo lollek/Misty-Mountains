@@ -207,17 +207,8 @@ potion_quaff_something(void)
       break;
 
     case P_RAISE:
-      if (game_type == DEFAULT)
-      {
-        potion_learn(obj->o_which);
-        player_raise_level();
-      }
-      else if (game_type == QUICK)
-      {
-        level++;
-        level_new();
-        msg("you fell through the floor!");
-      }
+      potion_learn(obj->o_which);
+      player_raise_level();
       break;
 
     case P_XHEAL:

@@ -54,7 +54,6 @@ parse_args(int argc, char* const* argv)
     {"score",     no_argument,       0, 's'},
     {"seed",      required_argument, 0, 'S'},
     {"terse",     no_argument,       0, 't'},
-    {"quick",     no_argument,       0, 'Q'},
     {"wizard",    no_argument,       0, 'W'},
     {"help",      no_argument,       0, '0'},
     {"version",   no_argument,       0, '1'},
@@ -69,7 +68,6 @@ parse_args(int argc, char* const* argv)
   see_floor = true;             /* Show the lamp-illuminated floor */
   passgo = false;               /* Follow the turnings in passageways */
   use_colors = true;            /* Use ncurses colors */
-  game_type = DEFAULT;          /* Play a normal game or rogue */
 
   /* Default file name for save file */
   strcpy(file_name, get_homedir());
@@ -80,7 +78,7 @@ parse_args(int argc, char* const* argv)
 
   for (;;)
   {
-    int c = getopt_long(argc, argv, "cE::fFjn:prsS:tTQW",
+    int c = getopt_long(argc, argv, "cE::fFjn:prsS:tW",
                         long_options, &option_index);
     if (c == -1)
       break;
@@ -101,7 +99,6 @@ parse_args(int argc, char* const* argv)
                 exit(0);
       case 'S': seed = atoi(optarg); break;
       case 't': terse = true; break;
-      case 'Q': game_type = QUICK; break;
       case 'W': wizard = true; break;
       case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
@@ -120,8 +117,6 @@ parse_args(int argc, char* const* argv)
                "  -s, --score          display the highscore and exit\n"
                "  -S, --seed=NUMBER    set map seed to NUMBER\n"
                "  -t, --terse          terse output\n"
-               "  -Q, --quick          Change some rules to make the game take\n"
-               "                       less time to play\n"
                ); printf(
                "  -W, --wizard         run the game in debug-mode\n"
                "      --help           display this help and exit\n"

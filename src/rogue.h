@@ -36,12 +36,6 @@
 #define PACKSIZE 22 /* How many items we can have in our pack */
 #define STATLINE (NUMLINES - 1)
 
-extern enum rogue_game_t
-{
-  DEFAULT,
-  QUICK
-} game_type;
-
 /* All the fun defines */
 #define winat(y,x)	(moat(y,x) != NULL ? moat(y,x)->t_disguise : chat(y,x))
 #define max(a,b)	((a) > (b) ? (a) : (b))

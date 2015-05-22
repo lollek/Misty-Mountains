@@ -213,9 +213,6 @@ level_new(void)
     player_add_sense_monsters(true);
   if (player_is_hallucinating())
     daemon_change_visuals();
-
-  if (game_type == QUICK && level > 1 && level <= 20)
-    player_raise_level();
 }
 
 bool

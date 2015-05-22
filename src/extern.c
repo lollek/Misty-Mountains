@@ -12,8 +12,6 @@
 
 #include "rogue.h"
 
-enum rogue_game_t game_type;            /* Which variant to play */
-
 bool after = false;			/* True if we want after daemons */
 bool again = false;			/* Repeating the last command */
 bool door_stop = false;			/* Stop running when we pass a door */

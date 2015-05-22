@@ -651,8 +651,7 @@ player_raise_level(void)
 
   player.t_stats.s_exp = next_level;
   player_check_for_level_up();
-  if (game_type != QUICK)
-    msg("you suddenly feel much more skillful");
+  msg("you suddenly feel much more skillful");
 }
 
 void

@@ -330,8 +330,7 @@ monster_start_running(coord* runner)
 void
 monster_on_death(THING* monster, bool pr)
 {
-  if (game_type == DEFAULT)
-    player_earn_exp(monster->t_stats.s_exp);
+  player_earn_exp(monster->t_stats.s_exp);
 
   switch (monster->t_type)
   {
