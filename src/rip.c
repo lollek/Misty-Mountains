@@ -33,7 +33,7 @@
 
 #include "rip.h"
 
-static char *rip[] = {
+static char* rip[] = {
 "                       __________\n",
 "                      /          \\\n",
 "                     /    REST    \\\n",
@@ -53,7 +53,7 @@ static char *rip[] = {
 /** center:
  * Return the index to center the given string */
 static int
-center(const char *str)
+center(char const* str)
 {
   return 28 - (((int)strlen(str) + 1) / 2);
 }
@@ -64,8 +64,6 @@ center(const char *str)
 static char *
 killname(char buf[], char monst, bool doart)
 {
-  char const* sp;
-  bool article;
   static struct h_list nlist[] = {
     {'a',	"arrow",		true},
     {'b',	"bolt",			true},
@@ -75,17 +73,16 @@ killname(char buf[], char monst, bool doart)
     {'\0'}
   };
 
+  char const* sp;
+  bool article = true;
   if (isupper(monst))
-  {
     sp = monsters[monst-'A'].m_name;
-    article = true;
-  }
+
   else
   {
-    struct h_list *hp;
     sp = "Wally the Wonder Badger";
     article = false;
-    for (hp = nlist; hp->h_ch; hp++)
+    for (struct h_list* hp = nlist; hp->h_ch; hp++)
       if (hp->h_ch == monst)
       {
         sp = hp->h_desc;
@@ -102,129 +99,132 @@ killname(char buf[], char monst, bool doart)
   return buf;
 }
 
+static bool
+score_insert(SCORE* top_ten, SCORE* endp, int amount, int flags, char monst)
+{
+  unsigned uid = getuid();
+  SCORE* ptr;
+  for (ptr = top_ten; ptr < endp; ptr++)
+    if (amount > ptr->sc_score)
+      break;
+
+  if (ptr == endp)
+    return false;
+
+  SCORE* sc2 = endp - 1;
+  while (sc2 > ptr)
+  {
+    *sc2 = sc2[-1];
+    sc2--;
+  }
+
+  ptr->sc_score = amount;
+  strncpy(ptr->sc_name, whoami, MAXSTR);
+  ptr->sc_flags = flags;
+  ptr->sc_level = flags == 2
+    ? max_level
+    : level;
+  ptr->sc_monster = monst;
+  ptr->sc_uid = uid;
+  sc2 = ptr;
+
+  return true;
+}
+
 void
 score(int amount, int flags, char monst)
 {
-    SCORE *scp;
-    int i;
-    SCORE *sc2;
-    SCORE *top_ten, *endp;
-    int prflags = 0;
-    unsigned int uid;
-    char buf[2*MAXSTR];
-    static char *reason[] = {
-	"killed",
-	"quit",
-	"A total winner",
-	"killed with Amulet"
-    };
+  int prflags = 0;
+  char buf[2*MAXSTR];
+  char *reason[] = { "killed", "quit", "A total winner", "killed with Amulet" };
 
- if (flags >= 0 || wizard)
+  if (flags >= 0 || wizard)
+  {
+    mvaddstr(LINES - 1, 0 , "[Press return to continue]");
+    refresh();
+    wgetnstr(stdscr,buf,80);
+    endwin();
+    printf("\n");
+
+    /* free up space to "guarantee" there is space for the top_ten */
+    delwin(stdscr);
+    delwin(curscr);
+    if (hw != NULL)
+      delwin(hw);
+  }
+
+  SCORE* top_ten = malloc(NUMSCORES * sizeof (SCORE));
+  SCORE* endp = &top_ten[NUMSCORES];
+  for (SCORE* ptr = top_ten; ptr < endp; ptr++)
+  {
+    ptr->sc_score = 0;
+    for (int i = 0; i < MAXSTR; i++)
+      ptr->sc_name[i] = (unsigned char) rnd(255);
+    ptr->sc_flags = rand_r(&seed);
+    ptr->sc_level = rand_r(&seed);
+    ptr->sc_monster = rand_r(&seed);
+    ptr->sc_uid = rand_r(&seed);
+  }
+
+  signal(SIGINT, SIG_DFL);
+
+  if (wizard && !strcmp(buf, "edit"))
+    prflags = 2;
+
+  score_read(top_ten);
+
+  /* Insert her in list if need be */
+  bool in_highscore = false;
+  if (!wizard)
+    in_highscore = score_insert(top_ten, endp, amount, flags, monst);
+
+  /* Print the list */
+  if (flags != -1)
+    putchar('\n');
+
+  printf("Top %s %s:\n", NUMNAME, "Scores");
+  printf("   Score Name\n");
+  for (SCORE* ptr = top_ten; ptr < endp; ptr++)
+  {
+    if (!ptr->sc_score)
+      break;
+
+    printf("%2d %5d %s: %s on level %d"
+           ,ptr - top_ten + 1       /* Position */
+           ,ptr->sc_score           /* Score */
+           ,ptr->sc_name            /* Name */
+           ,reason[ptr->sc_flags]   /* Cause of death */
+           ,ptr->sc_level);         /* Death level */
+
+    if (ptr->sc_flags == 0 || ptr->sc_flags == 3)
+      printf(" by %s", killname(buf, (char) ptr->sc_monster, true));
+
+    if (prflags == 2)
     {
-	mvaddstr(LINES - 1, 0 , "[Press return to continue]");
-        refresh();
-        wgetnstr(stdscr,buf,80);
- 	endwin();
-        printf("\n");
-
-	/* free up space to "guarantee" there is space for the top_ten */
-	delwin(stdscr);
-	delwin(curscr);
-	if (hw != NULL)
-	    delwin(hw);
+      fflush(stdout);
+      (void) fgets(buf,10,stdin);
+      if (buf[0] == 'd')
+      {
+        SCORE* sc2;
+        for (sc2 = ptr; sc2 < endp - 1; sc2++)
+          *sc2 = *(sc2 + 1);
+        sc2 = endp - 1;
+        sc2->sc_score = 0;
+        for (int i = 0; i < MAXSTR; i++)
+          sc2->sc_name[i] = (char) rnd(255);
+        sc2->sc_flags = rand_r(&seed);
+        sc2->sc_level = rand_r(&seed);
+        sc2->sc_monster = rand_r(&seed);
+        ptr--;
+      }
     }
+    else
+      printf(".");
+    putchar('\n');
+  }
 
-    top_ten = (SCORE *) malloc(NUMSCORES * sizeof (SCORE));
-    endp = &top_ten[NUMSCORES];
-    for (scp = top_ten; scp < endp; scp++)
-    {
-	scp->sc_score = 0;
-	for (i = 0; i < MAXSTR; i++)
-	    scp->sc_name[i] = (unsigned char) rnd(255);
-	scp->sc_flags = rand_r(&seed);
-	scp->sc_level = rand_r(&seed);
-	scp->sc_monster = rand_r(&seed);
-	scp->sc_uid = rand_r(&seed);
-    }
-
-    signal(SIGINT, SIG_DFL);
-
-    if (wizard && !strcmp(buf, "edit"))
-      prflags = 2;
-
-    score_read(top_ten);
-
-    /* Insert her in list if need be */
-    sc2 = NULL;
-    if (!wizard)
-    {
-	uid = getuid();
-	for (scp = top_ten; scp < endp; scp++)
-	    if (amount > scp->sc_score)
-		break;
-	if (scp < endp)
-	{
-	    sc2 = endp - 1;
-	    while (sc2 > scp)
-	    {
-		*sc2 = sc2[-1];
-		sc2--;
-	    }
-	    scp->sc_score = amount;
-	    strncpy(scp->sc_name, whoami, MAXSTR);
-	    scp->sc_flags = flags;
-	    if (flags == 2)
-		scp->sc_level = max_level;
-	    else
-		scp->sc_level = level;
-	    scp->sc_monster = monst;
-	    scp->sc_uid = uid;
-	    sc2 = scp;
-	}
-    }
-
-    /* Print the list */
-    if (flags != -1)
-	putchar('\n');
-    printf("Top %s %s:\n", NUMNAME, "Scores");
-    printf("   Score Name\n");
-    for (scp = top_ten; scp < endp; scp++)
-    {
-	if (scp->sc_score) {
-	    printf("%2d %5d %s: %s on level %d",
-                (int) (scp - top_ten + 1), scp->sc_score, scp->sc_name,
-                reason[scp->sc_flags], scp->sc_level);
-	    if (scp->sc_flags == 0 || scp->sc_flags == 3)
-		printf(" by %s", killname(buf, (char) scp->sc_monster, true));
-	    if (prflags == 2)
-	    {
-		fflush(stdout);
-		(void) fgets(buf,10,stdin);
-		if (buf[0] == 'd')
-		{
-		    for (sc2 = scp; sc2 < endp - 1; sc2++)
-			*sc2 = *(sc2 + 1);
-		    sc2 = endp - 1;
-		    sc2->sc_score = 0;
-		    for (i = 0; i < MAXSTR; i++)
-			sc2->sc_name[i] = (char) rnd(255);
-		    sc2->sc_flags = rand_r(&seed);
-		    sc2->sc_level = rand_r(&seed);
-		    sc2->sc_monster = rand_r(&seed);
-		    scp--;
-		}
-	    }
-	    else
-                printf(".");
-            putchar('\n');
-	}
-	else
-	    break;
-    }
-    /*
-     * Update the list file
-     */
-    if (sc2 != NULL)
+    /** Update the list file */
+    if (in_highscore)
       score_write(top_ten);
 }
 
