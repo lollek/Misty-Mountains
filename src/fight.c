@@ -29,6 +29,7 @@
 #include "weapons.h"
 #include "things.h"
 #include "rip.h"
+#include "options.h"
 #include "rogue.h"
 
 #include "fight.h"

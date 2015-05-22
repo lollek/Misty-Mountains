@@ -17,6 +17,7 @@
 #include "player.h"
 #include "command.h"
 #include "rogue.h"
+#include "options.h"
 
 #include "io.h"
 

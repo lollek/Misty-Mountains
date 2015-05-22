@@ -26,6 +26,7 @@
 #include "things.h"
 #include "os.h"
 #include "state.h"
+#include "options.h"
 #include "rogue.h"
 
 #include "scrolls.h"

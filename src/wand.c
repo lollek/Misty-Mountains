@@ -29,6 +29,7 @@
 #include "things.h"
 #include "rip.h"
 #include "os.h"
+#include "options.h"
 #include "rogue.h"
 
 #include "wand.h"

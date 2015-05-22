@@ -20,6 +20,7 @@
 #include "weapons.h"
 #include "things.h"
 #include "state.h"
+#include "options.h"
 #include "rogue.h"
 
 #include "rings.h"

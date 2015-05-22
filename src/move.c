@@ -26,6 +26,7 @@
 #include "misc.h"
 #include "level.h"
 #include "player.h"
+#include "options.h"
 #include "rogue.h"
 
 /** move_turn_ok:

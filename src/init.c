@@ -35,6 +35,7 @@
 #include "wand.h"
 #include "state.h"
 #include "things.h"
+#include "options.h"
 #include "rogue.h"
 
 #include "init.h"

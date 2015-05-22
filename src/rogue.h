@@ -66,13 +66,6 @@ extern enum rogue_game_t
 #define VS_BREATH	02
 #define VS_MAGIC	03
 
-/* Game Options - These are set in main.c */
-bool terse;       /* Terse output */
-bool fight_flush; /* Flush typeahead during battle */
-bool jump;        /* Show running as a series of jumps */
-bool see_floor;   /* Show the lamp-illuminated floor */
-bool passgo;      /* Follow the turnings in passageways */
-bool use_colors;  /* Use ncurses colors */
 
 /*
  * External variables

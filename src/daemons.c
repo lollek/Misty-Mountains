@@ -23,6 +23,7 @@
 #include "list.h"
 #include "rip.h"
 #include "level.h"
+#include "options.h"
 #include "rogue.h"
 
 #include "daemons.h"

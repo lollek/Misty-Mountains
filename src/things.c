@@ -29,6 +29,7 @@
 #include "weapons.h"
 #include "wand.h"
 #include "os.h"
+#include "options.h"
 #include "rogue.h"
 
 #include "things.h"

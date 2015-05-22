@@ -29,6 +29,7 @@
 #include "os.h"
 #include "rooms.h"
 #include "state.h"
+#include "options.h"
 #include "rogue.h"
 
 #include "pack.h"
