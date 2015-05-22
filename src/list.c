@@ -21,7 +21,7 @@
 
 #ifndef NDEBUG
 void
-_assert_attached(THING *list, THING *item)
+_assert_attached(THING const* list, THING const* item)
 {
   assert(list != NULL);
 
@@ -33,7 +33,7 @@ _assert_attached(THING *list, THING *item)
 #endif
 
 void
-list_detach(THING **list, THING *item)
+list_detach(THING** list, THING* item)
 {
   assert(list != NULL);
   assert(*list != NULL);
@@ -53,7 +53,7 @@ list_detach(THING **list, THING *item)
 }
 
 void
-list_attach(THING **list, THING *item)
+list_attach(THING** list, THING* item)
 {
   assert(list != NULL);
   assert(item != NULL);
@@ -75,11 +75,10 @@ list_attach(THING **list, THING *item)
 int8_t
 list_find(THING const* list, THING const* thing)
 {
-  THING const* ptr;
-  int8_t i;
-
   assert(thing != NULL);
 
+  THING const* ptr;
+  int8_t i;
   for (ptr = list, i = 0; ptr != NULL; ptr = ptr->l_next, ++i)
   {
     assert(i >= 0);
@@ -90,15 +89,13 @@ list_find(THING const* list, THING const* thing)
   return -1;
 }
 
-THING *
-list_element(THING *list, int8_t i)
+THING const*
+list_element(THING const* list, int8_t i)
 {
-  THING *ptr;
-
   if (i < 0)
     return NULL;
 
-  for (ptr = list; ptr != NULL; ptr = ptr->l_next)
+  for (THING const* ptr = list; ptr != NULL; ptr = ptr->l_next)
     if (i-- == 0)
       return ptr;
 
@@ -106,20 +103,20 @@ list_element(THING *list, int8_t i)
 }
 
 void
-list_free_all(THING **ptr)
+list_free_all(THING** ptr)
 {
   assert (ptr != NULL);
 
   while (*ptr != NULL)
   {
-    THING *item = *ptr;
+    THING* item = *ptr;
     *ptr = item->l_next;
     _discard(&item);
   }
 }
 
 void
-_discard(THING **item)
+_discard(THING** item)
 {
   assert (item != NULL);
 
