@@ -320,14 +320,14 @@ daemon_runners_move(void)
 
     if (!monster_is_held(tp) && monster_is_chasing(tp))
     {
-      bool wastarget = on(*tp, ISTARGET);
+      bool wastarget = monster_is_players_target(tp);
       coord orig_pos = tp->t_pos;
       if (!monster_chase(tp))
         continue;
 
       assert_attached(mlist, tp);
 
-      if (on(*tp, ISFLY) && dist_cp(player_get_pos(), &tp->t_pos) >= 3)
+      if (monster_is_flying(tp) && dist_cp(player_get_pos(), &tp->t_pos) >= 3)
         monster_chase(tp);
 
       assert_attached(mlist, tp);

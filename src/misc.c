@@ -431,7 +431,7 @@ seen_stairs(void)
   /* if a monster is on the stairs, this gets hairy */
   if (tp != NULL)
   {
-    if (see_monst(tp) && on(*tp, ISRUN)) /* if it's visible and awake */
+    if (see_monst(tp) && monster_is_chasing(tp)) /* if it's visible and awake */
       return true;                       /* it must have moved there */
 
     if (player_can_sense_monsters()      /* if she can detect monster */

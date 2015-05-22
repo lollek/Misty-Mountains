@@ -122,7 +122,7 @@ hold_monsters(void)
         if (y >= 0 && y <= NUMLINES - 1)
         {
           monster = moat(y, x);
-          if (monster != NULL && on(*monster, ISRUN))
+          if (monster != NULL && monster_is_chasing(monster))
           {
             monster_become_held(monster);
             monsters_affected++;

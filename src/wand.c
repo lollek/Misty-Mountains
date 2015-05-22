@@ -459,7 +459,7 @@ wand_zap(void)
         tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
         {
-          if (on(*tp, ISSLOW))
+          if (monster_is_slow(tp))
             tp->t_flags &= ~ISSLOW;
           else
             tp->t_flags |= ISHASTE;
@@ -477,7 +477,7 @@ wand_zap(void)
         tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
         {
-          if (on(*tp, ISHASTE))
+          if (monster_is_hasted(tp))
             tp->t_flags &= ~ISHASTE;
           else
             tp->t_flags |= ISSLOW;

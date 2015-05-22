@@ -148,7 +148,7 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
 
   /* If attacked creature is not running (asleep or held)
    * the attacker gets a bonus to hit */
-  if (!on(*defender, ISRUN))
+  if (!monster_is_chasing(defender))
     mod.to_hit += 4;
 
   assert(mod.damage != NULL);
@@ -289,7 +289,7 @@ fight_against_player(THING* mp)
   daemon_reset_doctor();
 
   /* If we're fighting something to death and get backstabbed, return command */
-  if (to_death && !on(*mp, ISTARGET))
+  if (to_death && !monster_is_players_target(mp))
   {
     to_death = false;
     kamikaze = false;

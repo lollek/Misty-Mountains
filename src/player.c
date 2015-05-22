@@ -295,14 +295,13 @@ void player_remove_hallucinating(void)
   /* undo the monsters */
   for (THING* tp = mlist; tp != NULL; tp = tp->l_next)
   {
-    move(tp->t_pos.y, tp->t_pos.x);
     if (cansee(tp->t_pos.y, tp->t_pos.x))
       if (!monster_is_invisible(tp) || player_has_true_sight())
-        addcch(tp->t_disguise);
+        mvaddcch(tp->t_pos.y, tp->t_pos.x, tp->t_disguise);
       else
-        addcch(chat(tp->t_pos.y, tp->t_pos.x));
-    else if (on(player, SEEMONST))
-      addcch(tp->t_type | A_STANDOUT);
+        mvaddcch(tp->t_pos.y, tp->t_pos.x, chat(tp->t_pos.y, tp->t_pos.x));
+    else if (player_can_sense_monsters())
+      mvaddcch(tp->t_pos.y, tp->t_pos.x, tp->t_type | A_STANDOUT);
   }
   msg("Everything feel your senses returning to normal");
 }

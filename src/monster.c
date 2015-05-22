@@ -100,6 +100,10 @@ bool monster_is_stuck(THING const* mon)         { return mon->t_flags & ISSTUCK;
 bool monster_is_chasing(THING const* mon)       { return mon->t_flags & ISRUN; }
 bool monster_is_mean(THING const* mon)          { return mon->t_flags & ISMEAN; }
 bool monster_is_greedy(THING const* mon)        { return mon->t_flags & ISGREED; }
+bool monster_is_players_target(THING const* mon){ return mon->t_flags & ISTARGET;}
+bool monster_is_slow(THING const* mon)          { return mon->t_flags & ISSLOW; }
+bool monster_is_hasted(THING const* mon)        { return mon->t_flags & ISHASTE; }
+bool monster_is_flying(THING const* mon)        { return mon->t_flags & ISFLY; }
 
 void monster_set_blind(THING* mon)        { mon->t_flags |= ISBLIND; }
 void monster_set_cancelled(THING* mon)    { mon->t_flags |= ISCANC; }
@@ -380,7 +384,7 @@ monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
   mvaddcch(mp->y, mp->x, tp->t_oldch);
   list_detach(&mlist, tp);
 
-  if (on(*tp, ISTARGET))
+  if (monster_is_players_target(tp))
   {
     kamikaze = false;
     to_death = false;

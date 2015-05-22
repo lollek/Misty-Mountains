@@ -33,6 +33,10 @@ bool monster_is_stuck(THING const* mon);
 bool monster_is_chasing(THING const* mon);
 bool monster_is_mean(THING const* mon);
 bool monster_is_greedy(THING const* mon);
+bool monster_is_players_target(THING const* mon);
+bool monster_is_slow(THING const* mon);
+bool monster_is_hasted(THING const* mon);
+bool monster_is_flying(THING const* mon);
 
 void monster_set_blind(THING* mon);
 void monster_set_cancelled(THING* mon);

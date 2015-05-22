@@ -167,7 +167,7 @@ chase_do(THING *th)
     assert_attached(mlist, th);
     rer = th->t_room;
 
-    if (on(*th, ISGREED) && rer->r_goldval == 0)
+    if (monster_is_greedy(th) && rer->r_goldval == 0)
 	th->t_dest = player_pos;	/* If gold has been taken, run after hero */
 
     if (th->t_dest == player_pos)	/* Find room of chasee */
@@ -219,7 +219,7 @@ over:
 	    fire_bolt(&th->t_pos, &delta, "flame");
 	    command_stop(true);
 	    daemon_reset_doctor();
-	    if (to_death && !on(*th, ISTARGET))
+	    if (to_death && !monster_is_players_target(th))
 	    {
 		to_death = false;
 		kamikaze = false;
@@ -259,7 +259,7 @@ over:
 	    return(0);
     }
 
-    if (on(*th, ISSTUCK))
+    if (monster_is_stuck(th))
       return 1;
 
     if (!same_coords(&ch_ret, &th->t_pos))
@@ -312,12 +312,12 @@ monster_chase(THING *tp)
 {
   assert_attached(mlist, tp);
 
-  if (!on(*tp, ISSLOW) || tp->t_turn)
+  if (!monster_is_slow(tp) || tp->t_turn)
     if (chase_do(tp) == -1)
       return false;
 
   assert_attached(mlist, tp);
-  if (on(*tp, ISHASTE))
+  if (monster_is_hasted(tp))
     if (chase_do(tp) == -1)
       return false;
 
