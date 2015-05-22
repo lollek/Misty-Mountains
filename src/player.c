@@ -423,6 +423,13 @@ void player_become_poisoned(void)
   }
 }
 
+bool
+player_is_stealthy(void)
+{
+  return player_has_ring_with_ability(R_STEALTH)
+    || player_is_levitating();
+}
+
 void player_teleport(coord *target)
 {
   coord new_pos;

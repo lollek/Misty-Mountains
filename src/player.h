@@ -63,6 +63,8 @@ void player_become_poisoned(void);
 void player_teleport(coord *target);
 bool player_search(void);
 
+bool player_is_stealthy(void);
+
 /* Position */
 int player_y(void);
 int player_x(void);

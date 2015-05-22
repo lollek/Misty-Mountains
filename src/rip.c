@@ -64,7 +64,7 @@ center(const char *str)
 static char *
 killname(char buf[], char monst, bool doart)
 {
-  char *sp;
+  char const* sp;
   bool article;
   static struct h_list nlist[] = {
     {'a',	"arrow",		true},

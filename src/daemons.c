@@ -318,7 +318,7 @@ daemon_runners_move(void)
     /* remember this in case the monster's "next" is changed */
     next = tp->l_next;
 
-    if (!monster_is_held(tp) && monster_is_running(tp))
+    if (!monster_is_held(tp) && monster_is_chasing(tp))
     {
       bool wastarget = on(*tp, ISTARGET);
       coord orig_pos = tp->t_pos;

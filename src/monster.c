@@ -32,8 +32,9 @@
 #include "rogue.h"
 
 #include "monster.h"
+#include "monster_private.h"
 
-THING *mlist = NULL;
+THING* mlist = NULL;
 struct monster monsters[26] =
     {
 /* Name		 CARRY	FLAG    str, exp, lvl, amr, hpt, dmg,      ,maxhp */
@@ -68,7 +69,7 @@ struct monster monsters[26] =
 bool
 monsters_save_state(void)
 {
-  THING *ptr;
+  THING const* ptr;
   int length;
 
   for (ptr = mlist, length = 0; ptr != NULL; ptr = ptr->l_next)
@@ -95,15 +96,18 @@ bool monster_is_invisible(THING const* mon)     { return mon->t_flags & ISINVIS;
 bool monster_is_levitating(THING const* mon)    { return mon->t_flags & ISLEVIT; }
 bool monster_is_true_seeing(THING const* mon)   { return mon->t_flags & CANSEE; }
 bool monster_is_held(THING const* mon)          { return mon->t_flags & ISHELD; }
-bool monster_is_running(THING const* mon)       { return mon->t_flags & ISRUN; }
+bool monster_is_stuck(THING const* mon)         { return mon->t_flags & ISSTUCK; }
+bool monster_is_chasing(THING const* mon)       { return mon->t_flags & ISRUN; }
+bool monster_is_mean(THING const* mon)          { return mon->t_flags & ISMEAN; }
+bool monster_is_greedy(THING const* mon)        { return mon->t_flags & ISGREED; }
 
-void monster_set_blind(THING *mon)        { mon->t_flags |= ISBLIND; }
-void monster_set_cancelled(THING *mon)    { mon->t_flags |= ISCANC; }
-void monster_set_confused(THING *mon)     { mon->t_flags |= ISHUH; }
-void monster_set_confusing(THING *mon)    { mon->t_flags |= CANHUH; }
-void monster_set_found(THING *mon)        { mon->t_flags |= ISFOUND; }
-void monster_set_hallucinating(THING *mon){ mon->t_flags |= ISHALU; }
-void monster_set_invisible(THING *mon)
+void monster_set_blind(THING* mon)        { mon->t_flags |= ISBLIND; }
+void monster_set_cancelled(THING* mon)    { mon->t_flags |= ISCANC; }
+void monster_set_confused(THING* mon)     { mon->t_flags |= ISHUH; }
+void monster_set_confusing(THING* mon)    { mon->t_flags |= CANHUH; }
+void monster_set_found(THING* mon)        { mon->t_flags |= ISFOUND; }
+void monster_set_hallucinating(THING* mon){ mon->t_flags |= ISHALU; }
+void monster_set_invisible(THING* mon)
 {
   mon->t_flags |= ISINVIS;
   if (cansee(mon->t_pos.y, mon->t_pos.x))
@@ -112,27 +116,29 @@ void monster_set_invisible(THING *mon)
     mvaddcch(mon->t_pos.y, mon->t_pos.x, mon->t_oldch);
   }
 }
-void monster_set_levitating(THING *mon)   { mon->t_flags |= ISLEVIT; }
-void monster_set_true_seeing(THING *mon)  { mon->t_flags |= CANSEE; }
-void monster_become_held(THING *mon)
+void monster_set_levitating(THING* mon)   { mon->t_flags |= ISLEVIT; }
+void monster_set_true_seeing(THING* mon)  { mon->t_flags |= CANSEE; }
+void monster_become_held(THING* mon)
 {
   mon->t_flags &= ~ISRUN;
   mon->t_flags |= ISHELD;
 }
-void monster_become_stuck(THING *mon)      { mon->t_flags |= ISSTUCK; }
+void monster_become_stuck(THING* mon)      { mon->t_flags |= ISSTUCK; }
+void monster_start_chasing(THING* mon)     { mon->t_flags |= ISRUN; }
+void monster_set_target(THING* mon, coord* target) { mon->t_dest = target; }
 
 
 
-void monster_remove_blind(THING *mon)        { mon->t_flags &= ~ISBLIND; }
-void monster_remove_cancelled(THING *mon)    { mon->t_flags &= ~ISCANC; }
-void monster_remove_confused(THING *mon)     { mon->t_flags &= ~ISHUH; }
-void monster_remove_confusing(THING *mon)    { mon->t_flags &= ~CANHUH; }
-void monster_remove_found(THING *mon)        { mon->t_flags &= ~ISFOUND; }
-void monster_remove_hallucinating(THING *mon){ mon->t_flags &= ~ISHALU; }
-void monster_remove_invisible(THING *mon)    { mon->t_flags &= ~ISINVIS; }
-void monster_remove_levitating(THING *mon)   { mon->t_flags &= ~ISLEVIT; }
-void monster_remove_true_seeing(THING *mon)  { mon->t_flags &= ~CANSEE; }
-void monster_remove_held(THING *mon)         { mon->t_flags &= ~ISHELD; }
+void monster_remove_blind(THING* mon)        { mon->t_flags &= ~ISBLIND; }
+void monster_remove_cancelled(THING* mon)    { mon->t_flags &= ~ISCANC; }
+void monster_remove_confused(THING* mon)     { mon->t_flags &= ~ISHUH; }
+void monster_remove_confusing(THING* mon)    { mon->t_flags &= ~CANHUH; }
+void monster_remove_found(THING* mon)        { mon->t_flags &= ~ISFOUND; }
+void monster_remove_hallucinating(THING* mon){ mon->t_flags &= ~ISHALU; }
+void monster_remove_invisible(THING* mon)    { mon->t_flags &= ~ISINVIS; }
+void monster_remove_levitating(THING* mon)   { mon->t_flags &= ~ISLEVIT; }
+void monster_remove_true_seeing(THING* mon)  { mon->t_flags &= ~CANSEE; }
+void monster_remove_held(THING* mon)         { mon->t_flags &= ~ISHELD; }
 
 
 
@@ -140,42 +146,32 @@ char
 monster_random(bool wander)
 {
   /* List of monsters in rough order of vorpalness */
-  static const char lvl_mons[] =  {
-    'K', 'E', 'B', 'S', 'H', 'I', 'R', 'O', 'Z', 'L', 'C', 'Q', 'A',
-    'N', 'Y', 'F', 'T', 'W', 'P', 'X', 'U', 'M', 'V', 'G', 'J', 'D'
-  };
-  static const char wand_mons[] = {
-    'K', 'E', 'B', 'S', 'H',  0 , 'R', 'O', 'Z',  0 , 'C', 'Q', 'A',
-     0 , 'Y',  0 , 'T', 'W', 'P',  0 , 'U', 'M', 'V', 'G', 'J',  0
-  };
+  char const* lvl_mons =  "KEBSHIROZLCQANYFTWPXUMVGJD";
+  char const* wand_mons = "KEBSH0ROZ0CQA0Y0TWP0UMVGJ0";
+  char const* mons = (wander ? wand_mons : lvl_mons);
 
-  const char *mons = (wander ? wand_mons : lvl_mons);
-
-  while (true)
+  int d;
+  do
   {
-    int d = level + (rnd(10) - 6);
-
+    d = level + (rnd(10) - 6);
     if (d < 0)
       d = rnd(5);
     if (d > 25)
       d = rnd(5) + 21;
-
-    if (mons[d] != 0)
-      return mons[d];
   }
+  while (mons[d] != 0);
+
+  return mons[d];
 }
 
 /** monster_xp_worth
  * Experience to add for this monster's level/hit points */
 static int
-monster_xp_worth(THING *tp)
+monster_xp_worth(THING* tp)
 {
-  int mod;
-
-  if (tp->t_stats.s_lvl == 1)
-    mod = tp->t_stats.s_maxhp / 8;
-  else
-    mod = tp->t_stats.s_maxhp / 6;
+  int mod = tp->t_stats.s_lvl == 1
+    ? tp->t_stats.s_maxhp / 8
+    : tp->t_stats.s_maxhp / 6;
 
   if (tp->t_stats.s_lvl > 9)
     mod *= 20;
@@ -186,184 +182,155 @@ monster_xp_worth(THING *tp)
 }
 
 void
-monster_new(THING *tp, char type, coord *cp)
+monster_new(THING* monster, char type, coord* pos)
 {
-  struct monster *mp;
   int lev_add = level - AMULETLEVEL;
-
   if (lev_add < 0)
     lev_add = 0;
 
-  list_attach(&mlist, tp);
-  tp->t_type = type;
-  tp->t_disguise = type;
-  tp->t_pos = *cp;
-  move(cp->y, cp->x);
-  tp->t_oldch = incch();
-  tp->t_room = roomin(cp);
-  moat(cp->y, cp->x) = tp;
+  list_attach(&mlist, monster);
+  monster->t_type       = type;
+  monster->t_disguise   = type;
+  monster->t_pos        = *pos;
+  monster->t_oldch      = mvincch(pos->y, pos->x);
+  monster->t_room       = roomin(pos);
+  moat(pos->y, pos->x)  = monster;
 
-  mp = &monsters[tp->t_type-'A'];
-  tp->t_stats.s_lvl = mp->m_stats.s_lvl + lev_add;
-  tp->t_stats.s_maxhp = tp->t_stats.s_hpt = roll(tp->t_stats.s_lvl, 8);
-  tp->t_stats.s_arm = mp->m_stats.s_arm - lev_add;
-  strcpy(tp->t_stats.s_dmg,mp->m_stats.s_dmg);
-  tp->t_stats.s_str = mp->m_stats.s_str;
-  tp->t_stats.s_exp = mp->m_stats.s_exp + lev_add * 10 + monster_xp_worth(tp);
-  tp->t_flags = mp->m_flags;
+  struct monster const* template = &monsters[monster->t_type-'A'];
+  monster->t_stats.s_lvl   = template->m_stats.s_lvl + lev_add;
+  monster->t_stats.s_hpt   = roll(monster->t_stats.s_lvl, 8);
+  monster->t_stats.s_maxhp = monster->t_stats.s_hpt;
+  monster->t_stats.s_arm   = template->m_stats.s_arm - lev_add;
+  monster->t_stats.s_str   = template->m_stats.s_str;
+  monster->t_stats.s_exp   = template->m_stats.s_exp + lev_add * 10 +
+                             monster_xp_worth(monster);
+  monster->t_turn          = true;
+  monster->t_pack          = NULL;
+  strcpy(monster->t_stats.s_dmg,template->m_stats.s_dmg);
+  monster->t_flags         = template->m_flags;
 
   if (level > 29)
-    tp->t_flags |= ISHASTE;
-
-  tp->t_turn = true;
-  tp->t_pack = NULL;
+    monster->t_flags |= ISHASTE;
 
   if (player_has_ring_with_ability(R_AGGR))
-    monster_start_running(cp);
+    monster_start_running(pos);
 
   if (type == 'X')
-    tp->t_disguise = rnd_thing();
+    monster->t_disguise = rnd_thing();
 }
 
 void
 monster_new_random_wanderer(void)
 {
-  THING *tp = allocate_new_item();
-  static coord cp;
+  coord monster_pos;
 
   do
-  {
-    room_find_floor((struct room *) NULL, &cp, false, true);
-  } while (roomin(&cp) == player_get_room());
+    room_find_floor((struct room *) NULL, &monster_pos, false, true);
+  while (roomin(&monster_pos) == player_get_room());
 
-  monster_new(tp, monster_random(true), &cp);
+  THING* monster = allocate_new_item();
+  monster_new(monster, monster_random(true), &monster_pos);
   if (player_can_sense_monsters())
   {
     if (player_is_hallucinating())
       addcch((rnd(26) + 'A') | A_STANDOUT);
     else
-      addcch(tp->t_type | A_STANDOUT);
+      addcch(monster->t_type | A_STANDOUT);
   }
-  monster_start_running(&tp->t_pos);
+  monster_start_running(&monster->t_pos);
 }
 
-THING *
+THING*
 monster_notice_player(int y, int x)
 {
-  coord *player_pos = player_get_pos();
-  THING *tp = moat(y, x);
-  char ch;
+  THING *monster = moat(y, x);
 
-  assert_attached(mlist, tp);
-  ch = tp->t_type;
+  assert_attached(mlist, monster);
 
-  /* Every time he sees mean monster, it might start chasing him */
-  if (!on(*tp, ISRUN) && rnd(3) != 0 && on(*tp, ISMEAN) && !on(*tp, ISHELD)
-      && !player_has_ring_with_ability(R_STEALTH) && !player_is_levitating())
+  coord* player_pos = player_get_pos();
+
+  /* Monster can begin chasing after the player if: */
+  if (!monster_is_chasing(monster)
+      && monster_is_mean(monster)
+      && !monster_is_held(monster)
+      && !player_is_stealthy()
+      && !rnd(3))
   {
-    tp->t_dest = player_pos;
-    if (!on(*tp, ISSTUCK))
-      tp->t_flags |= ISRUN;
+    monster_set_target(monster, player_pos);
+    if (!monster_is_stuck(monster))
+      monster_start_chasing(monster);
   }
 
-  if (ch == 'M' && !player_is_blind() && !player_is_hallucinating()
-      && !monster_is_found(tp) && !monster_is_cancelled(tp) && on(*tp, ISRUN))
+  /* Medusa can confuse player */
+  if (monster->t_type == 'M'
+      && !player_is_blind()
+      && !player_is_hallucinating()
+      && !monster_is_found(monster)
+      && !monster_is_cancelled(monster)
+      && monster_is_chasing(monster))
   {
-    struct room *rp = player_get_room();
+    struct room const* rp = player_get_room();
     if ((rp != NULL && !(rp->r_flags & ISDARK))
         || dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
     {
-      monster_set_found(tp);
+      monster_set_found(monster);
       if (!player_save_throw(VS_MAGIC))
       {
-        char const* mname = set_mname(tp);
-        addmsg("%s", mname);
-        if (strcmp(mname, "it") != 0)
-          addmsg("'");
-        msg("s gaze has confused you. ");
+        char const* mname = set_mname(monster);
+        msg("%s's gaze has confused you", mname);
         player_set_confused(false);
       }
     }
   }
 
   /* Let greedy ones guard gold */
-  if (on(*tp, ISGREED) && !on(*tp, ISRUN))
+  if (monster_is_greedy(monster) && !monster_is_chasing(monster))
   {
-    tp->t_flags |= ISRUN;
-    if (player_get_room()->r_goldval)
-      tp->t_dest = &player_get_room()->r_gold;
-    else
-      tp->t_dest = player_pos;
+    monster_set_target(monster, player_get_room()->r_goldval
+        ? &player_get_room()->r_gold
+        : player_pos);
+    monster_start_chasing(monster);
   }
-  return tp;
+
+  return monster;
 }
 
 void
-monster_give_pack(THING *tp)
+monster_give_pack(THING* tp)
 {
-  if (level >= max_level && rnd(100) < monsters[tp->t_type-'A'].m_carry)
+  if (level >= max_level
+      && rnd(100) < monsters[tp->t_type-'A'].m_carry)
     list_attach(&tp->t_pack, new_thing());
 }
 
 int
-monster_save_throw(int which, THING *tp)
+monster_save_throw(int which, THING const* tp)
 {
   int need = 14 + which - tp->t_stats.s_lvl / 2;
   return (roll(1, 20) >= need);
 }
 
 void
-monster_start_running(coord *runner)
+monster_start_running(coord* runner)
 {
   THING *tp = moat(runner->y, runner->x);
   assert_attached(mlist, tp);
 
-  tp->t_dest = monster_destination(tp);
-
-  if (tp->t_flags & ISSTUCK)
-    return;
-
-  /* Start the beastie running */
-  tp->t_flags |= ISRUN;
-  tp->t_flags &= ~ISHELD;
-}
-
-coord *
-monster_destination(THING *tp)
-{
-  THING *obj;
-  int prob = monsters[tp->t_type - 'A'].m_carry;
-
-  if (prob <= 0 || tp->t_room == player_get_room() || see_monst(tp))
-    return player_get_pos();
-
-  for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
+  monster_find_new_target(tp);
+  if (!monster_is_stuck(tp))
   {
-    if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
-      continue;
-
-    if (roomin(&obj->o_pos) == tp->t_room && rnd(100) < prob)
-    {
-      for (tp = mlist; tp != NULL; tp = tp->l_next)
-        if (tp->t_dest == &obj->o_pos)
-          break;
-
-      if (tp == NULL)
-        return &obj->o_pos;
-    }
+    monster_remove_held(tp);
+    monster_start_chasing(tp);
   }
-  return player_get_pos();
 }
 
 void
-monster_on_death(THING *tp, bool pr)
+monster_on_death(THING* monster, bool pr)
 {
-  char const* mname;
-
   if (game_type == DEFAULT)
-    player_earn_exp(tp->t_stats.s_exp);
+    player_earn_exp(monster->t_stats.s_exp);
 
-  switch (tp->t_type)
+  switch (monster->t_type)
   {
     /* If the monster was a venus flytrap, un-hold him */
     case 'F':
@@ -373,34 +340,22 @@ monster_on_death(THING *tp, bool pr)
 
     /* Leprechauns drop gold */
     case 'L':
+      if (fallpos(&monster->t_pos, &monster->t_room->r_gold))
       {
-        THING *gold;
-
-        if (fallpos(&tp->t_pos, &tp->t_room->r_gold) && level >= max_level)
-        {
-          gold = allocate_new_item();
-          gold->o_type = GOLD;
-          gold->o_goldval = GOLDCALC;
-          if (player_save_throw(VS_MAGIC))
-            gold->o_goldval += GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
-          list_attach(&tp->t_pack, gold);
-        }
+        THING* gold = allocate_new_item();
+        gold->o_type = GOLD;
+        gold->o_goldval = GOLDCALC;
+        if (player_save_throw(VS_MAGIC))
+          gold->o_goldval += GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
+        list_attach(&monster->t_pack, gold);
       }
   }
 
   /* Get rid of the monster. */
-  mname = set_mname(tp);
-  monster_remove_from_screen(&tp->t_pos, tp, true);
+  char const* mname = set_mname(monster);
+  monster_remove_from_screen(&monster->t_pos, monster, true);
   if (pr)
-  {
-    if (has_hit)
-    {
-      addmsg(".  Defeated ");
-      has_hit = false;
-    }
-    else
-      msg("you have slain %s", mname);
-  }
+    msg("you have slain %s", mname);
 
   /* Do adjustments if he went up a level */
   player_check_for_level_up();
@@ -409,11 +364,10 @@ monster_on_death(THING *tp, bool pr)
 }
 
 void
-monster_remove_from_screen(coord *mp, THING *tp, bool waskill)
+monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
 {
-  THING *obj, *nexti;
-
-  for (obj = tp->t_pack; obj != NULL; obj = nexti)
+  THING* nexti;
+  for (THING* obj = tp->t_pack; obj != NULL; obj = nexti)
   {
     nexti = obj->l_next;
     obj->o_pos = tp->t_pos;
@@ -440,25 +394,23 @@ monster_remove_from_screen(coord *mp, THING *tp, bool waskill)
 }
 
 bool
-monster_is_dead(THING *monster)
+monster_is_dead(THING const* monster)
 {
-  THING *ptr = mlist;
-
   if (monster == NULL)
     return true;
 
-  while (ptr != NULL && ptr != monster)
-    ptr = ptr->l_next;
+  for (THING const* ptr = mlist; ptr != NULL; ptr = ptr->l_next)
+    if (ptr == monster)
+      return false;
 
-  return ptr != monster;
+  return true;
 }
 
 void
-monster_teleport(THING *monster, coord *destination)
+monster_teleport(THING* monster, coord* destination)
 {
-  coord new_pos;
-
   /* Select destination */
+  coord new_pos;
   if (destination == NULL)
     do
       room_find_floor(NULL, &new_pos, false, true);
@@ -490,6 +442,8 @@ monster_teleport(THING *monster, coord *destination)
 void
 monster_do_special_ability(THING** monster)
 {
+  assert(*monster != NULL);
+
   if (monster_is_cancelled(*monster))
     return;
 

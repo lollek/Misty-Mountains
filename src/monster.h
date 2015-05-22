@@ -7,14 +7,14 @@
 
 /* Array containing information on all the various types of monsters */
 struct monster {
-    char *m_name;			/* What to call the monster */
+    char const* m_name;			/* What to call the monster */
     int m_carry;			/* Probability of carrying something */
     short m_flags;			/* things about the monster */
     struct stats m_stats;		/* Initial stats */
 };
 
 extern struct monster monsters[];
-THING *mlist;  /* List of monsters on the level */
+THING* mlist;  /* List of monsters on the level */
 
 bool monsters_save_state(void);
 
@@ -29,38 +29,43 @@ bool monster_is_invisible(THING const* mon);
 bool monster_is_levitating(THING const* mon);
 bool monster_is_true_seeing(THING const* mon);
 bool monster_is_held(THING const* mon);
-bool monster_is_running(THING const* mon);
+bool monster_is_stuck(THING const* mon);
+bool monster_is_chasing(THING const* mon);
+bool monster_is_mean(THING const* mon);
+bool monster_is_greedy(THING const* mon);
 
-void monster_set_blind(THING *mon);
-void monster_set_cancelled(THING *mon);
-void monster_set_confused(THING *mon);
-void monster_set_confusing(THING *mon);
-void monster_set_cursed(THING *mon);
-void monster_set_found(THING *mon);
-void monster_set_hallucinating(THING *mon);
-void monster_set_invisible(THING *mon);
-void monster_set_levitating(THING *mon);
-void monster_set_true_seeing(THING *mon);
-void monster_become_stuck(THING *monster);
-void monster_become_held(THING *monster);
+void monster_set_blind(THING* mon);
+void monster_set_cancelled(THING* mon);
+void monster_set_confused(THING* mon);
+void monster_set_confusing(THING* mon);
+void monster_set_cursed(THING* mon);
+void monster_set_found(THING* mon);
+void monster_set_hallucinating(THING* mon);
+void monster_set_invisible(THING* mon);
+void monster_set_levitating(THING* mon);
+void monster_set_true_seeing(THING* mon);
+void monster_become_stuck(THING* monster);
+void monster_become_held(THING* monster);
+void monster_start_chasing(THING* monster);
+void monster_set_target(THING* mon, coord* target);
 
-void monster_remove_blind(THING *mon);
-void monster_remove_cancelled(THING *mon);
-void monster_remove_confused(THING *mon);
-void monster_remove_confusing(THING *mon);
-void monster_remove_cursed(THING *mon);
-void monster_remove_found(THING *mon);
-void monster_remove_hallucinating(THING *mon);
-void monster_remove_invisible(THING *mon);
-void monster_remove_levitating(THING *mon);
-void monster_remove_true_seeing(THING *mon);
-void monster_remove_held(THING *mon);
+void monster_remove_blind(THING* mon);
+void monster_remove_cancelled(THING* mon);
+void monster_remove_confused(THING* mon);
+void monster_remove_confusing(THING* mon);
+void monster_remove_cursed(THING* mon);
+void monster_remove_found(THING* mon);
+void monster_remove_hallucinating(THING* mon);
+void monster_remove_invisible(THING* mon);
+void monster_remove_levitating(THING* mon);
+void monster_remove_true_seeing(THING* mon);
+void monster_remove_held(THING* mon);
 
 /* Pick a monster to show up.  The lower the level, the meaner the monster. */
 char monster_random(bool wander);
 
 /* Pick a new monster and add it to the monster list */
-void monster_new(THING *tp, char type, coord *cp);
+void monster_new(THING* tp, char type, coord* cp);
 
 /* Create a new wandering monster and aim it at the player */
 void monster_new_random_wanderer(void);
@@ -69,31 +74,28 @@ void monster_new_random_wanderer(void);
 THING *monster_notice_player(int y, int x);
 
 /* Give a pack to a monster if it deserves one */
-void monster_give_pack(THING *tp);
+void monster_give_pack(THING* tp);
 
 /* See if a creature save against something */
-int monster_save_throw(int which, THING *tp);
+int monster_save_throw(int which, THING const* tp);
 
 /* Make monster start running (towards hero?) */
-void monster_start_running(coord *runner);
-
-/* Find proper destination for monster */
-coord *monster_destination(THING *tp);
+void monster_start_running(coord* runner);
 
 /* Called to put a monster to death */
-void monster_on_death(THING *tp, bool pr);
+void monster_on_death(THING* tp, bool pr);
 
 /* Remove a monster from the screen */
-void monster_remove_from_screen(coord *mp, THING *tp, bool waskill);
+void monster_remove_from_screen(coord* mp, THING* tp, bool waskill);
 
-bool monster_is_dead(THING *monster);
+bool monster_is_dead(THING const* monster);
 
-void monster_teleport(THING *monster, coord *destination);
+void monster_teleport(THING* monster, coord* destination);
 
 void monster_do_special_ability(THING** monster);
 
 /** monster_chase.c **/
-bool monster_chase(THING *tp); /* Make a monster chase */
+bool monster_chase(THING* tp); /* Make a monster chase */
 
 
 #endif /* _ROGUE14_MONSTER_H_ */

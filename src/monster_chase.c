@@ -29,6 +29,7 @@
 #include "rogue.h"
 
 #include "monster.h"
+#include "monster_private.h"
 
 #define DRAGONSHOT  5  /* one chance in DRAGONSHOT that a dragon will flame */
 static coord ch_ret;   /* Where chasing takes you */
@@ -245,7 +246,7 @@ over:
 		    list_attach(&th->t_pack, obj);
 		    chat(obj->o_pos.y, obj->o_pos.x) =
 			(th->t_room->r_flags & ISGONE) ? PASSAGE : FLOOR;
-		    th->t_dest = monster_destination(th);
+		    monster_find_new_target(th);
 		    break;
 		}
 	    if (th->t_type != 'F')

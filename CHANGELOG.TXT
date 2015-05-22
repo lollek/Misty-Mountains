@@ -5,6 +5,7 @@ v1.2.8
   You can now stack haste (from potions)
   Some descriptions have changed
   Remove option to not show tombstone
+  Leprechauns now drop gold even when going up the stairs
 
 v1.2.7
   Made -j flag automatically set
