@@ -250,10 +250,11 @@ command_pick_up(void)
     msg("You can't. You're floating off the ground!");
 
   coord const* player_pos = player_get_pos();
-  for (THING const* obj = lvl_obj; obj != NULL; obj = obj->l_next)
+
+  for (THING* obj = lvl_obj; obj != NULL; obj = obj->l_next)
     if (same_coords(&obj->o_pos, player_pos))
     {
-      pack_pick_up(obj->o_type);
+      pack_pick_up(obj, true);
       return true;
     }
 
@@ -300,7 +301,6 @@ command_help(void)
     {'\0',	"	<CTRL><dir>: run till adjacent",	true},
     {'f',	"	fight till death or near death",	true},
     {'t',	"	throw something",			true},
-    {'m',	"	move onto without picking up",		true},
     {'z',	"	zap a wand in a direction",		true},
     {'^',	"	identify trap type",			true},
     {'s',	"	search for trap/secret door",		true},

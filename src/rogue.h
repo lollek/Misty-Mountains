@@ -27,14 +27,7 @@
 #define AMULETLEVEL  26    /* Level where we can find the amulet */
 
 /* Try not to change these */
-#define MAXSTR 1024 /* maximum length of strings */
-#define MAXINP   50 /* max string to read from terminal or environment */
-#define MAXLINES 32 /* maximum number of screen lines used */
-#define MAXCOLS  80 /* maximum number of screen columns used */
-#define NUMLINES 24
-#define NUMCOLS  80
 #define PACKSIZE 22 /* How many items we can have in our pack */
-#define STATLINE (NUMLINES - 1)
 
 /* All the fun defines */
 #define winat(y,x)	(moat(y,x) != NULL ? moat(y,x)->t_disguise : chat(y,x))
@@ -69,22 +62,17 @@ extern bool door_stop;
 extern bool firstmove;
 extern bool has_hit;
 extern bool kamikaze;
-extern bool move_on;
 extern bool running;
 extern bool to_death;
 
 extern char dir_ch;
 extern char file_name[];
-extern char huh[];
 extern char whoami[];
 extern char l_last_comm;
 extern char l_last_dir;
 extern char last_comm;
 extern char last_dir;
-extern char outbuf[];
 extern char runch;
-extern char take;
-extern char* tr_name[];
 
 extern int wizard;
 

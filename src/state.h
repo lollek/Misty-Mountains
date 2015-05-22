@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "things.h"
+
 bool state_save_string(char const* s);
 bool state_load_string(char** s);
 

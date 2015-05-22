@@ -253,12 +253,12 @@ hit_bound:
 	    else
 	    {
               coord *player_pos = player_get_pos();
-		if (ch != STAIRS)
-		    take = ch;
-		mvaddcch(player_pos->y, player_pos->x, floor_at());
-		if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
-		    room_leave(&nh);
-                player_set_pos(&nh);
+              mvaddcch(player_pos->y, player_pos->x, floor_at());
+              if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
+                room_leave(&nh);
+              player_set_pos(&nh);
+              if (ch != STAIRS)
+                pack_pick_up(find_obj(nh.y, nh.x), false);
 	    }
             break;
     }

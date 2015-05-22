@@ -84,7 +84,6 @@ command(void)
     status();
     if (!(running && jump))
       refresh();
-    take = 0;
     after = true;
 
 
@@ -106,7 +105,6 @@ command(void)
       else
       {
         ch = readchar(false);
-        move_on = false;
         if (mpos != 0)
           clearmsg();
       }
@@ -126,9 +124,6 @@ command(void)
         door_stop = false;
     }
 
-    /* If he ran into something to take, let him pick it up.  */
-    if (take != 0)
-      pack_pick_up(take);
     if (!running)
       door_stop = false;
     if (!after)
@@ -166,7 +161,6 @@ command_do(char ch)
     case 'e': return command_eat();
     case 'f': return command_attack(false);
     case 'i': return command_show_inventory();
-    case 'm': move_on = true; return get_dir() ? command_do(dir_ch) : false;
     case 'o': return option();
     case 'q': return potion_quaff_something();
     case 'r': return read_scroll();

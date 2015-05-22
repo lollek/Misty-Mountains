@@ -210,7 +210,7 @@ pack_char(void)
   return (char)((int)(bp - pack_used) + 'a');
 }
 
-static void
+void
 pack_move_msg(THING* obj)
 {
   msg("moved onto %s", inv_name(obj, true));
@@ -410,21 +410,12 @@ pack_remove(THING* obj, bool newobj, bool all)
 
 
 void
-pack_pick_up(char ch)
+pack_pick_up(THING* obj, bool force)
 {
   if (player_is_levitating())
     return;
 
-  coord* player_pos = player_get_pos();
-  THING* obj = find_obj(player_pos->y, player_pos->x);
-
-  if (move_on)
-  {
-    pack_move_msg(obj);
-    return;
-  }
-
-  switch (ch)
+  switch (obj->o_type)
   {
     case GOLD:
       if (obj != NULL)
@@ -442,7 +433,10 @@ pack_pick_up(char ch)
 
     case ARMOR: case POTION: case FOOD: case WEAPON:
     case SCROLL: case AMULET: case RING: case STICK:
-      pack_add((THING *) NULL, false);
+      if (force)
+        pack_add((THING *) NULL, false);
+      else
+        pack_move_msg(obj);
       break;
   }
 }

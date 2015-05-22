@@ -4,9 +4,11 @@ v1.2.8
   f-fighting now does the same as F-fighting
   You can now stack haste (from potions)
   Some descriptions have changed
-  Remove option to not show tombstone
+  Removed option to not show tombstone
+  Removed quick mode
   Leprechauns now drop gold even when going up the stairs
-  Remove many trippy sentences
+  Removed many trippy sentences
+  Removed autopickup when moving on top of items
 
 v1.2.7
   Made -j flag automatically set

@@ -10,7 +10,8 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
-#include "rogue.h"
+#include "io.h"
+#include "coord.h"
 
 bool after = false;			/* True if we want after daemons */
 bool again = false;			/* Repeating the last command */
@@ -18,16 +19,13 @@ bool door_stop = false;			/* Stop running when we pass a door */
 bool firstmove = false;			/* First move after setting door_stop */
 bool has_hit = false;			/* Has a "hit" message pending in msg */
 bool kamikaze = false;			/* to_death really to DEATH */
-bool move_on = false;			/* Next move shouldn't pick up items */
 bool running = false;			/* True if player is running */
 bool to_death = false;			/* Fighting is to the death! */
 int wizard = false;			/* True if allows wizard commands */
 
 char dir_ch;				/* Direction from last get_dir() call */
 char file_name[MAXSTR];			/* Save file name */
-char huh[MAXSTR] = { '\0' };		/* The last message printed */
 char runch;				/* Direction player is running */
-char take;				/* Thing she is taking */
 char whoami[MAXSTR];			/* Name of player */
 char l_last_comm = '\0';		/* Last last_comm */
 char l_last_dir = '\0';			/* Last last_dir */

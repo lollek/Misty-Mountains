@@ -1,7 +1,8 @@
 #ifndef _ROGUE14_LEVEL_H_
 #define _ROGUE14_LEVEL_H_
 
-#include "rogue.h"
+#include "io.h"
+
 
 /* TODO: Make functions of these */
 #define INDEX(y,x)	(&places[((x) << 5) + (y)])

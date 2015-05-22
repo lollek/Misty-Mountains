@@ -10,7 +10,7 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
-#include "rogue.h"
+#include "io.h"
 
 typedef struct sc_ent {
   unsigned int sc_uid;

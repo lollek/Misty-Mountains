@@ -4,6 +4,15 @@
 #include <stdbool.h>
 #include <curses.h>
 
+#define MAXSTR 1024 /* maximum length of strings */
+#define MAXINP   50 /* max string to read from terminal or environment */
+#define MAXLINES 32 /* maximum number of screen lines used */
+#define MAXCOLS  80 /* maximum number of screen columns used */
+#define NUMLINES 24
+#define NUMCOLS  80
+#define STATLINE (NUMLINES - 1)
+
+
 #undef CTRL
 #define CTRL(c) (c & 037)
 #define UNCTRL(c) (c + 'A' - CTRL('A'))
@@ -34,6 +43,7 @@
 #define STICK		'/'
 
 /* Variables, TODO: Remove these */
+char huh[MAXSTR];
 WINDOW* hw;/* used as a scratch window */
 int mpos;
 

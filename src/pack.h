@@ -34,11 +34,13 @@ THING* pack_list_element(int8_t i);
  * it off the ground. */
 bool pack_add(THING* obj, bool silent);
 
+void pack_move_msg(THING* obj); /* Message that we are standing on smt */
+
 /* take an item out of the pack */
 THING* pack_remove(THING* obj, bool newobj, bool all);
 
 /* Add something to characters pack */
-void pack_pick_up(char ch);
+void pack_pick_up(THING* obj, bool force);
 
 /* Find and return a magic item in the players inventory */
 THING* pack_find_magic_item(void);
