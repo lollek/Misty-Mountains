@@ -18,6 +18,13 @@
 #define F_PNUM		0x0f		/* passage number mask */
 #define F_TMASK		0x07		/* trap number mask */
 
+/* describe a place on the level map */
+typedef struct {
+    char p_ch;
+    char p_flags;
+    THING* p_monst;
+} PLACE;
+
 PLACE places[MAXLINES*MAXCOLS];  /* level map */
 coord stairs;   /* Location of staircase */
 THING* lvl_obj; /* List of objects on this level */

@@ -66,15 +66,6 @@ extern enum rogue_game_t
 #define VS_BREATH	02
 #define VS_MAGIC	03
 
-/*
- * describe a place on the level map
- */
-typedef struct {
-    char p_ch;
-    char p_flags;
-    THING* p_monst;
-} PLACE;
-
 /* Game Options - These are set in main.c */
 bool terse;       /* Terse output */
 bool fight_flush; /* Flush typeahead during battle */
