@@ -104,9 +104,7 @@ is_quaffable(THING *thing)
     return false;
   else if (thing->o_type != POTION)
   {
-    msg(terse
-        ? "that's undrinkable"
-        : "yuk! Why would you want to drink that?");
+    msg("that's undrinkable");
     return false;
   }
   else
@@ -124,16 +122,14 @@ potion_learn(enum potion_t potion)
 bool
 potion_quaff_something(void)
 {
-  THING *obj = pack_get_item("quaff", POTION);
-  THING *tp, *mp;
-  bool discardit = false;
+  THING* obj = pack_get_item("quaff", POTION);
 
   /* Make certain that it is somethings that we want to drink */
   if (!is_quaffable(obj))
     return false;
 
   /* Calculate the effect it has on the poor guy. */
-  discardit = (bool)(obj->o_count == 1);
+  bool discardit = (bool)(obj->o_count == 1);
   pack_remove(obj, false, false);
   switch (obj->o_which)
   {
@@ -142,25 +138,30 @@ potion_quaff_something(void)
         potion_learn(obj->o_which);
       player_set_confused(false);
       break;
+
     case P_POISON:
       potion_learn(obj->o_which);
       player_become_poisoned();
       break;
+
     case P_HEALING:
       potion_learn(obj->o_which);
       player_restore_health(roll(player_get_level(), 4), true);
       player_remove_blind();
       msg("you begin to feel better");
       break;
+
     case P_STRENGTH:
       potion_learn(obj->o_which);
       player_modify_strength(1);
       msg("you feel stronger, now.  What bulging muscles!");
       break;
+
     case P_MFIND:
       potion_learn(obj->o_which);
       player_add_sense_monsters(false);
       break;
+
     case P_TFIND:
     {
       /* Potion of magic detection.  Show the potions and scrolls */
@@ -168,46 +169,43 @@ potion_quaff_something(void)
       if (lvl_obj != NULL)
       {
         wclear(hw);
-        for (tp = lvl_obj; tp != NULL; tp = tp->l_next)
-        {
-          if (is_magic(tp))
+        for (THING* item = lvl_obj; item != NULL; item = item->l_next)
+          if (is_magic(item))
           {
             show = true;
-            wmove(hw, tp->o_pos.y, tp->o_pos.x);
-            waddcch(hw, MAGIC);
+            mvwaddcch(hw, item->o_pos.y, item->o_pos.x, MAGIC);
             potion_learn(obj->o_which);
           }
-        }
-        for (mp = mlist; mp != NULL; mp = mp->l_next)
-        {
-          for (tp = mp->t_pack; tp != NULL; tp = tp->l_next)
-          {
-            if (is_magic(tp))
+
+        for (THING* monster = mlist; monster != NULL; monster = monster->l_next)
+          for (THING* item = monster->t_pack; item != NULL; item = item->l_next)
+            if (is_magic(item))
             {
               show = true;
-              wmove(hw, mp->t_pos.y, mp->t_pos.x);
-              waddcch(hw, MAGIC);
+              mvwaddcch(hw, monster->t_pos.y, monster->t_pos.x, MAGIC);
             }
-          }
-        }
       }
+
       if (show)
       {
         potion_learn(obj->o_which);
         show_win("You sense the presence of magic on this level.--More--");
+
       }
       else
-        msg("you have a %s feeling for a moment, then it passes",
-            player_is_hallucinating() ? "normal" : "strange");
+        msg("you have a strange feeling for a moment, then it passes");
     }
     break;
+
     case P_LSD:
       potion_learn(obj->o_which);
       player_set_hallucinating(false);
       break;
+
     case P_SEEINVIS:
       player_add_true_sight(false);
       break;
+
     case P_RAISE:
       if (game_type == DEFAULT)
       {
@@ -221,6 +219,7 @@ potion_quaff_something(void)
         msg("you fell through the floor!");
       }
       break;
+
     case P_XHEAL:
       potion_learn(obj->o_which);
       player_restore_health(roll(player_get_level(), 8), true);
@@ -228,10 +227,12 @@ potion_quaff_something(void)
       player_remove_hallucinating();
       msg("you begin to feel much better");
       break;
+
     case P_HASTE:
       potion_learn(obj->o_which);
       player_increase_speed(false);
       break;
+
     case P_RESTORE:
       if (player_strength_is_weakened())
       {
@@ -241,14 +242,17 @@ potion_quaff_something(void)
       else
         msg("you feel warm all over");
       break;
+
     case P_BLIND:
       potion_learn(obj->o_which);
       player_set_blind(false);
       break;
+
     case P_LEVIT:
       potion_learn(obj->o_which);
       player_start_levitating(false);
       break;
+
     default:
       msg("what an odd tasting potion!");
       return true;
@@ -256,7 +260,6 @@ potion_quaff_something(void)
   status();
 
   /* Throw the item away */
-
   call_it("potion", &pot_info[obj->o_which]);
 
   if (discardit)
@@ -267,7 +270,7 @@ potion_quaff_something(void)
 void
 potion_description(THING const* obj, char buf[])
 {
-  struct obj_info *op = &pot_info[obj->o_which];
+  struct obj_info* op = &pot_info[obj->o_which];
   if (op->oi_know)
   {
     if (obj->o_count == 1)

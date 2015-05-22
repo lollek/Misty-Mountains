@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include "rogue.h" /* struct obj_info */
+#include "things.h" /* struct obj_info */
 
 /* Potion types */
 enum potion_t
