@@ -20,6 +20,7 @@ bool command_name_item(void);             /* Call an item something */
 bool command_pick_up(void);               /* Pick up something at her feet */
 bool command_quit(void);                  /* Ask player if she wants to quit  */
 bool command_rest(void);                  /* Rest until full hp */
+bool command_run(char ch, bool cautiously); /* Run in a direction */
 void command_shell(void);                 /* Let them escape for a while */
 bool command_show_inventory(void);        /* Print player inventory */
 bool command_take_off(enum equipment_pos pos); /* Unequip something */

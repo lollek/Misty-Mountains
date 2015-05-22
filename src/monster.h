@@ -92,4 +92,7 @@ void monster_teleport(THING* monster, coord* destination);
 
 void monster_do_special_ability(THING** monster);
 
+/** monster_chase.c **/
+bool monster_chase(THING* tp); /* Make a monster chase */
+
 #endif /* _ROGUE14_MONSTER_H_ */

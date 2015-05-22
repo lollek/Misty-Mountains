@@ -58,19 +58,6 @@ move_turnref(void)
   }
 }
 
-bool
-move_do_run(char ch, bool cautiously)
-{
-  if (cautiously)
-  {
-    door_stop = true;
-    firstmove = true;
-  }
-
-  running = true;
-  runch = tolower(ch);
-  return false;
-}
 
 /* TODO: Clean up this monster */
 bool

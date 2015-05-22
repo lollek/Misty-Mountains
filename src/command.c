@@ -179,7 +179,7 @@ command_do(char ch)
     /* Upper case */
     case 'H': case 'J': case 'K': case 'L':
     case 'Y': case 'U': case 'B': case 'N':
-      return move_do_run(ch, false);
+      return command_run(ch, false);
     case 'D': discovered(); return false;
     case 'F': return command_attack(true);
     case 'I': return pack_print_equipment();
@@ -194,7 +194,7 @@ command_do(char ch)
     /* Ctrl case */
     case CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
     case CTRL('Y'): case CTRL('U'): case CTRL('B'): case CTRL('N'):
-      return move_do_run(UNCTRL(ch), true);
+      return command_run(UNCTRL(ch), true);
     case CTRL('P'): msg(huh); return false;
     case CTRL('R'): clearok(curscr, true); wrefresh(curscr); return false;
     case CTRL('Z'): command_shell(); return false;

@@ -19,6 +19,7 @@
 #include "wand.h"
 #include "rip.h"
 #include "daemons.h"
+#include "move.h"
 #include "rogue.h"
 
 #include "command_private.h"
@@ -537,4 +538,17 @@ command_eat(void)
   return true;
 }
 
+bool
+command_run(char ch, bool cautiously)
+{
+  if (cautiously)
+  {
+    door_stop = true;
+    firstmove = true;
+  }
+
+  running = true;
+  runch = tolower(ch);
+  return move_do(runch);
+}
 
