@@ -67,44 +67,6 @@ extern enum rogue_game_t
 #define VS_MAGIC	03
 
 /*
- * Various flag bits
- */
-/* flags for rooms */
-#define ISDARK	0000001		/* room is dark */
-#define ISGONE	0000002		/* room is gone (a corridor) */
-#define ISMAZE	0000004		/* room is gone (a corridor) */
-
-/* flags for objects */
-#define ISCURSED 000001		/* object is cursed */
-#define ISKNOW	0000002		/* player knows details about the object */
-#define ISMISL	0000004		/* object is a missile type */
-#define ISMANY	0000010		/* object comes in groups */
-/*	ISFOUND 0000020		...is used for both objects and creatures */
-#define	ISPROT	0000040		/* armor is permanently protected */
-
-/* flags for creatures */
-#define CANHUH	0000001		/* creature can confuse */
-#define CANSEE	0000002		/* creature can see invisible creatures */
-#define ISBLIND	0000004		/* creature is blind */
-#define ISCANC	0000010		/* creature has special qualities cancelled */
-#define ISLEVIT	0000010		/* hero is levitating */
-#define ISFOUND	0000020		/* creature has been seen (used for objects) */
-#define ISGREED	0000040		/* creature runs to protect gold */
-#define ISHASTE	0000100		/* creature has been hastened */
-#define ISTARGET 000200		/* creature is the target of an 'f' command */
-#define ISHELD	0000400		/* creature has been held */
-#define ISHUH	0001000		/* creature is confused */
-#define ISINVIS	0002000		/* creature is invisible */
-#define ISMEAN	0004000		/* creature can wake when player enters room */
-#define ISHALU	0004000		/* hero is on acid trip */
-#define ISREGEN	0010000		/* creature can regenerate */
-#define ISRUN	0020000		/* creature is running at the player */
-#define SEEMONST 040000		/* hero can detect unseen monsters */
-#define ISFLY	0040000		/* creature can fly */
-#define ISSLOW	0100000		/* creature has been slowed */
-#define ISSTUCK	0200000		/* creature cannot move its feet */
-
-/*
  * Flags for level map
  */
 #define F_PASS		0x80		/* is a passageway */

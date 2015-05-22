@@ -13,6 +13,11 @@ struct room {
   coord r_exit[12]; /* Where the exits are */
 };
 
+/* flags for rooms */
+#define ISDARK	0000001		/* room is dark */
+#define ISGONE	0000002		/* room is gone (a corridor) */
+#define ISMAZE	0000004		/* room is gone (a corridor) */
+
 /* Variables. TODO: Move these */
 #define MAXROOMS  9 /* max rooms per level */
 struct room *oldrp;			/* Roomin(&oldpos) */
