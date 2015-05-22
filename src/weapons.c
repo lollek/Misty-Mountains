@@ -111,7 +111,7 @@ missile(int ydelta, int xdelta)
   /* Throwing an arrow without a bow always misses */
   if (obj->o_which == ARROW && (weapon == NULL || weapon->o_which != BOW))
   {
-    if (monster_at_pos)
+    if (monster_at_pos && !to_death)
       fight_missile_miss(obj, set_mname(monster_at_pos));
     fall(obj, true);
     return true;
