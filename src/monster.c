@@ -196,7 +196,7 @@ monster_new(THING* monster, char type, coord* pos)
   monster->t_pos        = *pos;
   monster->t_oldch      = mvincch(pos->y, pos->x);
   monster->t_room       = roomin(pos);
-  moat(pos->y, pos->x)  = monster;
+  level_set_monster(pos->y, pos->x, monster);
 
   struct monster const* template = &monsters[monster->t_type-'A'];
   monster->t_stats.s_lvl   = template->m_stats.s_lvl + lev_add;
@@ -245,7 +245,7 @@ monster_new_random_wanderer(void)
 THING*
 monster_notice_player(int y, int x)
 {
-  THING *monster = moat(y, x);
+  THING *monster = level_get_monster(y, x);
 
   assert_attached(mlist, monster);
 
@@ -315,7 +315,7 @@ monster_save_throw(int which, THING const* tp)
 void
 monster_start_running(coord* runner)
 {
-  THING *tp = moat(runner->y, runner->x);
+  THING *tp = level_get_monster(runner->y, runner->x);
   assert_attached(mlist, tp);
 
   monster_find_new_target(tp);
@@ -379,7 +379,7 @@ monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
       _discard(&obj);
   }
 
-  moat(mp->y, mp->x) = NULL;
+  level_set_monster(mp->y, mp->x, NULL);
   mvaddcch(mp->y, mp->x, tp->t_oldch);
   list_detach(&mlist, tp);
 
@@ -427,7 +427,7 @@ monster_teleport(THING* monster, coord* destination)
   if (see_monst(monster))
     mvaddcch(monster->t_pos.y, monster->t_pos.x, monster->t_oldch);
   set_oldch(monster, &new_pos);
-  moat(monster->t_pos.y, monster->t_pos.x) = NULL;
+  level_set_monster(monster->t_pos.y, monster->t_pos.x, NULL);
 
   /* Add monster */
   monster->t_room = roomin(&new_pos);

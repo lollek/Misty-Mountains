@@ -9,7 +9,6 @@
 #define INDEX(y,x)	(&places[((x) << 5) + (y)])
 #define chat(y,x)	(places[((x) << 5) + (y)].p_ch)
 #define flat(y,x)	(places[((x) << 5) + (y)].p_flags)
-#define moat(y,x)	(places[((x) << 5) + (y)].p_monst)
 
 /* Flags for level map */
 #define F_PASS		0x80		/* is a passageway */
@@ -39,6 +38,7 @@ bool level_save_state(void);
 bool level_load_state(void);
 
 char level_objtype_at_pos(int y, int x);
-THING* level_monster_at_pos(int y, int x);
+THING* level_get_monster(int y, int x);
+void level_set_monster(int y, int x, THING* monster);
 
 #endif /* _ROGUE14_LEVEL_H_ */

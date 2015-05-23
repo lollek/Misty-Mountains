@@ -122,7 +122,7 @@ hold_monsters(void)
       for (y = player_pos->y - 2; y <= player_pos->y + 2; y++)
         if (y >= 0 && y <= NUMLINES - 1)
         {
-          monster = moat(y, x);
+          monster = level_get_monster(y, x);
           if (monster != NULL && monster_is_chasing(monster))
           {
             monster_become_held(monster);

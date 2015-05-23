@@ -248,7 +248,7 @@ hit_bound:
           break;
 	default:
 	    running = false;
-	    if (isupper(ch) || moat(nh.y, nh.x))
+	    if (isupper(ch) || level_get_monster(nh.y, nh.x))
 		fight_against_monster(&nh, pack_equipped_item(EQUIPMENT_RHAND), false);
 	    else
 	    {

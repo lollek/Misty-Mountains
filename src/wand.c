@@ -184,7 +184,7 @@ wand_find_target(int *y, int *x, int dy, int dx)
     *x += dx;
   }
 
-  return moat(*y, *x);
+  return level_get_monster(*y, *x);
 }
 
 static void
@@ -342,7 +342,7 @@ wand_spell_magic_missile(int dy, int dx)
     bolt.o_launch = weapon->o_which;
 
   do_motion(&bolt, dy, dx);
-  target = moat(bolt.o_pos.y, bolt.o_pos.x);
+  target = level_get_monster(bolt.o_pos.y, bolt.o_pos.x);
   if (target == NULL)
     msg("the missle vanishes with a puff of smoke");
   else if (monster_save_throw(VS_MAGIC, target))
@@ -576,7 +576,7 @@ fire_bolt(coord *start, coord *dir, char *name)
 		break;
 	    default:
 def:
-		if (!hit_hero && (tp = moat(pos.y, pos.x)) != NULL)
+		if (!hit_hero && (tp = level_get_monster(pos.y, pos.x)) != NULL)
 		{
 		    hit_hero = true;
 		    changed = !changed;
@@ -612,7 +612,7 @@ def:
 			    if (start == player_get_pos())
 				death('b');
 			    else
-				death(moat(start->y, start->x)->t_type);
+                              death(level_get_monster(start->y, start->x)->t_type);
 			}
 			used = true;
 			if (terse)

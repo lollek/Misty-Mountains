@@ -355,7 +355,7 @@ room_enter(coord *cp)
       move(y, rp->r_pos.x);
       for (x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
       {
-        THING *tp = moat(y, x);
+        THING *tp = level_get_monster(y, x);
         char ch = chat(y, x);
         if (tp == NULL)
           if (ch != incch())

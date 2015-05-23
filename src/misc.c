@@ -420,7 +420,7 @@ is_magic(THING const* obj)
 bool
 seen_stairs(void)
 {
-  THING* tp = moat(stairs.y, stairs.x);
+  THING* tp = level_get_monster(stairs.y, stairs.x);
 
   move(stairs.y, stairs.x);
   if (incch() == STAIRS)  /* it's on the map */

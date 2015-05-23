@@ -75,7 +75,7 @@ command_attack(bool fight_to_death)
 
   kamikaze = fight_to_death;
 
-  THING* mp = moat(delta.y, delta.x);
+  THING* mp = level_get_monster(delta.y, delta.x);
   if (mp == NULL || (!see_monst(mp) && !player_can_sense_monsters()))
   {
     msg("no monster there");

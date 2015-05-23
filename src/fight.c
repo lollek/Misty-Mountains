@@ -218,7 +218,7 @@ int
 fight_against_monster(coord* monster_pos, THING* weapon, bool thrown)
 {
   THING* const player = NULL;
-  THING* tp = moat(monster_pos->y, monster_pos->x);
+  THING* tp = level_get_monster(monster_pos->y, monster_pos->x);
   if (tp == NULL)
     return !fail("fight_against_monster(%p, %p, %b) NULL monster\r\n",
                  monster_pos, weapon, thrown);

@@ -124,7 +124,8 @@ chase(THING *tp, coord *ee)
             continue;
         }
         /* It can also be a Xeroc, which we shouldn't step on */
-        if ((obj = moat(y, x)) != NULL && obj->t_type == 'X')
+        obj = level_get_monster(y, x);
+        if (obj != NULL && obj->t_type == 'X')
           continue;
 
         /* If we didn't find any scrolls at this place or it
@@ -269,7 +270,7 @@ over:
 
       /* Remove monster from old position */
       mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
-      moat(th->t_pos.y, th->t_pos.x) = NULL;
+      level_set_monster(th->t_pos.y, th->t_pos.x, NULL);
 
       /* Check if we stepped in a trap */
       if (ch == TRAP || (!(fl & F_REAL) && ch == FLOOR))
@@ -291,7 +292,7 @@ over:
       set_oldch(th, &ch_ret);
       th->t_room = roomin(&ch_ret);
       th->t_pos = ch_ret;
-      moat(ch_ret.y, ch_ret.x) = th;
+      level_set_monster(ch_ret.y, ch_ret.x, th);
     }
     move(ch_ret.y, ch_ret.x);
 

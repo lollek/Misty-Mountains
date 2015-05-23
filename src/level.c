@@ -236,8 +236,20 @@ level_load_state(void)
 char
 level_objtype_at_pos(int y, int x)
 {
-  THING* monster = moat(y, x);
+  THING* monster = level_get_monster(y, x);
   return monster == NULL
     ? chat(y, x)
     : monster->t_disguise;
+}
+
+THING*
+level_get_monster(int y, int x)
+{
+  return places[(x << 5) + y].p_monst;
+}
+
+void
+level_set_monster(int y, int x, THING* monster)
+{
+  places[(x << 5) + y].p_monst = monster;
 }
