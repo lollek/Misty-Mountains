@@ -696,7 +696,9 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     coord const* player_pos = player_get_pos();
     list_attach(&lvl_obj, obj);
     chat(player_pos->y, player_pos->x) = (char) obj->o_type;
-    flat(player_pos->y, player_pos->x) |= F_DROPPED;
+    int flags = level_get_flags(player_pos->y, player_pos->x);
+    flags |= F_DROPPED;
+    level_set_flags(player_pos->y, player_pos->x, flags);
     obj->o_pos = *player_pos;
     msg("dropped %s", inv_name(obj, true));
   }

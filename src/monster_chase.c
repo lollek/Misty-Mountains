@@ -196,7 +196,7 @@ over:
 	}
 	if (door)
 	{
-	    rer = &passages[flat(th->t_pos.y, th->t_pos.x) & F_PNUM];
+	    rer = &passages[level_get_flags(th->t_pos.y, th->t_pos.x) & F_PNUM];
 	    door = false;
 	    goto over;
 	}
@@ -266,7 +266,7 @@ over:
     if (!same_coords(&ch_ret, &th->t_pos))
     {
       char ch = level_get_type(ch_ret.y, ch_ret.x);
-      char fl = flat(ch_ret.y, ch_ret.x);
+      char fl = level_get_flags(ch_ret.y, ch_ret.x);
 
       /* Remove monster from old position */
       mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);

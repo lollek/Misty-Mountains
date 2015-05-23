@@ -486,8 +486,8 @@ player_search(void)
     for (int x = player_pos->x - 1; x <= player_pos->x + 1; x++)
     {
       /* Real wall/floor/shadow */
-      char *fp = &flat(y, x);
-      if (*fp & F_REAL)
+      int flags = level_get_flags(y, x);
+      if (flags & F_REAL)
         continue;
 
       char chatyx = chat(y, x);
@@ -499,7 +499,8 @@ player_search(void)
             chat(y, x) = DOOR;
             msg("a secret door");
             found = true;
-            *fp |= F_REAL;
+            flags |= F_REAL;
+            level_set_flags(y, x, flags);
           }
           break;
 
@@ -511,12 +512,14 @@ player_search(void)
             if (player_is_hallucinating())
               msg(trap_names[rnd(NTRAPS)]);
             else {
-              msg(trap_names[*fp & F_TMASK]);
-              *fp |= F_SEEN;
+              msg(trap_names[flags & F_TMASK]);
+              flags |= F_SEEN;
+              level_set_flags(y, x, flags);
             }
 
             found = true;
-            *fp |= F_REAL;
+            flags |= F_SEEN;
+            level_set_flags(y, x, flags);
           }
           break;
 
@@ -525,7 +528,8 @@ player_search(void)
           {
             chat(y, x) = PASSAGE;
             found = true;
-            *fp |= F_REAL;
+            flags |= F_REAL;
+            level_set_flags(y, x, flags);
           }
           break;
       }

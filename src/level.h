@@ -8,7 +8,6 @@
 /* TODO: Make functions of these */
 #define INDEX(y,x)	(&places[((x) << 5) + (y)])
 #define chat(y,x)	(places[((x) << 5) + (y)].p_ch)
-#define flat(y,x)	(places[((x) << 5) + (y)].p_flags)
 
 /* Flags for level map */
 #define F_PASS		0x80		/* is a passageway */
@@ -41,5 +40,8 @@ char level_get_type(int y, int x);
 
 THING* level_get_monster(int y, int x);
 void level_set_monster(int y, int x, THING* monster);
+
+char level_get_flags(int y, int x);
+void level_set_flags(int y, int x, char flags);
 
 #endif /* _ROGUE14_LEVEL_H_ */

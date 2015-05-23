@@ -186,7 +186,9 @@ drop(void)
   /* Link it into the level object list */
   list_attach(&lvl_obj, obj);
   chat(player_pos->y, player_pos->x) = (char) obj->o_type;
-  flat(player_pos->y, player_pos->x) |= F_DROPPED;
+  int flags = level_get_flags(player_pos->y, player_pos->x);
+  flags |= F_DROPPED;
+  level_set_flags(player_pos->y, player_pos->x, flags);
   obj->o_pos = *player_pos;
   msg("dropped %s", inv_name(obj, true));
   return true;

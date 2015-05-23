@@ -124,7 +124,7 @@ over:
     if (running && same_coords(player_get_pos(), &nh))
 	after = running = false;
 
-    fl = flat(nh.y, nh.x);
+    fl = level_get_flags(nh.y, nh.x);
     ch = level_get_type(nh.y, nh.x);
 
     if (!(fl & F_REAL) && ch == FLOOR)
@@ -132,7 +132,9 @@ over:
 	if (!player_is_levitating())
 	{
 	    chat(nh.y, nh.x) = ch = TRAP;
-	    flat(nh.y, nh.x) |= F_REAL;
+            int flags = level_get_flags(nh.y, nh.x);
+            flags |= F_REAL;
+            level_set_flags(nh.y, nh.x, flags);
 	}
     }
     else if (player_is_held() && ch != 'F')
@@ -200,7 +202,7 @@ hit_bound:
           {
             coord *player_pos = player_get_pos();
 	    running = false;
-	    if (flat(player_pos->y, player_pos->x) & F_PASS)
+	    if (level_get_flags(player_pos->y, player_pos->x) & F_PASS)
 		room_enter(&nh);
 	    mvaddcch(player_pos->y, player_pos->x, floor_at());
 	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)

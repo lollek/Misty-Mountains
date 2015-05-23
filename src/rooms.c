@@ -103,7 +103,7 @@ room_dig(int y, int x)
       int newx = x + cp->x;
       if (newy < 0 || newy > Maxy || newx < 0 || newx > Maxx)
         continue;
-      if (flat(newy + Starty, newx + Startx) & F_PASS)
+      if (level_get_flags(newy + Starty, newx + Startx) & F_PASS)
         continue;
       if (rnd(++cnt) == 0)
       {
@@ -397,7 +397,7 @@ room_leave(coord *cp)
     else
 	floor = SHADOW;
 
-    player_set_room(&passages[flat(cp->y, cp->x) & F_PNUM]);
+    player_set_room(&passages[level_get_flags(cp->y, cp->x) & F_PNUM]);
     for (y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++)
 	for (x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
 	{

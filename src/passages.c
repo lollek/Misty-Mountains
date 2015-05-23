@@ -48,8 +48,8 @@ numpass(int y, int x)
   if (x >= NUMCOLS || x < 0 || y >= NUMLINES || y <= 0)
     return;
 
-  char* flag = &flat(y, x);
-  if (*flag & F_PNUM)
+  int flags = level_get_flags(y, x);
+  if (flags & F_PNUM)
     return;
 
   if (newpnum)
@@ -61,17 +61,18 @@ numpass(int y, int x)
   /* check to see if it is a door or secret door, i.e., a new exit,
    * or a numerable type of place */
   char ch = chat(y, x);
-  if (ch == DOOR || (!(*flag & F_REAL) && (ch == VWALL || ch == HWALL)))
+  if (ch == DOOR || (!(flags & F_REAL) && (ch == VWALL || ch == HWALL)))
   {
     struct room* rp = &passages[pnum];
     rp->r_exit[rp->r_nexits].y = y;
     rp->r_exit[rp->r_nexits++].x = x;
   }
 
-  else if (!(*flag & F_PASS))
+  else if (!(flags & F_PASS))
     return;
 
-  *flag |= pnum;
+  flags |= pnum;
+  level_set_flags(y, x, flags);
 
   /* recurse on the surrounding places */
   numpass(y + 1, x);
@@ -175,13 +176,13 @@ conn(int r1, int r2)
         start_pos.y = room_from->r_pos.y + room_from->r_max.y - 1;
       }
       while ((room_from->r_flags & ISMAZE)
-             && !(flat(start_pos.y, start_pos.x) & F_PASS));
+             && !(level_get_flags(start_pos.y, start_pos.x) & F_PASS));
 
     if (!(room_to->r_flags & ISGONE))
       do
         end_pos.x = room_to->r_pos.x + rnd(room_to->r_max.x - 2) + 1;
       while ((room_to->r_flags & ISMAZE)
-             && !(flat(end_pos.y, end_pos.x) & F_PASS));
+             && !(level_get_flags(end_pos.y, end_pos.x) & F_PASS));
 
     distance = abs(start_pos.y - end_pos.y) - 1;
     turn_delta.y = 0;
@@ -206,13 +207,13 @@ conn(int r1, int r2)
         start_pos.x = room_from->r_pos.x + room_from->r_max.x - 1;
         start_pos.y = room_from->r_pos.y + rnd(room_from->r_max.y - 2) + 1;
       } while ((room_from->r_flags & ISMAZE)
-               && !(flat(start_pos.y, start_pos.x) & F_PASS));
+               && !(level_get_flags(start_pos.y, start_pos.x) & F_PASS));
 
     if (!(room_to->r_flags & ISGONE))
       do
         end_pos.y = room_to->r_pos.y + rnd(room_to->r_max.y - 2) + 1;
       while ((room_to->r_flags & ISMAZE)
-             && !(flat(end_pos.y, end_pos.x) & F_PASS));
+             && !(level_get_flags(end_pos.y, end_pos.x) & F_PASS));
 
     distance = abs(start_pos.x - end_pos.x) - 1;
     turn_delta.y = (start_pos.y < end_pos.y ? 1 : -1);

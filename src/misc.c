@@ -522,7 +522,7 @@ see_monst(THING* monster)
 struct room*
 roomin(coord* cp)
 {
-  char fp = flat(cp->y, cp->x);
+  char fp = level_get_flags(cp->y, cp->x);
   if (fp & F_PASS)
     return &passages[fp & F_PNUM];
 
@@ -558,7 +558,7 @@ cansee(int y, int x)
 
   if (dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
   {
-    if (flat(y, x) & F_PASS)
+    if (level_get_flags(y, x) & F_PASS)
       if (y != player_pos->y && x != player_pos->x &&
           !step_ok(chat(y, player_pos->x))
           && !step_ok(chat(player_pos->y, x)))

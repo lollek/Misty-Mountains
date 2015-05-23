@@ -222,7 +222,7 @@ command_identify_trap(void)
     .x = player_x() + dir->x
   };
 
-  char* fp = &flat(delta.y, delta.x);
+  int flags = level_get_flags(delta.y, delta.x);
 
   if (chat(delta.y, delta.x) != TRAP)
     msg("no trap there");
@@ -230,8 +230,9 @@ command_identify_trap(void)
     msg(trap_names[rnd(NTRAPS)]);
   else
   {
-    msg(trap_names[*fp & F_TMASK]);
-    *fp |= F_SEEN;
+    msg(trap_names[flags & F_TMASK]);
+    flags |= F_SEEN;
+    level_set_flags(delta.y, delta.x, flags);
   }
   return false;
 }

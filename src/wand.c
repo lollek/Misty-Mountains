@@ -220,15 +220,17 @@ wand_spell_drain_health(void)
      */
     cnt = 0;
     if (chat(player_pos->y, player_pos->x) == DOOR)
-	corp = &passages[flat(player_pos->y, player_pos->x) & F_PNUM];
+	corp = &passages[level_get_flags(player_pos->y, player_pos->x) & F_PNUM];
     else
 	corp = NULL;
     inpass = (bool)(player_get_room()->r_flags & ISGONE);
     dp = drainee;
     for (mp = mlist; mp != NULL; mp = mp->l_next)
-	if (mp->t_room == player_get_room() || mp->t_room == corp ||
-	    (inpass && chat(mp->t_pos.y, mp->t_pos.x) == DOOR &&
-	    &passages[flat(mp->t_pos.y, mp->t_pos.x) & F_PNUM] == player_get_room()))
+	if (mp->t_room == player_get_room()
+            || mp->t_room == corp
+            ||(inpass && chat(mp->t_pos.y, mp->t_pos.x) == DOOR &&
+              &passages[level_get_flags(mp->t_pos.y, mp->t_pos.x) & F_PNUM]
+              == player_get_room()))
 		*dp++ = mp;
     if ((cnt = (int)(dp - drainee)) == 0)
     {

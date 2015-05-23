@@ -156,15 +156,15 @@ create_obj(void)
 
   if (type == TRAP)
   {
-    coord *player_pos = player_get_pos();
-    char *ptr = &flat(player_pos->y, player_pos->x);
-
     if (which < 0 || which >= NTRAPS)
       msg("Bad trap id");
     else
     {
-      *ptr &= ~F_REAL;
-      *ptr |= which;
+      coord *player_pos = player_get_pos();
+      char flags = level_get_flags(player_pos->y, player_pos->x);
+      flags &= ~F_REAL;
+      flags |= which;
+      level_set_flags(player_pos->y, player_pos->x, flags);
     }
     return;
   }
@@ -257,7 +257,7 @@ show_map(void)
   for (y = 1; y < NUMLINES - 1; y++)
     for (x = 0; x < NUMCOLS; x++)
     {
-      int real = flat(y, x);
+      int real = level_get_flags(y, x);
       if (!(real & F_REAL))
         wstandout(hw);
       wmove(hw, y, x);

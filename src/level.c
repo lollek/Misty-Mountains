@@ -191,9 +191,10 @@ level_new(void)
         room_find_floor((struct room *) NULL, &stairs, false, false);
       while (chat(stairs.y, stairs.x) != FLOOR);
 
-      char* trap_ptr = &flat(stairs.y, stairs.x);
-      *trap_ptr &= ~F_REAL;
-      *trap_ptr |= rnd(NTRAPS);
+      char trapflag = level_get_flags(stairs.y, stairs.x);
+      trapflag &= ~F_REAL;
+      trapflag |= rnd(NTRAPS);
+      level_set_flags(stairs.y, stairs.x, trapflag);
     }
   }
 
@@ -252,4 +253,16 @@ void
 level_set_monster(int y, int x, THING* monster)
 {
   places[(x << 5) + y].p_monst = monster;
+}
+
+char
+level_get_flags(int y, int x)
+{
+  return places[(x << 5) + y].p_flags;
+}
+
+void
+level_set_flags(int y, int x, char flags)
+{
+  places[(x << 5) + y].p_flags = flags;
 }
