@@ -12,6 +12,9 @@
 
 #include "io.h"
 
+#define NUMNAME    "Ten"   /* The same number in letters  */
+#define NUMSCORES    10    /* Number of highscore entries */
+
 typedef struct sc_ent {
   unsigned int sc_uid;
   int sc_score;

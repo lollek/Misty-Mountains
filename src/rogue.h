@@ -16,11 +16,8 @@
 #include <ncurses.h>
 
 #include "coord.h"
-#include "things.h"
 
 /* Tuneable - feel free to change these */
-#define NUMNAME    "Ten"   /* The same number in letters  */
-#define NUMSCORES    10    /* Number of highscore entries */
 #define AMULETLEVEL  26    /* Level where we can find the amulet */
 
 /* Try not to change these */

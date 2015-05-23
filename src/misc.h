@@ -3,7 +3,8 @@
 
 #include <stdbool.h>
 
-#include "rogue.h"
+#include "rooms.h"
+#include "things.h"
 
 int rnd(int range);              /* Pick a very random number. */
 int roll(int number, int sides); /* Roll a number of dice */

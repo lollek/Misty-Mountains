@@ -1,7 +1,9 @@
 #ifndef _ROGUE14_SCROLLS_H_
 #define _ROGUE14_SCROLLS_H_
 
-#include "rogue.h"
+#include <stdbool.h>
+
+#include "things.h"
 
 /* Scroll types */
 enum scroll_t

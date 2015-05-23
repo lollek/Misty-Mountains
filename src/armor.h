@@ -1,7 +1,7 @@
 #ifndef _ROGUE14_ARMOR_H_
 #define _ROGUE14_ARMOR_H_
 
-#include "rogue.h"
+#include "things.h"
 
 enum armor_t
 {

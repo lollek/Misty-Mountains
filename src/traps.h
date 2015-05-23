@@ -1,7 +1,8 @@
 #ifndef _ROGUE14_TRAPS_H_
 #define _ROGUE14_TRAPS_H_
 
-#include "rogue.h" /* THING, coord */
+#include "coord.h"
+#include "things.h"
 
 /* Trap types */
 enum trap_t

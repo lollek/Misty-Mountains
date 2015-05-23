@@ -3,7 +3,7 @@
 
 #include <sys/types.h>
 
-#include "rogue.h"
+#include "things.h"
 
 typedef unsigned int usecs;
 int rand_r(unsigned* seedp);
