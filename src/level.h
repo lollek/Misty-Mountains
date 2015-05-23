@@ -3,6 +3,7 @@
 
 #include "io.h"
 
+#define AMULETLEVEL  26    /* Level where we can find the amulet */
 
 /* TODO: Make functions of these */
 #define INDEX(y,x)	(&places[((x) << 5) + (y)])

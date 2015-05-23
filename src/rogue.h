@@ -17,9 +17,6 @@
 
 #include "coord.h"
 
-/* Tuneable - feel free to change these */
-#define AMULETLEVEL  26    /* Level where we can find the amulet */
-
 /* All the fun defines */
 #define winat(y,x)	(moat(y,x) != NULL ? moat(y,x)->t_disguise : chat(y,x))
 #define max(a,b)	((a) > (b) ? (a) : (b))

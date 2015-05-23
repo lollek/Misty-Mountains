@@ -122,9 +122,6 @@ typedef union thing {
 #define ISSLOW	0100000		/* creature has been slowed */
 #define ISSTUCK	0200000		/* creature cannot move its feet */
 
-
-
-
 #define NUMTHINGS 7
 struct obj_info things[NUMTHINGS];
 
