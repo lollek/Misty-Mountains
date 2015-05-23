@@ -48,9 +48,6 @@
 
 /* Save against things */
 #define VS_POISON	00
-#define VS_PARALYZATION	00
-#define VS_DEATH	00
-#define VS_BREATH	02
 #define VS_MAGIC	03
 
 
