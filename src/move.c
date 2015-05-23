@@ -27,6 +27,7 @@
 #include "level.h"
 #include "player.h"
 #include "options.h"
+#include "level.h"
 #include "rogue.h"
 
 /** move_turn_ok:
@@ -124,7 +125,7 @@ over:
 	after = running = false;
 
     fl = flat(nh.y, nh.x);
-    ch = level_objtype_at_pos(nh.y, nh.x);
+    ch = level_get_type(nh.y, nh.x);
 
     if (!(fl & F_REAL) && ch == FLOOR)
     {
@@ -286,7 +287,7 @@ move_random(THING* who, coord* ret)
     return;
   }
 
-  char ch = level_objtype_at_pos(y, x);
+  char ch = level_get_type(y, x);
   if (!step_ok(ch))
   {
     ret->x = who->t_pos.x;

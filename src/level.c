@@ -234,7 +234,7 @@ level_load_state(void)
 }
 
 char
-level_objtype_at_pos(int y, int x)
+level_get_type(int y, int x)
 {
   THING* monster = level_get_monster(y, x);
   return monster == NULL

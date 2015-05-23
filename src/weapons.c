@@ -150,7 +150,7 @@ do_motion(THING *obj, int ydelta, int xdelta)
     /* Get the new position */
     obj->o_pos.y += ydelta;
     obj->o_pos.x += xdelta;
-    if (step_ok(ch = level_objtype_at_pos(obj->o_pos.y, obj->o_pos.x))
+    if (step_ok(ch = level_get_type(obj->o_pos.y, obj->o_pos.x))
        && ch != DOOR)
     {
       /* It hasn't hit anything yet, so display it if it alright. */

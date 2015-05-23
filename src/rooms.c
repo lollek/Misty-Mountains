@@ -66,7 +66,7 @@ room_open_door(struct room *rp)
 
   for (y = rp->r_pos.y; y < rp->r_pos.y + rp->r_max.y; y++)
     for (x = rp->r_pos.x; x < rp->r_pos.x + rp->r_max.x; x++)
-      if (isupper(level_objtype_at_pos(y, x)))
+      if (isupper(level_get_type(y, x)))
         monster_notice_player(y, x);
 }
 

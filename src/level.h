@@ -37,7 +37,8 @@ void level_new(void);
 bool level_save_state(void);
 bool level_load_state(void);
 
-char level_objtype_at_pos(int y, int x);
+char level_get_type(int y, int x);
+
 THING* level_get_monster(int y, int x);
 void level_set_monster(int y, int x, THING* monster);
 
