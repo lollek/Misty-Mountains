@@ -157,7 +157,7 @@ create_monster(void)
   for (y = player_pos->y - 1; y <= player_pos->y + 1; y++)
     for (x = player_pos->x - 1; x <= player_pos->x + 1; x++)
     {
-      char ch = winat(y, x);
+      char ch = level_thing_at_pos(y, x);
 
       if ((y == player_pos->y && x == player_pos->x)
           ||(!step_ok(ch))

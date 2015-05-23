@@ -144,8 +144,6 @@ void monster_remove_levitating(THING* mon)   { mon->t_flags &= ~ISLEVIT; }
 void monster_remove_true_seeing(THING* mon)  { mon->t_flags &= ~CANSEE; }
 void monster_remove_held(THING* mon)         { mon->t_flags &= ~ISHELD; }
 
-
-
 char
 monster_random(bool wander)
 {

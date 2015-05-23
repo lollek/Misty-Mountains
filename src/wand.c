@@ -178,7 +178,7 @@ wand_find_target(int *y, int *x, int dy, int dx)
   *y = player_pos->y;
 
   /* "walk" in the zap direction until we find a target */
-  while (step_ok(winat(*y, *x)))
+  while (step_ok(level_thing_at_pos(*y, *x)))
   {
     *y += dy;
     *x += dx;
@@ -553,7 +553,7 @@ fire_bolt(coord *start, coord *dir, char *name)
 	pos.y += dir->y;
 	pos.x += dir->x;
 	*c1 = pos;
-	ch = winat(pos.y, pos.x);
+	ch = level_thing_at_pos(pos.y, pos.x);
 	switch (ch)
 	{
 	    case DOOR:

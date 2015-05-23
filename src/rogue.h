@@ -18,9 +18,7 @@
 #include "coord.h"
 
 /* All the fun defines */
-#define winat(y,x)	(moat(y,x) != NULL ? moat(y,x)->t_disguise : chat(y,x))
 #define max(a,b)	((a) > (b) ? (a) : (b))
-#define GOLDCALC	(rnd(50 + 10 * level) + 2)
 
 /* Various constants */
 #define WANDERTIME	spread(70)

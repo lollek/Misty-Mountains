@@ -124,7 +124,7 @@ over:
 	after = running = false;
 
     fl = flat(nh.y, nh.x);
-    ch = winat(nh.y, nh.x);
+    ch = level_thing_at_pos(nh.y, nh.x);
 
     if (!(fl & F_REAL) && ch == FLOOR)
     {
@@ -286,7 +286,7 @@ move_random(THING* who, coord* ret)
     return;
   }
 
-  char ch = winat(y, x);
+  char ch = level_thing_at_pos(y, x);
   if (!step_ok(ch))
   {
     ret->x = who->t_pos.x;

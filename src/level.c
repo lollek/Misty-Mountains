@@ -233,3 +233,11 @@ level_load_state(void)
     || state_load_coord(&stairs);
 }
 
+char
+level_thing_at_pos(int y, int x)
+{
+  THING* monster = moat(y, x);
+  return monster == NULL
+    ? chat(y, x)
+    : monster->t_disguise;
+}
