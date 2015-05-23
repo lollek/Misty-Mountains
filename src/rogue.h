@@ -18,9 +18,6 @@
 #include "coord.h"
 #include "things.h"
 
-/* Version */
-#define GAME_VERSION "Rogue14 " VERSION " - Based on Rogue5.4.4"
-
 /* Tuneable - feel free to change these */
 #define NUMNAME    "Ten"   /* The same number in letters  */
 #define NUMSCORES    10    /* Number of highscore entries */
