@@ -20,9 +20,6 @@
 /* Tuneable - feel free to change these */
 #define AMULETLEVEL  26    /* Level where we can find the amulet */
 
-/* Try not to change these */
-#define PACKSIZE 22 /* How many items we can have in our pack */
-
 /* All the fun defines */
 #define winat(y,x)	(moat(y,x) != NULL ? moat(y,x)->t_disguise : chat(y,x))
 #define max(a,b)	((a) > (b) ? (a) : (b))

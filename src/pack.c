@@ -102,6 +102,12 @@ pack_list_element(int8_t i)
   return NULL;
 }
 
+int
+pack_size(void)
+{
+  return 22;
+}
+
 void
 pack_set_last_picked_item(THING* ptr)
 {
@@ -271,7 +277,7 @@ pack_add(THING* obj, bool silent)
     return false;
   }
 
-  if (pack_count_items() == PACKSIZE)
+  if (pack_count_items() == pack_size())
   {
     msg("there's no room in your pack");
     if (from_floor)
@@ -500,16 +506,16 @@ pack_is_empty(void)
   return player_pack == NULL;
 }
 
-unsigned
+int
 pack_count_items(void)
 {
   return pack_count_items_of_type(0);
 }
 
-unsigned
+int
 pack_count_items_of_type(int type)
 {
-  unsigned num = 0;
+  int num = 0;
 
   for (THING const* list = player_pack; list != NULL; list = list->l_next)
     if (!type || type == list->o_type ||

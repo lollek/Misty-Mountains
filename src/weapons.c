@@ -71,7 +71,7 @@ bool weapons_save_state(void)
   int8_t i = pack_list_index(last_wielded_weapon);
 
   assert(i >= -1);
-  assert(i < PACKSIZE);
+  assert(i < pack_size());
 
   return state_save_int8(i);
 }
@@ -82,7 +82,7 @@ bool weapons_load_state(void)
   bool status = state_load_int8(&i);
 
   assert(i >= -1);
-  assert(i < PACKSIZE);
+  assert(i < pack_size());
 
   last_wielded_weapon = pack_list_element(i);
 

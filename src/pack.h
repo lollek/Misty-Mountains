@@ -28,6 +28,7 @@ bool pack_load_state(void);
 
 int8_t pack_list_index(THING const* thing);
 THING* pack_list_element(int8_t i);
+int pack_size(void);
 
 /* Pick up an object and add it to the pack.  If the argument is
  * non-null use it as the linked_list pointer instead of gettting
@@ -52,10 +53,10 @@ THING* pack_get_item(char const* purpose, int type);
 bool pack_is_empty(void);
 
 /* Counts how many items she is carrying */
-unsigned pack_count_items(void);
+int pack_count_items(void);
 
 /* Counts how many items she is carrying of a certain type */
-unsigned pack_count_items_of_type(int type);
+int pack_count_items_of_type(int type);
 
 bool pack_contains_amulet(void);
 bool pack_contains(THING* item);
