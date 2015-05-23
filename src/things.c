@@ -168,7 +168,7 @@ bool
 drop(void)
 {
   coord *player_pos = player_get_pos();
-  char ch = chat(player_pos->y, player_pos->x);
+  char ch = level_get_ch(player_pos->y, player_pos->x);
   THING *obj;
 
   if (ch != FLOOR && ch != PASSAGE)
@@ -185,7 +185,7 @@ drop(void)
 
   /* Link it into the level object list */
   list_attach(&lvl_obj, obj);
-  chat(player_pos->y, player_pos->x) = (char) obj->o_type;
+  level_set_ch(player_pos->y, player_pos->x, obj->o_type);
   int flags = level_get_flags(player_pos->y, player_pos->x);
   flags |= F_DROPPED;
   level_set_flags(player_pos->y, player_pos->x, flags);

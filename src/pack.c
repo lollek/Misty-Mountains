@@ -229,9 +229,10 @@ pack_add_money(int value)
   purse += value;
 
   mvaddcch(player_pos->y, player_pos->x, floor_ch());
-  chat(player_pos->y, player_pos->x) = (player_get_room()->r_flags & ISGONE)
-    ? PASSAGE
-    : FLOOR;
+  level_set_ch(player_pos->y, player_pos->x,
+      (player_get_room()->r_flags & ISGONE)
+        ? PASSAGE
+        : FLOOR);
 
   if (value > 0)
     msg("you found %d gold pieces", value);
@@ -244,9 +245,10 @@ pack_remove_from_floor(THING* obj)
 
   list_detach(&lvl_obj, obj);
   mvaddcch(player_pos->y, player_pos->x, floor_ch());
-  chat(player_pos->y, player_pos->x) = (player_get_room()->r_flags & ISGONE)
-    ? PASSAGE
-    : FLOOR;
+  level_set_ch(player_pos->y, player_pos->x,
+      (player_get_room()->r_flags & ISGONE)
+        ? PASSAGE
+        : FLOOR);
 }
 
 bool
@@ -269,9 +271,10 @@ pack_add(THING* obj, bool silent)
   {
     list_detach(&lvl_obj, obj);
     mvaddcch(player_pos->y, player_pos->x, floor_ch());
-    chat(player_pos->y, player_pos->x) = (player_get_room()->r_flags & ISGONE)
-      ? PASSAGE
-      : FLOOR;
+    level_set_ch(player_pos->y, player_pos->x,
+        (player_get_room()->r_flags & ISGONE)
+          ? PASSAGE
+          : FLOOR);
     _discard(&obj);
     msg("the scroll turns to dust as you pick it up");
     return false;
@@ -695,7 +698,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   {
     coord const* player_pos = player_get_pos();
     list_attach(&lvl_obj, obj);
-    chat(player_pos->y, player_pos->x) = (char) obj->o_type;
+    level_set_ch(player_pos->y, player_pos->x, obj->o_type);
     int flags = level_get_flags(player_pos->y, player_pos->x);
     flags |= F_DROPPED;
     level_set_flags(player_pos->y, player_pos->x, flags);

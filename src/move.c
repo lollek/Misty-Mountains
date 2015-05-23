@@ -131,7 +131,8 @@ over:
     {
 	if (!player_is_levitating())
 	{
-	    chat(nh.y, nh.x) = ch = TRAP;
+            ch = TRAP;
+            level_set_ch(nh.y, nh.x, ch);
             int flags = level_get_flags(nh.y, nh.x);
             flags |= F_REAL;
             level_set_flags(nh.y, nh.x, flags);
@@ -205,7 +206,7 @@ hit_bound:
 	    if (level_get_flags(player_pos->y, player_pos->x) & F_PASS)
 		room_enter(&nh);
 	    mvaddcch(player_pos->y, player_pos->x, floor_at());
-	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
+	    if ((fl & F_PASS) && level_get_ch(oldpos.y, oldpos.x) == DOOR)
 		room_leave(&nh);
             player_set_pos(&nh);
           }
@@ -217,7 +218,7 @@ hit_bound:
 	    if (ch == T_DOOR || ch == T_TELEP)
 		return after;
 	    mvaddcch(player_pos->y, player_pos->x, floor_at());
-	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
+	    if ((fl & F_PASS) && level_get_ch(oldpos.y, oldpos.x) == DOOR)
 		room_leave(&nh);
             player_set_pos(&nh);
           }
@@ -233,7 +234,7 @@ hit_bound:
             coord *player_pos = player_get_pos();
 	    player_set_room(roomin(player_pos));
 	    mvaddcch(player_pos->y, player_pos->x, floor_at());
-	    if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
+	    if ((fl & F_PASS) && level_get_ch(oldpos.y, oldpos.x) == DOOR)
 		room_leave(&nh);
             player_set_pos(&nh);
           }
@@ -244,7 +245,7 @@ hit_bound:
 	    if (!(fl & F_REAL))
 		be_trapped(NULL, &nh);
 		mvaddcch(player_pos->y, player_pos->x, floor_at());
-		if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
+		if ((fl & F_PASS) && level_get_ch(oldpos.y, oldpos.x) == DOOR)
 		    room_leave(&nh);
                 player_set_pos(&nh);
           }
@@ -257,7 +258,7 @@ hit_bound:
 	    {
               coord *player_pos = player_get_pos();
               mvaddcch(player_pos->y, player_pos->x, floor_at());
-              if ((fl & F_PASS) && chat(oldpos.y, oldpos.x) == DOOR)
+              if ((fl & F_PASS) && level_get_ch(oldpos.y, oldpos.x) == DOOR)
                 room_leave(&nh);
               player_set_pos(&nh);
               if (ch != STAIRS)

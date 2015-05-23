@@ -177,7 +177,7 @@ chase_do(THING *th)
 	ree = roomin(th->t_dest);
 
     /* We don't count doors as inside rooms for this routine */
-    door = (chat(th->t_pos.y, th->t_pos.x) == DOOR);
+    door = (level_get_ch(th->t_pos.y, th->t_pos.x) == DOOR);
 
     /* If the object of our desire is in a different room,
      * and we are not in a corridor, run to the door nearest to
@@ -245,8 +245,8 @@ over:
 		{
 		    list_detach(&lvl_obj, obj);
 		    list_attach(&th->t_pack, obj);
-		    chat(obj->o_pos.y, obj->o_pos.x) =
-			(th->t_room->r_flags & ISGONE) ? PASSAGE : FLOOR;
+		    level_set_ch(obj->o_pos.y, obj->o_pos.x,
+			(th->t_room->r_flags & ISGONE) ? PASSAGE : FLOOR);
 		    monster_find_new_target(th);
 		    break;
 		}

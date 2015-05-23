@@ -305,7 +305,7 @@ void player_remove_hallucinating(void)
       if (!monster_is_invisible(tp) || player_has_true_sight())
         mvaddcch(tp->t_pos.y, tp->t_pos.x, tp->t_disguise);
       else
-        mvaddcch(tp->t_pos.y, tp->t_pos.x, chat(tp->t_pos.y, tp->t_pos.x));
+        mvaddcch(tp->t_pos.y, tp->t_pos.x, level_get_ch(tp->t_pos.y, tp->t_pos.x));
     else if (player_can_sense_monsters())
       mvaddcch(tp->t_pos.y, tp->t_pos.x, tp->t_type | A_STANDOUT);
   }
@@ -490,13 +490,13 @@ player_search(void)
       if (flags & F_REAL)
         continue;
 
-      char chatyx = chat(y, x);
+      char chatyx = level_get_ch(y, x);
       switch (chatyx)
       {
         case VWALL: case HWALL:
           if (!rnd(5 + probinc))
           {
-            chat(y, x) = DOOR;
+            level_set_ch(y, x, DOOR);
             msg("a secret door");
             found = true;
             flags |= F_REAL;
@@ -507,7 +507,7 @@ player_search(void)
         case FLOOR:
           if (!rnd(2 + probinc))
           {
-            chat(y, x) = TRAP;
+            level_set_ch(y, x, TRAP);
 
             if (player_is_hallucinating())
               msg(trap_names[rnd(NTRAPS)]);
@@ -526,7 +526,7 @@ player_search(void)
         case SHADOW:
           if (!rnd(3 + probinc))
           {
-            chat(y, x) = PASSAGE;
+            level_set_ch(y, x, PASSAGE);
             found = true;
             flags |= F_REAL;
             level_set_flags(y, x, flags);

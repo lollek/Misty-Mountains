@@ -60,7 +60,7 @@ numpass(int y, int x)
 
   /* check to see if it is a door or secret door, i.e., a new exit,
    * or a numerable type of place */
-  char ch = chat(y, x);
+  char ch = level_get_ch(y, x);
   if (ch == DOOR || (!(flags & F_REAL) && (ch == VWALL || ch == HWALL)))
   {
     struct room* rp = &passages[pnum];

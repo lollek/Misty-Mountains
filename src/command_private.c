@@ -33,7 +33,7 @@ command_use_stairs(char up_or_down)
 
   if (player_is_levitating())
     msg("You can't. You're floating off the ground!");
-  else if (chat(player_pos->y, player_pos->x) != STAIRS)
+  else if (level_get_ch(player_pos->y, player_pos->x) != STAIRS)
     msg("You're not standing on any stairs");
 
   else if (up_or_down == '>') /* DOWN */
@@ -224,7 +224,7 @@ command_identify_trap(void)
 
   int flags = level_get_flags(delta.y, delta.x);
 
-  if (chat(delta.y, delta.x) != TRAP)
+  if (level_get_ch(delta.y, delta.x) != TRAP)
     msg("no trap there");
   else if (player_has_confusing_attack())
     msg(trap_names[rnd(NTRAPS)]);

@@ -261,7 +261,7 @@ show_map(void)
       if (!(real & F_REAL))
         wstandout(hw);
       wmove(hw, y, x);
-      waddcch(hw, chat(y, x));
+      waddcch(hw, level_get_ch(y, x));
       if (!real)
         wstandend(hw);
     }

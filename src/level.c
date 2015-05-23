@@ -65,7 +65,7 @@ treas_room(void)
     room_find_floor(room, &monster_pos, 2 * MAXTRIES, false);
     monster->o_pos = monster_pos;
     list_attach(&lvl_obj, monster);
-    chat(monster_pos.y, monster_pos.x) = (char) monster->o_type;
+    level_set_ch(monster_pos.y, monster_pos.x, monster->o_type);
   }
 
   /* fill up room with monsters from the next level down */
@@ -118,7 +118,7 @@ put_things(void)
 
       /* Put it somewhere */
       room_find_floor((struct room *) NULL, &obj->o_pos, false, false);
-      chat(obj->o_pos.y, obj->o_pos.x) = (char) obj->o_type;
+      level_set_ch(obj->o_pos.y, obj->o_pos.x, obj->o_type);
     }
 
   /* If he is really deep in the dungeon and he hasn't found the
@@ -136,7 +136,7 @@ put_things(void)
 
     /* Put it somewhere */
     room_find_floor((struct room *) NULL, &obj->o_pos, false, false);
-    chat(obj->o_pos.y, obj->o_pos.x) = AMULET;
+    level_set_ch(obj->o_pos.y, obj->o_pos.x, AMULET);
   }
 }
 
@@ -189,7 +189,7 @@ level_new(void)
        */
       do
         room_find_floor((struct room *) NULL, &stairs, false, false);
-      while (chat(stairs.y, stairs.x) != FLOOR);
+      while (level_get_ch(stairs.y, stairs.x) != FLOOR);
 
       char trapflag = level_get_flags(stairs.y, stairs.x);
       trapflag &= ~F_REAL;
@@ -200,7 +200,7 @@ level_new(void)
 
   /* Place the staircase down.  */
   room_find_floor((struct room *) NULL, &stairs, false, false);
-  chat(stairs.y, stairs.x) = STAIRS;
+  level_set_ch(stairs.y, stairs.x, STAIRS);
 
   for (THING* monster = mlist; monster != NULL; monster = monster->l_next)
     monster->t_room = roomin(&monster->t_pos);
@@ -239,7 +239,7 @@ level_get_type(int y, int x)
 {
   THING* monster = level_get_monster(y, x);
   return monster == NULL
-    ? chat(y, x)
+    ? level_get_ch(y, x)
     : monster->t_disguise;
 }
 
@@ -265,4 +265,14 @@ void
 level_set_flags(int y, int x, char flags)
 {
   places[(x << 5) + y].p_flags = flags;
+}
+
+char level_get_ch(int y, int x)
+{
+  return places[(x << 5) + y].p_ch;
+}
+
+void level_set_ch(int y, int x, char ch)
+{
+  places[(x << 5) + y].p_ch = ch;
 }

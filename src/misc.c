@@ -117,8 +117,9 @@ look(bool wakeup)
       if (((xy_flags & F_PASS) || xy_ch == DOOR)
           && ((player_flags & F_PASS) || player_ch == DOOR))
       {
-        if (player_pos->x != x && player_pos->y != y &&
-            !step_ok(chat(y, player_pos->x)) && !step_ok(chat(player_pos->y, x)))
+        if (player_pos->x != x && player_pos->y != y
+            && !step_ok(level_get_ch(y, player_pos->x))
+            && !step_ok(level_get_ch(player_pos->y, x)))
           continue;
       }
 
@@ -490,7 +491,7 @@ set_oldch(THING* tp, coord* cp)
         (tp->t_room->r_flags & ISDARK))
       tp->t_oldch = SHADOW;
     else if (dist_cp(cp, player_get_pos()) <= LAMPDIST && see_floor)
-      tp->t_oldch = chat(cp->y, cp->x);
+      tp->t_oldch = level_get_ch(cp->y, cp->x);
   }
 }
 
@@ -508,8 +509,8 @@ see_monst(THING* monster)
   if (dist(monster_y, monster_x, player_pos->y, player_pos->x) < LAMPDIST)
   {
     if (monster_y != player_pos->y && monster_x != player_pos->x
-        && !step_ok(chat(monster_y, player_pos->x))
-        && !step_ok(chat(player_pos->y, monster_x)))
+        && !step_ok(level_get_ch(monster_y, player_pos->x))
+        && !step_ok(level_get_ch(player_pos->y, monster_x)))
       return false;
     return true;
   }
@@ -545,7 +546,8 @@ diag_ok(coord const* sp, coord const* ep)
     return false;
   if (ep->x == sp->x || ep->y == sp->y)
     return true;
-  return (bool)(step_ok(chat(ep->y, sp->x)) && step_ok(chat(sp->y, ep->x)));
+  return (bool)(step_ok(level_get_ch(ep->y, sp->x))
+             && step_ok(level_get_ch(sp->y, ep->x)));
 }
 
 bool
@@ -560,8 +562,8 @@ cansee(int y, int x)
   {
     if (level_get_flags(y, x) & F_PASS)
       if (y != player_pos->y && x != player_pos->x &&
-          !step_ok(chat(y, player_pos->x))
-          && !step_ok(chat(player_pos->y, x)))
+          !step_ok(level_get_ch(y, player_pos->x))
+          && !step_ok(level_get_ch(player_pos->y, x)))
         return false;
     return true;
   }
@@ -629,7 +631,7 @@ char
 floor_at(void)
 {
   coord *player_pos = player_get_pos();
-  char ch = chat(player_pos->y, player_pos->x);
+  char ch = level_get_ch(player_pos->y, player_pos->x);
   return ch == FLOOR ? floor_ch() : ch;
 }
 

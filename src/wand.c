@@ -219,7 +219,7 @@ wand_spell_drain_health(void)
      * First cnt how many things we need to spread the hit points among
      */
     cnt = 0;
-    if (chat(player_pos->y, player_pos->x) == DOOR)
+    if (level_get_ch(player_pos->y, player_pos->x) == DOOR)
 	corp = &passages[level_get_flags(player_pos->y, player_pos->x) & F_PNUM];
     else
 	corp = NULL;
@@ -228,7 +228,7 @@ wand_spell_drain_health(void)
     for (mp = mlist; mp != NULL; mp = mp->l_next)
 	if (mp->t_room == player_get_room()
             || mp->t_room == corp
-            ||(inpass && chat(mp->t_pos.y, mp->t_pos.x) == DOOR &&
+            ||(inpass && level_get_ch(mp->t_pos.y, mp->t_pos.x) == DOOR &&
               &passages[level_get_flags(mp->t_pos.y, mp->t_pos.x) & F_PNUM]
               == player_get_room()))
 		*dp++ = mp;
@@ -282,7 +282,7 @@ wand_spell_polymorph(THING *target)
   was_seen = see_monst(target);
   if (was_seen)
   {
-    mvaddcch(y, x, chat(y, x));
+    mvaddcch(y, x, level_get_ch(y, x));
     addmsg("%s", set_mname(target));
   }
   oldch = target->t_oldch;
@@ -582,7 +582,7 @@ def:
 		{
 		    hit_hero = true;
 		    changed = !changed;
-		    tp->t_oldch = chat(pos.y, pos.x);
+		    tp->t_oldch = level_get_ch(pos.y, pos.x);
 		    if (!monster_save_throw(VS_MAGIC, tp))
 		    {
 			bolt.o_pos = pos;
@@ -630,7 +630,7 @@ def:
 	}
     }
     for (c2 = spotpos; c2 < c1; c2++)
-	mvaddcch(c2->y, c2->x, chat(c2->y, c2->x));
+	mvaddcch(c2->y, c2->x, level_get_ch(c2->y, c2->x));
 }
 
 char *

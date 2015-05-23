@@ -141,7 +141,7 @@ do_motion(THING *obj, int ydelta, int xdelta)
     if (!same_coords(&obj->o_pos, player_pos) &&
         cansee(obj->o_pos.y, obj->o_pos.x) && !terse)
     {
-      ch = chat(obj->o_pos.y, obj->o_pos.x);
+      ch = level_get_ch(obj->o_pos.y, obj->o_pos.x);
       if (ch == FLOOR && !show_floor())
         ch = SHADOW;
       mvaddcch(obj->o_pos.y, obj->o_pos.x, ch);
@@ -312,7 +312,7 @@ fallpos(coord *pos, coord *newpos)
        */
       if (y == player_pos->y && x == player_pos->x)
         continue;
-      if (((ch = chat(y, x)) == FLOOR || ch == PASSAGE)
+      if (((ch = level_get_ch(y, x)) == FLOOR || ch == PASSAGE)
           && rnd(++cnt) == 0)
       {
         newpos->y = y;
