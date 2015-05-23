@@ -38,6 +38,7 @@ void level_new(void);
 bool level_save_state(void);
 bool level_load_state(void);
 
-char level_thing_at_pos(int y, int x);
+char level_objtype_at_pos(int y, int x);
+THING* level_monster_at_pos(int y, int x);
 
 #endif /* _ROGUE14_LEVEL_H_ */

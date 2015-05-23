@@ -108,7 +108,7 @@ chase(THING *tp, coord *ee)
       if (!diag_ok(er, &tryp))
         continue;
 
-      ch = level_thing_at_pos(y, x);
+      ch = level_objtype_at_pos(y, x);
       if (step_ok(ch))
       {
         /* If it is a scroll, it might be a scare monster scroll
@@ -264,7 +264,7 @@ over:
 
     if (!same_coords(&ch_ret, &th->t_pos))
     {
-      char ch = level_thing_at_pos(ch_ret.y, ch_ret.x);
+      char ch = level_objtype_at_pos(ch_ret.y, ch_ret.x);
       char fl = flat(ch_ret.y, ch_ret.x);
 
       /* Remove monster from old position */

@@ -234,7 +234,7 @@ level_load_state(void)
 }
 
 char
-level_thing_at_pos(int y, int x)
+level_objtype_at_pos(int y, int x)
 {
   THING* monster = moat(y, x);
   return monster == NULL
