@@ -575,10 +575,10 @@ void
 player_modify_strength(int amount)
 {
   player.t_stats.s_str += amount;
-  if (player.t_stats.s_str < 3)
-    player.t_stats.s_str = 3;
-  else if (player.t_stats.s_str > 31)
-    player.t_stats.s_str = 31;
+  if (player.t_stats.s_str < player_min_strength)
+    player.t_stats.s_str = player_min_strength;
+  else if (player.t_stats.s_str > player_max_strength)
+    player.t_stats.s_str = player_max_strength;
 
   player_update_max_strength();
 }
