@@ -478,7 +478,7 @@ void player_teleport(coord *target)
 bool
 player_search(void)
 {
-  int probinc = (player_is_hallucinating() ? 3:0) + player_is_blind() ? 2:0;
+  int probinc = (player_is_hallucinating() ? 3:0) + (player_is_blind() ? 2:0);
   bool found = false;
   coord *player_pos = player_get_pos();
 

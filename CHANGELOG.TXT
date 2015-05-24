@@ -9,6 +9,8 @@ v1.2.8
   Leprechauns now drop gold even when going up the stairs
   Removed many trippy sentences
   Removed autopickup when moving on top of items
+  Fixed a bug causing searching to be harder than it should be.
+    Being blind / hallucinating now causes searching to be harder as well
 
 v1.2.7
   Made -j flag automatically set
