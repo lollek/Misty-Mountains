@@ -17,7 +17,6 @@ bool after = false;			/* True if we want after daemons */
 bool again = false;			/* Repeating the last command */
 bool door_stop = false;			/* Stop running when we pass a door */
 bool firstmove = false;			/* First move after setting door_stop */
-bool has_hit = false;			/* Has a "hit" message pending in msg */
 bool kamikaze = false;			/* to_death really to DEATH */
 bool running = false;			/* True if player is running */
 bool to_death = false;			/* Fighting is to the death! */

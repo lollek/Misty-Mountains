@@ -43,7 +43,6 @@ extern bool after;
 extern bool again;
 extern bool door_stop;
 extern bool firstmove;
-extern bool has_hit;
 extern bool kamikaze;
 extern bool running;
 extern bool to_death;
