@@ -15,8 +15,8 @@ struct monster {
 
 /* Variables, TODO: Remove these */
 extern struct monster monsters[];
-THING* mlist;  /* List of monsters on the level */
-int vf_hit;
+extern THING* mlist;  /* List of monsters on the level */
+extern int vf_hit;
 
 bool monsters_save_state(void);
 

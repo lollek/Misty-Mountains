@@ -25,7 +25,7 @@ enum ring_t {
 };
 
 /* Variables: TODO: Make these private */
-struct obj_info ring_info[NRINGS];
+extern struct obj_info ring_info[NRINGS];
 
 void ring_init(void);
 bool ring_save_state(void);

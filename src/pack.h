@@ -7,7 +7,6 @@
 
 #include "things.h"
 
-int const RENAMEABLE; /* Type of item which can be renamed */
 
 enum equipment_pos
 {
@@ -19,9 +18,10 @@ enum equipment_pos
 };
 
 /* Variables. TODO: Move these */
+extern int const RENAMEABLE; /* Type of item which can be renamed */
 #define RING_SLOTS_SIZE 2
-enum equipment_pos ring_slots[RING_SLOTS_SIZE];
-int purse;
+extern enum equipment_pos ring_slots[RING_SLOTS_SIZE];
+extern int purse;
 
 bool pack_save_state(void);
 bool pack_load_state(void);

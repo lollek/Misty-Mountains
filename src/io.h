@@ -45,9 +45,9 @@
 #define STICK		'/'
 
 /* Variables, TODO: Remove these */
-char huh[MAXSTR];
-WINDOW* hw;/* used as a scratch window */
-int mpos;
+extern char huh[MAXSTR];
+extern WINDOW* hw;/* used as a scratch window */
+extern int mpos;
 
 void fatal(char const* msg, ...); /* Kill program with an error message */
 

@@ -125,7 +125,7 @@ typedef union thing {
 #define GOLDCALC	(rnd(50 + 10 * level) + 2)
 
 #define NUMTHINGS 7
-struct obj_info things[NUMTHINGS];
+extern struct obj_info things[NUMTHINGS];
 
 /* Return the name of something as it would appear in an inventory. */
 char *inv_name(THING *obj, bool drop);

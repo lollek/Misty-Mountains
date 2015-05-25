@@ -6,6 +6,7 @@
 #include "things.h"
 
 typedef unsigned int usecs;
+
 int rand_r(unsigned* seedp);
 int usleep(usecs usec);
 int setreuid(uid_t ruid, uid_t euid);

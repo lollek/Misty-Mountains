@@ -6,7 +6,7 @@
 
 /* upper limit on number of passages */
 #define MAXPASS 13
-struct room passages[MAXPASS];
+extern struct room passages[MAXPASS];
 
 void passages_add_pass(void);
 void passages_do(void);

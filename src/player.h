@@ -6,14 +6,14 @@
 #include "rogue.h"
 
 /* Variable (TODO: remove these) */
-int food_left;
-int hungry_state;
-int no_command;
-int no_food;
-int no_move;
+extern int food_left;
+extern int hungry_state;
+extern int no_command;
+extern int no_food;
+extern int no_move;
 
 void* __player_ptr(void);
-struct stats max_stats;
+extern struct stats max_stats;
 
 /* General */
 void player_init(void);

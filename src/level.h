@@ -24,12 +24,12 @@ typedef struct {
     THING* p_monst;
 } PLACE;
 
-PLACE places[MAXLINES*MAXCOLS];  /* level map */
-coord stairs;   /* Location of staircase */
-THING* lvl_obj; /* List of objects on this level */
+extern PLACE places[MAXLINES*MAXCOLS];  /* level map */
+extern coord stairs;   /* Location of staircase */
+extern THING* lvl_obj; /* List of objects on this level */
 
-int level;      /* What level she is on */
-int max_level;  /* Deepest player has gone */
+extern int level;      /* What level she is on */
+extern int max_level;  /* Deepest player has gone */
 
 void level_new(void);
 bool level_save_state(void);
