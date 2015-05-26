@@ -34,6 +34,8 @@
 
 static THING *last_wielded_weapon = NULL;
 
+struct obj_info weap_info[MAXWEAPONS +1];
+
 int group = 2;
 
 static struct init_weaps {

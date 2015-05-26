@@ -61,13 +61,7 @@ parse_args(int argc, char* const* argv)
   };
 
   /* Global default options */
-  ESCDELAY = 0;                 /* Set the delay before ESC cancels */
-  terse = false;                /* Terse output */
-  fight_flush = false;          /* Flush typeahead during battle */
-  jump = true;                  /* Show running as a series of jumps */
-  see_floor = true;             /* Show the lamp-illuminated floor */
-  passgo = false;               /* Follow the turnings in passageways */
-  use_colors = true;            /* Use ncurses colors */
+  ESCDELAY = 0;
 
   /* Default file name for save file */
   strcpy(file_name, get_homedir());

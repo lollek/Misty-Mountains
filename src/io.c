@@ -23,9 +23,9 @@
 
 #include "io.h"
 
-char huh[MAXSTR] = { '\0' }; /* The last message printed */
-int mpos = 0;                /* Where cursor is on top line */
+char huh[MAXSTR] = { '\0' };
 WINDOW* hw = NULL;
+int mpos = 0;
 
 #define MAXMSG	(NUMCOLS - sizeof " --More--")
 static char msgbuf[2*MAXMSG+1];

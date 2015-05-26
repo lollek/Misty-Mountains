@@ -23,6 +23,13 @@
 
 #include "options.h"
 
+bool terse        = false;
+bool fight_flush  = false;
+bool jump         = true;
+bool see_floor    = true;
+bool passgo       = false;
+bool use_colors   = true;
+
 static bool
 get_bool(void* vp, WINDOW* win)
 {

@@ -24,6 +24,9 @@
 
 #include "rooms.h"
 
+struct room* oldrp;
+struct room rooms[MAXROOMS];
+
 /* position matrix for maze positions */
 typedef struct spot {
   int nexits;

@@ -39,6 +39,7 @@
 #define MAXTRIES	10 /* max number of tries to put down a monster */
 #define MAXTRAPS	10
 
+PLACE places[MAXLINES*MAXCOLS];
 THING* lvl_obj = NULL;
 coord stairs;
 int level = 1;
