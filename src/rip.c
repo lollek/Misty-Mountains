@@ -151,7 +151,7 @@ score_print(SCORE* top_ten, SCORE* endp, int flags, int prflags)
       break;
 
     printf("%2d %5d %s: %s on level %d"
-        ,ptr - top_ten + 1       /* Position */
+        ,(int)(ptr - top_ten + 1)/* Position */
         ,ptr->sc_score           /* Score */
         ,ptr->sc_name            /* Name */
         ,reason[ptr->sc_flags]   /* Cause of death */
