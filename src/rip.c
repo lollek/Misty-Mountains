@@ -237,6 +237,9 @@ score(int amount, int flags, char monst)
   /** Update the list file */
   if (in_highscore)
     score_write(top_ten);
+
+  free(top_ten);
+  top_ten = NULL;
 }
 
 void
