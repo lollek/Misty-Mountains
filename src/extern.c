@@ -12,6 +12,7 @@
 
 #include "io.h"
 #include "coord.h"
+#include "rogue.h"
 
 bool after = false;			/* True if we want after daemons */
 bool again = false;			/* Repeating the last command */

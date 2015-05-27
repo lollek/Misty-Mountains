@@ -35,6 +35,8 @@
 #include "os.h"
 #include "rogue.h"
 
+#include "wizard.h"
+
 void
 pr_spec(char type)
 {

@@ -7,6 +7,8 @@
 #include "things.h"
 #include "io.h"
 
+#include "os.h"
+
 THING*
 allocate_new_item(void)
 {
@@ -21,4 +23,3 @@ allocate_new_item(void)
   return item;
 }
 
-#include "os.h"
