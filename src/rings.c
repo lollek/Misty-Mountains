@@ -80,21 +80,25 @@ struct obj_info ring_info[] = {
 void
 ring_init(void)
 {
-  bool used[NSTONES];
-
-  for (int i = 0; i < NSTONES; i++)
-    used[i] = false;
-
   for (int i = 0; i < NRINGS; i++)
-  {
-    size_t j;
-    do
-      j = rnd(NSTONES);
-    while (used[j]);
-    used[j] = true;
-    r_stones[i] = stones[j].st_name;
-    ring_info[i].oi_worth += stones[j].st_value;
-  }
+    for (;;)
+    {
+      int stone = rnd(NSTONES);
+
+      for (int j = 0; j < i; ++j)
+        if (r_stones[j] == stones[stone].st_name)
+        {
+          stone = -1;
+          break;
+        }
+
+      if (stone == -1)
+        continue;
+
+      r_stones[i] = stones[stone].st_name;
+      ring_info[i].oi_worth += stones[stone].st_value;
+      break;
+    }
 }
 
 bool
