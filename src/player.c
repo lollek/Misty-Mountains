@@ -593,13 +593,13 @@ player_restore_health(int amount, bool can_raise_total)
 
   if (can_raise_total)
   {
-    int amount = 0;
+    int extra_max_hp = 0;
     if (player_get_health() > player_get_max_health() + player_get_level() + 1)
-      ++amount;
+      ++extra_max_hp;
     if (player_get_health() > player_get_max_health())
-      ++amount;
+      ++extra_max_hp;
     if (amount > 0)
-      player_modify_max_health(amount);
+      player_modify_max_health(extra_max_hp);
   }
 
   if (player_get_health() > player_get_max_health())
