@@ -155,9 +155,6 @@ main(int argc, char** argv)
   {
     case LOAD_GAME: retval = init_old_game(); break;
     case NEW_GAME:  retval = init_new_game(); break;
-    default:
-      printf("Error: Failed while parsing arguments\n");
-      return 1;
   }
 
   if (retval == false)
@@ -187,7 +184,5 @@ main(int argc, char** argv)
   for (;;) command();
 
   /* CODE NOT REACHED */;
-  command_signal_endit(0);
-  return 1;
 }
 
