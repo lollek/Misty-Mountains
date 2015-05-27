@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <time.h>
+#include <stdlib.h>
 
 #include "state.h"
 #include "io.h"
@@ -19,14 +20,11 @@ static char scoreline[100];
 static bool
 lock_sc(void)
 {
-  int cnt;
-  static struct stat sbuf;
-
   lock = fopen(LOCKFILE, "w+");
   if (lock != NULL)
     return true;
 
-  for (cnt = 0; cnt < 5; cnt++)
+  for (int cnt = 0; cnt < 5; cnt++)
   {
     sleep(1);
     lock = fopen(LOCKFILE, "w+");
@@ -34,6 +32,7 @@ lock_sc(void)
       return true;
   }
 
+  struct stat sbuf;
   if (stat(LOCKFILE, &sbuf) < 0)
   {
     lock = fopen(LOCKFILE, "w+");
@@ -67,23 +66,20 @@ unlock_sc(void)
 int
 open_score_and_drop_setuid_setgid(void)
 {
-  /* NB: SCOREDIR comes from Makefile */
-  const char *scorefile = SCOREDIR "rogue14.highscore";
-
   /* Open file */
-  scoreboard = fopen(scorefile, "r+");
+  scoreboard = fopen(SCOREPATH, "r+");
 
   if (scoreboard == NULL && errno == ENOENT) {
-    scoreboard = fopen(scorefile, "w+");
+    scoreboard = fopen(SCOREPATH, "w+");
     if (scoreboard != NULL) {
-      chmod(scorefile, 0664);
-      chown(scorefile, geteuid(), getegid());
+      chmod(SCOREPATH, 0664);
+      chown(SCOREPATH, geteuid(), getegid());
     }
   }
 
   if (scoreboard == NULL) {
     fprintf(stderr, "Could not open %s for writing: %s\n",
-            scorefile, strerror(errno));
+            SCOREPATH, strerror(errno));
     fflush(stderr);
     return 1;
   }
@@ -95,11 +91,11 @@ open_score_and_drop_setuid_setgid(void)
 
     if (setregid(realgid, realgid) != 0) {
       perror("Could not drop setgid privileges.  Aborting.");
-      return 1;
+      abort();
     }
     if (setreuid(realuid, realuid) != 0) {
       perror("Could not drop setuid privileges.  Aborting.");
-      return 1;
+      abort();
     }
   }
   return 0;
@@ -108,17 +104,12 @@ open_score_and_drop_setuid_setgid(void)
 void
 score_read(SCORE *top_ten)
 {
-  unsigned int i;
-
-  if (scoreboard == NULL)
-    return;
-
-  if (!lock_sc())
+  if (scoreboard == NULL || !lock_sc())
     return;
 
   rewind(scoreboard);
 
-  for(i = 0; i < NUMSCORES; i++)
+  for (unsigned i = 0; i < NUMSCORES; i++)
   {
     encread(top_ten[i].sc_name, MAXSTR, scoreboard);
     encread(scoreline, 100, scoreboard);
@@ -136,17 +127,12 @@ score_read(SCORE *top_ten)
 void
 score_write(SCORE *top_ten)
 {
-  unsigned int i;
-
-  if (scoreboard == NULL)
-    return;
-
-  if (!lock_sc())
+  if (scoreboard == NULL !lock_sc())
     return;
 
   rewind(scoreboard);
 
-  for(i = 0; i < NUMSCORES; i++)
+  for(unsigned i = 0; i < NUMSCORES; i++)
   {
     memset(scoreline,0,100);
     encwrite(top_ten[i].sc_name, MAXSTR, scoreboard);

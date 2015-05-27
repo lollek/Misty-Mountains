@@ -31,7 +31,7 @@ typedef struct sc_ent {
 int open_score_and_drop_setuid_setgid(void);
 
 /* Read in the score file */
-void score_read(SCORE *top_ten);
+void score_read(SCORE* top_ten);
 
 /* Write out the score file */
-void score_write(SCORE *top_ten);
+void score_write(SCORE* top_ten);

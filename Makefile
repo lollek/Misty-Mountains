@@ -13,11 +13,11 @@
 PROGRAM  = rogue14
 VERSION  = 1.2.7+
 PREFIX   = /usr/local
-SCOREDIR = $(PREFIX)/share/$(PROGRAM)/
+SCOREPATH = $(PREFIX)/share/$(PROGRAM)/rogue14.highscore
 
 CC       = cc
 CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic -std=c99
-DFLAGS   = -DVERSION=\"$(VERSION)\" -DSCOREDIR=\"$(SCOREDIR)\"
+DFLAGS   = -DVERSION=\"$(VERSION)\" -DSCOREPATH=\"$(SCOREPATH)\"
 LDFLAGS  = -lcurses
 
 CFILES   = $(wildcard src/*.c)
