@@ -127,7 +127,7 @@ score_read(SCORE *top_ten)
 void
 score_write(SCORE *top_ten)
 {
-  if (scoreboard == NULL !lock_sc())
+  if (scoreboard == NULL || !lock_sc())
     return;
 
   rewind(scoreboard);

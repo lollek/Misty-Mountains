@@ -26,7 +26,7 @@ enum scroll_t
 };
 
 /* Variables */
-extern char *s_names[NSCROLLS];            /* Names of the scrolls */
+extern char* s_names[NSCROLLS];            /* Names of the scrolls */
 extern struct obj_info scr_info[NSCROLLS]; /* Scroll info */
 
 bool scroll_save_state(void);

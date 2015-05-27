@@ -31,7 +31,7 @@
 
 #include "scrolls.h"
 
-char *s_names[NSCROLLS];
+char* s_names[NSCROLLS];
 struct obj_info scr_info[NSCROLLS] = {
     { "monster confusion",		 7, 140, NULL, false },
     { "magic mapping",			 4, 150, NULL, false },
@@ -52,9 +52,7 @@ struct obj_info scr_info[NSCROLLS] = {
 bool
 scroll_save_state(void)
 {
-  int i;
-
-  for (i = 0; i < NSCROLLS; i++)
+  for (int i = 0; i < NSCROLLS; i++)
     if (state_save_string(s_names[i]))
       return 1;
   return 0;
@@ -63,9 +61,7 @@ scroll_save_state(void)
 bool
 scroll_load_state(void)
 {
-  int i;
-
-  for (i = 0; i < NSCROLLS; i++)
+  for (int i = 0; i < NSCROLLS; i++)
     if (state_load_string(&s_names[i]))
       return 1;
 
@@ -73,13 +69,12 @@ scroll_load_state(void)
 }
 
 static void
-set_know(THING *obj, struct obj_info *info)
+set_know(THING* obj, struct obj_info* info)
 {
-  char **guess;
-
   info[obj->o_which].oi_know = true;
   obj->o_flags |= ISKNOW;
-  guess = &info[obj->o_which].oi_guess;
+
+  char** guess = &info[obj->o_which].oi_guess;
   if (*guess)
   {
     free(*guess);
@@ -90,7 +85,7 @@ set_know(THING *obj, struct obj_info *info)
 static bool
 enchant_players_armor(void)
 {
-  THING *arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  THING* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == NULL)
   {
     switch (rnd(3))
@@ -112,17 +107,15 @@ enchant_players_armor(void)
 static bool
 hold_monsters(void)
 {
-  int x, y;
-  int monsters_affected = 0;
   coord *player_pos = player_get_pos();
-  THING *monster;
+  int monsters_affected = 0;
 
-  for (x = player_pos->x - 2; x <= player_pos->x + 2; x++)
+  for (int x = player_pos->x - 2; x <= player_pos->x + 2; x++)
     if (x >= 0 && x < NUMCOLS)
-      for (y = player_pos->y - 2; y <= player_pos->y + 2; y++)
+      for (int y = player_pos->y - 2; y <= player_pos->y + 2; y++)
         if (y >= 0 && y <= NUMLINES - 1)
         {
-          monster = level_get_monster(y, x);
+          THING* monster = level_get_monster(y, x);
           if (monster != NULL && monster_is_chasing(monster))
           {
             monster_become_held(monster);
@@ -149,20 +142,18 @@ static bool
 create_monster(void)
 {
   const coord *player_pos = player_get_pos();
-  THING *obj;
   coord mp;
-  int x, y;
   int i = 0;
 
-  for (y = player_pos->y - 1; y <= player_pos->y + 1; y++)
-    for (x = player_pos->x - 1; x <= player_pos->x + 1; x++)
+  for (int y = player_pos->y - 1; y <= player_pos->y + 1; y++)
+    for (int x = player_pos->x - 1; x <= player_pos->x + 1; x++)
     {
       char ch = level_get_type(y, x);
 
       if ((y == player_pos->y && x == player_pos->x)
-          ||(!step_ok(ch))
-          ||(ch == SCROLL && find_obj(y, x)->o_which == S_SCARE)
-          ||(rnd(++i) != 0))
+          || !step_ok(ch)
+          || (ch == SCROLL && find_obj(y, x)->o_which == S_SCARE)
+          || rnd(++i) != 0)
         continue;
 
       mp.y = y;
@@ -178,7 +169,7 @@ create_monster(void)
     }
   else
   {
-    obj = allocate_new_item();
+    THING *obj = allocate_new_item();
     monster_new(obj, monster_random(false), &mp);
     msg("A %s appears out of thin air", monsters[obj->t_type - 'A'].m_name);
   }
@@ -189,15 +180,13 @@ create_monster(void)
 static void
 magic_mapping(void)
 {
-  int x, y;
-  char ch;
-
   /* take all the things we want to keep hidden out of the window */
-  for (y = 1; y < NUMLINES - 1; y++)
-    for (x = 0; x < NUMCOLS; x++)
+  for (int y = 1; y < NUMLINES - 1; y++)
+    for (int x = 0; x < NUMCOLS; x++)
     {
-      PLACE *pp = INDEX(y, x);
-      switch (ch = pp->p_ch)
+      PLACE* pp = INDEX(y, x);
+      char ch = level_get_ch(y, x);
+      switch (ch)
       {
         case DOOR: case STAIRS: break;
 
@@ -245,7 +234,7 @@ def:
 
       if (ch != SHADOW)
       {
-        THING *obj = pp->p_monst;
+        THING* obj = pp->p_monst;
         if (obj != NULL)
           obj->t_oldch = ch;
         if (obj == NULL || !player_can_sense_monsters())
@@ -258,11 +247,9 @@ static bool
 food_detection(void)
 {
   bool food_seen = false;
-  THING *obj;
-
   wclear(hw);
 
-  for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
+  for (THING* obj = lvl_obj; obj != NULL; obj = obj->l_next)
     if (obj->o_type == FOOD)
     {
       food_seen = true;
@@ -280,7 +267,7 @@ food_detection(void)
 static bool
 player_enchant_weapon(void)
 {
-  THING *weapon = pack_equipped_item(EQUIPMENT_RHAND);
+  THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon == NULL)
   {
     switch (rnd(2))
@@ -305,8 +292,7 @@ player_enchant_weapon(void)
 static void
 remove_curse(void)
 {
-  int i;
-  for (i = 0; i < NEQUIPMENT; ++i)
+  for (int i = 0; i < NEQUIPMENT; ++i)
     if (pack_equipped_item((enum equipment_pos)i) != NULL)
       pack_uncurse_item(pack_equipped_item((enum equipment_pos)i));
 
@@ -318,7 +304,7 @@ remove_curse(void)
 static bool
 protect_armor(void)
 {
-  THING *arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  THING* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == NULL)
   {
     switch (rnd(2))
@@ -337,15 +323,13 @@ protect_armor(void)
 void
 identify(void)
 {
-  THING *obj;
-
   if (pack_is_empty())
   {
     msg("you don't have anything in your pack to identify");
     return;
   }
 
-  obj = pack_get_item("identify", 0);
+  THING* obj = pack_get_item("identify", 0);
   if (obj == NULL)
     return;
 
@@ -357,16 +341,14 @@ identify(void)
     case RING:   set_know(obj, ring_info); break;
     case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
   }
+
   msg(inv_name(obj, false));
 }
 
 bool
 read_scroll(void)
 {
-  THING *obj = pack_get_item("read", SCROLL);
-  THING *orig_obj;
-  bool discardit = false;
-
+  THING* obj = pack_get_item("read", SCROLL);
   if (obj == NULL)
     return false;
 
@@ -379,9 +361,9 @@ read_scroll(void)
   }
 
   /* Get rid of the thing */
-  discardit = (bool)(obj->o_count == 1);
+  bool discardit = obj->o_count == 1;
   pack_remove(obj, false, false);
-  orig_obj = obj;
+  THING* orig_obj = obj;
 
   switch (obj->o_which)
   {
