@@ -49,20 +49,25 @@ struct obj_info pot_info[NPOTIONS] = {
 void
 potions_init(void)
 {
-  bool used[color_max()];
-
-  for (int i = 0; i < color_max(); i++)
-    used[i] = false;
-
+  /* Pick a unique color for each potion */
   for (int i = 0; i < NPOTIONS; i++)
-  {
-    int j;
-    do
-      j = rnd(color_max());
-    while (used[j]);
-    used[j] = true;
-    p_colors[i] = color_get(j);
-  }
+    for (;;)
+    {
+      int color = rnd(color_max());
+
+      for (int j = 0; j < i; ++j)
+        if (p_colors[j] == color_get(color))
+        {
+          color = -1;
+          break;
+        }
+
+      if (color == -1)
+        continue;
+
+      p_colors[i] = color_get(color);
+      break;
+    }
 }
 
 
@@ -135,30 +140,30 @@ potion_quaff_something(void)
   {
     case P_CONFUSE:
       if (!player_is_hallucinating())
-        potion_learn(obj->o_which);
+        potion_learn(P_CONFUSE);
       player_set_confused(false);
       break;
 
     case P_POISON:
-      potion_learn(obj->o_which);
+      potion_learn(P_POISON);
       player_become_poisoned();
       break;
 
     case P_HEALING:
-      potion_learn(obj->o_which);
+      potion_learn(P_HEALING);
       player_restore_health(roll(player_get_level(), 4), true);
       player_remove_blind();
       msg("you begin to feel better");
       break;
 
     case P_STRENGTH:
-      potion_learn(obj->o_which);
+      potion_learn(P_STRENGTH);
       player_modify_strength(1);
       msg("you feel stronger, now.  What bulging muscles!");
       break;
 
     case P_MFIND:
-      potion_learn(obj->o_which);
+      potion_learn(P_MFIND);
       player_add_sense_monsters(false);
       break;
 
@@ -174,7 +179,7 @@ potion_quaff_something(void)
           {
             show = true;
             mvwaddcch(hw, item->o_pos.y, item->o_pos.x, MAGIC);
-            potion_learn(obj->o_which);
+            potion_learn(P_TFIND);
           }
 
         for (THING* monster = mlist; monster != NULL; monster = monster->l_next)
@@ -188,7 +193,7 @@ potion_quaff_something(void)
 
       if (show)
       {
-        potion_learn(obj->o_which);
+        potion_learn(P_TFIND);
         show_win("You sense the presence of magic on this level.--More--");
 
       }
@@ -198,7 +203,7 @@ potion_quaff_something(void)
     break;
 
     case P_LSD:
-      potion_learn(obj->o_which);
+      potion_learn(P_LSD);
       player_set_hallucinating(false);
       break;
 
@@ -207,12 +212,12 @@ potion_quaff_something(void)
       break;
 
     case P_RAISE:
-      potion_learn(obj->o_which);
+      potion_learn(P_RAISE);
       player_raise_level();
       break;
 
     case P_XHEAL:
-      potion_learn(obj->o_which);
+      potion_learn(P_XHEAL);
       player_restore_health(roll(player_get_level(), 8), true);
       player_remove_blind();
       player_remove_hallucinating();
@@ -220,7 +225,7 @@ potion_quaff_something(void)
       break;
 
     case P_HASTE:
-      potion_learn(obj->o_which);
+      potion_learn(P_HASTE);
       player_increase_speed(false);
       break;
 
@@ -235,12 +240,12 @@ potion_quaff_something(void)
       break;
 
     case P_BLIND:
-      potion_learn(obj->o_which);
+      potion_learn(P_BLIND);
       player_set_blind(false);
       break;
 
     case P_LEVIT:
-      potion_learn(obj->o_which);
+      potion_learn(P_LEVIT);
       player_start_levitating(false);
       break;
 
