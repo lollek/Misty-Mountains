@@ -391,11 +391,11 @@ rnd_thing(void)
     case 8: return GOLD;
     case 9:
       if (level < AMULETLEVEL)
-        (void)fail("rnd_thing: Amulet spawned at a too low level", (void));
+        (void)fail("rnd_thing: Amulet spawned at a too low level", NULL);
       return AMULET;
 
     default:
-      (void)fail("rnd_thing got %d, expected value between 0 and 9", (void));
+      (void)fail("rnd_thing got %d, expected value between 0 and 9", NULL);
       return GOLD;
   }
 }
