@@ -24,16 +24,10 @@
 
 #include "save.h"
 
-static const char encstr[] = "\300k||`\251Y.'\305\321\201+\277~r\"]\240_\223=1\341)\222\212\241t;\t$\270\314/<#\201\254";
-static const char statlist[] = "\355kl{+\204\255\313idJ\361\214=4:\311\271\341wK<\312\321\213,,7\271/Rk%\b\312\f\246";
-
 /* Write the saved game on the file */
 static bool
-save_file(FILE *savef)
+save_file(FILE* savef)
 {
-  int error = 0;
-  char buf[80];
-
   chmod(file_name, 0400);
 
 #ifdef NDEBUG
@@ -46,9 +40,11 @@ save_file(FILE *savef)
 #endif
 
   encwrite(GAME_VERSION, strlen(GAME_VERSION)+1, savef);
+
+  char buf[80];
   sprintf(buf,"%d x %d\n", LINES, COLS);
-  encwrite(buf,80,savef);
-  error = state_save_file(savef);
+  encwrite(buf, 80, savef);
+  int error = state_save_file(savef);
 
   fflush(savef);
   fclose(savef);
@@ -59,14 +55,9 @@ bool
 save_game(void)
 {
   FILE *savef = NULL;
-  bool did_save = false;
-
-  after = false; /* This does not count as a move */
   mpos = 0;
-
   while (savef == NULL)
   {
-    struct stat sbuf;
     msg("save to file? ");
     if (readstr(file_name) != 0)
     {
@@ -76,6 +67,7 @@ save_game(void)
     mpos = 0;
 
     /* test to see if the file exists */
+    struct stat sbuf;
     if (stat(file_name, &sbuf) >= 0)
     {
       int c;
@@ -91,11 +83,12 @@ save_game(void)
       unlink(file_name);
     }
 
-    if ((savef = fopen(file_name, "w")) == NULL)
+    savef = fopen(file_name, "w");
+    if (savef == NULL)
       msg(strerror(errno));
   }
 
-  did_save = save_file(savef);
+  bool did_save = save_file(savef);
   if (did_save)
   {
     endwin();
@@ -109,9 +102,6 @@ save_game(void)
 void
 auto_save(int sig)
 {
-  FILE *savef;
-  bool did_save = false;
-
   (void)sig;
 
   /* Ignore all signals that might have sent us here */
@@ -125,11 +115,14 @@ auto_save(int sig)
   signal(SIGSYS, SIG_IGN);
   signal(SIGTERM, SIG_IGN);
 
+  bool did_save = false;
+
   /* Always auto-save to ~/.rogue14_rescue */
   strcpy(file_name, get_homedir());
   strcat(file_name, ".rogue14_rescue");
   unlink(file_name);
-  if ((savef = fopen(file_name, "w")) != NULL)
+  FILE* savef = fopen(file_name, "w");
+  if (savef != NULL)
     did_save = save_file(savef);
 
   endwin();
@@ -145,49 +138,3 @@ auto_save(int sig)
   }
 }
 
-size_t
-encwrite(const char *start, size_t size, FILE *outf)
-{
-  const char *e1 = encstr;
-  const char *e2 = statlist;
-  char fb = 0;
-  size_t i;
-
-  for (i = size; i > 0; --i)
-  {
-    if (putc(*start++ ^ *e1 ^ *e2 ^ fb, outf) == EOF)
-      break;
-
-    fb += *e1++ * *e2++;
-    if (*e1 == '\0')
-      e1 = encstr;
-    if (*e2 == '\0')
-      e2 = statlist;
-  }
-
-  return(size - i);
-}
-
-size_t
-encread(char *start, size_t size, FILE *inf)
-{
-  const char *e1 = encstr;
-  const char *e2 = statlist;
-  char fb = 0;
-  size_t read_size;
-
-  if ((read_size = fread(start,1,size,inf)) == 0)
-    return(read_size);
-
-  while (size--)
-  {
-    *start++ ^= *e1 ^ *e2 ^ fb;
-    fb += *e1++ * *e2++;
-    if (*e1 == '\0')
-      e1 = encstr;
-    if (*e2 == '\0')
-      e2 = statlist;
-  }
-
-  return(read_size);
-}

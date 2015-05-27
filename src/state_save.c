@@ -28,9 +28,33 @@
 
 #define rs_assert(_a) if (_a) { return msg("Error (#%d)", __LINE__); }
 
-extern int group;
+char const encstr[] = "\300k||`\251Y.'\305\321\201+\277~r\"]\240_\223=1\341)\222\212\241t;\t$\270\314/<#\201\254";
+char const statlist[] = "\355kl{+\204\255\313idJ\361\214=4:\311\271\341wK<\312\321\213,,7\271/Rk%\b\312\f\246";
 
 static FILE* file;
+
+size_t
+encwrite(char const* start, size_t size, FILE* outf)
+{
+  char const* e1 = encstr;
+  char const* e2 = statlist;
+  char fb = 0;
+  size_t i;
+
+  for (i = size; i > 0; --i)
+  {
+    if (putc(*start++ ^ *e1 ^ *e2 ^ fb, outf) == EOF)
+      break;
+
+    fb += *e1++ * *e2++;
+    if (*e1 == '\0')
+      e1 = encstr;
+    if (*e2 == '\0')
+      e2 = statlist;
+  }
+
+  return size - i;
+}
 
 static bool
 state_write(void const* buf, int32_t length)

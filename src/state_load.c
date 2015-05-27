@@ -66,6 +66,30 @@ extern int group;
               state_load_char(&(_p)[temp_i].p_flags) || \
               rs_read_thing_reference( mlist, &(_p)[temp_i].p_monst))
 
+size_t
+encread(char* start, size_t size, FILE* inf)
+{
+  char const* e1 = encstr;
+  char const* e2 = statlist;
+  char fb = 0;
+
+  size_t read_size = fread(start, 1, size, inf);
+  if (read_size == 0)
+    return 0;
+
+  while (size--)
+  {
+    *start++ ^= *e1 ^ *e2 ^ fb;
+    fb += *e1++ * *e2++;
+    if (*e1 == '\0')
+      e1 = encstr;
+    if (*e2 == '\0')
+      e2 = statlist;
+  }
+
+  return read_size;
+}
+
 static bool
 state_read(void* buf, int32_t length)
 {
