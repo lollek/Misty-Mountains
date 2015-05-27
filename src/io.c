@@ -67,6 +67,7 @@ flushmsg(void)
   return ~KEY_ESCAPE;
 }
 
+__attribute__((__format__(__printf__, 1, 0)))
 static void
 doadd(char const* fmt, va_list args, bool end_of_command)
 {
@@ -167,6 +168,7 @@ colorize(const chtype ch)
 }
 
 #ifndef NDEBUG
+__attribute__((__format__(__printf__, 1, 2)))
 bool
 fail(char const* fmt, ...)
 {
@@ -187,6 +189,7 @@ clearmsg(void)
   return ~KEY_ESCAPE;
 }
 
+__attribute__((__format__(__printf__, 1, 2)))
 int
 msg(char const* fmt, ...)
 {
@@ -203,6 +206,7 @@ msg(char const* fmt, ...)
   return ~KEY_ESCAPE;
 }
 
+__attribute__((__format__(__printf__, 1, 2)))
 void
 addmsg(char const* fmt, ...)
 {
@@ -362,6 +366,7 @@ wreadstr(WINDOW* win, char* dest)
   return c == KEY_ESCAPE ? 1 : 0;
 }
 
+__attribute__((__format__(__printf__, 1, 2)))
 void
 fatal(char const* msg, ...)
 {
