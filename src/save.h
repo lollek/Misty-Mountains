@@ -7,7 +7,7 @@
 bool save_game(void);
 
 /* Automatically save a file.  This is used if a HUP signal is recieved */
-void auto_save(int signal);
+void auto_save(int signal) __attribute__((noreturn));
 
 /* Perform an encrypted write */
 size_t encwrite(const char *start, size_t size, FILE *outf);

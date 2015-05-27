@@ -89,7 +89,6 @@ armor_type_random(void)
   readchar(false);
   endwin();
   exit(1);
-  return 0;
 }
 
 void

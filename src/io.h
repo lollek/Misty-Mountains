@@ -49,7 +49,8 @@ extern char huh[MAXSTR]; /* The last message printed */
 extern WINDOW* hw;       /* used as a scratch window */
 extern int mpos;         /* Where cursor is on top line */
 
-void fatal(char const* msg, ...); /* Kill program with an error message */
+/* Kill program with an error message */
+void fatal(char const* msg, ...) __attribute__((noreturn));
 
 char const* get_homedir(void); /* returns e.g. /home/user/ */
 
