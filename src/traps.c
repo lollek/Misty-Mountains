@@ -19,8 +19,7 @@
 
 #include "traps.h"
 
-
-const char *trap_names[NTRAPS] = {
+char const* trap_names[NTRAPS] = {
   "a trapdoor",
   "an arrow trap",
   "a sleeping gas trap",
@@ -41,7 +40,7 @@ trap_door_player(void)
 }
 
 static enum trap_t
-trap_door_monster(THING *victim)
+trap_door_monster(THING* victim)
 {
   assert_monster(victim);
 
@@ -60,7 +59,7 @@ trap_bear_player(void)
 }
 
 static enum trap_t
-trap_bear_monster(THING *victim)
+trap_bear_monster(THING* victim)
 {
   assert_monster(victim);
 
@@ -91,7 +90,7 @@ trap_myst_player(void)
 }
 
 static enum trap_t
-trap_myst_monster(THING *victim)
+trap_myst_monster(THING* victim)
 {
   assert_monster(victim);
 
@@ -109,7 +108,7 @@ trap_sleep_player(void)
 }
 
 static enum trap_t
-trap_sleep_monster(THING *victim)
+trap_sleep_monster(THING* victim)
 {
   assert_monster(victim);
 
@@ -135,7 +134,7 @@ trap_arrow_player(void)
   }
   else
   {
-    THING *arrow = allocate_new_item();
+    THING* arrow = allocate_new_item();
     init_weapon(arrow, ARROW);
     arrow->o_count = 1;
     arrow->o_pos = *player_get_pos();
@@ -146,7 +145,7 @@ trap_arrow_player(void)
 }
 
 static enum trap_t
-trap_arrow_monster(THING *victim)
+trap_arrow_monster(THING* victim)
 {
   assert_monster(victim);
 
@@ -164,7 +163,7 @@ trap_arrow_monster(THING *victim)
   }
   else
   {
-    THING *arrow = allocate_new_item();
+    THING* arrow = allocate_new_item();
     init_weapon(arrow, ARROW);
     arrow->o_count = 1;
     arrow->o_pos = victim->t_pos;
@@ -176,7 +175,7 @@ trap_arrow_monster(THING *victim)
 }
 
 static enum trap_t
-trap_telep_player(coord *trap_coord)
+trap_telep_player(coord* trap_coord)
 {
   player_teleport(NULL);
   mvaddcch(trap_coord->y, trap_coord->x, TRAP); /* Mark trap before we leave */
@@ -184,13 +183,11 @@ trap_telep_player(coord *trap_coord)
 }
 
 static enum trap_t
-trap_telep_monster(THING *victim)
+trap_telep_monster(THING* victim)
 {
-  bool was_seen;
-
   assert_monster(victim);
 
-  was_seen = see_monst(victim);
+  bool was_seen = see_monst(victim);
   if (was_seen)
     addmsg("%s ", set_mname(victim));
 
@@ -230,7 +227,7 @@ trap_dart_player(void)
 }
 
 static enum trap_t
-trap_dart_monster(THING *victim)
+trap_dart_monster(THING* victim)
 {
   assert_monster(victim);
 
@@ -261,24 +258,23 @@ trap_rust_player(void)
 }
 
 static enum trap_t
-trap_rust_monster(THING *victim)
+trap_rust_monster(THING* victim)
 {
   assert_monster(victim);
+
   if (see_monst(victim))
     msg("a gush of water hits %s", set_mname(victim));
   return T_RUST;
 }
 
 enum trap_t
-be_trapped(THING *victim, coord *trap_coord)
+be_trapped(THING* victim, coord* trap_coord)
 {
-  bool player = victim == NULL;
-  PLACE *pp;
-  char tr;
-
   assert(trap_coord != NULL);
-  pp = INDEX(trap_coord->y, trap_coord->x);
-  tr = pp->p_flags & F_TMASK;
+
+  bool player = victim == NULL;
+  PLACE* pp = INDEX(trap_coord->y, trap_coord->x);
+  char tr = pp->p_flags & F_TMASK;
 
   if (player)
   {

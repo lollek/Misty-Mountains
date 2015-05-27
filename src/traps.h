@@ -20,8 +20,8 @@ enum trap_t
 
 /* Trap victim with trap at position (since it has not yet moved there).
  * if player, victim should be NULL */
-enum trap_t be_trapped(THING *victim, coord *trap_coord);
-extern const char *trap_names[NTRAPS];
+enum trap_t be_trapped(THING* victim, coord* trap_coord);
+extern char const* trap_names[NTRAPS];
 
 
 #endif /* _ROGUE14_TRAPS_H_ */
