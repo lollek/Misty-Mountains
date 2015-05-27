@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <linux/limits.h>
+#include <assert.h>
 
 #include "armor.h"
 #include "misc.h"
@@ -31,7 +32,7 @@ int mpos = 0;
 static char msgbuf[2*MAXMSG+1];
 static int newpos = 0;
 
-int
+static int
 flushmsg(void)
 {
   /* Nothing to show */
@@ -303,6 +304,8 @@ wreadstr(WINDOW* win, char* dest)
   int c = ~KEY_ESCAPE;
   int i = (int)strlen(dest);
   int oy, ox;
+
+  assert(i >= 0);
 
   flushmsg();
   getyx(win, oy, ox);
