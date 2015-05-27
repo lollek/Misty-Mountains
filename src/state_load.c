@@ -24,7 +24,6 @@
 
 #include "state.h"
 
-#define ERROR 1
 #define SUCCESS 0
 
 #define rs_assert(_a) if (_a) { return printf("Error (#%d)", __LINE__); }
@@ -70,11 +69,14 @@ extern int group;
 static bool
 state_read(void* buf, int32_t length)
 {
-  assert(file != NULL);
-  assert(buf != NULL);
-  assert(length > 0);
+  if (file == NULL)
+    return fail("state_read(%p, %d) File is NULL\r\n", buf, length);
+  if (buf == NULL)
+    return fail("state_read(%p, %d) Buffer is NULL\r\n", buf, length);
+  if (length <= 0)
+    return fail("state_read(%p, %d) Length is too short\r\n", buf, length);
 
-  return(int32_t)encread(buf, length, file) == length
+  return encread(buf, (size_t)length, file) == (size_t)length
     ? SUCCESS
     : fail("state_read:(buf: %p, length: %d)\r\n", buf, length);
 }
