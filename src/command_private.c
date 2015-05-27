@@ -107,7 +107,7 @@ command_name_item(void)
     case FOOD: msg("Don't play with your food!"); return false;
 
     case RING:
-      already_known = ring_is_known(obj->o_which);
+      already_known = ring_is_known((enum ring_t)obj->o_which);
       guess =        &ring_info[obj->o_which].oi_guess;
       break;
 
@@ -122,7 +122,7 @@ command_name_item(void)
       break;
 
     case STICK:
-      already_known = wand_is_known(obj->o_which);
+      already_known = wand_is_known((enum wand)obj->o_which);
       guess =         NULL;
       break;
 
@@ -144,7 +144,7 @@ command_name_item(void)
   if (readstr(tmpbuf) == 0)
   {
     if (obj->o_type == STICK)
-      wand_set_name(obj->o_which, tmpbuf);
+      wand_set_name((enum wand)obj->o_which, tmpbuf);
     else if (guess != NULL)
     {
       if (*guess != NULL) {
@@ -179,7 +179,7 @@ command_identify_character(void)
   if (isalpha(ch))
   {
     ch = toupper(ch);
-    msg("'%s': %s", unctrl(ch), monsters[ch - 'A'].m_name);
+    msg("'%s': %s", unctrl((chtype)ch), monsters[ch - 'A'].m_name);
     return false;
   }
 
@@ -202,11 +202,11 @@ command_identify_character(void)
   for (struct character_list const* ptr = ident_list; ptr->ch != '\0'; ++ptr)
     if (ptr->ch == ch)
     {
-      msg("'%s': %s", unctrl(ch), ptr->description);
+      msg("'%s': %s", unctrl((chtype)ch), ptr->description);
       return false;
     }
 
-  msg("'%s': %s", unctrl(ch), "unknown character");
+  msg("'%s': %s", unctrl((chtype)ch), "unknown character");
   return false;
 }
 
@@ -232,7 +232,7 @@ command_identify_trap(void)
   {
     msg(trap_names[flags & F_TMASK]);
     flags |= F_SEEN;
-    level_set_flags(delta.y, delta.x, flags);
+    level_set_flags(delta.y, delta.x, (char)flags);
   }
   return false;
 }
@@ -549,7 +549,7 @@ command_run(char ch, bool cautiously)
   }
 
   running = true;
-  runch = tolower(ch);
+  runch = (char)tolower(ch);
   return move_do(runch);
 }
 

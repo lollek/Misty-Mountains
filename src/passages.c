@@ -72,7 +72,7 @@ numpass(int y, int x)
     return;
 
   flags |= pnum;
-  level_set_flags(y, x, flags);
+  level_set_flags(y, x, (char)flags);
 
   /* recurse on the surrounding places */
   numpass(y + 1, x);

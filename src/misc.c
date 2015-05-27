@@ -125,7 +125,7 @@ look(bool wakeup)
 
       THING* monster = xy_pos->p_monst;
       if (monster == NULL)
-        xy_ch = trip_ch(y, x, xy_ch);
+        xy_ch = (char)trip_ch(y, x, xy_ch);
       else
       {
         if (player_can_sense_monsters() && monster_is_invisible(monster))
@@ -141,7 +141,7 @@ look(bool wakeup)
           if (see_monst(monster))
           {
             xy_ch = player_is_hallucinating()
-              ? rnd(26) + 'A'
+              ? (char)(rnd(26) + 'A')
               : monster->t_disguise;
           }
         }
@@ -407,7 +407,7 @@ is_magic(THING const* obj)
   {
     case ARMOR:
       return (bool)(obj->o_flags & ISPROT) ||
-             obj->o_arm != armor_ac(obj->o_which);
+             obj->o_arm != armor_ac((enum armor_t)obj->o_which);
 
     case WEAPON:
       return obj->o_hplus != 0 || obj->o_dplus != 0;

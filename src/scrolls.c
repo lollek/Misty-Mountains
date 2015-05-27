@@ -307,8 +307,8 @@ remove_curse(void)
 {
   int i;
   for (i = 0; i < NEQUIPMENT; ++i)
-    if (pack_equipped_item(i) != NULL)
-      pack_uncurse_item(pack_equipped_item(i));
+    if (pack_equipped_item((enum equipment_pos)i) != NULL)
+      pack_uncurse_item(pack_equipped_item((enum equipment_pos)i));
 
   msg(player_is_hallucinating()
       ? "you feel in touch with the Universal Onenes"

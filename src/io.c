@@ -27,7 +27,7 @@ char huh[MAXSTR] = { '\0' };
 WINDOW* hw = NULL;
 int mpos = 0;
 
-#define MAXMSG	(NUMCOLS - sizeof " --More--")
+#define MAXMSG	(int)(NUMCOLS - sizeof " --More--")
 static char msgbuf[2*MAXMSG+1];
 static int newpos = 0;
 
@@ -76,7 +76,7 @@ doadd(char const* fmt, va_list args, bool end_of_command)
   char buf[MAXSTR];
   vsprintf(buf, fmt, args);
 
-  unsigned msgsize = newpos + strlen(buf);
+  int msgsize = newpos + (int)strlen(buf);
   if (new_sentence)
     msgsize += separatorlen;
 
@@ -300,8 +300,8 @@ bool
 wreadstr(WINDOW* win, char* dest)
 {
   char buf[MAXSTR];
-  signed char c = ~KEY_ESCAPE;
-  unsigned i = strlen(dest);
+  int c = ~KEY_ESCAPE;
+  int i = (int)strlen(dest);
   int oy, ox;
 
   flushmsg();
@@ -342,8 +342,8 @@ wreadstr(WINDOW* win, char* dest)
 
     else if (i < MAXINP && (isprint(c) || c == ' '))
     {
-      buf[i++] = c;
-      waddch(win, c);
+      buf[i++] = (char)c;
+      waddch(win, (chtype)c);
     }
   }
 

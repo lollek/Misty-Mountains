@@ -66,7 +66,7 @@ treas_room(void)
     room_find_floor(room, &monster_pos, 2 * MAXTRIES, false);
     monster->o_pos = monster_pos;
     list_attach(&lvl_obj, monster);
-    level_set_ch(monster_pos.y, monster_pos.x, monster->o_type);
+    level_set_ch(monster_pos.y, monster_pos.x, (char)monster->o_type);
   }
 
   /* fill up room with monsters from the next level down */
@@ -119,7 +119,7 @@ put_things(void)
 
       /* Put it somewhere */
       room_find_floor((struct room *) NULL, &obj->o_pos, false, false);
-      level_set_ch(obj->o_pos.y, obj->o_pos.x, obj->o_type);
+      level_set_ch(obj->o_pos.y, obj->o_pos.x, (char)obj->o_type);
     }
 
   /* If he is really deep in the dungeon and he hasn't found the

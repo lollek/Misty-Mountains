@@ -300,10 +300,10 @@ daemon_change_visuals(void)
       if (tp->t_type == 'X' && tp->t_disguise != 'X')
         mvaddcch(tp->t_pos.y, tp->t_pos.x, rnd_thing());
       else
-        mvaddcch(tp->t_pos.y, tp->t_pos.x, rnd(26) + 'A');
+        mvaddcch(tp->t_pos.y, tp->t_pos.x, (chtype)(rnd(26) + 'A'));
     }
     else if (seemonst)
-      mvaddcch(tp->t_pos.y, tp->t_pos.x, (rnd(26) + 'A') | A_STANDOUT);
+      mvaddcch(tp->t_pos.y, tp->t_pos.x, (chtype)(rnd(26) + 'A') | A_STANDOUT);
   }
 }
 

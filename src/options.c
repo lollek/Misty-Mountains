@@ -106,7 +106,7 @@ option(void)
   coord const msg_pos =
   {
     .y = 0,
-    .x = strlen(query)
+    .x = (int)strlen(query)
   };
   msg(query);
 
@@ -126,7 +126,7 @@ option(void)
     waddch(optscr, '\n');
   }
 
-  char c = ~KEY_ESCAPE;
+  char c = (char)~KEY_ESCAPE;
   do
   {
     wmove(optscr, msg_pos.y, msg_pos.x);

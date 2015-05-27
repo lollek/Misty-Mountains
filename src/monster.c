@@ -235,7 +235,7 @@ monster_new_random_wanderer(void)
   if (player_can_sense_monsters())
   {
     if (player_is_hallucinating())
-      addcch((rnd(26) + 'A') | A_STANDOUT);
+      addcch((chtype)(rnd(26) + 'A') | A_STANDOUT);
     else
       addcch(monster->t_type | A_STANDOUT);
   }

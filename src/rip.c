@@ -216,7 +216,7 @@ score(int amount, int flags, char monst)
     ptr->sc_flags = rand_r(&seed);
     ptr->sc_level = rand_r(&seed);
     ptr->sc_monster = rand_r(&seed);
-    ptr->sc_uid = rand_r(&seed);
+    ptr->sc_uid = (unsigned)rand_r(&seed);
   }
 
   signal(SIGINT, SIG_DFL);

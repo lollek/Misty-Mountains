@@ -142,9 +142,9 @@ pack_print_evaluate_item(THING* obj)
       break;
 
     case ARMOR:
-      worth = armor_value(obj->o_which);
+      worth = armor_value((enum armor_t)obj->o_which);
       worth += (9 - obj->o_arm) * 100;
-      worth += (10 * (armor_ac(obj->o_which) - obj->o_arm));
+      worth += (10 * (armor_ac((enum armor_t)obj->o_which) - obj->o_arm));
       obj->o_flags |= ISKNOW;
       break;
 
@@ -184,12 +184,12 @@ pack_print_evaluate_item(THING* obj)
       break;
 
     case STICK:
-      wand_get_worth(obj->o_which);
+      wand_get_worth((enum wand)obj->o_which);
       worth += 20 * obj->o_charges;
       if (!(obj->o_flags & ISKNOW))
         worth /= 2;
       obj->o_flags |= ISKNOW;
-      wand_set_known(obj->o_which);
+      wand_set_known((enum wand)obj->o_which);
       break;
 
     case AMULET:
@@ -583,7 +583,7 @@ pack_print_inventory(int type)
   coord orig_pos;
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
-  unsigned num_items = 0;
+  int num_items = 0;
   /* Print out all items */
   for (THING* list = player_pack; list != NULL; list = list->l_next)
   {
@@ -616,7 +616,7 @@ pack_evaluate(void)
   clear();
   mvaddstr(0, 0, "Worth  Item  [Equipment]\n");
   for (int i = 0; i < NEQUIPMENT; ++i)
-    value += pack_print_evaluate_item(pack_equipped_item(i));
+    value += pack_print_evaluate_item(pack_equipped_item((enum equipment_pos)i));
 
   addstr("\nWorth  Item  [Inventory]\n");
   for (THING* obj = player_pack; obj != NULL; obj = obj->l_next)
@@ -698,10 +698,10 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   {
     coord const* player_pos = player_get_pos();
     list_attach(&lvl_obj, obj);
-    level_set_ch(player_pos->y, player_pos->x, obj->o_type);
+    level_set_ch(player_pos->y, player_pos->x, (char)obj->o_type);
     int flags = level_get_flags(player_pos->y, player_pos->x);
     flags |= F_DROPPED;
-    level_set_flags(player_pos->y, player_pos->x, flags);
+    level_set_flags(player_pos->y, player_pos->x, (char)flags);
     obj->o_pos = *player_pos;
     msg("dropped %s", inv_name(obj, true));
   }

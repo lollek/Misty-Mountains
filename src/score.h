@@ -16,19 +16,19 @@
 #define NUMSCORES    10    /* Number of highscore entries */
 
 typedef struct sc_ent {
-  unsigned int sc_uid;
+  unsigned sc_uid;
   int sc_score;
-  unsigned int sc_flags;
-  unsigned short sc_monster;
+  int sc_flags;
+  int sc_monster;
   char sc_name[MAXSTR];
   int sc_level;
-  unsigned int sc_time;
+  unsigned sc_time;
 } SCORE;
 
 /* Open up the score file for future use
  * We drop setgid privileges after opening the score file, so subsequent
  * open()'s will fail.  Just reuse the earlier filehandle. */
-int open_score_and_drop_setuid_setgid();
+int open_score_and_drop_setuid_setgid(void);
 
 /* Read in the score file */
 void score_read(SCORE *top_ten);

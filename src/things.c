@@ -57,7 +57,7 @@ type_to_string(int type, int which)
     case SCROLL: return "scroll";
     case FOOD: return which == 1 ? "fruit" : "food ration";
     case WEAPON: return weap_info[which].oi_name;
-    case ARMOR: return armor_name(which);
+    case ARMOR: return armor_name((enum armor_t)which);
     default: return "something";
   }
 }
@@ -131,7 +131,7 @@ inv_name(THING *obj, bool drop)
       break;
     case ARMOR:
       {
-        int bonus_ac = armor_ac(which) - obj->o_arm;
+        int bonus_ac = armor_ac((enum armor_t)which) - obj->o_arm;
         int base_ac = 10 - obj->o_arm - bonus_ac;
 
         pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
@@ -155,11 +155,11 @@ inv_name(THING *obj, bool drop)
       break;
     default:
       msg("You feel a disturbance in the force");
-      pb += sprintf(pb, "Something bizarre %s", unctrl(obj->o_type));
+      pb += sprintf(pb, "Something bizarre %s", unctrl((chtype)obj->o_type));
       break;
   }
 
-  buf[0] = drop ? tolower(buf[0]) : toupper(buf[0]);
+  buf[0] = drop ? (char)tolower(buf[0]) : (char)toupper(buf[0]);
   buf[MAXSTR-1] = '\0';
   return buf;
 }
@@ -185,10 +185,10 @@ drop(void)
 
   /* Link it into the level object list */
   list_attach(&lvl_obj, obj);
-  level_set_ch(player_pos->y, player_pos->x, obj->o_type);
+  level_set_ch(player_pos->y, player_pos->x, (char)obj->o_type);
   int flags = level_get_flags(player_pos->y, player_pos->x);
   flags |= F_DROPPED;
-  level_set_flags(player_pos->y, player_pos->x, flags);
+  level_set_flags(player_pos->y, player_pos->x, (char)flags);
   obj->o_pos = *player_pos;
   msg("dropped %s", inv_name(obj, true));
   return true;
@@ -223,7 +223,7 @@ new_thing(void)
   if (no_food > 3)
     r = 2;
   else
-    r = pick_one(things, NUMTHINGS);
+    r = (int)pick_one(things, NUMTHINGS);
 
   /* Decide what kind of object it will be
    * If we haven't had food for a while, let it be food. */
@@ -232,12 +232,12 @@ new_thing(void)
     case 0:
       cur = new_generic_thing();
       cur->o_type = POTION;
-      cur->o_which = pick_one(pot_info, NPOTIONS);
+      cur->o_which = (int)pick_one(pot_info, NPOTIONS);
       break;
     case 1:
       cur = new_generic_thing();
       cur->o_type = SCROLL;
-      cur->o_which = pick_one(scr_info, NSCROLLS);
+      cur->o_which = (int)pick_one(scr_info, NSCROLLS);
       break;
     case 2:
       cur = new_generic_thing();
@@ -248,7 +248,7 @@ new_thing(void)
     case 3:
       cur = new_generic_thing();
 
-      init_weapon(cur, pick_one(weap_info, MAXWEAPONS));
+      init_weapon(cur, (int)pick_one(weap_info, MAXWEAPONS));
       r = rnd(100);
       if (r < 10)
       {
@@ -263,7 +263,7 @@ new_thing(void)
 
       cur->o_type = ARMOR;
       cur->o_which = armor_type_random();
-      cur->o_arm = armor_ac(cur->o_which);
+      cur->o_arm = armor_ac((enum armor_t)cur->o_which);
       r = rnd(100);
       if (r < 20)
       {
@@ -276,7 +276,7 @@ new_thing(void)
     case 5:
       cur = new_generic_thing();
       cur->o_type = RING;
-      cur->o_which = pick_one(ring_info, NRINGS);
+      cur->o_which = (int)pick_one(ring_info, NRINGS);
       switch (cur->o_which)
       {
         case R_ADDSTR:
@@ -313,7 +313,7 @@ pick_one(struct obj_info *start, int nitems)
 
   for (ptr = start ; ptr != end; ++ptr)
     if (i < ptr->oi_prob)
-      return ptr - start;
+      return (unsigned)(ptr - start);
     else
       i -= ptr->oi_prob;
 
@@ -385,7 +385,7 @@ discovered(void)
       POTION, SCROLL, RING, STICK);
   while (true)
   {
-    int ch = readchar(true);
+    char ch = readchar(true);
     touchwin(stdscr);
     refresh();
     switch (ch)

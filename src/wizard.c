@@ -65,8 +65,8 @@ pr_spec(char type)
 
     if (type == ARMOR)
     {
-      name = armor_name(i);
-      prob = armor_probability(i);
+      name = armor_name((enum armor_t)i);
+      prob = armor_probability((enum armor_t)i);
     }
     else
     {
@@ -90,9 +90,9 @@ print_things(void)
     WEAPON, ARMOR, RING,
     STICK
   };
-  unsigned num_items = 0;
-  unsigned i;
-  unsigned end = NUMTHINGS;
+  int num_items = 0;
+  int i;
+  int end = NUMTHINGS;
   WINDOW *tmp = dupwin(stdscr);
   coord orig_pos;
 
@@ -121,7 +121,7 @@ pr_list(void)
   touchwin(stdscr);
   refresh();
 
-  pr_spec(ch);
+  pr_spec((char)ch);
   clearmsg();
   msg("--Press any key to continue--");
   readchar(false);
@@ -200,7 +200,7 @@ create_obj(void)
         }
         else
         {
-          obj->o_arm = armor_ac(obj->o_which);
+          obj->o_arm = armor_ac((enum armor_t)obj->o_which);
           if (bless == '-')
             obj->o_arm += rnd(3)+1;
           if (bless == '+')

@@ -167,7 +167,7 @@ state_load_string(char** s)
     *s = NULL;
   else
   {
-    *s = malloc(len);
+    *s = malloc((size_t)len);
     if (*s == NULL)
       return fail("state_load_string(s: %p[%p]) malloc(%d) failed\r\n",
                   s, *s, len);
@@ -222,13 +222,13 @@ rs_read_window(WINDOW *win)
       if (state_load_int32(&value) != 0)
         return 1;
       else if ((row < height) && (col < width))
-        mvwaddcch(win,row,col,value);
+        mvwaddcch(win, row, col, (chtype)value);
     }
 
   return 0;
 }
 
-void *
+static void *
 get_list_item(THING *l, int i)
 {
     int count;

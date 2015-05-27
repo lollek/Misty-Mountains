@@ -24,7 +24,6 @@
 
 #include "state.h"
 
-#define ERROR 1
 #define SUCCESS 0
 
 #define rs_assert(_a) if (_a) { return msg("Error (#%d)", __LINE__); }
@@ -43,7 +42,7 @@ state_write(void const* buf, int32_t length)
   if (length <= 0)
     return fail("rs_write(%p, %d) Length is too small%d\r\n", buf, length);
 
-  return(int32_t)encwrite(buf, length, file) == length
+  return encwrite(buf, (size_t)length, file) == (size_t)length
     ? SUCCESS
     : fail("rs_write(%p, %d)\r\n", buf, length);
 }
@@ -85,7 +84,7 @@ state_save_bools(bool const* c, int32_t count)
 
 static bool state_save_char(char c)
 {
-  return state_save_int8(c)
+  return state_save_int8((int8_t)c)
     ? fail("state_save_char('%c')\r\n", c)
     : SUCCESS;
 }
@@ -217,10 +216,10 @@ state_save_thing(THING const* t)
   return
     state_save_int32(1) ||
     state_save_coord(&t->_t._t_pos) ||
-    state_save_int8(t->_t._t_turn) ||
-    state_save_int8(t->_t._t_type) ||
-    state_save_int8(t->_t._t_disguise) ||
-    state_save_int8(t->_t._t_oldch) ||
+    state_save_bool(t->_t._t_turn) ||
+    state_save_char(t->_t._t_type) ||
+    state_save_char(t->_t._t_disguise) ||
+    state_save_char(t->_t._t_oldch) ||
     state_save_dest(t->t_dest) ||
     state_save_int32( t->_t._t_flags) ||
     state_save_stats( &t->_t._t_stats) ||
@@ -239,7 +238,7 @@ state_save_object(THING const* o)
     state_save_int32(o->_o._o_type) ||
     state_save_coord(&o->_o._o_pos) ||
     state_save_int32(o->_o._o_launch) ||
-    state_save_int8(o->_o._o_packch) ||
+    state_save_char(o->_o._o_packch) ||
     state_save_chars(o->_o._o_damage, sizeof(o->_o._o_damage)) ||
     state_save_chars(o->_o._o_hurldmg, sizeof(o->_o._o_hurldmg)) ||
     state_save_int32(o->_o._o_count) ||
@@ -472,7 +471,7 @@ state_save_file(FILE* savef)
 
   rs_assert(state_save_bool(firstmove))
   rs_assert(state_save_chars(file_name, maxstr))
-  rs_assert(state_save_int8(runch))
+  rs_assert(state_save_char(runch))
   rs_assert(state_save_chars(whoami, maxstr))
   rs_assert(state_save_int32(hungry_state))
   rs_assert(state_save_int32(no_food))
@@ -480,7 +479,7 @@ state_save_file(FILE* savef)
   rs_assert(state_save_int32(no_move))
   rs_assert(state_save_int32(purse))
   rs_assert(state_save_int32(vf_hit))
-  rs_assert(state_save_int32(seed))
+  rs_assert(state_save_int32((int32_t)seed))
 
   rs_assert(state_save_equipment(EQUIPMENT_ARMOR, RSID_ARMOR))
   rs_assert(state_save_equipment(EQUIPMENT_RHAND, RSID_RHAND))

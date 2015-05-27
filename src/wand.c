@@ -83,7 +83,7 @@ void wand_init(void)
 
   for (i = 0; i < MAXSTICKS; i++)
   {
-    size_t j = rnd(NMATERIAL);
+    int j = rnd(NMATERIAL);
 
     while (used[j])
       j = rnd(NMATERIAL);
@@ -156,7 +156,7 @@ wand_create(int wand)
 
   new_wand->o_type = STICK;
   if (wand < 0 || wand >= MAXSTICKS)
-    new_wand->o_which = pick_one(wands, MAXSTICKS);
+    new_wand->o_which = (int)pick_one(wands, MAXSTICKS);
   else
     new_wand->o_which = wand;
 
@@ -289,7 +289,7 @@ wand_spell_polymorph(THING *target)
 
   pos.y = y;
   pos.x = x;
-  monster = rnd(26) + 'A';
+  monster = (char)(rnd(26) + 'A');
   same_monster = monster == target->t_type;
 
   monster_new(target, monster, &pos);
@@ -657,12 +657,13 @@ wand_description(THING *obj, char *buf)
       sprintf(ptr, " [%d charges]", obj->o_charges);
 
     ptr += strlen(ptr);
-    sprintf(ptr, " (%s)", wand_material(obj->o_which));
+    sprintf(ptr, " (%s)", wand_material((enum wand)obj->o_which));
   }
   else if (obj->o_count == 1)
-    sprintf(ptr, "A %s wand", wand_material(obj->o_which));
+    sprintf(ptr, "A %s wand", wand_material((enum wand)obj->o_which));
   else
-    sprintf(ptr, "%d %s wands", obj->o_count, wand_material(obj->o_which));
+    sprintf(ptr, "%d %s wands", obj->o_count,
+            wand_material((enum wand)obj->o_which));
 
   return buf;
 }

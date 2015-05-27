@@ -70,10 +70,10 @@ static int e_levels[] = {
 };
 
 
-static unsigned
+static int
 player_get_strength_bonuses(void)
 {
-  unsigned bonuses = 0;
+  int bonuses = 0;
   for (int i = 0; i < RING_SLOTS_SIZE; ++i)
   {
     THING const* ring = pack_equipped_item(ring_slots[i]);
@@ -243,7 +243,7 @@ player_add_sense_monsters(bool permanent)
     if (!see_monst(monster))
     {
       mvaddcch(monster->t_pos.y, monster->t_pos.x,
-          (player_is_hallucinating() ? rnd(26) + 'A' : monster->t_type)
+          (player_is_hallucinating() ? (char)(rnd(26) + 'A') : monster->t_type)
             | A_STANDOUT);
       spotted_something = true;
     }
@@ -500,7 +500,7 @@ player_search(void)
             msg("a secret door");
             found = true;
             flags |= F_REAL;
-            level_set_flags(y, x, flags);
+            level_set_flags(y, x, (char)flags);
           }
           break;
 
@@ -514,12 +514,12 @@ player_search(void)
             else {
               msg(trap_names[flags & F_TMASK]);
               flags |= F_SEEN;
-              level_set_flags(y, x, flags);
+              level_set_flags(y, x, (char)flags);
             }
 
             found = true;
             flags |= F_SEEN;
-            level_set_flags(y, x, flags);
+            level_set_flags(y, x, (char)flags);
           }
           break;
 
@@ -529,7 +529,7 @@ player_search(void)
             level_set_ch(y, x, PASSAGE);
             found = true;
             flags |= F_REAL;
-            level_set_flags(y, x, flags);
+            level_set_flags(y, x, (char)flags);
           }
           break;
       }

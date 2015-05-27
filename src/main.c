@@ -68,7 +68,7 @@ parse_args(int argc, char* const* argv)
   strncat(file_name, ".rogue14_save", MAXSTR - strlen(get_homedir()) -1);
 
   /* Set seed and dungeon number */
-  seed = time(NULL) + getpid();
+  seed = (unsigned)(time(NULL) + getpid());
 
   for (;;)
   {
@@ -85,13 +85,13 @@ parse_args(int argc, char* const* argv)
       case 'F': see_floor = false; break;
       case 'j': jump = false; break;
       case 'n': if (strlen(optarg))
-                  strucpy(whoami, optarg, strlen(optarg));
+                  strucpy(whoami, optarg, (int)strlen(optarg));
                 break;
       case 'p': passgo = true; break;
       case 'r': game_mode = LOAD_GAME; break;
       case 's': score(0, -1, 0);
                 exit(0);
-      case 'S': seed = atoi(optarg); break;
+      case 'S': seed = (unsigned)atoi(optarg); break;
       case 't': terse = true; break;
       case 'W': wizard = true; break;
       case '0':

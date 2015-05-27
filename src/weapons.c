@@ -30,13 +30,13 @@
 
 #include "weapons.h"
 
-#define NO_WEAPON -1
+
+struct obj_info weap_info[MAXWEAPONS +1];
+int group = 2;
 
 static THING *last_wielded_weapon = NULL;
 
-struct obj_info weap_info[MAXWEAPONS +1];
-
-int group = 2;
+#define NO_WEAPON '\0'
 
 static struct init_weaps {
     char *iw_dam;	/* Damage when wielded */
@@ -146,7 +146,7 @@ do_motion(THING *obj, int ydelta, int xdelta)
       ch = level_get_ch(obj->o_pos.y, obj->o_pos.x);
       if (ch == FLOOR && !show_floor())
         ch = SHADOW;
-      mvaddcch(obj->o_pos.y, obj->o_pos.x, ch);
+      mvaddcch(obj->o_pos.y, obj->o_pos.x, (chtype)ch);
     }
 
     /* Get the new position */
@@ -159,7 +159,7 @@ do_motion(THING *obj, int ydelta, int xdelta)
       if (cansee(obj->o_pos.y, obj->o_pos.x) && !terse)
       {
         usleep(10000);
-        mvaddcch(obj->o_pos.y, obj->o_pos.x, obj->o_type);
+        mvaddcch(obj->o_pos.y, obj->o_pos.x, (chtype)obj->o_type);
         refresh();
       }
       continue;
@@ -184,7 +184,7 @@ fall(THING *obj, bool pr)
       if (pp->p_monst != NULL)
         pp->p_monst->t_oldch = (char) obj->o_type;
       else
-        mvaddcch(fpos.y, fpos.x, obj->o_type);
+        mvaddcch(fpos.y, fpos.x, (chtype)obj->o_type);
     }
     list_attach(&lvl_obj, obj);
     return;

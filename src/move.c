@@ -135,7 +135,7 @@ over:
             level_set_ch(nh.y, nh.x, ch);
             int flags = level_get_flags(nh.y, nh.x);
             flags |= F_REAL;
-            level_set_flags(nh.y, nh.x, flags);
+            level_set_flags(nh.y, nh.x, (char)flags);
 	}
     }
     else if (player_is_held() && ch != 'F')

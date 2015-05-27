@@ -66,7 +66,7 @@ sumprobs(char ch)
   int sum = 0;
   for (int i = 0; i < max; ++i)
   {
-    if (ch == ARMOR) sum += armor_probability(i);
+    if (ch == ARMOR) sum += armor_probability((enum armor_t)i);
     else             sum += ((struct obj_info*)ptr)[i].oi_prob;
   }
 
@@ -83,8 +83,8 @@ sumprobs(char ch)
     char const* name;
     if (ch == ARMOR)
     {
-      prob = armor_probability(i);
-      name = armor_name(i);
+      prob = armor_probability((enum armor_t)i);
+      name = armor_name((enum armor_t)i);
     }
     else
     {
@@ -223,7 +223,7 @@ init_new_game(void)
     struct passwd const* pw = getpwuid(getuid());
     char const* name = pw ? pw->pw_name : "nobody";
 
-    strucpy(whoami, name, strlen(name));
+    strucpy(whoami, name, (int)strlen(name));
   }
 
   printf("Hello %s, just a moment while I dig the dungeon...", whoami);

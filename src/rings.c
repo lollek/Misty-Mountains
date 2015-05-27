@@ -172,7 +172,7 @@ ring_put_on(void)
 
   char buf[MAXSTR];
   ring_description(obj, buf);
-  buf[0] = tolower(buf[0]);
+  buf[0] = (char)tolower(buf[0]);
   msg("now wearing %s", buf);
   return true;
 }
