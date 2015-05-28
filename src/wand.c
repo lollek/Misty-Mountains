@@ -497,116 +497,142 @@ wand_zap(void)
     return true;
 }
 
+static bool
+fire_bolt_handle_bounces(coord* pos, coord* dir, char* dirch, bool retval)
+{
+  char ch = level_get_type(pos->y, pos->x);
+  if (ch != DOOR && ch != VWALL && ch != HWALL)
+    return retval;
 
+  /* Figure out if the door is horizontal or vertical */
+  if (ch == DOOR)
+  {
+    if (dir->x != 0 && dir->y == 0)
+      ch = VWALL;
+    else if (dir->y != 0 && dir->x == 0)
+      ch = HWALL;
+    else if (dir->y < 0)
+      ch = level_get_ch(pos->y + 1, pos->x) == VWALL
+        ? VWALL : HWALL;
+    else if (dir->y > 0)
+      ch = level_get_ch(pos->y - 1, pos->x) == VWALL
+        ? VWALL : HWALL;
+  }
+  assert(ch == HWALL || ch == VWALL);
+
+  /* Handle potential bouncing */
+  if (ch == VWALL)
+  {
+    pos->x -= dir->x;
+    dir->x = -dir->x;
+  }
+  else if (ch == HWALL)
+  {
+    pos->y -= dir->y;
+    dir->y = -dir->y;
+  }
+
+  if (*dirch == '\\')
+    *dirch = '/';
+  else if (*dirch == '/')
+    *dirch = '\\';
+
+  /* It's possible for a bolt to bounce directly from one wall to another
+   * if you hit a corner, thus, we need to go through everything again */
+  return fire_bolt_handle_bounces(pos, dir, dirch, true);
+}
 
 void
-fire_bolt(coord *start, coord *dir, char *name)
+fire_bolt(coord* start, coord* dir, char* name)
 {
-    coord *c1, *c2;
-    THING *tp;
-    char dirch = 0, ch;
-    bool hit_hero, used, changed;
-    static coord pos;
-    static coord spotpos[BOLT_LENGTH];
-    THING bolt;
+  char dirch = '?';
+  switch (dir->y + dir->x)
+  {
+    case 0: dirch = '/'; break;
+    case 1: case -1: dirch = (dir->y == 0 ? HWALL : VWALL); break;
+    case 2: case -2: dirch = '\\'; break;
+  }
+  assert (dirch != '?');
 
-    bolt.o_type = WEAPON;
-    bolt.o_which = FLAME;
-    strncpy(bolt.o_hurldmg,"6x6",sizeof(bolt.o_hurldmg));
-    bolt.o_hplus = 100;
-    bolt.o_dplus = 0;
-    weap_info[FLAME].oi_name = name;
-    switch (dir->y + dir->x)
+  coord pos = *start;
+  struct charcoord {
+    int y;
+    int x;
+    char ch;
+  } spotpos[BOLT_LENGTH];
+
+  int i;
+  for (i = 0; i < BOLT_LENGTH; ++i)
+  {
+    pos.y += dir->y;
+    pos.x += dir->x;
+
+    if (fire_bolt_handle_bounces(&pos, dir, &dirch, false))
+      msg("the %s bounces", name);
+
+    /* Handle potential hits */
+    if (same_coords(&pos, player_get_pos()))
     {
-	case 0: dirch = '/'; break;
-	case 1: case -1: dirch = (dir->y == 0 ? HWALL : VWALL); break;
-	case 2: case -2: dirch = '\\'; break;
+      if (!player_save_throw(VS_MAGIC))
+      {
+        player_lose_health(roll(6, 6));
+        if (player_get_health() <= 0)
+        {
+          if (start == player_get_pos())
+            death('b');
+          else
+            death(level_get_monster(start->y, start->x)->t_type);
+        }
+        msg("you are hit by the %s", name);
+      }
+      else
+        msg("the %s whizzes by you", name);
     }
-    pos = *start;
-    hit_hero = (bool)(start != player_get_pos());
-    used = false;
-    changed = false;
-    for (c1 = spotpos; c1 <= &spotpos[BOLT_LENGTH-1] && !used; c1++)
+
+    THING* tp = level_get_monster(pos.y, pos.x);
+    if (tp != NULL)
     {
-	pos.y += dir->y;
-	pos.x += dir->x;
-	*c1 = pos;
-	ch = level_get_type(pos.y, pos.x);
-	switch (ch)
-	{
-	    case DOOR:
-		/*
-		 * this code is necessary if the hero is on a door
-		 * and he fires at the wall the door is in, it would
-		 * otherwise loop infinitely
-		 */
-		if (same_coords(player_get_pos(), &pos))
-		    goto def;
-		/* FALLTHROUGH */
-	    case VWALL: case HWALL: case SHADOW:
-		if (!changed)
-		    hit_hero = !hit_hero;
-		changed = false;
-		dir->y = -dir->y;
-		dir->x = -dir->x;
-		c1--;
-		msg("the %s bounces", name);
-		break;
-	    default:
-def:
-		if (!hit_hero && (tp = level_get_monster(pos.y, pos.x)) != NULL)
-		{
-		    hit_hero = true;
-		    changed = !changed;
-		    tp->t_oldch = level_get_ch(pos.y, pos.x);
-		    if (!monster_save_throw(VS_MAGIC, tp))
-		    {
-			bolt.o_pos = pos;
-			used = true;
-			if (tp->t_type == 'D' && strcmp(name, "flame") == 0)
-			    msg("the flame bounces off the dragon");
-			else
-			    hit_monster(pos.y, pos.x, &bolt);
-		    }
-		    else if (ch != 'M' || tp->t_disguise == 'M')
-		    {
-			if (start == player_get_pos())
-			    monster_start_running(&pos);
-			if (terse)
-			    msg("%s misses", name);
-			else
-			    msg("the %s whizzes past %s", name, set_mname(tp));
-		    }
-		}
-		else if (hit_hero && same_coords(&pos, player_get_pos()))
-		{
-		    hit_hero = false;
-		    changed = !changed;
-		    if (!player_save_throw(VS_MAGIC))
-		    {
-			player_lose_health(roll(6, 6));
-			if (player_get_health() <= 0)
-			{
-			    if (start == player_get_pos())
-				death('b');
-			    else
-                              death(level_get_monster(start->y, start->x)->t_type);
-			}
-			used = true;
-			if (terse)
-			    msg("the %s hits", name);
-			else
-			    msg("you are hit by the %s", name);
-		    }
-		    else
-			msg("the %s whizzes by you", name);
-		}
-		mvaddcch(pos.y, pos.x, dirch);
-		refresh();
-	}
+      tp->t_oldch = level_get_ch(pos.y, pos.x);
+      if (!monster_save_throw(VS_MAGIC, tp))
+      {
+        THING bolt;
+        memset(&bolt, 0, sizeof(bolt));
+        bolt.o_type = WEAPON;
+        bolt.o_which = FLAME;
+        bolt.o_hplus = 100;
+        bolt.o_dplus = 0;
+        bolt.o_pos = pos;
+        bolt.o_flags |= ISMISL;
+        bolt.o_launch = -1;
+        assert(sizeof(bolt.o_hurldmg) >= sizeof("6x6"));
+        strcpy(bolt.o_hurldmg, "6x6");
+        weap_info[FLAME].oi_name = name;
+
+        if (tp->t_type == 'D' && strcmp(name, "flame") == 0)
+          msg("the flame bounces off the dragon");
+        else
+          hit_monster(pos.y, pos.x, &bolt);
+      }
+      else if (level_get_type(pos.y, pos.x) != 'M' || tp->t_disguise == 'M')
+      {
+        if (start == player_get_pos())
+          monster_start_running(&pos);
+        else
+          msg("the %s whizzes past %s", name, set_mname(tp));
+      }
     }
-    for (c2 = spotpos; c2 < c1; c2++)
-	mvaddcch(c2->y, c2->x, level_get_ch(c2->y, c2->x));
+
+    spotpos[i].x = pos.x;
+    spotpos[i].y = pos.y;
+    spotpos[i].ch = mvincch(pos.y, pos.x);
+    addcch(dirch);
+    refresh();
+  }
+
+  getch();
+
+  for (int j = i -1; j >= 0; --j)
+    mvaddcch(spotpos[j].y, spotpos[j].x, spotpos[j].ch);
 }
 
 char *

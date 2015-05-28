@@ -153,8 +153,9 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
     mod.to_hit += 4;
 
   assert(mod.damage != NULL);
-  bool did_hit = false;
+  assert(*mod.damage != '\0');
 
+  bool did_hit = false;
   while (*mod.damage != '\0')
   {
     int defense = armor_for_thing(defender);

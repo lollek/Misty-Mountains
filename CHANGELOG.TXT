@@ -11,6 +11,8 @@ v1.2.8
   Removed autopickup when moving on top of items
   Fixed a bug causing searching to be harder than it should be.
     Being blind / hallucinating now causes searching to be harder as well
+  Firing a bolt from a wand into a wall causes it to bounce more naturally
+  Firing a bolt no longers stops on hit (now travels thought enemies)
 
 v1.2.7
   Made -j flag automatically set
