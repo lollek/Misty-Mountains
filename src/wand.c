@@ -501,24 +501,8 @@ static bool
 fire_bolt_handle_bounces(coord* pos, coord* dir, char* dirch, bool retval)
 {
   char ch = level_get_type(pos->y, pos->x);
-  if (ch != DOOR && ch != VWALL && ch != HWALL)
+  if (ch != VWALL && ch != HWALL)
     return retval;
-
-  /* Figure out if the door is horizontal or vertical */
-  if (ch == DOOR)
-  {
-    if (dir->x != 0 && dir->y == 0)
-      ch = VWALL;
-    else if (dir->y != 0 && dir->x == 0)
-      ch = HWALL;
-    else if (dir->y < 0)
-      ch = level_get_ch(pos->y + 1, pos->x) == VWALL
-        ? VWALL : HWALL;
-    else if (dir->y > 0)
-      ch = level_get_ch(pos->y - 1, pos->x) == VWALL
-        ? VWALL : HWALL;
-  }
-  assert(ch == HWALL || ch == VWALL);
 
   /* Handle potential bouncing */
   if (ch == VWALL)
@@ -538,8 +522,60 @@ fire_bolt_handle_bounces(coord* pos, coord* dir, char* dirch, bool retval)
     *dirch = '\\';
 
   /* It's possible for a bolt to bounce directly from one wall to another
-   * if you hit a corner, thus, we need to go through everything again */
+   * if you hit a corner, thus, we need to go through everything again. */
   return fire_bolt_handle_bounces(pos, dir, dirch, true);
+}
+
+static void
+fire_bolt_hit_player(coord* start, char const* missile_name)
+{
+  if (!player_save_throw(VS_MAGIC))
+  {
+    player_lose_health(roll(6, 6));
+    if (player_get_health() <= 0)
+    {
+      if (start == player_get_pos())
+        death(missile_name[0]);
+      else
+        death(level_get_monster(start->y, start->x)->t_type);
+    }
+    msg("you are hit by the %s", missile_name);
+  }
+  else
+    msg("the %s whizzes by you", missile_name);
+}
+
+static void
+fire_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
+{
+  mon->t_oldch = level_get_ch(pos->y, pos->x);
+  if (!monster_save_throw(VS_MAGIC, mon))
+  {
+    THING bolt;
+    memset(&bolt, 0, sizeof(bolt));
+    bolt.o_type = WEAPON;
+    bolt.o_which = FLAME;
+    bolt.o_hplus = 100;
+    bolt.o_dplus = 0;
+    bolt.o_pos = *pos;
+    bolt.o_flags |= ISMISL;
+    bolt.o_launch = -1;
+    assert(sizeof(bolt.o_hurldmg) >= sizeof("6x6"));
+    strcpy(bolt.o_hurldmg, "6x6");
+    weap_info[FLAME].oi_name = missile_name;
+
+    if (mon->t_type == 'D' && strcmp(missile_name, "flame") == 0)
+      msg("the flame bounces off the dragon");
+    else
+      hit_monster(pos->y, pos->x, &bolt);
+  }
+  else if (level_get_type(pos->y, pos->x) != 'M' || mon->t_disguise == 'M')
+  {
+    if (start == player_get_pos())
+      monster_start_running(pos);
+    else
+      msg("the %s whizzes past %s", missile_name, set_mname(mon));
+  }
 }
 
 void
@@ -561,6 +597,17 @@ fire_bolt(coord* start, coord* dir, char* name)
     char ch;
   } spotpos[BOLT_LENGTH];
 
+  /* Special case when player is standing in a doorway and aims at the wall
+   * nearby OR when stainding in a passage and aims at the wall
+   * Note that both of those things are really stupid to do */
+  char starting_pos = level_get_ch(start->y, start->x);
+  if (starting_pos == DOOR || starting_pos == PASSAGE)
+  {
+    char first_bounce = level_get_ch(start->y + dir->y, start->x + dir->x);
+    if (first_bounce == HWALL || first_bounce == VWALL || first_bounce == SHADOW)
+      death(name[0]);
+  }
+
   int i;
   for (i = 0; i < BOLT_LENGTH; ++i)
   {
@@ -572,55 +619,11 @@ fire_bolt(coord* start, coord* dir, char* name)
 
     /* Handle potential hits */
     if (same_coords(&pos, player_get_pos()))
-    {
-      if (!player_save_throw(VS_MAGIC))
-      {
-        player_lose_health(roll(6, 6));
-        if (player_get_health() <= 0)
-        {
-          if (start == player_get_pos())
-            death('b');
-          else
-            death(level_get_monster(start->y, start->x)->t_type);
-        }
-        msg("you are hit by the %s", name);
-      }
-      else
-        msg("the %s whizzes by you", name);
-    }
+      fire_bolt_hit_player(start, name);
 
     THING* tp = level_get_monster(pos.y, pos.x);
     if (tp != NULL)
-    {
-      tp->t_oldch = level_get_ch(pos.y, pos.x);
-      if (!monster_save_throw(VS_MAGIC, tp))
-      {
-        THING bolt;
-        memset(&bolt, 0, sizeof(bolt));
-        bolt.o_type = WEAPON;
-        bolt.o_which = FLAME;
-        bolt.o_hplus = 100;
-        bolt.o_dplus = 0;
-        bolt.o_pos = pos;
-        bolt.o_flags |= ISMISL;
-        bolt.o_launch = -1;
-        assert(sizeof(bolt.o_hurldmg) >= sizeof("6x6"));
-        strcpy(bolt.o_hurldmg, "6x6");
-        weap_info[FLAME].oi_name = name;
-
-        if (tp->t_type == 'D' && strcmp(name, "flame") == 0)
-          msg("the flame bounces off the dragon");
-        else
-          hit_monster(pos.y, pos.x, &bolt);
-      }
-      else if (level_get_type(pos.y, pos.x) != 'M' || tp->t_disguise == 'M')
-      {
-        if (start == player_get_pos())
-          monster_start_running(&pos);
-        else
-          msg("the %s whizzes past %s", name, set_mname(tp));
-      }
-    }
+      fire_bolt_hit_monster(tp, start, &pos, name);
 
     spotpos[i].x = pos.x;
     spotpos[i].y = pos.y;

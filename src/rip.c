@@ -73,7 +73,9 @@ killname(char buf[], char monst, bool doart)
     {'a',	"arrow",		true},
     {'b',	"bolt",			true},
     {'d',	"dart",			true},
+    {'f',	"flame",		false},
     {'h',	"hypothermia",		false},
+    {'i',	"hypothermia",		false},
     {'s',	"starvation",		false},
   };
 
