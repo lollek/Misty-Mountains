@@ -184,12 +184,12 @@ pack_print_evaluate_item(THING* obj)
       break;
 
     case STICK:
-      wand_get_worth((enum wand)obj->o_which);
+      wand_get_worth((enum wand_t)obj->o_which);
       worth += 20 * obj->o_charges;
       if (!(obj->o_flags & ISKNOW))
         worth /= 2;
       obj->o_flags |= ISKNOW;
-      wand_set_known((enum wand)obj->o_which);
+      wand_set_known((enum wand_t)obj->o_which);
       break;
 
     case AMULET:

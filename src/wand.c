@@ -35,7 +35,7 @@
 #include "wand.h"
 
 #define NMATERIAL ((sizeof(material)) / sizeof(*material))
-static const char *material[] = {
+static char const* material[] = {
   /* Wood */
   "avocado wood", "balsa", "bamboo", "banyan", "birch", "cedar", "cherry",
   "cinnibar", "cypress", "dogwood", "driftwood", "ebony", "elm", "eucalyptus",
@@ -50,7 +50,7 @@ static const char *material[] = {
   "zinc",
 };
 
-static const char *_wand_material[MAXSTICKS];
+static char const* _wand_material[MAXSTICKS];
 
 static struct obj_info wands[] = {
     { "light",			12, 250, NULL, false },
@@ -69,19 +69,18 @@ static struct obj_info wands[] = {
     { "cancellation",		 5, 280, NULL, false },
 };
 
-void *__wands_ptr(void) { return wands; }
+void* __wands_ptr(void) { return wands; }
 
 void wand_init(void)
 {
-  size_t i;
   bool used[sizeof(material) / sizeof(*material)];
 
   assert (NMATERIAL >= MAXSTICKS);
 
-  for (i = 0; i < NMATERIAL; i++)
+  for (size_t i = 0; i < NMATERIAL; i++)
     used[i] = false;
 
-  for (i = 0; i < MAXSTICKS; i++)
+  for (size_t i = 0; i < MAXSTICKS; i++)
   {
     int j = rnd(NMATERIAL);
 
@@ -95,14 +94,12 @@ void wand_init(void)
 
 bool wand_save_state(void)
 {
-  int i;
-
   assert(MAXSTICKS > 0);
   assert(NMATERIAL > 0);
   assert(MAXSTICKS <= NMATERIAL);
 
   /* Save material */
-  for (i = 0; i < MAXSTICKS; i++)
+  for (int i = 0; i < MAXSTICKS; i++)
     if (state_save_index(material, NMATERIAL, _wand_material[i]))
       return 1;
 
@@ -113,14 +110,12 @@ bool wand_save_state(void)
 
 bool wand_load_state(void)
 {
-  int i;
-
   assert(MAXSTICKS > 0);
   assert(NMATERIAL > 0);
   assert(MAXSTICKS <= NMATERIAL);
 
   /* Load material */
-  for (i = 0; i < MAXSTICKS; i++)
+  for (int i = 0; i < MAXSTICKS; i++)
     if (state_load_index(material, NMATERIAL, &_wand_material[i]))
       return 1;
 
@@ -130,17 +125,17 @@ bool wand_load_state(void)
 
 }
 
-const char *
-wand_material(enum wand wand)
+char const*
+wand_material(enum wand_t wand)
 {
   assert(wand >= 0 && wand < MAXSTICKS);
   return _wand_material[wand];
 }
 
-THING *
+THING*
 wand_create(int wand)
 {
-  THING *new_wand = allocate_new_item();
+  THING* new_wand = allocate_new_item();
 
   assert(sizeof("1x1") <= sizeof(new_wand->o_damage));
   assert(sizeof("1x1") <= sizeof(new_wand->o_hurldmg));
@@ -170,12 +165,11 @@ wand_create(int wand)
 }
 
 /* This can only be used inside the wand_zap() function */
-static THING *
-wand_find_target(int *y, int *x, int dy, int dx)
+static THING*
+wand_find_target(int* y, int* x, int dy, int dx)
 {
-  coord *player_pos = player_get_pos();
-  *x = player_pos->x;
-  *y = player_pos->y;
+  *y = player_y();
+  *x = player_x();
 
   /* "walk" in the zap direction until we find a target */
   while (step_ok(level_get_type(*y, *x)))
@@ -207,95 +201,83 @@ wand_spell_light(void)
 static void
 wand_spell_drain_health(void)
 {
-    THING *mp;
-    struct room *corp;
-    THING **dp;
-    int cnt;
-    bool inpass;
-    static THING *drainee[40];
-    coord *player_pos = player_get_pos();
+  THING* drainee[40];
+  coord* player_pos = player_get_pos();
 
-    /*
-     * First cnt how many things we need to spread the hit points among
-     */
-    cnt = 0;
-    if (level_get_ch(player_pos->y, player_pos->x) == DOOR)
-	corp = &passages[level_get_flags(player_pos->y, player_pos->x) & F_PNUM];
+  /* First cnt how many things we need to spread the hit points among */
+  struct room *corp = level_get_ch(player_pos->y, player_pos->x) == DOOR
+    ? &passages[level_get_flags(player_pos->y, player_pos->x) & F_PNUM]
+    : NULL;
+  bool inpass = player_get_room()->r_flags & ISGONE;
+  THING** dp = drainee;
+
+  for (THING* mp = mlist; mp != NULL; mp = mp->l_next)
+    if (mp->t_room == player_get_room()
+        || mp->t_room == corp
+        ||(inpass && level_get_ch(mp->t_pos.y, mp->t_pos.x) == DOOR &&
+          &passages[level_get_flags(mp->t_pos.y, mp->t_pos.x) & F_PNUM]
+          == player_get_room()))
+      *dp++ = mp;
+
+  int cnt = (int)(dp - drainee);
+  if (cnt == 0)
+  {
+    msg("you have a tingling feeling");
+    return;
+  }
+
+  *dp = NULL;
+  player_lose_health(player_get_health() / 2);
+  msg("You feel an intense pain");
+  cnt = player_get_health() / cnt;
+
+  /* Now zot all of the monsters */
+  for (dp = drainee; *dp; dp++)
+  {
+    THING* mp = *dp;
+    mp->t_stats.s_hpt -= cnt;
+    if (mp->t_stats.s_hpt <= 0)
+      monster_on_death(mp, see_monst(mp));
     else
-	corp = NULL;
-    inpass = (bool)(player_get_room()->r_flags & ISGONE);
-    dp = drainee;
-    for (mp = mlist; mp != NULL; mp = mp->l_next)
-	if (mp->t_room == player_get_room()
-            || mp->t_room == corp
-            ||(inpass && level_get_ch(mp->t_pos.y, mp->t_pos.x) == DOOR &&
-              &passages[level_get_flags(mp->t_pos.y, mp->t_pos.x) & F_PNUM]
-              == player_get_room()))
-		*dp++ = mp;
-    if ((cnt = (int)(dp - drainee)) == 0)
     {
-	msg("you have a tingling feeling");
-	return;
+      monster_start_running(&mp->t_pos);
+      msg("%s screams in pain", set_mname(mp));
     }
-    *dp = NULL;
-    player_lose_health(player_get_health() / 2);
-    msg("You feel an intense pain");
-    cnt = player_get_health() / cnt;
-    /*
-     * Now zot all of the monsters
-     */
-    for (dp = drainee; *dp; dp++)
-    {
-	mp = *dp;
-	if ((mp->t_stats.s_hpt -= cnt) <= 0)
-	    monster_on_death(mp, see_monst(mp));
-	else
-        {
-	    monster_start_running(&mp->t_pos);
-            msg("%s screams in pain", set_mname(mp));
-        }
-    }
+  }
 }
 
 static void
-wand_spell_polymorph(THING *target)
+wand_spell_polymorph(THING* target)
 {
-  THING *target_pack;
-  coord pos;
-  int x;
-  int y;
-  char monster;
-  char oldch;
-  bool was_seen;
-  bool same_monster;
-
   assert(target != NULL);
 
-  x = target->t_pos.x;
-  y = target->t_pos.y;
+  coord pos = {
+    .y = target->t_pos.y,
+    .x = target->t_pos.x
+  };
 
   if (target->t_type == 'F')
     player_remove_held();
 
-  target_pack = target->t_pack;
+  THING* target_pack = target->t_pack;
   list_detach(&mlist, target);
-  was_seen = see_monst(target);
+
+  bool was_seen = see_monst(target);
   if (was_seen)
   {
-    mvaddcch(y, x, level_get_ch(y, x));
+    mvaddcch(pos.y, pos.x, level_get_ch(pos.y, pos.x));
     addmsg("%s", set_mname(target));
   }
-  oldch = target->t_oldch;
 
-  pos.y = y;
-  pos.x = x;
-  monster = (char)(rnd(26) + 'A');
-  same_monster = monster == target->t_type;
+  char oldch = target->t_oldch;
+
+  char monster = (char)(rnd(26) + 'A');
+  bool same_monster = monster == target->t_type;
 
   monster_new(target, monster, &pos);
   if (see_monst(target))
   {
-    mvaddcch(y, x, monster);
+    mvaddcch(pos.y, pos.x, monster);
     if (same_monster)
       msg(" now looks a bit different");
     else
@@ -310,7 +292,7 @@ wand_spell_polymorph(THING *target)
 }
 
 static void
-wand_spell_cancel(THING *target)
+wand_spell_cancel(THING* target)
 {
   assert(target != NULL);
 
@@ -330,21 +312,20 @@ static void
 wand_spell_magic_missile(int dy, int dx)
 {
   THING bolt;
-  THING *target;
-  THING *weapon = pack_equipped_item(EQUIPMENT_RHAND);
-
   assert(sizeof(bolt.o_hurldmg) >= sizeof("1x4"));
-
   bolt.o_type = '*';
   bolt.o_hplus = 100;
   bolt.o_dplus = 1;
   bolt.o_flags = ISMISL;
   strcpy(bolt.o_hurldmg,"1x4");
+
+  THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon != NULL)
     bolt.o_launch = weapon->o_which;
 
   do_motion(&bolt, dy, dx);
-  target = level_get_monster(bolt.o_pos.y, bolt.o_pos.x);
+
+  THING* target = level_get_monster(bolt.o_pos.y, bolt.o_pos.x);
   if (target == NULL)
     msg("the missle vanishes with a puff of smoke");
   else if (monster_save_throw(VS_MAGIC, target))
@@ -358,28 +339,20 @@ wand_spell_magic_missile(int dy, int dx)
 bool
 wand_zap(void)
 {
-  const coord *dir = get_dir();
-  coord delta;
-  THING *obj;
-  THING *tp;
-  int y;
-  int x;
-
+  coord const* dir = get_dir();
   if (dir == NULL)
     return false;
-  delta = *dir;
+  coord delta = *dir;
 
-  obj = pack_get_item("zap with", STICK);
+  THING* obj = pack_get_item("zap with", STICK);
   if (obj == NULL)
     return false;
-
-  if (obj->o_type != STICK)
+  else if (obj->o_type != STICK)
   {
     msg("you can't zap with that!");
     return false;
   }
-
-  if (obj->o_charges == 0)
+  else if (obj->o_charges == 0)
   {
     msg("nothing happens");
     return true;
@@ -387,6 +360,9 @@ wand_zap(void)
 
   assert(obj->o_which >= 0 && obj->o_which < MAXSTICKS);
 
+  THING* tp;
+  int y;
+  int x;
   switch (obj->o_which)
   {
     case WS_LIGHT:
@@ -657,13 +633,13 @@ wand_description(THING *obj, char *buf)
       sprintf(ptr, " [%d charges]", obj->o_charges);
 
     ptr += strlen(ptr);
-    sprintf(ptr, " (%s)", wand_material((enum wand)obj->o_which));
+    sprintf(ptr, " (%s)", wand_material((enum wand_t)obj->o_which));
   }
   else if (obj->o_count == 1)
-    sprintf(ptr, "A %s wand", wand_material((enum wand)obj->o_which));
+    sprintf(ptr, "A %s wand", wand_material((enum wand_t)obj->o_which));
   else
     sprintf(ptr, "%d %s wands", obj->o_count,
-            wand_material((enum wand)obj->o_which));
+            wand_material((enum wand_t)obj->o_which));
 
   return buf;
 }
@@ -673,16 +649,16 @@ const char *wand_nickname(THING *obj)
   return wands[obj->o_which].oi_guess;
 }
 
-bool wand_is_known(enum wand wand)
+bool wand_is_known(enum wand_t wand)
 {
   return wands[wand].oi_know;
 }
-void wand_set_known(enum wand wand)
+void wand_set_known(enum wand_t wand)
 {
   wands[wand].oi_know = true;
 }
 
-void wand_set_name(enum wand wand, const char *new_name)
+void wand_set_name(enum wand_t wand, const char *new_name)
 {
   size_t len = strlen(new_name);
 
@@ -699,7 +675,7 @@ void wand_set_name(enum wand wand, const char *new_name)
   }
 }
 
-int wand_get_worth(enum wand wand)
+int wand_get_worth(enum wand_t wand)
 {
   return wands[wand].oi_worth;
 }

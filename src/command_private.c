@@ -122,7 +122,7 @@ command_name_item(void)
       break;
 
     case STICK:
-      already_known = wand_is_known((enum wand)obj->o_which);
+      already_known = wand_is_known((enum wand_t)obj->o_which);
       guess =         NULL;
       break;
 
@@ -144,7 +144,7 @@ command_name_item(void)
   if (readstr(tmpbuf) == 0)
   {
     if (obj->o_type == STICK)
-      wand_set_name((enum wand)obj->o_which, tmpbuf);
+      wand_set_name((enum wand_t)obj->o_which, tmpbuf);
     else if (guess != NULL)
     {
       if (*guess != NULL) {
