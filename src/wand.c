@@ -597,15 +597,25 @@ fire_bolt(coord* start, coord* dir, char* name)
     char ch;
   } spotpos[BOLT_LENGTH];
 
-  /* Special case when player is standing in a doorway and aims at the wall
+  /* Special case when someone is standing in a doorway and aims at the wall
    * nearby OR when stainding in a passage and aims at the wall
    * Note that both of those things are really stupid to do */
   char starting_pos = level_get_ch(start->y, start->x);
   if (starting_pos == DOOR || starting_pos == PASSAGE)
   {
     char first_bounce = level_get_ch(start->y + dir->y, start->x + dir->x);
+    bool is_player = same_coords(start, player_get_pos());
     if (first_bounce == HWALL || first_bounce == VWALL || first_bounce == SHADOW)
-      death(name[0]);
+    {
+      if (is_player)
+        for (int i = 0; i < BOLT_LENGTH; ++i)
+          fire_bolt_hit_player(start, name);
+      else
+        for (int i = 0; i < BOLT_LENGTH; ++i)
+          fire_bolt_hit_monster(level_get_monster(start->y, start->x),
+                                start, start, name);
+      return;
+    }
   }
 
   int i;
