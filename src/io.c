@@ -1,9 +1,3 @@
-/*
- * Various input/output functions
- *
- * @(#)io.c	4.32 (Berkeley) 02/05/99
- */
-
 #include <ctype.h>
 #include <string.h>
 #include <unistd.h>
@@ -377,4 +371,28 @@ fatal(char const* msg, ...)
   va_end(args);
 
   abort();
+}
+
+chtype
+io_attribute(enum attribute attribute)
+{
+  switch (attribute)
+  {
+    case ATTR_FIRE: return COLOR_PAIR(COLOR_RED);
+    case ATTR_ICE:  return COLOR_PAIR(COLOR_BLUE);
+  }
+}
+
+chtype
+io_tile(enum tile tile)
+{
+  switch (tile)
+  {
+    case TILE_BOLT_VERTICAL:  return  '|';
+    case TILE_BOLT_DIAGUP:    return  '/';
+    case TILE_BOLT_HORIZONTAL:return  '-';
+    case TILE_BOLT_DIAGDOWN:  return '\\';
+
+    case TILE_ERROR: return '?' | A_STANDOUT;
+  }
 }

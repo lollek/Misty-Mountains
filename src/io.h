@@ -14,7 +14,6 @@
 #define NUMCOLS  80
 #define STATLINE (NUMLINES - 1)
 
-
 #undef CTRL
 #define CTRL(c) (c & 037)
 #define UNCTRL(c) (c + 'A' - CTRL('A'))
@@ -23,16 +22,33 @@
 #define KEY_SPACE	' '
 #define KEY_ESCAPE	27
 
-/* Chars for things */
+typedef enum attribute {
+  ATTR_FIRE,
+  ATTR_ICE
+} attribute;
+
+typedef enum tile {
+  TILE_BOLT_VERTICAL,
+  TILE_BOLT_DIAGUP,
+  TILE_BOLT_HORIZONTAL,
+  TILE_BOLT_DIAGDOWN,
+  TILE_ERROR
+} tile;
+
+/* Glyphs for things */
+typedef chtype glyph;
 #define SHADOW		' '
 #define VWALL		'|'
 #define HWALL		'-'
 #define PASSAGE		'#'
 #define DOOR		'+'
 #define FLOOR		'.'
+
 #define PLAYER		'@'
+
 #define TRAP		'^'
 #define STAIRS		'%'
+
 #define GOLD		'*'
 #define POTION		'!'
 #define SCROLL		'?'
@@ -78,7 +94,14 @@ void addmsg(char const* fmt, ...);       /* Add things to the current message */
 /* Helper function to colorize chars before outputting them */
 chtype colorize(const chtype ch);
 
-/* ncurses functions, but with custom color support */
+/* New kind of IO API for better abstraction */
+chtype io_attribute(enum attribute attribute);
+chtype io_tile(enum tile tile);
+
+static inline int io_addch(enum tile tile, enum attribute attr)
+{ return addch(io_tile(tile) | io_attribute(attr)); }
+
+/* old ncurses functions, with custom color support, to be removed */
 #define incch()              (inch() & A_CHARTEXT)
 #define wincch(_w)           (winch(_w) & A_CHARTEXT)
 #define mvincch(_y, _x)      (mvinch(_y, _x) & A_CHARTEXT)

@@ -498,7 +498,7 @@ wand_zap(void)
 }
 
 static bool
-fire_bolt_handle_bounces(coord* pos, coord* dir, char* dirch, bool retval)
+fire_bolt_handle_bounces(coord* pos, coord* dir, tile* dirtile, bool retval)
 {
   char ch = level_get_type(pos->y, pos->x);
   if (ch != VWALL && ch != HWALL)
@@ -516,14 +516,14 @@ fire_bolt_handle_bounces(coord* pos, coord* dir, char* dirch, bool retval)
     dir->y = -dir->y;
   }
 
-  if (*dirch == '\\')
-    *dirch = '/';
-  else if (*dirch == '/')
-    *dirch = '\\';
+  if (*dirtile == TILE_BOLT_DIAGDOWN)
+    *dirtile = TILE_BOLT_DIAGUP;
+  else if (*dirtile == TILE_BOLT_DIAGUP)
+    *dirtile = TILE_BOLT_DIAGDOWN;
 
   /* It's possible for a bolt to bounce directly from one wall to another
    * if you hit a corner, thus, we need to go through everything again. */
-  return fire_bolt_handle_bounces(pos, dir, dirch, true);
+  return fire_bolt_handle_bounces(pos, dir, dirtile, true);
 }
 
 static void
@@ -581,14 +581,23 @@ fire_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
 void
 fire_bolt(coord* start, coord* dir, char* name)
 {
-  char dirch = '?';
+  tile dirtile = TILE_ERROR;
   switch (dir->y + dir->x)
   {
-    case 0: dirch = '/'; break;
-    case 1: case -1: dirch = (dir->y == 0 ? HWALL : VWALL); break;
-    case 2: case -2: dirch = '\\'; break;
+    case 0: dirtile = TILE_BOLT_DIAGUP; break;
+    case 1: case -1: dirtile = (dir->y == 0
+                         ? TILE_BOLT_HORIZONTAL
+                         : TILE_BOLT_VERTICAL); break;
+    case 2: case -2: dirtile = TILE_BOLT_DIAGDOWN; break;
   }
-  assert (dirch != '?');
+  assert (dirtile != TILE_ERROR);
+
+  enum attribute bolt_type = ATTR_FIRE;
+
+  if (!strcmp(name, "ice"))
+    bolt_type = ATTR_ICE;
+  else if (!strcmp(name, "flame"))
+    bolt_type = ATTR_FIRE;
 
   coord pos = *start;
   struct charcoord {
@@ -624,7 +633,7 @@ fire_bolt(coord* start, coord* dir, char* name)
     pos.y += dir->y;
     pos.x += dir->x;
 
-    if (fire_bolt_handle_bounces(&pos, dir, &dirch, false))
+    if (fire_bolt_handle_bounces(&pos, dir, &dirtile, false))
       msg("the %s bounces", name);
 
     /* Handle potential hits */
@@ -638,11 +647,11 @@ fire_bolt(coord* start, coord* dir, char* name)
     spotpos[i].x = pos.x;
     spotpos[i].y = pos.y;
     spotpos[i].ch = mvincch(pos.y, pos.x);
-    addcch(dirch);
+    io_addch(dirtile, bolt_type);
     refresh();
   }
 
-  getch();
+  usleep(200000);
 
   for (int j = i -1; j >= 0; --j)
     mvaddcch(spotpos[j].y, spotpos[j].x, spotpos[j].ch);
