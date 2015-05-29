@@ -61,7 +61,7 @@ pr_spec(char type)
   char ch = '0';
   for (int i = 0; i < max; ++i)
   {
-    const char *name;
+    char const* name;
     int prob;
     wmove(printscr, i + 1, 1);
 
@@ -87,23 +87,16 @@ pr_spec(char type)
 static void
 print_things(void)
 {
-  char index_to_char[] = {
-    POTION, SCROLL, FOOD,
-    WEAPON, ARMOR, RING,
-    STICK
-  };
-  int num_items = 0;
-  int i;
-  int end = NUMTHINGS;
-  WINDOW *tmp = dupwin(stdscr);
-  coord orig_pos;
+  char index_to_char[] = { POTION, SCROLL, FOOD, WEAPON, ARMOR, RING, STICK };
+  WINDOW* tmp = dupwin(stdscr);
 
+  coord orig_pos;
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
-  for (i = 0; i < end; ++i)
+  for (int i = 0; i < NUMTHINGS; ++i)
   {
-    wmove(tmp, ++num_items, 1);
-    wprintw(tmp, "%c) %s", index_to_char[i], things[i].oi_name);
+    wmove(tmp, i + 1, 1);
+    wprintw(tmp, "%c %s", index_to_char[i], things[i].oi_name);
   }
 
   wmove(stdscr, orig_pos.y, orig_pos.x);
@@ -136,13 +129,8 @@ pr_list(void)
 void
 create_obj(void)
 {
-  THING *obj = NULL;
-  char ch;
-  int type;
-  int which;
-
   msg("type of item: ");
-  type = readchar(true);
+  int type = readchar(true);
   mpos = 0;
 
   if (!(type == WEAPON || type == ARMOR || type == RING || type == STICK
@@ -153,7 +141,8 @@ create_obj(void)
   }
 
   msg("which %c do you want? (0-f)", type);
-  which = (isdigit((ch = readchar(true))) ? ch - '0' : ch - 'a' + 10);
+  char ch = readchar(true);
+  int which = isdigit(ch) ? ch - '0' : ch - 'a' + 10;
   mpos = 0;
 
   if (type == TRAP)
@@ -171,6 +160,7 @@ create_obj(void)
     return;
   }
 
+  THING* obj = NULL;
   if (type == STICK)
     obj = wand_create(which);
   else
@@ -186,9 +176,8 @@ create_obj(void)
   {
     case WEAPON: case ARMOR:
       {
-        char bless;
         msg("blessing? (+,-,n)");
-        bless = readchar(true);
+        char bless = readchar(true);
         mpos = 0;
         if (bless == '-')
           obj->o_flags |= ISCURSED;
@@ -216,10 +205,7 @@ create_obj(void)
         char bless;
         switch (obj->o_which)
         {
-          case R_PROTECT:
-          case R_ADDSTR:
-          case R_ADDHIT:
-          case R_ADDDAM:
+          case R_PROTECT: case R_ADDSTR: case R_ADDHIT: case R_ADDDAM:
             msg("blessing? (+,-,n)");
             bless = readchar(true);
             mpos = 0;
@@ -227,6 +213,7 @@ create_obj(void)
               obj->o_flags |= ISCURSED;
             obj->o_arm = (bless == '-' ? -1 : rnd(2) + 1);
             break;
+
           case R_AGGR: case R_TELEPORT:
             obj->o_flags |= ISCURSED;
             break;
@@ -252,12 +239,9 @@ create_obj(void)
 void
 show_map(void)
 {
-  int y;
-  int x;
-
   wclear(hw);
-  for (y = 1; y < NUMLINES - 1; y++)
-    for (x = 0; x < NUMCOLS; x++)
+  for (int y = 1; y < NUMLINES - 1; y++)
+    for (int x = 0; x < NUMCOLS; x++)
     {
       int real = level_get_flags(y, x);
       if (!(real & F_REAL))
@@ -273,16 +257,13 @@ show_map(void)
 void
 wizard_levels_and_gear(void)
 {
-  int i;
-  THING *obj;
-
-  for (i = 0; i < 9; i++)
+  for (int i = 0; i < 9; i++)
     player_raise_level();
 
   /* Give him a sword (+1,+1) */
   if (pack_equipped_item(EQUIPMENT_RHAND) == NULL)
   {
-    obj = allocate_new_item();
+    THING* obj = allocate_new_item();
     init_weapon(obj, TWOSWORD);
     obj->o_hplus = 1;
     obj->o_dplus = 1;
@@ -292,7 +273,7 @@ wizard_levels_and_gear(void)
   /* And his suit of armor */
   if (pack_equipped_item(EQUIPMENT_ARMOR) == NULL)
   {
-    obj = allocate_new_item();
+    THING* obj = allocate_new_item();
     obj->o_type = ARMOR;
     obj->o_which = PLATE_MAIL;
     obj->o_arm = -5;
