@@ -28,6 +28,24 @@ bool jump         = true;
 bool passgo       = false;
 bool use_colors   = true;
 
+static bool pickup_potions = true;
+static bool pickup_scrolls = true;
+static bool pickup_food    = true;
+static bool pickup_weapons = false;
+static bool pickup_armor   = false;
+static bool pickup_rings   = true;
+static bool pickup_sticks  = true;
+static bool pickup_ammo    = true;
+
+bool autopickup_potions(void) { return pickup_potions; }
+bool autopickup_scrolls(void) { return pickup_scrolls; }
+bool autopickup_food(void)    { return pickup_food; }
+bool autopickup_weapons(void) { return pickup_weapons; }
+bool autopickup_armor(void)   { return pickup_armor; }
+bool autopickup_rings(void)   { return pickup_rings; }
+bool autopickup_sticks(void)  { return pickup_sticks; }
+bool autopickup_ammo(void)    { return pickup_ammo; }
+
 static bool
 get_bool(void* vp, WINDOW* win)
 {
@@ -55,11 +73,19 @@ option(void)
     enum put_t { PUT_BOOL, PUT_STR } put_type;
     bool (*o_getfunc)(void *opt, WINDOW *win); /* Get value */
   } optlist[] = {
-    {"Flush typeahead during battle",    &fight_flush, PUT_BOOL, get_bool},
-    {"Show position only at end of run", &jump,        PUT_BOOL, get_bool},
-    {"Follow turnings in passageways",   &passgo,      PUT_BOOL, get_bool},
-    {"Name",                             whoami,       PUT_STR,  get_str},
-    {"Save file",                        file_name,    PUT_STR,  get_str}
+    {"Flush typeahead during battle?....", &fight_flush,    PUT_BOOL, get_bool},
+    {"Show position only at end of run?.", &jump,           PUT_BOOL, get_bool},
+    {"Follow turnings in passageways?...", &passgo,         PUT_BOOL, get_bool},
+    {"Pick up potions?..................", &pickup_potions, PUT_BOOL, get_bool},
+    {"Pick up scrolls?..................", &pickup_scrolls, PUT_BOOL, get_bool},
+    {"Pick up food?.....................", &pickup_food,    PUT_BOOL, get_bool},
+    {"Pick up weapons?..................", &pickup_weapons, PUT_BOOL, get_bool},
+    {"Pick up armor?....................", &pickup_armor,   PUT_BOOL, get_bool},
+    {"Pick up rings?....................", &pickup_rings,   PUT_BOOL, get_bool},
+    {"Pick up sticks?...................", &pickup_sticks,  PUT_BOOL, get_bool},
+    {"Pick up ammo?.....................", &pickup_ammo,    PUT_BOOL, get_bool},
+    {"Name..............................", whoami,          PUT_STR,  get_str},
+    {"Save file.........................", file_name,       PUT_STR,  get_str},
   };
   int const NOPTS = (sizeof optlist / sizeof (*optlist));
   char const* query = "Which value do you want to change? (ESC to exit) ";
@@ -74,11 +100,10 @@ option(void)
   optscr = dupwin(stdscr);
 
   /* Display current values of options */
-  int i;
   wmove(optscr, 1, 0);
-  for (i = 0; i < NOPTS; ++i)
+  for (int i = 0; i < NOPTS; ++i)
   {
-    wprintw(optscr, "%d: %s: ", i + 1, optlist[i].o_prompt);
+    wprintw(optscr, "%c) %s", '0' + i + 1, optlist[i].o_prompt);
     if (optlist[i].put_type == PUT_BOOL)
       waddstr(optscr, *(bool *) optlist[i].o_opt ? "True" : "False");
     else /* PUT_STR */
@@ -86,6 +111,7 @@ option(void)
     waddch(optscr, '\n');
   }
 
+  /* Loop and change values */
   char c = (char)~KEY_ESCAPE;
   do
   {
@@ -94,8 +120,9 @@ option(void)
     c = readchar(true);
     if (c > '0' && c <= '0' + NOPTS)
     {
-      i = c - '0' - 1;
-      mvwprintw(optscr, i + 1, 0, "%d: %s: ", i + 1, optlist[i].o_prompt);
+      int i = c - '0' - 1;
+      int x = (int)strlen(optlist[i].o_prompt) + 3;
+      mvwinch(optscr, i + 1, x);
       (*optlist[i].o_getfunc)(optlist[i].o_opt, optscr);
     }
   }

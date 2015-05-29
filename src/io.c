@@ -346,6 +346,15 @@ wreadstr(WINDOW* win, char* dest)
       buf[i++] = (char)c;
       waddch(win, (chtype)c);
     }
+
+#ifndef NDEBUG
+    coord currpos;
+    getyx(stdscr, currpos.y, currpos.x);
+    coord maxpos;
+    getmaxyx(stdscr, maxpos.y, maxpos.x);
+    assert(currpos.y >= 0 && currpos.y < maxpos.y);
+    assert(currpos.x >= 0 && currpos.x < maxpos.x);
+#endif
   }
 
   buf[i] = '\0';
