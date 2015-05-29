@@ -33,24 +33,10 @@ static bool
 get_bool(void* vp, WINDOW* win)
 {
   wrefresh(win);
-  switch (readchar(true))
-  {
-    case 't': case 'T':
-      *(bool *)vp = true;
-      waddstr(win, "True ");
-      return 0;
-
-    case 'f': case 'F':
-      *(bool *)vp = false;
-      waddstr(win, "False");
-      return 0;
-
-    case '\n': case '\r': case KEY_ESCAPE:
-      return 1;
-
-    default:
-      return get_bool(vp, win);
-  }
+  bool* b = vp;
+  *b = !*b;
+  waddstr(win, *b ? "True " : "False");
+  return 0;
 }
 
 static bool
@@ -75,7 +61,7 @@ get_sf(void* vp, WINDOW* win)
 }
 
 
-static bool
+static inline bool
 get_str(void* vopt, WINDOW* win)
 {
   return wreadstr(win, (char*)vopt);
@@ -87,8 +73,8 @@ bool
 option(void)
 {
   struct option {
-    char const* o_prompt;     /* prompt for interactive entry */
-    void* o_opt;        /* pointer to thing to set function to print value */
+    char const* o_prompt; /* prompt for interactive entry */
+    void* o_opt;          /* pointer to thing to set function to print value */
     enum put_t { PUT_BOOL, PUT_STR } put_type;
     bool (*o_getfunc)(void *opt, WINDOW *win); /* Get value */
   } optlist[] = {
