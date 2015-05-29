@@ -689,10 +689,10 @@ fire_bolt(coord* start, coord* dir, char* name)
     mvaddcch(spotpos[j].y, spotpos[j].x, spotpos[j].ch);
 }
 
-char *
-wand_description(THING *obj, char *buf)
+char*
+wand_description(THING* obj, char* buf)
 {
-  char *ptr = buf;
+  char* ptr = buf;
   struct obj_info oi = wands[obj->o_which];
 
   if (oi.oi_know || oi.oi_guess)
@@ -724,7 +724,7 @@ wand_description(THING *obj, char *buf)
   return buf;
 }
 
-const char *wand_nickname(THING *obj)
+char const* wand_nickname(THING* obj)
 {
   return wands[obj->o_which].oi_guess;
 }
@@ -738,7 +738,7 @@ void wand_set_known(enum wand_t wand)
   wands[wand].oi_know = true;
 }
 
-void wand_set_name(enum wand_t wand, const char *new_name)
+void wand_set_name(enum wand_t wand, char const* new_name)
 {
   size_t len = strlen(new_name);
 
