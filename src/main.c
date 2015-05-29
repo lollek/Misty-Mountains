@@ -53,7 +53,6 @@ parse_args(int argc, char* const* argv)
     {"restore",   no_argument,       0, 'r'},
     {"score",     no_argument,       0, 's'},
     {"seed",      required_argument, 0, 'S'},
-    {"terse",     no_argument,       0, 't'},
     {"wizard",    no_argument,       0, 'W'},
     {"help",      no_argument,       0, '0'},
     {"version",   no_argument,       0, '1'},
@@ -72,7 +71,7 @@ parse_args(int argc, char* const* argv)
 
   for (;;)
   {
-    int c = getopt_long(argc, argv, "cE::fFjn:prsS:tW",
+    int c = getopt_long(argc, argv, "cE::fFjn:prsS:W",
                         long_options, &option_index);
     if (c == -1)
       break;
@@ -92,7 +91,6 @@ parse_args(int argc, char* const* argv)
       case 's': score(0, -1, 0);
                 exit(0);
       case 'S': seed = (unsigned)atoi(optarg); break;
-      case 't': terse = true; break;
       case 'W': wizard = true; break;
       case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
@@ -110,7 +108,6 @@ parse_args(int argc, char* const* argv)
                "  -r, --restore        restore game instead of creating a new\n"
                "  -s, --score          display the highscore and exit\n"
                "  -S, --seed=NUMBER    set map seed to NUMBER\n"
-               "  -t, --terse          terse output\n"
                ); printf(
                "  -W, --wizard         run the game in debug-mode\n"
                "      --help           display this help and exit\n"

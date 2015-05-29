@@ -138,7 +138,7 @@ do_motion(THING* obj, int ydelta, int xdelta)
   {
     /* Erase the old one */
     if (!same_coords(&obj->o_pos, player_pos) &&
-        cansee(obj->o_pos.y, obj->o_pos.x) && !terse)
+        cansee(obj->o_pos.y, obj->o_pos.x))
     {
       ch = level_get_ch(obj->o_pos.y, obj->o_pos.x);
       if (ch == FLOOR && !show_floor())
@@ -153,7 +153,7 @@ do_motion(THING* obj, int ydelta, int xdelta)
        && ch != DOOR)
     {
       /* It hasn't hit anything yet, so display it if it alright. */
-      if (cansee(obj->o_pos.y, obj->o_pos.x) && !terse)
+      if (cansee(obj->o_pos.y, obj->o_pos.x))
       {
         usleep(10000);
         mvaddcch(obj->o_pos.y, obj->o_pos.x, (chtype)obj->o_type);

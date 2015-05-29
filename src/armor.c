@@ -108,9 +108,7 @@ armor_rust(void)
   else
   {
     arm->o_arm++;
-    msg(terse
-        ? "your armor weakens"
-        : "your armor appears to be weaker now. Oh my!");
+    msg("your armor weakens");
   }
 }
 

@@ -14,6 +14,7 @@ v1.2.8
   Firing a bolt from a wand into a wall causes it to bounce more naturally
   Firing a bolt no longers stops on hit (now travels thought enemies)
   Fixed a bug causing fire-bolt to deal no damage
+  Removed terse mode
 
 v1.2.7
   Made -j flag automatically set

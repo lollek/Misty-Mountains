@@ -205,7 +205,7 @@ print_attack(bool hit, char const* att, char const* def)
     , "doesn't hit"
   };
 
-  int i = terse ? 0 : rnd(4);
+  int i = rnd(4);
   if (att != NULL)
     i += 4;
 

@@ -355,9 +355,7 @@ read_scroll(void)
 
   if (obj->o_type != SCROLL)
   {
-    msg(terse
-      ? "nothing to read"
-      : "there is nothing on it to read");
+    msg("there is nothing on it to read");
     return false;
   }
 

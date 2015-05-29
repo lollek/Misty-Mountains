@@ -150,18 +150,14 @@ ring_put_on(void)
 
   if (obj->o_type != RING)
   {
-    msg(terse
-      ? "not a ring"
-      : "it would be difficult to wrap that around a finger");
+    msg("not a ring");
     return ring_put_on();
   }
 
   /* Try to put it on */
   if (!pack_equip_item(obj))
   {
-    msg(terse
-      ? "wearing two"
-      : "you already have a ring on each hand");
+    msg("you already have a ring on each hand");
     return false;
   }
   pack_remove(obj, false, true);

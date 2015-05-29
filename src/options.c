@@ -23,7 +23,6 @@
 
 #include "options.h"
 
-bool terse        = false;
 bool fight_flush  = false;
 bool jump         = true;
 bool see_floor    = true;
@@ -93,7 +92,6 @@ option(void)
     enum put_t { PUT_BOOL, PUT_STR } put_type;
     bool (*o_getfunc)(void *opt, WINDOW *win); /* Get value */
   } optlist[] = {
-    {"Terse output",                     &terse,       PUT_BOOL, get_bool},
     {"Flush typeahead during battle",    &fight_flush, PUT_BOOL, get_bool},
     {"Show position only at end of run", &jump,        PUT_BOOL, get_bool},
     {"Show the lamp-illuminated floor",  &see_floor,   PUT_BOOL, get_sf},

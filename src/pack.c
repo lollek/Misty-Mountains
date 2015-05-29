@@ -390,7 +390,7 @@ pack_add(THING* obj, bool silent)
   if (!silent)
   {
     char buf[MAXSTR];
-    msg("you now have %s (%c)", inv_name(buf, obj, !terse), obj->o_packch, true);
+    msg("you now have %s (%c)", inv_name(buf, obj, true), obj->o_packch, true);
   }
   return true;
 }
