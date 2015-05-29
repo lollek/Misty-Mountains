@@ -104,7 +104,7 @@ parse_args(int argc, char* const* argv)
                "  -j, --no-jump        draw each player step separately\n"
                , argv[0]); printf(
                "  -n, --name=NAME      set highscore name\n"
-               "  -p, --passgo         Follow the turnings in passageways\n"
+               "  -p, --passgo         follow the turnings in passageways\n"
                "  -r, --restore        restore game instead of creating a new\n"
                "  -s, --score          display the highscore and exit\n"
                "  -S, --seed=NUMBER    set map seed to NUMBER\n"
