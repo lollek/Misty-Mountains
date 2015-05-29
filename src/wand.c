@@ -500,9 +500,32 @@ wand_zap(void)
 static bool
 fire_bolt_handle_bounces(coord* pos, coord* dir, tile* dirtile, bool retval)
 {
+  msg("(%d:%d)[%d:%d]", pos->y, pos->x, dir->y, dir->x);
   char ch = level_get_type(pos->y, pos->x);
-  if (ch != VWALL && ch != HWALL)
+  if (ch != VWALL && ch != HWALL && ch != SHADOW)
     return retval;
+
+  /* Treat shadow as a wall */
+  if (ch == SHADOW)
+  {
+    if (dir->x != 0 && dir->y == 0)
+      ch = VWALL;
+    else if (dir->y != 0 && dir->x == 0)
+      ch = HWALL;
+    else if (dir->y < 0)
+    {
+      char y_ch = level_get_ch(pos->y + 1, pos->x);
+      ch =  (y_ch == SHADOW || y_ch == HWALL || y_ch == HWALL)
+        ? VWALL : HWALL;
+    }
+    else if (dir->y > 0)
+    {
+      char y_ch = level_get_ch(pos->y - 1, pos->x);
+      ch =  (y_ch == SHADOW || y_ch == HWALL || y_ch == HWALL)
+        ? VWALL : HWALL;
+    }
+  }
+  assert(ch != SHADOW);
 
   /* Handle potential bouncing */
   if (ch == VWALL)
@@ -585,9 +608,11 @@ fire_bolt(coord* start, coord* dir, char* name)
   switch (dir->y + dir->x)
   {
     case 0: dirtile = TILE_BOLT_DIAGUP; break;
-    case 1: case -1: dirtile = (dir->y == 0
-                         ? TILE_BOLT_HORIZONTAL
-                         : TILE_BOLT_VERTICAL); break;
+    case 1: case -1:
+      dirtile = (dir->y == 0
+          ? TILE_BOLT_HORIZONTAL
+          : TILE_BOLT_VERTICAL);
+      break;
     case 2: case -2: dirtile = TILE_BOLT_DIAGDOWN; break;
   }
   assert (dirtile != TILE_ERROR);
