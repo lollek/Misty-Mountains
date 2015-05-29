@@ -34,142 +34,57 @@
 
 #include "things.h"
 
-/* Only oi_prob is used
- *    oi_name  oi_prob oi_worth oi_guess oi_know */
+/* Only oi_prob is used */
 struct obj_info things[] = {
-    { "potion",	26,	0,	NULL,	false },	/* potion */
-    { "scroll",	36,	0,	NULL,	false },	/* scroll */
-    { "food",	16,	0,	NULL,	false },	/* food */
-    { "weapon",	 7,	0,	NULL,	false },	/* weapon */
-    { "armor",	 7,	0,	NULL,	false },	/* armor */
-    { "ring",	 4,	0,	NULL,	false },	/* ring */
-    { "stick",	 4,	0,	NULL,	false },	/* stick */
+/*   oi_name oi_prob oi_worth oi_guess oi_know */
+    { "potion",	26,	0,	NULL,	false },
+    { "scroll",	36,	0,	NULL,	false },
+    { "food",	16,	0,	NULL,	false },
+    { "weapon",	 7,	0,	NULL,	false },
+    { "armor",	 7,	0,	NULL,	false },
+    { "ring",	 4,	0,	NULL,	false },
+    { "stick",	 4,	0,	NULL,	false },
 };
 
-static const char *
-type_to_string(int type, int which)
+char*
+inv_name(char* buf, THING* obj, bool drop)
 {
-  switch (type)
-  {
-    case POTION: return "potion";
-    case RING: return "ring";
-    case STICK: return "stick";
-    case SCROLL: return "scroll";
-    case FOOD: return which == 1 ? "fruit" : "food ration";
-    case WEAPON: return weap_info[which].oi_name;
-    case ARMOR: return armor_name((enum armor_t)which);
-    default: return "something";
-  }
-}
-
-static int
-add_num_type_to_string(char *ptr, int type, int which, int num)
-{
-  const char *obj_type = type_to_string(type, which);
-
-  if (num == 1)
-    return sprintf(ptr, "A%s %s", vowelstr(obj_type), obj_type);
-  else
-    return sprintf(ptr, "%d %ss", num, obj_type);
-}
-
-char *
-inv_name(THING *obj, bool drop)
-{
-  static char buf[2*MAXSTR];
-  char *pb = buf;
-  int which = obj->o_which;
-
+  buf[MAXSTR -1] = '\0';
   switch (obj->o_type)
   {
     case POTION: potion_description(obj, buf); break;
-    case RING: ring_description(obj, buf); break;
-    case STICK: wand_description(obj, buf); break;
-    case SCROLL:
-      {
-        struct obj_info *op = &scr_info[which];
-
-        pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
-
-        if (op->oi_know)
-          pb += sprintf(pb, " of %s", op->oi_name);
-        else if (op->oi_guess)
-          pb += sprintf(pb, " called %s", op->oi_guess);
-        else
-          pb += sprintf(pb, " titled '%s'", s_names[which]);
-      }
-      break;
+    case RING:   ring_description(obj, buf); break;
+    case STICK:  wand_description(obj, buf); break;
+    case SCROLL: scroll_description(obj, buf); break;
+    case WEAPON: weapon_description(obj, buf); break;
+    case ARMOR:  armor_description(obj, buf); break;
     case FOOD:
-      pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
-      break;
-    case WEAPON:
-      {
-        pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
-
-        if (which != ARROW)
-        {
-          /* TODO: Maybe we can rename NumxNum -> NumdNum everywhere? */
-          char damage[4] = { '\0' };
-          sprintf(damage, "%s", which == BOW ? obj->o_hurldmg : obj->o_damage);
-          damage[1] = 'd';
-          pb += sprintf(pb, " (%s)", damage);
-        }
-
-        if (obj->o_flags & ISKNOW)
-        {
-          pb += sprintf(pb, " (");
-          pb += sprintf(pb, obj->o_hplus < 0 ? "%d," : "+%d,", obj->o_hplus);
-          pb += sprintf(pb, obj->o_dplus < 0 ? "%d)" : "+%d)", obj->o_dplus);
-        }
-
-        if (obj->o_arm != 0)
-          pb += sprintf(pb, obj->o_arm < 0 ? " [%d]" : " [+%d]", obj->o_arm);
-
-        if (obj->o_label != NULL)
-          pb += sprintf(pb, " called %s", obj->o_label);
-      }
-      break;
-    case ARMOR:
-      {
-        int bonus_ac = armor_ac((enum armor_t)which) - obj->o_arm;
-        int base_ac = 10 - obj->o_arm - bonus_ac;
-
-        pb += add_num_type_to_string(pb, obj->o_type, obj->o_which, obj->o_count);
-        pb += sprintf(pb, " [%d]", base_ac);
-
-        if (obj->o_flags & ISKNOW)
-        {
-          pb -= 1;
-          pb += sprintf(pb, bonus_ac < 0 ? ",%d]" : ",+%d]", bonus_ac);
-        }
-
-        if (obj->o_label != NULL)
-          pb += sprintf(pb, " called %s", obj->o_label);
-      }
-      break;
-    case AMULET:
-      pb += strlen(strcpy(pb, "The Amulet of Yendor"));
-      break;
-    case GOLD:
-      pb += sprintf(pb, "%d Gold pieces", obj->o_goldval);
-      break;
+    {
+      char const* obj_type = obj->o_which == 1 ? "fruit" : "food ration";
+      if (obj->o_count == 1)
+        sprintf(buf, "A %s", obj_type);
+      else
+        sprintf(buf, "%d %ss", obj->o_count, obj_type);
+    }
+    break;
+    case AMULET: strcpy(buf, "The Amulet of Yendor"); break;
+    case GOLD:   sprintf(buf, "%d Gold pieces", obj->o_goldval); break;
     default:
       msg("You feel a disturbance in the force");
-      pb += sprintf(pb, "Something bizarre %s", unctrl((chtype)obj->o_type));
+      sprintf(buf, "Something bizarre %s", unctrl((chtype)obj->o_type));
       break;
   }
 
   buf[0] = drop ? (char)tolower(buf[0]) : (char)toupper(buf[0]);
-  buf[MAXSTR-1] = '\0';
+  assert (buf[MAXSTR -1] == '\0');
   return buf;
 }
 
 bool
 drop(void)
 {
-  coord *player_pos = player_get_pos();
+  coord* player_pos = player_get_pos();
   char ch = level_get_ch(player_pos->y, player_pos->x);
-  THING *obj;
 
   if (ch != FLOOR && ch != PASSAGE)
   {
@@ -177,7 +92,8 @@ drop(void)
     return false;
   }
 
-  if ((obj = pack_get_item("drop", 0)) == NULL)
+  THING* obj = pack_get_item("drop", 0);
+  if (obj == NULL)
     return false;
 
   obj = pack_remove(obj, true, !(obj->o_type == POTION ||
@@ -185,19 +101,23 @@ drop(void)
 
   /* Link it into the level object list */
   list_attach(&lvl_obj, obj);
+
   level_set_ch(player_pos->y, player_pos->x, (char)obj->o_type);
   int flags = level_get_flags(player_pos->y, player_pos->x);
   flags |= F_DROPPED;
   level_set_flags(player_pos->y, player_pos->x, (char)flags);
+
   obj->o_pos = *player_pos;
-  msg("dropped %s", inv_name(obj, true));
+
+  char buf[MAXSTR];
+  msg("dropped %s", inv_name(buf, obj, true));
   return true;
 }
 
-static THING *
+static THING*
 new_generic_thing(void)
 {
-  THING *cur = allocate_new_item();
+  THING* cur = allocate_new_item();
 
   assert (sizeof(cur->o_damage) >= sizeof("0x0"));
   assert (sizeof(cur->o_hurldmg) >= sizeof("0x0"));
@@ -214,12 +134,11 @@ new_generic_thing(void)
   return cur;
 }
 
-THING *
+THING*
 new_thing(void)
 {
-  THING *cur = NULL;
-  int r;
 
+  int r;
   if (no_food > 3)
     r = 2;
   else
@@ -227,6 +146,7 @@ new_thing(void)
 
   /* Decide what kind of object it will be
    * If we haven't had food for a while, let it be food. */
+  THING* cur = NULL;
   switch (r)
   {
     case 0:
@@ -305,59 +225,48 @@ new_thing(void)
 }
 
 unsigned
-pick_one(struct obj_info *start, int nitems)
+pick_one(struct obj_info* start, int nitems)
 {
-  struct obj_info *ptr;
-  struct obj_info *end = &start[nitems];
-  int i = rnd(100);
-
-  for (ptr = start ; ptr != end; ++ptr)
-    if (i < ptr->oi_prob)
-      return (unsigned)(ptr - start);
+  for (int rand = rnd(100), i = 0; i < nitems; ++i)
+    if (rand < start[i].oi_prob)
+      return (unsigned)i;
     else
-      i -= ptr->oi_prob;
+      rand -= start[i].oi_prob;
 
   /* The functions should have returned by now */
-  {
-    coord orig;
-    int curr_y = 0;
-    getyx(stdscr, orig.y, orig.x);
-    mvprintw(0, 0, "DEBUG: bad pick_one: %d from %d items", i, nitems);
-    for (ptr = start; ptr != end; ++ptr)
-      mvprintw(++curr_y, 1, "%s: %d%%", ptr->oi_name, ptr->oi_prob);
-    move(orig.y, orig.x);
-    assert(0);
-    return 0;
-  }
+  assert(0);
+  return 0;
 }
 
 /* list what the player has discovered of this type */
 static void
-discovered_by_type(char type, struct obj_info *info, int max_items)
+discovered_by_type(char type, struct obj_info* info, int max_items)
 {
-  int i;
-  int items_found = 0;
-  WINDOW *printscr = dupwin(stdscr);
-  THING printable_object;
-  coord orig_pos;
 
+  WINDOW *printscr = dupwin(stdscr);
+
+  coord orig_pos;
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
+  THING printable_object;
+  memset(&printable_object, 0, sizeof(printable_object));
   printable_object.o_type = type;
   printable_object.o_flags = 0;
   printable_object.o_count = 1;
 
-  for (i = 0; i < max_items; ++i)
+  int items_found = 0;
+  for (int i = 0; i < max_items; ++i)
     if (info[i].oi_know || info[i].oi_guess)
     {
+      char buf[MAXSTR];
       printable_object.o_which = i;
       mvwprintw(printscr, ++items_found, 1,
-                "%s", inv_name(&printable_object, false));
+                "%s", inv_name(buf, &printable_object, false));
     }
 
   if (items_found == 0)
   {
-    const char *type_as_str = NULL;
+    char const* type_as_str = NULL;
     switch (type)
     {
       case POTION: type_as_str = "potion"; break;
@@ -365,10 +274,7 @@ discovered_by_type(char type, struct obj_info *info, int max_items)
       case RING:   type_as_str = "ring"; break;
       case STICK:  type_as_str = "stick"; break;
     }
-    mvwprintw(printscr, 1, 1, (terse
-          ? "No known %s"
-          : "Haven't discovered anything about any %s"),
-        type_as_str);
+    mvwprintw(printscr, 1, 1, "No known %s", type_as_str);
   }
 
   move(orig_pos.y, orig_pos.x);
@@ -379,9 +285,7 @@ discovered_by_type(char type, struct obj_info *info, int max_items)
 void
 discovered(void)
 {
-  msg((terse
-      ? "what type? (%c%c%c%c) "
-      : "for what type of objects do you want a list? (%c%c%c%c) "),
+  msg("for what type of objects do you want a list? (%c%c%c%c) ",
       POTION, SCROLL, RING, STICK);
   while (true)
   {

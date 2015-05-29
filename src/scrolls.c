@@ -342,7 +342,8 @@ identify(void)
     case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
   }
 
-  msg(inv_name(obj, false));
+  char buf[MAXSTR];
+  msg(inv_name(buf, obj, false));
 }
 
 bool
@@ -439,4 +440,22 @@ read_scroll(void)
   return true;
 }
 
+void
+scroll_description(THING* obj, char* buf)
+{
+  struct obj_info* op = &scr_info[obj->o_which];
+  char* ptr = buf;
+
+  if (obj->o_count == 1)
+    ptr += sprintf(ptr, "A scroll");
+  else
+    ptr += sprintf(ptr, "%d scrolls", obj->o_count);
+
+  if (op->oi_know)
+    ptr += sprintf(ptr, " of %s", op->oi_name);
+  else if (op->oi_guess)
+    ptr += sprintf(ptr, " called %s", op->oi_guess);
+  else
+    ptr += sprintf(ptr, " titled '%s'", s_names[obj->o_which]);
+}
 

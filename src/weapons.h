@@ -47,4 +47,6 @@ bool last_weapon(void);
 /* Pick a random position around the give (y, x) coordinates */
 bool fallpos(coord const* pos, coord* newpos);
 
+void weapon_description(THING* obj, char* buf);
+
 #endif /* _ROGUE14_WEAPON_H_ */

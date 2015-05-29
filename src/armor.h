@@ -35,4 +35,6 @@ int armor_for_thing(THING* thing); /* Returns the AC of a creature */
 void armor_rust(void);             /* Rust players armor */
 bool armor_command_wear(void);     /* Let player select something to wear */
 
+void armor_description(THING* obj, char* buf);
+
 #endif /* _ROGUE14_ARMOR_H_ */

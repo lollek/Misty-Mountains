@@ -38,4 +38,6 @@ bool read_scroll(void);     /* Read a scroll from the pack and do the needful */
 #define learn_scroll(_s) (scr_info[_s].oi_know = true) /* Learn scroll info */
 #define knows_scroll(_s) (scr_info[_s].oi_know) /* Knows what scroll does? */
 
+void scroll_description(THING* obj, char* buf);
+
 #endif /* _ROGUE14_SCROLLS_H_ */

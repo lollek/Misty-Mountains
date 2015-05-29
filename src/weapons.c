@@ -240,7 +240,8 @@ weapon_wield(THING* weapon)
   pack_remove(weapon, false, true);
   pack_equip_item(weapon);
 
-  msg("wielding %s", inv_name(weapon, true));
+  char buf[MAXSTR];
+  msg("wielding %s", inv_name(buf, weapon, true));
   last_wielded_weapon = currently_wielding;
   return true;
 }
@@ -295,3 +296,42 @@ fallpos(coord const* pos, coord* newpos)
     }
   return cnt != 0;
 }
+
+void
+weapon_description(THING* obj, char* buf)
+{
+  char* ptr = buf;
+  char const* obj_name = weap_info[obj->o_which].oi_name;
+
+  if (obj->o_count == 1)
+    ptr += sprintf(ptr, "A%s %s", vowelstr(obj_name), obj_name);
+  else
+    ptr += sprintf(ptr, "%d %ss", obj->o_count, obj_name);
+
+  if (obj->o_which != ARROW)
+  {
+    char damage[8] = { '\0' };
+    assert (sizeof(damage) >= sizeof(obj->o_hurldmg));
+    assert (sizeof(damage) >= sizeof(obj->o_damage));
+    sprintf(damage, "%s", obj->o_which == BOW
+        ? obj->o_hurldmg
+        : obj->o_damage);
+    damage[1] = 'd';
+    ptr += sprintf(ptr, " (%s)", damage);
+  }
+
+  if (obj->o_flags & ISKNOW)
+  {
+    ptr += sprintf(ptr, " (");
+    ptr += sprintf(ptr, obj->o_hplus < 0 ? "%d," : "+%d,", obj->o_hplus);
+    ptr += sprintf(ptr, obj->o_dplus < 0 ? "%d)" : "+%d)", obj->o_dplus);
+  }
+
+  if (obj->o_arm != 0)
+    ptr += sprintf(ptr, obj->o_arm < 0 ? " [%d]" : " [+%d]", obj->o_arm);
+
+  if (obj->o_label != NULL)
+    ptr += sprintf(ptr, " called %s", obj->o_label);
+
+}
+

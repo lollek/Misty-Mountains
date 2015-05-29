@@ -200,8 +200,9 @@ pack_print_evaluate_item(THING* obj)
   if (worth < 0)
     worth = 0;
 
+  char buf[MAXSTR];
   printw("%5d  %s\n", worth,
-      inv_name(obj, false));
+      inv_name(buf, obj, false));
 
   return (unsigned) worth;
 }
@@ -219,7 +220,8 @@ pack_char(void)
 void
 pack_move_msg(THING* obj)
 {
-  msg("moved onto %s", inv_name(obj, true));
+  char buf[MAXSTR];
+  msg("moved onto %s", inv_name(buf, obj, true));
 }
 
 static void
@@ -386,7 +388,10 @@ pack_add(THING* obj, bool silent)
 
   /* Notify the user */
   if (!silent)
-    msg("you now have %s (%c)", inv_name(obj, !terse), obj->o_packch, true);
+  {
+    char buf[MAXSTR];
+    msg("you now have %s (%c)", inv_name(buf, obj, !terse), obj->o_packch, true);
+  }
   return true;
 }
 
@@ -548,6 +553,7 @@ pack_contains(THING *item)
 bool
 pack_print_equipment(void)
 {
+  char buf[MAXSTR];
   WINDOW* equipscr = dupwin(stdscr);
 
   coord orig_pos;
@@ -560,7 +566,7 @@ pack_print_equipment(void)
     {
       mvwprintw(equipscr, sym - 'a' + 1, 1, "%c) %s: %s",
                 sym, equipment[i].description,
-                inv_name(equipment[i].ptr, false));
+                inv_name(buf, equipment[i].ptr, false));
       sym++;
     }
   }
@@ -578,6 +584,7 @@ pack_print_equipment(void)
 bool
 pack_print_inventory(int type)
 {
+  char buf[MAXSTR];
   WINDOW* invscr = dupwin(stdscr);
 
   coord orig_pos;
@@ -592,7 +599,7 @@ pack_print_inventory(int type)
     {
       /* Print out the item and move to next row */
       wmove(invscr, ++num_items, 1);
-      wprintw(invscr, "%c) %s", list->o_packch, inv_name(list, false));
+      wprintw(invscr, "%c) %s", list->o_packch, inv_name(buf, list, false));
     }
   }
 
@@ -694,6 +701,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   if (pos == EQUIPMENT_ARMOR)
     waste_time(1);
 
+  char buf[MAXSTR];
   if (!pack_add(obj, true))
   {
     coord const* player_pos = player_get_pos();
@@ -703,10 +711,10 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     flags |= F_DROPPED;
     level_set_flags(player_pos->y, player_pos->x, (char)flags);
     obj->o_pos = *player_pos;
-    msg("dropped %s", inv_name(obj, true));
+    msg("dropped %s", inv_name(buf, obj, true));
   }
   else if (!quiet_on_success)
-    msg("no longer %s %s", doing, inv_name(obj, true));
+    msg("no longer %s %s", doing, inv_name(buf, obj, true));
   return true;
 }
 

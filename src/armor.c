@@ -67,7 +67,8 @@ armor_command_wear(void)
   pack_remove(obj, false, true);
   pack_equip_item(obj);
 
-  msg("now wearing %s", inv_name(obj, true));
+  char buf[MAXSTR];
+  msg("now wearing %s", inv_name(buf, obj, true));
   return true;
 }
 
@@ -111,5 +112,25 @@ armor_rust(void)
         ? "your armor weakens"
         : "your armor appears to be weaker now. Oh my!");
   }
+}
+
+void
+armor_description(THING* obj, char* buf)
+{
+  char *ptr = buf;
+  char const* obj_name = armor_name((enum armor_t)obj->o_which);
+  int bonus_ac = armor_ac((enum armor_t)obj->o_which) - obj->o_arm;
+  int base_ac = 10 - obj->o_arm - bonus_ac;
+
+  ptr += sprintf(ptr, "A%s %s [%d]", vowelstr(obj_name), obj_name, base_ac);
+
+  if (obj->o_flags & ISKNOW)
+  {
+    ptr -= 1;
+    ptr += sprintf(ptr, bonus_ac < 0 ? ",%d]" : ",+%d]", bonus_ac);
+  }
+
+  if (obj->o_label != NULL)
+    ptr += sprintf(ptr, " called %s", obj->o_label);
 }
 

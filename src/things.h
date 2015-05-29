@@ -7,58 +7,67 @@
 
 /* Stuff about objects */
 struct obj_info {
-  char *oi_name;
-  int oi_prob;
-  int oi_worth;
-  char *oi_guess;
-  bool oi_know;
+  char* oi_name;
+  int   oi_prob;
+  int   oi_worth;
+  char* oi_guess;
+  bool  oi_know;
 };
 
 /* Structure describing a fighting being */
 struct stats {
-  int s_str;   /* Strength */
-  int s_exp;        /* Experience */
-  int s_lvl;        /* level of mastery */
-  int s_arm;        /* Armor class */
-  int s_hpt;        /* Hit points */
-  char s_dmg[13];   /* String describing damage done */
-  int s_maxhp;      /* Max hit points */
+  int  s_str;      /* Strength */
+  int  s_exp;      /* Experience */
+  int  s_lvl;      /* level of mastery */
+  int  s_arm;      /* Armor class */
+  int  s_hpt;      /* Hit points */
+  char s_dmg[13];  /* String describing damage done */
+  int  s_maxhp;    /* Max hit points */
 };
 
 /* Structure for monsters and player */
 typedef union thing {
-    struct {
-	union thing *_l_next, *_l_prev;	/* Next pointer in link */
-	coord _t_pos;			/* Position */
-	bool _t_turn;			/* If slowed, is it a turn to move */
-	char _t_type;			/* What it is */
-	char _t_disguise;		/* What mimic looks like */
-	char _t_oldch;			/* Character that was where it was */
-	coord *_t_dest;			/* Where it is running to */
-	int _t_flags;			/* State word */
-	struct stats _t_stats;		/* Physical description */
-	struct room *_t_room;		/* Current room for thing */
-	union thing *_t_pack;		/* What the thing is carrying */
-        int _t_reserved;
-    } _t;
-    struct {
-	union thing *_l_next, *_l_prev;	/* Next pointer in link */
-	int _o_type;			/* What kind of object it is */
-	coord _o_pos;			/* Where it lives on the screen */
-	char *_o_text;			/* What it says if you read it */
-	int  _o_launch;			/* What you need to launch it */
-	char _o_packch;			/* What character it is in the pack */
-	char _o_damage[8];		/* Damage if used like sword */
-	char _o_hurldmg[8];		/* Damage if thrown */
-	int _o_count;			/* count for plural objects */
-	int _o_which;			/* Which object of a type it is */
-	int _o_hplus;			/* Plusses to hit */
-	int _o_dplus;			/* Plusses to damage */
-	int _o_arm;			/* Armor protection */
-	int _o_flags;			/* information about objects */
-	int _o_group;			/* group number for this object */
-	char *_o_label;			/* Label for object */
-    } _o;
+  struct {
+    /* Linked list pointers */
+    union thing* _l_next;
+    union thing* _l_prev;
+
+    struct stats _t_stats;   /* Physical description */
+    coord        _t_pos;     /* Position */
+    coord*       _t_dest;    /* Where it is running to */
+    struct room* _t_room;    /* Current room for thing */
+    union thing* _t_pack;    /* What the thing is carrying */
+
+    int          _t_flags;   /* State word */
+    char         _t_type;    /* What it is */
+    char         _t_disguise;/* What mimic looks like */
+    char         _t_oldch;   /* Character that was where it was */
+    bool         _t_turn;    /* If slowed, is it a turn to move */
+    int          _t_reserved;
+  } _t;
+
+  struct {
+    /* Linked list pointers */
+    union thing* _l_next;
+    union thing* _l_prev;
+
+    coord        _o_pos;          /* Where it lives on the screen */
+    char*        _o_text;         /* What it says if you read it */
+    char*        _o_label;        /* Label for object */
+    int          _o_type;         /* What kind of object it is */
+    int          _o_launch;       /* What you need to launch it */
+    int          _o_count;        /* count for plural objects */
+    int          _o_which;        /* Which object of a type it is */
+    int          _o_hplus;        /* Plusses to hit */
+    int          _o_dplus;        /* Plusses to damage */
+    int          _o_arm;          /* Armor protection */
+    int          _o_flags;        /* information about objects */
+    int          _o_group;        /* group number for this object */
+    char         _o_packch;       /* What character it is in the pack */
+    char         _o_damage[8];    /* Damage if used like sword */
+    char         _o_hurldmg[8];   /* Damage if thrown */
+  } _o;
+
 } THING;
 
 #define l_next		_t._l_next
@@ -128,16 +137,16 @@ typedef union thing {
 extern struct obj_info things[NUMTHINGS];
 
 /* Return the name of something as it would appear in an inventory. */
-char *inv_name(THING *obj, bool drop);
+char* inv_name(char* buf, THING* obj, bool drop);
 
 /* Put something down */
 bool drop(void);
 
 /* Return a new thing */
-THING *new_thing(void);
+THING* new_thing(void);
 
 /* Pick an item out of a list of nitems possible objects */
-unsigned pick_one(struct obj_info *start, int nitems);
+unsigned pick_one(struct obj_info* start, int nitems);
 
 /* list what the player has discovered in this game of a certain type */
 void discovered(void);
