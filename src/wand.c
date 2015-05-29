@@ -498,12 +498,18 @@ wand_zap(void)
 }
 
 static bool
-fire_bolt_handle_bounces(coord* pos, coord* dir, tile* dirtile, bool retval)
+fire_bolt_handle_bounces(coord* pos, coord* dir, tile* dirtile)
 {
-  msg("(%d:%d)[%d:%d]", pos->y, pos->x, dir->y, dir->x);
+  int num_bounces = 0;
+recursive_loop:; /* ONLY called by end of function */
   char ch = level_get_type(pos->y, pos->x);
   if (ch != VWALL && ch != HWALL && ch != SHADOW)
-    return retval;
+    return num_bounces != 0;
+
+  /* There are no known bugs with this functions at the moment,
+   * but just in case, we'll abort after too many bounces */
+  if (num_bounces > 10)
+    return true;
 
   /* Treat shadow as a wall */
   if (ch == SHADOW)
@@ -512,16 +518,16 @@ fire_bolt_handle_bounces(coord* pos, coord* dir, tile* dirtile, bool retval)
       ch = VWALL;
     else if (dir->y != 0 && dir->x == 0)
       ch = HWALL;
-    else if (dir->y < 0)
+    else
     {
-      char y_ch = level_get_ch(pos->y + 1, pos->x);
-      ch =  (y_ch == SHADOW || y_ch == HWALL || y_ch == HWALL)
-        ? VWALL : HWALL;
-    }
-    else if (dir->y > 0)
-    {
-      char y_ch = level_get_ch(pos->y - 1, pos->x);
-      ch =  (y_ch == SHADOW || y_ch == HWALL || y_ch == HWALL)
+      int y = dir->y < 0 ? pos->y + 1 : pos->y - 1;
+      int y_ch;
+      if (y >= NUMLINES || y <= 0)
+        y_ch = HWALL;
+      else
+        y_ch = level_get_ch(y, pos->x);
+
+      ch = (y_ch == HWALL || y_ch == VWALL || y_ch == SHADOW)
         ? VWALL : HWALL;
     }
   }
@@ -546,7 +552,8 @@ fire_bolt_handle_bounces(coord* pos, coord* dir, tile* dirtile, bool retval)
 
   /* It's possible for a bolt to bounce directly from one wall to another
    * if you hit a corner, thus, we need to go through everything again. */
-  return fire_bolt_handle_bounces(pos, dir, dirtile, true);
+  ++num_bounces;
+  goto recursive_loop; /* == fire_bolt_handle_bounces(pos,dir,dirtile) */
 }
 
 static void
@@ -639,7 +646,7 @@ fire_bolt(coord* start, coord* dir, char* name)
   {
     char first_bounce = level_get_ch(start->y + dir->y, start->x + dir->x);
     bool is_player = same_coords(start, player_get_pos());
-    if (first_bounce == HWALL || first_bounce == VWALL || first_bounce == SHADOW)
+    if (first_bounce == HWALL || first_bounce == VWALL)
     {
       if (is_player)
         for (int i = 0; i < BOLT_LENGTH; ++i)
@@ -658,7 +665,7 @@ fire_bolt(coord* start, coord* dir, char* name)
     pos.y += dir->y;
     pos.x += dir->x;
 
-    if (fire_bolt_handle_bounces(&pos, dir, &dirtile, false))
+    if (fire_bolt_handle_bounces(&pos, dir, &dirtile))
       msg("the %s bounces", name);
 
     /* Handle potential hits */
