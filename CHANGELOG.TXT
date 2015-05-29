@@ -1,20 +1,26 @@
 v1.2.8
-  Change some in game messages / texts
-  Did some balancing (which might be way off)
-  f-fighting now does the same as F-fighting
-  You can now stack haste (from potions)
-  Some descriptions have changed
-  Removed option to not show tombstone
-  Removed quick mode
-  Leprechauns now drop gold even when going up the stairs
-  Removed many trippy sentences
-  Removed autopickup when moving on top of items
-  Fixed a bug causing searching to be harder than it should be.
-    Being blind / hallucinating now causes searching to be harder as well
-  Firing a bolt from a wand into a wall causes it to bounce more naturally
-  Firing a bolt no longers stops on hit (now travels thought enemies)
-  Fixed a bug causing fire-bolt to deal no damage
-  Removed terse mode
+  Tweaking:
+    Change some in game messages / texts
+    Did some balancing (which might be way off)
+    f-fighting now does the same as F-fighting
+    You can now stack haste (from potions)
+    Some descriptions have changed
+    Leprechauns now drop gold even when going up the stairs
+    Firing a bolt from a wand into a wall causes it to bounce more naturally
+    Firing a bolt no longers stops on hit (now travels thought enemies)
+    Changed how you toggle bools in the option menu
+
+  Bugs:
+    Fixed a bug causing searching to be harder than it should be.
+      Being blind / hallucinating now causes searching to be harder as well
+    Fixed a bug causing fire-bolt to deal no damage
+
+  Removed features:
+    Removed option to not show tombstone
+    Removed quick mode
+    Removed many trippy sentences
+    Removed autopickup when moving on top of items
+    Removed terse mode
 
 v1.2.7
   Made -j flag automatically set
