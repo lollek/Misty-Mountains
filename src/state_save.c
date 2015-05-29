@@ -153,7 +153,7 @@ static bool
 state_save_dest(coord const* dest)
 {
   int32_t i;
-  THING *ptr;
+  THING* ptr;
 
   /* (0,0): NULL - Not chasing anyone */
   if (dest == NULL)
@@ -281,7 +281,7 @@ state_save_object(THING const* o)
 static bool
 state_save_equipment(enum equipment_pos slot, int32_t marker)
 {
-  THING *o = pack_equipped_item(slot);
+  THING* o = pack_equipped_item(slot);
   if (o == NULL)
     return state_save_int32(RSID_NULL)
       ? fail("state_save_object(%d, %d)\r\n", slot, marker)
@@ -319,7 +319,7 @@ state_save_places(void)
 }
 
 static bool
-state_save_room(struct room const *room)
+state_save_room(struct room const* room)
 {
   return
     state_save_coord(&room->r_pos) ||
@@ -424,15 +424,13 @@ state_save_window(WINDOW* win)
 }
 
 bool
-state_save_obj_info(const struct obj_info *i, int count)
+state_save_obj_info(const struct obj_info* i, int count)
 {
-  int n;
-
   if (state_save_int32(RSID_MAGICITEMS) ||
       state_save_int32(count))
     return fail("state_save_obj_info(%p, %d)\r\n", i, count);
 
-  for (n = 0; n < count; n++)
+  for (int n = 0; n < count; n++)
     if(state_save_int32(i[n].oi_prob) ||
        state_save_int32(i[n].oi_worth) ||
        state_save_string(i[n].oi_guess) ||
@@ -442,7 +440,7 @@ state_save_obj_info(const struct obj_info *i, int count)
 }
 
 bool
-state_save_list(const THING *l)
+state_save_list(const THING* l)
 {
   int32_t listsize;
   THING const* ptr;
@@ -462,7 +460,7 @@ state_save_list(const THING *l)
 }
 
 bool
-state_save_index(const char **master, int max, const char *str)
+state_save_index(char const** master, int max, char const* str)
 {
   int32_t i;
   for(i = 0; i < max; i++)

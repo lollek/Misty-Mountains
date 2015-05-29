@@ -32,34 +32,33 @@ static FILE* file;
 
 extern int group;
 
-#define rs_read_stats(_s) \
-  (state_assert_int32(RSID_STATS) || \
-   state_load_int32(&(_s)->s_str) || \
-   state_load_int32(&(_s)->s_exp) || \
-   state_load_int32(&(_s)->s_lvl) || \
-   state_load_int32(&(_s)->s_arm) || \
-   state_load_int32(&(_s)->s_hpt) || \
-   state_load_chars((_s)->s_dmg, sizeof((_s)->s_dmg)) || \
-   state_load_int32(&(_s)->s_maxhp))
-#define rs_read_room(_r) \
-  (state_load_coord(&(_r)->r_pos) || \
-   state_load_coord(&(_r)->r_max) || \
-   state_load_coord(&(_r)->r_gold) || \
-   state_load_int32(&(_r)->r_goldval) || \
-   state_load_int32(&(_r)->r_flags) || \
-   state_load_int32(&(_r)->r_nexits) || \
-   state_load_coord(&(_r)->r_exit[0]) || \
-   state_load_coord(&(_r)->r_exit[1]) || \
-   state_load_coord(&(_r)->r_exit[2]) || \
-   state_load_coord(&(_r)->r_exit[3]) || \
-   state_load_coord(&(_r)->r_exit[4]) || \
-   state_load_coord(&(_r)->r_exit[5]) || \
-   state_load_coord(&(_r)->r_exit[6]) || \
-   state_load_coord(&(_r)->r_exit[7]) || \
-   state_load_coord(&(_r)->r_exit[8]) || \
-   state_load_coord(&(_r)->r_exit[9]) || \
-   state_load_coord(&(_r)->r_exit[10]) || \
-   state_load_coord(&(_r)->r_exit[11]))
+static bool
+state_load_room(struct room* room)
+{
+  return
+    state_load_coord(&room->r_pos) ||
+    state_load_coord(&room->r_max) ||
+    state_load_coord(&room->r_gold) ||
+    state_load_int32(&room->r_goldval) ||
+    state_load_int32(&room->r_flags) ||
+    state_load_int32(&room->r_nexits) ||
+    state_load_coord(&room->r_exit[0]) ||
+    state_load_coord(&room->r_exit[1]) ||
+    state_load_coord(&room->r_exit[2]) ||
+    state_load_coord(&room->r_exit[3]) ||
+    state_load_coord(&room->r_exit[4]) ||
+    state_load_coord(&room->r_exit[5]) ||
+    state_load_coord(&room->r_exit[6]) ||
+    state_load_coord(&room->r_exit[7]) ||
+    state_load_coord(&room->r_exit[8]) ||
+    state_load_coord(&room->r_exit[9]) ||
+    state_load_coord(&room->r_exit[10]) ||
+    state_load_coord(&room->r_exit[11])
+
+    ? fail("state_load_room(%p)\r\n", room)
+    : SUCCESS;
+}
+
 #define rs_assert_read_places(_p, _n) \
   for (temp_i = 0; temp_i < _n; ++temp_i) \
     rs_assert(state_load_char(&(_p)[temp_i].p_ch) || \
@@ -180,6 +179,22 @@ state_load_chars(char* c, int32_t len)
     : SUCCESS;
 }
 
+static bool state_load_stats(struct stats* s)
+{
+  return
+    state_assert_int32(RSID_STATS) ||
+    state_load_int32(&s->s_str) ||
+    state_load_int32(&s->s_exp) ||
+    state_load_int32(&s->s_lvl) ||
+    state_load_int32(&s->s_arm) ||
+    state_load_int32(&s->s_hpt) ||
+    state_load_chars(s->s_dmg, sizeof(s->s_dmg)) ||
+    state_load_int32(&s->s_maxhp)
+
+    ? fail("state_load_stats(%p)\r\n", s)
+    : SUCCESS;
+}
+
 
 bool
 state_load_string(char** s)
@@ -213,7 +228,7 @@ state_load_coord(coord* c)
 }
 
 bool
-state_load_index(const char **master, int max, const char **str)
+state_load_index(char const** master, int max, char const** str)
 {
   int i;
 
@@ -227,10 +242,8 @@ state_load_index(const char **master, int max, const char **str)
 }
 
 static int
-rs_read_window(WINDOW *win)
+rs_read_window(WINDOW* win)
 {
-  int row;
-  int col;
   int maxlines;
   int maxcols;
   int width  = getmaxx(win);
@@ -242,8 +255,8 @@ rs_read_window(WINDOW *win)
       state_load_int32(&maxcols))
     return fail("rs_read_window(%p)\r\n", win);
 
-  for (row = 0; row < maxlines; row++)
-    for (col = 0; col < maxcols; col++)
+  for (int row = 0; row < maxlines; row++)
+    for (int col = 0; col < maxcols; col++)
     {
       if (state_load_int32(&value) != 0)
         return 1;
@@ -254,18 +267,17 @@ rs_read_window(WINDOW *win)
   return 0;
 }
 
-static void *
-get_list_item(THING *l, int i)
+static void*
+get_list_item(THING* l, int i)
 {
-    int count;
-    for (count = 0; l != NULL; count++, l = l->l_next)
+    for (int count = 0; l != NULL; count++, l = l->l_next)
         if (count == i)
             return l;
     return NULL;
 }
 
 static int
-rs_read_daemons(struct delayed_action *d_list, int count)
+rs_read_daemons(struct delayed_action* d_list, int count)
 {
   int i = 0;
   int value = 0;
@@ -277,7 +289,7 @@ rs_read_daemons(struct delayed_action *d_list, int count)
   if (value > count)
     return 1;
 
-  for(i=0; i < count; i++)
+  for(i = 0; i < count; i++)
   {
     int func = 0;
     if (state_load_int32(&d_list[i].d_type) ||
@@ -319,9 +331,8 @@ rs_read_daemons(struct delayed_action *d_list, int count)
 
 
 bool
-state_load_obj_info(struct obj_info *mi, int count)
+state_load_obj_info(struct obj_info* mi, int count)
 {
-  int n;
   int value;
 
   if (state_assert_int32(RSID_MAGICITEMS) ||
@@ -329,7 +340,7 @@ state_load_obj_info(struct obj_info *mi, int count)
       value > count)
     return fail("state_load_obj_info(%p, %d)\r\n", mi, count);
 
-  for (n = 0; n < value; n++)
+  for (int n = 0; n < value; n++)
     if (state_load_int32(&mi[n].oi_prob) ||
         state_load_int32(&mi[n].oi_worth) ||
         state_load_string(&mi[n].oi_guess) ||
@@ -339,22 +350,21 @@ state_load_obj_info(struct obj_info *mi, int count)
 }
 
 static int
-rs_read_rooms(struct room *r, int count)
+rs_read_rooms(struct room* r, int count)
 {
   int value = 0;
-  int n = 0;
 
   if (state_load_int32(&value) || value > count)
     return 1;
 
-  for (n = 0; n < value; n++)
-    if (rs_read_room(&r[n]))
+  for (int n = 0; n < value; n++)
+    if (state_load_room(&r[n]))
       return 1;
   return 0;
 }
 
 static int
-rs_read_room_reference(struct room **rp)
+rs_read_room_reference(struct room** rp)
 {
   int i;
   if (state_load_int32(&i))
@@ -364,7 +374,7 @@ rs_read_room_reference(struct room **rp)
 }
 
 static int
-rs_read_object(THING *o)
+rs_read_object(THING* o)
 {
   assert(o != NULL);
 
@@ -391,7 +401,7 @@ static int
 rs_read_equipment(int32_t marker)
 {
   int32_t disk_mark;
-  THING *item;
+  THING* item;
 
   if (state_load_int32(&disk_mark))
     return fail("rs_read_equipment(%X)\r\n", marker);
@@ -412,19 +422,18 @@ rs_read_equipment(int32_t marker)
 
 
 bool
-state_load_list(THING **list)
+state_load_list(THING** list)
 {
-  int i;
   int cnt;
-  THING *l = NULL;
-  THING *previous = NULL;
-  THING *head = NULL;
 
   if (state_assert_int32(RSID_OBJECTLIST) ||
       state_load_int32(&cnt))
     return fail("state_load_list(%p[%p])\r\n", list, *list);
 
-  for (i = 0; i < cnt; i++)
+  THING* l = NULL;
+  THING* previous = NULL;
+  THING* head = NULL;
+  for (int i = 0; i < cnt; i++)
   {
     l = allocate_new_item();
     l->l_prev = previous;
@@ -451,7 +460,7 @@ state_load_list(THING **list)
 }
 
 bool
-state_load_thing(THING *t)
+state_load_thing(THING* t)
 {
   int32_t listid = 0;
   int32_t index = -1;
@@ -504,7 +513,7 @@ state_load_thing(THING *t)
 
     case 2: /* object */
       {
-        THING *item = get_list_item(lvl_obj, index);
+        THING* item = get_list_item(lvl_obj, index);
         if (item != NULL)
           t->_t._t_dest = &item->o_pos;
       }
@@ -521,7 +530,7 @@ state_load_thing(THING *t)
 
 
   if (state_load_int32(&t->_t._t_flags) ||
-      rs_read_stats(&t->_t._t_stats) ||
+      state_load_stats(&t->_t._t_stats) ||
       rs_read_room_reference( &t->_t._t_room) ||
       state_load_list(&t->_t._t_pack))
     return 1;
@@ -529,14 +538,12 @@ state_load_thing(THING *t)
 }
 
 static int
-rs_fix_thing(THING *t)
+rs_fix_thing(THING* t)
 {
-  THING *item;
-
   if (t->t_reserved < 0)
     return 0;
 
-  item = get_list_item(mlist,t->t_reserved);
+  THING* item = get_list_item(mlist,t->t_reserved);
 
   if (item != NULL)
     t->t_dest = &item->t_pos;
@@ -544,19 +551,18 @@ rs_fix_thing(THING *t)
 }
 
 static int
-rs_read_thing_list(THING **list)
+rs_read_thing_list(THING** list)
 {
-  int i;
   int cnt;
-  THING *l = NULL;
-  THING *previous = NULL;
-  THING *head = NULL;
+  THING* l = NULL;
+  THING* previous = NULL;
+  THING* head = NULL;
 
   if (state_assert_int32(RSID_MONSTERLIST) ||
       state_load_int32(&cnt))
     return fail("rs_read_thing_list(%p[%p])\r\n", list, *list);
 
-  for (i = 0; i < cnt; i++)
+  for (int i = 0; i < cnt; i++)
   {
     l = allocate_new_item();
     l->l_prev = previous;
@@ -581,16 +587,15 @@ rs_read_thing_list(THING **list)
 }
 
 static int
-rs_fix_thing_list(THING *list)
+rs_fix_thing_list(THING* list)
 {
-  THING *item;
-  for(item = list; item != NULL; item = item->l_next)
+  for(THING* item = list; item != NULL; item = item->l_next)
     rs_fix_thing(item);
   return 0;
 }
 
 static int
-rs_read_thing_reference(THING *list, THING **item)
+rs_read_thing_reference(THING* list, THING** item)
 {
   int i;
 
@@ -602,7 +607,7 @@ rs_read_thing_reference(THING *list, THING **item)
 }
 
 bool
-state_load_file(FILE *inf)
+state_load_file(FILE* inf)
 {
   int32_t temp_i = 0; /* Used as buffer for macros */
 
@@ -643,7 +648,7 @@ state_load_file(FILE *inf)
   rs_assert(weapons_load_state());
   rs_assert(rs_fix_thing_list(mlist))
   rs_assert_read_places(places,MAXLINES*MAXCOLS)
-  rs_assert(rs_read_stats(&max_stats))
+  rs_assert(state_load_stats(&max_stats))
   rs_assert(rs_read_rooms(rooms, MAXROOMS))
   rs_assert(rs_read_room_reference(&oldrp))
   rs_assert(rs_read_rooms(passages, MAXPASS))
