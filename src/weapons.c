@@ -30,17 +30,16 @@
 
 #include "weapons.h"
 
-
 struct obj_info weap_info[MAXWEAPONS +1];
 int group = 2;
 
-static THING *last_wielded_weapon = NULL;
+static THING* last_wielded_weapon = NULL;
 
 #define NO_WEAPON '\0'
 
 static struct init_weaps {
-    char *iw_dam;	/* Damage when wielded */
-    char *iw_hrl;	/* Damage when thrown */
+    char const* iw_dam;	/* Damage when wielded */
+    char const* iw_hrl;	/* Damage when thrown */
     char iw_launch;	/* Launching weapon */
     int iw_flags;	/* Miscellaneous flags */
 } init_dam[MAXWEAPONS] = {
@@ -95,10 +94,7 @@ bool weapons_load_state(void)
 bool
 missile(int ydelta, int xdelta)
 {
-  THING *obj = pack_get_item("throw", WEAPON);
-  THING *monster_at_pos;
-  THING *weapon = pack_equipped_item(EQUIPMENT_RHAND);
-
+  THING* obj = pack_get_item("throw", WEAPON);
   if (obj == NULL)
     return false;
 
@@ -110,9 +106,10 @@ missile(int ydelta, int xdelta)
 
   obj = pack_remove(obj, true, false);
   do_motion(obj, ydelta, xdelta);
-  monster_at_pos = level_get_monster(obj->o_pos.y, obj->o_pos.x);
+  THING* monster_at_pos = level_get_monster(obj->o_pos.y, obj->o_pos.x);
 
   /* Throwing an arrow without a bow always misses */
+  THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (obj->o_which == ARROW && (weapon == NULL || weapon->o_which != BOW))
   {
     if (monster_at_pos && !to_death)
@@ -123,16 +120,16 @@ missile(int ydelta, int xdelta)
   /* AHA! Here it has hit something.  If it is a wall or a door,
    * or if it misses (combat) the monster, put it on the floor */
   else if (monster_at_pos == NULL ||
-      !hit_monster(obj->o_pos.y, obj->o_pos.x, obj))
+      !fight_against_monster(&obj->o_pos, obj, true))
     fall(obj, true);
 
   return true;
 }
 
 void
-do_motion(THING *obj, int ydelta, int xdelta)
+do_motion(THING* obj, int ydelta, int xdelta)
 {
-  coord *player_pos = player_get_pos();
+  coord* player_pos = player_get_pos();
   int ch;
 
   /* Come fly with us ... */
@@ -169,14 +166,12 @@ do_motion(THING *obj, int ydelta, int xdelta)
 }
 
 void
-fall(THING *obj, bool pr)
+fall(THING* obj, bool pr)
 {
-  PLACE *pp;
-  static coord fpos;
-
+  coord fpos;
   if (fallpos(&obj->o_pos, &fpos))
   {
-    pp = INDEX(fpos.y, fpos.x);
+    PLACE* pp = INDEX(fpos.y, fpos.x);
     pp->p_ch = (char) obj->o_type;
     obj->o_pos = fpos;
     if (cansee(fpos.y, fpos.x))
@@ -197,20 +192,22 @@ fall(THING *obj, bool pr)
 }
 
 void
-init_weapon(THING *weap, int which)
+init_weapon(THING* weap, int which)
 {
-  struct init_weaps *iwp;
-
   weap->o_type = WEAPON;
   weap->o_which = which;
-  iwp = &init_dam[which];
-  strncpy(weap->o_damage, iwp->iw_dam, sizeof(weap->o_damage));
-  strncpy(weap->o_hurldmg,iwp->iw_hrl, sizeof(weap->o_hurldmg));
+  struct init_weaps* iwp = &init_dam[which];
   weap->o_launch = iwp->iw_launch;
   weap->o_flags = iwp->iw_flags;
   weap->o_hplus = 0;
   weap->o_dplus = 0;
   weap->o_arm = 0;
+
+  assert(sizeof(weap->o_damage) >= sizeof(iwp->iw_dam));
+  assert(sizeof(weap->o_hurldmg) >= sizeof(iwp->iw_hrl));
+
+  strcpy(weap->o_damage, iwp->iw_dam);
+  strcpy(weap->o_hurldmg,iwp->iw_hrl);
 
   if (which == SPEAR)
     weap->o_arm = 2;
@@ -232,34 +229,10 @@ init_weapon(THING *weap, int which)
   }
 }
 
-int
-hit_monster(int y, int x, THING *obj)
-{
-  static coord mp;
-
-  assert(obj != NULL);
-
-  mp.y = y;
-  mp.x = x;
-  return fight_against_monster(&mp, obj, true);
-}
-
-char *
-num(int n1, int n2, char type)
-{
-  static char numbuf[10];
-
-  sprintf(numbuf, n1 < 0 ? "%d" : "+%d", n1);
-  if (type == WEAPON)
-    sprintf(&numbuf[strlen(numbuf)], n2 < 0 ? ",%d" : ",+%d", n2);
-  return numbuf;
-}
-
 bool
-weapon_wield(THING *weapon)
+weapon_wield(THING* weapon)
 {
-  THING *currently_wielding = pack_equipped_item(EQUIPMENT_RHAND);
-
+  THING* currently_wielding = pack_equipped_item(EQUIPMENT_RHAND);
   if (currently_wielding != NULL)
     if (!pack_unequip(EQUIPMENT_RHAND, true))
       return true;
@@ -273,7 +246,7 @@ weapon_wield(THING *weapon)
 }
 
 void
-set_last_weapon(THING *weapon)
+set_last_weapon(THING* weapon)
 {
   last_wielded_weapon = weapon;
 }
@@ -298,13 +271,11 @@ last_weapon(void)
 }
 
 bool
-fallpos(coord *pos, coord *newpos)
+fallpos(coord const* pos, coord* newpos)
 {
-  int y, x, cnt, ch;
-
-  cnt = 0;
-  for (y = pos->y - 1; y <= pos->y + 1; y++)
-    for (x = pos->x - 1; x <= pos->x + 1; x++)
+  int cnt = 0;
+  for (int y = pos->y - 1; y <= pos->y + 1; y++)
+    for (int x = pos->x - 1; x <= pos->x + 1; x++)
     {
       coord *player_pos = player_get_pos();
       /*
@@ -314,8 +285,9 @@ fallpos(coord *pos, coord *newpos)
        */
       if (y == player_pos->y && x == player_pos->x)
         continue;
-      if (((ch = level_get_ch(y, x)) == FLOOR || ch == PASSAGE)
-          && rnd(++cnt) == 0)
+
+      int ch = level_get_ch(y, x);
+      if ((ch == FLOOR || ch == PASSAGE) && rnd(++cnt) == 0)
       {
         newpos->y = y;
         newpos->x = x;

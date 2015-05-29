@@ -216,7 +216,7 @@ print_attack(bool hit, char const* att, char const* def)
 }
 
 int
-fight_against_monster(coord* monster_pos, THING* weapon, bool thrown)
+fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
 {
   THING* const player = NULL;
   THING* tp = level_get_monster(monster_pos->y, monster_pos->x);

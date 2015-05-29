@@ -32,25 +32,19 @@ bool missile(int ydelta, int xdelta);
 
 /* Do the actual motion on the screen done by an object traveling
  * across the room */
-void do_motion(THING *obj, int ydelta, int xdelta);
+void do_motion(THING* obj, int ydelta, int xdelta);
 
 /* Drop an item someplace around here. */
-void fall(THING *obj, bool pr);
+void fall(THING* obj, bool pr);
 
 /* Set up the initial goodies for a weapon */
-void init_weapon(THING *weap, int which);
+void init_weapon(THING* weap, int which);
 
-/* Does the missile hit the monster? */
-int hit_monster(int y, int x, THING *obj);
-
-/* Figure out the plus number for armor/weapons */
-char *num(int n1, int n2, char type);
-
-bool weapon_wield(THING *weapon);
-void set_last_weapon(THING *weapon);
+bool weapon_wield(THING* weapon);
+void set_last_weapon(THING* weapon);
 bool last_weapon(void);
 
 /* Pick a random position around the give (y, x) coordinates */
-bool fallpos(coord *pos, coord *newpos);
+bool fallpos(coord const* pos, coord* newpos);
 
 #endif /* _ROGUE14_WEAPON_H_ */

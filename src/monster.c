@@ -313,7 +313,7 @@ monster_save_throw(int which, THING const* tp)
 }
 
 void
-monster_start_running(coord* runner)
+monster_start_running(coord const* runner)
 {
   THING *tp = level_get_monster(runner->y, runner->x);
   assert_attached(mlist, tp);

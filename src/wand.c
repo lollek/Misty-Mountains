@@ -30,6 +30,7 @@
 #include "rip.h"
 #include "os.h"
 #include "options.h"
+#include "fight.h"
 #include "rogue.h"
 
 #include "wand.h"
@@ -331,7 +332,7 @@ wand_spell_magic_missile(int dy, int dx)
   else if (monster_save_throw(VS_MAGIC, target))
     msg("the missle missed the %s", set_mname(target));
   else
-    hit_monster(bolt.o_pos.y, bolt.o_pos.x, &bolt);
+    fight_against_monster(&bolt.o_pos, &bolt, true);
 }
 
 
@@ -597,7 +598,7 @@ fire_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
     if (mon->t_type == 'D' && strcmp(missile_name, "flame") == 0)
       msg("the flame bounces off the dragon");
     else
-      hit_monster(pos->y, pos->x, &bolt);
+      fight_against_monster(pos, &bolt, true);
   }
   else if (level_get_type(pos->y, pos->x) != 'M' || mon->t_disguise == 'M')
   {

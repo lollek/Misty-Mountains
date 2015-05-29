@@ -84,7 +84,7 @@ void monster_give_pack(THING* tp);
 int monster_save_throw(int which, THING const* tp);
 
 /* Make monster start running (towards hero?) */
-void monster_start_running(coord* runner);
+void monster_start_running(coord const* runner);
 
 /* Called to put a monster to death */
 void monster_on_death(THING* tp, bool pr);
