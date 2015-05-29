@@ -25,7 +25,6 @@
 
 bool fight_flush  = false;
 bool jump         = true;
-bool see_floor    = true;
 bool passgo       = false;
 bool use_colors   = true;
 
@@ -38,28 +37,6 @@ get_bool(void* vp, WINDOW* win)
   waddstr(win, *b ? "True " : "False");
   return 0;
 }
-
-static bool
-get_sf(void* vp, WINDOW* win)
-{
-  bool was_sf = see_floor;
-
-  if (get_bool(vp, win) != 0)
-    return 1;
-  else if (was_sf == see_floor)
-    return 0;
-
-  if (!see_floor) {
-    see_floor = true;
-    erase_lamp(player_get_pos(), player_get_room());
-    see_floor = false;
-  }
-  else
-    look(false);
-
-  return 0;
-}
-
 
 static inline bool
 get_str(void* vopt, WINDOW* win)
@@ -80,7 +57,6 @@ option(void)
   } optlist[] = {
     {"Flush typeahead during battle",    &fight_flush, PUT_BOOL, get_bool},
     {"Show position only at end of run", &jump,        PUT_BOOL, get_bool},
-    {"Show the lamp-illuminated floor",  &see_floor,   PUT_BOOL, get_sf},
     {"Follow turnings in passageways",   &passgo,      PUT_BOOL, get_bool},
     {"Name",                             whoami,       PUT_STR,  get_str},
     {"Save file",                        file_name,    PUT_STR,  get_str}

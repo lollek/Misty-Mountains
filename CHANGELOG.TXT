@@ -21,6 +21,7 @@ v1.2.8
     Removed many trippy sentences
     Removed autopickup when moving on top of items
     Removed terse mode
+    Removed 'hide-floor' option
 
 v1.2.7
   Made -j flag automatically set

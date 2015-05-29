@@ -152,9 +152,6 @@ look(bool wakeup)
 
       move(y, x);
 
-      if ((player_get_room()->r_flags & ISDARK) && !see_floor && xy_ch == FLOOR)
-        xy_ch = SHADOW;
-
       if (monster != NULL || xy_ch != incch())
         addcch(xy_ch);
 
@@ -203,8 +200,7 @@ look(bool wakeup)
 void
 erase_lamp(coord const* pos, struct room const* room)
 {
-  if (!(see_floor
-       && (room->r_flags & (ISGONE|ISDARK)) == ISDARK
+  if (!((room->r_flags & (ISGONE|ISDARK)) == ISDARK
        && !player_is_blind()))
     return;
 
@@ -219,16 +215,6 @@ erase_lamp(coord const* pos, struct room const* room)
       if (incch() == FLOOR)
         addcch(SHADOW);
     }
-}
-
-bool
-show_floor(void)
-{
-  return
-    ((player_get_room()->r_flags & (ISGONE|ISDARK)) == ISDARK
-     && !player_is_blind())
-    ? see_floor
-    : true;
 }
 
 THING*
@@ -490,7 +476,7 @@ set_oldch(THING* tp, coord* cp)
     if ((old_char == FLOOR || tp->t_oldch == FLOOR) &&
         (tp->t_room->r_flags & ISDARK))
       tp->t_oldch = SHADOW;
-    else if (dist_cp(cp, player_get_pos()) <= LAMPDIST && see_floor)
+    else if (dist_cp(cp, player_get_pos()) <= LAMPDIST)
       tp->t_oldch = level_get_ch(cp->y, cp->x);
   }
 }
@@ -622,9 +608,8 @@ pick_color(const char *col)
 char
 floor_ch(void)
 {
-  if (player_get_room()->r_flags & ISGONE)
-    return PASSAGE;
-  return show_floor() ? FLOOR : SHADOW;
+  return (player_get_room()->r_flags & ISGONE)
+    ? PASSAGE : FLOOR;
 }
 
 char

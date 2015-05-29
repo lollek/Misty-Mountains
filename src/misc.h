@@ -13,7 +13,6 @@ void look(bool wakeup);          /* A quick glance all around the player */
 /* Erase the area shown by a lamp in a dark room. */
 void erase_lamp(coord const* pos, struct room const* room);
 
-bool show_floor(void);         /* Should we show the floor at this time? */
 THING* find_obj(int y, int x); /* Find the unclaimed object at y, x */
 
 void aggravate(void);          /* Aggravate all the monsters on this level */

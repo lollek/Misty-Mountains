@@ -7,7 +7,6 @@
 
 extern bool fight_flush; /* Flush typeahead during battle */
 extern bool jump;        /* Show running as a series of jumps */
-extern bool see_floor;   /* Show the lamp-illuminated floor */
 extern bool passgo;      /* Follow the turnings in passageways */
 extern bool use_colors;  /* Use ncurses colors */
 

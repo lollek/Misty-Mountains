@@ -71,7 +71,7 @@ parse_args(int argc, char* const* argv)
 
   for (;;)
   {
-    int c = getopt_long(argc, argv, "cE::fFjn:prsS:W",
+    int c = getopt_long(argc, argv, "cE::fjn:prsS:W",
                         long_options, &option_index);
     if (c == -1)
       break;
@@ -81,7 +81,6 @@ parse_args(int argc, char* const* argv)
       case 'c': use_colors = false; break;
       case 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg); break;
       case 'f': fight_flush = true; break;
-      case 'F': see_floor = false; break;
       case 'j': jump = false; break;
       case 'n': if (strlen(optarg))
                   strucpy(whoami, optarg, (int)strlen(optarg));
@@ -100,7 +99,6 @@ parse_args(int argc, char* const* argv)
                "                       defaults to 0. If you do not give a NUM\n"
                "                       argument, it's set to 64 (old standard)\n"
                "  -f, --flush          flush typeahead during battle\n"
-               "  -F, --hide-floor     hide the lamp-illuminated floor\n"
                "  -j, --no-jump        draw each player step separately\n"
                , argv[0]); printf(
                "  -n, --name=NAME      set highscore name\n"

@@ -141,8 +141,6 @@ do_motion(THING* obj, int ydelta, int xdelta)
         cansee(obj->o_pos.y, obj->o_pos.x))
     {
       ch = level_get_ch(obj->o_pos.y, obj->o_pos.x);
-      if (ch == FLOOR && !show_floor())
-        ch = SHADOW;
       mvaddcch(obj->o_pos.y, obj->o_pos.x, (chtype)ch);
     }
 
