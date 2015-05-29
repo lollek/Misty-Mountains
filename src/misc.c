@@ -258,8 +258,6 @@ get_dir(void)
   static coord last_delt= {0,0};
   static coord delta;
 
-  char const* prompt = "which direction? ";
-  bool gotit;
 
   if (again && last_dir != '\0')
   {
@@ -270,8 +268,10 @@ get_dir(void)
 
   else
   {
+    char const* prompt = "which direction? ";
     msg(prompt);
 
+    bool gotit;
     do
     {
       gotit = true;
@@ -377,11 +377,11 @@ rnd_thing(void)
     case 8: return GOLD;
     case 9:
       if (level < AMULETLEVEL)
-        (void)fail("rnd_thing: Amulet spawned at a too low level", NULL);
+        (void)fail("rnd_thing: Amulet spawned at a too low level", 0);
       return AMULET;
 
     default:
-      (void)fail("rnd_thing got %d, expected value between 0 and 9", NULL);
+      (void)fail("rnd_thing got %d, expected value between 0 and 9", 0);
       return GOLD;
   }
 }

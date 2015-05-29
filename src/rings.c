@@ -265,5 +265,5 @@ ring_description(THING const* item, char* buf)
     }
   }
   else if (op->oi_guess)
-    buf += sprintf(buf, " called %s", op->oi_guess);
+    sprintf(buf, " called %s", op->oi_guess);
 }

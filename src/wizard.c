@@ -107,12 +107,10 @@ print_things(void)
 int
 pr_list(void)
 {
-  int ch = ~KEY_ESCAPE;
-
   msg("for what type of object do you want a list? ");
   print_things();
 
-  ch = readchar(true);
+  int ch = readchar(true);
   touchwin(stdscr);
   refresh();
 

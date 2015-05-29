@@ -281,7 +281,8 @@ potion_description(THING const* obj, char buf[])
     else
       buf += sprintf(buf, "%d %s potions", obj->o_count, p_colors[obj->o_which]);
   }
+
   if (op->oi_guess)
-    buf += sprintf(buf, " called %s", op->oi_guess);
+    sprintf(buf, " called %s", op->oi_guess);
 }
 

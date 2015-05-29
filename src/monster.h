@@ -94,7 +94,7 @@ void monster_remove_from_screen(coord* mp, THING* tp, bool waskill);
 
 bool monster_is_dead(THING const* monster);
 
-void monster_teleport(THING* monster, coord* destination);
+void monster_teleport(THING* monster, coord const* destination);
 
 void monster_do_special_ability(THING** monster);
 

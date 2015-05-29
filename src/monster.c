@@ -408,7 +408,7 @@ monster_is_dead(THING const* monster)
 }
 
 void
-monster_teleport(THING* monster, coord* destination)
+monster_teleport(THING* monster, coord const* destination)
 {
   /* Select destination */
   coord new_pos;
@@ -417,11 +417,7 @@ monster_teleport(THING* monster, coord* destination)
       room_find_floor(NULL, &new_pos, false, true);
     while (same_coords(&new_pos, &monster->t_pos));
   else
-  {
-    new_pos.y = destination->y;
-    new_pos.x = destination->x;
-  }
-  destination = NULL; /* Past this point, use new_pos instead of destination */
+    new_pos = *destination;
 
   /* Remove monster */
   if (see_monst(monster))

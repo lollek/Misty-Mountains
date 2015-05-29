@@ -5,7 +5,7 @@
 #include "rooms.h"
 
 /* upper limit on number of passages */
-#define MAXPASS 13
+#define MAXPASS 12
 extern struct room passages[MAXPASS];
 
 void passages_add_pass(void);

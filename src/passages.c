@@ -88,13 +88,13 @@ passnum(void)
 {
   pnum = 0;
   newpnum = false;
-  for (struct room* rp = passages; rp < &passages[MAXPASS]; rp++)
-    rp->r_nexits = 0;
-  for (struct room* rp = rooms; rp < &rooms[MAXROOMS]; rp++)
-    for (int i = 0; i < rp->r_nexits; i++)
+  for (int i = 0; i < MAXPASS; ++i)
+    passages[i].r_nexits = 0;
+  for (int i = 0; i < MAXROOMS; ++i)
+    for (int j = 0; j < rooms[i].r_nexits; ++j)
     {
-      newpnum++;
-      numpass(rp->r_exit[i].y, rp->r_exit[i].x);
+      newpnum = true;
+      numpass(rooms[i].r_exit[j].y, rooms[i].r_exit[j].x);
     }
 }
 
