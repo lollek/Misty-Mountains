@@ -9,6 +9,8 @@ v1.2.8
     Firing a bolt from a wand into a wall causes it to bounce more naturally
     Firing a bolt no longers stops on hit (now travels thought enemies)
     Changed how you toggle bools in the option menu
+    Removed many trippy sentences
+    Removed autopickup when moving on top of items
 
   Bugs:
     Fixed a bug causing searching to be harder than it should be.
@@ -18,8 +20,6 @@ v1.2.8
   Removed features:
     Removed option to not show tombstone
     Removed quick mode
-    Removed many trippy sentences
-    Removed autopickup when moving on top of items
     Removed terse mode
     Removed 'hide-floor' option
 
