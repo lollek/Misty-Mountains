@@ -64,4 +64,7 @@ remove:
 dist: final docs
 	tar czf $(PROGRAM)-$(VERSION)-linux.tar.gz $(PROGRAM) $(DOCS) $(MISC)
 
+lint:
+	cppcheck --enable=all --std=c99 -inconlusive src/*.c src/*.h 2>lint.txt
+
 .PHONY: clean final doc.nroff doc.groff install remove dist
