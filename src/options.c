@@ -57,19 +57,18 @@ bool autopickup(int type)
 }
 
 static bool
-get_bool(void* vp, WINDOW* win)
+get_bool(bool* b, WINDOW* win)
 {
   wrefresh(win);
-  bool* b = vp;
   *b = !*b;
   waddstr(win, *b ? "True " : "False");
   return 0;
 }
 
 static inline bool
-get_str(void* vopt, WINDOW* win)
+get_str(char* buf, WINDOW* win)
 {
-  return wreadstr(win, (char*)vopt);
+  return wreadstr(win, buf);
 }
 
 /** option:
@@ -78,24 +77,24 @@ bool
 option(void)
 {
   struct option {
+    char index;           /* What to press to change option */
     char const* o_prompt; /* prompt for interactive entry */
     void* o_opt;          /* pointer to thing to set function to print value */
-    enum put_t { PUT_BOOL, PUT_STR } put_type;
-    bool (*o_getfunc)(void *opt, WINDOW *win); /* Get value */
+    enum put_t { BOOL, STR } put_type;
   } optlist[] = {
-    {"Flush typeahead during battle?....", &fight_flush,    PUT_BOOL, get_bool},
-    {"Show position only at end of run?.", &jump,           PUT_BOOL, get_bool},
-    {"Follow turnings in passageways?...", &passgo,         PUT_BOOL, get_bool},
-    {"Pick up potions?..................", &pickup_potions, PUT_BOOL, get_bool},
-    {"Pick up scrolls?..................", &pickup_scrolls, PUT_BOOL, get_bool},
-    {"Pick up food?.....................", &pickup_food,    PUT_BOOL, get_bool},
-    {"Pick up weapons?..................", &pickup_weapons, PUT_BOOL, get_bool},
-    {"Pick up armor?....................", &pickup_armor,   PUT_BOOL, get_bool},
-    {"Pick up rings?....................", &pickup_rings,   PUT_BOOL, get_bool},
-    {"Pick up sticks?...................", &pickup_sticks,  PUT_BOOL, get_bool},
-    {"Pick up ammo?.....................", &pickup_ammo,    PUT_BOOL, get_bool},
-    {"Name..............................", whoami,          PUT_STR,  get_str},
-    {"Save file.........................", file_name,       PUT_STR,  get_str},
+    {'1',    "Flush typeahead during battle?....", &fight_flush,    BOOL},
+    {'2',    "Show position only at end of run?.", &jump,           BOOL},
+    {'3',    "Follow turnings in passageways?...", &passgo,         BOOL},
+    {POTION, "Pick up potions?..................", &pickup_potions, BOOL},
+    {SCROLL, "Pick up scrolls?..................", &pickup_scrolls, BOOL},
+    {FOOD,   "Pick up food?.....................", &pickup_food,    BOOL},
+    {WEAPON, "Pick up weapons?..................", &pickup_weapons, BOOL},
+    {ARMOR,  "Pick up armor?....................", &pickup_armor,   BOOL},
+    {RING,   "Pick up rings?....................", &pickup_rings,   BOOL},
+    {STICK,  "Pick up sticks?...................", &pickup_sticks,  BOOL},
+    {AMMO,   "Pick up ammo?.....................", &pickup_ammo,    BOOL},
+    {'4',    "Name..............................", whoami,          STR},
+    {'5',    "Save file.........................", file_name,       STR},
   };
   int const NOPTS = (sizeof optlist / sizeof (*optlist));
   char const* query = "Which value do you want to change? (ESC to exit) ";
@@ -113,30 +112,33 @@ option(void)
   wmove(optscr, 1, 0);
   for (int i = 0; i < NOPTS; ++i)
   {
-    wprintw(optscr, "%c) %s", '0' + i + 1, optlist[i].o_prompt);
-    if (optlist[i].put_type == PUT_BOOL)
+    wprintw(optscr, "%c) %s", optlist[i].index, optlist[i].o_prompt);
+    if (optlist[i].put_type == BOOL)
       waddstr(optscr, *(bool *) optlist[i].o_opt ? "True" : "False");
-    else /* PUT_STR */
+    else if (optlist[i].put_type == STR)
       waddstr(optscr, (char *) optlist[i].o_opt);
     waddch(optscr, '\n');
   }
 
   /* Loop and change values */
   char c = (char)~KEY_ESCAPE;
-  do
+  while (c != KEY_ESCAPE)
   {
     wmove(optscr, msg_pos.y, msg_pos.x);
     wrefresh(optscr);
     c = readchar(true);
-    if (c > '0' && c <= '0' + NOPTS)
-    {
-      int i = c - '0' - 1;
-      int x = (int)strlen(optlist[i].o_prompt) + 3;
-      mvwinch(optscr, i + 1, x);
-      (*optlist[i].o_getfunc)(optlist[i].o_opt, optscr);
-    }
+    for (int i = 0; i < NOPTS; ++i)
+      if (c == optlist[i].index)
+      {
+        wmove(optscr, i + 1, (int)strlen(optlist[i].o_prompt) + 3);
+        switch (optlist[i].put_type)
+        {
+          case BOOL: get_bool(optlist[i].o_opt, optscr); break;
+          case STR:  get_str(optlist[i].o_opt, optscr); break;
+        }
+        break;
+      }
   }
-  while (c != KEY_ESCAPE);
 
   /* Switch back to original screen */
   wmove(optscr, LINES - 1, 0);
