@@ -56,7 +56,7 @@ inv_name(char* buf, THING* obj, bool drop)
     case RING:   ring_description(obj, buf); break;
     case STICK:  wand_description(obj, buf); break;
     case SCROLL: scroll_description(obj, buf); break;
-    case WEAPON: weapon_description(obj, buf); break;
+    case WEAPON: case AMMO: weapon_description(obj, buf); break;
     case ARMOR:  armor_description(obj, buf); break;
     case FOOD:
     {

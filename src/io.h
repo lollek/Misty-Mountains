@@ -54,6 +54,7 @@ typedef chtype glyph;
 #define SCROLL		'?'
 #define MAGIC		'$'
 #define FOOD		':'
+#define AMMO		'('
 #define WEAPON		')'
 #define ARMOR		']'
 #define AMULET		','

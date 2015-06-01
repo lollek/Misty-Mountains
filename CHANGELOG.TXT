@@ -1,4 +1,7 @@
 v1.2.8
+  Features:
+    Autopickup can now be modified from the options menu
+
   Tweaking:
     Change some in game messages / texts
     Did some balancing (which might be way off)
@@ -10,8 +13,8 @@ v1.2.8
     Firing a bolt no longers stops on hit (now travels thought enemies)
     Changed how you toggle bools in the option menu
     Removed many trippy sentences
-    Removed autopickup when moving on top of items
     Changed how the option menu looks
+    Ammunition now has the icon ( instead of )
 
   Bugs:
     Fixed a bug causing searching to be harder than it should be.

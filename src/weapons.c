@@ -201,6 +201,9 @@ init_weapon(THING* weap, int which)
   weap->o_dplus = 0;
   weap->o_arm = 0;
 
+  if (weap->o_flags & ISMANY)
+    weap->o_type= AMMO;
+
   assert(sizeof(weap->o_damage) >= sizeof(iwp->iw_dam));
   assert(sizeof(weap->o_hurldmg) >= sizeof(iwp->iw_hrl));
 

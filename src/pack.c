@@ -195,6 +195,10 @@ pack_print_evaluate_item(THING* obj)
     case AMULET:
       worth = 1000;
       break;
+
+    default:
+      (void)fail("Unknown type: %c(%d)", obj->o_type, obj->o_type);
+      break;
   }
 
   if (worth < 0)
@@ -439,20 +443,19 @@ pack_pick_up(THING* obj, bool force)
         _discard(&obj);
         player_get_room()->r_goldval = 0;
       }
-      break;
+      return;
 
-    default:
-      msg("DEBUG: You picked something you shouldn't have...");
-      /* FALLTHROUGH */
-
-    case ARMOR: case POTION: case FOOD: case WEAPON:
+    case POTION: case WEAPON: case AMMO: case FOOD: case ARMOR:
     case SCROLL: case AMULET: case RING: case STICK:
-      if (force)
+      if (force || autopickup(obj->o_type))
         pack_add((THING *) NULL, false);
       else
         pack_move_msg(obj);
-      break;
+      return;
   }
+
+  (void)fail("Unknown type: %c(%d)", obj->o_type, obj->o_type);
+  assert(0);
 }
 
 
@@ -651,7 +654,7 @@ pack_equip_item(THING* item)
       pos = EQUIPMENT_ARMOR;
       break;
 
-    case WEAPON:
+    case WEAPON: case AMMO:
       pos = EQUIPMENT_RHAND;
       break;
 

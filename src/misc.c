@@ -395,7 +395,7 @@ is_magic(THING const* obj)
       return (bool)(obj->o_flags & ISPROT) ||
              obj->o_arm != armor_ac((enum armor_t)obj->o_which);
 
-    case WEAPON:
+    case WEAPON: case AMMO:
       return obj->o_hplus != 0 || obj->o_dplus != 0;
 
     case POTION: case SCROLL: case STICK: case RING: case AMULET:

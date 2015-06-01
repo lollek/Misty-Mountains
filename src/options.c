@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <assert.h>
 
 #include "io.h"
 #include "misc.h"
@@ -37,14 +38,23 @@ static bool pickup_rings   = true;
 static bool pickup_sticks  = true;
 static bool pickup_ammo    = true;
 
-bool autopickup_potions(void) { return pickup_potions; }
-bool autopickup_scrolls(void) { return pickup_scrolls; }
-bool autopickup_food(void)    { return pickup_food; }
-bool autopickup_weapons(void) { return pickup_weapons; }
-bool autopickup_armor(void)   { return pickup_armor; }
-bool autopickup_rings(void)   { return pickup_rings; }
-bool autopickup_sticks(void)  { return pickup_sticks; }
-bool autopickup_ammo(void)    { return pickup_ammo; }
+bool autopickup(int type)
+{
+  switch (type)
+  {
+    case AMMO:   return pickup_ammo;
+    case POTION: return pickup_potions;
+    case SCROLL: return pickup_scrolls;
+    case FOOD:   return pickup_food;
+    case WEAPON: return pickup_weapons;
+    case ARMOR:  return pickup_armor;
+    case RING:   return pickup_rings;
+    case STICK:  return pickup_sticks;
+  }
+  (void)fail("autopickup: unknown type: %d", type);
+  assert(0);
+  return false;
+}
 
 static bool
 get_bool(void* vp, WINDOW* win)
