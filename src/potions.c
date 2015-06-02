@@ -11,6 +11,7 @@
  */
 
 #include <stdbool.h>
+#include <string.h>
 
 #include "io.h"
 #include "pack.h"
@@ -21,6 +22,7 @@
 #include "monster.h"
 #include "state.h"
 #include "colors.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "potions.h"
@@ -284,5 +286,19 @@ potion_description(THING const* obj, char buf[])
 
   if (op->oi_guess)
     sprintf(buf, " called %s", op->oi_guess);
+}
+
+THING*
+potion_create(void)
+{
+  THING* pot = allocate_new_item();
+  memset(pot, 0, sizeof(*pot));
+  pot->o_type = POTION;
+  pot->o_which = (int)pick_one(pot_info, NPOTIONS);
+
+  pot->o_damage[0] = (struct damage){1, 2};
+  pot->o_hurldmg[0] = (struct damage){1, 2};
+
+  return pot;
 }
 

@@ -149,6 +149,23 @@ state_save_coord(coord const* c)
     : SUCCESS;
 }
 
+bool
+state_save_struct_damage(struct damage const* dmg)
+{
+  return state_save_int32(dmg->sides) || state_save_int32(dmg->dices)
+    ? fail("state_save_struct_damage(%p)\r\n", dmg)
+    : SUCCESS;
+}
+
+bool
+state_save_structs_damage(struct damage const dmg[MAXATTACKS])
+{
+  for (int i = 0; i < MAXATTACKS; ++i)
+    if (state_save_struct_damage(&dmg[i]))
+      return fail("state_save_structs_damage(%p)\r\n", dmg);
+  return SUCCESS;
+}
+
 static bool
 state_save_dest(coord const* dest)
 {
@@ -205,7 +222,7 @@ state_save_stats(struct stats const* s)
     state_save_int32(s->s_lvl) ||
     state_save_int32(s->s_arm) ||
     state_save_int32(s->s_hpt) ||
-    state_save_chars(s->s_dmg, sizeof(s->s_dmg)) ||
+    state_save_structs_damage(s->s_dmg) ||
     state_save_int32(s->s_maxhp)
 
     ? fail("state_save_stats(%p)\r\n", s)
@@ -263,8 +280,8 @@ state_save_object(THING const* o)
     state_save_coord(&o->_o._o_pos) ||
     state_save_int32(o->_o._o_launch) ||
     state_save_char(o->_o._o_packch) ||
-    state_save_chars(o->_o._o_damage, sizeof(o->_o._o_damage)) ||
-    state_save_chars(o->_o._o_hurldmg, sizeof(o->_o._o_hurldmg)) ||
+    state_save_structs_damage(o->_o._o_damage) ||
+    state_save_structs_damage(o->_o._o_hurldmg) ||
     state_save_int32(o->_o._o_count) ||
     state_save_int32(o->_o._o_which) ||
     state_save_int32(o->_o._o_hplus) ||

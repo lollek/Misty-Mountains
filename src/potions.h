@@ -37,4 +37,6 @@ bool potion_load_state(void);
 bool potion_quaff_something(void);  /* Quaff a potion from the pack */
 void potion_description(THING const* obj, char buf[]);
 
+THING* potion_create(void);
+
 #endif /* _ROGUE14_POTIONS_H_ */

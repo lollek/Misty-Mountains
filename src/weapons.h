@@ -5,7 +5,6 @@
 
 #include "rogue.h"
 
-#define FLAME MAXWEAPONS /* fake entry for dragon breath (ick) */
 enum weapon_type
 {
   MACE     = 0,
@@ -19,6 +18,7 @@ enum weapon_type
   SPEAR    = 8,
   MAXWEAPONS
 };
+#define FLAME MAXWEAPONS /* fake entry for dragon breath (ick) */
 
 /* TODO: Remove vars */
 extern int group; /* I think this is related to inventory sorting? */

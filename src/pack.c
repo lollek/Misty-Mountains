@@ -135,7 +135,7 @@ pack_print_evaluate_item(THING* obj)
       worth = 2 * obj->o_count;
       break;
 
-    case WEAPON:
+    case WEAPON: case AMMO:
       worth = weap_info[obj->o_which].oi_worth;
       worth *= 3 * (obj->o_hplus + obj->o_dplus) + obj->o_count;
       obj->o_flags |= ISKNOW;
@@ -198,6 +198,7 @@ pack_print_evaluate_item(THING* obj)
 
     default:
       (void)fail("Unknown type: %c(%d)", obj->o_type, obj->o_type);
+      assert(0);
       break;
   }
 

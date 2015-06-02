@@ -138,13 +138,15 @@ wand_create(int wand)
 {
   THING* new_wand = allocate_new_item();
 
-  assert(sizeof("1x1") <= sizeof(new_wand->o_damage));
-  assert(sizeof("1x1") <= sizeof(new_wand->o_hurldmg));
-
   new_wand->o_hplus = 0;
   new_wand->o_dplus = 0;
-  strcpy(new_wand->o_damage, "1x1");
-  strcpy(new_wand->o_hurldmg,"1x1");
+
+  memset(new_wand->o_damage, 0, sizeof(new_wand->o_damage));
+  new_wand->o_damage[0] = (struct damage){1, 1};
+
+  memset(new_wand->o_hurldmg, 0, sizeof(new_wand->o_hurldmg));
+  new_wand->o_hurldmg[0] = (struct damage){1, 1};
+
   new_wand->o_arm = 11;
   new_wand->o_count = 1;
   new_wand->o_group = 0;
@@ -313,12 +315,13 @@ static void
 wand_spell_magic_missile(int dy, int dx)
 {
   THING bolt;
-  assert(sizeof(bolt.o_hurldmg) >= sizeof("1x4"));
+  memset(&bolt, 0, sizeof(bolt));
   bolt.o_type = '*';
   bolt.o_hplus = 100;
   bolt.o_dplus = 1;
   bolt.o_flags = ISMISL;
-  strcpy(bolt.o_hurldmg,"1x4");
+  bolt.o_damage[0] = (struct damage){0, 0};
+  bolt.o_hurldmg[0] = (struct damage){1, 4};
 
   THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon != NULL)
@@ -591,8 +594,7 @@ fire_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
     bolt.o_pos = *pos;
     bolt.o_flags |= ISMISL;
     bolt.o_launch = -1;
-    assert(sizeof(bolt.o_hurldmg) >= sizeof("6x6"));
-    strcpy(bolt.o_hurldmg, "6x6");
+    bolt.o_hurldmg[0] = (struct damage){6,6};
     weap_info[FLAME].oi_name = missile_name;
 
     if (mon->t_type == 'D' && strcmp(missile_name, "flame") == 0)

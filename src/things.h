@@ -5,6 +5,13 @@
 
 #include "coord.h"
 
+struct damage
+{
+  int sides;
+  int dices;
+};
+#define MAXATTACKS 3
+
 /* Stuff about objects */
 struct obj_info {
   char* oi_name;
@@ -16,13 +23,13 @@ struct obj_info {
 
 /* Structure describing a fighting being */
 struct stats {
-  int  s_str;      /* Strength */
-  int  s_exp;      /* Experience */
-  int  s_lvl;      /* level of mastery */
-  int  s_arm;      /* Armor class */
-  int  s_hpt;      /* Hit points */
-  char s_dmg[13];  /* String describing damage done */
-  int  s_maxhp;    /* Max hit points */
+  int           s_str;             /* Strength */
+  int           s_exp;             /* Experience */
+  int           s_lvl;             /* level of mastery */
+  int           s_arm;             /* Armor class */
+  int           s_hpt;             /* Hit points */
+  struct damage s_dmg[MAXATTACKS]; /* String describing damage done */
+  int           s_maxhp;           /* Max hit points */
 };
 
 /* Structure for monsters and player */
@@ -48,24 +55,24 @@ typedef union thing {
 
   struct {
     /* Linked list pointers */
-    union thing* _l_next;
-    union thing* _l_prev;
+    union thing*  _l_next;
+    union thing*  _l_prev;
 
-    coord        _o_pos;          /* Where it lives on the screen */
-    char*        _o_text;         /* What it says if you read it */
-    char*        _o_label;        /* Label for object */
-    int          _o_type;         /* What kind of object it is */
-    int          _o_launch;       /* What you need to launch it */
-    int          _o_count;        /* count for plural objects */
-    int          _o_which;        /* Which object of a type it is */
-    int          _o_hplus;        /* Plusses to hit */
-    int          _o_dplus;        /* Plusses to damage */
-    int          _o_arm;          /* Armor protection */
-    int          _o_flags;        /* information about objects */
-    int          _o_group;        /* group number for this object */
-    char         _o_packch;       /* What character it is in the pack */
-    char         _o_damage[8];    /* Damage if used like sword */
-    char         _o_hurldmg[8];   /* Damage if thrown */
+    coord         _o_pos;                 /* Where it lives on the screen */
+    char*         _o_text;                /* What it says if you read it */
+    char*         _o_label;               /* Label for object */
+    int           _o_type;                /* What kind of object it is */
+    int           _o_launch;              /* What you need to launch it */
+    int           _o_count;               /* count for plural objects */
+    int           _o_which;               /* Which object of a type it is */
+    int           _o_hplus;               /* Plusses to hit */
+    int           _o_dplus;               /* Plusses to damage */
+    int           _o_arm;                 /* Armor protection */
+    int           _o_flags;               /* information about objects */
+    int           _o_group;               /* group number for this object */
+    char          _o_packch;              /* What character it is in the pack */
+    struct damage _o_damage[MAXATTACKS];  /* Damage if used like sword */
+    struct damage _o_hurldmg[MAXATTACKS]; /* Damage if thrown */
   } _o;
 
 } THING;
@@ -107,7 +114,7 @@ typedef union thing {
 #define ISMISL	0000004		/* object is a missile type */
 #define ISMANY	0000010		/* object comes in groups */
 /*	ISFOUND 0000020		...is used for both objects and creatures */
-#define	ISPROT	0000040		/* armor is permanently protected */
+#define ISPROT	0000040		/* armor is permanently protected */
 
 /* flags for creatures */
 #define CANHUH	0000001		/* creature can confuse */
@@ -144,6 +151,8 @@ bool drop(void);
 
 /* Return a new thing */
 THING* new_thing(void);
+THING* new_amulet(void);
+THING* new_food(int which);
 
 /* Pick an item out of a list of nitems possible objects */
 unsigned pick_one(struct obj_info* start, int nitems);

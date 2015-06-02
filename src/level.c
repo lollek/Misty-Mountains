@@ -126,18 +126,12 @@ put_things(void)
    * amulet yet, put it somewhere on the ground */
   if (level >= AMULETLEVEL && !pack_contains_amulet())
   {
-    THING* obj = allocate_new_item();
-    list_attach(&lvl_obj, obj);
-    obj->o_hplus = 0;
-    obj->o_dplus = 0;
-    strncpy(obj->o_damage,"0x0",sizeof(obj->o_damage));
-    strncpy(obj->o_hurldmg,"0x0",sizeof(obj->o_hurldmg));
-    obj->o_arm = 11;
-    obj->o_type = AMULET;
+    THING* amulet = new_amulet();
+    list_attach(&lvl_obj, amulet);
 
     /* Put it somewhere */
-    room_find_floor((struct room *) NULL, &obj->o_pos, false, false);
-    level_set_ch(obj->o_pos.y, obj->o_pos.x, AMULET);
+    room_find_floor((struct room *) NULL, &amulet->o_pos, false, false);
+    level_set_ch(amulet->o_pos.y, amulet->o_pos.x, AMULET);
   }
 }
 

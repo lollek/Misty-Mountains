@@ -38,34 +38,34 @@
 int vf_hit = 0; /* Number of time flytrap has hit */
 THING* mlist = NULL;
 struct monster monsters[26] =
-    {
-/* Name		 CARRY	FLAG    str, exp, lvl, amr, hpt, dmg,      ,maxhp */
-{ "aquator",	   0,	ISMEAN,	{ 10, 20,   5,   2,  1, "0x0/0x0", 0 } },
-{ "bat",	   0,	ISFLY,	{ 10,  1,   1,   3,  1, "1x2", 0 } },
-{ "centaur",	  15,	0,	{ 10, 17,   4,   4,  1, "1x2/1x5/1x5", 0 } },
-{ "dragon",	 100,	ISMEAN,	{ 10,5000, 10,  -1,  1, "1x8/1x8/3x10", 0 } },
-{ "emu",	   0,	ISMEAN,	{ 10,  2,   1,   7,  1, "1x2", 0 } },
-{ "venus flytrap", 0,	ISMEAN,	{ 10, 80,   8,   3,  1, "000x0", 0 } },
-{ "griffin",	  20,	ISMEAN|ISFLY|ISREGEN, { 10,2000, 13,   2, 1, "4x3/3x5", 0 } },
-{ "hobgoblin",	   0,	ISMEAN,	{ 10,  3,   1,   5,  1, "1x8", 0 } },
-{ "ice monster",   0,	0,	{ 10,  5,   1,   9,  1, "0x0", 0 } },
-{ "jabberwock",   70,	0,	{ 10,3000, 15,   6,  1, "2x12/2x4", 0 } },
-{ "kestrel",	   0,	ISMEAN|ISFLY,	{ 10,  1,    1,   7, 1, "1x4", 0 } },
-{ "leprechaun",	   0,	0,	{ 10, 10,   3,   8,  1, "1x1", 0 } },
-{ "medusa",	  40,	ISMEAN,	{ 10,200,   8,   2,  1, "3x4/3x4/2x5", 0 } },
-{ "nymph",	 100,	0,	{ 10, 37,   3,   9,  1, "0x0", 0 } },
-{ "orc",	  15,	ISGREED,{ 10,  5,   1,   6,  1, "1x8", 0 } },
-{ "phantom",	   0,	ISINVIS,{ 10,120,   8,   3,  1, "4x4", 0 } },
-{ "quagga",	   0,	ISMEAN,	{ 10, 15,   3,   3,  1, "1x5/1x5", 0 } },
-{ "rattlesnake",   0,	ISMEAN,	{ 10,  9,   2,   3,  1, "1x6", 0 } },
-{ "snake",	   0,	ISMEAN,	{ 10,  2,   1,   5,  1, "1x3", 0 } },
-{ "troll",	  50,	ISREGEN|ISMEAN,{ 10, 120, 6, 4, 1, "1x8/1x8/2x6", 0 } },
-{ "black unicorn", 0,	ISMEAN,	{ 10,190,   7,  -2, 1, "1x9/1x9/2x9", 0 } },
-{ "vampire",	  20,	ISREGEN|ISMEAN,{ 10,350,   8,   1, 1, "1x10", 0 } },
-{ "wraith",	   0,	0,	{ 10, 55,   5,   4,  1, "1x6", 0 } },
-{ "xeroc",	  30,	0,	{ 10,100,   7,   7,  1, "4x4", 0 } },
-{ "yeti",	  30,	0,	{ 10, 50,   4,   6,  1, "1x6/1x6", 0 } },
-{ "zombie",	   0,	ISMEAN,	{ 10,  6,   2,   8,  1, "1x8", 0 } }
+{
+  /* Name            CARRY FLAG                 str,exp,lvl, amr, hpt, dmg,               maxhp */
+  { "aquator",       0, ISMEAN,               { 10,  20,  5,   2,   1, {{0,0}},              0 } },
+  { "bat",           0, ISFLY,                { 10,   1,  1,   3,   1, {{1,2}},              0 } },
+  { "centaur",      15, 0,                    { 10,  17,  4,   4,   1, {{1,2},{1,5},{1,5}},  0 } },
+  { "dragon",      100, ISMEAN,               { 10,5000, 10,  -1,   1, {{1,8},{1,8},{3,10}}, 0 } },
+  { "emu",           0, ISMEAN,               { 10,   2,  1,   7,   1, {{1,2}},              0 } },
+  { "venus flytrap", 0, ISMEAN,               { 10,  80,  8,   3,   1, {{0,0}},              0 } },
+  { "griffin",      20, ISMEAN|ISFLY|ISREGEN, { 10,2000, 13,   2,   1, {{4,3},{3,5}},        0 } },
+  { "hobgoblin",     0, ISMEAN,               { 10,   3,  1,   5,   1, {{1,8}},              0 } },
+  { "ice monster",   0, 0,                    { 10,   5,  1,   9,   1, {{0,0}},              0 } },
+  { "jabberwock",   70, 0,                    { 10,3000, 15,   6,   1, {{2,12},{2,4}},       0 } },
+  { "kestrel",       0, ISMEAN|ISFLY,         { 10,   1,  1,   7,   1, {{1,4}},              0 } },
+  { "leprechaun",    0, 0,                    { 10,  10,  3,   8,   1, {{1,1}},              0 } },
+  { "medusa",       40, ISMEAN,               { 10, 200,  8,   2,   1, {{3,4},{3,4},{2,5}},  0 } },
+  { "nymph",       100, 0,                    { 10,  37,  3,   9,   1, {{0,0}},              0 } },
+  { "orc",          15, ISGREED,              { 10,   5,  1,   6,   1, {{1,8}},              0 } },
+  { "phantom",       0, ISINVIS,              { 10, 120,  8,   3,   1, {{4,4}},              0 } },
+  { "quagga",        0, ISMEAN,               { 10,  15,  3,   3,   1, {{1,5},{1,5}},        0 } },
+  { "rattlesnake",   0, ISMEAN,               { 10,   9,  2,   3,   1, {{1,6}},              0 } },
+  { "snake",         0, ISMEAN,               { 10,   2,  1,   5,   1, {{1,3}},              0 } },
+  { "troll",        50, ISREGEN|ISMEAN,       { 10, 120,  6,   4,   1, {{1,8},{1,8},{2,6}},  0 } },
+  { "black unicorn", 0, ISMEAN,               { 10, 190,  7,  -2,   1, {{1,9},{1,9},{2,9}},  0 } },
+  { "vampire",      20, ISREGEN|ISMEAN,       { 10, 350,  8,   1,   1, {{1,10}},             0 } },
+  { "wraith",        0, 0,                    { 10,  55,  5,   4,   1, {{1,6}},              0 } },
+  { "xeroc",        30, 0,                    { 10, 100,  7,   7,   1, {{4,4}},              0 } },
+  { "yeti",         30, 0,                    { 10,  50,  4,   6,   1, {{1,6},{1,6}},        0 } },
+  { "zombie",        0, ISMEAN,               { 10,   6,  2,   8,   1, {{1,8}},              0 } },
 };
 
 bool
@@ -198,18 +198,21 @@ monster_new(THING* monster, char type, coord* pos)
   monster->t_room       = roomin(pos);
   level_set_monster(pos->y, pos->x, monster);
 
-  struct monster const* template = &monsters[monster->t_type-'A'];
-  monster->t_stats.s_lvl   = template->m_stats.s_lvl + lev_add;
-  monster->t_stats.s_hpt   = roll(monster->t_stats.s_lvl, 8);
-  monster->t_stats.s_maxhp = monster->t_stats.s_hpt;
-  monster->t_stats.s_arm   = template->m_stats.s_arm - lev_add;
-  monster->t_stats.s_str   = template->m_stats.s_str;
-  monster->t_stats.s_exp   = template->m_stats.s_exp + lev_add * 10 +
-                             monster_xp_worth(monster);
+  struct stats const* template = &monsters[monster->t_type - 'A'].m_stats;
+  struct stats* new_stats = &monster->t_stats;
+
+  new_stats->s_lvl   = template->s_lvl + lev_add;
+  new_stats->s_hpt   = roll(monster->t_stats.s_lvl, 8);
+  new_stats->s_maxhp = monster->t_stats.s_hpt;
+  new_stats->s_arm   = template->s_arm - lev_add;
+  new_stats->s_str   = template->s_str;
+  new_stats->s_exp   = template->s_exp + lev_add*10 + monster_xp_worth(monster);
+  assert(sizeof(new_stats->s_dmg) == sizeof(template->s_dmg));
+  memcpy(new_stats->s_dmg, template->s_dmg, sizeof(template->s_dmg));
+
   monster->t_turn          = true;
   monster->t_pack          = NULL;
-  strcpy(monster->t_stats.s_dmg,template->m_stats.s_dmg);
-  monster->t_flags         = template->m_flags;
+  monster->t_flags         = monsters[monster->t_type - 'A'].m_flags;
 
   if (level > 29)
     monster->t_flags |= ISHASTE;

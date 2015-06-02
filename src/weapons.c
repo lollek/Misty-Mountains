@@ -38,20 +38,20 @@ static THING* last_wielded_weapon = NULL;
 #define NO_WEAPON '\0'
 
 static struct init_weaps {
-    char const* iw_dam;	/* Damage when wielded */
-    char const* iw_hrl;	/* Damage when thrown */
-    char iw_launch;	/* Launching weapon */
-    int iw_flags;	/* Miscellaneous flags */
+    struct damage const iw_dam;		/* Damage when wielded */
+    struct damage const iw_hrl;		/* Damage when thrown */
+    char                iw_launch;	/* Launching weapon */
+    int                 iw_flags;	/* Miscellaneous flags */
 } init_dam[MAXWEAPONS] = {
-    { "2x4",	"1x3",	NO_WEAPON,	0,		},	/* Mace */
-    { "3x4",	"1x2",	NO_WEAPON,	0,		},	/* Long sword */
-    { "1x1",	"2x3",	NO_WEAPON,	0,		},	/* Bow */
-    { "1x1",	"2x3",	BOW,		ISMANY|ISMISL,	},	/* Arrow */
-    { "1x6",	"1x4",	NO_WEAPON,	ISMISL|ISMISL,	},	/* Dagger */
-    { "4x4",	"1x2",	NO_WEAPON,	0,		},	/* 2h sword */
-    { "1x1",	"1x3",	NO_WEAPON,	ISMANY|ISMISL,	},	/* Dart */
-    { "1x2",	"2x4",	NO_WEAPON,	ISMANY|ISMISL,	},	/* Shuriken */
-    { "2x3",	"1x6",	NO_WEAPON,	ISMISL,		},	/* Spear */
+    { {2,4}, {1,3}, NO_WEAPON,  0,             },	/* Mace */
+    { {3,4}, {1,2}, NO_WEAPON,  0,             },	/* Long sword */
+    { {1,1}, {2,3}, NO_WEAPON,  0,             },	/* Bow */
+    { {0,0}, {2,3}, BOW,        ISMANY|ISMISL, },	/* Arrow */
+    { {1,6}, {1,4}, NO_WEAPON,  ISMISL,        },	/* Dagger */
+    { {4,4}, {1,2}, NO_WEAPON,  0,             },	/* 2h sword */
+    { {0,0}, {1,3}, NO_WEAPON,  ISMANY|ISMISL, },	/* Dart */
+    { {0,0}, {2,4}, NO_WEAPON,  ISMANY|ISMISL, },	/* Shuriken */
+    { {2,3}, {1,6}, NO_WEAPON,  ISMISL,        },	/* Spear */
 };
 
 struct obj_info weap_info[] = {
@@ -94,14 +94,14 @@ bool weapons_load_state(void)
 bool
 missile(int ydelta, int xdelta)
 {
-  THING* obj = pack_get_item("throw", WEAPON);
+  THING* obj = pack_get_item("throw", 0);
   if (obj == NULL)
     return false;
 
   if (obj->o_type == ARMOR)
   {
     msg("you can't throw armor");
-    return missile(ydelta, xdelta);
+    return false;
   }
 
   obj = pack_remove(obj, true, false);
@@ -202,13 +202,13 @@ init_weapon(THING* weap, int which)
   weap->o_arm = 0;
 
   if (weap->o_flags & ISMANY)
-    weap->o_type= AMMO;
+    weap->o_type = AMMO;
 
-  assert(sizeof(weap->o_damage) >= sizeof(iwp->iw_dam));
-  assert(sizeof(weap->o_hurldmg) >= sizeof(iwp->iw_hrl));
+  memset(weap->o_damage, 0, sizeof(weap->o_damage));
+  weap->o_damage[0] = iwp->iw_dam;
 
-  strcpy(weap->o_damage, iwp->iw_dam);
-  strcpy(weap->o_hurldmg,iwp->iw_hrl);
+  memset(weap->o_hurldmg, 0, sizeof(weap->o_hurldmg));
+  weap->o_hurldmg[0] = iwp->iw_hrl;
 
   if (which == SPEAR)
     weap->o_arm = 2;
@@ -309,16 +309,28 @@ weapon_description(THING* obj, char* buf)
   else
     ptr += sprintf(ptr, "%d %ss", obj->o_count, obj_name);
 
-  if (obj->o_which != ARROW)
+  if (obj->o_type == WEAPON)
   {
-    char damage[8] = { '\0' };
-    assert (sizeof(damage) >= sizeof(obj->o_hurldmg));
-    assert (sizeof(damage) >= sizeof(obj->o_damage));
-    sprintf(damage, "%s", obj->o_which == BOW
-        ? obj->o_hurldmg
-        : obj->o_damage);
-    damage[1] = 'd';
-    ptr += sprintf(ptr, " (%s)", damage);
+    for (int i = 0; i < MAXATTACKS; ++i)
+      if (obj->o_damage[i].sides != 0 && obj->o_damage[i].dices != 0)
+        ptr += sprintf(ptr, "%s%dd%d", i == 0 ? " (" : "/",
+            obj->o_damage[i].sides,
+            obj->o_damage[i].dices);
+    strcpy(ptr++, ")");
+  }
+  else if (obj->o_type == AMMO)
+  {
+    for (int i = 0; i < MAXATTACKS; ++i)
+      if (obj->o_hurldmg[i].sides != 0 && obj->o_hurldmg[i].dices != 0)
+        ptr += sprintf(ptr, "%s%dd%d", i == 0 ? " (" : "/",
+            obj->o_hurldmg[i].sides,
+            obj->o_hurldmg[i].dices);
+    strcpy(ptr++, ")");
+  }
+  else
+  {
+    (void)fail("Bad type: %p->o_type == %d\r\n", obj, obj->o_type);
+    assert(0);
   }
 
   if (obj->o_flags & ISKNOW)

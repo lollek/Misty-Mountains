@@ -188,7 +188,7 @@ static bool state_load_stats(struct stats* s)
     state_load_int32(&s->s_lvl) ||
     state_load_int32(&s->s_arm) ||
     state_load_int32(&s->s_hpt) ||
-    state_load_chars(s->s_dmg, sizeof(s->s_dmg)) ||
+    state_load_structs_damage(s->s_dmg) ||
     state_load_int32(&s->s_maxhp)
 
     ? fail("state_load_stats(%p)\r\n", s)
@@ -225,6 +225,23 @@ state_load_coord(coord* c)
   return state_load_int32(&c->y) || state_load_int32(&c->x)
     ? fail("state_load_coord(%p)\r\n", c)
     : SUCCESS;
+}
+
+bool
+state_load_struct_damage(struct damage* dmg)
+{
+  return state_load_int32(&dmg->sides) || state_load_int32(&dmg->dices)
+    ? fail("state_load_coord(%p)\r\n", dmg)
+    : SUCCESS;
+}
+
+bool
+state_load_structs_damage(struct damage dmg[MAXATTACKS])
+{
+  for (int i = 0; i < MAXATTACKS; ++i)
+    if (state_load_struct_damage(&dmg[i]))
+      return fail("state_load_structs_damage(%p)\r\n", dmg);
+  return SUCCESS;
 }
 
 bool
@@ -383,8 +400,8 @@ rs_read_object(THING* o)
       state_load_coord(&o->_o._o_pos) ||
       state_load_int32(&o->_o._o_launch) ||
       state_load_char(&o->_o._o_packch) ||
-      state_load_chars(o->_o._o_damage, sizeof(o->_o._o_damage)) ||
-      state_load_chars(o->_o._o_hurldmg, sizeof(o->_o._o_hurldmg)) ||
+      state_load_structs_damage(o->_o._o_damage) ||
+      state_load_structs_damage(o->_o._o_hurldmg) ||
       state_load_int32(&o->_o._o_count) ||
       state_load_int32(&o->_o._o_which) ||
       state_load_int32(&o->_o._o_hplus) ||

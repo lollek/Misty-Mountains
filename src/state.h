@@ -31,6 +31,12 @@ bool state_assert_int32(int32_t data);
 bool state_load_coord(coord* c);
 bool state_save_coord(coord const* c);
 
+bool state_save_struct_damage(struct damage const* dmg);
+bool state_load_struct_damage(struct damage* dmg);
+
+bool state_save_structs_damage(struct damage const dmg[MAXATTACKS]);
+bool state_load_structs_damage(struct damage dmg[MAXATTACKS]);
+
 bool state_save_bools(bool const* c, int32_t count);
 bool state_load_bools(bool* c, int32_t count);
 

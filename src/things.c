@@ -119,13 +119,10 @@ new_generic_thing(void)
 {
   THING* cur = allocate_new_item();
 
-  assert (sizeof(cur->o_damage) >= sizeof("0x0"));
-  assert (sizeof(cur->o_hurldmg) >= sizeof("0x0"));
-
   cur->o_hplus = 0;
   cur->o_dplus = 0;
-  strcpy(cur->o_damage, "0x0");
-  strcpy(cur->o_hurldmg, "0x0");
+  memset(cur->o_damage, -1, sizeof(cur->o_damage));
+  memset(cur->o_hurldmg, -1, sizeof(cur->o_hurldmg));
   cur->o_arm = 11;
   cur->o_count = 1;
   cur->o_group = 0;
@@ -135,36 +132,57 @@ new_generic_thing(void)
 }
 
 THING*
+new_food(int which)
+{
+  /* Reset levels-without-food counter */
+  no_food = 0;
+
+  THING* cur = allocate_new_item();
+  memset(cur, 0, sizeof(*cur));
+  cur->o_count = 1;
+  cur->o_type = FOOD;
+  switch (which)
+  {
+    case 0: case 1: cur->o_which = which; break;
+    default: cur->o_which = rnd(10) ? 0 : 1; break;
+  }
+  return cur;
+}
+
+THING*
+new_amulet(void)
+{
+  THING* obj = allocate_new_item();
+  memset(obj, 0, sizeof(*obj));
+
+  obj->o_damage[0] = (struct damage){1, 2};
+  obj->o_hurldmg[0] = (struct damage){1, 2};
+  obj->o_type = AMULET;
+
+  return obj;
+}
+
+THING*
 new_thing(void)
 {
-
+  /* Decide what kind of object it will be
+   * If we haven't had food for a while, let it be food. */
   int r;
   if (no_food > 3)
     r = 2;
   else
     r = (int)pick_one(things, NUMTHINGS);
 
-  /* Decide what kind of object it will be
-   * If we haven't had food for a while, let it be food. */
   THING* cur = NULL;
   switch (r)
   {
-    case 0:
-      cur = new_generic_thing();
-      cur->o_type = POTION;
-      cur->o_which = (int)pick_one(pot_info, NPOTIONS);
-      break;
+    case 0: cur = potion_create(); break;
     case 1:
       cur = new_generic_thing();
       cur->o_type = SCROLL;
       cur->o_which = (int)pick_one(scr_info, NSCROLLS);
       break;
-    case 2:
-      cur = new_generic_thing();
-      cur->o_type = FOOD;
-      no_food = 0;
-      cur->o_which = rnd(10) ? 0 : 1;
-      break;
+    case 2: cur = new_food(-1); break;
     case 3:
       cur = new_generic_thing();
 
@@ -199,28 +217,27 @@ new_thing(void)
       cur->o_which = (int)pick_one(ring_info, NRINGS);
       switch (cur->o_which)
       {
-        case R_ADDSTR:
-        case R_PROTECT:
-        case R_ADDHIT:
-        case R_ADDDAM:
+        case R_ADDSTR: case R_PROTECT: case R_ADDHIT: case R_ADDDAM:
           if ((cur->o_arm = rnd(3)) == 0)
           {
             cur->o_arm = -1;
             cur->o_flags |= ISCURSED;
           }
           break;
-        case R_AGGR:
-        case R_TELEPORT:
+        case R_AGGR: case R_TELEPORT:
           cur->o_flags |= ISCURSED;
       }
       break;
-    case 6: return wand_create(-1);
+    case 6: cur = wand_create(-1); break;
     default:
       msg("Picked a bad kind of object (this should not happen)");
       wait_for(KEY_SPACE);
       break;
   }
+
   assert(cur != NULL);
+  assert(cur->o_damage[0].sides != -1 && cur->o_damage[0].dices != -1);
+  assert(cur->o_hurldmg[0].sides != -1 && cur->o_hurldmg[0].dices != -1);
   return cur;
 }
 

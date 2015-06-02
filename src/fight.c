@@ -38,7 +38,7 @@ struct attack_modifier
 {
   int to_hit;
   int to_dmg;
-  char* damage;
+  struct damage damage[MAXATTACKS];
 };
 
 /** add_player_attack_modifiers
@@ -99,7 +99,8 @@ calculate_attacker(THING* attacker, THING* weapon, bool thrown,
 {
   if (weapon != NULL)
   {
-    mod->damage  = weapon->o_damage;
+    assert(sizeof(mod->damage) == sizeof(weapon->o_damage));
+    memcpy(mod->damage, weapon->o_damage, sizeof(weapon->o_damage));
     mod->to_hit += weapon->o_hplus;
     mod->to_dmg += weapon->o_dplus;
   }
@@ -116,21 +117,25 @@ calculate_attacker(THING* attacker, THING* weapon, bool thrown,
       if ((weapon->o_flags & ISMISL) && held_weapon != NULL
           && held_weapon->o_which == weapon->o_launch)
       {
-        mod->damage  = weapon->o_hurldmg;
+        assert(sizeof(mod->damage) == sizeof(weapon->o_hurldmg));
+        memcpy(mod->damage, weapon->o_hurldmg, sizeof(weapon->o_hurldmg));
         mod->to_hit += held_weapon->o_hplus;
         mod->to_dmg += held_weapon->o_dplus;
       }
       else if (weapon->o_launch == -1)
-        mod->damage = weapon->o_hurldmg;
+      {
+        assert(sizeof(mod->damage) == sizeof(weapon->o_hurldmg));
+        memcpy(mod->damage, weapon->o_hurldmg, sizeof(weapon->o_hurldmg));
+      }
     }
   }
 
   /* Venus Flytraps have a different kind of dmg system */
   else if (attacker->o_type == 'F')
   {
-    static char f_damage[13];
-    sprintf(f_damage, "%dx1", vf_hit);
-    mod->damage = f_damage;
+    memset(mod->damage, 0, sizeof(mod->damage));
+    mod->damage[0].sides = vf_hit;
+    mod->damage[0].dices = 1;
   }
 }
 
@@ -144,7 +149,12 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
        if (attacker == NULL) attacker = __player_ptr();
   else if (defender == NULL) defender = __player_ptr();
 
-  struct attack_modifier mod = { 0, 0, attacker->t_stats.s_dmg };
+  struct attack_modifier mod;
+  mod.to_hit = 0;
+  mod.to_dmg = 0;
+  assert(sizeof(mod.damage) == sizeof(attacker->t_stats.s_dmg));
+  memcpy(mod.damage, attacker->t_stats.s_dmg, sizeof(attacker->t_stats.s_dmg));
+
   calculate_attacker(attacker, weapon, thrown, &mod);
 
   /* If attacked creature is not running (asleep or held)
@@ -152,28 +162,23 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
   if (!monster_is_chasing(defender))
     mod.to_hit += 4;
 
-  assert(mod.damage != NULL);
-  assert(*mod.damage != '\0');
+  assert(mod.damage[0].sides != -1 && mod.damage[0].dices != -1);
 
   bool did_hit = false;
-  while (*mod.damage != '\0')
+  for (int i = 0; i < MAXATTACKS; ++i)
   {
-    int defense = armor_for_thing(defender);
-    int dices;
-    int dice_sides;
-    if (sscanf(mod.damage, "%dx%d", &dices, &dice_sides) == EOF)
-      break;
+    int dice_sides = mod.damage[i].sides;
+    int dices = mod.damage[i].dices;
 
+    if (dice_sides == 0 && dices == 0)
+      continue;
+
+    int defense = armor_for_thing(defender);
     if (fight_swing_hits(attacker->t_stats.s_lvl, defense, mod.to_hit))
     {
       defender->t_stats.s_hpt -= max(0, roll(dices, dice_sides) + mod.to_dmg);
       did_hit = true;
     }
-
-    mod.damage = strchr(mod.damage, '/');
-    if (mod.damage == NULL)
-      break;
-    ++mod.damage;
   }
 
   return did_hit;

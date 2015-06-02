@@ -41,7 +41,7 @@ int no_move = 0;    /* Number of turns held in place */
 #define STUCKTIME       spread(3)   /* Stuck */
 
 /* The maximum for the player */
-struct stats max_stats = { 16, 0, 1, 10, 12, "1x4", 12 };
+struct stats max_stats = { 16, 0, 1, 10, 12, {{1,4}}, 12 };
 
 void* __player_ptr(void) { return &player; }
 
@@ -100,10 +100,7 @@ player_init(void)
   food_left = HUNGERTIME;
 
   /* Give him some food */
-  obj           = allocate_new_item();
-  obj->o_type   = FOOD;
-  obj->o_count  = 1;
-  pack_add(obj, true);
+  pack_add(new_food(-1), true);
 
   /* And his suit of armor */
   obj           = allocate_new_item();
