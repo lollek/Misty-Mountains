@@ -144,6 +144,7 @@ armor_create(int which, int random_stats)
     which = armor_type_random();
 
   armor->o_type = ARMOR;
+  armor->o_which = which;
   armor->o_arm = armor_ac((enum armor_t)armor->o_which);
 
   if (random_stats)

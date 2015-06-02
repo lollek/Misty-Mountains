@@ -114,23 +114,6 @@ drop(void)
   return true;
 }
 
-static THING*
-new_generic_thing(void)
-{
-  THING* cur = allocate_new_item();
-
-  cur->o_hplus = 0;
-  cur->o_dplus = 0;
-  memset(cur->o_damage, -1, sizeof(cur->o_damage));
-  memset(cur->o_hurldmg, -1, sizeof(cur->o_hurldmg));
-  cur->o_arm = 11;
-  cur->o_count = 1;
-  cur->o_group = 0;
-  cur->o_flags = 0;
-
-  return cur;
-}
-
 THING*
 new_food(int which)
 {
@@ -181,23 +164,7 @@ new_thing(void)
     case 2: cur = new_food(-1); break;
     case 3: cur = weapon_create(-1, true); break;
     case 4: cur = armor_create(-1, true); break;
-    case 5:
-      cur = new_generic_thing();
-      cur->o_type = RING;
-      cur->o_which = (int)pick_one(ring_info, NRINGS);
-      switch (cur->o_which)
-      {
-        case R_ADDSTR: case R_PROTECT: case R_ADDHIT: case R_ADDDAM:
-          if ((cur->o_arm = rnd(3)) == 0)
-          {
-            cur->o_arm = -1;
-            cur->o_flags |= ISCURSED;
-          }
-          break;
-        case R_AGGR: case R_TELEPORT:
-          cur->o_flags |= ISCURSED;
-      }
-      break;
+    case 5: cur = ring_create(-1, true); break;
     case 6: cur = wand_create(-1); break;
     default:
       msg("Picked a bad kind of object (this should not happen)");
@@ -206,8 +173,8 @@ new_thing(void)
   }
 
   assert(cur != NULL);
-  assert(cur->o_damage[0].sides != -1 && cur->o_damage[0].dices != -1);
-  assert(cur->o_hurldmg[0].sides != -1 && cur->o_hurldmg[0].dices != -1);
+  assert(cur->o_damage[0].sides >= 0 && cur->o_damage[0].dices >= 0);
+  assert(cur->o_hurldmg[0].sides >= 0 && cur->o_hurldmg[0].dices >= 0);
   return cur;
 }
 

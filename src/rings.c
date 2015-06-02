@@ -11,6 +11,7 @@
  */
 
 #include <ctype.h>
+#include <string.h>
 
 #include "io.h"
 #include "pack.h"
@@ -21,6 +22,7 @@
 #include "things.h"
 #include "state.h"
 #include "options.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "rings.h"
@@ -267,3 +269,40 @@ ring_description(THING const* item, char* buf)
   else if (op->oi_guess)
     sprintf(buf, " called %s", op->oi_guess);
 }
+
+THING*
+ring_create(int which, bool random_stats)
+{
+  THING* ring = allocate_new_item();
+  memset(ring, 0, sizeof(*ring));
+
+  if (which == -1)
+    which = (int)pick_one(ring_info, NRINGS);
+
+  ring->o_type = RING;
+  ring->o_which = which;
+
+  switch (ring->o_which)
+  {
+    case R_ADDSTR: case R_PROTECT: case R_ADDHIT: case R_ADDDAM:
+      if (random_stats)
+      {
+        ring->o_arm = rnd(3);
+        if (ring->o_arm == 0)
+        {
+          ring->o_arm = -1;
+          ring->o_flags |= ISCURSED;
+        }
+      }
+      else
+        ring->o_arm = 1;
+      break;
+
+    case R_AGGR: case R_TELEPORT:
+      ring->o_flags |= ISCURSED;
+      break;
+  }
+
+  return ring;
+}
+
