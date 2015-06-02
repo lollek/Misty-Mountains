@@ -40,6 +40,6 @@ bool read_scroll(void);     /* Read a scroll from the pack and do the needful */
 
 void scroll_description(THING* obj, char* buf);
 
-THING* scroll_create(void);
+THING* scroll_create(int which);
 
 #endif /* _ROGUE14_SCROLLS_H_ */

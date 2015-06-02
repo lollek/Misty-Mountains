@@ -143,37 +143,27 @@ create_obj(void)
   int which = isdigit(ch) ? ch - '0' : ch - 'a' + 10;
   mpos = 0;
 
-  if (type == TRAP)
-  {
-    if (which < 0 || which >= NTRAPS)
-      msg("Bad trap id");
-    else
-    {
-      coord *player_pos = player_get_pos();
-      char flags = level_get_flags(player_pos->y, player_pos->x);
-      flags &= ~F_REAL;
-      flags |= which;
-      level_set_flags(player_pos->y, player_pos->x, flags);
-    }
-    return;
-  }
-
   THING* obj = NULL;
-  /*
-  if (type == STICK)
-    obj = wand_create(which);
-  else
-  {
-    obj = allocate_new_item();
-    obj->o_type = type;
-    obj->o_which = which;
-    obj->o_group = 0;
-    obj->o_count = 1;
-  } */
-
   switch (type)
   {
-    case STICK: obj = wand_create(which);
+    case TRAP:
+      {
+        if (which < 0 || which >= NTRAPS)
+          msg("Bad trap id");
+        else
+        {
+          coord *player_pos = player_get_pos();
+          char flags = level_get_flags(player_pos->y, player_pos->x);
+          flags &= ~F_REAL;
+          flags |= which;
+          level_set_flags(player_pos->y, player_pos->x, flags);
+        }
+        return;
+      }
+    case STICK: obj = wand_create(which); break;
+    case SCROLL: obj = scroll_create(which); break;
+    case POTION: obj = potion_create(which); break;
+    case FOOD: obj = new_food(which); break;
     case WEAPON:
       {
         obj = weapon_create(which, false);
@@ -211,12 +201,7 @@ create_obj(void)
 
     case RING:
       {
-        obj = allocate_new_item();
-        obj->o_type = type;
-        obj->o_which = which;
-        obj->o_group = 0;
-        obj->o_count = 1;
-
+        obj = ring_create(which, false);
         switch (obj->o_which)
         {
           case R_PROTECT: case R_ADDSTR: case R_ADDHIT: case R_ADDDAM:
@@ -227,14 +212,9 @@ create_obj(void)
               obj->o_flags |= ISCURSED;
             obj->o_arm = (bless == '-' ? -1 : rnd(2) + 1);
             break;
-
-          case R_AGGR: case R_TELEPORT:
-            obj->o_flags |= ISCURSED;
-            break;
         }
       }
       break;
-
 
     case GOLD:
       {

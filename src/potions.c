@@ -289,13 +289,16 @@ potion_description(THING const* obj, char buf[])
 }
 
 THING*
-potion_create(void)
+potion_create(int which)
 {
   THING* pot = allocate_new_item();
   memset(pot, 0, sizeof(*pot));
 
+  if (which == -1)
+    which = (int)pick_one(pot_info, NPOTIONS);
+
   pot->o_type       = POTION;
-  pot->o_which      = (int)pick_one(pot_info, NPOTIONS);
+  pot->o_which      = which;
   pot->o_count      = 1;
   pot->o_damage[0]  = (struct damage){1, 2};
   pot->o_hurldmg[0] = (struct damage){1, 2};

@@ -159,8 +159,8 @@ new_thing(void)
   THING* cur = NULL;
   switch (r)
   {
-    case 0: cur = potion_create(); break;
-    case 1: cur = scroll_create(); break;
+    case 0: cur = potion_create(-1); break;
+    case 1: cur = scroll_create(-1); break;
     case 2: cur = new_food(-1); break;
     case 3: cur = weapon_create(-1, true); break;
     case 4: cur = armor_create(-1, true); break;

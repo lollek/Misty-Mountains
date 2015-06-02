@@ -464,13 +464,17 @@ scroll_description(THING* obj, char* buf)
 }
 
 THING*
-scroll_create(void)
+scroll_create(int which)
 {
   THING* scroll = allocate_new_item();
   memset(scroll, 0, sizeof(*scroll));
+
+  if (which == -1)
+    which = (int)pick_one(scr_info, NSCROLLS);
+
   scroll->o_type  = SCROLL;
   scroll->o_count = 1;
-  scroll->o_which = (int)pick_one(scr_info, NSCROLLS);
+  scroll->o_which = which;
   return scroll;
 }
 
