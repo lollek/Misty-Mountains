@@ -323,22 +323,22 @@ weapon_description(THING* obj, char* buf)
   else
     ptr += sprintf(ptr, "%d %ss", obj->o_count, obj_name);
 
-  if (obj->o_type == WEAPON)
-  {
-    for (int i = 0; i < MAXATTACKS; ++i)
-      if (obj->o_damage[i].sides != 0 && obj->o_damage[i].dices != 0)
-        ptr += sprintf(ptr, "%s%dd%d", i == 0 ? " (" : "/",
-            obj->o_damage[i].sides,
-            obj->o_damage[i].dices);
-    strcpy(ptr++, ")");
-  }
-  else if (obj->o_type == AMMO)
+  if (obj->o_type == AMMO || obj->o_which == BOW)
   {
     for (int i = 0; i < MAXATTACKS; ++i)
       if (obj->o_hurldmg[i].sides != 0 && obj->o_hurldmg[i].dices != 0)
         ptr += sprintf(ptr, "%s%dd%d", i == 0 ? " (" : "/",
             obj->o_hurldmg[i].sides,
             obj->o_hurldmg[i].dices);
+    strcpy(ptr++, ")");
+  }
+  else if (obj->o_type == WEAPON)
+  {
+    for (int i = 0; i < MAXATTACKS; ++i)
+      if (obj->o_damage[i].sides != 0 && obj->o_damage[i].dices != 0)
+        ptr += sprintf(ptr, "%s%dd%d", i == 0 ? " (" : "/",
+            obj->o_damage[i].sides,
+            obj->o_damage[i].dices);
     strcpy(ptr++, ")");
   }
   else
