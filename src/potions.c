@@ -293,10 +293,11 @@ potion_create(void)
 {
   THING* pot = allocate_new_item();
   memset(pot, 0, sizeof(*pot));
-  pot->o_type = POTION;
-  pot->o_which = (int)pick_one(pot_info, NPOTIONS);
 
-  pot->o_damage[0] = (struct damage){1, 2};
+  pot->o_type       = POTION;
+  pot->o_which      = (int)pick_one(pot_info, NPOTIONS);
+  pot->o_count      = 1;
+  pot->o_damage[0]  = (struct damage){1, 2};
   pot->o_hurldmg[0] = (struct damage){1, 2};
 
   return pot;

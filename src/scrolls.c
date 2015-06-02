@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 #include "io.h"
 #include "pack.h"
@@ -460,5 +461,16 @@ scroll_description(THING* obj, char* buf)
     ptr += sprintf(ptr, " called %s", op->oi_guess);
   else
     ptr += sprintf(ptr, " titled '%s'", s_names[obj->o_which]);
+}
+
+THING*
+scroll_create(void)
+{
+  THING* scroll = allocate_new_item();
+  memset(scroll, 0, sizeof(*scroll));
+  scroll->o_type  = SCROLL;
+  scroll->o_count = 1;
+  scroll->o_which = (int)pick_one(scr_info, NSCROLLS);
+  return scroll;
 }
 

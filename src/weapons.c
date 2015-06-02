@@ -189,26 +189,26 @@ fall(THING* obj, bool pr)
   _discard(&obj);
 }
 
-void
-init_weapon(THING* weap, int which)
+THING*
+weapon_create(int which, bool random_stats)
 {
-  weap->o_type = WEAPON;
+  THING* weap = allocate_new_item();
+  memset(weap, 0, sizeof(*weap));
+
+  if (which == -1)
+    which = (int)pick_one(weap_info, MAXWEAPONS);
+
+  weap->o_type  = WEAPON;
   weap->o_which = which;
+
   struct init_weaps* iwp = &init_dam[which];
-  weap->o_launch = iwp->iw_launch;
-  weap->o_flags = iwp->iw_flags;
-  weap->o_hplus = 0;
-  weap->o_dplus = 0;
-  weap->o_arm = 0;
+  weap->o_launch     = iwp->iw_launch;
+  weap->o_flags      = iwp->iw_flags;
+  weap->o_damage[0]  = iwp->iw_dam;
+  weap->o_hurldmg[0] = iwp->iw_hrl;
 
   if (weap->o_flags & ISMANY)
     weap->o_type = AMMO;
-
-  memset(weap->o_damage, 0, sizeof(weap->o_damage));
-  weap->o_damage[0] = iwp->iw_dam;
-
-  memset(weap->o_hurldmg, 0, sizeof(weap->o_hurldmg));
-  weap->o_hurldmg[0] = iwp->iw_hrl;
 
   if (which == SPEAR)
     weap->o_arm = 2;
@@ -228,6 +228,20 @@ init_weapon(THING* weap, int which)
     weap->o_count = 1;
     weap->o_group = 0;
   }
+
+  if (random_stats)
+  {
+    int rand = rnd(100);
+    if (rand < 10)
+    {
+      weap->o_flags |= ISCURSED;
+      weap->o_hplus -= rnd(3) + 1;
+    }
+    else if (rand < 15)
+      weap->o_hplus += rnd(3) + 1;
+  }
+
+  return weap;
 }
 
 bool

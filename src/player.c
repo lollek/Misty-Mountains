@@ -112,24 +112,21 @@ player_init(void)
   pack_equip_item(obj);
 
   /* Give him his weaponry.  First a mace. */
-  obj = allocate_new_item();
-  init_weapon(obj, MACE);
+  obj = weapon_create(MACE, false);
   obj->o_hplus  = 1;
   obj->o_dplus  = 1;
   obj->o_flags |= ISKNOW;
   pack_equip_item(obj);
 
   /* Now a +1 bow */
-  obj           = allocate_new_item();
-  init_weapon(obj, BOW);
+  obj = weapon_create(BOW, false);
   obj->o_hplus  = 1;
   obj->o_flags |= ISKNOW;
   pack_add(obj, true);
   set_last_weapon(obj);
 
   /* Now some arrows */
-  obj           = allocate_new_item();
-  init_weapon(obj, ARROW);
+  obj = weapon_create(ARROW, false);
   obj->o_count  = rnd(15) + 25;
   obj->o_flags |= ISKNOW;
   pack_add(obj, true);

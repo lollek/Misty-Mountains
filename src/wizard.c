@@ -159,6 +159,7 @@ create_obj(void)
   }
 
   THING* obj = NULL;
+  /*
   if (type == STICK)
     obj = wand_create(which);
   else
@@ -168,44 +169,64 @@ create_obj(void)
     obj->o_which = which;
     obj->o_group = 0;
     obj->o_count = 1;
-  }
+  } */
 
   switch (type)
   {
-    case WEAPON: case ARMOR:
+    case STICK: obj = wand_create(which);
+    case WEAPON:
       {
+        obj = weapon_create(which, false);
+
+        msg("blessing? (+,-,n)");
+        char bless = readchar(true);
+        mpos = 0;
+
+        if (bless == '-')
+        {
+          obj->o_flags |= ISCURSED;
+          obj->o_hplus -= rnd(3) + 1;
+        }
+        else if (bless == '+')
+          obj->o_hplus += rnd(3) + 1;
+      }
+      break;
+
+    case ARMOR:
+      {
+        obj = allocate_new_item();
+        obj->o_type = type;
+        obj->o_which = which;
+        obj->o_group = 0;
+        obj->o_count = 1;
+        obj->o_arm = armor_ac((enum armor_t)obj->o_which);
+
         msg("blessing? (+,-,n)");
         char bless = readchar(true);
         mpos = 0;
         if (bless == '-')
+        {
           obj->o_flags |= ISCURSED;
-        if (obj->o_type == WEAPON)
-        {
-          init_weapon(obj, obj->o_which);
-          if (bless == '-')
-            obj->o_hplus -= rnd(3)+1;
-          if (bless == '+')
-            obj->o_hplus += rnd(3)+1;
+          obj->o_arm += rnd(3) + 1;
         }
-        else
-        {
-          obj->o_arm = armor_ac((enum armor_t)obj->o_which);
-          if (bless == '-')
-            obj->o_arm += rnd(3)+1;
-          if (bless == '+')
-            obj->o_arm -= rnd(3)+1;
-        }
+        else if (bless == '+')
+          obj->o_arm -= rnd(3) + 1;
       }
       break;
 
     case RING:
       {
-        char bless;
+        obj = allocate_new_item();
+        obj->o_type = type;
+        obj->o_which = which;
+        obj->o_group = 0;
+        obj->o_count = 1;
+
         switch (obj->o_which)
         {
           case R_PROTECT: case R_ADDSTR: case R_ADDHIT: case R_ADDDAM:
             msg("blessing? (+,-,n)");
-            bless = readchar(true);
+            char bless = readchar(true);
             mpos = 0;
             if (bless == '-')
               obj->o_flags |= ISCURSED;
@@ -227,6 +248,11 @@ create_obj(void)
         if (readstr(buf) == 0)
           obj->o_goldval = (short) atoi(buf);
       }
+      break;
+
+    default:
+      (void)fail("Not implemented: %c(%d)\r\n", which, which);
+      assert(0);
       break;
   }
 
@@ -261,8 +287,7 @@ wizard_levels_and_gear(void)
   /* Give him a sword (+1,+1) */
   if (pack_equipped_item(EQUIPMENT_RHAND) == NULL)
   {
-    THING* obj = allocate_new_item();
-    init_weapon(obj, TWOSWORD);
+    THING* obj = weapon_create(TWOSWORD, false);
     obj->o_hplus = 1;
     obj->o_dplus = 1;
     pack_equip_item(obj);

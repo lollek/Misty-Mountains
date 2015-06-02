@@ -134,8 +134,7 @@ trap_arrow_player(void)
   }
   else
   {
-    THING* arrow = allocate_new_item();
-    init_weapon(arrow, ARROW);
+    THING* arrow = weapon_create(ARROW, false);
     arrow->o_count = 1;
     arrow->o_pos = *player_get_pos();
     fall(arrow, false);
@@ -163,8 +162,7 @@ trap_arrow_monster(THING* victim)
   }
   else
   {
-    THING* arrow = allocate_new_item();
-    init_weapon(arrow, ARROW);
+    THING* arrow = weapon_create(ARROW, false);
     arrow->o_count = 1;
     arrow->o_pos = victim->t_pos;
     fall(arrow, false);

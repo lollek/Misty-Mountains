@@ -177,25 +177,9 @@ new_thing(void)
   switch (r)
   {
     case 0: cur = potion_create(); break;
-    case 1:
-      cur = new_generic_thing();
-      cur->o_type = SCROLL;
-      cur->o_which = (int)pick_one(scr_info, NSCROLLS);
-      break;
+    case 1: cur = scroll_create(); break;
     case 2: cur = new_food(-1); break;
-    case 3:
-      cur = new_generic_thing();
-
-      init_weapon(cur, (int)pick_one(weap_info, MAXWEAPONS));
-      r = rnd(100);
-      if (r < 10)
-      {
-        cur->o_flags |= ISCURSED;
-        cur->o_hplus -= rnd(3) + 1;
-      }
-      else if (r < 15)
-        cur->o_hplus += rnd(3) + 1;
-      break;
+    case 3: cur = weapon_create(-1, true); break;
     case 4:
       cur = new_generic_thing();
 

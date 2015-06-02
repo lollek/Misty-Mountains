@@ -37,8 +37,7 @@ void do_motion(THING* obj, int ydelta, int xdelta);
 /* Drop an item someplace around here. */
 void fall(THING* obj, bool pr);
 
-/* Set up the initial goodies for a weapon */
-void init_weapon(THING* weap, int which);
+THING* weapon_create(int which, bool random_stats);
 
 bool weapon_wield(THING* weapon);
 void set_last_weapon(THING* weapon);
