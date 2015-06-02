@@ -180,21 +180,7 @@ new_thing(void)
     case 1: cur = scroll_create(); break;
     case 2: cur = new_food(-1); break;
     case 3: cur = weapon_create(-1, true); break;
-    case 4:
-      cur = new_generic_thing();
-
-      cur->o_type = ARMOR;
-      cur->o_which = armor_type_random();
-      cur->o_arm = armor_ac((enum armor_t)cur->o_which);
-      r = rnd(100);
-      if (r < 20)
-      {
-        cur->o_flags |= ISCURSED;
-        cur->o_arm += rnd(3) + 1;
-      }
-      else if (r < 28)
-        cur->o_arm -= rnd(3) + 1;
-      break;
+    case 4: cur = armor_create(-1, true); break;
     case 5:
       cur = new_generic_thing();
       cur->o_type = RING;

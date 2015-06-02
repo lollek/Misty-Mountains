@@ -194,12 +194,7 @@ create_obj(void)
 
     case ARMOR:
       {
-        obj = allocate_new_item();
-        obj->o_type = type;
-        obj->o_which = which;
-        obj->o_group = 0;
-        obj->o_count = 1;
-        obj->o_arm = armor_ac((enum armor_t)obj->o_which);
+        obj = armor_create(-1, false);
 
         msg("blessing? (+,-,n)");
         char bless = readchar(true);
@@ -296,9 +291,7 @@ wizard_levels_and_gear(void)
   /* And his suit of armor */
   if (pack_equipped_item(EQUIPMENT_ARMOR) == NULL)
   {
-    THING* obj = allocate_new_item();
-    obj->o_type = ARMOR;
-    obj->o_which = PLATE_MAIL;
+    THING* obj = armor_create(PLATE_MAIL, false);
     obj->o_arm = -5;
     obj->o_flags |= ISKNOW;
     obj->o_count = 1;

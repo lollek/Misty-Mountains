@@ -10,6 +10,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "io.h"
 #include "pack.h"
@@ -18,6 +19,7 @@
 #include "wizard.h"
 #include "things.h"
 #include "options.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "armor.h"
@@ -132,3 +134,29 @@ armor_description(THING* obj, char* buf)
     ptr += sprintf(ptr, " called %s", obj->o_label);
 }
 
+THING*
+armor_create(int which, int random_stats)
+{
+  THING* armor = allocate_new_item();
+  memset(armor, 0, sizeof(*armor));
+
+  if (which == -1)
+    which = armor_type_random();
+
+  armor->o_type = ARMOR;
+  armor->o_arm = armor_ac((enum armor_t)armor->o_which);
+
+  if (random_stats)
+  {
+    int rand = rnd(100);
+    if (rand < 20)
+    {
+      armor->o_flags |= ISCURSED;
+      armor->o_arm += rnd(3) + 1;
+    }
+    else if (rand < 28)
+      armor->o_arm -= rnd(3) + 1;
+  }
+
+  return armor;
+}

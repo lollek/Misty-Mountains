@@ -103,12 +103,9 @@ player_init(void)
   pack_add(new_food(-1), true);
 
   /* And his suit of armor */
-  obj           = allocate_new_item();
-  obj->o_type   = ARMOR;
-  obj->o_which  = RING_MAIL;
-  obj->o_arm    = armor_ac(RING_MAIL) - 1;
+  obj = armor_create(RING_MAIL, false);
   obj->o_flags |= ISKNOW;
-  obj->o_count  = 1;
+  obj->o_arm -= 1;
   pack_equip_item(obj);
 
   /* Give him his weaponry.  First a mace. */
