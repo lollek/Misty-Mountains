@@ -24,7 +24,8 @@
 
 typedef enum attribute {
   ATTR_FIRE,
-  ATTR_ICE
+  ATTR_ICE,
+  ATTR_NONE,
 } attribute;
 
 typedef enum tile {
@@ -32,7 +33,7 @@ typedef enum tile {
   TILE_BOLT_DIAGUP,
   TILE_BOLT_HORIZONTAL,
   TILE_BOLT_DIAGDOWN,
-  TILE_ERROR
+  TILE_ERROR,
 } tile;
 
 /* Glyphs for things */
@@ -99,8 +100,21 @@ chtype colorize(const chtype ch);
 chtype io_attribute(enum attribute attribute);
 chtype io_tile(enum tile tile);
 
-static inline int io_addch(enum tile tile, enum attribute attr)
+static inline int
+io_addch(enum tile tile, enum attribute attr)
 { return addch(io_tile(tile) | io_attribute(attr)); }
+
+static inline int
+io_waddch(WINDOW* win, enum tile tile, enum attribute attr)
+{ return waddch(win, io_tile(tile) | io_attribute(attr)); }
+
+static inline int
+io_mvaddch(int y, int x, enum tile tile, enum attribute attr)
+{ return mvaddch(y, x, io_tile(tile) | io_attribute(attr)); }
+
+static inline int
+io_mvwaddch(WINDOW* win, int y, int x, enum tile tile, enum attribute attr)
+{ return mvwaddch(win, y, x, io_tile(tile) | io_attribute(attr)); }
 
 /* old ncurses functions, with custom color support, to be removed */
 #define incch()              (inch() & A_CHARTEXT)

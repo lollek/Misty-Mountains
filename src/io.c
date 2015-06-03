@@ -388,8 +388,9 @@ io_attribute(enum attribute attribute)
   {
     case ATTR_FIRE: return COLOR_PAIR(COLOR_RED);
     case ATTR_ICE:  return COLOR_PAIR(COLOR_BLUE);
+    case ATTR_NONE: return 0;
   }
-  assert(0);
+  assert(0 && "Unknown io_attribute");
   return 0;
 }
 
@@ -405,6 +406,6 @@ io_tile(enum tile tile)
 
     case TILE_ERROR: return '?' | A_STANDOUT;
   }
-  assert(0);
+  assert(0 && "Unknown io_tile");
   return 0;
 }
