@@ -280,10 +280,7 @@ pack_add(THING* obj, bool silent)
   {
     list_detach(&lvl_obj, obj);
     mvaddcch(player_pos->y, player_pos->x, floor_ch());
-    level_set_ch(player_pos->y, player_pos->x,
-        (player_get_room()->r_flags & ISGONE)
-          ? PASSAGE
-          : FLOOR);
+    level_set_ch(player_pos->y, player_pos->x, floor_ch());
     _discard(&obj);
     msg("the scroll turns to dust as you pick it up");
     return false;
