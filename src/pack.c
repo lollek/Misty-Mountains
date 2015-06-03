@@ -149,12 +149,14 @@ pack_print_evaluate_item(THING* obj)
       break;
 
     case SCROLL:
-      worth = scr_info[obj->o_which].oi_worth;
-      worth *= obj->o_count;
-      op = &scr_info[obj->o_which];
-      if (!op->oi_know)
-        worth /= 2;
-      op->oi_know = true;
+      {
+        enum scroll_t scroll = (enum scroll_t)obj->o_which;
+        worth = scroll_value(scroll);
+        worth *= obj->o_count;
+        if (!scroll_is_known(scroll))
+          worth /= 2;
+        scroll_learn(scroll);
+      }
       break;
 
     case POTION:

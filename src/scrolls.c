@@ -135,6 +135,12 @@ scroll_is_known(enum scroll_t scroll)
   return scr_info[scroll].oi_know;
 }
 
+int
+scroll_value(enum scroll_t scroll)
+{
+  return scr_info[scroll].oi_worth;
+}
+
 static void
 set_know(THING* obj, struct obj_info* info)
 {
