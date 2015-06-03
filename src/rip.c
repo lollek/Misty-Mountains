@@ -255,6 +255,11 @@ death(char monst)
 
   signal(SIGINT, command_signal_leave);
 
+  status();
+  refresh();
+  msg("You die!");
+  readchar(false);
+
   clear();
   char const* killer = killname(buf, monst, false);
 
