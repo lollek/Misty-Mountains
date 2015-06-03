@@ -44,16 +44,27 @@ command_use_stairs(char up_or_down)
 
   else if (up_or_down == '<') /* UP */
   {
-    if (pack_contains_amulet())
+    bool has_amulet = pack_contains_amulet();
+
+    assert(level >= 0 && "Level should not go lower than 0");
+
+    if (level == 1)
     {
-      level--;
-      if (level == 0)
+      if (has_amulet)
         total_winner();
-      level_new();
-      msg("you feel a wrenching sensation in your gut");
+      else
+      {
+        /* This either quits, or player did not want to leave */
+        command_quit();
+        return false;
+      }
     }
-    else
-      msg("your way is magically blocked");
+
+    level--;
+    level_new();
+
+    if (has_amulet)
+      msg("you feel a wrenching sensation in your gut");
   }
 
   return false;
