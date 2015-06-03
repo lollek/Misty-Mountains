@@ -109,7 +109,8 @@ scroll_save_state(void)
   for (int i = 0; i < NSCROLLS; i++)
     if (state_save_string(s_names[i]))
       return 1;
-  return 0;
+
+  return state_save_obj_info(scr_info, NSCROLLS);
 }
 
 bool
@@ -119,7 +120,7 @@ scroll_load_state(void)
     if (state_load_string(&s_names[i]))
       return 1;
 
-  return 0;
+  return state_load_obj_info(scr_info, NSCROLLS);
 }
 
 void
