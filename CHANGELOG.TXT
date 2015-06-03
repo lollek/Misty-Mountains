@@ -2,6 +2,9 @@ v1.2.9
   Features:
     Can now go up the stairs even without the amulet
 
+  Tweaking:
+    Automatically pick up the amulet
+
 v1.2.8
   Features:
     Autopickup can now be modified from the options menu
