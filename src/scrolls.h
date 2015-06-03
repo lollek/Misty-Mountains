@@ -38,6 +38,7 @@ bool read_scroll(void);     /* Read a scroll from the pack and do the needful */
 void scroll_learn(enum scroll_t scroll);    /* Learn scroll info */
 bool scroll_is_known(enum scroll_t scroll); /* Knows what scroll does? */
 int scroll_value(enum scroll_t scroll);
+void scroll_set_name(enum scroll_t wand, char const* new_name);
 
 void scroll_description(THING* obj, char* buf);
 

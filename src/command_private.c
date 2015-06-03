@@ -117,8 +117,8 @@ command_name_item(void)
       break;
 
     case SCROLL:
-      already_known = scr_info[obj->o_which].oi_know;
-      guess =        &scr_info[obj->o_which].oi_guess;
+      already_known = scroll_is_known((enum scroll_t)obj->o_which);
+      guess =         NULL;
       break;
 
     case STICK:
@@ -145,6 +145,8 @@ command_name_item(void)
   {
     if (obj->o_type == STICK)
       wand_set_name((enum wand_t)obj->o_which, tmpbuf);
+    else if (obj->o_type == SCROLL)
+      scroll_set_name((enum scroll_t)obj->o_which, tmpbuf);
     else if (guess != NULL)
     {
       if (*guess != NULL) {

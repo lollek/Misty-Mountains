@@ -51,7 +51,6 @@ struct obj_info scr_info[NSCROLLS] = {
     { "protect armor",			 2, 250, NULL, false },
 };
 
-
 void
 scroll_init(void)
 {
@@ -123,8 +122,7 @@ scroll_load_state(void)
   return state_load_obj_info(scr_info, NSCROLLS);
 }
 
-void
-scroll_learn(enum scroll_t scroll)
+void scroll_learn(enum scroll_t scroll)
 {
   scr_info[scroll].oi_know = true;
 }
@@ -139,6 +137,23 @@ int
 scroll_value(enum scroll_t scroll)
 {
   return scr_info[scroll].oi_worth;
+}
+
+void scroll_set_name(enum scroll_t scroll, char const* new_name)
+{
+  size_t len = strlen(new_name);
+
+  if (scr_info[scroll].oi_guess != NULL)
+  {
+    free(scr_info[scroll].oi_guess);
+    scr_info[scroll].oi_guess = NULL;
+  }
+
+  if (len > 0)
+  {
+    scr_info[scroll].oi_guess = malloc(len + 1);
+    strcpy(scr_info[scroll].oi_guess, new_name);
+  }
 }
 
 static void
