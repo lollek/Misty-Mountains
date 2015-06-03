@@ -392,8 +392,9 @@ read_scroll(void)
         learn_scroll(S_CREATE);
       break;
     case S_ID:
+      if (!knows_scroll(obj->o_which))
+        msg("this scroll is an %s scroll", scr_info[obj->o_which].oi_name);
       learn_scroll(obj->o_which);
-      msg("this scroll is an %s scroll", scr_info[obj->o_which].oi_name);
       identify();
       break;
     case S_MAP:
