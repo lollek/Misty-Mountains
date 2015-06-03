@@ -189,9 +189,8 @@ msg(char const* fmt, ...)
 {
   va_list args;
 
-  /* if the string is "", just clear the line */
-  if (*fmt == '\0')
-    clearmsg();
+  assert(fmt != NULL  && "Use clearmsg() instead of msg(NULL)");
+  assert(*fmt != '\0' && "Use clearmsg() instead of msg(\"\")");
 
   /* otherwise add to the message */
   va_start(args, fmt);
@@ -204,11 +203,11 @@ __attribute__((__format__(__printf__, 1, 2)))
 void
 addmsg(char const* fmt, ...)
 {
-    va_list args;
+  va_list args;
 
-    va_start(args, fmt);
-    doadd(fmt, args, false);
-    va_end(args);
+  va_start(args, fmt);
+  doadd(fmt, args, false);
+  va_end(args);
 }
 
 
