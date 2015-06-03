@@ -342,10 +342,7 @@ identify(void)
     case STICK:  set_know(obj, __wands_ptr());   break;
     case RING:   set_know(obj, ring_info); break;
     case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
-    default:
-      (void)fail("Unknown type: %c(%d)", obj->o_type, obj->o_type);
-      assert(0);
-      break;
+    default: break;
   }
 
   char buf[MAXSTR];
