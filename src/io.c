@@ -289,9 +289,13 @@ show_win(const char *message)
   touchwin(hw);
   wmove(hw, player_y(), player_x());
   wrefresh(hw);
+  untouchwin(stdscr);
+
   wait_for(KEY_SPACE);
+
   clearok(curscr, true);
   touchwin(stdscr);
+  clearmsg();
 }
 
 bool

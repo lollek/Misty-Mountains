@@ -5,6 +5,9 @@ v1.2.9
   Tweaking:
     Automatically pick up the amulet
 
+  Bugs:
+    Fix food not always showing when reading the scroll of foodfinding
+
 v1.2.8
   Features:
     Autopickup can now be modified from the options menu
