@@ -26,7 +26,6 @@ enum scroll_t
 };
 
 /* Variables */
-extern char* s_names[NSCROLLS];            /* Names of the scrolls */
 extern struct obj_info scr_info[NSCROLLS]; /* Scroll info */
 
 void scroll_init(void);
@@ -36,8 +35,8 @@ bool scroll_load_state(void);
 /* Functions */
 void identify(void);        /* Identify something from player's pack */
 bool read_scroll(void);     /* Read a scroll from the pack and do the needful */
-#define learn_scroll(_s) (scr_info[_s].oi_know = true) /* Learn scroll info */
-#define knows_scroll(_s) (scr_info[_s].oi_know) /* Knows what scroll does? */
+void scroll_learn(enum scroll_t scroll);    /* Learn scroll info */
+bool scroll_is_known(enum scroll_t scroll); /* Knows what scroll does? */
 
 void scroll_description(THING* obj, char* buf);
 

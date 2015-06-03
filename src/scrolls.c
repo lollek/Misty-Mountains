@@ -33,7 +33,7 @@
 
 #include "scrolls.h"
 
-char* s_names[NSCROLLS];
+static char* s_names[NSCROLLS];
 struct obj_info scr_info[NSCROLLS] = {
     { "monster confusion",		 7, 140, NULL, false },
     { "magic mapping",			 4, 150, NULL, false },
@@ -120,6 +120,18 @@ scroll_load_state(void)
       return 1;
 
   return 0;
+}
+
+void
+scroll_learn(enum scroll_t scroll)
+{
+  scr_info[scroll].oi_know = true;
+}
+
+bool
+scroll_is_known(enum scroll_t scroll)
+{
+  return scr_info[scroll].oi_know;
 }
 
 static void
@@ -426,37 +438,37 @@ read_scroll(void)
       break;
     case S_ARMOR:
       if (enchant_players_armor())
-        learn_scroll(S_ARMOR);
+        scroll_learn(S_ARMOR);
       break;
     case S_HOLD:
       if (hold_monsters())
-        learn_scroll(S_HOLD);
+        scroll_learn(S_HOLD);
       break;
     case S_SLEEP:
-      learn_scroll(S_SLEEP);
+      scroll_learn(S_SLEEP);
       player_fall_asleep();
       break;
     case S_CREATE:
       if (create_monster())
-        learn_scroll(S_CREATE);
+        scroll_learn(S_CREATE);
       break;
     case S_ID:
-      if (!knows_scroll(obj->o_which))
+      if (!scroll_is_known(S_ID))
         msg("this scroll is an %s scroll", scr_info[obj->o_which].oi_name);
-      learn_scroll(obj->o_which);
+      scroll_learn(S_ID);
       identify();
       break;
     case S_MAP:
-      learn_scroll(S_MAP);
+      scroll_learn(S_MAP);
       msg("this scroll has a map on it");
       magic_mapping();
       break;
     case S_FDET:
       if (food_detection())
-        learn_scroll(S_FDET);
+        scroll_learn(S_FDET);
       break;
     case S_TELEP:
-      learn_scroll(S_TELEP);
+      scroll_learn(S_TELEP);
       player_teleport(NULL);
       break;
     case S_ENCH:
