@@ -51,6 +51,58 @@ struct obj_info scr_info[NSCROLLS] = {
     { "protect armor",			 2, 250, NULL, false },
 };
 
+
+void
+scroll_init(void)
+{
+  char const* sylls[] = {
+    "a", "ab", "ag", "aks", "ala", "an", "app", "arg", "arze", "ash",
+    "bek", "bie", "bit", "bjor", "blu", "bot", "bu", "byt", "comp",
+    "con", "cos", "cre", "dalf", "dan", "den", "do", "e", "eep", "el",
+    "eng", "er", "ere", "erk", "esh", "evs", "fa", "fid", "fri", "fu",
+    "gan", "gar", "glen", "gop", "gre", "ha", "hyd", "i", "ing", "ip",
+    "ish", "it", "ite", "iv", "jo", "kho", "kli", "klis", "la", "lech",
+    "mar", "me", "mi", "mic", "mik", "mon", "mung", "mur", "nej",
+    "nelg", "nep", "ner", "nes", "nes", "nih", "nin", "o", "od", "ood",
+    "org", "orn", "ox", "oxy", "pay", "ple", "plu", "po", "pot",
+    "prok", "re", "rea", "rhov", "ri", "ro", "rog", "rok", "rol", "sa",
+    "san", "sat", "sef", "seh", "shu", "ski", "sna", "sne", "snik",
+    "sno", "so", "sol", "sri", "sta", "sun", "ta", "tab", "tem",
+    "ther", "ti", "tox", "trol", "tue", "turs", "u", "ulk", "um", "un",
+    "uni", "ur", "val", "viv", "vly", "vom", "wah", "wed", "werg",
+    "wex", "whon", "wun", "xo", "y", "yot", "yu", "zant", "zeb", "zim",
+    "zok", "zon", "zum",
+  };
+
+  int const MAXNAME = 40;
+  for (int i = 0; i < NSCROLLS; i++)
+  {
+    char tmpbuf[MAXSTR*2];
+    char* cp = tmpbuf;
+    int nwords;
+
+    for (nwords = rnd(3)+2; nwords > 0; nwords--)
+    {
+      int nsyl = rnd(3) + 1;
+
+      while (nsyl--)
+      {
+        char const* sp = sylls[rnd((sizeof(sylls)) / (sizeof(*sylls)))];
+        if (&cp[strlen(sp)] > &tmpbuf[MAXNAME])
+          break;
+        while (*sp)
+          *cp++ = *sp++;
+      }
+
+      *cp++ = ' ';
+    }
+
+    *--cp = '\0';
+    s_names[i] = malloc((unsigned) strlen(tmpbuf)+1);
+    strcpy(s_names[i], tmpbuf);
+  }
+}
+
 bool
 scroll_save_state(void)
 {

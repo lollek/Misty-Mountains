@@ -142,64 +142,6 @@ init_graphics(void)
   return 0;
 }
 
-/** Contains defintions and functions for dealing with things like
- * potions and scrolls */
-
-static char *sylls[] = {
-    "a", "ab", "ag", "aks", "ala", "an", "app", "arg", "arze", "ash",
-    "bek", "bie", "bit", "bjor", "blu", "bot", "bu", "byt", "comp",
-    "con", "cos", "cre", "dalf", "dan", "den", "do", "e", "eep", "el",
-    "eng", "er", "ere", "erk", "esh", "evs", "fa", "fid", "fri", "fu",
-    "gan", "gar", "glen", "gop", "gre", "ha", "hyd", "i", "ing", "ip",
-    "ish", "it", "ite", "iv", "jo", "kho", "kli", "klis", "la", "lech",
-    "mar", "me", "mi", "mic", "mik", "mon", "mung", "mur", "nej",
-    "nelg", "nep", "ner", "nes", "nes", "nih", "nin", "o", "od", "ood",
-    "org", "orn", "ox", "oxy", "pay", "ple", "plu", "po", "pot",
-    "prok", "re", "rea", "rhov", "ri", "ro", "rog", "rok", "rol", "sa",
-    "san", "sat", "sef", "seh", "shu", "ski", "sna", "sne", "snik",
-    "sno", "so", "sol", "sri", "sta", "sun", "ta", "tab", "tem",
-    "ther", "ti", "tox", "trol", "tue", "turs", "u", "ulk", "um", "un",
-    "uni", "ur", "val", "viv", "vly", "vom", "wah", "wed", "werg",
-    "wex", "whon", "wun", "xo", "y", "yot", "yu", "zant", "zeb", "zim",
-    "zok", "zon", "zum",
-};
-
-/** init_names:
- * Generate the names of the various scrolls */
-#define MAXNAME	40	/* Max number of characters in a name */
-static void
-init_names(void)
-{
-  int i;
-
-  for (i = 0; i < NSCROLLS; i++)
-  {
-    char tmpbuf[MAXSTR*2];
-    char* cp = tmpbuf;
-    int nwords;
-
-    for (nwords = rnd(3)+2; nwords > 0; nwords--)
-    {
-      int nsyl = rnd(3) + 1;
-
-      while (nsyl--)
-      {
-        char *sp = sylls[rnd((sizeof sylls) / (sizeof (char *)))];
-        if (&cp[strlen(sp)] > &tmpbuf[MAXNAME])
-          break;
-        while (*sp)
-          *cp++ = *sp++;
-      }
-
-      *cp++ = ' ';
-    }
-
-    *--cp = '\0';
-    s_names[i] = (char *) malloc((unsigned) strlen(tmpbuf)+1);
-    strcpy(s_names[i], tmpbuf);
-  }
-}
-
 /** init_probs:
  * Initialize the probabilities for the various items */
 static void
@@ -238,7 +180,7 @@ init_new_game(void)
   /* Init stuff */
   init_probs();                         /* Set up prob tables for objects */
   player_init();                        /* Set up initial player stats */
-  init_names();                         /* Set up names of scrolls */
+  scroll_init();                        /* Set up names of scrolls */
   potions_init();                       /* Set up colors of potions */
   ring_init();                          /* Set up stone settings of rings */
   wand_init();                          /* Set up materials of wands */
