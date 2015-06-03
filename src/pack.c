@@ -265,8 +265,9 @@ pack_add(THING* obj, bool silent)
 {
   coord* player_pos = player_get_pos();
   bool from_floor = false;
+  bool is_picked_up = false;
 
-  /* Either obj in an item or we try to take something from the floor */
+  /* Either obj is an item or we try to take something from the floor */
   if (obj == NULL)
   {
     obj = find_obj(player_pos->y, player_pos->x);
@@ -286,7 +287,23 @@ pack_add(THING* obj, bool silent)
     return false;
   }
 
-  if (pack_count_items() == pack_size())
+  /* See if we can stack it with something else in the pack */
+  if (obj->o_type == POTION || obj->o_type == SCROLL || obj->o_type == FOOD)
+    for (THING* ptr = player_pack; ptr != NULL; ptr = ptr->l_next)
+      if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which)
+      {
+        if (from_floor)
+          pack_remove_from_floor(obj);
+        ptr->o_count++;
+        ptr->o_pos = obj->o_pos;
+        _discard(&obj);
+        obj = ptr;
+        is_picked_up = true;
+        break;
+      }
+
+  /* If we cannot stack it, we need to have available space in the pack */
+  if (!is_picked_up && pack_count_items() == pack_size())
   {
     msg("there's no room in your pack");
     if (from_floor)
@@ -294,17 +311,19 @@ pack_add(THING* obj, bool silent)
     return false;
   }
 
-  if (player_pack == NULL)
+  /* Empty pack? Just insert it */
+  if (!is_picked_up && player_pack == NULL)
   {
     if (from_floor)
       pack_remove_from_floor(obj);
     list_attach(&player_pack, obj);
     obj->o_packch = pack_char();
+    is_picked_up = true;
   }
 
   /* Add thing to inventory in some sorted way
    * TODO: Clean up this mess */
-  else
+  else if (!is_picked_up)
   {
     THING *lp = NULL;
     for (THING* op = player_pack; op != NULL; op = op->l_next)
@@ -323,18 +342,7 @@ pack_add(THING* obj, bool silent)
         }
         if (op->o_type == obj->o_type && op->o_which == obj->o_which)
         {
-          if (op->o_type == POTION || op->o_type == SCROLL ||
-              obj->o_type == FOOD)
-          {
-            if (from_floor)
-              pack_remove_from_floor(obj);
-            op->o_count++;
-            _discard(&obj);
-            obj = op;
-            lp = NULL;
-            break;
-          }
-          else if (obj->o_group)
+          if (obj->o_group)
           {
             lp = op;
             while (op->o_type == obj->o_type
@@ -382,10 +390,8 @@ pack_add(THING* obj, bool silent)
 
   obj->o_flags |= ISFOUND;
 
-  /*
-   * If this was the object of something's desire, that monster will
-   * get mad and run at the hero.
-   */
+  /* If this was the object of something's desire, that monster will
+   * get mad and run at the hero.  */
   for (THING* op = mlist; op != NULL; op = op->l_next)
     if (op->t_dest == &obj->o_pos)
       op->t_dest = player_pos;
