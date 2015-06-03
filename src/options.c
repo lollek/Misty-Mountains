@@ -50,6 +50,7 @@ bool autopickup(int type)
     case ARMOR:  return pickup_armor;
     case RING:   return pickup_rings;
     case STICK:  return pickup_sticks;
+    case AMULET: return true;
   }
   (void)fail("autopickup: unknown type: %d", type);
   assert(0);
