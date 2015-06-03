@@ -490,8 +490,8 @@ pack_get_item(char const* purpose, int type)
     return NULL;
   }
 
-  msg("which object do you want to %s? ", purpose);
   pack_print_inventory(type);
+  msg("which object do you want to %s? ", purpose);
   char ch = readchar(true);
   mpos = 0;
 
@@ -610,6 +610,7 @@ pack_print_inventory(int type)
   wmove(stdscr, orig_pos.y, orig_pos.x);
   wrefresh(invscr);
   delwin(invscr);
+  untouchwin(stdscr);
   return num_items != 0;
 }
 
