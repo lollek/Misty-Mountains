@@ -41,9 +41,6 @@ char const* wand_material(enum wand_t wand);
 /* Returns a description of the obj (e.g. for inventory screen) */
 char* wand_description(THING* obj, char* buf);
 
-/* What the hero has called the wand (might be NULL) */
-char const* wand_nickname(THING* obj);
-
 /* Does the player know what the wand does? */
 void wand_set_known(enum wand_t wand);
 bool wand_is_known(enum wand_t wand);

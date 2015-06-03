@@ -727,11 +727,6 @@ wand_description(THING* obj, char* buf)
   return buf;
 }
 
-char const* wand_nickname(THING* obj)
-{
-  return wands[obj->o_which].oi_guess;
-}
-
 bool wand_is_known(enum wand_t wand)
 {
   return wands[wand].oi_know;
