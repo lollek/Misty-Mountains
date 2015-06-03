@@ -300,7 +300,7 @@ void player_remove_hallucinating(void)
     else if (player_can_sense_monsters())
       mvaddcch(tp->t_pos.y, tp->t_pos.x, tp->t_type | A_STANDOUT);
   }
-  msg("Everything feel your senses returning to normal");
+  msg("You feel your senses returning to normal");
 }
 
 int player_get_speed(void)    { return player_speed; }
