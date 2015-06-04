@@ -294,7 +294,7 @@ pack_add(THING* obj, bool silent)
       {
         if (from_floor)
           pack_remove_from_floor(obj);
-        ptr->o_count++;
+        ptr->o_count += obj->o_count;
         ptr->o_pos = obj->o_pos;
         _discard(&obj);
         obj = ptr;
@@ -321,70 +321,42 @@ pack_add(THING* obj, bool silent)
     is_picked_up = true;
   }
 
-  /* Add thing to inventory in some sorted way
-   * TODO: Clean up this mess */
+  /* Add thing to inventory in a sorted way */
   else if (!is_picked_up)
   {
-    THING *lp = NULL;
-    for (THING* op = player_pack; op != NULL; op = op->l_next)
+    THING* prev_ptr = NULL;
+    THING* ptr = player_pack;
+
+    /* Try to find an object of the same type */
+    while (ptr != NULL && ptr->o_type != obj->o_type)
     {
-      if (op->o_type != obj->o_type)
-        lp = op;
-      else
-      {
-        while (op->o_type == obj->o_type && op->o_which != obj->o_which)
-        {
-          lp = op;
-          if (op->l_next == NULL)
-            break;
-          else
-            op = op->l_next;
-        }
-        if (op->o_type == obj->o_type && op->o_which == obj->o_which)
-        {
-          if (obj->o_group)
-          {
-            lp = op;
-            while (op->o_type == obj->o_type
-                && op->o_which == obj->o_which
-                && op->o_group != obj->o_group)
-            {
-              lp = op;
-              if (op->l_next == NULL)
-                break;
-              else
-                op = op->l_next;
-            }
-            if (op->o_type == obj->o_type
-                && op->o_which == obj->o_which
-                && op->o_group == obj->o_group)
-            {
-              op->o_count += obj->o_count;
-              if (from_floor)
-                pack_remove_from_floor(obj);
-              _discard(&obj);
-              obj = op;
-              lp = NULL;
-              break;
-            }
-          }
-          else
-            lp = op;
-        }
-        break;
-      }
+      prev_ptr = ptr;
+      ptr = ptr->l_next;
     }
 
-    if (lp != NULL)
+    /* Move to the end of those objects, or stop if found similar item */
+    while (ptr != NULL && ptr->o_type == obj->o_type
+           && ptr->o_which != obj->o_which)
     {
-      if (from_floor)
-        pack_remove_from_floor(obj);
-      obj->o_packch = pack_char();
-      obj->l_next = lp->l_next;
-      obj->l_prev = lp;
-      if (lp->l_next != NULL)
-        lp->l_next->l_prev = obj;
-      lp->l_next = obj;
+      prev_ptr = ptr;
+      ptr = ptr->l_next;
+    }
+
+    /* Make object ready for insertion */
+    if (from_floor)
+      pack_remove_from_floor(obj);
+    obj->o_packch = pack_char();
+
+    /* Add to list */
+    if (ptr == NULL && prev_ptr == NULL)
+      list_attach(&player_pack, obj);
+    else
+    {
+      obj->l_next = ptr;
+      obj->l_prev = prev_ptr;
+      if (ptr != NULL)
+        ptr->l_prev = obj;
+      prev_ptr->l_next = obj;
     }
   }
 
