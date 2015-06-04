@@ -45,7 +45,7 @@ int armor_probability(enum armor_t i)   { return armors[i].prob; }
 int
 armor_for_thing(THING* thing)
 {
-  return is_player(thing) ? player_get_armor() : 20 - thing->t_stats.s_arm;
+  return is_player(thing) ? player_get_armor() : thing->t_stats.s_arm;
 }
 
 bool
