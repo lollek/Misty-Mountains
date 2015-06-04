@@ -1,4 +1,6 @@
 v1.3.0+
+  Bugs:
+    Fix bug where player's AC was never calculated
 
 v1.3.0
   Features:
