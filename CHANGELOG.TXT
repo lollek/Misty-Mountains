@@ -1,6 +1,7 @@
 v1.2.9
   Features:
     Can now go up the stairs even without the amulet
+    Can now drop many items of the same type at the same time
 
   Tweaking:
     Automatically pick up the amulet

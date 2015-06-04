@@ -10,6 +10,7 @@
 #include "options.h"
 #include "io.h"
 #include "pack.h"
+#include "list.h"
 #include "level.h"
 #include "rings.h"
 #include "misc.h"
@@ -564,5 +565,44 @@ command_run(char ch, bool cautiously)
   running = true;
   runch = (char)tolower(ch);
   return move_do(runch);
+}
+
+bool command_drop(void)
+{
+  coord* player_pos = player_get_pos();
+  char ch = level_get_ch(player_pos->y, player_pos->x);
+
+  if (ch != FLOOR && ch != PASSAGE)
+  {
+    msg("there is something there already");
+    return false;
+  }
+
+  THING* obj = pack_get_item("drop", 0);
+  if (obj == NULL)
+    return false;
+
+  bool drop_all = false;
+  if (obj->o_count > 1)
+  {
+    msg("Drop all? (y/N) ");
+    drop_all = readchar(true) == 'y';
+  }
+
+  obj = pack_remove(obj, true, drop_all);
+
+  /* Link it into the level object list */
+  list_attach(&lvl_obj, obj);
+
+  level_set_ch(player_pos->y, player_pos->x, (char)obj->o_type);
+  int flags = level_get_flags(player_pos->y, player_pos->x);
+  flags |= F_DROPPED;
+  level_set_flags(player_pos->y, player_pos->x, (char)flags);
+
+  obj->o_pos = *player_pos;
+
+  char buf[MAXSTR];
+  msg("dropped %s", inv_name(buf, obj, true));
+  return true;
 }
 

@@ -288,9 +288,11 @@ pack_add(THING* obj, bool silent)
   }
 
   /* See if we can stack it with something else in the pack */
-  if (obj->o_type == POTION || obj->o_type == SCROLL || obj->o_type == FOOD)
+  if (obj->o_type == POTION || obj->o_type == SCROLL || obj->o_type == FOOD
+      || obj->o_type == AMMO)
     for (THING* ptr = player_pack; ptr != NULL; ptr = ptr->l_next)
-      if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which)
+      if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which
+          && ptr->o_hplus == obj->o_hplus && ptr->o_dplus == obj->o_dplus)
       {
         if (from_floor)
           pack_remove_from_floor(obj);
@@ -356,7 +358,10 @@ pack_add(THING* obj, bool silent)
       obj->l_prev = prev_ptr;
       if (ptr != NULL)
         ptr->l_prev = obj;
-      prev_ptr->l_next = obj;
+      if (prev_ptr == NULL)
+        player_pack = obj;
+      else
+        prev_ptr->l_next = obj;
     }
   }
 

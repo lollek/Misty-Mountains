@@ -12,6 +12,7 @@ bool command_wizard_do(char ch);
 /* In command_sub.c */
 bool command_again(void);                 /* Repeat last command */
 bool command_attack(bool fight_to_death); /* Attack and fight something */
+bool command_drop(void);                  /* Drop something */
 bool command_eat(void);                   /* Eat something */
 bool command_help(void);                  /* Give command help */
 bool command_identify_character(void);    /* Identify monster or item */

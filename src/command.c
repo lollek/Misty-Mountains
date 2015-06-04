@@ -157,7 +157,7 @@ command_do(char ch)
       return move_do(ch);
     case 'a': return command_again();
     case 'c': return command_name_item();
-    case 'd': return drop();
+    case 'd': return command_drop();
     case 'e': return command_eat();
     case 'f': return command_attack(false);
     case 'i': return command_show_inventory();

@@ -80,40 +80,6 @@ inv_name(char* buf, THING* obj, bool drop)
   return buf;
 }
 
-bool
-drop(void)
-{
-  coord* player_pos = player_get_pos();
-  char ch = level_get_ch(player_pos->y, player_pos->x);
-
-  if (ch != FLOOR && ch != PASSAGE)
-  {
-    msg("there is something there already");
-    return false;
-  }
-
-  THING* obj = pack_get_item("drop", 0);
-  if (obj == NULL)
-    return false;
-
-  obj = pack_remove(obj, true, !(obj->o_type == POTION ||
-        obj->o_type == SCROLL || obj->o_type == FOOD));
-
-  /* Link it into the level object list */
-  list_attach(&lvl_obj, obj);
-
-  level_set_ch(player_pos->y, player_pos->x, (char)obj->o_type);
-  int flags = level_get_flags(player_pos->y, player_pos->x);
-  flags |= F_DROPPED;
-  level_set_flags(player_pos->y, player_pos->x, (char)flags);
-
-  obj->o_pos = *player_pos;
-
-  char buf[MAXSTR];
-  msg("dropped %s", inv_name(buf, obj, true));
-  return true;
-}
-
 THING*
 new_food(int which)
 {
