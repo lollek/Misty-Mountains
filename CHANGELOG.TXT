@@ -1,3 +1,5 @@
+v1.3.0+
+
 v1.3.0
   Features:
     Can now go up the stairs even without the amulet
