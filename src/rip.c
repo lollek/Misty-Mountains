@@ -33,22 +33,6 @@
 
 #include "rip.h"
 
-static char const* rip[] = {
-"                       __________\n",
-"                      /          \\\n",
-"                     /    REST    \\\n",
-"                    /      IN      \\\n",
-"                   /     PEACE      \\\n",
-"                  /                  \\\n",
-"                  |                  |\n",
-"                  |                  |\n",
-"                  |   killed by a    |\n",
-"                  |                  |\n",
-"                  |       1980       |\n",
-"                 *|     *  *  *      | *\n",
-"         ________)/\\\\_//(\\/(/\\)/\\//\\/|_)_______\n",
-    0
-};
 
 /** center:
  * Return the index to center the given string */
@@ -269,6 +253,22 @@ death(char monst)
 
   move(8, 0);
 
+  char const* rip[] = {
+    "                       __________\n",
+    "                      /          \\\n",
+    "                     /    REST    \\\n",
+    "                    /      IN      \\\n",
+    "                   /     PEACE      \\\n",
+    "                  /                  \\\n",
+    "                  |                  |\n",
+    "                  |                  |\n",
+    "                  |   killed by a    |\n",
+    "                  |                  |\n",
+    "                  |       1980       |\n",
+    "                 *|     *  *  *      | *\n",
+    "         ________)/\\\\_//(\\/(/\\)/\\//\\/|_)_______\n",
+    0
+  };
   char const** dp = rip;
   while (*dp)
     addstr(*dp++);
@@ -299,7 +299,6 @@ void
 total_winner(void)
 {
   clear();
-  standout();
   addstr("                                                               \n");
   addstr("  @   @               @   @           @          @@@  @     @  \n");
   addstr("  @   @               @@ @@           @           @   @     @  \n");
@@ -310,7 +309,6 @@ total_winner(void)
   addstr("   @@@   @@@   @@ @   @   @  @@@@  @@@@  @@@     @@@   @@   @  \n");
   addstr("                                                               \n");
   addstr("     Congratulations, you have made it to the light of day!    \n");
-  standend();
   addstr("\nYou have joined the elite ranks of those who have escaped the\n");
   addstr("Dungeons of Doom alive.  You journey home and sell all your loot at\n");
   addstr("a great profit and are admitted to the Fighters' Guild.\n");
