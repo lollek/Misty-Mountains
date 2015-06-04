@@ -132,11 +132,7 @@ calculate_attacker(THING* attacker, THING* weapon, bool thrown,
 
   /* Venus Flytraps have a different kind of dmg system */
   else if (attacker->o_type == 'F')
-  {
-    memset(mod->damage, 0, sizeof(mod->damage));
     mod->damage[0].sides = vf_hit;
-    mod->damage[0].dices = 1;
-  }
 }
 
 /* Roll attackers attack vs defenders defense and then take damage if it hits
@@ -343,7 +339,9 @@ fight_against_player(THING* mp)
 int
 fight_swing_hits(int at_lvl, int op_arm, int wplus)
 {
-  return at_lvl + wplus + rnd(20) >= op_arm;
+  int rand = rnd(20);
+  /* msg("%d + %d + %d vs %d", at_lvl, wplus, rand, op_arm); */
+  return at_lvl + wplus + rand >= op_arm;
 }
 
 void

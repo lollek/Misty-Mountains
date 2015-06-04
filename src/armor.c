@@ -20,6 +20,7 @@
 #include "things.h"
 #include "options.h"
 #include "os.h"
+#include "player.h"
 #include "rogue.h"
 
 #include "armor.h"
@@ -44,7 +45,7 @@ int armor_probability(enum armor_t i)   { return armors[i].prob; }
 int
 armor_for_thing(THING* thing)
 {
-  return 20 - thing->t_stats.s_arm;
+  return is_player(thing) ? player_get_armor() : 20 - thing->t_stats.s_arm;
 }
 
 bool
