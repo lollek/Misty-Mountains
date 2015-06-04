@@ -256,6 +256,12 @@ daemon_digest_food(void)
   int oldfood = food_left;
   food_left -= ring_drain_amount() + 1 - pack_contains_amulet();
 
+  if (food_left < -STARVETIME) /* Integer overflow */
+  {
+    (void)fail("Food left was: %d Wanted to be: %d\r\n", oldfood, food_left);
+    food_left = oldfood;
+  }
+
   if (food_left < starving_time && oldfood >= starving_time)
   {
     hungry_state = 2;
