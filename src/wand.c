@@ -137,9 +137,7 @@ THING*
 wand_create(int wand)
 {
   THING* new_wand = allocate_new_item();
-
-  new_wand->o_hplus = 0;
-  new_wand->o_dplus = 0;
+  memset(new_wand, 0, sizeof(*new_wand));
 
   memset(new_wand->o_damage, 0, sizeof(new_wand->o_damage));
   new_wand->o_damage[0] = (struct damage){1, 1};
@@ -149,8 +147,6 @@ wand_create(int wand)
 
   new_wand->o_arm = 11;
   new_wand->o_count = 1;
-  new_wand->o_group = 0;
-  new_wand->o_flags = 0;
 
   new_wand->o_type = STICK;
   if (wand < 0 || wand >= MAXSTICKS)
