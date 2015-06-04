@@ -3,11 +3,14 @@ v1.2.9
     Can now go up the stairs even without the amulet
     Can now drop many items of the same type at the same time
 
-  Tweaking:
+  Tweaking/Smaller changes:
     Automatically pick up the amulet
+    Winning screen is no longer inverted
 
   Bugs:
     Fix food not always showing when reading the scroll of foodfinding
+    Teleporting towards a monster now places you right next to it (and not at
+      the exact same spot)
 
 v1.2.8
   Features:

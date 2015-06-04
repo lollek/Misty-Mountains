@@ -415,8 +415,8 @@ wand_zap(void)
       if (tp != NULL)
       {
         coord new_pos;
-        new_pos.y = y;
-        new_pos.x = x;
+        new_pos.y = y - delta.y;
+        new_pos.x = x - delta.x;
 
         tp->t_dest = player_get_pos();
         tp->t_flags |= ISRUN;
