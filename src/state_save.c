@@ -396,11 +396,10 @@ state_save_daemons(struct delayed_action const* d_list, int32_t count)
     else if (d_list[i].d_func == player_remove_true_sight)     func = 8;
     else if (d_list[i].d_func == player_remove_blind)          func = 9;
     else if (d_list[i].d_func == daemon_ring_abilities)        func = 10;
-    else if (d_list[i].d_func == player_remove_confused)       func = 11;
-    else if (d_list[i].d_func == player_remove_sense_monsters) func = 12;
-    else if (d_list[i].d_func == player_remove_hallucinating)  func = 13;
-    else if (d_list[i].d_func == player_stop_levitating)       func = 14;
-    else if (d_list[i].d_func == daemon_change_visuals)        func = 15;
+    else if (d_list[i].d_func == player_remove_sense_monsters) func = 11;
+    else if (d_list[i].d_func == player_remove_hallucinating)  func = 12;
+    else if (d_list[i].d_func == player_stop_levitating)       func = 13;
+    else if (d_list[i].d_func == daemon_change_visuals)        func = 14;
     else
       return fail("state_save_daemons(%p, %d) Unknown Daemon\r\n",
                      d_list, count);

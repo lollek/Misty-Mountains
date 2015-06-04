@@ -328,11 +328,10 @@ rs_read_daemons(struct delayed_action* d_list, int count)
       case 8:    d_list[i].d_func = player_remove_true_sight; break;
       case 9:    d_list[i].d_func = player_remove_blind; break;
       case 10:   d_list[i].d_func = daemon_ring_abilities; break;
-      case 11:   d_list[i].d_func = player_remove_confused; break;
-      case 12:   d_list[i].d_func = player_remove_sense_monsters; break;
-      case 13:   d_list[i].d_func = player_remove_hallucinating; break;
-      case 14:   d_list[i].d_func = player_stop_levitating; break;
-      case 15:   d_list[i].d_func = daemon_change_visuals; break;
+      case 11:   d_list[i].d_func = player_remove_sense_monsters; break;
+      case 12:   d_list[i].d_func = player_remove_hallucinating; break;
+      case 13:   d_list[i].d_func = player_stop_levitating; break;
+      case 14:   d_list[i].d_func = daemon_change_visuals; break;
       default:   msg("Unknown daemon by id %d", func); return 1;
     }
   }
