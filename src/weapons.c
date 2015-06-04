@@ -214,20 +214,11 @@ weapon_create(int which, bool random_stats)
     weap->o_arm = 2;
 
   if (which == DAGGER)
-  {
     weap->o_count = rnd(4) + 2;
-    weap->o_group = group++;
-  }
   else if (weap->o_flags & ISMANY)
-  {
     weap->o_count = rnd(8) + 8;
-    weap->o_group = group++;
-  }
   else
-  {
     weap->o_count = 1;
-    weap->o_group = 0;
-  }
 
   if (random_stats)
   {

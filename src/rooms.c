@@ -36,8 +36,6 @@ typedef struct spot {
 
 static SPOT maze[NUMLINES/3+1][NUMCOLS/3+1];
 
-#define GOLDGRP 1
-
 /* Draw a vertical line */
 static void
 room_draw_vertical_line(struct room* rp, int startx)
@@ -294,7 +292,6 @@ rooms_create(void)
       gold->o_pos = rooms[i].r_gold;
       level_set_ch(rooms[i].r_gold.y, rooms[i].r_gold.x, GOLD);
       gold->o_flags = ISMANY;
-      gold->o_group = GOLDGRP;
       gold->o_type = GOLD;
       list_attach(&lvl_obj, gold);
     }

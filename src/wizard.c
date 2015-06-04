@@ -275,7 +275,6 @@ wizard_levels_and_gear(void)
     obj->o_arm = -5;
     obj->o_flags |= ISKNOW;
     obj->o_count = 1;
-    obj->o_group = 0;
     pack_equip_item(obj);
   }
 }

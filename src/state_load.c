@@ -408,7 +408,6 @@ rs_read_object(THING* o)
       state_load_int32(&o->_o._o_dplus) ||
       state_load_int32(&o->_o._o_arm) ||
       state_load_int32(&o->_o._o_flags) ||
-      state_load_int32(&o->_o._o_group) ||
       state_load_string(&o->_o._o_label))
     return fail("rs_read_obj(%p)\r\n", o);
   return 0;

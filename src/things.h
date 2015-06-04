@@ -69,7 +69,6 @@ typedef union thing {
     int           _o_dplus;               /* Plusses to damage */
     int           _o_arm;                 /* Armor protection */
     int           _o_flags;               /* information about objects */
-    int           _o_group;               /* group number for this object */
     char          _o_packch;              /* What character it is in the pack */
     struct damage _o_damage[MAXATTACKS];  /* Damage if used like sword */
     struct damage _o_hurldmg[MAXATTACKS]; /* Damage if thrown */
@@ -105,7 +104,6 @@ typedef union thing {
 #define o_charges	o_arm
 #define o_goldval	o_arm
 #define o_flags		_o._o_flags
-#define o_group		_o._o_group
 #define o_label		_o._o_label
 
 /* flags for objects */

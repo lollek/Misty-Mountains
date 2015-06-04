@@ -288,7 +288,6 @@ state_save_object(THING const* o)
     state_save_int32(o->_o._o_dplus) ||
     state_save_int32(o->_o._o_arm) ||
     state_save_int32(o->_o._o_flags) ||
-    state_save_int32(o->_o._o_group) ||
     state_save_string(o->_o._o_label)
 
     ? fail("state_save_object(%p)\r\n", o)
