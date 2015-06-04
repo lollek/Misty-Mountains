@@ -587,6 +587,7 @@ bool command_drop(void)
   {
     msg("Drop all? (y/N) ");
     drop_all = readchar(true) == 'y';
+    clearmsg();
   }
 
   obj = pack_remove(obj, true, drop_all);
