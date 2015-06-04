@@ -1,5 +1,6 @@
 v1.3.0+
   Tweaking:
+    Monsters no longer get extremely strong after level ~30
     Scrolls of hold monster now holds all nearby monster, even if they are not
     chasing you
 

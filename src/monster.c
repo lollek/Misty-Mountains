@@ -186,10 +186,6 @@ monster_xp_worth(THING* tp)
 void
 monster_new(THING* monster, char type, coord* pos)
 {
-  int lev_add = level - AMULETLEVEL;
-  if (lev_add < 0)
-    lev_add = 0;
-
   list_attach(&mlist, monster);
   monster->t_type       = type;
   monster->t_disguise   = type;
@@ -201,21 +197,18 @@ monster_new(THING* monster, char type, coord* pos)
   struct stats const* template = &monsters[monster->t_type - 'A'].m_stats;
   struct stats* new_stats = &monster->t_stats;
 
-  new_stats->s_lvl   = template->s_lvl + lev_add;
+  new_stats->s_lvl   = template->s_lvl;
   new_stats->s_hpt   = roll(monster->t_stats.s_lvl, 8);
   new_stats->s_maxhp = monster->t_stats.s_hpt;
-  new_stats->s_arm   = template->s_arm - lev_add;
+  new_stats->s_arm   = template->s_arm;
   new_stats->s_str   = template->s_str;
-  new_stats->s_exp   = template->s_exp + lev_add*10 + monster_xp_worth(monster);
+  new_stats->s_exp   = template->s_exp + monster_xp_worth(monster);
   assert(sizeof(new_stats->s_dmg) == sizeof(template->s_dmg));
   memcpy(new_stats->s_dmg, template->s_dmg, sizeof(template->s_dmg));
 
   monster->t_turn          = true;
   monster->t_pack          = NULL;
   monster->t_flags         = monsters[monster->t_type - 'A'].m_flags;
-
-  if (level > 29)
-    monster->t_flags |= ISHASTE;
 
   if (player_has_ring_with_ability(R_AGGR))
     monster_start_running(pos);
