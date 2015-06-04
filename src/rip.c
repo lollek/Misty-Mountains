@@ -66,7 +66,7 @@ killname(char buf[], char monst, bool doart)
   char const* sp;
   bool article = true;
   if (isupper(monst))
-    sp = monsters[monst-'A'].m_name;
+    sp = monster_name_by_type(monst);
 
   else
   {

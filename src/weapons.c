@@ -113,7 +113,10 @@ missile(int ydelta, int xdelta)
   if (obj->o_which == ARROW && (weapon == NULL || weapon->o_which != BOW))
   {
     if (monster_at_pos && !to_death)
-      fight_missile_miss(obj, set_mname(monster_at_pos));
+    {
+      char buf[MAXSTR];
+      fight_missile_miss(obj, monster_name(monster_at_pos, buf));
+    }
     fall(obj, true);
     return true;
   }

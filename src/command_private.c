@@ -193,7 +193,7 @@ command_identify_character(void)
   if (isalpha(ch))
   {
     ch = toupper(ch);
-    msg("'%s': %s", unctrl((chtype)ch), monsters[ch - 'A'].m_name);
+    msg("'%s': %s", unctrl((chtype)ch), monster_name_by_type((char)ch));
     return false;
   }
 

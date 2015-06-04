@@ -240,7 +240,8 @@ wand_spell_drain_health(void)
     else
     {
       monster_start_running(&mp->t_pos);
-      msg("%s screams in pain", set_mname(mp));
+      char buf[MAXSTR];
+      msg("%s screams in pain", monster_name(mp, buf));
     }
   }
 }
@@ -265,7 +266,8 @@ wand_spell_polymorph(THING* target)
   if (was_seen)
   {
     mvaddcch(pos.y, pos.x, level_get_ch(pos.y, pos.x));
-    addmsg("%s", set_mname(target));
+    char buf[MAXSTR];
+    addmsg("%s", monster_name(target, buf));
   }
 
   char oldch = target->t_oldch;
@@ -280,7 +282,10 @@ wand_spell_polymorph(THING* target)
     if (same_monster)
       msg(" now looks a bit different");
     else
-      msg(" turned into a %s", set_mname(target));
+    {
+      char buf[MAXSTR];
+      msg(" turned into a %s", monster_name(target, buf));
+    }
   }
   else if (was_seen)
     msg(" disappeared");
@@ -329,7 +334,10 @@ wand_spell_magic_missile(int dy, int dx)
   if (target == NULL)
     msg("the missle vanishes with a puff of smoke");
   else if (monster_save_throw(VS_MAGIC, target))
-    msg("the missle missed the %s", set_mname(target));
+  {
+    char buf[MAXSTR];
+    msg("the missle missed the %s", monster_name(target, buf));
+  }
   else
     fight_against_monster(&bolt.o_pos, &bolt, true);
 }
@@ -443,7 +451,8 @@ wand_zap(void)
           else
             tp->t_flags |= ISHASTE;
           monster_start_running(&c);
-          msg("%s became faster", set_mname(tp));
+          char buf[MAXSTR];
+          msg("%s became faster", monster_name(tp, buf));
         }
         else
           msg("You did not hit anything");
@@ -462,7 +471,8 @@ wand_zap(void)
             tp->t_flags |= ISSLOW;
           tp->t_turn = true;
           monster_start_running(&c);
-          msg("%s became slower", set_mname(tp));
+          char buf[MAXSTR];
+          msg("%s became slower", monster_name(tp, buf));
         }
         else
           msg("You did not hit anything");
@@ -603,7 +613,10 @@ fire_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
     if (start == player_get_pos())
       monster_start_running(pos);
     else
-      msg("the %s whizzes past %s", missile_name, set_mname(mon));
+    {
+      char buf[MAXSTR];
+      msg("the %s whizzes past %s", missile_name, monster_name(mon, buf));
+    }
   }
 }
 

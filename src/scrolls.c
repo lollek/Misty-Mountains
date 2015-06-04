@@ -214,7 +214,10 @@ hold_monsters(void)
         }
 
   if (monsters_affected == 1)
-    msg("%s freezes", set_mname(held_monster));
+  {
+    char buf[MAXSTR];
+    msg("%s freezes", monster_name(held_monster, buf));
+  }
   else if (monsters_affected > 1)
     msg("the monsters around you freeze");
   else /* monsters_affected == 0 */
@@ -259,9 +262,10 @@ create_monster(void)
     }
   else
   {
+    char buf[MAXSTR];
     THING *obj = allocate_new_item();
     monster_new(obj, monster_random(false), &mp);
-    msg("A %s appears out of thin air", monsters[obj->t_type - 'A'].m_name);
+    msg("A %s appears out of thin air", monster_name(obj, buf));
   }
 
   return i;

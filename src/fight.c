@@ -238,7 +238,9 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
           return false;
   }
 
-  char const* mname = set_mname(tp);
+  char mname[MAXSTR];
+  monster_name(tp, mname);
+
   if (roll_attacks(player, tp, weapon, thrown))
   {
     if (tp->t_stats.s_hpt <= 0)
@@ -304,7 +306,8 @@ fight_against_player(THING* mp)
       && !player_is_hallucinating())
     mp->t_disguise = 'X';
 
-  char const* mname = set_mname(mp);
+  char mname[MAXSTR];
+  monster_name(mp, mname);
 
   if (roll_attacks(mp, NULL, NULL, false))
   {

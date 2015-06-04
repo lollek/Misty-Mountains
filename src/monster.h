@@ -5,16 +5,7 @@
 
 #include "rogue.h"
 
-/* Array containing information on all the various types of monsters */
-struct monster {
-    char const* m_name;			/* What to call the monster */
-    int m_carry;			/* Probability of carrying something */
-    short m_flags;			/* things about the monster */
-    struct stats m_stats;		/* Initial stats */
-};
-
 /* Variables, TODO: Remove these */
-extern struct monster monsters[];
 extern THING* mlist;  /* List of monsters on the level */
 extern int vf_hit;
 
@@ -97,6 +88,9 @@ bool monster_is_dead(THING const* monster);
 void monster_teleport(THING* monster, coord const* destination);
 
 void monster_do_special_ability(THING** monster);
+
+char const* monster_name(THING const* tp, char* buf);
+char const* monster_name_by_type(char monster_type);
 
 /** monster_chase.c **/
 bool monster_chase(THING* tp); /* Make a monster chase */

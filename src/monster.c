@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <assert.h>
 
 #include "io.h"
@@ -37,7 +38,9 @@
 
 int vf_hit = 0; /* Number of time flytrap has hit */
 THING* mlist = NULL;
-struct monster monsters[26] =
+
+#define NMONSTERS sizeof(monsters) / sizeof(*monsters)
+struct monster monsters[] =
 {
   /* Name            CARRY FLAG
    * str,exp, lvl, amr, hpt, dmg,     maxhp */
@@ -170,7 +173,8 @@ void monster_set_invisible(THING* mon)
   mon->t_flags |= ISINVIS;
   if (cansee(mon->t_pos.y, mon->t_pos.x))
   {
-    msg("%s disappeared", set_mname(mon));
+    char buf[MAXSTR];
+    msg("%s disappeared", monster_name(mon, buf));
     mvaddcch(mon->t_pos.y, mon->t_pos.x, mon->t_oldch);
   }
 }
@@ -326,8 +330,8 @@ monster_notice_player(int y, int x)
       monster_set_found(monster);
       if (!player_save_throw(VS_MAGIC))
       {
-        char const* mname = set_mname(monster);
-        msg("%s's gaze has confused you", mname);
+        char buf[MAXSTR];
+        msg("%s's gaze has confused you", monster_name(monster, buf));
         player_set_confused(false);
       }
     }
@@ -401,7 +405,8 @@ monster_on_death(THING* monster, bool pr)
   }
 
   /* Get rid of the monster. */
-  char const* mname = set_mname(monster);
+  char mname[MAXSTR];
+  monster_name(monster, mname);
   monster_remove_from_screen(&monster->t_pos, monster, true);
   if (pr)
     msg("you have slain %s", mname);
@@ -512,7 +517,10 @@ monster_do_special_ability(THING** monster)
     case 'I':
       player_stop_running();
       if (!no_command)
-        msg("you are frozen by the %s", set_mname(*monster));
+      {
+        char buf[MAXSTR];
+        msg("you are frozen by the %s", monster_name(*monster, buf));
+      }
       no_command += rnd(2) + 2;
       if (no_command > 50)
         death('h');
@@ -588,4 +596,38 @@ monster_do_special_ability(THING** monster)
 
     default: return;
   }
+}
+
+char const*
+monster_name(THING const* monster, char* buf)
+{
+  assert(monster != NULL);
+  assert(buf != NULL);
+
+  if (!see_monst(monster) && !player_can_sense_monsters())
+    strcpy(buf, "something");
+
+  else if (player_is_hallucinating())
+  {
+    int ch = mvincch(monster->t_pos.y, monster->t_pos.x);
+    if (!isupper(ch))
+      ch = rnd(NMONSTERS);
+    else
+      ch -= 'A';
+
+    sprintf(buf, "the %s", monster_name_by_type((char)ch));
+  }
+
+  else
+    sprintf(buf, "the %s", monster_name_by_type(monster->t_type));
+
+  return buf;
+}
+
+char const*
+monster_name_by_type(char monster_type)
+{
+  assert(monster_type >= 'A');
+  assert(monster_type < 'A' + NMONSTERS);
+  return monsters[monster_type - 'A'].m_name;
 }

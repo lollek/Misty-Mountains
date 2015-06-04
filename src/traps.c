@@ -45,7 +45,10 @@ trap_door_monster(THING* victim)
   assert_monster(victim);
 
   if (see_monst(victim))
-    msg("%s fell through the floor", set_mname(victim));
+  {
+    char buf[MAXSTR];
+    msg("%s fell through the floor", monster_name(victim, buf));
+  }
   monster_remove_from_screen(&victim->t_pos, victim, false);
   return T_DOOR;
 }
@@ -64,7 +67,10 @@ trap_bear_monster(THING* victim)
   assert_monster(victim);
 
   if (see_monst(victim))
-    msg("%s was caught in a bear trap", set_mname(victim));
+  {
+    char buf[MAXSTR];
+    msg("%s was caught in a bear trap", monster_name(victim, buf));
+  }
   monster_become_stuck(victim);
   return T_BEAR;
 }
@@ -95,7 +101,10 @@ trap_myst_monster(THING* victim)
   assert_monster(victim);
 
   if (see_monst(victim))
-    msg("%s seems to have stepped on something", set_mname(victim));
+  {
+    char buf[MAXSTR];
+    msg("%s seems to have stepped on something", monster_name(victim, buf));
+  }
   return T_MYST;
 }
 
@@ -113,7 +122,10 @@ trap_sleep_monster(THING* victim)
   assert_monster(victim);
 
   if (see_monst(victim))
-    msg("%s collapsed to the ground", set_mname(victim));
+  {
+    char buf[MAXSTR];
+    msg("%s collapsed to the ground", monster_name(victim, buf));
+  }
   monster_become_held(victim);
   return T_SLEEP;
 }
@@ -146,6 +158,7 @@ trap_arrow_player(void)
 static enum trap_t
 trap_arrow_monster(THING* victim)
 {
+  char buf[MAXSTR];
   assert_monster(victim);
 
   if (fight_swing_hits(victim->t_stats.s_lvl -1, armor_for_thing(victim), 1))
@@ -155,10 +168,10 @@ trap_arrow_monster(THING* victim)
     {
       monster_on_death(victim, false);
       if (see_monst(victim))
-        msg("An arrow killed %s", set_mname(victim));
+        msg("An arrow killed %s", monster_name(victim, buf));
     }
     else if (see_monst(victim))
-      msg("An arrow shot %s", set_mname(victim));
+      msg("An arrow shot %s", monster_name(victim, buf));
   }
   else
   {
@@ -167,7 +180,7 @@ trap_arrow_monster(THING* victim)
     arrow->o_pos = victim->t_pos;
     fall(arrow, false);
     if (see_monst(victim))
-      msg("An arrow barely missed %s", set_mname(victim));
+      msg("An arrow barely missed %s", monster_name(victim, buf));
   }
   return T_ARROW;
 }
@@ -187,7 +200,10 @@ trap_telep_monster(THING* victim)
 
   bool was_seen = see_monst(victim);
   if (was_seen)
-    addmsg("%s ", set_mname(victim));
+  {
+    char buf[MAXSTR];
+    addmsg("%s ", monster_name(victim, buf));
+  }
 
   monster_teleport(victim, NULL);
   if (was_seen)
@@ -199,7 +215,10 @@ trap_telep_monster(THING* victim)
   }
 
   if (!was_seen && see_monst(victim))
-    msg("%s appeared out of thin air", set_mname(victim));
+  {
+    char buf[MAXSTR];
+    msg("%s appeared out of thin air", monster_name(victim, buf));
+  }
 
   return T_TELEP;
 }
@@ -237,13 +256,22 @@ trap_dart_monster(THING* victim)
     {
       monster_on_death(victim, false);
       if (see_monst(victim))
-        msg("A poisoned dart killed %s", set_mname(victim));
+      {
+        char buf[MAXSTR];
+        msg("A poisoned dart killed %s", monster_name(victim, buf));
+      }
     }
     else if (see_monst(victim))
-      msg("An dart hit %s", set_mname(victim));
+    {
+      char buf[MAXSTR];
+      msg("An dart hit %s", monster_name(victim, buf));
+    }
   }
   else if (see_monst(victim))
-    msg("A dart barely missed %s", set_mname(victim));
+  {
+    char buf[MAXSTR];
+    msg("A dart barely missed %s", monster_name(victim, buf));
+  }
   return T_DART;
 }
 
@@ -261,7 +289,10 @@ trap_rust_monster(THING* victim)
   assert_monster(victim);
 
   if (see_monst(victim))
-    msg("a gush of water hits %s", set_mname(victim));
+  {
+    char buf[MAXSTR];
+    msg("a gush of water hits %s", monster_name(victim, buf));
+  }
   return T_RUST;
 }
 

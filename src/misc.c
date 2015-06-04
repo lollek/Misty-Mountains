@@ -482,7 +482,7 @@ set_oldch(THING* tp, coord* cp)
 }
 
 bool
-see_monst(THING* monster)
+see_monst(THING const* monster)
 {
   coord const* player_pos = player_get_pos();
   int monster_y = monster->t_pos.y;
@@ -572,31 +572,6 @@ int
 dist(int y1, int x1, int y2, int x2)
 {
     return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-}
-
-char const*
-set_mname(THING *tp)
-{
-  char const* mname;
-  static char tbuf[MAXSTR] = { 't', 'h', 'e', ' ' };
-
-  if (!see_monst(tp) && !player_can_sense_monsters())
-    return "something";
-
-  else if (player_is_hallucinating())
-  {
-    int ch = mvincch(tp->t_pos.y, tp->t_pos.x);
-    if (!isupper(ch))
-      ch = rnd(26);
-    else
-      ch -= 'A';
-    mname = monsters[ch].m_name;
-  }
-  else
-    mname = monsters[tp->t_type - 'A'].m_name;
-
-  strcpy(&tbuf[4], mname);
-  return tbuf;
 }
 
 const char *

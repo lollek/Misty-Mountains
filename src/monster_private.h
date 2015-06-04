@@ -4,6 +4,15 @@
 #include "coord.h"
 #include "things.h"
 
+struct monster {
+    char const* m_name;   /* What to call the monster */
+    int m_carry;          /* Probability of carrying something */
+    short m_flags;        /* things about the monster */
+    struct stats m_stats; /* Initial stats */
+};
+
+extern struct monster monsters[26];
+
 /* Find proper destination for monster */
 void monster_find_new_target(THING* tp);
 

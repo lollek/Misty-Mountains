@@ -36,7 +36,7 @@ void strucpy(char* s1, char const* s2, int len);
 
 void waste_time(int rounds);
 void set_oldch(THING* tp, coord* cp); /* Set oldch for a monster */
-bool see_monst(THING* mp);            /* Can player see the monster? */
+bool see_monst(THING const* mp);            /* Can player see the monster? */
 
 struct room* roomin(coord* cp); /* Find what room some coords are in, NULL means no room */
 bool diag_ok(coord const* sp, coord const* ep); /* Check if move is legal if diagonal */
@@ -47,7 +47,7 @@ bool cansee(int y, int x); /* True if player can see coord */
  * our purposes, since it's only used comparitively. */
 int dist(int y1, int x1, int y2, int x2);
 #define dist_cp(_1, _2) dist((_1)->y, (_1)->x, (_2)->y, (_2)->x)
-char const* set_mname(THING* tp); /* return the monster name for the given monster */
+
 const char *pick_color(const char *col); /* Return given color (or random if hallucinating) */
 char floor_ch(void); /* Floor-type at hero's position */
 char floor_at(void); /* Return the character at hero's position */
