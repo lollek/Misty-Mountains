@@ -197,22 +197,24 @@ hold_monsters(void)
 {
   coord *player_pos = player_get_pos();
   int monsters_affected = 0;
+  THING* held_monster = NULL;
 
   for (int x = player_pos->x - 2; x <= player_pos->x + 2; x++)
     if (x >= 0 && x < NUMCOLS)
       for (int y = player_pos->y - 2; y <= player_pos->y + 2; y++)
         if (y >= 0 && y <= NUMLINES - 1)
         {
-          THING* monster = level_get_monster(y, x);
-          if (monster != NULL && monster_is_chasing(monster))
+          THING *monster = level_get_monster(y, x);
+          if (monster != NULL)
           {
             monster_become_held(monster);
             monsters_affected++;
+            held_monster = monster;
           }
         }
 
   if (monsters_affected == 1)
-    msg("the monster freezes");
+    msg("%s freezes", set_mname(held_monster));
   else if (monsters_affected > 1)
     msg("the monsters around you freeze");
   else /* monsters_affected == 0 */

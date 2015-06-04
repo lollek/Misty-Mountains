@@ -1,4 +1,7 @@
 v1.3.0+
+  Tweaking:
+    Scrolls of hold monster now holds all nearby monster, even if they are not
+    chasing you
   Bugs:
     Fix bug where player's AC was never calculated
 
