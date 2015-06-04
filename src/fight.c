@@ -153,9 +153,9 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
 
   calculate_attacker(attacker, weapon, thrown, &mod);
 
-  /* If attacked creature is not running (asleep or held)
-   * the attacker gets a bonus to hit */
-  if (!monster_is_chasing(defender))
+  /* If defender is stuck in some way,the attacker gets a bonus to hit */
+  if ((is_player(defender) && no_command) || monster_is_held(defender)
+      || monster_is_stuck(defender))
     mod.to_hit += 4;
 
   assert(mod.damage[0].sides != -1 && mod.damage[0].dices != -1);
@@ -228,7 +228,6 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
   /* Since we are fighting, things are not quiet so no healing takes place */
   command_stop(false);
   daemon_reset_doctor();
-  monster_start_running(monster_pos);
 
   /* Let him know it was really a xeroc (if it was one) */
   if (tp->t_type == 'X' && tp->t_disguise != 'X' && !player_is_blind())
@@ -273,8 +272,10 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
       }
     }
 
+    monster_start_running(monster_pos);
     return true;
   }
+  monster_start_running(monster_pos);
 
   if (thrown && !to_death)
     fight_missile_miss(weapon, mname);
