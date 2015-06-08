@@ -40,7 +40,7 @@ int vf_hit = 0; /* Number of time flytrap has hit */
 THING* mlist = NULL;
 
 #define NMONSTERS sizeof(monsters) / sizeof(*monsters)
-struct monster monsters[] =
+struct monster_template monsters[] =
 {
   /* Name        CARRY  FLAG                   exp lvl  amr  dmg              */
   { "aquator",       0, ISMEAN,                 20,  5,  18, {{0,1}}},
@@ -198,7 +198,7 @@ monster_new(THING* monster, char type, coord* pos)
   monster->t_room       = roomin(pos);
   level_set_monster(pos->y, pos->x, monster);
 
-  struct monster const* template = &monsters[monster->t_type - 'A'];
+  struct monster_template const* template = &monsters[monster->t_type - 'A'];
   struct stats* new_stats = &monster->t_stats;
 
   new_stats->s_lvl   = template->m_level;
