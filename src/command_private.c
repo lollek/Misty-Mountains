@@ -26,7 +26,7 @@
 
 #include "command_private.h"
 
-static bool command_attack_bow(coord* delta)
+static bool command_attack_bow(coord const* delta)
 {
   THING* ptr = pack_find_arrow();
 
@@ -120,20 +120,19 @@ command_use_stairs(char up_or_down)
 bool
 command_attack(bool fight_to_death)
 {
-  coord const* _dir = get_dir();
-  if (_dir == NULL)
+  coord const* dir = get_dir();
+  if (dir == NULL)
     return false;
 
-  coord dir = *_dir;
   coord delta = {
-    .y = player_y() + dir.y,
-    .x = player_x() + dir.x
+    .y = player_y() + dir->y,
+    .x = player_x() + dir->x
   };
 
   THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
   return weapon != NULL && weapon->o_which == BOW
-    ? command_attack_bow(&dir)
+    ? command_attack_bow(dir)
     : command_attack_melee(fight_to_death, &delta);
 }
 
