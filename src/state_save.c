@@ -533,7 +533,6 @@ state_save_file(FILE* savef)
   rs_assert(state_save_obj_info(pot_info,  NPOTIONS))
   rs_assert(state_save_obj_info(ring_info,  NRINGS))
   rs_assert(state_save_daemons(__daemons_ptr(), 20))
-  rs_assert(state_save_int32(group))
   rs_assert(state_save_window(stdscr))
 
   state_save_int32(RSID_END);

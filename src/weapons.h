@@ -21,7 +21,6 @@ enum weapon_type
 #define FLAME MAXWEAPONS /* fake entry for dragon breath (ick) */
 
 /* TODO: Remove vars */
-extern int group; /* I think this is related to inventory sorting? */
 extern struct obj_info weap_info[MAXWEAPONS +1];
 
 bool weapons_save_state(void);

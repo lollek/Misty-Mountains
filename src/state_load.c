@@ -670,7 +670,6 @@ state_load_file(FILE* inf)
   rs_assert(state_load_obj_info(pot_info,  NPOTIONS))
   rs_assert(state_load_obj_info(ring_info,  NRINGS))
   rs_assert(rs_read_daemons(__daemons_ptr(), 20))
-  rs_assert(state_load_int32(&group))
   rs_assert(rs_read_window(stdscr))
 
   rs_assert(state_assert_int32(RSID_END))
