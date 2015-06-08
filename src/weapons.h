@@ -27,9 +27,6 @@ extern struct obj_info weap_info[MAXWEAPONS +1];
 bool weapons_save_state(void);
 bool weapons_load_state(void);
 
-/* Fire a missile in a given direction */
-bool missile(int ydelta, int xdelta);
-
 /* Do the actual motion on the screen done by an object traveling
  * across the room */
 void do_motion(THING* obj, int ydelta, int xdelta);

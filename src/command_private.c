@@ -491,7 +491,47 @@ command_take_off(enum equipment_pos pos)
 bool command_throw(void)
 {
   const coord* dir = get_dir();
-  return dir == NULL ? false : missile(dir->y, dir->x);
+  if (dir == NULL)
+    return false;
+
+  int ydelta = dir->y;
+  int xdelta = dir->x;
+  dir = NULL;
+
+  THING* obj = pack_get_item("throw", 0);
+  if (obj == NULL)
+    return false;
+
+  if (obj->o_type == ARMOR)
+  {
+    msg("you can't throw armor");
+    return false;
+  }
+
+  obj = pack_remove(obj, true, false);
+  do_motion(obj, ydelta, xdelta);
+  THING* monster_at_pos = level_get_monster(obj->o_pos.y, obj->o_pos.x);
+
+  /* Throwing an arrow always misses */
+  if (obj->o_which == ARROW)
+  {
+    if (monster_at_pos && !to_death)
+    {
+      char buf[MAXSTR];
+      fight_missile_miss(obj, monster_name(monster_at_pos, buf));
+    }
+    fall(obj, true);
+    return true;
+  }
+  /* AHA! Here it has hit something.  If it is a wall or a door,
+   * or if it misses (combat) the monster, put it on the floor */
+  else if (monster_at_pos == NULL ||
+      !fight_against_monster(&obj->o_pos, obj, true))
+    fall(obj, true);
+
+  return true;
+
+
 }
 
 bool
