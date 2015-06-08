@@ -78,5 +78,6 @@ bool pack_item_is_cursed(THING const* item);
 void pack_curse_item(THING* item);
 void pack_uncurse_item(THING* item);
 
+THING* pack_find_arrow(void); /* Return arrow in pack or NULL */
 
 #endif /* _ROGUE14_PACK_H_ */

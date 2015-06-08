@@ -21,9 +21,55 @@
 #include "rip.h"
 #include "daemons.h"
 #include "move.h"
+#include "fight.h"
 #include "rogue.h"
 
 #include "command_private.h"
+
+static bool command_attack_bow(coord* delta)
+{
+  THING* ptr = pack_find_arrow();
+
+  if (ptr == NULL)
+  {
+    msg("you've run out of arrows!");
+    return true;
+  }
+
+  THING* arrow = pack_remove(ptr, true, false);
+  do_motion(arrow, delta->y, delta->x);
+  THING* monster_at_pos = level_get_monster(arrow->o_pos.y, arrow->o_pos.x);
+
+  if (monster_at_pos == NULL || !fight_against_monster(&arrow->o_pos, arrow, true))
+    fall(arrow, true);
+
+  return true;
+}
+
+static bool command_attack_melee(bool fight_to_death, coord* delta)
+{
+  THING* mp = level_get_monster(delta->y, delta->x);
+  if (mp != NULL && diag_ok(player_get_pos(), delta))
+  {
+    if (fight_to_death)
+    {
+      kamikaze = to_death = true;
+      mp->t_flags |= ISTARGET;
+    }
+    runch = dir_ch;
+    return command_do(dir_ch);
+  }
+
+  char const* what;
+  switch (mvincch(delta->y, delta->x))
+  {
+    case SHADOW: case HWALL: case VWALL: what = "wall"; break;
+    default: what = "air"; break;
+  }
+
+  msg("you swing at the %s", what);
+  return true;
+}
 
 bool
 command_use_stairs(char up_or_down)
@@ -74,35 +120,21 @@ command_use_stairs(char up_or_down)
 bool
 command_attack(bool fight_to_death)
 {
-  const coord* dir = get_dir();
-  coord* player_pos = player_get_pos();
-
-  if (dir == NULL)
+  coord const* _dir = get_dir();
+  if (_dir == NULL)
     return false;
 
+  coord dir = *_dir;
   coord delta = {
-    .y = player_pos->y + dir->y,
-    .x = player_pos->x + dir->x
+    .y = player_y() + dir.y,
+    .x = player_x() + dir.x
   };
 
-  kamikaze = fight_to_death;
+  THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
-  THING* mp = level_get_monster(delta.y, delta.x);
-  if (mp == NULL
-      || (!monster_seen_by_player(mp) && !player_can_sense_monsters()))
-  {
-    msg("no monster there");
-    return false;
-  }
-  else if (diag_ok(player_pos, &delta))
-  {
-    to_death = true;
-    mp->t_flags |= ISTARGET;
-    runch = dir_ch;
-    return command_do(dir_ch);
-  }
-  else
-    return true;
+  return weapon != NULL && weapon->o_which == BOW
+    ? command_attack_bow(&dir)
+    : command_attack_melee(fight_to_death, &delta);
 }
 
 bool
@@ -287,67 +319,66 @@ command_help(void)
     char *description;
     bool print;
   } const helpstr[] = {
-    {'?',	"	prints help",				true},
+    {',',	"	pick something up",			true},
+    {'.',	"	rest for a turn",			true},
     {'/',	"	identify object",			true},
-    {'h',	"	left",					true},
-    {'j',	"	down",					true},
-    {'k',	"	up",					true},
-    {'l',	"	right",					true},
-    {'y',	"	up & left",				true},
-    {'u',	"	up & right",				true},
-    {'b',	"	down & left",				true},
-    {'n',	"	down & right",				true},
+    {'<',	"	go up a staircase",			true},
+    {'>',	"	go down a staircase",			true},
+    {'?',	"	prints help",				true},
+    {'A',	"	attack till either of you dies",	true},
+    {'B',	"	run down & left",			false},
+    {'D',	"	recall what's been discovered",		true},
     {'H',	"	run left",				false},
+    {'I',	"	equipment",				true},
     {'J',	"	run down",				false},
     {'K',	"	run up",				false},
     {'L',	"	run right",				false},
-    {'Y',	"	run up & left",				false},
-    {'U',	"	run up & right",			false},
-    {'B',	"	run down & left",			false},
     {'N',	"	run down & right",			false},
+    {'P',	"	put on ring",				true},
+    {'Q',	"	quit",					true},
+    {'R',	"	remove ring",				true},
+    {'S',	"	save game",				true},
+    {'T',	"	take armor off",			true},
+    {'U',	"	run up & right",			false},
+    {'W',	"	wear armor",				true},
+    {'Y',	"	run up & left",				false},
+    {'Z',	"	rest until healed",			true},
+    {'\0',	"	<CTRL><dir>: run till adjacent",	true},
+    {'\0',	"	<SHIFT><dir>: run that way",		true},
+    {'^',	"	identify trap type",			true},
+    {'a',	"	attack in a direction",			true},
+    {'b',	"	down & left",				true},
+    {'c',	"	call object",				true},
+    {'d',	"	drop object",				true},
+    {'e',	"	eat food",				true},
+    {'h',	"	left",					true},
+    {'i',	"	inventory",				true},
+    {'j',	"	down",					true},
+    {'k',	"	up",					true},
+    {'l',	"	right",					true},
+    {'n',	"	down & right",				true},
+    {'o',	"	examine/set options",			true},
+    {'q',	"	quaff potion",				true},
+    {'r',	"	read scroll",				true},
+    {'s',	"	search for trap/secret door",		true},
+    {'t',	"	throw something",			true},
+    {'u',	"	up & right",				true},
+    {'w',	"	wield a weapon",			true},
+    {'x',	"	wield last used weapon",		true},
+    {'y',	"	up & left",				true},
+    {'z',	"	zap a wand in a direction",		true},
+    {CTRL('B'),	"	run down & left until adjacent",	false},
     {CTRL('H'),	"	run left until adjacent",		false},
     {CTRL('J'),	"	run down until adjacent",		false},
     {CTRL('K'),	"	run up until adjacent",			false},
     {CTRL('L'),	"	run right until adjacent",		false},
-    {CTRL('Y'),	"	run up & left until adjacent",		false},
-    {CTRL('U'),	"	run up & right until adjacent",		false},
-    {CTRL('B'),	"	run down & left until adjacent",	false},
     {CTRL('N'),	"	run down & right until adjacent",	false},
-    {'\0',	"	<SHIFT><dir>: run that way",		true},
-    {'\0',	"	<CTRL><dir>: run till adjacent",	true},
-    {'f',	"	fight till death or near death",	true},
-    {'t',	"	throw something",			true},
-    {'z',	"	zap a wand in a direction",		true},
-    {'^',	"	identify trap type",			true},
-    {'s',	"	search for trap/secret door",		true},
-    {'>',	"	go down a staircase",			true},
-    {'<',	"	go up a staircase",			true},
-    {'.',	"	rest for a turn",			true},
-    {'Z',	"	rest until healed",			true},
-    {',',	"	pick something up",			true},
-    {'i',	"	inventory",				true},
-    {'I',	"	equipment",				true},
-    {'q',	"	quaff potion",				true},
-    {'r',	"	read scroll",				true},
-    {'e',	"	eat food",				true},
-    {'w',	"	wield a weapon",			true},
-    {'x',	"	wield last used weapon",		true},
-    {'W',	"	wear armor",				true},
-    {'T',	"	take armor off",			true},
-    {'P',	"	put on ring",				true},
-    {'R',	"	remove ring",				true},
-    {'d',	"	drop object",				true},
-    {'c',	"	call object",				true},
-    {'a',	"	repeat last command",			true},
-    {'D',	"	recall what's been discovered",		true},
-    {'o',	"	examine/set options",			true},
-    {CTRL('R'),	"	redraw screen",				true},
     {CTRL('P'),	"	repeat last message",			true},
-    {KEY_ESCAPE,"	cancel command",			true},
-    {'S',	"	save game",				true},
-    {'Q',	"	quit",					true},
+    {CTRL('R'),	"	redraw screen",				true},
+    {CTRL('U'),	"	run up & right until adjacent",		false},
+    {CTRL('Y'),	"	run up & left until adjacent",		false},
     {CTRL('Z'),	"	shell escape",				true},
-    {'F',	"	fight till either of you dies",		true},
+    {KEY_ESCAPE,"	cancel command",			true},
   };
   int const helpstrsize = sizeof(helpstr) / sizeof(*helpstr);
 
@@ -409,18 +440,6 @@ command_help(void)
   wrefresh(stdscr);
   return false;
 }
-
-bool
-command_again(void)
-{
-  if (last_comm != '\0')
-  {
-    again = true;
-    return command_do(last_comm);
-  }
-  return false;
-}
-
 
 /* Let them escape for a while */
 void

@@ -155,11 +155,10 @@ command_do(char ch)
     case 'h': case 'j': case 'k': case 'l':
     case 'y': case 'u': case 'b': case 'n':
       return move_do(ch);
-    case 'a': return command_again();
+    case 'a': return command_attack(false);
     case 'c': return command_name_item();
     case 'd': return command_drop();
     case 'e': return command_eat();
-    case 'f': return command_attack(false);
     case 'i': return command_show_inventory();
     case 'o': return option();
     case 'q': return potion_quaff_something();
@@ -174,8 +173,8 @@ command_do(char ch)
     case 'H': case 'J': case 'K': case 'L':
     case 'Y': case 'U': case 'B': case 'N':
       return command_run(ch, false);
+    case 'A': return command_attack(true);
     case 'D': discovered(); return false;
-    case 'F': return command_attack(true);
     case 'I': return pack_print_equipment();
     case 'P': return ring_put_on();
     case 'Q': return command_quit();
