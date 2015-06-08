@@ -1,4 +1,6 @@
 v1.3.1+
+  Tweaking:
+    Throwing arrows now always miss (use 'a'ttack instead)
 
 v1.3.1
   Tweaking:
