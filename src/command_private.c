@@ -53,7 +53,7 @@ static bool command_attack_melee(bool fight_to_death, coord* delta)
   {
     if (fight_to_death)
     {
-      kamikaze = to_death = true;
+      to_death = true;
       mp->t_flags |= ISTARGET;
     }
     runch = dir_ch;
@@ -527,8 +527,8 @@ bool command_rest(void)
   }
 
   msg("you rest for a while");
-  again = true;
-  while (again && player_is_hurt())
+  player_alerted = false;
+  while (!player_alerted && player_is_hurt())
   {
     daemon_run_before();
     daemon_run_after();

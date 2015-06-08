@@ -221,10 +221,7 @@ over:
 	    command_stop(true);
 	    daemon_reset_doctor();
 	    if (to_death && !monster_is_players_target(th))
-	    {
-		to_death = false;
-		kamikaze = false;
-	    }
+              to_death = false;
 	    return(0);
 	}
     }

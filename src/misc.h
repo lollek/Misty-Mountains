@@ -50,7 +50,6 @@ int dist(int y1, int x1, int y2, int x2);
 const char *pick_color(const char *col); /* Return given color (or random if hallucinating) */
 char floor_ch(void); /* Floor-type at hero's position */
 char floor_at(void); /* Return the character at hero's position */
-void reset_last(void); /* Reset the last command when the current one is aborted */
 bool player_has_ring_with_ability(int ability);
 
 #endif /* _ROGUE14_MISC_H_ */

@@ -11,6 +11,7 @@ extern int hungry_state;
 extern int no_command;
 extern int no_food;
 extern int no_move;
+extern bool player_alerted;
 
 void* __player_ptr(void);
 extern struct stats max_stats;

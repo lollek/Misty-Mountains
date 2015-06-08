@@ -386,7 +386,6 @@ monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
 
   if (monster_is_players_target(tp))
   {
-    kamikaze = false;
     to_death = false;
     if (fight_flush)
       flushinp();

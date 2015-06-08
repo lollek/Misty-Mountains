@@ -40,20 +40,14 @@
 /* External variables */
 
 extern bool after;
-extern bool again;
 extern bool door_stop;
 extern bool firstmove;
-extern bool kamikaze;
 extern bool running;
 extern bool to_death;
 
 extern char dir_ch;
 extern char file_name[];
 extern char whoami[];
-extern char l_last_comm;
-extern char l_last_dir;
-extern char last_comm;
-extern char last_dir;
 extern char runch;
 
 extern int wizard;

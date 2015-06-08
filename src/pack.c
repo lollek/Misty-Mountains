@@ -456,17 +456,7 @@ pack_find_magic_item(void)
 THING*
 pack_get_item(char const* purpose, int type)
 {
-  if (again)
-    if (last_picked_item != NULL)
-      return last_picked_item;
-    else
-    {
-      msg("you ran out");
-      return NULL;
-    }
-
-  /* Make sure theres an item of the type */
-  else if (pack_count_items_of_type(type) == 0)
+  if (pack_count_items_of_type(type) < 1)
   {
     msg("You have no item to %s", purpose);
     return NULL;
@@ -481,7 +471,6 @@ pack_get_item(char const* purpose, int type)
 
   if (ch == KEY_ESCAPE || ch == KEY_SPACE)
   {
-    reset_last();
     clearmsg();
     return NULL;
   }

@@ -30,6 +30,7 @@ int hungry_state = 0;/* How hungry is he */
 int no_food = 0;    /* Number of levels without food */
 int no_command = 0; /* Number of turns asleep */
 int no_move = 0;    /* Number of turns held in place */
+bool player_alerted = false; /* Something needs the player's attention */
 
 /* Duration of effects */
 #define HUHDURATION     spread(20)  /* Confusion */

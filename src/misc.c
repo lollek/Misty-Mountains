@@ -255,58 +255,40 @@ vowelstr(char const* str)
 coord const*
 get_dir(void)
 {
-  static coord last_delt= {0,0};
   static coord delta;
 
+  char const* prompt = "which direction? ";
+  msg(prompt);
 
-  if (again && last_dir != '\0')
+  bool gotit;
+  do
   {
-    delta.y = last_delt.y;
-    delta.x = last_delt.x;
-    dir_ch = last_dir;
-  }
-
-  else
-  {
-    char const* prompt = "which direction? ";
-    msg(prompt);
-
-    bool gotit;
-    do
+    gotit = true;
+    switch (dir_ch = readchar(false))
     {
-      gotit = true;
-      switch (dir_ch = readchar(false))
-      {
-        case 'h': case 'H': delta.y =  0; delta.x = -1; break;
-        case 'j': case 'J': delta.y =  1; delta.x =  0; break;
-        case 'k': case 'K': delta.y = -1; delta.x =  0; break;
-        case 'l': case 'L': delta.y =  0; delta.x =  1; break;
-        case 'y': case 'Y': delta.y = -1; delta.x = -1; break;
-        case 'u': case 'U': delta.y = -1; delta.x =  1; break;
-        case 'b': case 'B': delta.y =  1; delta.x = -1; break;
-        case 'n': case 'N': delta.y =  1; delta.x =  1; break;
+      case 'h': case 'H': delta.y =  0; delta.x = -1; break;
+      case 'j': case 'J': delta.y =  1; delta.x =  0; break;
+      case 'k': case 'K': delta.y = -1; delta.x =  0; break;
+      case 'l': case 'L': delta.y =  0; delta.x =  1; break;
+      case 'y': case 'Y': delta.y = -1; delta.x = -1; break;
+      case 'u': case 'U': delta.y = -1; delta.x =  1; break;
+      case 'b': case 'B': delta.y =  1; delta.x = -1; break;
+      case 'n': case 'N': delta.y =  1; delta.x =  1; break;
 
-        case KEY_ESCAPE:
-          last_dir = '\0';
-          reset_last();
-          clearmsg();
-          return NULL;
+      case KEY_ESCAPE:
+        clearmsg();
+        return NULL;
 
-        default:
-          mpos = 0;
-          msg(prompt);
-          gotit = false;
-          break;
-      }
-    } while (!gotit);
+      default:
+        mpos = 0;
+        msg(prompt);
+        gotit = false;
+        break;
+    }
+  } while (!gotit);
 
-    if (isupper(dir_ch))
-      dir_ch = (char) tolower(dir_ch);
-
-    last_dir = dir_ch;
-    last_delt.y = delta.y;
-    last_delt.x = delta.x;
-  }
+  if (isupper(dir_ch))
+    dir_ch = (char) tolower(dir_ch);
 
   if (player_is_confused() && rnd(5) == 0)
     do
@@ -570,15 +552,6 @@ floor_at(void)
   coord *player_pos = player_get_pos();
   char ch = level_get_ch(player_pos->y, player_pos->x);
   return ch == FLOOR ? floor_ch() : ch;
-}
-
-
-void
-reset_last(void)
-{
-  last_comm = l_last_comm;
-  last_dir = l_last_dir;
-  pack_reset_last_picked_item();
 }
 
 bool

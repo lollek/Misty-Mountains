@@ -56,7 +56,6 @@ command_stop(bool stop_fighting)
 {
   player_stop_running();
   door_stop = false;
-  again = false;
   running = false;
 
   if (stop_fighting)
@@ -75,9 +74,6 @@ command(void)
 
   while (num_moves-- > 0)
   {
-
-
-    again = false;
     look(true);
     if (!running)
       door_stop = false;
@@ -107,15 +103,6 @@ command(void)
         ch = readchar(false);
         if (mpos != 0)
           clearmsg();
-      }
-
-      if (ch != 'a' && ch != KEY_ESCAPE && !(running || to_death))
-      {
-        pack_set_last_picked_item(NULL);
-        l_last_comm = last_comm;
-        l_last_dir = last_dir;
-        last_comm = ch;
-        last_dir = '\0';
       }
       after = command_do(ch);
 

@@ -291,15 +291,13 @@ fight_against_player(THING* mp)
 {
   /* Since this is an attack, stop running and any healing that was
    * going on at the time */
+  player_alerted = true;
   command_stop(false);
   daemon_reset_doctor();
 
   /* If we're fighting something to death and get backstabbed, return command */
   if (to_death && !monster_is_players_target(mp))
-  {
     to_death = false;
-    kamikaze = false;
-  }
 
   /* If it's a xeroc, tag it as known */
   if (mp->t_type == 'X' && mp->t_disguise != 'X' && !player_is_blind()
