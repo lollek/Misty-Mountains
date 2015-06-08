@@ -108,9 +108,8 @@ missile(int ydelta, int xdelta)
   do_motion(obj, ydelta, xdelta);
   THING* monster_at_pos = level_get_monster(obj->o_pos.y, obj->o_pos.x);
 
-  /* Throwing an arrow without a bow always misses */
-  THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
-  if (obj->o_which == ARROW && (weapon == NULL || weapon->o_which != BOW))
+  /* Throwing an arrow always misses */
+  if (obj->o_which == ARROW)
   {
     if (monster_at_pos && !to_death)
     {
