@@ -1,3 +1,5 @@
+v1.3.1+
+
 v1.3.1
   Tweaking:
     Changed 'f'ight, 'F'ight, and 'a'gain to 'a'ttack/'A'ttack,
