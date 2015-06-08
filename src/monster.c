@@ -42,85 +42,33 @@ THING* mlist = NULL;
 #define NMONSTERS sizeof(monsters) / sizeof(*monsters)
 struct monster monsters[] =
 {
-  /* Name            CARRY FLAG
-   * str,exp, lvl, amr, hpt, dmg,     maxhp */
-  { "aquator",       0, ISMEAN,
-    { 10,  20,  5,  18,   1, {{0,1}}, 0 } },
-
-  { "bat",           0, ISFLY,
-    { 10,   1,  1,  17,   1, {{1,2}}, 0 } },
-
-  { "centaur",      15, 0,
-    { 10,  17,  4,  16,   1, {{1,2},{1,5},{1,5}},  0 } },
-
-  { "dragon",      100, ISMEAN,
-    { 10,5000, 10,  21,   1, {{1,8},{1,8},{3,10}}, 0 } },
-
-  { "emu",           0, ISMEAN,
-    { 10,   2,  1,  13,   1, {{1,2}}, 0 } },
-
-  { "venus flytrap", 0, ISMEAN,
-    { 10,  80,  8,  17,   1, {{0,1}}, 0 } },
-
-  { "griffin",      20, ISMEAN|ISFLY|ISREGEN,
-    { 10,2000, 13,  18,   1, {{4,3},{3,5}}, 0 } },
-
-  { "hobgoblin",     0, ISMEAN,
-    { 10,   3,  1,  15,   1, {{1,8}}, 0 } },
-
-  { "ice monster",   0, 0,
-    { 10,   5,  1,  11,   1, {{0,1}}, 0 } },
-
-  { "jabberwock",   70, 0,
-    { 10,3000, 15,  14,   1, {{2,12},{2,4}}, 0 } },
-
-  { "kestrel",       0, ISMEAN|ISFLY,
-    { 10,   1,  1,  13,   1, {{1,4}},              0 } },
-
-  { "leprechaun",    0, 0,
-    { 10,  10,  3,  12,   1, {{1,1}},              0 } },
-
-  { "medusa",       40, ISMEAN,
-    { 10, 200,  8,  18,   1, {{3,4},{3,4},{2,5}},  0 } },
-
-  { "nymph",       100, 0,
-    { 10,  37,  3,  11,   1, {{0,1}},              0 } },
-
-  { "orc",          15, ISGREED,
-    { 10,   5,  1,  14,   1, {{1,8}},              0 } },
-
-  { "phantom",       0, ISINVIS,
-    { 10, 120,  8,  17,   1, {{4,4}},              0 } },
-
-  { "quagga",        0, ISMEAN,
-    { 10,  15,  3,  17,   1, {{1,5},{1,5}},        0 } },
-
-  { "rattlesnake",   0, ISMEAN,
-    { 10,   9,  2,  17,   1, {{1,6}},              0 } },
-
-  { "snake",         0, ISMEAN,
-    { 10,   2,  1,  15,   1, {{1,3}},              0 } },
-
-  { "troll",        50, ISREGEN|ISMEAN,
-    { 10, 120,  6,  16,   1, {{1,8},{1,8},{2,6}},  0 } },
-
-  { "black unicorn", 0, ISMEAN,
-    { 10, 190,  7,  22,   1, {{1,9},{1,9},{2,9}},  0 } },
-
-  { "vampire",      20, ISREGEN|ISMEAN,
-    { 10, 350,  8,  19,   1, {{1,10}},             0 } },
-
-  { "wraith",        0, 0,
-    { 10,  55,  5,  16,   1, {{1,6}},              0 } },
-
-  { "xeroc",        30, 0,
-    { 10, 100,  7,  13,   1, {{4,4}},              0 } },
-
-  { "yeti",         30, 0,
-    { 10,  50,  4,  14,   1, {{1,6},{1,6}},        0 } },
-
-  { "zombie",        0, ISMEAN,
-    { 10,   6,  2,  12,   1, {{1,8}},              0 } },
+  /* Name        CARRY  FLAG                   exp lvl  amr  dmg              */
+  { "aquator",       0, ISMEAN,                 20,  5,  18, {{0,1}}},
+  { "bat",           0, ISFLY,                   1,  1,  17, {{1,2}}},
+  { "centaur",      15, 0,                      17,  4,  16, {{1,2},{1,5},{1,5}}},
+  { "dragon",      100, ISMEAN,               5000, 10,  21, {{1,8},{1,8},{3,10}}},
+  { "emu",           0, ISMEAN,                  2,  1,  13, {{1,2}}},
+  { "venus flytrap", 0, ISMEAN,                 80,  8,  17, {{0,1}}},
+  { "griffin",      20, ISMEAN|ISFLY|ISREGEN, 2000, 13,  18, {{4,3},{3,5}}},
+  { "hobgoblin",     0, ISMEAN,                  3,  1,  15, {{1,8}}},
+  { "ice monster",   0, 0,                       5,  1,  11, {{0,1}}},
+  { "jabberwock",   70, 0,                    3000, 15,  14, {{2,12},{2,4}}},
+  { "kestrel",       0, ISMEAN|ISFLY,            1,  1,  13, {{1,4}}},
+  { "leprechaun",    0, 0,                      10,  3,  12, {{1,1}}},
+  { "medusa",       40, ISMEAN,                200,  8,  18, {{3,4},{3,4},{2,5}}},
+  { "nymph",       100, 0,                      37,  3,  11, {{0,1}}},
+  { "orc",          15, ISGREED,                 5,  1,  14, {{1,8}}},
+  { "phantom",       0, ISINVIS,               120,  8,  17, {{4,4}}},
+  { "quagga",        0, ISMEAN,                 15,  3,  17, {{1,5},{1,5}}},
+  { "rattlesnake",   0, ISMEAN,                  9,  2,  17, {{1,6}}},
+  { "snake",         0, ISMEAN,                  2,  1,  15, {{1,3}}},
+  { "troll",        50, ISREGEN|ISMEAN,        120,  6,  16, {{1,8},{1,8},{2,6}}},
+  { "black unicorn", 0, ISMEAN,                190,  7,  22, {{1,9},{1,9},{2,9}}},
+  { "vampire",      20, ISREGEN|ISMEAN,        350,  8,  19, {{1,10}}},
+  { "wraith",        0, 0,                      55,  5,  16, {{1,6}}},
+  { "xeroc",        30, 0,                     100,  7,  13, {{4,4}}},
+  { "yeti",         30, 0,                      50,  4,  14, {{1,6},{1,6}}},
+  { "zombie",        0, ISMEAN,                  6,  2,  12, {{1,8}}},
 };
 
 bool
@@ -250,21 +198,21 @@ monster_new(THING* monster, char type, coord* pos)
   monster->t_room       = roomin(pos);
   level_set_monster(pos->y, pos->x, monster);
 
-  struct stats const* template = &monsters[monster->t_type - 'A'].m_stats;
+  struct monster const* template = &monsters[monster->t_type - 'A'];
   struct stats* new_stats = &monster->t_stats;
 
-  new_stats->s_lvl   = template->s_lvl;
-  new_stats->s_hpt   = roll(monster->t_stats.s_lvl, 8);
-  new_stats->s_maxhp = monster->t_stats.s_hpt;
-  new_stats->s_arm   = template->s_arm;
-  new_stats->s_str   = template->s_str;
-  new_stats->s_exp   = template->s_exp + monster_xp_worth(monster);
-  assert(sizeof(new_stats->s_dmg) == sizeof(template->s_dmg));
-  memcpy(new_stats->s_dmg, template->s_dmg, sizeof(template->s_dmg));
+  new_stats->s_lvl   = template->m_level;
+  new_stats->s_hpt   = roll(new_stats->s_lvl, 8);
+  new_stats->s_maxhp = new_stats->s_hpt;
+  new_stats->s_arm   = template->m_armor;
+  new_stats->s_str   = 10;
+  new_stats->s_exp   = template->m_basexp + monster_xp_worth(monster);
+  assert(sizeof(new_stats->s_dmg) == sizeof(template->m_dmg));
+  memcpy(new_stats->s_dmg, template->m_dmg, sizeof(template->m_dmg));
 
   monster->t_turn          = true;
   monster->t_pack          = NULL;
-  monster->t_flags         = monsters[monster->t_type - 'A'].m_flags;
+  monster->t_flags         = template->m_flags;
 
   if (player_has_ring_with_ability(R_AGGR))
     monster_start_running(pos);

@@ -5,10 +5,13 @@
 #include "things.h"
 
 struct monster {
-    char const* m_name;   /* What to call the monster */
-    int m_carry;          /* Probability of carrying something */
-    short m_flags;        /* things about the monster */
-    struct stats m_stats; /* Initial stats */
+    char const*   m_name;             /* What to call the monster */
+    int           m_carry;            /* Probability of carrying something */
+    int           m_flags;            /* things about the monster */
+    int           m_basexp;           /* Base xp */
+    int           m_level;            /* Level */
+    int           m_armor;            /* Armor */
+    struct damage m_dmg[MAXATTACKS];  /* Monster attacks */
 };
 
 extern struct monster monsters[26];
