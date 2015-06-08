@@ -1,5 +1,10 @@
-v1.3.0+
+v1.3.1
   Tweaking:
+    Changed 'f'ight, 'F'ight, and 'a'gain to 'a'ttack/'A'ttack,
+      this does the same as walking into an enemy but will not move the player
+      if there is no enemy there. If you hold a bow while 'a'ttackig you will
+      fire arrows automatically. 'A' attacks until death if melee, and does the
+      same as 'a' if ranged. 't'hrow still works the same as before.
     Monsters no longer get extremely strong after level ~30
     Scrolls of hold monster now holds all nearby monster, even if they are not
     chasing you
