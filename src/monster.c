@@ -473,7 +473,7 @@ monster_teleport(THING* monster, coord const* destination)
     new_pos = *destination;
 
   /* Remove monster */
-  if (see_monst(monster))
+  if (monster_seen_by_player(monster))
     mvaddcch(monster->t_pos.y, monster->t_pos.x, monster->t_oldch);
   set_oldch(monster, &new_pos);
   level_set_monster(monster->t_pos.y, monster->t_pos.x, NULL);
@@ -483,7 +483,7 @@ monster_teleport(THING* monster, coord const* destination)
   monster->t_pos = new_pos;
   monster_remove_held(monster);
 
-  if (see_monst(monster))
+  if (monster_seen_by_player(monster))
     mvaddcch(new_pos.y, new_pos.x, monster->t_disguise);
   else if (player_can_sense_monsters())
     mvaddcch(new_pos.y, new_pos.x, monster->t_type | A_STANDOUT);
@@ -604,7 +604,7 @@ monster_name(THING const* monster, char* buf)
   assert(monster != NULL);
   assert(buf != NULL);
 
-  if (!see_monst(monster) && !player_can_sense_monsters())
+  if (!monster_seen_by_player(monster) && !player_can_sense_monsters())
     strcpy(buf, "something");
 
   else if (player_is_hallucinating())
@@ -631,3 +631,30 @@ monster_name_by_type(char monster_type)
   assert(monster_type < 'A' + NMONSTERS);
   return monsters[monster_type - 'A'].m_name;
 }
+
+bool
+monster_seen_by_player(THING const* monster)
+{
+  coord const* player_pos = player_get_pos();
+  int monster_y = monster->t_pos.y;
+  int monster_x = monster->t_pos.x;
+
+  if (player_is_blind() ||
+      (monster_is_invisible(monster) && !player_has_true_sight()))
+    return false;
+
+  if (dist(monster_y, monster_x, player_pos->y, player_pos->x) < LAMPDIST)
+  {
+    if (monster_y != player_pos->y && monster_x != player_pos->x
+        && !step_ok(level_get_ch(monster_y, player_pos->x))
+        && !step_ok(level_get_ch(player_pos->y, monster_x)))
+      return false;
+    return true;
+  }
+
+  if (monster->t_room != player_get_room())
+    return false;
+  return ((bool)!(monster->t_room->r_flags & ISDARK));
+}
+
+

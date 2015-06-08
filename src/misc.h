@@ -36,7 +36,6 @@ void strucpy(char* s1, char const* s2, int len);
 
 void waste_time(int rounds);
 void set_oldch(THING* tp, coord* cp); /* Set oldch for a monster */
-bool see_monst(THING const* mp);            /* Can player see the monster? */
 
 struct room* roomin(coord* cp); /* Find what room some coords are in, NULL means no room */
 bool diag_ok(coord const* sp, coord const* ep); /* Check if move is legal if diagonal */

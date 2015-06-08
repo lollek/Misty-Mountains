@@ -91,6 +91,7 @@ void monster_do_special_ability(THING** monster);
 
 char const* monster_name(THING const* tp, char* buf);
 char const* monster_name_by_type(char monster_type);
+bool monster_seen_by_player(THING const* monster);
 
 /** monster_chase.c **/
 bool monster_chase(THING* tp); /* Make a monster chase */

@@ -301,7 +301,7 @@ daemon_change_visuals(void)
   bool seemonst = player_can_sense_monsters();
   for (THING* tp = mlist; tp != NULL; tp = tp->l_next)
   {
-    if (see_monst(tp))
+    if (monster_seen_by_player(tp))
     {
       if (tp->t_type == 'X' && tp->t_disguise != 'X')
         mvaddcch(tp->t_pos.y, tp->t_pos.x, rnd_thing());

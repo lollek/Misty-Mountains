@@ -138,7 +138,7 @@ look(bool wakeup)
         {
           if (wakeup)
             monster_notice_player(y, x);
-          if (see_monst(monster))
+          if (monster_seen_by_player(monster))
           {
             xy_ch = player_is_hallucinating()
               ? (char)(rnd(26) + 'A')
@@ -418,8 +418,9 @@ seen_stairs(void)
   /* if a monster is on the stairs, this gets hairy */
   if (tp != NULL)
   {
-    if (see_monst(tp) && monster_is_chasing(tp)) /* if it's visible and awake */
-      return true;                       /* it must have moved there */
+    /* if it's visible and awake, it must have moved there */
+    if (monster_seen_by_player(tp) && monster_is_chasing(tp))
+      return true;
 
     if (player_can_sense_monsters()      /* if she can detect monster */
         && tp->t_oldch == STAIRS)        /* and there once were stairs */
@@ -433,7 +434,8 @@ invis_on(void)
 {
   player_add_true_sight(true);
   for (THING* mp = mlist; mp != NULL; mp = mp->l_next)
-    if (monster_is_invisible(mp) && see_monst(mp) && !player_is_hallucinating())
+    if (monster_is_invisible(mp) && monster_seen_by_player(mp)
+        && !player_is_hallucinating())
       mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
 }
 
@@ -479,31 +481,6 @@ set_oldch(THING* tp, coord* cp)
     else if (dist_cp(cp, player_get_pos()) <= LAMPDIST)
       tp->t_oldch = level_get_ch(cp->y, cp->x);
   }
-}
-
-bool
-see_monst(THING const* monster)
-{
-  coord const* player_pos = player_get_pos();
-  int monster_y = monster->t_pos.y;
-  int monster_x = monster->t_pos.x;
-
-  if (player_is_blind() ||
-      (monster_is_invisible(monster) && !player_has_true_sight()))
-    return false;
-
-  if (dist(monster_y, monster_x, player_pos->y, player_pos->x) < LAMPDIST)
-  {
-    if (monster_y != player_pos->y && monster_x != player_pos->x
-        && !step_ok(level_get_ch(monster_y, player_pos->x))
-        && !step_ok(level_get_ch(player_pos->y, monster_x)))
-      return false;
-    return true;
-  }
-
-  if (monster->t_room != player_get_room())
-    return false;
-  return ((bool)!(monster->t_room->r_flags & ISDARK));
 }
 
 struct room*

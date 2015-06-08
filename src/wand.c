@@ -236,7 +236,7 @@ wand_spell_drain_health(void)
     THING* mp = *dp;
     mp->t_stats.s_hpt -= cnt;
     if (mp->t_stats.s_hpt <= 0)
-      monster_on_death(mp, see_monst(mp));
+      monster_on_death(mp, monster_seen_by_player(mp));
     else
     {
       monster_start_running(&mp->t_pos);
@@ -262,7 +262,7 @@ wand_spell_polymorph(THING* target)
   THING* target_pack = target->t_pack;
   list_detach(&mlist, target);
 
-  bool was_seen = see_monst(target);
+  bool was_seen = monster_seen_by_player(target);
   if (was_seen)
   {
     mvaddcch(pos.y, pos.x, level_get_ch(pos.y, pos.x));
@@ -276,7 +276,7 @@ wand_spell_polymorph(THING* target)
   bool same_monster = monster == target->t_type;
 
   monster_new(target, monster, &pos);
-  if (see_monst(target))
+  if (monster_seen_by_player(target))
   {
     mvaddcch(pos.y, pos.x, monster);
     if (same_monster)
@@ -292,7 +292,7 @@ wand_spell_polymorph(THING* target)
 
   target->t_oldch = oldch;
   target->t_pack = target_pack;
-  wands[WS_POLYMORPH].oi_know |= see_monst(target);
+  wands[WS_POLYMORPH].oi_know |= monster_seen_by_player(target);
 }
 
 static void
@@ -308,7 +308,7 @@ wand_spell_cancel(THING* target)
   monster_remove_confusing(target);
 
   target->t_disguise = target->t_type;
-  if (see_monst(target))
+  if (monster_seen_by_player(target))
     mvaddcch(target->t_pos.y, target->t_pos.x, target->t_disguise);
 }
 

@@ -364,7 +364,7 @@ room_enter(coord* cp)
         }
 
         tp->t_oldch = ch;
-        if (see_monst(tp))
+        if (monster_seen_by_player(tp))
           mvaddcch(y, x, tp->t_disguise);
         else if (player_can_sense_monsters())
           mvaddcch(y, x, tp->t_disguise | A_STANDOUT);

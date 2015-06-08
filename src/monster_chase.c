@@ -296,7 +296,7 @@ over:
     }
     move(ch_ret.y, ch_ret.x);
 
-    if (see_monst(th))
+    if (monster_seen_by_player(th))
       addcch(th->t_disguise);
     else if (player_can_sense_monsters())
       addcch(th->t_type | A_STANDOUT);

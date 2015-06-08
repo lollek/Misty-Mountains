@@ -88,7 +88,8 @@ command_attack(bool fight_to_death)
   kamikaze = fight_to_death;
 
   THING* mp = level_get_monster(delta.y, delta.x);
-  if (mp == NULL || (!see_monst(mp) && !player_can_sense_monsters()))
+  if (mp == NULL
+      || (!monster_seen_by_player(mp) && !player_can_sense_monsters()))
   {
     msg("no monster there");
     return false;
@@ -495,7 +496,7 @@ command_wield(void)
 bool command_rest(void)
 {
   for (THING* mon = mlist; mon != NULL; mon = mon->l_next)
-    if (see_monst(mon))
+    if (monster_seen_by_player(mon))
     {
       msg("cannot rest with monsters nearby");
       return false;
