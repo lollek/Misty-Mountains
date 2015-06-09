@@ -24,6 +24,8 @@ static char const* hunger_state_name[] = {
   "Faint"
 };
 
+#define STARTING_FOOD 1300
+
 static int const full = 2000;
 static int const satiated = 1300;
 static int const hunger_alert = 300;
@@ -31,7 +33,7 @@ static int const starvation_alert = 150;
 static int const starvation_start = 0;
 static int const starvation_death = -850;
 
-static int food_left = satiated;
+static int food_left = STARTING_FOOD;
 static int hunger_state = 0;
 
 bool
