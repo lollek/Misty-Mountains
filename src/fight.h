@@ -1,6 +1,11 @@
 #ifndef _ROGUE14_FIGHT_H_
 #define _ROGUE14_FIGHT_H_
 
+#include <stdbool.h>
+
+#include "coord.h"
+#include "things.h"
+
 /** fight_against_monster:
  * The player attacks the monster. */
 int fight_against_monster(coord const* mp, THING* weap, bool thrown);

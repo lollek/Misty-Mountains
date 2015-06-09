@@ -27,6 +27,7 @@
 #include "player.h"
 #include "wand.h"
 #include "rogue.h"
+#include "magic.h"
 
 #include "monster.h"
 #include "monster_private.h"
@@ -217,7 +218,7 @@ over:
 	{
 	    delta.y = sign(player_pos->y - th->t_pos.y);
 	    delta.x = sign(player_pos->x - th->t_pos.x);
-	    fire_bolt(&th->t_pos, &delta, "flame");
+	    magic_bolt(&th->t_pos, &delta, "flame");
 	    command_stop(true);
 	    daemon_reset_doctor();
 	    if (to_death && !monster_is_players_target(th))

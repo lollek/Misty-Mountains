@@ -57,8 +57,4 @@ THING* wand_create(int which);
 /* Perform a zap with a wand */
 bool wand_zap(void);
 
-/* Fire a bolt in a given direction from a specific starting place */
-void fire_bolt(coord* start, coord* dir, char* name);
-
-
 #endif /* _ROGUE14_WAND_H_ */
