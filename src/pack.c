@@ -430,7 +430,7 @@ pack_pick_up(THING* obj, bool force)
 
     case POTION: case WEAPON: case AMMO: case FOOD: case ARMOR:
     case SCROLL: case AMULET: case RING: case STICK:
-      if (force || autopickup(obj->o_type))
+      if (force || option_autopickup(obj->o_type))
         pack_add((THING *) NULL, false);
       else
         pack_move_msg(obj);

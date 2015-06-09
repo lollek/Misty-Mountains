@@ -38,7 +38,7 @@ static bool pickup_rings   = true;
 static bool pickup_sticks  = true;
 static bool pickup_ammo    = true;
 
-bool autopickup(int type)
+bool option_autopickup(int type)
 {
   switch (type)
   {
@@ -52,7 +52,7 @@ bool autopickup(int type)
     case STICK:  return pickup_sticks;
     case AMULET: return true;
   }
-  (void)fail("autopickup: unknown type: %d", type);
+  (void)fail("option_autopickup: unknown type: %d", type);
   assert(0);
   return false;
 }
