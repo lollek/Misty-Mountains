@@ -9,6 +9,6 @@ typedef struct {
     int y;
 } coord;
 
-bool same_coords(coord const* a, coord const* b);
+bool coord_same(coord const* a, coord const* b);
 
 #endif /* _ROGUE14_COORD_H_ */

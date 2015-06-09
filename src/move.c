@@ -93,7 +93,7 @@ move_do(char ch)
     {
       /* TODO: Remove __player_ptr() */
 	move_random(__player_ptr(), &nh);
-	if (same_coords(&nh, player_get_pos()))
+	if (coord_same(&nh, player_get_pos()))
 	{
 	    running = false;
 	    to_death = false;
@@ -121,7 +121,7 @@ over:
 	return false;
     }
 
-    if (running && same_coords(player_get_pos(), &nh))
+    if (running && coord_same(player_get_pos(), &nh))
 	after = running = false;
 
     fl = level_get_flags(nh.y, nh.x);

@@ -415,7 +415,7 @@ monster_teleport(THING* monster, coord const* destination)
   if (destination == NULL)
     do
       room_find_floor(NULL, &new_pos, false, true);
-    while (same_coords(&new_pos, &monster->t_pos));
+    while (coord_same(&new_pos, &monster->t_pos));
   else
     new_pos = *destination;
 

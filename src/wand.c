@@ -657,7 +657,7 @@ fire_bolt(coord* start, coord* dir, char* name)
   if (starting_pos == DOOR || starting_pos == PASSAGE)
   {
     char first_bounce = level_get_ch(start->y + dir->y, start->x + dir->x);
-    bool is_player = same_coords(start, player_get_pos());
+    bool is_player = coord_same(start, player_get_pos());
     if (first_bounce == HWALL || first_bounce == VWALL)
     {
       if (is_player)
@@ -681,7 +681,7 @@ fire_bolt(coord* start, coord* dir, char* name)
       msg("the %s bounces", name);
 
     /* Handle potential hits */
-    if (same_coords(&pos, player_get_pos()))
+    if (coord_same(&pos, player_get_pos()))
       fire_bolt_hit_player(start, name);
 
     THING* tp = level_get_monster(pos.y, pos.x);

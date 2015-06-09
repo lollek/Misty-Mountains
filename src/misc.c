@@ -73,7 +73,7 @@ look(bool wakeup)
   char const player_ch = INDEX(player_pos->y, player_pos->x)->p_ch;
   char const player_flags = INDEX(player_pos->y, player_pos->x)->p_flags;
 
-  if (!same_coords(&oldpos, player_pos))
+  if (!coord_same(&oldpos, player_pos))
   {
     erase_lamp(&oldpos, oldrp);
     oldpos = *player_pos;
@@ -394,7 +394,7 @@ seen_stairs(void)
   move(stairs.y, stairs.x);
   if (incch() == STAIRS)  /* it's on the map */
     return true;
-  if (same_coords(player_get_pos(), &stairs)) /* It's under him */
+  if (coord_same(player_get_pos(), &stairs)) /* It's under him */
     return true;
 
   /* if a monster is on the stairs, this gets hairy */
@@ -451,7 +451,7 @@ set_oldch(THING* tp, coord* cp)
 {
   char old_char = tp->t_oldch;
 
-  if (same_coords(&tp->t_pos, cp))
+  if (coord_same(&tp->t_pos, cp))
     return;
 
   tp->t_oldch = mvincch(cp->y, cp->x);

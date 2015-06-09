@@ -286,7 +286,7 @@ daemon_runners_move(void)
 
       assert_attached(mlist, tp);
 
-      if (wastarget && !same_coords(&orig_pos, &tp->t_pos))
+      if (wastarget && !coord_same(&orig_pos, &tp->t_pos))
       {
         tp->t_flags &= ~ISTARGET;
         to_death = false;

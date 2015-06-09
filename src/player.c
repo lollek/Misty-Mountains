@@ -430,7 +430,7 @@ void player_teleport(coord *target)
   if (target == NULL)
     do
       room_find_floor(NULL, &new_pos, false, true);
-    while (same_coords(&new_pos, player_pos));
+    while (coord_same(&new_pos, player_pos));
   else
   {
     new_pos.y = target->y;

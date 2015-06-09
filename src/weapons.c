@@ -101,7 +101,7 @@ do_motion(THING* obj, int ydelta, int xdelta)
   for (;;)
   {
     /* Erase the old one */
-    if (!same_coords(&obj->o_pos, player_pos) &&
+    if (!coord_same(&obj->o_pos, player_pos) &&
         cansee(obj->o_pos.y, obj->o_pos.x))
     {
       ch = level_get_ch(obj->o_pos.y, obj->o_pos.x);

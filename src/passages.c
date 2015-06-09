@@ -268,7 +268,7 @@ conn(int r1, int r2)
   curr.x += del.x;
   curr.y += del.y;
 
-  if (!same_coords(&curr, &end_pos))
+  if (!coord_same(&curr, &end_pos))
     msg("warning, connectivity problem on this level");
 }
 

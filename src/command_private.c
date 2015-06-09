@@ -300,7 +300,7 @@ command_pick_up(void)
   coord const* player_pos = player_get_pos();
 
   for (THING* obj = lvl_obj; obj != NULL; obj = obj->l_next)
-    if (same_coords(&obj->o_pos, player_pos))
+    if (coord_same(&obj->o_pos, player_pos))
     {
       pack_pick_up(obj, true);
       return true;
