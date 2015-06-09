@@ -19,7 +19,7 @@
 
 #include "traps.h"
 
-char const* trap_names[NTRAPS] = {
+char const* trap_names[] = {
   "a trapdoor",
   "an arrow trap",
   "a sleeping gas trap",
@@ -297,7 +297,7 @@ trap_rust_monster(THING* victim)
 }
 
 enum trap_t
-be_trapped(THING* victim, coord* trap_coord)
+trap_spring(THING* victim, coord* trap_coord)
 {
   assert(trap_coord != NULL);
 

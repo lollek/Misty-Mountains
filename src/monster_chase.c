@@ -274,7 +274,7 @@ over:
       {
         coord orig_pos = th->t_pos;
 
-        be_trapped(th, &ch_ret);
+        trap_spring(th, &ch_ret);
         if (monster_is_dead(th))
           return -1;
 
