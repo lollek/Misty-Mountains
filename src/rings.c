@@ -221,9 +221,9 @@ ring_drain_amount(void)
     1, /* R_STEALTH */  1, /* R_SUSTARM  */
   };
 
-  for (int i = 0; i < RING_SLOTS_SIZE; ++i)
+  for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    THING *ring = pack_equipped_item(ring_slots[i]);
+    THING *ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != NULL)
       total_eat += uses[ring->o_which];
   }

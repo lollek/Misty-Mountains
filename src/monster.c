@@ -479,12 +479,12 @@ monster_do_special_ability(THING** monster)
       monster_remove_from_screen(&(*monster)->t_pos, *monster, false);
       *monster = NULL;
 
-      purse -= GOLDCALC;
+      pack_gold -= GOLDCALC;
       if (!player_save_throw(VS_MAGIC))
-        purse -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
-      if (purse < 0)
-        purse = 0;
-      msg("your purse feels lighter");
+        pack_gold -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
+      if (pack_gold < 0)
+        pack_gold = 0;
+      msg("your pack_gold feels lighter");
       return;
 
 

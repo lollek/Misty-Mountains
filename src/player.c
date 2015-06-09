@@ -73,9 +73,9 @@ static int
 player_get_strength_bonuses(void)
 {
   int bonuses = 0;
-  for (int i = 0; i < RING_SLOTS_SIZE; ++i)
+  for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    THING const* ring = pack_equipped_item(ring_slots[i]);
+    THING const* ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != NULL && ring->o_which == R_ADDSTR)
       bonuses += ring->o_arm;
   }
@@ -151,9 +151,9 @@ int
 player_save_throw(int which)
 {
   if (which == VS_MAGIC)
-    for (int i = 0; i < RING_SLOTS_SIZE; ++i)
+    for (int i = 0; i < PACK_RING_SLOTS; ++i)
     {
-      THING *ring = pack_equipped_item(ring_slots[i]);
+      THING *ring = pack_equipped_item(pack_ring_slots[i]);
       if (ring != NULL && ring->o_which == R_PROTECT)
         which -= ring->o_arm;
     }
@@ -625,9 +625,9 @@ player_get_armor(void)
   if (weapon)
     ac -= weapon->o_arm;
 
-  for (int i = 0; i < RING_SLOTS_SIZE; ++i)
+  for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    THING const* ring = pack_equipped_item(ring_slots[i]);
+    THING const* ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != NULL && ring->o_which == R_PROTECT)
       ac -= ring->o_arm;
   }

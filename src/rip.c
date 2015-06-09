@@ -235,7 +235,7 @@ death(char monst)
 
   signal(SIGINT, SIG_IGN);
 
-  purse -= purse / 10;
+  pack_gold -= pack_gold / 10;
 
   signal(SIGINT, command_signal_leave);
 
@@ -280,7 +280,7 @@ death(char monst)
     mvaddstr(16, 33, vowelstr(killer));
 
   mvaddstr(14, center(whoami), whoami);
-  sprintf(buf, "%d Au", purse);
+  sprintf(buf, "%d Au", pack_gold);
   move(15, center(buf));
   addstr(buf);
   sprintf(buf, "%4d", 1900+lt->tm_year);
@@ -290,7 +290,7 @@ death(char monst)
   refresh();
   wait_for(KEY_ENTER);
   pack_evaluate();
-  score(purse, pack_contains_amulet() ? 3 : 0, monst);
+  score(pack_gold, pack_contains_amulet() ? 3 : 0, monst);
   exit(0);
 }
 
@@ -315,8 +315,8 @@ total_winner(void)
   mvaddstr(LINES - 1, 0, "--Press space to continue--");
   refresh();
   wait_for(KEY_SPACE);
-  purse += pack_evaluate();
-  score(purse, 2, ' ');
+  pack_gold += pack_evaluate();
+  score(pack_gold, 2, ' ');
   exit(0);
 }
 

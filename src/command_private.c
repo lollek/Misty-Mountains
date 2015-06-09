@@ -140,7 +140,7 @@ command_attack(bool fight_to_death)
 bool
 command_name_item(void)
 {
-  THING* obj = pack_get_item("rename", RENAMEABLE);
+  THING* obj = pack_get_item("rename", PACK_RENAMEABLE);
 
   if (obj == NULL)
     return false;

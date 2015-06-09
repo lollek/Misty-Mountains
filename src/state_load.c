@@ -648,7 +648,7 @@ state_load_file(FILE* inf)
   rs_assert(state_load_chars(whoami, MAXSTR))
   rs_assert(state_load_int32(&no_food))
   rs_assert(state_load_int32(&no_move))
-  rs_assert(state_load_int32(&purse))
+  rs_assert(state_load_int32(&pack_gold))
   rs_assert(state_load_int32(&monster_flytrap_hit))
   rs_assert(state_load_int32((int32_t*) &seed))
 

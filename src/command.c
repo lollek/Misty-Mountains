@@ -250,7 +250,7 @@ command_signal_quit(int sig)
   /* Reset the signal in case we got here via an interrupt */
     signal(SIGINT, command_signal_leave);
     pack_evaluate();
-    score(purse, 1, 0);
+    score(pack_gold, 1, 0);
     exit(0);
   }
   else

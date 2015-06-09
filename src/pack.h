@@ -18,10 +18,11 @@ enum equipment_pos
 };
 
 /* Variables. TODO: Move these */
-extern int const RENAMEABLE; /* Type of item which can be renamed */
-#define RING_SLOTS_SIZE 2
-extern enum equipment_pos ring_slots[RING_SLOTS_SIZE];
-extern int purse;
+extern int const PACK_RENAMEABLE; /* Type of item which can be renamed */
+#define PACK_RING_SLOTS 2
+
+extern enum equipment_pos pack_ring_slots[PACK_RING_SLOTS];
+extern int                pack_gold;
 
 bool pack_save_state(void);
 bool pack_load_state(void);

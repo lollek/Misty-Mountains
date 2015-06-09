@@ -558,9 +558,9 @@ bool
 player_has_ring_with_ability(int ability)
 {
   int i;
-  for (i = 0; i < RING_SLOTS_SIZE; ++i)
+  for (i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    THING *ring = pack_equipped_item(ring_slots[i]);
+    THING *ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != NULL && ring->o_which == ability)
       return true;
   }

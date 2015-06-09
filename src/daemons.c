@@ -189,9 +189,9 @@ daemon_doctor(void)
   else if (quiet_rounds >= 3)
     player_restore_health(rnd(player_get_level() - 7) + 1, false);
 
-  for (int i = 0; i < RING_SLOTS_SIZE; ++i)
+  for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    THING *ring = pack_equipped_item(ring_slots[i]);
+    THING *ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != NULL && ring->o_which == R_REGEN)
       player_restore_health(1, false);
   }
@@ -297,9 +297,9 @@ daemon_runners_move(void)
 
 void daemon_ring_abilities(void)
 {
-  for (int i = 0; i < RING_SLOTS_SIZE; ++i)
+  for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    THING* obj = pack_equipped_item(ring_slots[i]);
+    THING* obj = pack_equipped_item(pack_ring_slots[i]);
     if (obj == NULL)
       continue;
 

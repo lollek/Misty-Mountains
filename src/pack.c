@@ -34,9 +34,9 @@
 
 #include "pack.h"
 
-int const RENAMEABLE = -1;
+int const PACK_RENAMEABLE = -1;
 
-int purse = 0;
+int           pack_gold = 0;
 static THING* player_pack;
 static THING* last_picked_item;
 static THING* last_last_picked_item;
@@ -55,7 +55,7 @@ static struct equipment_t
 /* Is the character used in the pack? */
 static bool pack_used[26];
 
-enum equipment_pos ring_slots[RING_SLOTS_SIZE] = {
+enum equipment_pos pack_ring_slots[PACK_RING_SLOTS] = {
   EQUIPMENT_RRING,
   EQUIPMENT_LRING
 };
@@ -235,7 +235,7 @@ static void
 pack_add_money(int value)
 {
   coord const* player_pos = player_get_pos();
-  purse += value;
+  pack_gold += value;
 
   mvaddcch(player_pos->y, player_pos->x, floor_ch());
   level_set_ch(player_pos->y, player_pos->x,
@@ -502,7 +502,7 @@ pack_count_items_of_type(int type)
 
   for (THING const* list = player_pack; list != NULL; list = list->l_next)
     if (!type || type == list->o_type ||
-        (type == RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET)))
+        (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET)))
       ++num;
   return num;
 }
@@ -570,7 +570,7 @@ pack_print_inventory(int type)
   for (THING* list = player_pack; list != NULL; list = list->l_next)
   {
     if (!type || type == list->o_type ||
-        (type == RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET)))
+        (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET)))
     {
       /* Print out the item and move to next row */
       wmove(invscr, ++num_items, 1);
@@ -605,7 +605,7 @@ pack_evaluate(void)
   for (THING* obj = player_pack; obj != NULL; obj = obj->l_next)
     value += pack_print_evaluate_item(obj);
 
-  printw("\n%5d  Gold Pieces          ", purse);
+  printw("\n%5d  Gold Pieces          ", pack_gold);
   refresh();
   return value;
 }
