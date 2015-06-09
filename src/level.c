@@ -44,7 +44,7 @@ coord     level_stairs;
 THING*    level_items = NULL;
 int       level = 1;
 int       level_max = 1;
-int const level_amulet;
+int const level_amulet = 26;
 
 
 /** treas_room:
