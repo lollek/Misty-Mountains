@@ -26,7 +26,7 @@ enum potion_t
 };
 
 /* Variables, TODO: Make these private */
-extern struct obj_info pot_info[NPOTIONS]; /* A list of potions and info */
+extern struct obj_info potion_info[NPOTIONS]; /* A list of potions and info */
 
 void potions_init(void);
 

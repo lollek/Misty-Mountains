@@ -53,7 +53,7 @@ sumprobs(char ch)
   switch (ch)
   {
     case '0':    ptr = things;         max = NUMTHINGS;  str = "things"; break;
-    case POTION: ptr = pot_info;       max = NPOTIONS;   str = "potions"; break;
+    case POTION: ptr = potion_info;       max = NPOTIONS;   str = "potions"; break;
     case SCROLL: ptr = scr_info;       max = NSCROLLS;   str = "scrolls"; break;
     case RING:   ptr = ring_info;      max = NRINGS;     str = "rings"; break;
     case STICK:  ptr = __wands_ptr();  max = MAXSTICKS;  str = "wands"; break;

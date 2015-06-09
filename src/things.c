@@ -214,7 +214,7 @@ discovered(void)
     refresh();
     switch (ch)
     {
-      case POTION: discovered_by_type(ch, pot_info, NPOTIONS); break;
+      case POTION: discovered_by_type(ch, potion_info, NPOTIONS); break;
       case SCROLL: discovered_by_type(ch, scr_info, NSCROLLS); break;
       case RING: discovered_by_type(ch, ring_info, NRINGS); break;
       case STICK: discovered_by_type(ch, __wands_ptr(), MAXSTICKS); break;

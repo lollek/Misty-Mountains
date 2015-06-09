@@ -157,8 +157,8 @@ command_name_item(void)
       break;
 
     case POTION:
-      already_known = pot_info[obj->o_which].oi_know;
-      guess =        &pot_info[obj->o_which].oi_guess;
+      already_known = potion_info[obj->o_which].oi_know;
+      guess =        &potion_info[obj->o_which].oi_guess;
       break;
 
     case SCROLL:

@@ -30,7 +30,7 @@
 /* Colors of the potions */
 static char const* p_colors[NPOTIONS];
 
-struct obj_info pot_info[NPOTIONS] = {
+struct obj_info potion_info[NPOTIONS] = {
   /* io_name,      oi_prob, oi_worth, oi_guess, oi_know */
   { "confusion",         7,        5,     NULL, false },
   { "hallucination",     8,        5,     NULL, false },
@@ -123,7 +123,7 @@ is_quaffable(THING *thing)
 static void
 potion_learn(enum potion_t potion)
 {
-  pot_info[potion].oi_know = true;
+  potion_info[potion].oi_know = true;
 }
 
 bool
@@ -258,7 +258,7 @@ potion_quaff_something(void)
   status();
 
   /* Throw the item away */
-  call_it("potion", &pot_info[obj->o_which]);
+  call_it("potion", &potion_info[obj->o_which]);
 
   if (discardit)
     os_remove_thing(&obj);
@@ -268,7 +268,7 @@ potion_quaff_something(void)
 void
 potion_description(THING const* obj, char buf[])
 {
-  struct obj_info* op = &pot_info[obj->o_which];
+  struct obj_info* op = &potion_info[obj->o_which];
   if (op->oi_know)
   {
     if (obj->o_count == 1)
@@ -295,7 +295,7 @@ potion_create(int which)
   memset(pot, 0, sizeof(*pot));
 
   if (which == -1)
-    which = (int)pick_one(pot_info, NPOTIONS);
+    which = (int)pick_one(potion_info, NPOTIONS);
 
   pot->o_type       = POTION;
   pot->o_which      = which;

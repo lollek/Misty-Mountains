@@ -49,7 +49,7 @@ pr_spec(char type)
   int max;
   switch (type)
   {
-    case POTION: ptr = pot_info;          max = NPOTIONS;  break;
+    case POTION: ptr = potion_info;          max = NPOTIONS;  break;
     case SCROLL: ptr = scr_info;          max = NSCROLLS;  break;
     case RING:   ptr = ring_info;         max = NRINGS;    break;
     case STICK:  ptr = __wands_ptr();     max = MAXSTICKS; break;

@@ -160,9 +160,9 @@ pack_print_evaluate_item(THING* obj)
       break;
 
     case POTION:
-      worth = pot_info[obj->o_which].oi_worth;
+      worth = potion_info[obj->o_which].oi_worth;
       worth *= obj->o_count;
-      op = &pot_info[obj->o_which];
+      op = &potion_info[obj->o_which];
       if (!op->oi_know)
         worth /= 2;
       op->oi_know = true;
