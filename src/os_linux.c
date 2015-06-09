@@ -23,3 +23,10 @@ allocate_new_item(void)
   return item;
 }
 
+void os_remove_thing(THING** thing)
+{
+  assert(thing != NULL);
+
+  free(*thing);
+  *thing = NULL;
+}

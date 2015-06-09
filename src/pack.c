@@ -282,7 +282,7 @@ pack_add(THING* obj, bool silent)
     list_detach(&level_items, obj);
     mvaddcch(player_pos->y, player_pos->x, floor_ch());
     level_set_ch(player_pos->y, player_pos->x, floor_ch());
-    _discard(&obj);
+    os_remove_thing(&obj);
     msg("the scroll turns to dust as you pick it up");
     return false;
   }
@@ -298,7 +298,7 @@ pack_add(THING* obj, bool silent)
           pack_remove_from_floor(obj);
         ptr->o_count += obj->o_count;
         ptr->o_pos = obj->o_pos;
-        _discard(&obj);
+        os_remove_thing(&obj);
         obj = ptr;
         is_picked_up = true;
         break;
@@ -423,7 +423,7 @@ pack_pick_up(THING* obj, bool force)
       {
         pack_add_money(obj->o_goldval);
         list_detach(&level_items, obj);
-        _discard(&obj);
+        os_remove_thing(&obj);
         player_get_room()->r_goldval = 0;
       }
       return;

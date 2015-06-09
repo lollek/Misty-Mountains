@@ -279,12 +279,12 @@ daemon_runners_move(void)
       if (!monster_chase(tp))
         continue;
 
-      assert_attached(mlist, tp);
+      list_assert_monster(tp);
 
       if (monster_is_flying(tp) && dist_cp(player_get_pos(), &tp->t_pos) >= 3)
         monster_chase(tp);
 
-      assert_attached(mlist, tp);
+      list_assert_monster(tp);
 
       if (wastarget && !coord_same(&orig_pos, &tp->t_pos))
       {

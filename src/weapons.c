@@ -150,7 +150,7 @@ fall(THING* obj, bool pr)
   if (pr)
     msg("the %s vanishes as it hits the ground",
         weap_info[obj->o_which].oi_name);
-  _discard(&obj);
+  os_remove_thing(&obj);
 }
 
 THING*

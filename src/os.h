@@ -13,6 +13,7 @@ int setreuid(uid_t ruid, uid_t euid);
 int setregid(gid_t rgid, gid_t egid);
 
 THING* allocate_new_item(void);
+void os_remove_thing(THING** thing);
 
 
 #endif /* _ROGUE14_OS_H_ */

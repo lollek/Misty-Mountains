@@ -247,7 +247,7 @@ monster_notice_player(int y, int x)
 {
   THING *monster = level_get_monster(y, x);
 
-  assert_attached(mlist, monster);
+  list_assert_monster(monster);
 
   coord* player_pos = player_get_pos();
 
@@ -316,7 +316,7 @@ void
 monster_start_running(coord const* runner)
 {
   THING *tp = level_get_monster(runner->y, runner->x);
-  assert_attached(mlist, tp);
+  list_assert_monster(tp);
 
   monster_find_new_target(tp);
   if (!monster_is_stuck(tp))
@@ -377,7 +377,7 @@ monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
     if (waskill)
       fall(obj, false);
     else
-      _discard(&obj);
+      os_remove_thing(&obj);
   }
 
   level_set_monster(mp->y, mp->x, NULL);
@@ -391,7 +391,7 @@ monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
       flushinp();
   }
 
-  _discard(&tp);
+  os_remove_thing(&tp);
 }
 
 bool
@@ -497,7 +497,7 @@ monster_do_special_ability(THING** monster)
         *monster = NULL;
         pack_remove(steal, false, false);
         msg("your pack feels lighter");
-        _discard(&steal);
+        os_remove_thing(&steal);
       }
       return;
 

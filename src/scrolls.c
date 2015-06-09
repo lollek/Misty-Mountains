@@ -529,7 +529,7 @@ read_scroll(void)
   call_it("scroll", &scr_info[obj->o_which]);
 
   if (discardit)
-    _discard(&obj);
+    os_remove_thing(&obj);
 
   return true;
 }

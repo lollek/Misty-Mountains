@@ -5,13 +5,13 @@
 
 #include "things.h"
 
-#define assert_monster(a) assert_attached(mlist, a)
+#define list_assert_monster(a) list_assert_attached(mlist, a)
 
 #ifndef NDEBUG
-#define assert_attached(a, b) _assert_attached(a, b)
-void _assert_attached(THING const* list, THING const* item);
+#define list_assert_attached(a, b) _list_assert_attached(a, b)
+void _list_assert_attached(THING const* list, THING const* item);
 #else
-#define assert_attached(a, b)
+#define list_assert_attached(a, b)
 #endif
 
 /* takes an item out of whatever linked list it might be in */
@@ -28,8 +28,5 @@ THING const* list_element(THING const* list, int8_t i);
 
 /* Throw the whole blamed thing away */
 void list_free_all(THING** ptr);
-
-/* Free up an item */
-void _discard(THING** item);
 
 #endif /* _ROGUE14_LIST_H_ */

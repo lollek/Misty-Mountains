@@ -15,13 +15,14 @@
 #include <stdint.h>
 
 #include "io.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "list.h"
 
 #ifndef NDEBUG
 void
-_assert_attached(THING const* list, THING const* item)
+_list_assert_attached(THING const* list, THING const* item)
 {
   assert(list != NULL);
 
@@ -111,16 +112,6 @@ list_free_all(THING** ptr)
   {
     THING* item = *ptr;
     *ptr = item->l_next;
-    _discard(&item);
+    os_remove_thing(&item);
   }
 }
-
-void
-_discard(THING** item)
-{
-  assert (item != NULL);
-
-  free(*item);
-  *item = NULL;
-}
-
