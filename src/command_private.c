@@ -524,11 +524,19 @@ bool command_throw(void)
     fall(obj, true);
     return true;
   }
+
   /* AHA! Here it has hit something.  If it is a wall or a door,
    * or if it misses (combat) the monster, put it on the floor */
-  else if (monster_at_pos == NULL ||
-      !fight_against_monster(&obj->o_pos, obj, true))
-    fall(obj, true);
+  bool missed = monster_at_pos == NULL ||
+    !fight_against_monster(&obj->o_pos, obj, true);
+
+  if (missed)
+  {
+    if (obj->o_type == POTION)
+      msg("the potion crashes into the wall");
+    else
+      fall(obj, true);
+  }
 
   return true;
 
