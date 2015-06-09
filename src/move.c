@@ -82,9 +82,9 @@ move_do(char ch)
     }
 
     firstmove = false;
-    if (no_move)
+    if (player_turns_without_moving)
     {
-	no_move--;
+	player_turns_without_moving--;
 	msg("you are still stuck in the bear trap");
 	return true;
     }

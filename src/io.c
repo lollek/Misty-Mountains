@@ -256,7 +256,7 @@ status(void)
   printw("Level: %d  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  Arm: %-2d  "
          "Exp: %d/%d  %s",
          level, pack_gold, hpwidth, player_get_health(), hpwidth,
-         player_get_max_health(), player_get_strength(), max_stats.s_str,
+         player_get_max_health(), player_get_strength(), player_max_stats.s_str,
          player_get_armor(), player_get_level(), player_get_exp(),
          food_hunger_state());
 

@@ -25,10 +25,10 @@ static int player_speed = 0;
 static const int player_min_strength = 3;
 static const int player_max_strength = 31;
 
-int no_food = 0;    /* Number of levels without food */
-int no_command = 0; /* Number of turns asleep */
-int no_move = 0;    /* Number of turns held in place */
-bool player_alerted = false; /* Something needs the player's attention */
+int          player_turns_without_action = 0;
+int          player_turns_without_moving = 0;
+bool         player_alerted              = false;
+struct stats player_max_stats = { 16, 0, 1, 10, 12, {{1,4}}, 12 };
 
 /* Duration of effects */
 #define HUHDURATION     spread(20)  /* Confusion */
@@ -39,8 +39,6 @@ bool player_alerted = false; /* Something needs the player's attention */
 #define SLEEPTIME       spread(7)   /* Sleep */
 #define STUCKTIME       spread(3)   /* Stuck */
 
-/* The maximum for the player */
-struct stats max_stats = { 16, 0, 1, 10, 12, {{1,4}}, 12 };
 
 void* __player_ptr(void) { return &player; }
 
@@ -86,8 +84,8 @@ static void
 player_update_max_strength(void)
 {
   int bonuses = player_get_strength_bonuses();
-  if (player.t_stats.s_str - bonuses > max_stats.s_str)
-    max_stats.s_str = player.t_stats.s_str - bonuses;
+  if (player.t_stats.s_str - bonuses > player_max_stats.s_str)
+    player_max_stats.s_str = player.t_stats.s_str - bonuses;
 }
 
 void
@@ -95,7 +93,7 @@ player_init(void)
 {
   THING* obj;
 
-  player.t_stats = max_stats;
+  player.t_stats = player_max_stats;
 
   /* Give him some food */
   pack_add(new_food(-1), true);
@@ -391,14 +389,14 @@ void player_remove_confusing_attack(void) { player.t_flags &= ~CANHUH; }
 void
 player_fall_asleep(void)
 {
-  no_command += SLEEPTIME;
+  player_turns_without_action += SLEEPTIME;
   player_stop_running();
   msg("you fall asleep");
 }
 
 void player_become_stuck(void)
 {
-  no_move += STUCKTIME;
+  player_turns_without_moving += STUCKTIME;
   player_stop_running();
 }
 
@@ -458,7 +456,7 @@ void player_teleport(coord *target)
     player_remove_held();
     monster_flytrap_hit = 0;
   }
-  no_move = 0;
+  player_turns_without_moving = 0;
   command_stop(true);
   flushinp();
   msg("suddenly you're somewhere else");
@@ -551,13 +549,13 @@ int player_get_strength(void)               { return player.t_stats.s_str; }
 bool
 player_strength_is_weakened(void)
 {
-  return player.t_stats.s_str < max_stats.s_str;
+  return player.t_stats.s_str < player_max_stats.s_str;
 }
 
 void
 player_restore_strength(void)
 {
-  player.t_stats.s_str = max_stats.s_str + player_get_strength_bonuses();
+  player.t_stats.s_str = player_max_stats.s_str + player_get_strength_bonuses();
 }
 
 void

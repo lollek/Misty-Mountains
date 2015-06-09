@@ -39,12 +39,14 @@
 #define MAXTRIES	10 /* max number of tries to put down a monster */
 #define MAXTRAPS	10
 
+int const level_amulet = 26;
+
 PLACE     level_places[MAXLINES*MAXCOLS];
 coord     level_stairs;
 THING*    level_items = NULL;
 int       level = 1;
 int       level_max = 1;
-int const level_amulet = 26;
+int       levels_without_food = 0;
 
 
 /** treas_room:
@@ -166,7 +168,7 @@ level_new(void)
 
   rooms_create(); /* Draw rooms */
   passages_do();  /* Draw passages */
-  no_food++;      /* Levels with no food placed */
+  levels_without_food++;      /* Levels with no food placed */
   put_things();   /* Place objects (if any) */
 
   /* Place the traps */

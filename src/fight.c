@@ -154,7 +154,7 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
   calculate_attacker(attacker, weapon, thrown, &mod);
 
   /* If defender is stuck in some way,the attacker gets a bonus to hit */
-  if ((is_player(defender) && no_command) || monster_is_held(defender)
+  if ((is_player(defender) && player_turns_without_action) || monster_is_held(defender)
       || monster_is_stuck(defender))
     mod.to_hit += 4;
 

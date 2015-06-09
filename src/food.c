@@ -86,10 +86,10 @@ food_digest(void)
 
   if (food_left < starvation_start)
   {
-    if (no_command || rnd(5) != 0)
+    if (player_turns_without_action || rnd(5) != 0)
       return;
 
-    no_command += rnd(8) + 4;
+    player_turns_without_action += rnd(8) + 4;
     hunger_state = STARVING;
     msg("you faint from lack of food");
     command_stop(true);

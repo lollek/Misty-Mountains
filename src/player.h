@@ -6,13 +6,12 @@
 #include "rogue.h"
 
 /* Variable (TODO: remove these) */
-extern int no_command;
-extern int no_food;
-extern int no_move;
-extern bool player_alerted;
+extern int          player_turns_without_action; /* Turns asleep */
+extern int          player_turns_without_moving; /* Turns held in place */
+extern bool         player_alerted;              /* Alert the player? */
+extern struct stats player_max_stats;            /* Current max stats */
 
 void* __player_ptr(void);
-extern struct stats max_stats;
 
 /* General */
 void player_init(void);

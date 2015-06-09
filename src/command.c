@@ -85,7 +85,7 @@ command(void)
     after = true;
 
 
-    if (no_command && --no_command == 0)
+    if (player_turns_without_action && --player_turns_without_action == 0)
     {
       player_start_running();
       msg("you can move again");
@@ -94,7 +94,7 @@ command(void)
     coord* player_pos = player_get_pos();
     move(player_pos->y, player_pos->x);
 
-    if (!no_command)
+    if (!player_turns_without_action)
     {
       char ch;
 

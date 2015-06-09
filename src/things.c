@@ -84,7 +84,7 @@ THING*
 new_food(int which)
 {
   /* Reset levels-without-food counter */
-  no_food = 0;
+  levels_without_food = 0;
 
   THING* cur = allocate_new_item();
   memset(cur, 0, sizeof(*cur));
@@ -117,7 +117,7 @@ new_thing(void)
   /* Decide what kind of object it will be
    * If we haven't had food for a while, let it be food. */
   int r;
-  if (no_food > 3)
+  if (levels_without_food > 3)
     r = 2;
   else
     r = (int)pick_one(things, NUMTHINGS);

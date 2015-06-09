@@ -463,13 +463,13 @@ monster_do_special_ability(THING** monster)
     /* The ice monster freezes you */
     case 'I':
       player_stop_running();
-      if (!no_command)
+      if (!player_turns_without_action)
       {
         char buf[MAXSTR];
         msg("you are frozen by the %s", monster_name(*monster, buf));
       }
-      no_command += rnd(2) + 2;
-      if (no_command > 50)
+      player_turns_without_action += rnd(2) + 2;
+      if (player_turns_without_action > 50)
         death('h');
       return;
 
