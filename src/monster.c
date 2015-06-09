@@ -230,7 +230,7 @@ monster_new_random_wanderer(void)
     room_find_floor((struct room *) NULL, &monster_pos, false, true);
   while (roomin(&monster_pos) == player_get_room());
 
-  THING* monster = allocate_new_item();
+  THING* monster = os_calloc_thing();
   monster_new(monster, monster_random(true), &monster_pos);
   if (player_can_sense_monsters())
   {
@@ -343,7 +343,7 @@ monster_on_death(THING* monster, bool pr)
     case 'L':
       if (fallpos(&monster->t_pos, &monster->t_room->r_gold))
       {
-        THING* gold = allocate_new_item();
+        THING* gold = os_calloc_thing();
         gold->o_type = GOLD;
         gold->o_goldval = GOLDCALC;
         if (player_save_throw(VS_MAGIC))

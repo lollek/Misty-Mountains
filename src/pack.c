@@ -393,7 +393,7 @@ pack_remove(THING* obj, bool newobj, bool all)
     obj->o_count--;
     if (newobj)
     {
-      nobj = allocate_new_item();
+      nobj = os_calloc_thing();
       *nobj = *obj;
       nobj->l_next = NULL;
       nobj->l_prev = NULL;

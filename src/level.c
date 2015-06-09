@@ -87,7 +87,7 @@ treas_room(void)
     spots = 0;
     if (room_find_floor(room, &monster_pos, MAXTRIES, true))
     {
-      THING* tp = allocate_new_item();
+      THING* tp = os_calloc_thing();
       monster_new(tp, monster_random(false), &monster_pos);
       tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
       monster_give_pack(tp);

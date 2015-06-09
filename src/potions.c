@@ -291,8 +291,7 @@ potion_description(THING const* obj, char buf[])
 THING*
 potion_create(int which)
 {
-  THING* pot = allocate_new_item();
-  memset(pot, 0, sizeof(*pot));
+  THING* pot = os_calloc_thing();
 
   if (which == -1)
     which = (int)pick_one(potion_info, NPOTIONS);

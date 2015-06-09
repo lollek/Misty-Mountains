@@ -10,7 +10,7 @@
 #include "os.h"
 
 THING*
-allocate_new_item(void)
+os_calloc_thing(void)
 {
   THING* item = calloc(1, sizeof *item);
 

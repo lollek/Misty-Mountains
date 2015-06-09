@@ -156,12 +156,10 @@ fall(THING* obj, bool pr)
 THING*
 weapon_create(int which, bool random_stats)
 {
-  THING* weap = allocate_new_item();
-  memset(weap, 0, sizeof(*weap));
-
   if (which == -1)
     which = (int)pick_one(weap_info, MAXWEAPONS);
 
+  THING* weap = os_calloc_thing();
   weap->o_type  = WEAPON;
   weap->o_which = which;
 

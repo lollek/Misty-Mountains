@@ -264,12 +264,10 @@ ring_description(THING const* item, char* buf)
 THING*
 ring_create(int which, bool random_stats)
 {
-  THING* ring = allocate_new_item();
-  memset(ring, 0, sizeof(*ring));
-
   if (which == -1)
     which = (int)pick_one(ring_info, NRINGS);
 
+  THING* ring = os_calloc_thing();
   ring->o_type = RING;
   ring->o_which = which;
 

@@ -135,8 +135,7 @@ wand_material(enum wand_t wand)
 THING*
 wand_create(int wand)
 {
-  THING* new_wand = allocate_new_item();
-  memset(new_wand, 0, sizeof(*new_wand));
+  THING* new_wand = os_calloc_thing();
 
   memset(new_wand->o_damage, 0, sizeof(new_wand->o_damage));
   new_wand->o_damage[0] = (struct damage){1, 1};

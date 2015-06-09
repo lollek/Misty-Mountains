@@ -263,7 +263,7 @@ create_monster(void)
   else
   {
     char buf[MAXSTR];
-    THING *obj = allocate_new_item();
+    THING *obj = os_calloc_thing();
     monster_new(obj, monster_random(false), &mp);
     msg("A %s appears out of thin air", monster_name(obj, buf));
   }
@@ -556,8 +556,7 @@ scroll_description(THING* obj, char* buf)
 THING*
 scroll_create(int which)
 {
-  THING* scroll = allocate_new_item();
-  memset(scroll, 0, sizeof(*scroll));
+  THING* scroll = os_calloc_thing();
 
   if (which == -1)
     which = (int)pick_one(scr_info, NSCROLLS);

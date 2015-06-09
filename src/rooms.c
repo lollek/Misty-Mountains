@@ -286,7 +286,7 @@ rooms_create(void)
     /* Put the gold in */
     if (rnd(2) == 0 && (!pack_contains_amulet() || level >= level_max))
     {
-      THING *gold = allocate_new_item();
+      THING *gold = os_calloc_thing();
       gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
       room_find_floor(&rooms[i], &rooms[i].r_gold, false, false);
       gold->o_pos = rooms[i].r_gold;
@@ -299,9 +299,9 @@ rooms_create(void)
     /* Put the monster in */
     if (rnd(100) < (rooms[i].r_goldval > 0 ? 80 : 25))
     {
-      THING *tp = allocate_new_item();
       coord mp;
       room_find_floor(&rooms[i], &mp, false, true);
+      THING *tp = os_calloc_thing();
       monster_new(tp, monster_random(false), &mp);
       monster_give_pack(tp);
     }

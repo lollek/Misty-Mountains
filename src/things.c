@@ -86,8 +86,7 @@ new_food(int which)
   /* Reset levels-without-food counter */
   levels_without_food = 0;
 
-  THING* cur = allocate_new_item();
-  memset(cur, 0, sizeof(*cur));
+  THING* cur = os_calloc_thing();
   cur->o_count = 1;
   cur->o_type = FOOD;
   switch (which)
@@ -101,9 +100,7 @@ new_food(int which)
 THING*
 new_amulet(void)
 {
-  THING* obj = allocate_new_item();
-  memset(obj, 0, sizeof(*obj));
-
+  THING* obj = os_calloc_thing();
   obj->o_damage[0] = (struct damage){1, 2};
   obj->o_hurldmg[0] = (struct damage){1, 2};
   obj->o_type = AMULET;

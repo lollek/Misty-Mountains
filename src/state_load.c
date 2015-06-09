@@ -427,7 +427,7 @@ rs_read_equipment(int32_t marker)
     return fail("rs_read_equipment(%X) expected %X found %x\r\n",
                 marker, disk_mark);
 
-  item = allocate_new_item();
+  item = os_calloc_thing();
   if (rs_read_object(item))
     return fail("rs_read_equipment(%X)\r\n", marker);
 
@@ -450,7 +450,7 @@ state_load_list(THING** list)
   THING* head = NULL;
   for (int i = 0; i < cnt; i++)
   {
-    l = allocate_new_item();
+    l = os_calloc_thing();
     l->l_prev = previous;
 
     if (previous != NULL)
@@ -579,7 +579,7 @@ rs_read_thing_list(THING** list)
 
   for (int i = 0; i < cnt; i++)
   {
-    l = allocate_new_item();
+    l = os_calloc_thing();
     l->l_prev = previous;
 
     if (previous != NULL)

@@ -138,12 +138,10 @@ armor_description(THING* obj, char* buf)
 THING*
 armor_create(int which, int random_stats)
 {
-  THING* armor = allocate_new_item();
-  memset(armor, 0, sizeof(*armor));
-
   if (which == -1)
     which = armor_type_random();
 
+  THING* armor = os_calloc_thing();
   armor->o_type = ARMOR;
   armor->o_which = which;
   armor->o_arm = armor_ac((enum armor_t)armor->o_which);
