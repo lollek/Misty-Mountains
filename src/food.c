@@ -1,11 +1,11 @@
-#include "state.h"
-#include "rings.h"
-#include "pack.h"
-#include "io.h"
 #include "command.h"
-#include "player.h"
-#include "rip.h"
+#include "io.h"
 #include "misc.h"
+#include "pack.h"
+#include "player.h"
+#include "rings.h"
+#include "rip.h"
+#include "state.h"
 
 #include "food.h"
 
