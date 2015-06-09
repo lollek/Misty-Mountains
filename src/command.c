@@ -196,6 +196,7 @@ command_wizard_do(char ch)
 
   switch (ch)
   {
+    case '_': raise(SIGINT); break;
     case '|': msg("@ %d,%d", player_get_pos()->y, player_get_pos()->x); break;
     case 'C': create_obj(); break;
     case '$': msg("inpack = %d", pack_count_items()); break;
