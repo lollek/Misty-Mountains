@@ -55,6 +55,7 @@ static int32_t const RSID_START        = 0x1011E006;
 static int32_t const RSID_END          = 0x1011E007;
 static int32_t const RSID_PLAYER       = 0x1011E008;
 static int32_t const RSID_LEVEL        = 0x1011E009;
+static int32_t const RSID_FOOD         = 0x1011E00A;
 
 static int32_t const RSID_STATS        = 0x1011EA01;
 static int32_t const RSID_THING        = 0x1011EA02;

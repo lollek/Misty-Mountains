@@ -20,6 +20,7 @@
 #include "monster.h"
 #include "os.h"
 #include "weapons.h"
+#include "food.h"
 #include "rogue.h"
 
 #include "state.h"
@@ -320,18 +321,17 @@ rs_read_daemons(struct delayed_action* d_list, int count)
       case 0:    d_list[i].d_func = NULL; break;
       case 1:    d_list[i].d_func = daemon_rollwand; break;
       case 2:    d_list[i].d_func = daemon_doctor; break;
-      case 3:    d_list[i].d_func = daemon_digest_food; break;
-      case 4:    d_list[i].d_func = daemon_runners_move; break;
-      case 5:    d_list[i].d_func = daemon_start_wanderer; break;
-      case 6:    d_list[i].d_func = player_decrease_speed; break;
-      case 7:    d_list[i].d_func = player_remove_confused; break;
-      case 8:    d_list[i].d_func = player_remove_true_sight; break;
-      case 9:    d_list[i].d_func = player_remove_blind; break;
-      case 10:   d_list[i].d_func = daemon_ring_abilities; break;
-      case 11:   d_list[i].d_func = player_remove_sense_monsters; break;
-      case 12:   d_list[i].d_func = player_remove_hallucinating; break;
-      case 13:   d_list[i].d_func = player_stop_levitating; break;
-      case 14:   d_list[i].d_func = daemon_change_visuals; break;
+      case 3:    d_list[i].d_func = daemon_runners_move; break;
+      case 4:    d_list[i].d_func = daemon_start_wanderer; break;
+      case 5:    d_list[i].d_func = player_decrease_speed; break;
+      case 6:    d_list[i].d_func = player_remove_confused; break;
+      case 7:    d_list[i].d_func = player_remove_true_sight; break;
+      case 8:    d_list[i].d_func = player_remove_blind; break;
+      case 9:    d_list[i].d_func = daemon_ring_abilities; break;
+      case 10:   d_list[i].d_func = player_remove_sense_monsters; break;
+      case 11:   d_list[i].d_func = player_remove_hallucinating; break;
+      case 12:   d_list[i].d_func = player_stop_levitating; break;
+      case 13:   d_list[i].d_func = daemon_change_visuals; break;
       default:   msg("Unknown daemon by id %d", func); return 1;
     }
   }
@@ -640,14 +640,13 @@ state_load_file(FILE* inf)
   rs_assert(state_assert_int32(RSID_WANDS)   ||   wand_load_state());
   rs_assert(state_assert_int32(RSID_PLAYER)  || player_load_state());
   rs_assert(state_assert_int32(RSID_LEVEL)   ||  level_load_state());
+  rs_assert(state_assert_int32(RSID_FOOD)    ||   food_load_state());
 
   rs_assert(state_load_bool(&firstmove))
   rs_assert(state_load_chars(file_name, MAXSTR))
   rs_assert(state_load_char(&runch))
   rs_assert(state_load_chars(whoami, MAXSTR))
-  rs_assert(state_load_int32(&hungry_state))
   rs_assert(state_load_int32(&no_food))
-  rs_assert(state_load_int32(&food_left))
   rs_assert(state_load_int32(&no_move))
   rs_assert(state_load_int32(&purse))
   rs_assert(state_load_int32(&vf_hit))

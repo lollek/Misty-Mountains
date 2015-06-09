@@ -20,6 +20,7 @@
 #include "monster.h"
 #include "os.h"
 #include "weapons.h"
+#include "food.h"
 #include "rogue.h"
 
 #include "state.h"
@@ -388,18 +389,17 @@ state_save_daemons(struct delayed_action const* d_list, int32_t count)
     if (d_list[i].d_func == NULL)                              func = 0;
     else if (d_list[i].d_func == daemon_rollwand)              func = 1;
     else if (d_list[i].d_func == daemon_doctor)                func = 2;
-    else if (d_list[i].d_func == daemon_digest_food)           func = 3;
-    else if (d_list[i].d_func == daemon_runners_move)          func = 4;
-    else if (d_list[i].d_func == daemon_start_wanderer)        func = 5;
-    else if (d_list[i].d_func == player_decrease_speed)        func = 6;
-    else if (d_list[i].d_func == player_remove_confused)       func = 7;
-    else if (d_list[i].d_func == player_remove_true_sight)     func = 8;
-    else if (d_list[i].d_func == player_remove_blind)          func = 9;
-    else if (d_list[i].d_func == daemon_ring_abilities)        func = 10;
-    else if (d_list[i].d_func == player_remove_sense_monsters) func = 11;
-    else if (d_list[i].d_func == player_remove_hallucinating)  func = 12;
-    else if (d_list[i].d_func == player_stop_levitating)       func = 13;
-    else if (d_list[i].d_func == daemon_change_visuals)        func = 14;
+    else if (d_list[i].d_func == daemon_runners_move)          func = 3;
+    else if (d_list[i].d_func == daemon_start_wanderer)        func = 4;
+    else if (d_list[i].d_func == player_decrease_speed)        func = 5;
+    else if (d_list[i].d_func == player_remove_confused)       func = 6;
+    else if (d_list[i].d_func == player_remove_true_sight)     func = 7;
+    else if (d_list[i].d_func == player_remove_blind)          func = 8;
+    else if (d_list[i].d_func == daemon_ring_abilities)        func = 9;
+    else if (d_list[i].d_func == player_remove_sense_monsters) func = 10;
+    else if (d_list[i].d_func == player_remove_hallucinating)  func = 11;
+    else if (d_list[i].d_func == player_stop_levitating)       func = 12;
+    else if (d_list[i].d_func == daemon_change_visuals)        func = 13;
     else
       return fail("state_save_daemons(%p, %d) Unknown Daemon\r\n",
                      d_list, count);
@@ -505,14 +505,13 @@ state_save_file(FILE* savef)
   rs_assert(state_save_int32(RSID_WANDS)   ||   wand_save_state());
   rs_assert(state_save_int32(RSID_PLAYER)  || player_save_state());
   rs_assert(state_save_int32(RSID_LEVEL)   ||  level_save_state());
+  rs_assert(state_save_int32(RSID_FOOD)    ||   food_save_state());
 
   rs_assert(state_save_bool(firstmove))
   rs_assert(state_save_chars(file_name, maxstr))
   rs_assert(state_save_char(runch))
   rs_assert(state_save_chars(whoami, maxstr))
-  rs_assert(state_save_int32(hungry_state))
   rs_assert(state_save_int32(no_food))
-  rs_assert(state_save_int32(food_left))
   rs_assert(state_save_int32(no_move))
   rs_assert(state_save_int32(purse))
   rs_assert(state_save_int32(vf_hit))

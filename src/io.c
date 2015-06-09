@@ -14,6 +14,7 @@
 #include "rogue.h"
 #include "options.h"
 #include "level.h"
+#include "food.h"
 #include "pack.h"
 
 #include "io.h"
@@ -244,7 +245,6 @@ status(void)
 {
   int oy, ox;
   int hpwidth = 0;
-  char const* state_name[] = { "", "Hungry", "Weak", "Faint" };
 
   getyx(stdscr, oy, ox);
 
@@ -258,7 +258,7 @@ status(void)
          level, purse, hpwidth, player_get_health(), hpwidth,
          player_get_max_health(), player_get_strength(), max_stats.s_str,
          player_get_armor(), player_get_level(), player_get_exp(),
-         state_name[hungry_state]);
+         food_hunger_state());
 
   clrtoeol();
   move(oy, ox);

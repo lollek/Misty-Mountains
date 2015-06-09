@@ -27,7 +27,6 @@ void daemon_lengthen_fuse(void (*func)(), int xtime);
 void daemon_doctor(void);
 void daemon_start_wanderer(void);
 void daemon_rollwand(void);
-void daemon_digest_food(void);
 void daemon_change_visuals(void);
 void daemon_runners_move(void);
 void daemon_ring_abilities(void);

@@ -227,60 +227,6 @@ daemon_rollwand(void)
   }
 }
 
-/** daemon_digest_food:
- * Digest the hero's food */
-void
-daemon_digest_food(void)
-{
-  int const hungry_time = 300;
-  int const starving_time = 150;
-  int const death_by_starvation = -850;
-
-  /* Player is dying from lack of food */
-  if (food_left <= 0)
-  {
-    if (food_left-- < death_by_starvation)
-      death('s');
-
-    /** the hero is fainting */
-    if (no_command || rnd(5) != 0)
-      return;
-
-    no_command += rnd(8) + 4;
-    hungry_state = 3;
-    msg("you faint from lack of food");
-    command_stop(true);
-    return;
-  }
-
-
-  int oldfood = food_left;
-  food_left -= 1 + ring_drain_amount() - pack_contains_amulet();
-
-  if (food_left < death_by_starvation) /* Integer overflow */
-  {
-    (void)fail("Food left was: %d Wanted to be: %d\r\n", oldfood, food_left);
-    food_left = oldfood;
-  }
-
-  if (food_left < starving_time && oldfood >= starving_time)
-  {
-    hungry_state = 2;
-    msg("you feel weak from lack of food");
-    command_stop(true);
-    return;
-  }
-
-  if (food_left < hungry_time && oldfood >= hungry_time)
-  {
-    hungry_state = 1;
-    msg("you are starting to get hungry");
-    command_stop(true);
-    return;
-  }
-}
-
-
 /** daemon_change_visuals:
  * change the characters for the player */
 void

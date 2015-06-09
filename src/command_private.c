@@ -22,6 +22,7 @@
 #include "daemons.h"
 #include "move.h"
 #include "fight.h"
+#include "food.h"
 #include "rogue.h"
 
 #include "command_private.h"
@@ -589,11 +590,7 @@ command_eat(void)
     return false;
   }
 
-  food_left = (food_left > 0 ? food_left : 0) + HUNGERTIME - 200 + rnd(400);
-  if (food_left > STOMACHSIZE)
-    food_left = STOMACHSIZE;
-
-  hungry_state = 0;
+  food_eat();
 
   if (obj->o_which == 1)
     msg("my, that was a yummy fruit");

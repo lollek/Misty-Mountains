@@ -35,6 +35,7 @@
 #include "wand.h"
 #include "things.h"
 #include "rip.h"
+#include "food.h"
 #include "rogue.h"
 
 #include "command.h"
@@ -57,6 +58,7 @@ command_stop(bool stop_fighting)
   player_stop_running();
   door_stop = false;
   running = false;
+  player_alerted = true;
 
   if (stop_fighting)
     to_death = false;
@@ -117,6 +119,7 @@ command(void)
       num_moves++;
   }
 
+  food_digest();
   daemon_run_after();
   return 0;
 }
@@ -199,7 +202,7 @@ command_wizard_do(char ch)
     case CTRL('A'): level--; level_new(); break;
     case CTRL('C'): passages_add_pass(); break;
     case CTRL('D'): level++; level_new(); break;
-    case CTRL('E'): msg("food left: %d", food_left); break;
+    case CTRL('E'): msg("food left: %d", food_nutrition_left()); break;
     case CTRL('F'): show_map(); break;
     case CTRL('I'): wizard_levels_and_gear(); break;
     case CTRL('T'): player_teleport(NULL); break;

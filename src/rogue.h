@@ -24,8 +24,6 @@
 #define WANDERTIME	spread(70)
 #define BEFORE		spread(1)
 #define AFTER		spread(2)
-#define HUNGERTIME	1300
-#define STOMACHSIZE	2000
 #define LEFT		0
 #define RIGHT		1
 #define BOLT_LENGTH	6

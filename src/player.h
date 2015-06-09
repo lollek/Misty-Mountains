@@ -6,8 +6,6 @@
 #include "rogue.h"
 
 /* Variable (TODO: remove these) */
-extern int food_left;
-extern int hungry_state;
 extern int no_command;
 extern int no_food;
 extern int no_move;
