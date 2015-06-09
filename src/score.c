@@ -84,19 +84,13 @@ open_score_and_drop_setuid_setgid(void)
     return 1;
   }
 
-  /* Drop setuid/setgid */
-  {
-    gid_t realgid = getgid();
-    uid_t realuid = getuid();
-
-    if (setregid(realgid, realgid) != 0) {
-      perror("Could not drop setgid privileges.  Aborting.");
-      abort();
-    }
-    if (setreuid(realuid, realuid) != 0) {
-      perror("Could not drop setuid privileges.  Aborting.");
-      abort();
-    }
+  if (os_drop_gid() != 0) {
+    perror("Could not drop group privileges.  Aborting.");
+    abort();
+  }
+  if (os_drop_uid() != 0) {
+    perror("Could not drop user privileges.  Aborting.");
+    abort();
   }
   return 0;
 }

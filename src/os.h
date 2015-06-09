@@ -5,13 +5,11 @@
 
 #include "things.h"
 
-typedef unsigned int usecs;
-
 int rand_r(unsigned* seedp);
-int usleep(usecs usec);
-int setreuid(uid_t ruid, uid_t euid);
-int setregid(gid_t rgid, gid_t egid);
+int usleep(unsigned int usec);
 
+int    os_drop_uid(void);
+int    os_drop_gid(void);
 THING* os_calloc_thing(void);
 void   os_remove_thing(THING** thing);
 

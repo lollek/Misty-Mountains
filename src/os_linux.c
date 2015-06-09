@@ -9,6 +9,20 @@
 
 #include "os.h"
 
+int
+os_drop_uid(void)
+{
+  uid_t realuid = getuid();
+  return setreuid(realuid, realuid);
+}
+
+int
+os_drop_gid(void)
+{
+  gid_t realgid = getgid();
+  return setregid(realgid, realgid);
+}
+
 THING*
 os_calloc_thing(void)
 {
