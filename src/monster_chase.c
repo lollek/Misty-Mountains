@@ -115,7 +115,7 @@ chase(THING *tp, coord *ee)
          * so we need to look it up to see what type it is */
         if (ch == SCROLL)
         {
-          for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
+          for (obj = level_items; obj != NULL; obj = obj->l_next)
           {
             if (y == obj->o_pos.y && x == obj->o_pos.x)
               break;
@@ -237,10 +237,10 @@ over:
 	    return( fight_against_player(th) );
 	else if (coord_same(&this, th->t_dest))
 	{
-	    for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
+	    for (obj = level_items; obj != NULL; obj = obj->l_next)
 		if (th->t_dest == &obj->o_pos)
 		{
-		    list_detach(&lvl_obj, obj);
+		    list_detach(&level_items, obj);
 		    list_attach(&th->t_pack, obj);
 		    level_set_ch(obj->o_pos.y, obj->o_pos.x,
 			(th->t_room->r_flags & ISGONE) ? PASSAGE : FLOOR);

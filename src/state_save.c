@@ -193,7 +193,7 @@ state_save_dest(coord const* dest)
         : SUCCESS;
 
   /* (2,i): location of an object */
-  for (ptr = lvl_obj, i = 0; ptr != NULL; ptr = ptr->l_next, ++i)
+  for (ptr = level_items, i = 0; ptr != NULL; ptr = ptr->l_next, ++i)
     if (&ptr->o_pos == dest)
       return state_save_int32(2) || state_save_int32(i)
         ? fail("state_save_dest(%p)\r\n", dest)
@@ -328,9 +328,9 @@ state_save_places(void)
   int end = MAXLINES * MAXCOLS;
   int i;
   for (i = 0; i < end; ++i)
-    if (state_save_char(places[i].p_ch) ||
-        state_save_char(places[i].p_flags) ||
-        state_save_list_index(mlist, places[i].p_monst))
+    if (state_save_char(level_places[i].p_ch) ||
+        state_save_char(level_places[i].p_flags) ||
+        state_save_list_index(mlist, level_places[i].p_monst))
       return fail("state_save_places()\r\n", i);
   return SUCCESS;
 }

@@ -236,13 +236,13 @@ daemon_change_visuals(void)
     return;
 
   /* change the things */
-  for (THING* tp = lvl_obj; tp != NULL; tp = tp->l_next)
+  for (THING* tp = level_items; tp != NULL; tp = tp->l_next)
     if (cansee(tp->o_pos.y, tp->o_pos.x))
       mvaddcch(tp->o_pos.y, tp->o_pos.x, rnd_thing());
 
   /* change the stairs */
   if (seen_stairs())
-    mvaddcch(stairs.y, stairs.x, rnd_thing());
+    mvaddcch(level_stairs.y, level_stairs.x, rnd_thing());
 
   /* change the monsters */
   bool seemonst = player_can_sense_monsters();

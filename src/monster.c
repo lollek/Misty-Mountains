@@ -300,7 +300,7 @@ monster_notice_player(int y, int x)
 void
 monster_give_pack(THING* tp)
 {
-  if (level >= max_level
+  if (level >= level_max
       && rnd(100) < monsters[tp->t_type-'A'].m_carry)
     list_attach(&tp->t_pack, new_thing());
 }

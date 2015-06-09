@@ -35,7 +35,7 @@
 static bool
 move_turn_ok(int y, int x)
 {
-  PLACE *pp = INDEX(y, x);
+  PLACE *pp = level_get_place(y, x);
   return (pp->p_ch == DOOR
       || (pp->p_flags & (F_REAL|F_PASS)) == (F_REAL|F_PASS));
 }
@@ -46,7 +46,7 @@ static void
 move_turnref(void)
 {
   coord *player_pos = player_get_pos();
-  PLACE *pp = INDEX(player_pos->y, player_pos->x);
+  PLACE *pp = level_get_place(player_pos->y, player_pos->x);
 
   if (!(pp->p_flags & F_SEEN))
   {
@@ -301,7 +301,7 @@ move_random(THING* who, coord* ret)
   if (ch == SCROLL)
   {
     THING* obj;
-    for (obj = lvl_obj; obj != NULL; obj = obj->l_next)
+    for (obj = level_items; obj != NULL; obj = obj->l_next)
       if (y == obj->o_pos.y && x == obj->o_pos.x)
         break;
 

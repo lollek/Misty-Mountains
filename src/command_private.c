@@ -299,7 +299,7 @@ command_pick_up(void)
 
   coord const* player_pos = player_get_pos();
 
-  for (THING* obj = lvl_obj; obj != NULL; obj = obj->l_next)
+  for (THING* obj = level_items; obj != NULL; obj = obj->l_next)
     if (coord_same(&obj->o_pos, player_pos))
     {
       pack_pick_up(obj, true);
@@ -657,7 +657,7 @@ bool command_drop(void)
   obj = pack_remove(obj, true, drop_all);
 
   /* Link it into the level object list */
-  list_attach(&lvl_obj, obj);
+  list_attach(&level_items, obj);
 
   level_set_ch(player_pos->y, player_pos->x, (char)obj->o_type);
   int flags = level_get_flags(player_pos->y, player_pos->x);

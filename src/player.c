@@ -283,7 +283,7 @@ void player_remove_hallucinating(void)
     return;
 
   /* undo the things */
-  for (THING* tp = lvl_obj; tp != NULL; tp = tp->l_next)
+  for (THING* tp = level_items; tp != NULL; tp = tp->l_next)
     if (cansee(tp->o_pos.y, tp->o_pos.x))
       mvaddcch(tp->o_pos.y, tp->o_pos.x, (chtype)tp->o_type);
 

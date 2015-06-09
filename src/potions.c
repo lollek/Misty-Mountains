@@ -173,10 +173,10 @@ potion_quaff_something(void)
     {
       /* Potion of magic detection.  Show the potions and scrolls */
       bool show = false;
-      if (lvl_obj != NULL)
+      if (level_items != NULL)
       {
         wclear(hw);
-        for (THING* item = lvl_obj; item != NULL; item = item->l_next)
+        for (THING* item = level_items; item != NULL; item = item->l_next)
           if (is_magic(item))
           {
             show = true;

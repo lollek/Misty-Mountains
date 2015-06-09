@@ -39,11 +39,12 @@
 #define MAXTRIES	10 /* max number of tries to put down a monster */
 #define MAXTRAPS	10
 
-PLACE places[MAXLINES*MAXCOLS];
-THING* lvl_obj = NULL;
-coord stairs;
-int level = 1;
-int max_level = 1;
+PLACE     level_places[MAXLINES*MAXCOLS];
+coord     level_stairs;
+THING*    level_items = NULL;
+int       level = 1;
+int       level_max = 1;
+int const level_amulet;
 
 
 /** treas_room:
@@ -65,7 +66,7 @@ treas_room(void)
 
     room_find_floor(room, &monster_pos, 2 * MAXTRIES, false);
     monster->o_pos = monster_pos;
-    list_attach(&lvl_obj, monster);
+    list_attach(&level_items, monster);
     level_set_ch(monster_pos.y, monster_pos.x, (char)monster->o_type);
   }
 
@@ -102,7 +103,7 @@ put_things(void)
 
   /* Once you have found the amulet, the only way to get new stuff is
    * go down into the dungeon. */
-  if (pack_contains_amulet() && level < max_level)
+  if (pack_contains_amulet() && level < level_max)
       return;
 
   /* check for treasure rooms, and if so, put it in. */
@@ -115,7 +116,7 @@ put_things(void)
     {
       /* Pick a new object and link it in the list */
       THING* obj = new_thing();
-      list_attach(&lvl_obj, obj);
+      list_attach(&level_items, obj);
 
       /* Put it somewhere */
       room_find_floor((struct room *) NULL, &obj->o_pos, false, false);
@@ -124,10 +125,10 @@ put_things(void)
 
   /* If he is really deep in the dungeon and he hasn't found the
    * amulet yet, put it somewhere on the ground */
-  if (level >= AMULETLEVEL && !pack_contains_amulet())
+  if (level >= level_amulet && !pack_contains_amulet())
   {
     THING* amulet = new_amulet();
-    list_attach(&lvl_obj, amulet);
+    list_attach(&level_items, amulet);
 
     /* Put it somewhere */
     room_find_floor((struct room *) NULL, &amulet->o_pos, false, false);
@@ -143,11 +144,11 @@ level_new(void)
   player_remove_held();
 
   /* Set max level we've been to */
-  if (level > max_level)
-    max_level = level;
+  if (level > level_max)
+    level_max = level;
 
   /* Clean things off from last level */
-  for (PLACE* pp = places; pp < &places[MAXCOLS*MAXLINES]; pp++)
+  for (PLACE* pp = level_places; pp < &level_places[MAXCOLS*MAXLINES]; pp++)
   {
       pp->p_ch = SHADOW;
       pp->p_flags = F_REAL;
@@ -161,7 +162,7 @@ level_new(void)
   list_free_all(&mlist);
 
   /* Throw away stuff left on the previous level (if anything) */
-  list_free_all(&lvl_obj);
+  list_free_all(&level_items);
 
   rooms_create(); /* Draw rooms */
   passages_do();  /* Draw passages */
@@ -183,19 +184,19 @@ level_new(void)
        * can't actually do it.
        */
       do
-        room_find_floor((struct room *) NULL, &stairs, false, false);
-      while (level_get_ch(stairs.y, stairs.x) != FLOOR);
+        room_find_floor((struct room *) NULL, &level_stairs, false, false);
+      while (level_get_ch(level_stairs.y, level_stairs.x) != FLOOR);
 
-      char trapflag = level_get_flags(stairs.y, stairs.x);
+      char trapflag = level_get_flags(level_stairs.y, level_stairs.x);
       trapflag &= ~F_REAL;
       trapflag |= rnd(NTRAPS);
-      level_set_flags(stairs.y, stairs.x, trapflag);
+      level_set_flags(level_stairs.y, level_stairs.x, trapflag);
     }
   }
 
   /* Place the staircase down.  */
-  room_find_floor((struct room *) NULL, &stairs, false, false);
-  level_set_ch(stairs.y, stairs.x, STAIRS);
+  room_find_floor((struct room *) NULL, &level_stairs, false, false);
+  level_set_ch(level_stairs.y, level_stairs.x, STAIRS);
 
   for (THING* monster = mlist; monster != NULL; monster = monster->l_next)
     monster->t_room = roomin(&monster->t_pos);
@@ -214,19 +215,19 @@ level_new(void)
 bool
 level_save_state(void)
 {
-  return state_save_list(lvl_obj)
+  return state_save_list(level_items)
     || state_save_int32(level)
-    || state_save_int32(max_level)
-    || state_save_coord(&stairs);
+    || state_save_int32(level_max)
+    || state_save_coord(&level_stairs);
 }
 
 bool
 level_load_state(void)
 {
-  return state_load_list(&lvl_obj)
+  return state_load_list(&level_items)
     || state_load_int32(&level)
-    || state_load_int32(&max_level)
-    || state_load_coord(&stairs);
+    || state_load_int32(&level_max)
+    || state_load_coord(&level_stairs);
 }
 
 char
@@ -238,36 +239,42 @@ level_get_type(int y, int x)
     : monster->t_disguise;
 }
 
+PLACE*
+level_get_place(int y, int x)
+{
+  return &level_places[((x) << 5) + (y)];
+}
+
 THING*
 level_get_monster(int y, int x)
 {
-  return places[(x << 5) + y].p_monst;
+  return level_places[(x << 5) + y].p_monst;
 }
 
 void
 level_set_monster(int y, int x, THING* monster)
 {
-  places[(x << 5) + y].p_monst = monster;
+  level_places[(x << 5) + y].p_monst = monster;
 }
 
 char
 level_get_flags(int y, int x)
 {
-  return places[(x << 5) + y].p_flags;
+  return level_places[(x << 5) + y].p_flags;
 }
 
 void
 level_set_flags(int y, int x, char flags)
 {
-  places[(x << 5) + y].p_flags = flags;
+  level_places[(x << 5) + y].p_flags = flags;
 }
 
 char level_get_ch(int y, int x)
 {
-  return places[(x << 5) + y].p_ch;
+  return level_places[(x << 5) + y].p_ch;
 }
 
 void level_set_ch(int y, int x, char ch)
 {
-  places[(x << 5) + y].p_ch = ch;
+  level_places[(x << 5) + y].p_ch = ch;
 }

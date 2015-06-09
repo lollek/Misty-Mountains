@@ -528,7 +528,7 @@ state_load_thing(THING* t)
 
     case 2: /* object */
       {
-        THING* item = get_list_item(lvl_obj, index);
+        THING* item = get_list_item(level_items, index);
         if (item != NULL)
           t->_t._t_dest = &item->o_pos;
       }
@@ -661,7 +661,7 @@ state_load_file(FILE* inf)
   rs_assert(rs_fix_thing(__player_ptr()))
   rs_assert(weapons_load_state());
   rs_assert(rs_fix_thing_list(mlist))
-  rs_assert_read_places(places,MAXLINES*MAXCOLS)
+  rs_assert_read_places(level_places,MAXLINES*MAXCOLS)
   rs_assert(state_load_stats(&max_stats))
   rs_assert(rs_read_rooms(rooms, MAXROOMS))
   rs_assert(rs_read_room_reference(&oldrp))

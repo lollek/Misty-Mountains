@@ -20,7 +20,7 @@ monster_find_new_target(THING* monster)
     return;
   }
 
-  for (THING* obj = lvl_obj; obj != NULL; obj = obj->l_next)
+  for (THING* obj = level_items; obj != NULL; obj = obj->l_next)
   {
     if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
       continue;

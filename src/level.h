@@ -3,11 +3,6 @@
 
 #include "io.h"
 
-#define AMULETLEVEL  26    /* Level where we can find the amulet */
-
-/* TODO: Make functions of these */
-#define INDEX(y,x)	(&places[((x) << 5) + (y)])
-
 /* Flags for level map */
 #define F_PASS		0x80		/* is a passageway */
 #define F_SEEN		0x40		/* have seen this spot before */
@@ -24,18 +19,20 @@ typedef struct {
     THING* p_monst;
 } PLACE;
 
-extern PLACE places[MAXLINES*MAXCOLS];  /* level map */
-extern coord stairs;   /* Location of staircase */
-extern THING* lvl_obj; /* List of objects on this level */
-
-extern int level;      /* What level she is on */
-extern int max_level;  /* Deepest player has gone */
+extern PLACE     level_places[MAXLINES*MAXCOLS];  /* level map */
+extern coord     level_stairs;                    /* Location of staircase */
+extern THING*    level_items;                     /* List of items on level */
+extern int       level;                           /* What level she is on */
+extern int       level_max;                       /* Deepest player has gone */
+extern int const level_amulet;                    /* Level where amulet starts */
 
 void level_new(void);
 bool level_save_state(void);
 bool level_load_state(void);
 
 char level_get_type(int y, int x);
+
+PLACE* level_get_place(int y, int x);
 
 THING* level_get_monster(int y, int x);
 void level_set_monster(int y, int x, THING* monster);

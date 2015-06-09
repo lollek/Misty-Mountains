@@ -112,7 +112,7 @@ score_insert(SCORE* top_ten, SCORE* endp, int amount, int flags, char monst)
   strncpy(ptr->sc_name, whoami, MAXSTR);
   ptr->sc_flags = flags;
   ptr->sc_level = flags == 2
-    ? max_level
+    ? level_max
     : level;
   ptr->sc_monster = monst;
   ptr->sc_uid = uid;

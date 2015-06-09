@@ -278,7 +278,7 @@ magic_mapping(void)
   for (int y = 1; y < NUMLINES - 1; y++)
     for (int x = 0; x < NUMCOLS; x++)
     {
-      PLACE* pp = INDEX(y, x);
+      PLACE* pp = level_get_place(y, x);
       char ch = level_get_ch(y, x);
       switch (ch)
       {
@@ -343,7 +343,7 @@ food_detection(void)
   bool food_seen = false;
   wclear(hw);
 
-  for (THING* obj = lvl_obj; obj != NULL; obj = obj->l_next)
+  for (THING* obj = level_items; obj != NULL; obj = obj->l_next)
     if (obj->o_type == FOOD)
     {
       food_seen = true;

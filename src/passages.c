@@ -109,7 +109,7 @@ door(struct room* rm, coord* cp)
   if (rm->r_flags & ISMAZE)
     return;
 
-  PLACE* place = INDEX(cp->y, cp->x);
+  PLACE* place = level_get_place(cp->y, cp->x);
   if (rnd(10) + 1 < level && rnd(5) == 0)
   {
     if (cp->y == rm->r_pos.y || cp->y == rm->r_pos.y + rm->r_max.y - 1)
@@ -371,7 +371,7 @@ passages_do(void)
 void
 passages_putpass(coord* cp)
 {
-  PLACE *pp = INDEX(cp->y, cp->x);
+  PLACE *pp = level_get_place(cp->y, cp->x);
   pp->p_flags |= F_PASS;
 
   if (rnd(10) + 1 < level && rnd(40) == 0)
@@ -388,7 +388,7 @@ passages_add_pass(void)
   for (int y = 1; y < NUMLINES - 1; y++)
     for (int x = 0; x < NUMCOLS; x++)
     {
-      PLACE* pp = INDEX(y, x);
+      PLACE* pp = level_get_place(y, x);
       if ((pp->p_flags & F_PASS) || pp->p_ch == DOOR ||
           (!(pp->p_flags&F_REAL) && (pp->p_ch == VWALL ||
                                      pp->p_ch == HWALL)))

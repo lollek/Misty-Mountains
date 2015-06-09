@@ -302,7 +302,7 @@ be_trapped(THING* victim, coord* trap_coord)
   assert(trap_coord != NULL);
 
   bool player = victim == NULL;
-  PLACE* pp = INDEX(trap_coord->y, trap_coord->x);
+  PLACE* pp = level_get_place(trap_coord->y, trap_coord->x);
   char tr = pp->p_flags & F_TMASK;
 
   if (player)

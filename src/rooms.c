@@ -284,7 +284,7 @@ rooms_create(void)
     room_draw(&rooms[i]);
 
     /* Put the gold in */
-    if (rnd(2) == 0 && (!pack_contains_amulet() || level >= max_level))
+    if (rnd(2) == 0 && (!pack_contains_amulet() || level >= level_max))
     {
       THING *gold = allocate_new_item();
       gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
@@ -293,7 +293,7 @@ rooms_create(void)
       level_set_ch(rooms[i].r_gold.y, rooms[i].r_gold.x, GOLD);
       gold->o_flags = ISMANY;
       gold->o_type = GOLD;
-      list_attach(&lvl_obj, gold);
+      list_attach(&level_items, gold);
     }
 
     /* Put the monster in */
@@ -330,7 +330,7 @@ room_find_floor(struct room* rp, coord* cp, int limit, bool monst)
     }
 
     rnd_pos(rp, cp);
-    PLACE* pp = INDEX(cp->y, cp->x);
+    PLACE* pp = level_get_place(cp->y, cp->x);
     if (monst)
     {
       if (pp->p_monst == NULL && step_ok(pp->p_ch))

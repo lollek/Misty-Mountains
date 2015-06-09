@@ -44,7 +44,7 @@ trip_ch(int y, int x, int ch)
       case TRAP:
         break;
       default:
-        if (y != stairs.y || x != stairs.x || !seen_stairs())
+        if (y != level_stairs.y || x != level_stairs.x || !seen_stairs())
           return rnd_thing();
     }
   return ch;
@@ -70,8 +70,8 @@ void
 look(bool wakeup)
 {
   coord const* player_pos = player_get_pos();
-  char const player_ch = INDEX(player_pos->y, player_pos->x)->p_ch;
-  char const player_flags = INDEX(player_pos->y, player_pos->x)->p_flags;
+  char const player_ch = level_get_place(player_pos->y, player_pos->x)->p_ch;
+  char const player_flags = level_get_place(player_pos->y, player_pos->x)->p_flags;
 
   if (!coord_same(&oldpos, player_pos))
   {
@@ -103,7 +103,7 @@ look(bool wakeup)
           && y == player_pos->y && x == player_pos->x)
         continue;
 
-      PLACE const* xy_pos = INDEX(y, x);
+      PLACE const* xy_pos = level_get_place(y, x);
       char xy_ch = xy_pos->p_ch;
       if (xy_ch == SHADOW)  /* nothing need be done with a ' ' */
         continue;
@@ -220,7 +220,7 @@ erase_lamp(coord const* pos, struct room const* room)
 THING*
 find_obj(int y, int x)
 {
-  for (THING* obj = lvl_obj; obj != NULL; obj = obj->l_next)
+  for (THING* obj = level_items; obj != NULL; obj = obj->l_next)
     if (obj->o_pos.y == y && obj->o_pos.x == x)
       return obj;
 
@@ -345,7 +345,7 @@ call_it(char const* what, struct obj_info *info)
 char
 rnd_thing(void)
 {
-  int i = rnd(level >= AMULETLEVEL ? 10 : 9);
+  int i = rnd(level >= level_amulet ? 10 : 9);
   switch (i)
   {
     case 0: return POTION;
@@ -358,7 +358,7 @@ rnd_thing(void)
     case 7: return STAIRS;
     case 8: return GOLD;
     case 9:
-      if (level < AMULETLEVEL)
+      if (level < level_amulet)
         (void)fail("rnd_thing: Amulet spawned at a too low level", 0);
       return AMULET;
 
@@ -389,12 +389,12 @@ is_magic(THING const* obj)
 bool
 seen_stairs(void)
 {
-  THING* tp = level_get_monster(stairs.y, stairs.x);
+  THING* tp = level_get_monster(level_stairs.y, level_stairs.x);
 
-  move(stairs.y, stairs.x);
+  move(level_stairs.y, level_stairs.x);
   if (incch() == STAIRS)  /* it's on the map */
     return true;
-  if (coord_same(player_get_pos(), &stairs)) /* It's under him */
+  if (coord_same(player_get_pos(), &level_stairs)) /* It's under him */
     return true;
 
   /* if a monster is on the stairs, this gets hairy */

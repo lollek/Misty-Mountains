@@ -133,7 +133,7 @@ fall(THING* obj, bool pr)
   coord fpos;
   if (fallpos(&obj->o_pos, &fpos))
   {
-    PLACE* pp = INDEX(fpos.y, fpos.x);
+    PLACE* pp = level_get_place(fpos.y, fpos.x);
     pp->p_ch = (char) obj->o_type;
     obj->o_pos = fpos;
     if (cansee(fpos.y, fpos.x))
@@ -143,7 +143,7 @@ fall(THING* obj, bool pr)
       else
         mvaddcch(fpos.y, fpos.x, (chtype)obj->o_type);
     }
-    list_attach(&lvl_obj, obj);
+    list_attach(&level_items, obj);
     return;
   }
 
