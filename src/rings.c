@@ -214,27 +214,18 @@ ring_drain_amount(void)
 {
   int total_eat = 0;
   int uses[] = {
-    1, /* R_PROTECT */  1, /* R_ADDSTR */
-    1, /* R_SUSTSTR */ -3, /* R_SEARCH */
-   -5, /* R_SEEINVIS */ 0, /* R_NOP */
-    0, /* R_AGGR */    -3, /* R_ADDHIT */
-   -3, /* R_ADDDAM */   2, /* R_REGEN */
-   -2, /* R_DIGEST */   0, /* R_TELEPORT */
-    1, /* R_STEALTH */  1  /* R_SUSTARM */
+    1, /* R_PROTECT */  1, /* R_ADDSTR   */  1, /* R_SUSTSTR  */
+    1, /* R_SEARCH  */  1, /* R_SEEINVIS */  0, /* R_NOP      */
+    0, /* R_AGGR    */  1, /* R_ADDHIT   */  1, /* R_ADDDAM   */
+    2, /* R_REGEN   */ -1, /* R_DIGEST   */  0, /* R_TELEPORT */
+    1, /* R_STEALTH */  1, /* R_SUSTARM  */
   };
 
   for (int i = 0; i < RING_SLOTS_SIZE; ++i)
   {
     THING *ring = pack_equipped_item(ring_slots[i]);
     if (ring != NULL)
-    {
-      int eat = uses[ring->o_which];
-      if (eat < 0)
-        eat = rnd(-eat) == 0;
-      if (ring->o_which == R_DIGEST)
-        eat = -eat;
-      total_eat += eat;
-    }
+      total_eat += uses[ring->o_which];
   }
 
   return total_eat;

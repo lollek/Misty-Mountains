@@ -234,11 +234,12 @@ daemon_digest_food(void)
 {
   int const hungry_time = 300;
   int const starving_time = 150;
+  int const death_by_starvation = -850;
 
   /* Player is dying from lack of food */
   if (food_left <= 0)
   {
-    if (food_left-- < -STARVETIME)
+    if (food_left-- < death_by_starvation)
       death('s');
 
     /** the hero is fainting */
@@ -254,9 +255,9 @@ daemon_digest_food(void)
 
 
   int oldfood = food_left;
-  food_left -= ring_drain_amount() + 1 - pack_contains_amulet();
+  food_left -= 1 + ring_drain_amount() - pack_contains_amulet();
 
-  if (food_left < -STARVETIME) /* Integer overflow */
+  if (food_left < death_by_starvation) /* Integer overflow */
   {
     (void)fail("Food left was: %d Wanted to be: %d\r\n", oldfood, food_left);
     food_left = oldfood;

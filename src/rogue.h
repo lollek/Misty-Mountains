@@ -26,7 +26,6 @@
 #define AFTER		spread(2)
 #define HUNGERTIME	1300
 #define STOMACHSIZE	2000
-#define STARVETIME	850
 #define LEFT		0
 #define RIGHT		1
 #define BOLT_LENGTH	6
