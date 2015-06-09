@@ -158,16 +158,16 @@ main(int argc, char** argv)
   /* Try to crash cleanly, and autosave if possible
    * Unless we are debugging, since that messes with gdb */
 #ifdef NDEBUG
-  signal(SIGHUP, auto_save);
+  signal(SIGHUP, save_auto);
   signal(SIGQUIT, command_signal_endit);
-  signal(SIGILL, auto_save);
-  signal(SIGTRAP, auto_save);
-  signal(SIGIOT, auto_save);
-  signal(SIGFPE, auto_save);
-  signal(SIGBUS, auto_save);
-  signal(SIGSEGV, auto_save);
-  signal(SIGSYS, auto_save);
-  signal(SIGTERM, auto_save);
+  signal(SIGILL, save_auto);
+  signal(SIGTRAP, save_auto);
+  signal(SIGIOT, save_auto);
+  signal(SIGFPE, save_auto);
+  signal(SIGBUS, save_auto);
+  signal(SIGSEGV, save_auto);
+  signal(SIGSYS, save_auto);
+  signal(SIGTERM, save_auto);
   signal(SIGINT, command_signal_quit);
 #else
   msg("Seed: #%u", seed);

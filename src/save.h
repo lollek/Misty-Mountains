@@ -6,6 +6,6 @@
 bool save_game(void);
 
 /* Automatically save a file.  This is used if a HUP signal is recieved */
-void auto_save(int signal) __attribute__((noreturn));
+void save_auto(int signal) __attribute__((noreturn));
 
 #endif /* _ROGUE14_SAVE_H_ */

@@ -100,7 +100,7 @@ save_game(void)
 }
 
 void
-auto_save(int sig)
+save_auto(int sig)
 {
   (void)sig;
 
