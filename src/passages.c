@@ -20,6 +20,8 @@
 
 #include "passages.h"
 
+#define PASSAGES_MAX 12
+
 /* One for each passage */
 struct room passages[] = {
 /*    r_pos   r_max   r_gold r_goldval r_flags        r_nexits r_exit[12] */
@@ -88,7 +90,7 @@ passnum(void)
 {
   pnum = 0;
   newpnum = false;
-  for (int i = 0; i < MAXPASS; ++i)
+  for (int i = 0; i < PASSAGES_MAX; ++i)
     passages[i].r_nexits = 0;
   for (int i = 0; i < MAXROOMS; ++i)
     for (int j = 0; j < rooms[i].r_nexits; ++j)

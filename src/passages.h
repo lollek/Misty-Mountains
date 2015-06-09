@@ -5,8 +5,8 @@
 #include "rooms.h"
 
 /* upper limit on number of passages */
-#define MAXPASS 12
-extern struct room passages[MAXPASS];
+#define PASSAGES_MAX 12
+extern struct room passages[PASSAGES_MAX];
 
 void passages_add_pass(void);
 void passages_do(void);
