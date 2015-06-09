@@ -75,9 +75,9 @@ look(bool wakeup)
 
   if (!coord_same(&oldpos, player_pos))
   {
-    erase_lamp(&oldpos, oldrp);
+    erase_lamp(&oldpos, room_prev);
     oldpos = *player_pos;
-    oldrp = player_get_room();
+    room_prev = player_get_room();
   }
 
   int sumhero = 0;
@@ -472,7 +472,7 @@ roomin(coord* cp)
   if (fp & F_PASS)
     return &passages[fp & F_PNUM];
 
-  for (struct room* rp = rooms; rp < &rooms[MAXROOMS]; rp++)
+  for (struct room* rp = rooms; rp < &rooms[ROOMS_MAX]; rp++)
     if (cp->x <= rp->r_pos.x + rp->r_max.x
         && rp->r_pos.x <= cp->x
         && cp->y <= rp->r_pos.y + rp->r_max.y

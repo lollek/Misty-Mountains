@@ -174,7 +174,7 @@ main(int argc, char** argv)
 #endif
 
   oldpos = *player_get_pos();
-  oldrp = roomin(player_get_pos());
+  room_prev = roomin(player_get_pos());
 
   for (;;) command();
 

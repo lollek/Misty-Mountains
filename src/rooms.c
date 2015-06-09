@@ -24,8 +24,8 @@
 
 #include "rooms.h"
 
-struct room* oldrp;
-struct room rooms[MAXROOMS];
+struct room* room_prev;
+struct room rooms[ROOMS_MAX];
 
 /* position matrix for maze positions */
 typedef struct spot {
@@ -224,7 +224,7 @@ rooms_create(void)
   };
 
   /* Clear things for a new level */
-  for (int i = 0; i < MAXROOMS; ++i)
+  for (int i = 0; i < ROOMS_MAX; ++i)
   {
     rooms[i].r_goldval = 0;
     rooms[i].r_nexits = 0;
@@ -237,7 +237,7 @@ rooms_create(void)
     rooms[room_random()].r_flags |= ISGONE;
 
   /* dig and populate all the rooms on the level */
-  for (int i = 0; i < MAXROOMS; i++)
+  for (int i = 0; i < ROOMS_MAX; i++)
   {
     /* Find upper left corner of box that this room goes in */
     coord const top = {
@@ -424,7 +424,7 @@ room_random(void)
   int rm;
 
   do
-    rm = rnd(MAXROOMS);
+    rm = rnd(ROOMS_MAX);
   while (rooms[rm].r_flags & ISGONE);
 
   return rm;

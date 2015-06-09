@@ -19,9 +19,9 @@ struct room {
 #define ISMAZE	0000004		/* room is gone (a corridor) */
 
 /* Variables. TODO: Move these */
-#define MAXROOMS  9 /* max rooms per level */
-extern struct room* oldrp;			/* Roomin(&oldpos) */
-extern struct room rooms[MAXROOMS];		/* One for each room -- A level */
+#define ROOMS_MAX  9                   /* max rooms per level */
+extern struct room* room_prev;         /* Roomin(&oldpos) */
+extern struct room rooms[ROOMS_MAX];   /* One for each room -- A level */
 
 /* Create rooms and corridors with a connectivity graph */
 void rooms_create(void);

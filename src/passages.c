@@ -92,7 +92,7 @@ passnum(void)
   newpnum = false;
   for (int i = 0; i < PASSAGES_MAX; ++i)
     passages[i].r_nexits = 0;
-  for (int i = 0; i < MAXROOMS; ++i)
+  for (int i = 0; i < ROOMS_MAX; ++i)
     for (int j = 0; j < rooms[i].r_nexits; ++j)
     {
       newpnum = true;
@@ -282,10 +282,10 @@ passages_do(void)
 {
   struct rdes
   {
-    bool conn[MAXROOMS];  /* possible to connect to room i? */
-    bool isconn[MAXROOMS];/* connection been made to room i? */
+    bool conn[ROOMS_MAX];  /* possible to connect to room i? */
+    bool isconn[ROOMS_MAX];/* connection been made to room i? */
     bool ingraph;         /* this room in graph already? */
-  } rdes[MAXROOMS] = {
+  } rdes[ROOMS_MAX] = {
     { { 0, 1, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
     { { 1, 0, 1, 0, 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
     { { 0, 1, 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
@@ -298,9 +298,9 @@ passages_do(void)
   };
 
   /* reinitialize room graph description */
-  for (struct rdes* ptr = rdes; ptr <= &rdes[MAXROOMS-1]; ptr++)
+  for (struct rdes* ptr = rdes; ptr <= &rdes[ROOMS_MAX-1]; ptr++)
   {
-    for (int i = 0; i < MAXROOMS; i++)
+    for (int i = 0; i < ROOMS_MAX; i++)
       ptr->isconn[i] = false;
     ptr->ingraph = false;
   }
@@ -308,7 +308,7 @@ passages_do(void)
   /* starting with one room, connect it to a random adjacent room and
    * then pick a new room to start with.  */
   int roomcount = 1;
-  struct rdes* r1 = &rdes[rnd(MAXROOMS)];
+  struct rdes* r1 = &rdes[rnd(ROOMS_MAX)];
   r1->ingraph = true;
 
   struct rdes* r2 = NULL;
@@ -316,7 +316,7 @@ passages_do(void)
     {
       /* find a room to connect with */
       int j = 0;
-      for (int i = 0; i < MAXROOMS; i++)
+      for (int i = 0; i < ROOMS_MAX; i++)
         if (r1->conn[i] && !rdes[i].ingraph && !rnd(++j))
           r2 = &rdes[i];
 
@@ -325,7 +325,7 @@ passages_do(void)
       if (j == 0)
       {
         do
-          r1 = &rdes[rnd(MAXROOMS)];
+          r1 = &rdes[rnd(ROOMS_MAX)];
         while (!r1->ingraph);
       }
 
@@ -341,17 +341,17 @@ passages_do(void)
         r2->isconn[i] = true;
         roomcount++;
       }
-    } while (roomcount < MAXROOMS);
+    } while (roomcount < ROOMS_MAX);
 
     /* attempt to add passages to the graph a random number of times so
      * that there isn't always just one unique passage through it.  */
   for (roomcount = rnd(5); roomcount > 0; roomcount--)
   {
-    r1 = &rdes[rnd(MAXROOMS)];	/* a random room to look from */
+    r1 = &rdes[rnd(ROOMS_MAX)];	/* a random room to look from */
 
     /* find an adjacent room not already connected */
     int j = 0;
-    for (int i = 0; i < MAXROOMS; i++)
+    for (int i = 0; i < ROOMS_MAX; i++)
       if (r1->conn[i] && !r1->isconn[i] && rnd(++j) == 0)
         r2 = &rdes[i];
 

@@ -200,7 +200,7 @@ state_save_dest(coord const* dest)
         : SUCCESS;
 
   /* (3,i): location of gold in a room */
-  for (i = 0; i < MAXROOMS; ++i)
+  for (i = 0; i < ROOMS_MAX; ++i)
     if (&rooms[i].r_gold == dest)
       return state_save_int32(3) || state_save_int32(i)
         ? fail("state_save_dest(%p)\r\n", dest)
@@ -234,7 +234,7 @@ static bool
 state_save_room_number(struct room const* room)
 {
   int i;
-  for (i = 0; i < MAXROOMS; ++i)
+  for (i = 0; i < ROOMS_MAX; ++i)
     if (&rooms[i] == room)
       return state_save_int32(i)
         ? fail("state_save_room_number(%p)\r\n", room)
@@ -526,8 +526,8 @@ state_save_file(FILE* savef)
   rs_assert(weapons_save_state());
   rs_assert(state_save_places());
   rs_assert(state_save_stats(&player_max_stats))
-  rs_assert(state_save_rooms( rooms, MAXROOMS))
-  rs_assert(state_save_room_number(oldrp))
+  rs_assert(state_save_rooms( rooms, ROOMS_MAX))
+  rs_assert(state_save_room_number(room_prev))
   rs_assert(state_save_rooms(passages, PASSAGES_MAX))
   rs_assert(state_save_obj_info(potion_info,  NPOTIONS))
   rs_assert(state_save_obj_info(ring_info,  NRINGS))
