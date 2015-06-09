@@ -181,7 +181,7 @@ void
 player_remove_true_sight(void)
 {
   /* Hide all invisible monsters */
-  for (THING* monster = mlist; monster != NULL; monster = monster->l_next)
+  for (THING* monster = monster_list; monster != NULL; monster = monster->l_next)
     if (monster_is_invisible(monster) && monster_seen_by_player(monster))
       mvaddcch(monster->t_pos.y, monster->t_pos.x, monster->t_oldch);
 
@@ -228,7 +228,7 @@ player_add_sense_monsters(bool permanent)
   player.t_flags |= SEEMONST;
 
   bool spotted_something = false;
-  for (THING* monster = mlist; monster != NULL; monster = monster->l_next)
+  for (THING* monster = monster_list; monster != NULL; monster = monster->l_next)
     if (!monster_seen_by_player(monster))
     {
       mvaddcch(monster->t_pos.y, monster->t_pos.x,
@@ -246,7 +246,7 @@ player_remove_sense_monsters(void)
 {
   player.t_flags &= ~SEEMONST;
 
-  for (THING* monster = mlist; monster != NULL; monster = monster->l_next)
+  for (THING* monster = monster_list; monster != NULL; monster = monster->l_next)
     if (!monster_seen_by_player(monster))
       mvaddcch(monster->t_pos.y, monster->t_pos.x, monster->t_oldch);
 }
@@ -288,7 +288,7 @@ void player_remove_hallucinating(void)
       mvaddcch(tp->o_pos.y, tp->o_pos.x, (chtype)tp->o_type);
 
   /* undo the monsters */
-  for (THING* tp = mlist; tp != NULL; tp = tp->l_next)
+  for (THING* tp = monster_list; tp != NULL; tp = tp->l_next)
   {
     if (cansee(tp->t_pos.y, tp->t_pos.x))
       if (!monster_is_invisible(tp) || player_has_true_sight())
@@ -456,7 +456,7 @@ void player_teleport(coord *target)
   if (player_is_held())
   {
     player_remove_held();
-    vf_hit = 0;
+    monster_flytrap_hit = 0;
   }
   no_move = 0;
   command_stop(true);

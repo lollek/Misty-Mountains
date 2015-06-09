@@ -562,7 +562,7 @@ command_wield(void)
 
 bool command_rest(void)
 {
-  for (THING* mon = mlist; mon != NULL; mon = mon->l_next)
+  for (THING* mon = monster_list; mon != NULL; mon = mon->l_next)
     if (monster_seen_by_player(mon))
     {
       msg("cannot rest with monsters nearby");

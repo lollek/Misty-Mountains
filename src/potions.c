@@ -184,7 +184,7 @@ potion_quaff_something(void)
             potion_learn(P_TFIND);
           }
 
-        for (THING* monster = mlist; monster != NULL; monster = monster->l_next)
+        for (THING* monster = monster_list; monster != NULL; monster = monster->l_next)
           for (THING* item = monster->t_pack; item != NULL; item = item->l_next)
             if (is_magic(item))
             {

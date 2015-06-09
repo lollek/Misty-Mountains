@@ -246,7 +246,7 @@ daemon_change_visuals(void)
 
   /* change the monsters */
   bool seemonst = player_can_sense_monsters();
-  for (THING* tp = mlist; tp != NULL; tp = tp->l_next)
+  for (THING* tp = monster_list; tp != NULL; tp = tp->l_next)
   {
     if (monster_seen_by_player(tp))
     {
@@ -267,7 +267,7 @@ daemon_runners_move(void)
 {
   THING* next;
 
-  for (THING* tp = mlist; tp != NULL; tp = next)
+  for (THING* tp = monster_list; tp != NULL; tp = next)
   {
     /* remember this in case the monster's "next" is changed */
     next = tp->l_next;

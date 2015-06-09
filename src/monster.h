@@ -6,8 +6,8 @@
 #include "rogue.h"
 
 /* Variables, TODO: Remove these */
-extern THING* mlist;  /* List of monsters on the level */
-extern int vf_hit;
+extern THING* monster_list;  /* List of monsters on the level */
+extern int    monster_flytrap_hit;
 
 bool monsters_save_state(void);
 

@@ -369,7 +369,7 @@ pack_add(THING* obj, bool silent)
 
   /* If this was the object of something's desire, that monster will
    * get mad and run at the hero.  */
-  for (THING* op = mlist; op != NULL; op = op->l_next)
+  for (THING* op = monster_list; op != NULL; op = op->l_next)
     if (op->t_dest == &obj->o_pos)
       op->t_dest = player_pos;
 

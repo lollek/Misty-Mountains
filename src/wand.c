@@ -210,7 +210,7 @@ wand_spell_drain_health(void)
   bool inpass = player_get_room()->r_flags & ISGONE;
   THING** dp = drainee;
 
-  for (THING* mp = mlist; mp != NULL; mp = mp->l_next)
+  for (THING* mp = monster_list; mp != NULL; mp = mp->l_next)
     if (mp->t_room == player_get_room()
         || mp->t_room == corp
         ||(inpass && level_get_ch(mp->t_pos.y, mp->t_pos.x) == DOOR &&
@@ -260,7 +260,7 @@ wand_spell_polymorph(THING* target)
     player_remove_held();
 
   THING* target_pack = target->t_pack;
-  list_detach(&mlist, target);
+  list_detach(&monster_list, target);
 
   bool was_seen = monster_seen_by_player(target);
   if (was_seen)

@@ -232,7 +232,7 @@ find_obj(int y, int x)
 void
 aggravate(void)
 {
-  for (THING* mp = mlist; mp != NULL; mp = mp->l_next)
+  for (THING* mp = monster_list; mp != NULL; mp = mp->l_next)
     monster_start_running(&mp->t_pos);
 }
 
@@ -415,7 +415,7 @@ void
 invis_on(void)
 {
   player_add_true_sight(true);
-  for (THING* mp = mlist; mp != NULL; mp = mp->l_next)
+  for (THING* mp = monster_list; mp != NULL; mp = mp->l_next)
     if (monster_is_invisible(mp) && monster_seen_by_player(mp)
         && !player_is_hallucinating())
       mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);

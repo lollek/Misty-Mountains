@@ -36,8 +36,8 @@
 #include "monster.h"
 #include "monster_private.h"
 
-int vf_hit = 0; /* Number of time flytrap has hit */
-THING* mlist = NULL;
+int    monster_flytrap_hit = 0; /* Number of time flytrap has hit */
+THING* monster_list = NULL;
 
 #define NMONSTERS sizeof(monsters) / sizeof(*monsters)
 struct monster_template monsters[] =
@@ -77,14 +77,14 @@ monsters_save_state(void)
   THING const* ptr;
   int length;
 
-  for (ptr = mlist, length = 0; ptr != NULL; ptr = ptr->l_next)
+  for (ptr = monster_list, length = 0; ptr != NULL; ptr = ptr->l_next)
     ++length;
 
   if (state_save_int32(RSID_MONSTERLIST) ||
       state_save_int32(length))
     return 1;
 
-  for (ptr = mlist; ptr != NULL; ptr = ptr->l_next)
+  for (ptr = monster_list; ptr != NULL; ptr = ptr->l_next)
     if (state_save_thing(ptr))
       return 1;
 
@@ -190,7 +190,7 @@ monster_xp_worth(THING* tp)
 void
 monster_new(THING* monster, char type, coord* pos)
 {
-  list_attach(&mlist, monster);
+  list_attach(&monster_list, monster);
   monster->t_type       = type;
   monster->t_disguise   = type;
   monster->t_pos        = *pos;
@@ -336,7 +336,7 @@ monster_on_death(THING* monster, bool pr)
     /* If the monster was a venus flytrap, un-hold him */
     case 'F':
       player_remove_held();
-      vf_hit = 0;
+      monster_flytrap_hit = 0;
       break;
 
     /* Leprechauns drop gold */
@@ -382,7 +382,7 @@ monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
 
   level_set_monster(mp->y, mp->x, NULL);
   mvaddcch(mp->y, mp->x, tp->t_oldch);
-  list_detach(&mlist, tp);
+  list_detach(&monster_list, tp);
 
   if (monster_is_players_target(tp))
   {
@@ -400,7 +400,7 @@ monster_is_dead(THING const* monster)
   if (monster == NULL)
     return true;
 
-  for (THING const* ptr = mlist; ptr != NULL; ptr = ptr->l_next)
+  for (THING const* ptr = monster_list; ptr != NULL; ptr = ptr->l_next)
     if (ptr == monster)
       return false;
 
@@ -454,7 +454,7 @@ monster_do_special_ability(THING** monster)
     /* Venus Flytrap stops the poor guy from moving */
     case 'F':
       player_set_held();
-      ++vf_hit;
+      ++monster_flytrap_hit;
       player_lose_health(1);
       if (player_get_health() <= 0)
         death('F');

@@ -132,7 +132,7 @@ calculate_attacker(THING* attacker, THING* weapon, bool thrown,
 
   /* Venus Flytraps have a different kind of dmg system */
   else if (attacker->o_type == 'F')
-    mod->damage[0].sides = vf_hit;
+    mod->damage[0].sides = monster_flytrap_hit;
 }
 
 /* Roll attackers attack vs defenders defense and then take damage if it hits
@@ -324,7 +324,7 @@ fight_against_player(THING* mp)
   {
     if (mp->t_type == 'F')
     {
-      player_lose_health(vf_hit);
+      player_lose_health(monster_flytrap_hit);
       if (player_get_health() <= 0)
         death(mp->t_type);
     }

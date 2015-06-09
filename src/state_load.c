@@ -64,7 +64,7 @@ state_load_room(struct room* room)
   for (temp_i = 0; temp_i < _n; ++temp_i) \
     rs_assert(state_load_char(&(_p)[temp_i].p_ch) || \
               state_load_char(&(_p)[temp_i].p_flags) || \
-              rs_read_thing_reference( mlist, &(_p)[temp_i].p_monst))
+              rs_read_thing_reference( monster_list, &(_p)[temp_i].p_monst))
 
 size_t
 encread(char* start, size_t size, FILE* inf)
@@ -558,7 +558,7 @@ rs_fix_thing(THING* t)
   if (t->t_reserved < 0)
     return 0;
 
-  THING* item = get_list_item(mlist,t->t_reserved);
+  THING* item = get_list_item(monster_list,t->t_reserved);
 
   if (item != NULL)
     t->t_dest = &item->t_pos;
@@ -649,7 +649,7 @@ state_load_file(FILE* inf)
   rs_assert(state_load_int32(&no_food))
   rs_assert(state_load_int32(&no_move))
   rs_assert(state_load_int32(&purse))
-  rs_assert(state_load_int32(&vf_hit))
+  rs_assert(state_load_int32(&monster_flytrap_hit))
   rs_assert(state_load_int32((int32_t*) &seed))
 
   rs_assert(rs_read_equipment(RSID_ARMOR))
@@ -657,10 +657,10 @@ state_load_file(FILE* inf)
   rs_assert(rs_read_equipment(RSID_RRING))
   rs_assert(rs_read_equipment(RSID_LRING))
 
-  rs_assert(rs_read_thing_list(&mlist))
+  rs_assert(rs_read_thing_list(&monster_list))
   rs_assert(rs_fix_thing(__player_ptr()))
   rs_assert(weapons_load_state());
-  rs_assert(rs_fix_thing_list(mlist))
+  rs_assert(rs_fix_thing_list(monster_list))
   rs_assert_read_places(level_places,MAXLINES*MAXCOLS)
   rs_assert(state_load_stats(&max_stats))
   rs_assert(rs_read_rooms(rooms, MAXROOMS))

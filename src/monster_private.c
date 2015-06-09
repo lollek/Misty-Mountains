@@ -28,7 +28,7 @@ monster_find_new_target(THING* monster)
     if (roomin(&obj->o_pos) == monster->t_room && rnd(100) < prob)
     {
       THING *someone;
-      for (someone = mlist; someone != NULL; someone = someone->l_next)
+      for (someone = monster_list; someone != NULL; someone = someone->l_next)
         if (someone->t_dest == &obj->o_pos)
           break;
 

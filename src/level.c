@@ -157,9 +157,9 @@ level_new(void)
   clear();
 
   /* Free up the monsters on the last level */
-  for (THING* monster = mlist; monster != NULL; monster = monster->l_next)
+  for (THING* monster = monster_list; monster != NULL; monster = monster->l_next)
     list_free_all(&monster->t_pack);
-  list_free_all(&mlist);
+  list_free_all(&monster_list);
 
   /* Throw away stuff left on the previous level (if anything) */
   list_free_all(&level_items);
@@ -198,7 +198,7 @@ level_new(void)
   room_find_floor((struct room *) NULL, &level_stairs, false, false);
   level_set_ch(level_stairs.y, level_stairs.x, STAIRS);
 
-  for (THING* monster = mlist; monster != NULL; monster = monster->l_next)
+  for (THING* monster = monster_list; monster != NULL; monster = monster->l_next)
     monster->t_room = roomin(&monster->t_pos);
 
   coord* player_pos = player_get_pos();

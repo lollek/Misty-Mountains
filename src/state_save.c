@@ -186,7 +186,7 @@ state_save_dest(coord const* dest)
       : SUCCESS;
 
   /* (1,i): location of a thing (monster) */
-  for (ptr = mlist, i = 0; ptr != NULL; ptr = ptr->l_next, ++i)
+  for (ptr = monster_list, i = 0; ptr != NULL; ptr = ptr->l_next, ++i)
     if (&ptr->t_pos == dest)
       return state_save_int32(1) || state_save_int32(i)
         ? fail("state_save_dest(%p)\r\n", dest)
@@ -330,7 +330,7 @@ state_save_places(void)
   for (i = 0; i < end; ++i)
     if (state_save_char(level_places[i].p_ch) ||
         state_save_char(level_places[i].p_flags) ||
-        state_save_list_index(mlist, level_places[i].p_monst))
+        state_save_list_index(monster_list, level_places[i].p_monst))
       return fail("state_save_places()\r\n", i);
   return SUCCESS;
 }
@@ -514,7 +514,7 @@ state_save_file(FILE* savef)
   rs_assert(state_save_int32(no_food))
   rs_assert(state_save_int32(no_move))
   rs_assert(state_save_int32(purse))
-  rs_assert(state_save_int32(vf_hit))
+  rs_assert(state_save_int32(monster_flytrap_hit))
   rs_assert(state_save_int32((int32_t)seed))
 
   rs_assert(state_save_equipment(EQUIPMENT_ARMOR, RSID_ARMOR))
