@@ -326,7 +326,7 @@ wand_spell_magic_missile(int dy, int dx)
   if (weapon != NULL)
     bolt.o_launch = weapon->o_which;
 
-  do_motion(&bolt, dy, dx);
+  io_missile_motion(&bolt, dy, dx);
 
   THING* target = level_get_monster(bolt.o_pos.y, bolt.o_pos.x);
   if (target == NULL)

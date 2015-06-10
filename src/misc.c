@@ -560,3 +560,31 @@ player_has_ring_with_ability(int ability)
   }
   return false;
 }
+
+bool
+fallpos(coord const* pos, coord* newpos)
+{
+  int cnt = 0;
+  for (int y = pos->y - 1; y <= pos->y + 1; y++)
+    for (int x = pos->x - 1; x <= pos->x + 1; x++)
+    {
+      coord *player_pos = player_get_pos();
+      /*
+       * check to make certain the spot is empty, if it is,
+       * put the object there, set it in the level list
+       * and re-draw the room if he can see it
+       */
+      if (y == player_pos->y && x == player_pos->x)
+        continue;
+
+      int ch = level_get_ch(y, x);
+      if ((ch == FLOOR || ch == PASSAGE) && os_rand_range(++cnt) == 0)
+      {
+        newpos->y = y;
+        newpos->x = x;
+      }
+    }
+  return cnt != 0;
+}
+
+

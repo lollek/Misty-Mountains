@@ -54,7 +54,7 @@ pr_spec(char type)
     case RING:   ptr = ring_info;         max = NRINGS;    break;
     case STICK:  ptr = __wands_ptr();     max = MAXSTICKS; break;
     case ARMOR:  ptr = NULL;              max = NARMORS;   break;
-    case WEAPON: ptr = weap_info;         max = MAXWEAPONS;break;
+    case WEAPON: ptr = weapon_info;         max = MAXWEAPONS;break;
     default:     ptr = NULL;              max = 0;         break;
   }
 

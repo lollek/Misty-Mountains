@@ -57,7 +57,7 @@ sumprobs(char ch)
     case SCROLL: ptr = scr_info;       max = NSCROLLS;   str = "scrolls"; break;
     case RING:   ptr = ring_info;      max = NRINGS;     str = "rings"; break;
     case STICK:  ptr = __wands_ptr();  max = MAXSTICKS;  str = "wands"; break;
-    case WEAPON: ptr = weap_info;      max = MAXWEAPONS; str = "weapons"; break;
+    case WEAPON: ptr = weapon_info;      max = MAXWEAPONS; str = "weapons"; break;
     case ARMOR:  ptr = NULL;           max = NARMORS;    str = "armor"; break;
     default:     ptr = NULL;           max = 0;          str = "error"; break;
   }

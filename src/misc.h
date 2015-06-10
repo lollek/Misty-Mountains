@@ -51,4 +51,8 @@ char floor_ch(void); /* Floor-type at hero's position */
 char floor_at(void); /* Return the character at hero's position */
 bool player_has_ring_with_ability(int ability);
 
+/* Pick a random position around the give (y, x) coordinates */
+bool fallpos(coord const* pos, coord* newpos);
+
+
 #endif /* _ROGUE14_MISC_H_ */

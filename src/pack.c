@@ -136,7 +136,7 @@ pack_print_evaluate_item(THING* obj)
       break;
 
     case WEAPON: case AMMO:
-      worth = weap_info[obj->o_which].oi_worth;
+      worth = weapon_info[obj->o_which].oi_worth;
       worth *= 3 * (obj->o_hplus + obj->o_dplus) + obj->o_count;
       obj->o_flags |= ISKNOW;
       break;

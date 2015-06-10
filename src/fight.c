@@ -255,7 +255,7 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
       if (thrown)
       {
         if (weapon->o_type == WEAPON)
-          addmsg("the %s hits ", weap_info[weapon->o_which].oi_name);
+          addmsg("the %s hits ", weapon_info[weapon->o_which].oi_name);
         else
           addmsg("you hit ");
         msg("%s", mname);
@@ -351,7 +351,7 @@ void
 fight_missile_miss(THING const* weap, char const* mname)
 {
   if (weap->o_type == WEAPON)
-    msg("the %s misses %s", weap_info[weap->o_which].oi_name, mname);
+    msg("the %s misses %s", weapon_info[weap->o_which].oi_name, mname);
   else
     msg("you missed %s", mname);
 }

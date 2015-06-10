@@ -156,7 +156,7 @@ command_do(char ch)
     case 's': return player_search();
     case 't': return command_throw();
     case 'w': return command_wield();
-    case 'x': return last_weapon();
+    case 'x': return weapon_wield_last_used();
     case 'z': return wand_zap();
 
     /* Upper case */

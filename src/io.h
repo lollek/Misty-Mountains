@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <curses.h>
 
+#include "things.h"
+
 #define GAME_VERSION "Rogue14 " VERSION " - Based on Rogue5.4.4"
 
 #define MAXSTR 1024 /* maximum length of strings */
@@ -66,6 +68,8 @@ typedef chtype glyph;
 extern char huh[MAXSTR]; /* The last message printed */
 extern WINDOW* hw;       /* used as a scratch window */
 extern int mpos;         /* Where cursor is on top line */
+
+void io_missile_motion(THING* obj, int ydelta, int xdelta);
 
 /* Kill program with an error message */
 void fatal(char const* msg, ...) __attribute__((noreturn));

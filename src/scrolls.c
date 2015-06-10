@@ -378,7 +378,7 @@ player_enchant_weapon(void)
   else
     weapon->o_dplus++;
   msg("your %s glows %s for a moment",
-      weap_info[weapon->o_which].oi_name, pick_color("blue"));
+      weapon_info[weapon->o_which].oi_name, pick_color("blue"));
 
   return true;
 }

@@ -14,23 +14,23 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include "io.h"
-#include "pack.h"
 #include "fight.h"
+#include "io.h"
+#include "level.h"
 #include "list.h"
 #include "misc.h"
-#include "level.h"
-#include "player.h"
-#include "os.h"
-#include "things.h"
-#include "state.h"
-#include "options.h"
 #include "monster.h"
+#include "options.h"
+#include "os.h"
+#include "pack.h"
+#include "player.h"
 #include "rogue.h"
+#include "state.h"
+#include "things.h"
 
 #include "weapons.h"
 
-struct obj_info weap_info[MAXWEAPONS +1];
+struct obj_info weapon_info[MAXWEAPONS +1];
 
 static THING* last_wielded_weapon = NULL;
 
@@ -53,7 +53,7 @@ static struct init_weaps {
     { {2,3}, {1,6}, NO_WEAPON,  ISMISL,        },	/* Spear */
 };
 
-struct obj_info weap_info[] = {
+struct obj_info weapon_info[] = {
     { "mace",				11,   8, NULL, false },
     { "long sword",			11,  15, NULL, false },
     { "short bow",			12,  15, NULL, false },
@@ -91,44 +91,7 @@ bool weapons_load_state(void)
 }
 
 void
-do_motion(THING* obj, int ydelta, int xdelta)
-{
-  coord* player_pos = player_get_pos();
-  int ch;
-
-  /* Come fly with us ... */
-  obj->o_pos = *player_pos;
-  for (;;)
-  {
-    /* Erase the old one */
-    if (!coord_same(&obj->o_pos, player_pos) &&
-        cansee(obj->o_pos.y, obj->o_pos.x))
-    {
-      ch = level_get_ch(obj->o_pos.y, obj->o_pos.x);
-      mvaddcch(obj->o_pos.y, obj->o_pos.x, (chtype)ch);
-    }
-
-    /* Get the new position */
-    obj->o_pos.y += ydelta;
-    obj->o_pos.x += xdelta;
-    if (step_ok(ch = level_get_type(obj->o_pos.y, obj->o_pos.x))
-       && ch != DOOR)
-    {
-      /* It hasn't hit anything yet, so display it if it alright. */
-      if (cansee(obj->o_pos.y, obj->o_pos.x))
-      {
-        os_usleep(10000);
-        mvaddcch(obj->o_pos.y, obj->o_pos.x, (chtype)obj->o_type);
-        refresh();
-      }
-      continue;
-    }
-    break;
-  }
-}
-
-void
-fall(THING* obj, bool pr)
+weapon_missile_fall(THING* obj, bool pr)
 {
   coord fpos;
   if (fallpos(&obj->o_pos, &fpos))
@@ -149,7 +112,7 @@ fall(THING* obj, bool pr)
 
   if (pr)
     msg("the %s vanishes as it hits the ground",
-        weap_info[obj->o_which].oi_name);
+        weapon_info[obj->o_which].oi_name);
   os_remove_thing(&obj);
 }
 
@@ -157,7 +120,7 @@ THING*
 weapon_create(int which, bool random_stats)
 {
   if (which == -1)
-    which = (int)pick_one(weap_info, MAXWEAPONS);
+    which = (int)pick_one(weapon_info, MAXWEAPONS);
 
   THING* weap = os_calloc_thing();
   weap->o_type  = WEAPON;
@@ -215,21 +178,15 @@ weapon_wield(THING* weapon)
 }
 
 void
-set_last_weapon(THING* weapon)
+weapon_set_last_used(THING* weapon)
 {
   last_wielded_weapon = weapon;
 }
 
 bool
-last_weapon(void)
+weapon_wield_last_used(void)
 {
-  if (last_wielded_weapon == NULL)
-  {
-    msg("you have no weapon to switch to");
-    return false;
-  }
-
-  if (!pack_contains(last_wielded_weapon))
+  if (last_wielded_weapon == NULL || !pack_contains(last_wielded_weapon))
   {
     last_wielded_weapon = NULL;
     msg("you have no weapon to switch to");
@@ -239,37 +196,11 @@ last_weapon(void)
   return weapon_wield(last_wielded_weapon);
 }
 
-bool
-fallpos(coord const* pos, coord* newpos)
-{
-  int cnt = 0;
-  for (int y = pos->y - 1; y <= pos->y + 1; y++)
-    for (int x = pos->x - 1; x <= pos->x + 1; x++)
-    {
-      coord *player_pos = player_get_pos();
-      /*
-       * check to make certain the spot is empty, if it is,
-       * put the object there, set it in the level list
-       * and re-draw the room if he can see it
-       */
-      if (y == player_pos->y && x == player_pos->x)
-        continue;
-
-      int ch = level_get_ch(y, x);
-      if ((ch == FLOOR || ch == PASSAGE) && os_rand_range(++cnt) == 0)
-      {
-        newpos->y = y;
-        newpos->x = x;
-      }
-    }
-  return cnt != 0;
-}
-
 void
 weapon_description(THING* obj, char* buf)
 {
   char* ptr = buf;
-  char const* obj_name = weap_info[obj->o_which].oi_name;
+  char const* obj_name = weapon_info[obj->o_which].oi_name;
 
   if (obj->o_count == 1)
     ptr += sprintf(ptr, "A%s %s", vowelstr(obj_name), obj_name);

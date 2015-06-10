@@ -375,7 +375,7 @@ monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
     obj->o_pos = tp->t_pos;
     list_detach(&tp->t_pack, obj);
     if (waskill)
-      fall(obj, false);
+      weapon_missile_fall(obj, false);
     else
       os_remove_thing(&obj);
   }

@@ -116,7 +116,7 @@ player_init(void)
   obj->o_hplus  = 1;
   obj->o_flags |= ISKNOW;
   pack_add(obj, true);
-  set_last_weapon(obj);
+  weapon_set_last_used(obj);
 
   /* Now some arrows */
   obj = weapon_create(ARROW, false);

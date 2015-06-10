@@ -8,14 +8,15 @@
 #include <assert.h>
 
 #include "armor.h"
-#include "misc.h"
-#include "player.h"
 #include "command.h"
-#include "rogue.h"
-#include "options.h"
-#include "level.h"
 #include "food.h"
+#include "level.h"
+#include "misc.h"
+#include "options.h"
+#include "os.h"
 #include "pack.h"
+#include "player.h"
+#include "rogue.h"
 
 #include "io.h"
 
@@ -413,3 +414,41 @@ io_tile(enum tile tile)
   assert(0 && "Unknown io_tile");
   return 0;
 }
+
+void
+io_missile_motion(THING* obj, int ydelta, int xdelta)
+{
+  coord* player_pos = player_get_pos();
+  int ch;
+
+  /* Come fly with us ... */
+  obj->o_pos = *player_pos;
+  for (;;)
+  {
+    /* Erase the old one */
+    if (!coord_same(&obj->o_pos, player_pos) &&
+        cansee(obj->o_pos.y, obj->o_pos.x))
+    {
+      ch = level_get_ch(obj->o_pos.y, obj->o_pos.x);
+      mvaddcch(obj->o_pos.y, obj->o_pos.x, (chtype)ch);
+    }
+
+    /* Get the new position */
+    obj->o_pos.y += ydelta;
+    obj->o_pos.x += xdelta;
+    if (step_ok(ch = level_get_type(obj->o_pos.y, obj->o_pos.x))
+       && ch != DOOR)
+    {
+      /* It hasn't hit anything yet, so display it if it alright. */
+      if (cansee(obj->o_pos.y, obj->o_pos.x))
+      {
+        os_usleep(10000);
+        mvaddcch(obj->o_pos.y, obj->o_pos.x, (chtype)obj->o_type);
+        refresh();
+      }
+      continue;
+    }
+    break;
+  }
+}
+

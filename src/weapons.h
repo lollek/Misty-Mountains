@@ -21,26 +21,19 @@ enum weapon_type
 #define FLAME MAXWEAPONS /* fake entry for dragon breath (ick) */
 
 /* TODO: Remove vars */
-extern struct obj_info weap_info[MAXWEAPONS +1];
+extern struct obj_info weapon_info[MAXWEAPONS +1];
 
 bool weapons_save_state(void);
 bool weapons_load_state(void);
 
-/* Do the actual motion on the screen done by an object traveling
- * across the room */
-void do_motion(THING* obj, int ydelta, int xdelta);
-
 /* Drop an item someplace around here. */
-void fall(THING* obj, bool pr);
+void weapon_missile_fall(THING* obj, bool pr);
 
 THING* weapon_create(int which, bool random_stats);
 
 bool weapon_wield(THING* weapon);
-void set_last_weapon(THING* weapon);
-bool last_weapon(void);
-
-/* Pick a random position around the give (y, x) coordinates */
-bool fallpos(coord const* pos, coord* newpos);
+bool weapon_wield_last_used(void);
+void weapon_set_last_used(THING* weapon);
 
 void weapon_description(THING* obj, char* buf);
 

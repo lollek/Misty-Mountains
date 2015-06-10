@@ -108,7 +108,7 @@ magic_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
     bolt.o_flags |= ISMISL;
     bolt.o_launch = -1;
     bolt.o_hurldmg[0] = (struct damage){6,6};
-    weap_info[FLAME].oi_name = missile_name;
+    weapon_info[FLAME].oi_name = missile_name;
 
     if (mon->t_type == 'D' && strcmp(missile_name, "flame") == 0)
       msg("the flame bounces off the dragon");

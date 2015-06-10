@@ -39,11 +39,11 @@ static bool command_attack_bow(coord const* delta)
   }
 
   THING* arrow = pack_remove(ptr, true, false);
-  do_motion(arrow, delta->y, delta->x);
+  io_missile_motion(arrow, delta->y, delta->x);
   THING* monster_at_pos = level_get_monster(arrow->o_pos.y, arrow->o_pos.x);
 
   if (monster_at_pos == NULL || !fight_against_monster(&arrow->o_pos, arrow, true))
-    fall(arrow, true);
+    weapon_missile_fall(arrow, true);
 
   return true;
 }
@@ -511,7 +511,7 @@ bool command_throw(void)
   }
 
   obj = pack_remove(obj, true, false);
-  do_motion(obj, ydelta, xdelta);
+  io_missile_motion(obj, ydelta, xdelta);
   THING* monster_at_pos = level_get_monster(obj->o_pos.y, obj->o_pos.x);
 
   /* Throwing an arrow always misses */
@@ -522,7 +522,7 @@ bool command_throw(void)
       char buf[MAXSTR];
       fight_missile_miss(obj, monster_name(monster_at_pos, buf));
     }
-    fall(obj, true);
+    weapon_missile_fall(obj, true);
     return true;
   }
 
@@ -536,7 +536,7 @@ bool command_throw(void)
     if (obj->o_type == POTION)
       msg("the potion crashes into the wall");
     else
-      fall(obj, true);
+      weapon_missile_fall(obj, true);
   }
 
   return true;
