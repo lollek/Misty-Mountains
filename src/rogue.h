@@ -42,8 +42,6 @@ extern char dir_ch;
 extern char whoami[];
 extern char runch;
 
-extern int wizard;
-
 extern coord oldpos;
 
 #endif /* _ROGUE14_ROGUE_H_ */

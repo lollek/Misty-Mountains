@@ -1,6 +1,8 @@
 #ifndef _ROGUE14_WIZARD_H_
 #define _ROGUE14_WIZARD_H_
 
+extern int wizard; /* True if allows wizard commands (debug mode) */
+
 /* List possible potions, scrolls, etc. for wizard. */
 int wizard_list_items(void);
 

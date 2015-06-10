@@ -37,6 +37,8 @@
 
 #include "wizard.h"
 
+int wizard = false;
+
 static void
 pr_spec(char type)
 {
