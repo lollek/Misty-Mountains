@@ -69,6 +69,7 @@ void player_teleport(coord* target);
 bool player_search(void);
 
 bool player_is_stealthy(void);
+bool player_has_ring_with_ability(int ability);
 
 /* Position */
 int player_y(void);

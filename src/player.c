@@ -697,3 +697,17 @@ void player_earn_exp(int amount)
 {
   player.t_stats.s_exp += amount;
 }
+
+bool
+player_has_ring_with_ability(int ability)
+{
+  int i;
+  for (i = 0; i < PACK_RING_SLOTS; ++i)
+  {
+    THING *ring = pack_equipped_item(pack_ring_slots[i]);
+    if (ring != NULL && ring->o_which == ability)
+      return true;
+  }
+  return false;
+}
+

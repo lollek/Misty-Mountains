@@ -49,7 +49,6 @@ int dist(int y1, int x1, int y2, int x2);
 const char *pick_color(const char *col); /* Return given color (or random if hallucinating) */
 char floor_ch(void); /* Floor-type at hero's position */
 char floor_at(void); /* Return the character at hero's position */
-bool player_has_ring_with_ability(int ability);
 
 /* Pick a random position around the give (y, x) coordinates */
 bool fallpos(coord const* pos, coord* newpos);
