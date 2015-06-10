@@ -16,7 +16,6 @@
 #include "pack.h"
 #include "rings.h"
 #include "misc.h"
-#include "wizard.h"
 #include "things.h"
 #include "options.h"
 #include "os.h"
@@ -88,11 +87,9 @@ armor_type_random(void)
   }
 
   /* Error! Sum of probs was not 100 */
-  msg("Error! Sum of probabilities is not 100%");
-  pr_spec(ARMOR);
+  (void)fail("Error! Sum of probabilities is not 100%");
   readchar(false);
-  endwin();
-  exit(1);
+  return LEATHER;
 }
 
 void

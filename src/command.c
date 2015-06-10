@@ -198,20 +198,20 @@ command_wizard_do(char ch)
   {
     case '_': raise(SIGINT); break;
     case '|': msg("@ %d,%d", player_get_pos()->y, player_get_pos()->x); break;
-    case 'C': create_obj(); break;
+    case 'C': wizard_create_item(); break;
     case '$': msg("inpack = %d", pack_count_items()); break;
     case CTRL('A'): level--; level_new(); break;
     case CTRL('C'): passages_add_pass(); break;
     case CTRL('D'): level++; level_new(); break;
     case CTRL('E'): msg("food left: %d", food_nutrition_left()); break;
-    case CTRL('F'): show_map(); break;
+    case CTRL('F'): wizard_show_map(); break;
     case CTRL('I'): wizard_levels_and_gear(); break;
     case CTRL('T'): player_teleport(NULL); break;
     case CTRL('W'): identify(); break;
     case CTRL('X'): player_can_sense_monsters()
                     ? player_remove_sense_monsters()
                     : player_add_sense_monsters(true); break;
-    case '*' : pr_list(); break;
+    case '*' : wizard_list_items(); break;
 
     case CTRL('~'):
      {

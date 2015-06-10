@@ -37,7 +37,7 @@
 
 #include "wizard.h"
 
-void
+static void
 pr_spec(char type)
 {
   WINDOW* printscr = dupwin(stdscr);
@@ -105,7 +105,7 @@ print_things(void)
 }
 
 int
-pr_list(void)
+wizard_list_items(void)
 {
   msg("for what type of object do you want a list? ");
   print_things();
@@ -125,7 +125,7 @@ pr_list(void)
 }
 
 void
-create_obj(void)
+wizard_create_item(void)
 {
   msg("type of item: ");
   int type = readchar(true);
@@ -236,7 +236,7 @@ create_obj(void)
 }
 
 void
-show_map(void)
+wizard_show_map(void)
 {
   wclear(hw);
   for (int y = 1; y < NUMLINES - 1; y++)
