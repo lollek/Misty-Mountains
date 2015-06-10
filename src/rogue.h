@@ -42,7 +42,6 @@ extern bool running;
 extern bool to_death;
 
 extern char dir_ch;
-extern char file_name[];
 extern char whoami[];
 extern char runch;
 

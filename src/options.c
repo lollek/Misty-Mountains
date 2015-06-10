@@ -20,7 +20,7 @@
 #include "io.h"
 #include "misc.h"
 #include "player.h"
-#include "rogue.h"
+#include "save.h"
 
 #include "options.h"
 
@@ -95,7 +95,7 @@ option(void)
     {STICK,  "Pick up sticks?...................", &pickup_sticks,  BOOL},
     {AMMO,   "Pick up ammo?.....................", &pickup_ammo,    BOOL},
     {'4',    "Name..............................", whoami,          STR},
-    {'5',    "Save file.........................", file_name,       STR},
+    {'5',    "Save file.........................", save_file_name,  STR},
   };
   int const NOPTS = (sizeof optlist / sizeof (*optlist));
   char const* query = "Which value do you want to change? (ESC to exit) ";

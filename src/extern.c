@@ -21,7 +21,6 @@ bool to_death = false;			/* Fighting is to the death! */
 int wizard = false;			/* True if allows wizard commands */
 
 char dir_ch;				/* Direction from last get_dir() call */
-char file_name[MAXSTR];			/* Save file name */
 char runch;				/* Direction player is running */
 char whoami[MAXSTR];			/* Name of player */
 

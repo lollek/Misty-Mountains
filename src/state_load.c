@@ -619,7 +619,7 @@ state_load_file(FILE* inf)
   rs_assert(state_assert_int32(RSID_FOOD)    ||   food_load_state());
 
   rs_assert(state_load_bool(&firstmove))
-  rs_assert(state_load_chars(file_name, MAXSTR))
+  rs_assert(state_load_chars(save_file_name, MAXSTR))
   rs_assert(state_load_char(&runch))
   rs_assert(state_load_chars(whoami, MAXSTR))
   rs_assert(state_load_int32(&levels_without_food))

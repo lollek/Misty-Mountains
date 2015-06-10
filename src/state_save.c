@@ -487,7 +487,7 @@ state_save_file(FILE* savef)
   rs_assert(state_save_int32(RSID_FOOD)    ||   food_save_state());
 
   rs_assert(state_save_bool(firstmove))
-  rs_assert(state_save_chars(file_name, maxstr))
+  rs_assert(state_save_chars(save_file_name, maxstr))
   rs_assert(state_save_char(runch))
   rs_assert(state_save_chars(whoami, maxstr))
   rs_assert(state_save_int32(levels_without_food))

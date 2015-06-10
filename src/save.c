@@ -24,11 +24,13 @@
 
 #include "save.h"
 
+char save_file_name[MAXSTR];
+
 /* Write the saved game on the file */
 static bool
 save_file(FILE* savef)
 {
-  chmod(file_name, 0400);
+  chmod(save_file_name, 0400);
 
 #ifdef NDEBUG
   if (wizard)
@@ -54,7 +56,7 @@ save_game(void)
   while (savef == NULL)
   {
     msg("save to file? ");
-    if (readstr(file_name) != 0)
+    if (readstr(save_file_name) != 0)
     {
       clearmsg();
       return false;
@@ -63,7 +65,7 @@ save_game(void)
 
     /* test to see if the file exists */
     struct stat sbuf;
-    if (stat(file_name, &sbuf) >= 0)
+    if (stat(save_file_name, &sbuf) >= 0)
     {
       int c;
       msg("File exists.  Do you wish to overwrite it? ");
@@ -75,10 +77,10 @@ save_game(void)
           return false;
         }
       }
-      unlink(file_name);
+      unlink(save_file_name);
     }
 
-    savef = fopen(file_name, "w");
+    savef = fopen(save_file_name, "w");
     if (savef == NULL)
       msg(strerror(errno));
   }
@@ -113,17 +115,17 @@ save_auto(int sig)
   bool did_save = false;
 
   /* Always auto-save to ~/.rogue14_rescue */
-  strcpy(file_name, get_homedir());
-  strcat(file_name, ".rogue14_rescue");
-  unlink(file_name);
-  FILE* savef = fopen(file_name, "w");
+  strcpy(save_file_name, get_homedir());
+  strcat(save_file_name, ".rogue14_rescue");
+  unlink(save_file_name);
+  FILE* savef = fopen(save_file_name, "w");
   if (savef != NULL)
     did_save = save_file(savef);
 
   endwin();
   if (did_save)
   {
-    printf("Autosaved to %s\n", file_name);
+    printf("Autosaved to %s\n", save_file_name);
     exit(0);
   }
   else

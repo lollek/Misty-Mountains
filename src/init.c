@@ -198,12 +198,12 @@ init_new_game(void)
 bool
 init_old_game(void)
 {
-  FILE* inf = fopen(file_name, "r");
+  FILE* inf = fopen(save_file_name, "r");
   char buf[MAXSTR];
 
   if (inf == NULL)
   {
-    perror(file_name);
+    perror(save_file_name);
     return false;
   }
 
@@ -230,7 +230,7 @@ init_old_game(void)
   /* we do not close the file so that we will have a hold of the
    * inode for as long as possible */
 
-  if (unlink(file_name) < 0)
+  if (unlink(save_file_name) < 0)
   {
     endwin();
     printf("Cannot unlink file\n");
@@ -247,7 +247,7 @@ init_old_game(void)
   }
 
   clearok(curscr, true);
-  msg("file name: %s", file_name);
+  msg("file name: %s", save_file_name);
   return true;
 }
 

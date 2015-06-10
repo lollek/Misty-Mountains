@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+extern char save_file_name[MAXSTR];
+
 bool save_game(void);
 
 /* Automatically save a file.  This is used if a HUP signal is recieved */
