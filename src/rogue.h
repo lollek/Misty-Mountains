@@ -17,9 +17,6 @@
 
 #include "coord.h"
 
-/* All the fun defines */
-#define max(a,b)	((a) > (b) ? (a) : (b))
-
 /* Various constants */
 #define WANDERTIME	spread(70)
 #define BEFORE		spread(1)

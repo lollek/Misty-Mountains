@@ -173,7 +173,9 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
     int defense = armor_for_thing(defender);
     if (fight_swing_hits(attacker->t_stats.s_lvl, defense, mod.to_hit))
     {
-      defender->t_stats.s_hpt -= max(0, roll(dices, dice_sides) + mod.to_dmg);
+      int damage = roll(dices, dice_sides) + mod.to_dmg;
+      if (damage > 0)
+        defender->t_stats.s_hpt -= damage;
       did_hit = true;
     }
   }
