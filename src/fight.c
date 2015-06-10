@@ -31,6 +31,7 @@
 #include "rip.h"
 #include "options.h"
 #include "rogue.h"
+#include "os.h"
 
 #include "fight.h"
 
@@ -206,7 +207,7 @@ print_attack(bool hit, char const* att, char const* def)
     , "doesn't hit"
   };
 
-  int i = rnd(4);
+  int i = os_rand_range(4);
   if (att != NULL)
     i += 4;
 
@@ -341,7 +342,7 @@ fight_against_player(THING* mp)
 int
 fight_swing_hits(int at_lvl, int op_arm, int wplus)
 {
-  int rand = rnd(20);
+  int rand = os_rand_range(20);
   /* msg("%d + %d + %d vs %d", at_lvl, wplus, rand, op_arm); */
   return at_lvl + wplus + rand >= op_arm;
 }

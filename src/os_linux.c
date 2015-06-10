@@ -9,6 +9,26 @@
 
 #include "os.h"
 
+unsigned os_rand_seed;
+
+int
+os_rand_range(int max)
+{
+  return max == 0 ? 0 : os_rand() % max;
+}
+
+int
+os_rand(void)
+{
+  return rand_r(&os_rand_seed);
+}
+
+int
+os_usleep(unsigned int usec)
+{
+  return usleep(usec);
+}
+
 int
 os_drop_uid(void)
 {

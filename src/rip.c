@@ -158,10 +158,10 @@ score_print(SCORE* top_ten, SCORE* endp, int flags, int prflags)
         sc2 = endp - 1;
         sc2->sc_score = 0;
         for (int i = 0; i < MAXSTR; i++)
-          sc2->sc_name[i] = (char) rnd(255);
-        sc2->sc_flags = rand_r(&seed);
-        sc2->sc_level = rand_r(&seed);
-        sc2->sc_monster = rand_r(&seed);
+          sc2->sc_name[i] = (char) os_rand_range(255);
+        sc2->sc_flags = os_rand();
+        sc2->sc_level = os_rand();
+        sc2->sc_monster = os_rand();
         ptr--;
       }
     }
@@ -198,11 +198,11 @@ score(int amount, int flags, char monst)
   {
     ptr->sc_score = 0;
     for (int i = 0; i < MAXSTR; i++)
-      ptr->sc_name[i] = (unsigned char) rnd(255);
-    ptr->sc_flags = rand_r(&seed);
-    ptr->sc_level = rand_r(&seed);
-    ptr->sc_monster = rand_r(&seed);
-    ptr->sc_uid = (unsigned)rand_r(&seed);
+      ptr->sc_name[i] = (unsigned char) os_rand_range(255);
+    ptr->sc_flags = os_rand();
+    ptr->sc_level = os_rand();
+    ptr->sc_monster = os_rand();
+    ptr->sc_uid = (unsigned)os_rand();
   }
 
   signal(SIGINT, SIG_DFL);

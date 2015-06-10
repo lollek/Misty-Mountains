@@ -2,7 +2,7 @@
 #include <stdbool.h>
 
 #include "potions.h"
-#include "misc.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "colors.h"
@@ -33,5 +33,5 @@ color_get(int i)
 char const*
 color_random(void)
 {
-  return rainbow[rnd(NCOLORS)];
+  return rainbow[os_rand_range(NCOLORS)];
 }

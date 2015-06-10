@@ -515,7 +515,7 @@ state_save_file(FILE* savef)
   rs_assert(state_save_int32(player_turns_without_moving))
   rs_assert(state_save_int32(pack_gold))
   rs_assert(state_save_int32(monster_flytrap_hit))
-  rs_assert(state_save_int32((int32_t)seed))
+  rs_assert(state_save_int32((int32_t)os_rand_seed))
 
   rs_assert(state_save_equipment(EQUIPMENT_ARMOR, RSID_ARMOR))
   rs_assert(state_save_equipment(EQUIPMENT_RHAND, RSID_RHAND))

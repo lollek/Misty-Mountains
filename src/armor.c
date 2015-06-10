@@ -78,7 +78,7 @@ armor_command_wear(void)
 enum armor_t
 armor_type_random(void)
 {
-  int value = rnd(100);
+  int value = os_rand_range(100);
   for (enum armor_t i = 0; i < NARMORS; ++i)
   {
     if (value < armors[i].prob)
@@ -148,14 +148,14 @@ armor_create(int which, int random_stats)
 
   if (random_stats)
   {
-    int rand = rnd(100);
+    int rand = os_rand_range(100);
     if (rand < 20)
     {
       armor->o_flags |= ISCURSED;
-      armor->o_arm += rnd(3) + 1;
+      armor->o_arm += os_rand_range(3) + 1;
     }
     else if (rand < 28)
-      armor->o_arm -= rnd(3) + 1;
+      armor->o_arm -= os_rand_range(3) + 1;
   }
 
   return armor;

@@ -49,8 +49,6 @@ extern char runch;
 
 extern int wizard;
 
-extern unsigned seed;
-
 extern coord oldpos;
 
 #endif /* _ROGUE14_ROGUE_H_ */

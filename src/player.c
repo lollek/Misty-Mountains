@@ -33,7 +33,7 @@ struct stats player_max_stats = { 16, 0, 1, 10, 12, {{1,4}}, 12 };
 /* Duration of effects */
 #define HUHDURATION     spread(20)  /* Confusion */
 #define MFINDDURATION   spread(20)  /* Monster find */
-#define HASTEDURATION   rnd(4)+4    /* Haste */
+#define HASTEDURATION   os_rand_range(4)+4    /* Haste */
 #define SEEDURATION     spread(850) /* See invisible / blind / hallucinating */
 #define LEVITDUR        spread(30)  /* Levitation */
 #define SLEEPTIME       spread(7)   /* Sleep */
@@ -120,7 +120,7 @@ player_init(void)
 
   /* Now some arrows */
   obj = weapon_create(ARROW, false);
-  obj->o_count  = rnd(15) + 25;
+  obj->o_count  = os_rand_range(15) + 25;
   obj->o_flags |= ISKNOW;
   pack_add(obj, true);
 }
@@ -230,7 +230,9 @@ player_add_sense_monsters(bool permanent)
     if (!monster_seen_by_player(monster))
     {
       mvaddcch(monster->t_pos.y, monster->t_pos.x,
-          (player_is_hallucinating() ? (char)(rnd(26) + 'A') : monster->t_type)
+          (player_is_hallucinating()
+           ? (char)(os_rand_range(26) + 'A')
+           : monster->t_type)
             | A_STANDOUT);
       spotted_something = true;
     }
@@ -406,7 +408,7 @@ void player_become_poisoned(void)
     msg("you feel momentarily nauseous");
   else
   {
-    player_modify_strength(-(rnd(3) + 1));
+    player_modify_strength(-(os_rand_range(3) + 1));
     msg("you feel very sick now");
     player_remove_hallucinating();
   }
@@ -481,7 +483,7 @@ player_search(void)
       switch (chatyx)
       {
         case VWALL: case HWALL:
-          if (!rnd(5 + probinc))
+          if (!os_rand_range(5 + probinc))
           {
             level_set_ch(y, x, DOOR);
             msg("a secret door");
@@ -492,12 +494,12 @@ player_search(void)
           break;
 
         case FLOOR:
-          if (!rnd(2 + probinc))
+          if (!os_rand_range(2 + probinc))
           {
             level_set_ch(y, x, TRAP);
 
             if (player_is_hallucinating())
-              msg(trap_names[rnd(NTRAPS)]);
+              msg(trap_names[os_rand_range(NTRAPS)]);
             else {
               msg(trap_names[flags & F_TMASK]);
               flags |= F_SEEN;
@@ -511,7 +513,7 @@ player_search(void)
           break;
 
         case SHADOW:
-          if (!rnd(3 + probinc))
+          if (!os_rand_range(3 + probinc))
           {
             level_set_ch(y, x, PASSAGE);
             found = true;

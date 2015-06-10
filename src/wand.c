@@ -82,10 +82,10 @@ void wand_init(void)
 
   for (size_t i = 0; i < MAXSTICKS; i++)
   {
-    int j = rnd(NMATERIAL);
+    int j = os_rand_range(NMATERIAL);
 
     while (used[j])
-      j = rnd(NMATERIAL);
+      j = os_rand_range(NMATERIAL);
 
     _wand_material[i] = material[j];
     used[j] = true;
@@ -154,8 +154,8 @@ wand_create(int wand)
 
   switch (new_wand->o_which)
   {
-    case WS_LIGHT: new_wand->o_charges = rnd(10) + 10; break;
-    default:       new_wand->o_charges = rnd(5) + 3;   break;
+    case WS_LIGHT: new_wand->o_charges = os_rand_range(10) + 10; break;
+    default:       new_wand->o_charges = os_rand_range(5) + 3;   break;
   }
 
   return new_wand;
@@ -270,7 +270,7 @@ wand_spell_polymorph(THING* target)
 
   char oldch = target->t_oldch;
 
-  char monster = (char)(rnd(26) + 'A');
+  char monster = (char)(os_rand_range(26) + 'A');
   bool same_monster = monster == target->t_type;
 
   monster_new(target, monster, &pos);

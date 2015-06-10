@@ -159,11 +159,11 @@ monster_random(bool wander)
   int d;
   do
   {
-    d = level + (rnd(10) - 6);
+    d = level + (os_rand_range(10) - 6);
     if (d < 0)
-      d = rnd(5);
+      d = os_rand_range(5);
     if (d > 25)
-      d = rnd(5) + 21;
+      d = os_rand_range(5) + 21;
   }
   while (mons[d] == 0);
 
@@ -235,7 +235,7 @@ monster_new_random_wanderer(void)
   if (player_can_sense_monsters())
   {
     if (player_is_hallucinating())
-      addcch((chtype)(rnd(26) + 'A') | A_STANDOUT);
+      addcch((chtype)(os_rand_range(26) + 'A') | A_STANDOUT);
     else
       addcch(monster->t_type | A_STANDOUT);
   }
@@ -256,7 +256,7 @@ monster_notice_player(int y, int x)
       && monster_is_mean(monster)
       && !monster_is_held(monster)
       && !player_is_stealthy()
-      && !rnd(3))
+      && !os_rand_range(3))
   {
     monster_set_target(monster, player_pos);
     if (!monster_is_stuck(monster))
@@ -301,7 +301,7 @@ void
 monster_give_pack(THING* tp)
 {
   if (level >= level_max
-      && rnd(100) < monsters[tp->t_type-'A'].m_carry)
+      && os_rand_range(100) < monsters[tp->t_type-'A'].m_carry)
     list_attach(&tp->t_pack, new_thing());
 }
 
@@ -468,7 +468,7 @@ monster_do_special_ability(THING** monster)
         char buf[MAXSTR];
         msg("you are frozen by the %s", monster_name(*monster, buf));
       }
-      player_turns_without_action += rnd(2) + 2;
+      player_turns_without_action += os_rand_range(2) + 2;
       if (player_turns_without_action > 50)
         death('h');
       return;
@@ -513,7 +513,7 @@ monster_do_special_ability(THING** monster)
 
     /* Vampires can steal max hp */
     case 'V':
-      if (rnd(100) < 30)
+      if (os_rand_range(100) < 30)
       {
         int fewer = roll(1, 3);
         player_lose_health(fewer);
@@ -526,7 +526,7 @@ monster_do_special_ability(THING** monster)
 
     /* Wraiths might drain exp */
     case 'W':
-      if (rnd(100) < 15)
+      if (os_rand_range(100) < 15)
       {
         if (player_get_exp() == 0)
           death('W');  /* Death by no exp */
@@ -558,7 +558,7 @@ monster_name(THING const* monster, char* buf)
   {
     int ch = mvincch(monster->t_pos.y, monster->t_pos.x);
     if (!isupper(ch))
-      ch = rnd(NMONSTERS);
+      ch = os_rand_range(NMONSTERS);
     else
       ch -= 'A';
 

@@ -23,6 +23,7 @@
 #include "move.h"
 #include "fight.h"
 #include "food.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "command_private.h"
@@ -274,7 +275,7 @@ command_identify_trap(void)
   if (level_get_ch(delta.y, delta.x) != TRAP)
     msg("no trap there");
   else if (player_has_confusing_attack())
-    msg(trap_names[rnd(NTRAPS)]);
+    msg(trap_names[os_rand_range(NTRAPS)]);
   else
   {
     msg(trap_names[flags & F_TMASK]);
@@ -603,7 +604,7 @@ command_eat(void)
   if (obj->o_which == 1)
     msg("my, that was a yummy fruit");
 
-  else if (rnd(100) > 70)
+  else if (os_rand_range(100) > 70)
   {
     player_earn_exp(1);
     msg("this food tastes awful");

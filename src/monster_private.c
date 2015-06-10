@@ -5,6 +5,7 @@
 #include "scrolls.h"
 #include "misc.h"
 #include "io.h"
+#include "os.h"
 
 #include "monster.h"
 #include "monster_private.h"
@@ -25,7 +26,7 @@ monster_find_new_target(THING* monster)
     if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
       continue;
 
-    if (roomin(&obj->o_pos) == monster->t_room && rnd(100) < prob)
+    if (roomin(&obj->o_pos) == monster->t_room && os_rand_range(100) < prob)
     {
       THING *someone;
       for (someone = monster_list; someone != NULL; someone = someone->l_next)

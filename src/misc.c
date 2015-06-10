@@ -51,18 +51,12 @@ trip_ch(int y, int x, int ch)
 }
 
 int
-rnd(int range)
-{
-  return range == 0 ? 0 : rand_r(&seed) % range;
-}
-
-int
 roll(int number, int sides)
 {
   int dtotal = 0;
 
   while (number--)
-    dtotal += rnd(sides)+1;
+    dtotal += os_rand_range(sides) + 1;
   return dtotal;
 }
 
@@ -141,7 +135,7 @@ look(bool wakeup)
           if (monster_seen_by_player(monster))
           {
             xy_ch = player_is_hallucinating()
-              ? (char)(rnd(26) + 'A')
+              ? (char)(os_rand_range(26) + 'A')
               : monster->t_disguise;
           }
         }
@@ -290,11 +284,11 @@ get_dir(void)
   if (isupper(dir_ch))
     dir_ch = (char) tolower(dir_ch);
 
-  if (player_is_confused() && rnd(5) == 0)
+  if (player_is_confused() && os_rand_range(5) == 0)
     do
     {
-      delta.y = rnd(3) - 1;
-      delta.x = rnd(3) - 1;
+      delta.y = os_rand_range(3) - 1;
+      delta.x = os_rand_range(3) - 1;
     } while (delta.y == 0 && delta.x == 0);
 
   mpos = 0;
@@ -313,7 +307,7 @@ sign(int nm)
 int
 spread(int nm)
 {
-  return nm - nm / 20 + rnd(nm / 10);
+  return nm - nm / 20 + os_rand_range(nm / 10);
 }
 
 void
@@ -345,7 +339,7 @@ call_it(char const* what, struct obj_info *info)
 char
 rnd_thing(void)
 {
-  int i = rnd(level >= level_amulet ? 10 : 9);
+  int i = os_rand_range(level >= level_amulet ? 10 : 9);
   switch (i)
   {
     case 0: return POTION;

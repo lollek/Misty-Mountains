@@ -80,13 +80,13 @@ scroll_init(void)
     char* cp = tmpbuf;
     int nwords;
 
-    for (nwords = rnd(3)+2; nwords > 0; nwords--)
+    for (nwords = os_rand_range(3)+2; nwords > 0; nwords--)
     {
-      int nsyl = rnd(3) + 1;
+      int nsyl = os_rand_range(3) + 1;
 
       while (nsyl--)
       {
-        char const* sp = sylls[rnd((sizeof(sylls)) / (sizeof(*sylls)))];
+        char const* sp = sylls[os_rand_range((sizeof(sylls)) / (sizeof(*sylls)))];
         if (&cp[strlen(sp)] > &tmpbuf[MAXNAME])
           break;
         while (*sp)
@@ -176,7 +176,7 @@ enchant_players_armor(void)
   THING* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == NULL)
   {
-    switch (rnd(3))
+    switch (os_rand_range(3))
     {
       case 0: msg("you are unsure if anything happened"); break;
       case 1: msg("you feel naked"); break;
@@ -221,7 +221,7 @@ hold_monsters(void)
   else if (monsters_affected > 1)
     msg("the monsters around you freeze");
   else /* monsters_affected == 0 */
-    switch (rnd(3))
+    switch (os_rand_range(3))
     {
       case 0: msg("you are unsure if anything happened"); break;
       case 1: msg("you feel a strange sense of loss"); break;
@@ -246,7 +246,7 @@ create_monster(void)
       if ((y == player_pos->y && x == player_pos->x)
           || !step_ok(ch)
           || (ch == SCROLL && find_obj(y, x)->o_which == S_SCARE)
-          || rnd(++i) != 0)
+          || os_rand_range(++i) != 0)
         continue;
 
       mp.y = y;
@@ -254,7 +254,7 @@ create_monster(void)
     }
 
   if (i == 0)
-    switch (rnd(3))
+    switch (os_rand_range(3))
     {
       case 0: msg("you are unsure if anything happened"); break;
       case 1: msg("you hear a faint cry of anguish in the distance"); break;
@@ -364,7 +364,7 @@ player_enchant_weapon(void)
   THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon == NULL)
   {
-    switch (rnd(2))
+    switch (os_rand_range(2))
     {
       case 0: msg("you feel a strange sense of loss"); break;
       case 1: msg("you are unsure if anything happened"); break;
@@ -373,7 +373,7 @@ player_enchant_weapon(void)
   }
 
   weapon->o_flags &= ~ISCURSED;
-  if (rnd(2) == 0)
+  if (os_rand_range(2) == 0)
     weapon->o_hplus++;
   else
     weapon->o_dplus++;
@@ -401,7 +401,7 @@ protect_armor(void)
   THING* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == NULL)
   {
-    switch (rnd(2))
+    switch (os_rand_range(2))
     {
       case 0: msg("you feel a strange sense of loss"); break;
       case 1: msg("you are unsure if anything happened"); break;

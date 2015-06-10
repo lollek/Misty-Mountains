@@ -13,7 +13,7 @@
 #include <stdlib.h>
 
 #include "io.h"
-#include "misc.h"
+#include "os.h"
 #include "rooms.h"
 #include "level.h"
 #include "rogue.h"
@@ -112,7 +112,7 @@ door(struct room* rm, coord* cp)
     return;
 
   PLACE* place = level_get_place(cp->y, cp->x);
-  if (rnd(10) + 1 < level && rnd(5) == 0)
+  if (os_rand_range(10) + 1 < level && os_rand_range(5) == 0)
   {
     if (cp->y == rm->r_pos.y || cp->y == rm->r_pos.y + rm->r_max.y - 1)
       place->p_ch = HWALL;
@@ -174,7 +174,8 @@ conn(int r1, int r2)
     if (!(room_from->r_flags & ISGONE))
       do
       {
-        start_pos.x = room_from->r_pos.x + rnd(room_from->r_max.x - 2) + 1;
+        start_pos.x = room_from->r_pos.x + os_rand_range(room_from->r_max.x - 2)
+          + 1;
         start_pos.y = room_from->r_pos.y + room_from->r_max.y - 1;
       }
       while ((room_from->r_flags & ISMAZE)
@@ -182,7 +183,7 @@ conn(int r1, int r2)
 
     if (!(room_to->r_flags & ISGONE))
       do
-        end_pos.x = room_to->r_pos.x + rnd(room_to->r_max.x - 2) + 1;
+        end_pos.x = room_to->r_pos.x + os_rand_range(room_to->r_max.x - 2) + 1;
       while ((room_to->r_flags & ISMAZE)
              && !(level_get_flags(end_pos.y, end_pos.x) & F_PASS));
 
@@ -207,13 +208,14 @@ conn(int r1, int r2)
       do
       {
         start_pos.x = room_from->r_pos.x + room_from->r_max.x - 1;
-        start_pos.y = room_from->r_pos.y + rnd(room_from->r_max.y - 2) + 1;
+        start_pos.y = room_from->r_pos.y + os_rand_range(room_from->r_max.y - 2)
+          + 1;
       } while ((room_from->r_flags & ISMAZE)
                && !(level_get_flags(start_pos.y, start_pos.x) & F_PASS));
 
     if (!(room_to->r_flags & ISGONE))
       do
-        end_pos.y = room_to->r_pos.y + rnd(room_to->r_max.y - 2) + 1;
+        end_pos.y = room_to->r_pos.y + os_rand_range(room_to->r_max.y - 2) + 1;
       while ((room_to->r_flags & ISMAZE)
              && !(level_get_flags(end_pos.y, end_pos.x) & F_PASS));
 
@@ -227,7 +229,7 @@ conn(int r1, int r2)
     msg("DEBUG: error in connection tables");
 
   /* where turn starts */
-  int turn_spot = rnd(distance - 1) + 1;
+  int turn_spot = os_rand_range(distance - 1) + 1;
 
   /* Draw in the doors on either side of the passage or just put #'s
    * if the rooms are gone.  */
@@ -308,7 +310,7 @@ passages_do(void)
   /* starting with one room, connect it to a random adjacent room and
    * then pick a new room to start with.  */
   int roomcount = 1;
-  struct rdes* r1 = &rdes[rnd(ROOMS_MAX)];
+  struct rdes* r1 = &rdes[os_rand_range(ROOMS_MAX)];
   r1->ingraph = true;
 
   struct rdes* r2 = NULL;
@@ -317,7 +319,7 @@ passages_do(void)
       /* find a room to connect with */
       int j = 0;
       for (int i = 0; i < ROOMS_MAX; i++)
-        if (r1->conn[i] && !rdes[i].ingraph && !rnd(++j))
+        if (r1->conn[i] && !rdes[i].ingraph && !os_rand_range(++j))
           r2 = &rdes[i];
 
       /* if no adjacent rooms are outside the graph, pick a new room
@@ -325,7 +327,7 @@ passages_do(void)
       if (j == 0)
       {
         do
-          r1 = &rdes[rnd(ROOMS_MAX)];
+          r1 = &rdes[os_rand_range(ROOMS_MAX)];
         while (!r1->ingraph);
       }
 
@@ -345,14 +347,14 @@ passages_do(void)
 
     /* attempt to add passages to the graph a random number of times so
      * that there isn't always just one unique passage through it.  */
-  for (roomcount = rnd(5); roomcount > 0; roomcount--)
+  for (roomcount = os_rand_range(5); roomcount > 0; roomcount--)
   {
-    r1 = &rdes[rnd(ROOMS_MAX)];	/* a random room to look from */
+    r1 = &rdes[os_rand_range(ROOMS_MAX)];	/* a random room to look from */
 
     /* find an adjacent room not already connected */
     int j = 0;
     for (int i = 0; i < ROOMS_MAX; i++)
-      if (r1->conn[i] && !r1->isconn[i] && rnd(++j) == 0)
+      if (r1->conn[i] && !r1->isconn[i] && os_rand_range(++j) == 0)
         r2 = &rdes[i];
 
     /* if there is one, connect it and look for the next added passage */
@@ -376,7 +378,7 @@ passages_putpass(coord* cp)
   PLACE *pp = level_get_place(cp->y, cp->x);
   pp->p_flags |= F_PASS;
 
-  if (rnd(10) + 1 < level && rnd(40) == 0)
+  if (os_rand_range(10) + 1 < level && os_rand_range(40) == 0)
     pp->p_flags &= ~F_REAL;
   else
     pp->p_ch = PASSAGE;

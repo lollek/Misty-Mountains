@@ -85,7 +85,7 @@ ring_init(void)
   for (int i = 0; i < NRINGS; i++)
     for (;;)
     {
-      int stone = rnd(NSTONES);
+      int stone = os_rand_range(NSTONES);
 
       for (int j = 0; j < i; ++j)
         if (r_stones[j] == stones[stone].st_name)
@@ -276,7 +276,7 @@ ring_create(int which, bool random_stats)
     case R_ADDSTR: case R_PROTECT: case R_ADDHIT: case R_ADDDAM:
       if (random_stats)
       {
-        ring->o_arm = rnd(3);
+        ring->o_arm = os_rand_range(3);
         if (ring->o_arm == 0)
         {
           ring->o_arm = -1;

@@ -175,10 +175,10 @@ create_obj(void)
         if (bless == '-')
         {
           obj->o_flags |= ISCURSED;
-          obj->o_hplus -= rnd(3) + 1;
+          obj->o_hplus -= os_rand_range(3) + 1;
         }
         else if (bless == '+')
-          obj->o_hplus += rnd(3) + 1;
+          obj->o_hplus += os_rand_range(3) + 1;
       }
       break;
 
@@ -192,10 +192,10 @@ create_obj(void)
         if (bless == '-')
         {
           obj->o_flags |= ISCURSED;
-          obj->o_arm += rnd(3) + 1;
+          obj->o_arm += os_rand_range(3) + 1;
         }
         else if (bless == '+')
-          obj->o_arm -= rnd(3) + 1;
+          obj->o_arm -= os_rand_range(3) + 1;
       }
       break;
 
@@ -210,7 +210,7 @@ create_obj(void)
             mpos = 0;
             if (bless == '-')
               obj->o_flags |= ISCURSED;
-            obj->o_arm = (bless == '-' ? -1 : rnd(2) + 1);
+            obj->o_arm = (bless == '-' ? -1 : os_rand_range(2) + 1);
             break;
         }
       }

@@ -28,6 +28,7 @@
 #include "player.h"
 #include "options.h"
 #include "level.h"
+#include "os.h"
 #include "rogue.h"
 
 /** move_turn_ok:
@@ -89,7 +90,7 @@ move_do(char ch)
 	return true;
     }
 
-    if (player_is_confused() && rnd(5) != 0)
+    if (player_is_confused() && os_rand_range(5) != 0)
     {
       /* TODO: Remove __player_ptr() */
 	move_random(__player_ptr(), &nh);
@@ -278,8 +279,8 @@ move_random(THING* who, coord* ret)
 
   /* Now check to see if that's a legal move.
    * If not, don't move.(I.e., bump into the wall or whatever) */
-  int x = ret->x = who->t_pos.x + rnd(3) - 1;
-  int y = ret->y = who->t_pos.y + rnd(3) - 1;
+  int x = ret->x = who->t_pos.x + os_rand_range(3) - 1;
+  int y = ret->y = who->t_pos.y + os_rand_range(3) - 1;
   if (y == who->t_pos.y && x == who->t_pos.x)
     return;
 

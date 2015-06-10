@@ -202,7 +202,7 @@ magic_bolt(coord* start, coord* dir, char* name)
     refresh();
   }
 
-  usleep(200000);
+  os_usleep(200000);
 
   for (int j = i -1; j >= 0; --j)
     mvaddcch(spotpos[j].y, spotpos[j].x, spotpos[j].ch);

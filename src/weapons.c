@@ -117,7 +117,7 @@ do_motion(THING* obj, int ydelta, int xdelta)
       /* It hasn't hit anything yet, so display it if it alright. */
       if (cansee(obj->o_pos.y, obj->o_pos.x))
       {
-        usleep(10000);
+        os_usleep(10000);
         mvaddcch(obj->o_pos.y, obj->o_pos.x, (chtype)obj->o_type);
         refresh();
       }
@@ -176,22 +176,22 @@ weapon_create(int which, bool random_stats)
     weap->o_arm = 2;
 
   if (which == DAGGER)
-    weap->o_count = rnd(4) + 2;
+    weap->o_count = os_rand_range(4) + 2;
   else if (weap->o_flags & ISMANY)
-    weap->o_count = rnd(8) + 8;
+    weap->o_count = os_rand_range(8) + 8;
   else
     weap->o_count = 1;
 
   if (random_stats)
   {
-    int rand = rnd(100);
+    int rand = os_rand_range(100);
     if (rand < 10)
     {
       weap->o_flags |= ISCURSED;
-      weap->o_hplus -= rnd(3) + 1;
+      weap->o_hplus -= os_rand_range(3) + 1;
     }
     else if (rand < 15)
-      weap->o_hplus += rnd(3) + 1;
+      weap->o_hplus += os_rand_range(3) + 1;
   }
 
   return weap;
@@ -256,7 +256,7 @@ fallpos(coord const* pos, coord* newpos)
         continue;
 
       int ch = level_get_ch(y, x);
-      if ((ch == FLOOR || ch == PASSAGE) && rnd(++cnt) == 0)
+      if ((ch == FLOOR || ch == PASSAGE) && os_rand_range(++cnt) == 0)
       {
         newpos->y = y;
         newpos->x = x;

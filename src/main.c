@@ -26,6 +26,7 @@
 #include "player.h"
 #include "rip.h"
 #include "options.h"
+#include "os.h"
 #include "rogue.h"
 
 enum game_mode_t
@@ -67,7 +68,7 @@ parse_args(int argc, char* const* argv)
   strncat(file_name, ".rogue14_save", MAXSTR - strlen(get_homedir()) -1);
 
   /* Set seed and dungeon number */
-  seed = (unsigned)(time(NULL) + getpid());
+  os_rand_seed = (unsigned)(time(NULL) + getpid());
 
   for (;;)
   {
@@ -89,7 +90,7 @@ parse_args(int argc, char* const* argv)
       case 'r': game_mode = LOAD_GAME; break;
       case 's': score(0, -1, 0);
                 exit(0);
-      case 'S': seed = (unsigned)atoi(optarg); break;
+      case 'S': os_rand_seed = (unsigned)atoi(optarg); break;
       case 'W': wizard = true; break;
       case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
@@ -170,7 +171,7 @@ main(int argc, char** argv)
   signal(SIGTERM, save_auto);
   signal(SIGINT, command_signal_quit);
 #else
-  msg("Seed: #%u", seed);
+  msg("Seed: #%u", os_rand_seed);
 #endif
 
   oldpos = *player_get_pos();

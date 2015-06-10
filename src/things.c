@@ -92,7 +92,7 @@ new_food(int which)
   switch (which)
   {
     case 0: case 1: cur->o_which = which; break;
-    default: cur->o_which = rnd(10) ? 0 : 1; break;
+    default: cur->o_which = os_rand_range(10) ? 0 : 1; break;
   }
   return cur;
 }
@@ -144,7 +144,7 @@ new_thing(void)
 unsigned
 pick_one(struct obj_info* start, int nitems)
 {
-  for (int rand = rnd(100), i = 0; i < nitems; ++i)
+  for (int rand = os_rand_range(100), i = 0; i < nitems; ++i)
     if (rand < start[i].oi_prob)
       return (unsigned)i;
     else

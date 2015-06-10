@@ -102,7 +102,7 @@ room_dig(int y, int x, int starty, int startx, int maxy, int maxx)
           || level_get_flags(newy + starty, newx + startx) & F_PASS)
         continue;
 
-      if (rnd(++cnt) == 0)
+      if (os_rand_range(++cnt) == 0)
       {
         nexty = newy;
         nextx = newx;
@@ -147,8 +147,8 @@ room_dig(int y, int x, int starty, int startx, int maxy, int maxx)
 static void
 rnd_pos(struct room* rp, coord* cp)
 {
-  cp->x = rp->r_pos.x + rnd(rp->r_max.x - 2) + 1;
-  cp->y = rp->r_pos.y + rnd(rp->r_max.y - 2) + 1;
+  cp->x = rp->r_pos.x + os_rand_range(rp->r_max.x - 2) + 1;
+  cp->y = rp->r_pos.y + os_rand_range(rp->r_max.y - 2) + 1;
 }
 
 /* Dig a maze */
@@ -161,8 +161,8 @@ room_do_maze(struct room* rp)
     sp->nexits = 0;
   }
 
-  int y = (rnd(rp->r_max.y) / 2) * 2;
-  int x = (rnd(rp->r_max.x) / 2) * 2;
+  int y = (os_rand_range(rp->r_max.y) / 2) * 2;
+  int x = (os_rand_range(rp->r_max.x) / 2) * 2;
 
   coord pos = {
     .y = y + rp->r_pos.y,
@@ -206,8 +206,8 @@ room_place_gone_room(coord const* max_size, coord const* top, struct room* room)
    * for passage drawing.  */
   do
   {
-    room->r_pos.x = top->x + rnd(max_size->x - 3) + 1;
-    room->r_pos.y = top->y + rnd(max_size->y - 2) + 1;
+    room->r_pos.x = top->x + os_rand_range(max_size->x - 3) + 1;
+    room->r_pos.y = top->y + os_rand_range(max_size->y - 2) + 1;
     room->r_max.x = -NUMCOLS;
     room->r_max.y = -NUMLINES;
   }
@@ -232,7 +232,7 @@ rooms_create(void)
   }
 
   /* Put the gone rooms, if any, on the level */
-  int left_out = rnd(4);
+  int left_out = os_rand_range(4);
   for (int i = 0; i < left_out; i++)
     rooms[room_random()].r_flags |= ISGONE;
 
@@ -252,10 +252,10 @@ rooms_create(void)
     }
 
     /* set room type */
-    if (rnd(10) < level - 1)
+    if (os_rand_range(10) < level - 1)
     {
       rooms[i].r_flags |= ISDARK;  /* dark room */
-      if (rnd(15) == 0)
+      if (os_rand_range(15) == 0)
         rooms[i].r_flags = ISMAZE; /* maze room */
     }
 
@@ -276,15 +276,15 @@ rooms_create(void)
     else
       do
       {
-        rooms[i].r_max.x = rnd(bsze.x - 4) + 4;
-        rooms[i].r_max.y = rnd(bsze.y - 4) + 4;
-        rooms[i].r_pos.x = top.x + rnd(bsze.x - rooms[i].r_max.x);
-        rooms[i].r_pos.y = top.y + rnd(bsze.y - rooms[i].r_max.y);
+        rooms[i].r_max.x = os_rand_range(bsze.x - 4) + 4;
+        rooms[i].r_max.y = os_rand_range(bsze.y - 4) + 4;
+        rooms[i].r_pos.x = top.x + os_rand_range(bsze.x - rooms[i].r_max.x);
+        rooms[i].r_pos.y = top.y + os_rand_range(bsze.y - rooms[i].r_max.y);
       } while (rooms[i].r_pos.y == 0);
     room_draw(&rooms[i]);
 
     /* Put the gold in */
-    if (rnd(2) == 0 && (!pack_contains_amulet() || level >= level_max))
+    if (os_rand_range(2) == 0 && (!pack_contains_amulet() || level >= level_max))
     {
       THING *gold = os_calloc_thing();
       gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
@@ -297,7 +297,7 @@ rooms_create(void)
     }
 
     /* Put the monster in */
-    if (rnd(100) < (rooms[i].r_goldval > 0 ? 80 : 25))
+    if (os_rand_range(100) < (rooms[i].r_goldval > 0 ? 80 : 25))
     {
       coord mp;
       room_find_floor(&rooms[i], &mp, false, true);
@@ -424,7 +424,7 @@ room_random(void)
   int rm;
 
   do
-    rm = rnd(ROOMS_MAX);
+    rm = os_rand_range(ROOMS_MAX);
   while (rooms[rm].r_flags & ISGONE);
 
   return rm;

@@ -136,7 +136,7 @@ typedef union thing {
 #define ISSLOW	0100000		/* creature has been slowed */
 #define ISSTUCK	0200000		/* creature cannot move its feet */
 
-#define GOLDCALC	(rnd(50 + 10 * level) + 2)
+#define GOLDCALC	(os_rand_range(50 + 10 * level) + 2)
 
 #define NUMTHINGS 7
 extern struct obj_info things[NUMTHINGS];

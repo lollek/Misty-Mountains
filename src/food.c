@@ -1,10 +1,10 @@
 #include "command.h"
 #include "io.h"
-#include "misc.h"
 #include "pack.h"
 #include "player.h"
 #include "rings.h"
 #include "rip.h"
+#include "os.h"
 #include "state.h"
 
 #include "food.h"
@@ -56,7 +56,7 @@ food_eat(void)
   if (food_left < 0)
     food_left = 0;
 
-  food_left += satiated - 200 + rnd(400);
+  food_left += satiated - 200 + os_rand_range(400);
 
   if (food_left > full)
     food_left = full;
@@ -86,10 +86,10 @@ food_digest(void)
 
   if (food_left < starvation_start)
   {
-    if (player_turns_without_action || rnd(5) != 0)
+    if (player_turns_without_action || os_rand_range(5) != 0)
       return;
 
-    player_turns_without_action += rnd(8) + 4;
+    player_turns_without_action += os_rand_range(8) + 4;
     hunger_state = STARVING;
     msg("you faint from lack of food");
     command_stop(true);

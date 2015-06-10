@@ -27,6 +27,7 @@
 #include "player.h"
 #include "wand.h"
 #include "rogue.h"
+#include "os.h"
 #include "magic.h"
 
 #include "monster.h"
@@ -45,7 +46,7 @@ chase_as_confused(THING *tp, coord *ee)
   curdist = dist_cp(&ch_ret, ee);
 
   /* Small chance that it will become un-confused */
-  if (rnd(20) == 0)
+  if (os_rand_range(20) == 0)
     monster_remove_confused(tp);
 
   return curdist != 0 && !coord_same(&ch_ret, player_get_pos());
@@ -74,9 +75,9 @@ chase(THING *tp, coord *ee)
   /* If the thing is confused, let it move randomly. Invisible
    * Stalkers are slightly confused all of the time, and bats are
    * quite confused all the time */
-  if ((monster_is_confused(tp) && rnd(5) != 0)
-      || (tp->t_type == 'P' && rnd(5) == 0)
-      || (tp->t_type == 'B' && rnd(2) == 0))
+  if ((monster_is_confused(tp) && os_rand_range(5) != 0)
+      || (tp->t_type == 'P' && os_rand_range(5) == 0)
+      || (tp->t_type == 'B' && os_rand_range(2) == 0))
     return chase_as_confused(tp, ee);
 
 
@@ -138,7 +139,7 @@ chase(THING *tp, coord *ee)
           ch_ret = tryp;
           curdist = thisdist;
         }
-        else if (thisdist == curdist && rnd(++plcnt) == 0)
+        else if (thisdist == curdist && os_rand_range(++plcnt) == 0)
         {
           ch_ret = tryp;
           curdist = thisdist;
@@ -214,7 +215,7 @@ over:
               || abs(th->t_pos.y - player_pos->y)
                   == abs(th->t_pos.x - player_pos->x))
 	    && dist_cp(&th->t_pos, player_pos) <= BOLT_LENGTH * BOLT_LENGTH
-	    && !monster_is_cancelled(th) && rnd(DRAGONSHOT) == 0)
+	    && !monster_is_cancelled(th) && os_rand_range(DRAGONSHOT) == 0)
 	{
 	    delta.y = sign(player_pos->y - th->t_pos.y);
 	    delta.x = sign(player_pos->x - th->t_pos.x);

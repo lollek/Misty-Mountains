@@ -59,7 +59,7 @@ treas_room(void)
 
   if (spots > (MAXTREAS - MINTREAS))
     spots = (MAXTREAS - MINTREAS);
-  int num_monsters = rnd(spots) + MINTREAS;
+  int num_monsters = os_rand_range(spots) + MINTREAS;
 
   for (int i = 0; i < num_monsters; ++i)
   {
@@ -73,7 +73,7 @@ treas_room(void)
   }
 
   /* fill up room with monsters from the next level down */
-  int nm = rnd(spots) + MINTREAS;
+  int nm = os_rand_range(spots) + MINTREAS;
   if (nm < num_monsters + 2)
     nm = num_monsters + 2;
 
@@ -109,12 +109,12 @@ put_things(void)
       return;
 
   /* check for treasure rooms, and if so, put it in. */
-  if (rnd(TREAS_ROOM) == 0)
+  if (os_rand_range(TREAS_ROOM) == 0)
     treas_room();
 
   /* Do MAXOBJ attempts to put things on a level */
   for (i = 0; i < MAXOBJ; i++)
-    if (rnd(100) < 36)
+    if (os_rand_range(100) < 36)
     {
       /* Pick a new object and link it in the list */
       THING* obj = new_thing();
@@ -172,9 +172,9 @@ level_new(void)
   put_things();   /* Place objects (if any) */
 
   /* Place the traps */
-  if (rnd(10) < level)
+  if (os_rand_range(10) < level)
   {
-    int ntraps = rnd(level / 4) + 1;
+    int ntraps = os_rand_range(level / 4) + 1;
     if (ntraps > MAXTRAPS)
       ntraps = MAXTRAPS;
     while (ntraps--)
@@ -191,7 +191,7 @@ level_new(void)
 
       char trapflag = level_get_flags(level_stairs.y, level_stairs.x);
       trapflag &= ~F_REAL;
-      trapflag |= rnd(NTRAPS);
+      trapflag |= os_rand_range(NTRAPS);
       level_set_flags(level_stairs.y, level_stairs.x, trapflag);
     }
   }

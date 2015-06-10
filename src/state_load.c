@@ -650,7 +650,7 @@ state_load_file(FILE* inf)
   rs_assert(state_load_int32(&player_turns_without_moving))
   rs_assert(state_load_int32(&pack_gold))
   rs_assert(state_load_int32(&monster_flytrap_hit))
-  rs_assert(state_load_int32((int32_t*) &seed))
+  rs_assert(state_load_int32((int32_t*) &os_rand_seed))
 
   rs_assert(rs_read_equipment(RSID_ARMOR))
   rs_assert(rs_read_equipment(RSID_RHAND))

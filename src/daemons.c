@@ -24,6 +24,7 @@
 #include "rip.h"
 #include "level.h"
 #include "options.h"
+#include "os.h"
 #include "rogue.h"
 
 #include "daemons.h"
@@ -187,7 +188,7 @@ daemon_doctor(void)
       player_restore_health(1, false);
   }
   else if (quiet_rounds >= 3)
-    player_restore_health(rnd(player_get_level() - 7) + 1, false);
+    player_restore_health(os_rand_range(player_get_level() - 7) + 1, false);
 
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
@@ -253,10 +254,11 @@ daemon_change_visuals(void)
       if (tp->t_type == 'X' && tp->t_disguise != 'X')
         mvaddcch(tp->t_pos.y, tp->t_pos.x, rnd_thing());
       else
-        mvaddcch(tp->t_pos.y, tp->t_pos.x, (chtype)(rnd(26) + 'A'));
+        mvaddcch(tp->t_pos.y, tp->t_pos.x, (chtype)(os_rand_range(26) + 'A'));
     }
     else if (seemonst)
-      mvaddcch(tp->t_pos.y, tp->t_pos.x, (chtype)(rnd(26) + 'A') | A_STANDOUT);
+      mvaddcch(tp->t_pos.y, tp->t_pos.x,
+          (chtype)(os_rand_range(26) + 'A') | A_STANDOUT);
   }
 }
 
@@ -305,7 +307,7 @@ void daemon_ring_abilities(void)
 
     else if (obj->o_which == R_SEARCH)
       player_search();
-    else if (obj->o_which == R_TELEPORT && rnd(50) == 0)
+    else if (obj->o_which == R_TELEPORT && os_rand_range(50) == 0)
       player_teleport(NULL);
   }
 }

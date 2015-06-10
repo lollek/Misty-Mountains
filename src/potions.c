@@ -55,7 +55,7 @@ potions_init(void)
   for (int i = 0; i < NPOTIONS; i++)
     for (;;)
     {
-      int color = rnd(color_max());
+      int color = os_rand_range(color_max());
 
       for (int j = 0; j < i; ++j)
         if (p_colors[j] == color_get(color))

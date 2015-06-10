@@ -78,7 +78,7 @@ trap_bear_monster(THING* victim)
 static enum trap_t
 trap_myst_player(void)
 {
-  switch(rnd(11))
+  switch(os_rand_range(11))
   {
     case 0: msg("you are suddenly in a parallel dimension"); break;
     case 1: msg("the light in here suddenly seems %s", color_random()); break;

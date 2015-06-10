@@ -26,7 +26,5 @@ char file_name[MAXSTR];			/* Save file name */
 char runch;				/* Direction player is running */
 char whoami[MAXSTR];			/* Name of player */
 
-unsigned seed;				/* Random number seed */
-
 coord oldpos;				/* Position before last look() call */
 
