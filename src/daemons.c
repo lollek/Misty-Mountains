@@ -233,7 +233,7 @@ daemon_rollwand(void)
 void
 daemon_change_visuals(void)
 {
-  if (!after || (running && jump))
+  if (running && jump)
     return;
 
   /* change the things */

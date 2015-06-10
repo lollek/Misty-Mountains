@@ -66,6 +66,7 @@ move_turnref(void)
 bool
 move_do(char ch)
 {
+    bool after = true;
     int dy = 0, dx = 0;
     char fl;
     coord nh;
@@ -141,8 +142,8 @@ over:
     }
     else if (player_is_held() && ch != 'F')
     {
-	msg("you are being held");
-	return after;
+      msg("you are being held");
+      return after;
     }
 
     switch (ch)

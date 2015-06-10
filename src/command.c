@@ -82,7 +82,6 @@ command(void)
     status();
     if (!(running && jump))
       refresh();
-    after = true;
 
 
     if (player_turns_without_action && --player_turns_without_action == 0)
@@ -106,7 +105,11 @@ command(void)
         if (mpos != 0)
           clearmsg();
       }
-      after = command_do(ch);
+
+      /* command_do returns 0 if player did something not in-game
+       * (like changing options), thus recevies another turn */
+      if (!command_do(ch))
+        num_moves++;
 
       /* turn off flags if no longer needed */
       if (!running)
@@ -115,8 +118,6 @@ command(void)
 
     if (!running)
       door_stop = false;
-    if (!after)
-      num_moves++;
   }
 
   food_digest();
@@ -192,8 +193,6 @@ command_do(char ch)
 bool
 command_wizard_do(char ch)
 {
-  after = false;
-
   switch (ch)
   {
     case '_': raise(SIGINT); break;

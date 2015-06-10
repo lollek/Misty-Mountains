@@ -14,7 +14,6 @@
 #include "coord.h"
 #include "rogue.h"
 
-bool after = false;			/* True if we want after daemons */
 bool door_stop = false;			/* Stop running when we pass a door */
 bool firstmove = false;			/* First move after setting door_stop */
 bool running = false;			/* True if player is running */

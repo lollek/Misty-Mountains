@@ -37,7 +37,7 @@
 static int
 trip_ch(int y, int x, int ch)
 {
-  if (player_is_hallucinating() && after)
+  if (player_is_hallucinating())
     switch (ch)
     {
       case FLOOR: case SHADOW: case PASSAGE: case HWALL: case VWALL: case DOOR:

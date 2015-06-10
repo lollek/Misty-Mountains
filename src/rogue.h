@@ -36,7 +36,6 @@
 
 /* External variables */
 
-extern bool after;
 extern bool door_stop;
 extern bool firstmove;
 extern bool running;
