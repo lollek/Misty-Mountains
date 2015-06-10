@@ -3,6 +3,7 @@ v1.3.1+
     Throwing arrows now always miss (use 'a'ttack instead)
     Ring hunger is now a bit lower (and slow digestation is stronger)
     Potions now always break when thrown
+    Only wizards can now set map seed
 
   Bugs:
     Ring hunger (and slow digestation) now affects the player even when starving

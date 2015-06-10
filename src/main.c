@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <getopt.h>
+#include <inttypes.h>
 
 #include "command.h"
 #include "io.h"
@@ -90,7 +91,9 @@ parse_args(int argc, char* const* argv)
       case 'r': game_mode = LOAD_GAME; break;
       case 's': score(0, -1, 0);
                 exit(0);
-      case 'S': os_rand_seed = (unsigned)atoi(optarg); break;
+      case 'S': if (wizard)
+                  sscanf(optarg, "%"SCNu32, &os_rand_seed);
+                break;
       case 'W': wizard = true; break;
       case '0':
         printf("Usage: %s [OPTIONS] [FILE]\n"
@@ -106,9 +109,9 @@ parse_args(int argc, char* const* argv)
                "  -p, --passgo         follow the turnings in passageways\n"
                "  -r, --restore        restore game instead of creating a new\n"
                "  -s, --score          display the highscore and exit\n"
-               "  -S, --seed=NUMBER    set map seed to NUMBER\n"
                ); printf(
                "  -W, --wizard         run the game in debug-mode\n"
+               "  -S, --seed=NUMBER    (wizard) set map seed to NUMBER\n"
                "      --help           display this help and exit\n"
                "      --version        display game version and exit\n\n"
                "%s\n"
