@@ -6,9 +6,6 @@
 
 #include "things.h"
 
-size_t encwrite(char const* start, size_t size, FILE* outf);
-size_t encread(char* start, size_t size, FILE* inf);
-
 bool state_save_string(char const* s);
 bool state_load_string(char** s);
 
@@ -70,8 +67,5 @@ static int32_t const RSID_RHAND        = 0x1011EA11;
 static int32_t const RSID_RRING        = 0x1011EA13;
 static int32_t const RSID_LRING        = 0x1011E012;
 static int32_t const RSID_NULL         = 0x1011E000;
-
-extern char const encstr[];
-extern char const statlist[];
 
 #endif /* _ROGUE14_STATE_H_ */

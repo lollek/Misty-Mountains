@@ -39,11 +39,6 @@ save_file(FILE* savef)
   }
 #endif
 
-  encwrite(GAME_VERSION, strlen(GAME_VERSION)+1, savef);
-
-  char buf[80];
-  sprintf(buf,"%d x %d\n", LINES, COLS);
-  encwrite(buf, 80, savef);
   int error = state_save_file(savef);
 
   fflush(savef);

@@ -88,6 +88,9 @@ void wait_for(int ch); /* Wait for the specified key */
 bool fail(char const* fmt, ...);
 #endif /* NDEBUG */
 
+size_t io_encwrite(char const* start, size_t size, FILE* outf);
+size_t io_encread(char* start, size_t size, FILE* inf);
+
 /* Message player */
 int clearmsg(void);            /* Remove displayed text */
 int msg(char const* fmt, ...); /* Display a message at the top of the screen. */

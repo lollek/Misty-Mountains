@@ -105,8 +105,8 @@ score_read(SCORE *top_ten)
 
   for (unsigned i = 0; i < NUMSCORES; i++)
   {
-    encread(top_ten[i].sc_name, MAXSTR, scoreboard);
-    encread(scoreline, 100, scoreboard);
+    io_encread(top_ten[i].sc_name, MAXSTR, scoreboard);
+    io_encread(scoreline, 100, scoreboard);
     sscanf(scoreline, " %u %d %d %d %d %x \n",
         &top_ten[i].sc_uid, &top_ten[i].sc_score,
         &top_ten[i].sc_flags, &top_ten[i].sc_monster,
@@ -129,12 +129,12 @@ score_write(SCORE *top_ten)
   for(unsigned i = 0; i < NUMSCORES; i++)
   {
     memset(scoreline,0,100);
-    encwrite(top_ten[i].sc_name, MAXSTR, scoreboard);
+    io_encwrite(top_ten[i].sc_name, MAXSTR, scoreboard);
     sprintf(scoreline, " %u %d %d %d %d %x \n",
         top_ten[i].sc_uid, top_ten[i].sc_score,
         top_ten[i].sc_flags, top_ten[i].sc_monster,
         top_ten[i].sc_level, top_ten[i].sc_time);
-    encwrite(scoreline,100,scoreboard);
+    io_encwrite(scoreline,100,scoreboard);
   }
 
   rewind(scoreboard);

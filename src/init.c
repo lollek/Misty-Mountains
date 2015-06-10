@@ -208,14 +208,14 @@ init_old_game(void)
   }
 
   fflush(stdout);
-  encread(buf, strlen(GAME_VERSION) + 1, inf);
+  io_encread(buf, sizeof(GAME_VERSION), inf);
   if (strcmp(buf, GAME_VERSION))
   {
     printf("Sorry, saved game is out of date.\n");
     return false;
   }
 
-  encread(buf, 80, inf);
+  io_encread(buf, 80, inf);
 
   if (init_graphics() != 0)
     return false;
