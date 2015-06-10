@@ -129,7 +129,7 @@ score_print(SCORE* top_ten, SCORE* endp, int flags, int prflags)
   if (flags != -1)
     putchar('\n');
 
-  printf("Top %s %s:\n", NUMNAME, "Scores");
+  printf("Top %s %s:\n", SCORE_MAX_STRING, "Scores");
   printf("   Score Name\n");
   for (SCORE* ptr = top_ten; ptr < endp; ptr++)
   {
@@ -192,8 +192,8 @@ score(int amount, int flags, char monst)
       delwin(hw);
   }
 
-  SCORE* top_ten = malloc(NUMSCORES * sizeof (SCORE));
-  SCORE* endp = &top_ten[NUMSCORES];
+  SCORE* top_ten = malloc(SCORE_MAX * sizeof (SCORE));
+  SCORE* endp = &top_ten[SCORE_MAX];
   for (SCORE* ptr = top_ten; ptr < endp; ptr++)
   {
     ptr->sc_score = 0;

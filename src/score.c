@@ -64,7 +64,7 @@ unlock_sc(void)
 }
 
 int
-open_score_and_drop_setuid_setgid(void)
+score_open_and_drop_setuid_setgid(void)
 {
   /* Open file */
   scoreboard = fopen(SCOREPATH, "r+");
@@ -103,7 +103,7 @@ score_read(SCORE *top_ten)
 
   rewind(scoreboard);
 
-  for (unsigned i = 0; i < NUMSCORES; i++)
+  for (unsigned i = 0; i < SCORE_MAX; i++)
   {
     io_encread(top_ten[i].sc_name, MAXSTR, scoreboard);
     io_encread(scoreline, 100, scoreboard);
@@ -126,7 +126,7 @@ score_write(SCORE *top_ten)
 
   rewind(scoreboard);
 
-  for(unsigned i = 0; i < NUMSCORES; i++)
+  for(unsigned i = 0; i < SCORE_MAX; i++)
   {
     memset(scoreline,0,100);
     io_encwrite(top_ten[i].sc_name, MAXSTR, scoreboard);

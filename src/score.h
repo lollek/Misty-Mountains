@@ -12,8 +12,8 @@
 
 #include "io.h"
 
-#define NUMNAME    "Ten"   /* The same number in letters  */
-#define NUMSCORES    10    /* Number of highscore entries */
+#define SCORE_MAX         10    /* Number of highscore entries */
+#define SCORE_MAX_STRING  "Ten" /* The same number in letters  */
 
 typedef struct sc_ent {
   unsigned sc_uid;
@@ -28,7 +28,7 @@ typedef struct sc_ent {
 /* Open up the score file for future use
  * We drop setgid privileges after opening the score file, so subsequent
  * open()'s will fail.  Just reuse the earlier filehandle. */
-int open_score_and_drop_setuid_setgid(void);
+int score_open_and_drop_setuid_setgid(void);
 
 /* Read in the score file */
 void score_read(SCORE* top_ten);

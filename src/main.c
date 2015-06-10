@@ -146,7 +146,7 @@ main(int argc, char** argv)
   bool retval = false;
 
   /* Open scoreboard and drop setuid/getgid, so we can modify the score later */
-  if (open_score_and_drop_setuid_setgid() != 0)
+  if (score_open_and_drop_setuid_setgid() != 0)
     return 1;
 
   /* Parse args and then init new (or old) game */
