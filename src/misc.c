@@ -15,20 +15,21 @@
 #include <ctype.h>
 #include <assert.h>
 
-#include "options.h"
-#include "io.h"
 #include "armor.h"
-#include "pack.h"
-#include "daemons.h"
 #include "colors.h"
-#include "monster.h"
-#include "rings.h"
-#include "passages.h"
-#include "rooms.h"
+#include "daemons.h"
+#include "io.h"
 #include "level.h"
-#include "player.h"
+#include "monster.h"
+#include "move.h"
+#include "options.h"
 #include "os.h"
+#include "pack.h"
+#include "passages.h"
+#include "player.h"
+#include "rings.h"
 #include "rogue.h"
+#include "rooms.h"
 
 #include "misc.h"
 
@@ -67,10 +68,10 @@ look(bool wakeup)
   char const player_ch = level_get_place(player_pos->y, player_pos->x)->p_ch;
   char const player_flags = level_get_place(player_pos->y, player_pos->x)->p_flags;
 
-  if (!coord_same(&oldpos, player_pos))
+  if (!coord_same(&move_pos_prev, player_pos))
   {
-    erase_lamp(&oldpos, room_prev);
-    oldpos = *player_pos;
+    erase_lamp(&move_pos_prev, room_prev);
+    move_pos_prev = *player_pos;
     room_prev = player_get_room();
   }
 

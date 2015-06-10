@@ -23,5 +23,3 @@ char dir_ch;				/* Direction from last get_dir() call */
 char runch;				/* Direction player is running */
 char whoami[MAXSTR];			/* Name of player */
 
-coord oldpos;				/* Position before last look() call */
-

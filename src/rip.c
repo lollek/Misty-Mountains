@@ -18,18 +18,19 @@
 #include <ctype.h>
 #include <unistd.h>
 
-#include "score.h"
-#include "potions.h"
-#include "scrolls.h"
-#include "io.h"
 #include "armor.h"
-#include "pack.h"
+#include "command.h"
+#include "io.h"
+#include "level.h"
 #include "misc.h"
 #include "monster.h"
 #include "os.h"
-#include "command.h"
+#include "pack.h"
+#include "potions.h"
 #include "rogue.h"
-#include "level.h"
+#include "score.h"
+#include "scrolls.h"
+#include "wizard.h"
 
 #include "rip.h"
 

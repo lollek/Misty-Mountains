@@ -3,6 +3,8 @@
 
 #include "rogue.h"
 
+extern coord move_pos_prev; /* Position before last look() call */
+
 void move_random(THING* who, coord* ret);
 
 /* Check to see that a move is legal.  If it is handle the 

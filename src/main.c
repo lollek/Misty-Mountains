@@ -28,7 +28,9 @@
 #include "rip.h"
 #include "options.h"
 #include "os.h"
+#include "move.h"
 #include "rogue.h"
+#include "wizard.h"
 
 enum game_mode_t
 {
@@ -177,7 +179,7 @@ main(int argc, char** argv)
   msg("Seed: #%u", os_rand_seed);
 #endif
 
-  oldpos = *player_get_pos();
+  move_pos_prev = *player_get_pos();
   room_prev = roomin(player_get_pos());
 
   for (;;) command();
