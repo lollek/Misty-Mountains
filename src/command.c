@@ -152,7 +152,7 @@ command_do(char ch)
     case 'i': return command_show_inventory();
     case 'o': return option();
     case 'q': return potion_quaff_something();
-    case 'r': return read_scroll();
+    case 'r': return scroll_read();
     case 's': return player_search();
     case 't': return command_throw();
     case 'w': return command_wield();
@@ -207,7 +207,7 @@ command_wizard_do(char ch)
     case CTRL('F'): wizard_show_map(); break;
     case CTRL('I'): wizard_levels_and_gear(); break;
     case CTRL('T'): player_teleport(NULL); break;
-    case CTRL('W'): identify(); break;
+    case CTRL('W'): pack_identify_item(); break;
     case CTRL('X'): player_can_sense_monsters()
                     ? player_remove_sense_monsters()
                     : player_add_sense_monsters(true); break;

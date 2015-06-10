@@ -706,3 +706,46 @@ pack_find_arrow(void)
       return ptr;
   return NULL;
 }
+
+static void
+pack_identify_item_set_know(THING* obj, struct obj_info* info)
+{
+  info[obj->o_which].oi_know = true;
+  obj->o_flags |= ISKNOW;
+
+  char** guess = &info[obj->o_which].oi_guess;
+  if (*guess)
+  {
+    free(*guess);
+    *guess = NULL;
+  }
+}
+
+void
+pack_identify_item(void)
+{
+  if (pack_is_empty())
+  {
+    msg("you don't have anything in your pack to identify");
+    return;
+  }
+
+  THING* obj = pack_get_item("identify", 0);
+  if (obj == NULL)
+    return;
+
+  switch (obj->o_type)
+  {
+    case SCROLL: pack_identify_item_set_know(obj, scroll_info);  break;
+    case POTION: pack_identify_item_set_know(obj, potion_info);  break;
+    case STICK:  pack_identify_item_set_know(obj, __wands_ptr());   break;
+    case RING:   pack_identify_item_set_know(obj, ring_info); break;
+    case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
+    default: break;
+  }
+
+  char buf[MAXSTR];
+  msg(inv_name(buf, obj, false));
+}
+
+

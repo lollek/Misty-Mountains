@@ -80,5 +80,6 @@ void pack_curse_item(THING* item);
 void pack_uncurse_item(THING* item);
 
 THING* pack_find_arrow(void); /* Return arrow in pack or NULL */
+void pack_identify_item(void);
 
 #endif /* _ROGUE14_PACK_H_ */

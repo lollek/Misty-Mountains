@@ -34,7 +34,7 @@
 #include "scrolls.h"
 
 static char* s_names[NSCROLLS];
-struct obj_info scr_info[NSCROLLS] = {
+struct obj_info scroll_info[NSCROLLS] = {
     { "monster confusion",		 7, 140, NULL, false },
     { "magic mapping",			 4, 150, NULL, false },
     { "hold monster",			 2, 180, NULL, false },
@@ -109,7 +109,7 @@ scroll_save_state(void)
     if (state_save_string(s_names[i]))
       return 1;
 
-  return state_save_obj_info(scr_info, NSCROLLS);
+  return state_save_obj_info(scroll_info, NSCROLLS);
 }
 
 bool
@@ -119,54 +119,40 @@ scroll_load_state(void)
     if (state_load_string(&s_names[i]))
       return 1;
 
-  return state_load_obj_info(scr_info, NSCROLLS);
+  return state_load_obj_info(scroll_info, NSCROLLS);
 }
 
 void scroll_learn(enum scroll_t scroll)
 {
-  scr_info[scroll].oi_know = true;
+  scroll_info[scroll].oi_know = true;
 }
 
 bool
 scroll_is_known(enum scroll_t scroll)
 {
-  return scr_info[scroll].oi_know;
+  return scroll_info[scroll].oi_know;
 }
 
 int
 scroll_value(enum scroll_t scroll)
 {
-  return scr_info[scroll].oi_worth;
+  return scroll_info[scroll].oi_worth;
 }
 
 void scroll_set_name(enum scroll_t scroll, char const* new_name)
 {
   size_t len = strlen(new_name);
 
-  if (scr_info[scroll].oi_guess != NULL)
+  if (scroll_info[scroll].oi_guess != NULL)
   {
-    free(scr_info[scroll].oi_guess);
-    scr_info[scroll].oi_guess = NULL;
+    free(scroll_info[scroll].oi_guess);
+    scroll_info[scroll].oi_guess = NULL;
   }
 
   if (len > 0)
   {
-    scr_info[scroll].oi_guess = malloc(len + 1);
-    strcpy(scr_info[scroll].oi_guess, new_name);
-  }
-}
-
-static void
-set_know(THING* obj, struct obj_info* info)
-{
-  info[obj->o_which].oi_know = true;
-  obj->o_flags |= ISKNOW;
-
-  char** guess = &info[obj->o_which].oi_guess;
-  if (*guess)
-  {
-    free(*guess);
-    *guess = NULL;
+    scroll_info[scroll].oi_guess = malloc(len + 1);
+    strcpy(scroll_info[scroll].oi_guess, new_name);
   }
 }
 
@@ -414,35 +400,8 @@ protect_armor(void)
   return true;
 }
 
-void
-identify(void)
-{
-  if (pack_is_empty())
-  {
-    msg("you don't have anything in your pack to identify");
-    return;
-  }
-
-  THING* obj = pack_get_item("identify", 0);
-  if (obj == NULL)
-    return;
-
-  switch (obj->o_type)
-  {
-    case SCROLL: set_know(obj, scr_info);  break;
-    case POTION: set_know(obj, potion_info);  break;
-    case STICK:  set_know(obj, __wands_ptr());   break;
-    case RING:   set_know(obj, ring_info); break;
-    case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
-    default: break;
-  }
-
-  char buf[MAXSTR];
-  msg(inv_name(buf, obj, false));
-}
-
 bool
-read_scroll(void)
+scroll_read(void)
 {
   THING* obj = pack_get_item("read", SCROLL);
   if (obj == NULL)
@@ -482,9 +441,9 @@ read_scroll(void)
       break;
     case S_ID:
       if (!scroll_is_known(S_ID))
-        msg("this scroll is an %s scroll", scr_info[obj->o_which].oi_name);
+        msg("this scroll is an %s scroll", scroll_info[obj->o_which].oi_name);
       scroll_learn(S_ID);
-      identify();
+      pack_identify_item();
       break;
     case S_MAP:
       scroll_learn(S_MAP);
@@ -526,7 +485,7 @@ read_scroll(void)
   look(true);	/* put the result of the scroll on the screen */
   status();
 
-  call_it("scroll", &scr_info[obj->o_which]);
+  call_it("scroll", &scroll_info[obj->o_which]);
 
   if (discardit)
     os_remove_thing(&obj);
@@ -537,7 +496,7 @@ read_scroll(void)
 void
 scroll_description(THING* obj, char* buf)
 {
-  struct obj_info* op = &scr_info[obj->o_which];
+  struct obj_info* op = &scroll_info[obj->o_which];
   char* ptr = buf;
 
   if (obj->o_count == 1)
@@ -559,7 +518,7 @@ scroll_create(int which)
   THING* scroll = os_calloc_thing();
 
   if (which == -1)
-    which = (int)pick_one(scr_info, NSCROLLS);
+    which = (int)pick_one(scroll_info, NSCROLLS);
 
   scroll->o_type  = SCROLL;
   scroll->o_count = 1;

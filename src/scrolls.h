@@ -26,15 +26,14 @@ enum scroll_t
 };
 
 /* Variables */
-extern struct obj_info scr_info[NSCROLLS]; /* Scroll info */
+extern struct obj_info scroll_info[NSCROLLS]; /* Scroll info */
 
 void scroll_init(void);
 bool scroll_save_state(void);
 bool scroll_load_state(void);
 
 /* Functions */
-void identify(void);        /* Identify something from player's pack */
-bool read_scroll(void);     /* Read a scroll from the pack and do the needful */
+bool scroll_read(void);     /* Read a scroll from the pack and do the needful */
 void scroll_learn(enum scroll_t scroll);    /* Learn scroll info */
 bool scroll_is_known(enum scroll_t scroll); /* Knows what scroll does? */
 int scroll_value(enum scroll_t scroll);
