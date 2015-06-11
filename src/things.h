@@ -62,7 +62,6 @@ typedef union thing {
     union thing*  l_prev;
 
     coord         o_pos;                 /* Where it lives on the screen */
-    char*         o_text;                /* What it says if you read it */
     char*         o_label;               /* Label for object */
     int           o_type;                /* What kind of object it is */
     int           o_launch;              /* What you need to launch it */

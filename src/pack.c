@@ -31,6 +31,7 @@
 #include "state.h"
 #include "options.h"
 #include "rogue.h"
+#include "item.h"
 
 #include "pack.h"
 
@@ -690,10 +691,11 @@ pack_find_arrow(void)
 static void
 pack_identify_item_set_know(item* item, struct obj_info* info)
 {
-  info[item->o_which].oi_know = true;
+  int const subtype = item_subtype(item);
+  info[subtype].oi_know = true;
   item->o_flags |= ISKNOW;
 
-  char** guess = &info[item->o_which].oi_guess;
+  char** guess = &info[subtype].oi_guess;
   if (*guess)
   {
     free(*guess);
