@@ -109,7 +109,7 @@ is_quaffable(THING *thing)
 {
   if (thing == NULL)
     return false;
-  else if (thing->o_type != POTION)
+  else if (thing->o.o_type != POTION)
   {
     msg("that's undrinkable");
     return false;
@@ -136,9 +136,9 @@ potion_quaff_something(void)
     return false;
 
   /* Calculate the effect it has on the poor guy. */
-  bool discardit = (bool)(obj->o_count == 1);
+  bool discardit = (bool)(obj->o.o_count == 1);
   pack_remove(obj, false, false);
-  switch (obj->o_which)
+  switch (obj->o.o_which)
   {
     case P_CONFUSE:
       if (!player_is_hallucinating())
@@ -176,20 +176,20 @@ potion_quaff_something(void)
       if (level_items != NULL)
       {
         wclear(hw);
-        for (THING* item = level_items; item != NULL; item = item->l_next)
+        for (THING* item = level_items; item != NULL; item = item->o.l_next)
           if (is_magic(item))
           {
             show = true;
-            mvwaddcch(hw, item->o_pos.y, item->o_pos.x, MAGIC);
+            mvwaddcch(hw, item->o.o_pos.y, item->o.o_pos.x, MAGIC);
             potion_learn(P_TFIND);
           }
 
-        for (THING* monster = monster_list; monster != NULL; monster = monster->l_next)
-          for (THING* item = monster->t_pack; item != NULL; item = item->l_next)
+        for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
+          for (THING* item = mon->t.t_pack; item != NULL; item = item->o.l_next)
             if (is_magic(item))
             {
               show = true;
-              mvwaddcch(hw, monster->t_pos.y, monster->t_pos.x, MAGIC);
+              mvwaddcch(hw, mon->t.t_pos.y, mon->t.t_pos.x, MAGIC);
             }
       }
 
@@ -258,7 +258,7 @@ potion_quaff_something(void)
   status();
 
   /* Throw the item away */
-  call_it("potion", &potion_info[obj->o_which]);
+  call_it("potion", &potion_info[obj->o.o_which]);
 
   if (discardit)
     os_remove_thing(&obj);
@@ -268,20 +268,21 @@ potion_quaff_something(void)
 void
 potion_description(THING const* obj, char buf[])
 {
-  struct obj_info* op = &potion_info[obj->o_which];
+  struct obj_info* op = &potion_info[obj->o.o_which];
   if (op->oi_know)
   {
-    if (obj->o_count == 1)
+    if (obj->o.o_count == 1)
       buf += sprintf(buf, "A potion of %s", op->oi_name);
     else
-      buf += sprintf(buf, "%d potions of %s", obj->o_count, op->oi_name);
+      buf += sprintf(buf, "%d potions of %s", obj->o.o_count, op->oi_name);
   }
   else
   {
-    if (obj->o_count == 1)
-      buf += sprintf(buf, "A %s potion", p_colors[obj->o_which]);
+    if (obj->o.o_count == 1)
+      buf += sprintf(buf, "A %s potion", p_colors[obj->o.o_which]);
     else
-      buf += sprintf(buf, "%d %s potions", obj->o_count, p_colors[obj->o_which]);
+      buf += sprintf(buf, "%d %s potions",
+                     obj->o.o_count, p_colors[obj->o.o_which]);
   }
 
   if (op->oi_guess)
@@ -296,11 +297,11 @@ potion_create(int which)
   if (which == -1)
     which = (int)pick_one(potion_info, NPOTIONS);
 
-  pot->o_type       = POTION;
-  pot->o_which      = which;
-  pot->o_count      = 1;
-  pot->o_damage[0]  = (struct damage){1, 2};
-  pot->o_hurldmg[0] = (struct damage){1, 2};
+  pot->o.o_type       = POTION;
+  pot->o.o_which      = which;
+  pot->o.o_count      = 1;
+  pot->o.o_damage[0]  = (struct damage){1, 2};
+  pot->o.o_hurldmg[0] = (struct damage){1, 2};
 
   return pot;
 }

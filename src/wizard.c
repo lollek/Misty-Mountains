@@ -176,11 +176,11 @@ wizard_create_item(void)
 
         if (bless == '-')
         {
-          obj->o_flags |= ISCURSED;
-          obj->o_hplus -= os_rand_range(3) + 1;
+          obj->o.o_flags |= ISCURSED;
+          obj->o.o_hplus -= os_rand_range(3) + 1;
         }
         else if (bless == '+')
-          obj->o_hplus += os_rand_range(3) + 1;
+          obj->o.o_hplus += os_rand_range(3) + 1;
       }
       break;
 
@@ -193,26 +193,26 @@ wizard_create_item(void)
         mpos = 0;
         if (bless == '-')
         {
-          obj->o_flags |= ISCURSED;
-          obj->o_arm += os_rand_range(3) + 1;
+          obj->o.o_flags |= ISCURSED;
+          obj->o.o_arm += os_rand_range(3) + 1;
         }
         else if (bless == '+')
-          obj->o_arm -= os_rand_range(3) + 1;
+          obj->o.o_arm -= os_rand_range(3) + 1;
       }
       break;
 
     case RING:
       {
         obj = ring_create(which, false);
-        switch (obj->o_which)
+        switch (obj->o.o_which)
         {
           case R_PROTECT: case R_ADDSTR: case R_ADDHIT: case R_ADDDAM:
             msg("blessing? (+,-,n)");
             char bless = readchar(true);
             mpos = 0;
             if (bless == '-')
-              obj->o_flags |= ISCURSED;
-            obj->o_arm = (bless == '-' ? -1 : os_rand_range(2) + 1);
+              obj->o.o_flags |= ISCURSED;
+            obj->o.o_arm = (bless == '-' ? -1 : os_rand_range(2) + 1);
             break;
         }
       }
@@ -223,7 +223,7 @@ wizard_create_item(void)
         char buf[MAXSTR] = { '\0' };
         msg("how much?");
         if (readstr(buf) == 0)
-          obj->o_goldval = (short) atoi(buf);
+          obj->o.o_goldval = (short) atoi(buf);
       }
       break;
 
@@ -265,8 +265,8 @@ wizard_levels_and_gear(void)
   if (pack_equipped_item(EQUIPMENT_RHAND) == NULL)
   {
     THING* obj = weapon_create(TWOSWORD, false);
-    obj->o_hplus = 1;
-    obj->o_dplus = 1;
+    obj->o.o_hplus = 1;
+    obj->o.o_dplus = 1;
     pack_equip_item(obj);
   }
 
@@ -274,9 +274,9 @@ wizard_levels_and_gear(void)
   if (pack_equipped_item(EQUIPMENT_ARMOR) == NULL)
   {
     THING* obj = armor_create(PLATE_MAIL, false);
-    obj->o_arm = -5;
-    obj->o_flags |= ISKNOW;
-    obj->o_count = 1;
+    obj->o.o_arm = -5;
+    obj->o.o_flags |= ISKNOW;
+    obj->o.o_count = 1;
     pack_equip_item(obj);
   }
 }

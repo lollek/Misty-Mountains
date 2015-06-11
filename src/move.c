@@ -287,37 +287,37 @@ move_random(THING* who, coord* ret)
 
   /* Now check to see if that's a legal move.
    * If not, don't move.(I.e., bump into the wall or whatever) */
-  int x = ret->x = who->t_pos.x + os_rand_range(3) - 1;
-  int y = ret->y = who->t_pos.y + os_rand_range(3) - 1;
-  if (y == who->t_pos.y && x == who->t_pos.x)
+  int x = ret->x = who->t.t_pos.x + os_rand_range(3) - 1;
+  int y = ret->y = who->t.t_pos.y + os_rand_range(3) - 1;
+  if (y == who->t.t_pos.y && x == who->t.t_pos.x)
     return;
 
-  if (!diag_ok(&who->t_pos, ret))
+  if (!diag_ok(&who->t.t_pos, ret))
   {
-    ret->x = who->t_pos.x;
-    ret->y = who->t_pos.y;
+    ret->x = who->t.t_pos.x;
+    ret->y = who->t.t_pos.y;
     return;
   }
 
   char ch = level_get_type(y, x);
   if (!step_ok(ch))
   {
-    ret->x = who->t_pos.x;
-    ret->y = who->t_pos.y;
+    ret->x = who->t.t_pos.x;
+    ret->y = who->t.t_pos.y;
     return;
   }
 
   if (ch == SCROLL)
   {
     THING* obj;
-    for (obj = level_items; obj != NULL; obj = obj->l_next)
-      if (y == obj->o_pos.y && x == obj->o_pos.x)
+    for (obj = level_items; obj != NULL; obj = obj->o.l_next)
+      if (y == obj->o.o_pos.y && x == obj->o.o_pos.x)
         break;
 
-    if (obj != NULL && obj->o_which == S_SCARE)
+    if (obj != NULL && obj->o.o_which == S_SCARE)
     {
-      ret->x = who->t_pos.x;
-      ret->y = who->t_pos.y;
+      ret->x = who->t.t_pos.x;
+      ret->y = who->t.t_pos.y;
       return;
     }
   }

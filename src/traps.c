@@ -49,7 +49,7 @@ trap_door_monster(THING* victim)
     char buf[MAXSTR];
     msg("%s fell through the floor", monster_name(victim, buf));
   }
-  monster_remove_from_screen(&victim->t_pos, victim, false);
+  monster_remove_from_screen(&victim->t.t_pos, victim, false);
   return T_DOOR;
 }
 
@@ -147,8 +147,8 @@ trap_arrow_player(void)
   else
   {
     THING* arrow = weapon_create(ARROW, false);
-    arrow->o_count = 1;
-    arrow->o_pos = *player_get_pos();
+    arrow->o.o_count = 1;
+    arrow->o.o_pos = *player_get_pos();
     weapon_missile_fall(arrow, false);
     msg("an arrow shoots past you");
   }
@@ -161,10 +161,10 @@ trap_arrow_monster(THING* victim)
   char buf[MAXSTR];
   list_assert_monster(victim);
 
-  if (fight_swing_hits(victim->t_stats.s_lvl -1, armor_for_thing(victim), 1))
+  if (fight_swing_hits(victim->t.t_stats.s_lvl -1, armor_for_thing(victim), 1))
   {
-    victim->t_stats.s_hpt -= roll(1,6);
-    if (victim->t_stats.s_hpt <= 0)
+    victim->t.t_stats.s_hpt -= roll(1,6);
+    if (victim->t.t_stats.s_hpt <= 0)
     {
       monster_on_death(victim, false);
       if (monster_seen_by_player(victim))
@@ -176,8 +176,8 @@ trap_arrow_monster(THING* victim)
   else
   {
     THING* arrow = weapon_create(ARROW, false);
-    arrow->o_count = 1;
-    arrow->o_pos = victim->t_pos;
+    arrow->o.o_count = 1;
+    arrow->o.o_pos = victim->t.t_pos;
     weapon_missile_fall(arrow, false);
     if (monster_seen_by_player(victim))
       msg("An arrow barely missed %s", monster_name(victim, buf));
@@ -249,10 +249,10 @@ trap_dart_monster(THING* victim)
   list_assert_monster(victim);
 
   /* TODO: In the future this should probably weaken the monster */
-  if (fight_swing_hits(victim->t_stats.s_lvl + 1, armor_for_thing(victim), 1))
+  if (fight_swing_hits(victim->t.t_stats.s_lvl + 1, armor_for_thing(victim), 1))
   {
-    victim->t_stats.s_hpt -= roll(1,4);
-    if (victim->t_stats.s_hpt <= 0)
+    victim->t.t_stats.s_hpt -= roll(1,4);
+    if (victim->t.t_stats.s_hpt <= 0)
     {
       monster_on_death(victim, false);
       if (monster_seen_by_player(victim))

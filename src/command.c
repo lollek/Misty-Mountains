@@ -216,7 +216,7 @@ command_wizard_do(char ch)
      {
        THING* item = pack_get_item("charge", STICK);
        if (item != NULL)
-         item->o_charges = 10000;
+         item->o.o_charges = 10000;
      }
      break;
 

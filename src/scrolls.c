@@ -171,8 +171,8 @@ enchant_players_armor(void)
     return false;
   }
 
-  arm->o_arm--;
-  arm->o_flags &= ~ISCURSED;
+  arm->o.o_arm--;
+  arm->o.o_flags &= ~ISCURSED;
   msg("your armor glows %s for a moment", pick_color("silver"));
   return true;
 }
@@ -231,7 +231,7 @@ create_monster(void)
 
       if ((y == player_pos->y && x == player_pos->x)
           || !step_ok(ch)
-          || (ch == SCROLL && find_obj(y, x)->o_which == S_SCARE)
+          || (ch == SCROLL && find_obj(y, x)->o.o_which == S_SCARE)
           || os_rand_range(++i) != 0)
         continue;
 
@@ -316,7 +316,7 @@ def:
       {
         THING* obj = pp->p_monst;
         if (obj != NULL)
-          obj->t_oldch = ch;
+          obj->t.t_oldch = ch;
         if (obj == NULL || !player_can_sense_monsters())
           mvaddcch(y, x, ch);
       }
@@ -329,11 +329,11 @@ food_detection(void)
   bool food_seen = false;
   wclear(hw);
 
-  for (THING* obj = level_items; obj != NULL; obj = obj->l_next)
-    if (obj->o_type == FOOD)
+  for (THING* obj = level_items; obj != NULL; obj = obj->o.l_next)
+    if (obj->o.o_type == FOOD)
     {
       food_seen = true;
-      mvwaddcch(hw, obj->o_pos.y, obj->o_pos.x, FOOD);
+      mvwaddcch(hw, obj->o.o_pos.y, obj->o.o_pos.x, FOOD);
     }
 
   if (food_seen)
@@ -358,13 +358,13 @@ player_enchant_weapon(void)
     return false;
   }
 
-  weapon->o_flags &= ~ISCURSED;
+  weapon->o.o_flags &= ~ISCURSED;
   if (os_rand_range(2) == 0)
-    weapon->o_hplus++;
+    weapon->o.o_hplus++;
   else
-    weapon->o_dplus++;
+    weapon->o.o_dplus++;
   msg("your %s glows %s for a moment",
-      weapon_info[weapon->o_which].oi_name, pick_color("blue"));
+      weapon_info[weapon->o.o_which].oi_name, pick_color("blue"));
 
   return true;
 }
@@ -395,7 +395,7 @@ protect_armor(void)
     return false;
   }
 
-  arm->o_flags |= ISPROT;
+  arm->o.o_flags |= ISPROT;
   msg("your armor is covered by a shimmering %s shield", pick_color("gold"));
   return true;
 }
@@ -407,18 +407,18 @@ scroll_read(void)
   if (obj == NULL)
     return false;
 
-  if (obj->o_type != SCROLL)
+  if (obj->o.o_type != SCROLL)
   {
     msg("there is nothing on it to read");
     return false;
   }
 
   /* Get rid of the thing */
-  bool discardit = obj->o_count == 1;
+  bool discardit = obj->o.o_count == 1;
   pack_remove(obj, false, false);
   THING* orig_obj = obj;
 
-  switch (obj->o_which)
+  switch (obj->o.o_which)
   {
     case S_CONFUSE:
       player_set_confusing_attack();
@@ -441,7 +441,7 @@ scroll_read(void)
       break;
     case S_ID:
       if (!scroll_is_known(S_ID))
-        msg("this scroll is an %s scroll", scroll_info[obj->o_which].oi_name);
+        msg("this scroll is an %s scroll", scroll_info[obj->o.o_which].oi_name);
       scroll_learn(S_ID);
       pack_identify_item();
       break;
@@ -485,7 +485,7 @@ scroll_read(void)
   look(true);	/* put the result of the scroll on the screen */
   status();
 
-  call_it("scroll", &scroll_info[obj->o_which]);
+  call_it("scroll", &scroll_info[obj->o.o_which]);
 
   if (discardit)
     os_remove_thing(&obj);
@@ -496,20 +496,20 @@ scroll_read(void)
 void
 scroll_description(THING* obj, char* buf)
 {
-  struct obj_info* op = &scroll_info[obj->o_which];
+  struct obj_info* op = &scroll_info[obj->o.o_which];
   char* ptr = buf;
 
-  if (obj->o_count == 1)
+  if (obj->o.o_count == 1)
     ptr += sprintf(ptr, "A scroll");
   else
-    ptr += sprintf(ptr, "%d scrolls", obj->o_count);
+    ptr += sprintf(ptr, "%d scrolls", obj->o.o_count);
 
   if (op->oi_know)
     ptr += sprintf(ptr, " of %s", op->oi_name);
   else if (op->oi_guess)
     ptr += sprintf(ptr, " called %s", op->oi_guess);
   else
-    ptr += sprintf(ptr, " titled '%s'", s_names[obj->o_which]);
+    ptr += sprintf(ptr, " titled '%s'", s_names[obj->o.o_which]);
 }
 
 THING*
@@ -520,9 +520,9 @@ scroll_create(int which)
   if (which == -1)
     which = (int)pick_one(scroll_info, NSCROLLS);
 
-  scroll->o_type  = SCROLL;
-  scroll->o_count = 1;
-  scroll->o_which = which;
+  scroll->o.o_type  = SCROLL;
+  scroll->o.o_count = 1;
+  scroll->o.o_which = which;
   return scroll;
 }
 

@@ -40,9 +40,9 @@ static bool command_attack_bow(coord const* delta)
 
   THING* arrow = pack_remove(ptr, true, false);
   io_missile_motion(arrow, delta->y, delta->x);
-  THING* monster_at_pos = level_get_monster(arrow->o_pos.y, arrow->o_pos.x);
+  THING* monster_at_pos = level_get_monster(arrow->o.o_pos.y, arrow->o.o_pos.x);
 
-  if (monster_at_pos == NULL || !fight_against_monster(&arrow->o_pos, arrow, true))
+  if (monster_at_pos == NULL || !fight_against_monster(&arrow->o.o_pos, arrow, true))
     weapon_missile_fall(arrow, true);
 
   return true;
@@ -56,7 +56,7 @@ static bool command_attack_melee(bool fight_to_death, coord* delta)
     if (fight_to_death)
     {
       to_death = true;
-      mp->t_flags |= ISTARGET;
+      mp->t.t_flags |= ISTARGET;
     }
     runch = dir_ch;
     return command_do(dir_ch);
@@ -133,7 +133,7 @@ command_attack(bool fight_to_death)
 
   THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
-  return weapon != NULL && weapon->o_which == BOW
+  return weapon != NULL && weapon->o.o_which == BOW
     ? command_attack_bow(dir)
     : command_attack_melee(fight_to_death, &delta);
 }
@@ -148,33 +148,33 @@ command_name_item(void)
 
   bool already_known;
   char** guess;
-  switch (obj->o_type)
+  switch (obj->o.o_type)
   {
     case FOOD: msg("Don't play with your food!"); return false;
 
     case RING:
-      already_known = ring_is_known((enum ring_t)obj->o_which);
-      guess =        &ring_info[obj->o_which].oi_guess;
+      already_known = ring_is_known((enum ring_t)obj->o.o_which);
+      guess =        &ring_info[obj->o.o_which].oi_guess;
       break;
 
     case POTION:
-      already_known = potion_info[obj->o_which].oi_know;
-      guess =        &potion_info[obj->o_which].oi_guess;
+      already_known = potion_info[obj->o.o_which].oi_know;
+      guess =        &potion_info[obj->o.o_which].oi_guess;
       break;
 
     case SCROLL:
-      already_known = scroll_is_known((enum scroll_t)obj->o_which);
+      already_known = scroll_is_known((enum scroll_t)obj->o.o_which);
       guess =         NULL;
       break;
 
     case STICK:
-      already_known = wand_is_known((enum wand_t)obj->o_which);
+      already_known = wand_is_known((enum wand_t)obj->o.o_which);
       guess =         NULL;
       break;
 
     default:
       already_known = false;
-      guess = &obj->o_label;
+      guess = &obj->o.o_label;
       break;
   }
 
@@ -189,10 +189,10 @@ command_name_item(void)
   char tmpbuf[MAXSTR] = { '\0' };
   if (readstr(tmpbuf) == 0)
   {
-    if (obj->o_type == STICK)
-      wand_set_name((enum wand_t)obj->o_which, tmpbuf);
-    else if (obj->o_type == SCROLL)
-      scroll_set_name((enum scroll_t)obj->o_which, tmpbuf);
+    if (obj->o.o_type == STICK)
+      wand_set_name((enum wand_t)obj->o.o_which, tmpbuf);
+    else if (obj->o.o_type == SCROLL)
+      scroll_set_name((enum scroll_t)obj->o.o_which, tmpbuf);
     else if (guess != NULL)
     {
       if (*guess != NULL) {
@@ -300,8 +300,8 @@ command_pick_up(void)
 
   coord const* player_pos = player_get_pos();
 
-  for (THING* obj = level_items; obj != NULL; obj = obj->l_next)
-    if (coord_same(&obj->o_pos, player_pos))
+  for (THING* obj = level_items; obj != NULL; obj = obj->o.l_next)
+    if (coord_same(&obj->o.o_pos, player_pos))
     {
       pack_pick_up(obj, true);
       return true;
@@ -504,7 +504,7 @@ bool command_throw(void)
   if (obj == NULL)
     return false;
 
-  if (obj->o_type == ARMOR)
+  if (obj->o.o_type == ARMOR)
   {
     msg("you can't throw armor");
     return false;
@@ -512,10 +512,10 @@ bool command_throw(void)
 
   obj = pack_remove(obj, true, false);
   io_missile_motion(obj, ydelta, xdelta);
-  THING* monster_at_pos = level_get_monster(obj->o_pos.y, obj->o_pos.x);
+  THING* monster_at_pos = level_get_monster(obj->o.o_pos.y, obj->o.o_pos.x);
 
   /* Throwing an arrow always misses */
-  if (obj->o_which == ARROW)
+  if (obj->o.o_which == ARROW)
   {
     if (monster_at_pos && !to_death)
     {
@@ -529,11 +529,11 @@ bool command_throw(void)
   /* AHA! Here it has hit something.  If it is a wall or a door,
    * or if it misses (combat) the monster, put it on the floor */
   bool missed = monster_at_pos == NULL ||
-    !fight_against_monster(&obj->o_pos, obj, true);
+    !fight_against_monster(&obj->o.o_pos, obj, true);
 
   if (missed)
   {
-    if (obj->o_type == POTION)
+    if (obj->o.o_type == POTION)
       msg("the potion crashes into the wall");
     else
       weapon_missile_fall(obj, true);
@@ -552,7 +552,7 @@ command_wield(void)
   if (obj == NULL)
     return false;
 
-  if (obj->o_type == ARMOR)
+  if (obj->o.o_type == ARMOR)
   {
     msg("you can't wield armor");
     return command_wield();
@@ -563,7 +563,7 @@ command_wield(void)
 
 bool command_rest(void)
 {
-  for (THING* mon = monster_list; mon != NULL; mon = mon->l_next)
+  for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
     if (monster_seen_by_player(mon))
     {
       msg("cannot rest with monsters nearby");
@@ -593,7 +593,7 @@ command_eat(void)
   if (obj == NULL)
     return false;
 
-  if (obj->o_type != FOOD)
+  if (obj->o.o_type != FOOD)
   {
     msg("that's inedible!");
     return false;
@@ -601,7 +601,7 @@ command_eat(void)
 
   food_eat();
 
-  if (obj->o_which == 1)
+  if (obj->o.o_which == 1)
     msg("my, that was a yummy fruit");
 
   else if (os_rand_range(100) > 70)
@@ -648,7 +648,7 @@ bool command_drop(void)
     return false;
 
   bool drop_all = false;
-  if (obj->o_count > 1)
+  if (obj->o.o_count > 1)
   {
     msg("Drop all? (y/N) ");
     drop_all = readchar(true) == 'y';
@@ -660,12 +660,12 @@ bool command_drop(void)
   /* Link it into the level object list */
   list_attach(&level_items, obj);
 
-  level_set_ch(player_pos->y, player_pos->x, (char)obj->o_type);
+  level_set_ch(player_pos->y, player_pos->x, (char)obj->o.o_type);
   int flags = level_get_flags(player_pos->y, player_pos->x);
   flags |= F_DROPPED;
   level_set_flags(player_pos->y, player_pos->x, (char)flags);
 
-  obj->o_pos = *player_pos;
+  obj->o.o_pos = *player_pos;
 
   char buf[MAXSTR];
   msg("dropped %s", inv_name(buf, obj, true));

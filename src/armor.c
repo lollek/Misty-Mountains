@@ -44,7 +44,7 @@ int armor_probability(enum armor_t i)   { return armors[i].prob; }
 int
 armor_for_thing(THING* thing)
 {
-  return is_player(thing) ? player_get_armor() : thing->t_stats.s_arm;
+  return is_player(thing) ? player_get_armor() : thing->t.t_stats.s_arm;
 }
 
 bool
@@ -55,7 +55,7 @@ armor_command_wear(void)
   if (obj == NULL)
     return false;
 
-  if (obj->o_type != ARMOR)
+  if (obj->o.o_type != ARMOR)
   {
     msg("you can't wear that");
     return armor_command_wear();
@@ -96,18 +96,18 @@ void
 armor_rust(void)
 {
   THING* arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  if (arm == NULL || arm->o_type != ARMOR || arm->o_which == LEATHER ||
-      arm->o_arm >= 9)
+  if (arm == NULL || arm->o.o_type != ARMOR || arm->o.o_which == LEATHER ||
+      arm->o.o_arm >= 9)
     return;
 
-  if ((arm->o_flags & ISPROT) || player_has_ring_with_ability(R_SUSTARM))
+  if ((arm->o.o_flags & ISPROT) || player_has_ring_with_ability(R_SUSTARM))
   {
     if (!to_death)
       msg("the rust vanishes instantly");
   }
   else
   {
-    arm->o_arm++;
+    arm->o.o_arm++;
     msg("your armor weakens");
   }
 }
@@ -116,20 +116,20 @@ void
 armor_description(THING* obj, char* buf)
 {
   char *ptr = buf;
-  char const* obj_name = armor_name((enum armor_t)obj->o_which);
-  int bonus_ac = armor_ac((enum armor_t)obj->o_which) - obj->o_arm;
-  int base_ac = 10 - obj->o_arm - bonus_ac;
+  char const* obj_name = armor_name((enum armor_t)obj->o.o_which);
+  int bonus_ac = armor_ac((enum armor_t)obj->o.o_which) - obj->o.o_arm;
+  int base_ac = 10 - obj->o.o_arm - bonus_ac;
 
   ptr += sprintf(ptr, "A%s %s [%d]", vowelstr(obj_name), obj_name, base_ac);
 
-  if (obj->o_flags & ISKNOW)
+  if (obj->o.o_flags & ISKNOW)
   {
     ptr -= 1;
     ptr += sprintf(ptr, bonus_ac < 0 ? ",%d]" : ",+%d]", bonus_ac);
   }
 
-  if (obj->o_label != NULL)
-    ptr += sprintf(ptr, " called %s", obj->o_label);
+  if (obj->o.o_label != NULL)
+    ptr += sprintf(ptr, " called %s", obj->o.o_label);
 }
 
 THING*
@@ -139,20 +139,20 @@ armor_create(int which, int random_stats)
     which = armor_type_random();
 
   THING* armor = os_calloc_thing();
-  armor->o_type = ARMOR;
-  armor->o_which = which;
-  armor->o_arm = armor_ac((enum armor_t)armor->o_which);
+  armor->o.o_type = ARMOR;
+  armor->o.o_which = which;
+  armor->o.o_arm = armor_ac((enum armor_t)armor->o.o_which);
 
   if (random_stats)
   {
     int rand = os_rand_range(100);
     if (rand < 20)
     {
-      armor->o_flags |= ISCURSED;
-      armor->o_arm += os_rand_range(3) + 1;
+      armor->o.o_flags |= ISCURSED;
+      armor->o.o_arm += os_rand_range(3) + 1;
     }
     else if (rand < 28)
-      armor->o_arm -= os_rand_range(3) + 1;
+      armor->o.o_arm -= os_rand_range(3) + 1;
   }
 
   return armor;

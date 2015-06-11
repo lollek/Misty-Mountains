@@ -82,7 +82,7 @@ pack_list_index(THING const* thing)
 
   THING const* ptr;
   int8_t i;
-  for (ptr = player_pack, i = 0; ptr != NULL; ptr = ptr->l_next, ++i)
+  for (ptr = player_pack, i = 0; ptr != NULL; ptr = ptr->o.l_next, ++i)
     if (ptr == thing)
       return i;
 
@@ -95,7 +95,7 @@ pack_list_element(int8_t i)
   if (i < 0)
     return NULL;
 
-  for (THING* ptr = player_pack; ptr != NULL; ptr = ptr->l_next)
+  for (THING* ptr = player_pack; ptr != NULL; ptr = ptr->o.l_next)
     if (i-- == 0)
       return ptr;
 
@@ -129,30 +129,30 @@ pack_print_evaluate_item(THING* obj)
   if (obj == NULL)
     return 0;
 
-  switch (obj->o_type)
+  switch (obj->o.o_type)
   {
     case FOOD:
-      worth = 2 * obj->o_count;
+      worth = 2 * obj->o.o_count;
       break;
 
     case WEAPON: case AMMO:
-      worth = weapon_info[obj->o_which].oi_worth;
-      worth *= 3 * (obj->o_hplus + obj->o_dplus) + obj->o_count;
-      obj->o_flags |= ISKNOW;
+      worth = weapon_info[obj->o.o_which].oi_worth;
+      worth *= 3 * (obj->o.o_hplus + obj->o.o_dplus) + obj->o.o_count;
+      obj->o.o_flags |= ISKNOW;
       break;
 
     case ARMOR:
-      worth = armor_value((enum armor_t)obj->o_which);
-      worth += (9 - obj->o_arm) * 100;
-      worth += (10 * (armor_ac((enum armor_t)obj->o_which) - obj->o_arm));
-      obj->o_flags |= ISKNOW;
+      worth = armor_value((enum armor_t)obj->o.o_which);
+      worth += (9 - obj->o.o_arm) * 100;
+      worth += (10 * (armor_ac((enum armor_t)obj->o.o_which) - obj->o.o_arm));
+      obj->o.o_flags |= ISKNOW;
       break;
 
     case SCROLL:
       {
-        enum scroll_t scroll = (enum scroll_t)obj->o_which;
+        enum scroll_t scroll = (enum scroll_t)obj->o.o_which;
         worth = scroll_value(scroll);
-        worth *= obj->o_count;
+        worth *= obj->o.o_count;
         if (!scroll_is_known(scroll))
           worth /= 2;
         scroll_learn(scroll);
@@ -160,38 +160,38 @@ pack_print_evaluate_item(THING* obj)
       break;
 
     case POTION:
-      worth = potion_info[obj->o_which].oi_worth;
-      worth *= obj->o_count;
-      op = &potion_info[obj->o_which];
+      worth = potion_info[obj->o.o_which].oi_worth;
+      worth *= obj->o.o_count;
+      op = &potion_info[obj->o.o_which];
       if (!op->oi_know)
         worth /= 2;
       op->oi_know = true;
       break;
 
     case RING:
-      op = &ring_info[obj->o_which];
+      op = &ring_info[obj->o.o_which];
       worth = op->oi_worth;
-      if (obj->o_which == R_ADDSTR || obj->o_which == R_ADDDAM ||
-          obj->o_which == R_PROTECT || obj->o_which == R_ADDHIT)
+      if (obj->o.o_which == R_ADDSTR || obj->o.o_which == R_ADDDAM ||
+          obj->o.o_which == R_PROTECT || obj->o.o_which == R_ADDHIT)
       {
-        if (obj->o_arm > 0)
-          worth += obj->o_arm * 100;
+        if (obj->o.o_arm > 0)
+          worth += obj->o.o_arm * 100;
         else
           worth = 10;
       }
-      if (!(obj->o_flags & ISKNOW))
+      if (!(obj->o.o_flags & ISKNOW))
         worth /= 2;
-      obj->o_flags |= ISKNOW;
+      obj->o.o_flags |= ISKNOW;
       op->oi_know = true;
       break;
 
     case STICK:
-      wand_get_worth((enum wand_t)obj->o_which);
-      worth += 20 * obj->o_charges;
-      if (!(obj->o_flags & ISKNOW))
+      wand_get_worth((enum wand_t)obj->o.o_which);
+      worth += 20 * obj->o.o_charges;
+      if (!(obj->o.o_flags & ISKNOW))
         worth /= 2;
-      obj->o_flags |= ISKNOW;
-      wand_set_known((enum wand_t)obj->o_which);
+      obj->o.o_flags |= ISKNOW;
+      wand_set_known((enum wand_t)obj->o.o_which);
       break;
 
     case AMULET:
@@ -199,7 +199,7 @@ pack_print_evaluate_item(THING* obj)
       break;
 
     default:
-      (void)fail("Unknown type: %c(%d)", obj->o_type, obj->o_type);
+      (void)fail("Unknown type: %c(%d)", obj->o.o_type, obj->o.o_type);
       assert(0);
       break;
   }
@@ -277,7 +277,7 @@ pack_add(THING* obj, bool silent)
   }
 
   /* Check for and deal with scare monster scrolls */
-  if (obj->o_type == SCROLL && obj->o_which == S_SCARE && obj->o_flags & ISFOUND)
+  if (obj->o.o_type == SCROLL && obj->o.o_which == S_SCARE && obj->o.o_flags & ISFOUND)
   {
     list_detach(&level_items, obj);
     mvaddcch(player_pos->y, player_pos->x, floor_ch());
@@ -288,16 +288,16 @@ pack_add(THING* obj, bool silent)
   }
 
   /* See if we can stack it with something else in the pack */
-  if (obj->o_type == POTION || obj->o_type == SCROLL || obj->o_type == FOOD
-      || obj->o_type == AMMO)
-    for (THING* ptr = player_pack; ptr != NULL; ptr = ptr->l_next)
-      if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which
-          && ptr->o_hplus == obj->o_hplus && ptr->o_dplus == obj->o_dplus)
+  if (obj->o.o_type == POTION || obj->o.o_type == SCROLL || obj->o.o_type == FOOD
+      || obj->o.o_type == AMMO)
+    for (THING* ptr = player_pack; ptr != NULL; ptr = ptr->o.l_next)
+      if (ptr->o.o_type == obj->o.o_type && ptr->o.o_which == obj->o.o_which
+          && ptr->o.o_hplus == obj->o.o_hplus && ptr->o.o_dplus == obj->o.o_dplus)
       {
         if (from_floor)
           pack_remove_from_floor(obj);
-        ptr->o_count += obj->o_count;
-        ptr->o_pos = obj->o_pos;
+        ptr->o.o_count += obj->o.o_count;
+        ptr->o.o_pos = obj->o.o_pos;
         os_remove_thing(&obj);
         obj = ptr;
         is_picked_up = true;
@@ -319,7 +319,7 @@ pack_add(THING* obj, bool silent)
     if (from_floor)
       pack_remove_from_floor(obj);
     list_attach(&player_pack, obj);
-    obj->o_packch = pack_char();
+    obj->o.o_packch = pack_char();
     is_picked_up = true;
   }
 
@@ -330,54 +330,54 @@ pack_add(THING* obj, bool silent)
     THING* ptr = player_pack;
 
     /* Try to find an object of the same type */
-    while (ptr != NULL && ptr->o_type != obj->o_type)
+    while (ptr != NULL && ptr->o.o_type != obj->o.o_type)
     {
       prev_ptr = ptr;
-      ptr = ptr->l_next;
+      ptr = ptr->o.l_next;
     }
 
     /* Move to the end of those objects, or stop if found similar item */
-    while (ptr != NULL && ptr->o_type == obj->o_type
-           && ptr->o_which != obj->o_which)
+    while (ptr != NULL && ptr->o.o_type == obj->o.o_type
+           && ptr->o.o_which != obj->o.o_which)
     {
       prev_ptr = ptr;
-      ptr = ptr->l_next;
+      ptr = ptr->o.l_next;
     }
 
     /* Make object ready for insertion */
     if (from_floor)
       pack_remove_from_floor(obj);
-    obj->o_packch = pack_char();
+    obj->o.o_packch = pack_char();
 
     /* Add to list */
     if (ptr == NULL && prev_ptr == NULL)
       list_attach(&player_pack, obj);
     else
     {
-      obj->l_next = ptr;
-      obj->l_prev = prev_ptr;
+      obj->o.l_next = ptr;
+      obj->o.l_prev = prev_ptr;
       if (ptr != NULL)
-        ptr->l_prev = obj;
+        ptr->o.l_prev = obj;
       if (prev_ptr == NULL)
         player_pack = obj;
       else
-        prev_ptr->l_next = obj;
+        prev_ptr->o.l_next = obj;
     }
   }
 
-  obj->o_flags |= ISFOUND;
+  obj->o.o_flags |= ISFOUND;
 
   /* If this was the object of something's desire, that monster will
    * get mad and run at the hero.  */
-  for (THING* op = monster_list; op != NULL; op = op->l_next)
-    if (op->t_dest == &obj->o_pos)
-      op->t_dest = player_pos;
+  for (THING* op = monster_list; op != NULL; op = op->t.l_next)
+    if (op->t.t_dest == &obj->o.o_pos)
+      op->t.t_dest = player_pos;
 
   /* Notify the user */
   if (!silent)
   {
     char buf[MAXSTR];
-    msg("you now have %s (%c)", inv_name(buf, obj, true), obj->o_packch, true);
+    msg("you now have %s (%c)", inv_name(buf, obj, true), obj->o.o_packch, true);
   }
   return true;
 }
@@ -387,23 +387,23 @@ pack_remove(THING* obj, bool newobj, bool all)
 {
   THING* nobj = obj;
 
-  if (obj->o_count > 1 && !all)
+  if (obj->o.o_count > 1 && !all)
   {
     last_picked_item = obj;
-    obj->o_count--;
+    obj->o.o_count--;
     if (newobj)
     {
       nobj = os_calloc_thing();
       *nobj = *obj;
-      nobj->l_next = NULL;
-      nobj->l_prev = NULL;
-      nobj->o_count = 1;
+      nobj->o.l_next = NULL;
+      nobj->o.l_prev = NULL;
+      nobj->o.o_count = 1;
     }
   }
   else
   {
     last_picked_item = NULL;
-    pack_used[obj->o_packch - 'a'] = false;
+    pack_used[obj->o.o_packch - 'a'] = false;
     list_detach(&player_pack, obj);
   }
   return nobj;
@@ -416,12 +416,12 @@ pack_pick_up(THING* obj, bool force)
   if (player_is_levitating())
     return;
 
-  switch (obj->o_type)
+  switch (obj->o.o_type)
   {
     case GOLD:
       if (obj != NULL)
       {
-        pack_add_money(obj->o_goldval);
+        pack_add_money(obj->o.o_goldval);
         list_detach(&level_items, obj);
         os_remove_thing(&obj);
         player_get_room()->r_goldval = 0;
@@ -430,14 +430,14 @@ pack_pick_up(THING* obj, bool force)
 
     case POTION: case WEAPON: case AMMO: case FOOD: case ARMOR:
     case SCROLL: case AMULET: case RING: case STICK:
-      if (force || option_autopickup(obj->o_type))
+      if (force || option_autopickup(obj->o.o_type))
         pack_add((THING *) NULL, false);
       else
         pack_move_msg(obj);
       return;
   }
 
-  (void)fail("Unknown type: %c(%d)", obj->o_type, obj->o_type);
+  (void)fail("Unknown type: %c(%d)", obj->o.o_type, obj->o.o_type);
   assert(0);
 }
 
@@ -447,7 +447,7 @@ pack_find_magic_item(void)
 {
   int nobj = 0;
 
-  for (THING* obj = player_pack; obj != NULL; obj = obj->l_next)
+  for (THING* obj = player_pack; obj != NULL; obj = obj->o.l_next)
     if (is_magic(obj) && os_rand_range(++nobj) == 0)
       return obj;
   return NULL;
@@ -475,8 +475,8 @@ pack_get_item(char const* purpose, int type)
     return NULL;
   }
 
-  for (THING* obj = player_pack; obj != NULL; obj = obj->l_next)
-    if (obj->o_packch == ch)
+  for (THING* obj = player_pack; obj != NULL; obj = obj->o.l_next)
+    if (obj->o.o_packch == ch)
       return obj;
 
   msg("'%s' is not a valid item",unctrl(ch));
@@ -500,9 +500,9 @@ pack_count_items_of_type(int type)
 {
   int num = 0;
 
-  for (THING const* list = player_pack; list != NULL; list = list->l_next)
-    if (!type || type == list->o_type ||
-        (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET)))
+  for (THING const* list = player_pack; list != NULL; list = list->o.l_next)
+    if (!type || type == list->o.o_type ||
+        (type == PACK_RENAMEABLE && (list->o.o_type != FOOD && list->o.o_type != AMULET)))
       ++num;
   return num;
 }
@@ -510,8 +510,8 @@ pack_count_items_of_type(int type)
 bool
 pack_contains_amulet(void)
 {
-  for (THING const* ptr = player_pack; ptr != NULL; ptr = ptr->l_next)
-    if (ptr->o_type == AMULET)
+  for (THING const* ptr = player_pack; ptr != NULL; ptr = ptr->o.l_next)
+    if (ptr->o.o_type == AMULET)
       return true;
   return false;
 }
@@ -519,7 +519,7 @@ pack_contains_amulet(void)
 bool
 pack_contains(THING *item)
 {
-  for (THING const* ptr = player_pack; ptr != NULL; ptr = ptr->l_next)
+  for (THING const* ptr = player_pack; ptr != NULL; ptr = ptr->o.l_next)
     if (ptr == item)
       return true;
   return false;
@@ -567,14 +567,14 @@ pack_print_inventory(int type)
 
   int num_items = 0;
   /* Print out all items */
-  for (THING* list = player_pack; list != NULL; list = list->l_next)
+  for (THING* list = player_pack; list != NULL; list = list->o.l_next)
   {
-    if (!type || type == list->o_type ||
-        (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET)))
+    if (!type || type == list->o.o_type ||
+        (type == PACK_RENAMEABLE && (list->o.o_type != FOOD && list->o.o_type != AMULET)))
     {
       /* Print out the item and move to next row */
       wmove(invscr, ++num_items, 1);
-      wprintw(invscr, "%c) %s", list->o_packch, inv_name(buf, list, false));
+      wprintw(invscr, "%c) %s", list->o.o_packch, inv_name(buf, list, false));
     }
   }
 
@@ -602,7 +602,7 @@ pack_evaluate(void)
     value += pack_print_evaluate_item(pack_equipped_item((enum equipment_pos)i));
 
   addstr("\nWorth  Item  [Inventory]\n");
-  for (THING* obj = player_pack; obj != NULL; obj = obj->l_next)
+  for (THING* obj = player_pack; obj != NULL; obj = obj->o.l_next)
     value += pack_print_evaluate_item(obj);
 
   printw("\n%5d  Gold Pieces          ", pack_gold);
@@ -621,7 +621,7 @@ bool
 pack_equip_item(THING* item)
 {
   enum equipment_pos pos;
-  switch(item->o_type)
+  switch(item->o.o_type)
   {
     case ARMOR:
       pos = EQUIPMENT_ARMOR;
@@ -665,7 +665,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     return false;
   }
 
-  if (obj->o_flags & ISCURSED)
+  if (obj->o.o_flags & ISCURSED)
   {
     msg("you can't. It appears to be cursed");
     return false;
@@ -682,11 +682,11 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   {
     coord const* player_pos = player_get_pos();
     list_attach(&level_items, obj);
-    level_set_ch(player_pos->y, player_pos->x, (char)obj->o_type);
+    level_set_ch(player_pos->y, player_pos->x, (char)obj->o.o_type);
     int flags = level_get_flags(player_pos->y, player_pos->x);
     flags |= F_DROPPED;
     level_set_flags(player_pos->y, player_pos->x, (char)flags);
-    obj->o_pos = *player_pos;
+    obj->o.o_pos = *player_pos;
     msg("dropped %s", inv_name(buf, obj, true));
   }
   else if (!quiet_on_success)
@@ -694,15 +694,15 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   return true;
 }
 
-bool pack_item_is_cursed(THING const*item){ return item->o_flags & ISCURSED; }
-void pack_curse_item(THING *item)         { item->o_flags |= ISCURSED; }
-void pack_uncurse_item(THING *item)       { item->o_flags &= ~ISCURSED; }
+bool pack_item_is_cursed(THING const*item){ return item->o.o_flags & ISCURSED; }
+void pack_curse_item(THING *item)         { item->o.o_flags |= ISCURSED; }
+void pack_uncurse_item(THING *item)       { item->o.o_flags &= ~ISCURSED; }
 
 THING*
 pack_find_arrow(void)
 {
-  for (THING* ptr = player_pack; ptr != NULL; ptr = ptr->l_next)
-    if (ptr->o_which == ARROW)
+  for (THING* ptr = player_pack; ptr != NULL; ptr = ptr->o.l_next)
+    if (ptr->o.o_which == ARROW)
       return ptr;
   return NULL;
 }
@@ -710,10 +710,10 @@ pack_find_arrow(void)
 static void
 pack_identify_item_set_know(THING* obj, struct obj_info* info)
 {
-  info[obj->o_which].oi_know = true;
-  obj->o_flags |= ISKNOW;
+  info[obj->o.o_which].oi_know = true;
+  obj->o.o_flags |= ISKNOW;
 
-  char** guess = &info[obj->o_which].oi_guess;
+  char** guess = &info[obj->o.o_which].oi_guess;
   if (*guess)
   {
     free(*guess);
@@ -734,13 +734,13 @@ pack_identify_item(void)
   if (obj == NULL)
     return;
 
-  switch (obj->o_type)
+  switch (obj->o.o_type)
   {
     case SCROLL: pack_identify_item_set_know(obj, scroll_info);  break;
     case POTION: pack_identify_item_set_know(obj, potion_info);  break;
     case STICK:  pack_identify_item_set_know(obj, __wands_ptr());   break;
     case RING:   pack_identify_item_set_know(obj, ring_info); break;
-    case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
+    case WEAPON: case ARMOR: obj->o.o_flags |= ISKNOW; break;
     default: break;
   }
 

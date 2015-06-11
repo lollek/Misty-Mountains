@@ -94,17 +94,17 @@ void
 weapon_missile_fall(THING* obj, bool pr)
 {
   coord fpos;
-  if (fallpos(&obj->o_pos, &fpos))
+  if (fallpos(&obj->o.o_pos, &fpos))
   {
     PLACE* pp = level_get_place(fpos.y, fpos.x);
-    pp->p_ch = (char) obj->o_type;
-    obj->o_pos = fpos;
+    pp->p_ch = (char) obj->o.o_type;
+    obj->o.o_pos = fpos;
     if (cansee(fpos.y, fpos.x))
     {
       if (pp->p_monst != NULL)
-        pp->p_monst->t_oldch = (char) obj->o_type;
+        pp->p_monst->t.t_oldch = (char) obj->o.o_type;
       else
-        mvaddcch(fpos.y, fpos.x, (chtype)obj->o_type);
+        mvaddcch(fpos.y, fpos.x, (chtype)obj->o.o_type);
     }
     list_attach(&level_items, obj);
     return;
@@ -112,7 +112,7 @@ weapon_missile_fall(THING* obj, bool pr)
 
   if (pr)
     msg("the %s vanishes as it hits the ground",
-        weapon_info[obj->o_which].oi_name);
+        weapon_info[obj->o.o_which].oi_name);
   os_remove_thing(&obj);
 }
 
@@ -123,38 +123,38 @@ weapon_create(int which, bool random_stats)
     which = (int)pick_one(weapon_info, MAXWEAPONS);
 
   THING* weap = os_calloc_thing();
-  weap->o_type  = WEAPON;
-  weap->o_which = which;
+  weap->o.o_type  = WEAPON;
+  weap->o.o_which = which;
 
   struct init_weaps* iwp = &init_dam[which];
-  weap->o_launch     = iwp->iw_launch;
-  weap->o_flags      = iwp->iw_flags;
-  weap->o_damage[0]  = iwp->iw_dam;
-  weap->o_hurldmg[0] = iwp->iw_hrl;
+  weap->o.o_launch     = iwp->iw_launch;
+  weap->o.o_flags      = iwp->iw_flags;
+  weap->o.o_damage[0]  = iwp->iw_dam;
+  weap->o.o_hurldmg[0] = iwp->iw_hrl;
 
-  if (weap->o_flags & ISMANY)
-    weap->o_type = AMMO;
+  if (weap->o.o_flags & ISMANY)
+    weap->o.o_type = AMMO;
 
   if (which == SPEAR)
-    weap->o_arm = 2;
+    weap->o.o_arm = 2;
 
   if (which == DAGGER)
-    weap->o_count = os_rand_range(4) + 2;
-  else if (weap->o_flags & ISMANY)
-    weap->o_count = os_rand_range(8) + 8;
+    weap->o.o_count = os_rand_range(4) + 2;
+  else if (weap->o.o_flags & ISMANY)
+    weap->o.o_count = os_rand_range(8) + 8;
   else
-    weap->o_count = 1;
+    weap->o.o_count = 1;
 
   if (random_stats)
   {
     int rand = os_rand_range(100);
     if (rand < 10)
     {
-      weap->o_flags |= ISCURSED;
-      weap->o_hplus -= os_rand_range(3) + 1;
+      weap->o.o_flags |= ISCURSED;
+      weap->o.o_hplus -= os_rand_range(3) + 1;
     }
     else if (rand < 15)
-      weap->o_hplus += os_rand_range(3) + 1;
+      weap->o.o_hplus += os_rand_range(3) + 1;
   }
 
   return weap;
@@ -200,49 +200,49 @@ void
 weapon_description(THING* obj, char* buf)
 {
   char* ptr = buf;
-  char const* obj_name = weapon_info[obj->o_which].oi_name;
+  char const* obj_name = weapon_info[obj->o.o_which].oi_name;
 
-  if (obj->o_count == 1)
+  if (obj->o.o_count == 1)
     ptr += sprintf(ptr, "A%s %s", vowelstr(obj_name), obj_name);
   else
-    ptr += sprintf(ptr, "%d %ss", obj->o_count, obj_name);
+    ptr += sprintf(ptr, "%d %ss", obj->o.o_count, obj_name);
 
-  if (obj->o_type == AMMO || obj->o_which == BOW)
+  if (obj->o.o_type == AMMO || obj->o.o_which == BOW)
   {
     for (int i = 0; i < MAXATTACKS; ++i)
-      if (obj->o_hurldmg[i].sides != 0 && obj->o_hurldmg[i].dices != 0)
+      if (obj->o.o_hurldmg[i].sides != 0 && obj->o.o_hurldmg[i].dices != 0)
         ptr += sprintf(ptr, "%s%dd%d", i == 0 ? " (" : "/",
-            obj->o_hurldmg[i].sides,
-            obj->o_hurldmg[i].dices);
+            obj->o.o_hurldmg[i].sides,
+            obj->o.o_hurldmg[i].dices);
     strcpy(ptr++, ")");
   }
-  else if (obj->o_type == WEAPON)
+  else if (obj->o.o_type == WEAPON)
   {
     for (int i = 0; i < MAXATTACKS; ++i)
-      if (obj->o_damage[i].sides != 0 && obj->o_damage[i].dices != 0)
+      if (obj->o.o_damage[i].sides != 0 && obj->o.o_damage[i].dices != 0)
         ptr += sprintf(ptr, "%s%dd%d", i == 0 ? " (" : "/",
-            obj->o_damage[i].sides,
-            obj->o_damage[i].dices);
+            obj->o.o_damage[i].sides,
+            obj->o.o_damage[i].dices);
     strcpy(ptr++, ")");
   }
   else
   {
-    (void)fail("Bad type: %p->o_type == %d\r\n", obj, obj->o_type);
+    (void)fail("Bad type: %p->o_type == %d\r\n", obj, obj->o.o_type);
     assert(0);
   }
 
-  if (obj->o_flags & ISKNOW)
+  if (obj->o.o_flags & ISKNOW)
   {
     ptr += sprintf(ptr, " (");
-    ptr += sprintf(ptr, obj->o_hplus < 0 ? "%d," : "+%d,", obj->o_hplus);
-    ptr += sprintf(ptr, obj->o_dplus < 0 ? "%d)" : "+%d)", obj->o_dplus);
+    ptr += sprintf(ptr, obj->o.o_hplus < 0 ? "%d," : "+%d,", obj->o.o_hplus);
+    ptr += sprintf(ptr, obj->o.o_dplus < 0 ? "%d)" : "+%d)", obj->o.o_dplus);
   }
 
-  if (obj->o_arm != 0)
-    ptr += sprintf(ptr, obj->o_arm < 0 ? " [%d]" : " [+%d]", obj->o_arm);
+  if (obj->o.o_arm != 0)
+    ptr += sprintf(ptr, obj->o.o_arm < 0 ? " [%d]" : " [+%d]", obj->o.o_arm);
 
-  if (obj->o_label != NULL)
-    ptr += sprintf(ptr, " called %s", obj->o_label);
+  if (obj->o.o_label != NULL)
+    ptr += sprintf(ptr, " called %s", obj->o.o_label);
 
 }
 

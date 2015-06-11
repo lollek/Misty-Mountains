@@ -50,7 +50,7 @@ char*
 inv_name(char* buf, THING* obj, bool drop)
 {
   buf[MAXSTR -1] = '\0';
-  switch (obj->o_type)
+  switch (obj->o.o_type)
   {
     case POTION: potion_description(obj, buf); break;
     case RING:   ring_description(obj, buf); break;
@@ -60,18 +60,18 @@ inv_name(char* buf, THING* obj, bool drop)
     case ARMOR:  armor_description(obj, buf); break;
     case FOOD:
     {
-      char const* obj_type = obj->o_which == 1 ? "fruit" : "food ration";
-      if (obj->o_count == 1)
+      char const* obj_type = obj->o.o_which == 1 ? "fruit" : "food ration";
+      if (obj->o.o_count == 1)
         sprintf(buf, "A %s", obj_type);
       else
-        sprintf(buf, "%d %ss", obj->o_count, obj_type);
+        sprintf(buf, "%d %ss", obj->o.o_count, obj_type);
     }
     break;
     case AMULET: strcpy(buf, "The Amulet of Yendor"); break;
-    case GOLD:   sprintf(buf, "%d Gold pieces", obj->o_goldval); break;
+    case GOLD:   sprintf(buf, "%d Gold pieces", obj->o.o_goldval); break;
     default:
       msg("You feel a disturbance in the force");
-      sprintf(buf, "Something bizarre %s", unctrl((chtype)obj->o_type));
+      sprintf(buf, "Something bizarre %s", unctrl((chtype)obj->o.o_type));
       break;
   }
 
@@ -87,12 +87,12 @@ new_food(int which)
   levels_without_food = 0;
 
   THING* cur = os_calloc_thing();
-  cur->o_count = 1;
-  cur->o_type = FOOD;
+  cur->o.o_count = 1;
+  cur->o.o_type = FOOD;
   switch (which)
   {
-    case 0: case 1: cur->o_which = which; break;
-    default: cur->o_which = os_rand_range(10) ? 0 : 1; break;
+    case 0: case 1: cur->o.o_which = which; break;
+    default: cur->o.o_which = os_rand_range(10) ? 0 : 1; break;
   }
   return cur;
 }
@@ -101,9 +101,9 @@ THING*
 new_amulet(void)
 {
   THING* obj = os_calloc_thing();
-  obj->o_damage[0] = (struct damage){1, 2};
-  obj->o_hurldmg[0] = (struct damage){1, 2};
-  obj->o_type = AMULET;
+  obj->o.o_damage[0] = (struct damage){1, 2};
+  obj->o.o_hurldmg[0] = (struct damage){1, 2};
+  obj->o.o_type = AMULET;
 
   return obj;
 }
@@ -136,8 +136,8 @@ new_thing(void)
   }
 
   assert(cur != NULL);
-  assert(cur->o_damage[0].sides >= 0 && cur->o_damage[0].dices >= 0);
-  assert(cur->o_hurldmg[0].sides >= 0 && cur->o_hurldmg[0].dices >= 0);
+  assert(cur->o.o_damage[0].sides >= 0 && cur->o.o_damage[0].dices >= 0);
+  assert(cur->o.o_hurldmg[0].sides >= 0 && cur->o.o_hurldmg[0].dices >= 0);
   return cur;
 }
 
@@ -167,16 +167,16 @@ discovered_by_type(char type, struct obj_info* info, int max_items)
 
   THING printable_object;
   memset(&printable_object, 0, sizeof(printable_object));
-  printable_object.o_type = type;
-  printable_object.o_flags = 0;
-  printable_object.o_count = 1;
+  printable_object.o.o_type = type;
+  printable_object.o.o_flags = 0;
+  printable_object.o.o_count = 1;
 
   int items_found = 0;
   for (int i = 0; i < max_items; ++i)
     if (info[i].oi_know || info[i].oi_guess)
     {
       char buf[MAXSTR];
-      printable_object.o_which = i;
+      printable_object.o.o_which = i;
       mvwprintw(printscr, ++items_found, 1,
                 "%s", inv_name(buf, &printable_object, false));
     }

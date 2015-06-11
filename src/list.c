@@ -27,7 +27,7 @@ _list_assert_attached(THING const* list, THING const* item)
   assert(list != NULL);
 
   while (list != NULL && list != item)
-    list = list->l_next;
+    list = list->o.l_next;
 
   assert(list == item);
 }
@@ -41,16 +41,16 @@ list_detach(THING** list, THING* item)
   assert(item != NULL);
 
   if (*list == item)
-    *list = item->l_next;
+    *list = item->o.l_next;
 
-  if (item->l_prev != NULL)
-    item->l_prev->l_next = item->l_next;
+  if (item->o.l_prev != NULL)
+    item->o.l_prev->o.l_next = item->o.l_next;
 
-  if (item->l_next != NULL)
-    item->l_next->l_prev = item->l_prev;
+  if (item->o.l_next != NULL)
+    item->o.l_next->o.l_prev = item->o.l_prev;
 
-  item->l_next = NULL;
-  item->l_prev = NULL;
+  item->o.l_next = NULL;
+  item->o.l_prev = NULL;
 }
 
 void
@@ -61,14 +61,14 @@ list_attach(THING** list, THING* item)
 
   if (*list != NULL)
   {
-    item->l_next = *list;
-    (*list)->l_prev = item;
-    item->l_prev = NULL;
+    item->o.l_next = *list;
+    (*list)->o.l_prev = item;
+    item->o.l_prev = NULL;
   }
   else
   {
-    item->l_next = NULL;
-    item->l_prev = NULL;
+    item->o.l_next = NULL;
+    item->o.l_prev = NULL;
   }
   *list = item;
 }
@@ -80,7 +80,7 @@ list_find(THING const* list, THING const* thing)
 
   THING const* ptr;
   int8_t i;
-  for (ptr = list, i = 0; ptr != NULL; ptr = ptr->l_next, ++i)
+  for (ptr = list, i = 0; ptr != NULL; ptr = ptr->o.l_next, ++i)
   {
     assert(i >= 0);
     if (ptr == thing)
@@ -96,7 +96,7 @@ list_element(THING const* list, int8_t i)
   if (i < 0)
     return NULL;
 
-  for (THING const* ptr = list; ptr != NULL; ptr = ptr->l_next)
+  for (THING const* ptr = list; ptr != NULL; ptr = ptr->o.l_next)
     if (i-- == 0)
       return ptr;
 
@@ -111,7 +111,7 @@ list_free_all(THING** ptr)
   while (*ptr != NULL)
   {
     THING* item = *ptr;
-    *ptr = item->l_next;
+    *ptr = item->o.l_next;
     os_remove_thing(&item);
   }
 }

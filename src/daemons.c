@@ -193,7 +193,7 @@ daemon_doctor(void)
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
     THING *ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != NULL && ring->o_which == R_REGEN)
+    if (ring != NULL && ring->o.o_which == R_REGEN)
       player_restore_health(1, false);
   }
 
@@ -237,9 +237,9 @@ daemon_change_visuals(void)
     return;
 
   /* change the things */
-  for (THING* tp = level_items; tp != NULL; tp = tp->l_next)
-    if (cansee(tp->o_pos.y, tp->o_pos.x))
-      mvaddcch(tp->o_pos.y, tp->o_pos.x, rnd_thing());
+  for (THING* tp = level_items; tp != NULL; tp = tp->o.l_next)
+    if (cansee(tp->o.o_pos.y, tp->o.o_pos.x))
+      mvaddcch(tp->o.o_pos.y, tp->o.o_pos.x, rnd_thing());
 
   /* change the stairs */
   if (seen_stairs())
@@ -247,17 +247,17 @@ daemon_change_visuals(void)
 
   /* change the monsters */
   bool seemonst = player_can_sense_monsters();
-  for (THING* tp = monster_list; tp != NULL; tp = tp->l_next)
+  for (THING* tp = monster_list; tp != NULL; tp = tp->t.l_next)
   {
     if (monster_seen_by_player(tp))
     {
-      if (tp->t_type == 'X' && tp->t_disguise != 'X')
-        mvaddcch(tp->t_pos.y, tp->t_pos.x, rnd_thing());
+      if (tp->t.t_type == 'X' && tp->t.t_disguise != 'X')
+        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, rnd_thing());
       else
-        mvaddcch(tp->t_pos.y, tp->t_pos.x, (chtype)(os_rand_range(26) + 'A'));
+        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype)(os_rand_range(26) + 'A'));
     }
     else if (seemonst)
-      mvaddcch(tp->t_pos.y, tp->t_pos.x,
+      mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x,
           (chtype)(os_rand_range(26) + 'A') | A_STANDOUT);
   }
 }
@@ -272,25 +272,25 @@ daemon_runners_move(void)
   for (THING* tp = monster_list; tp != NULL; tp = next)
   {
     /* remember this in case the monster's "next" is changed */
-    next = tp->l_next;
+    next = tp->t.l_next;
 
     if (!monster_is_held(tp) && monster_is_chasing(tp))
     {
       bool wastarget = monster_is_players_target(tp);
-      coord orig_pos = tp->t_pos;
+      coord orig_pos = tp->t.t_pos;
       if (!monster_chase(tp))
         continue;
 
       list_assert_monster(tp);
 
-      if (monster_is_flying(tp) && dist_cp(player_get_pos(), &tp->t_pos) >= 3)
+      if (monster_is_flying(tp) && dist_cp(player_get_pos(), &tp->t.t_pos) >= 3)
         monster_chase(tp);
 
       list_assert_monster(tp);
 
-      if (wastarget && !coord_same(&orig_pos, &tp->t_pos))
+      if (wastarget && !coord_same(&orig_pos, &tp->t.t_pos))
       {
-        tp->t_flags &= ~ISTARGET;
+        tp->t.t_flags &= ~ISTARGET;
         to_death = false;
       }
     }
@@ -305,9 +305,9 @@ void daemon_ring_abilities(void)
     if (obj == NULL)
       continue;
 
-    else if (obj->o_which == R_SEARCH)
+    else if (obj->o.o_which == R_SEARCH)
       player_search();
-    else if (obj->o_which == R_TELEPORT && os_rand_range(50) == 0)
+    else if (obj->o.o_which == R_TELEPORT && os_rand_range(50) == 0)
       player_teleport(NULL);
   }
 }

@@ -403,7 +403,7 @@ passages_add_pass(void)
         pp->p_flags |= F_SEEN;
         move(y, x);
         if (pp->p_monst != NULL)
-          pp->p_monst->t_oldch = pp->p_ch;
+          pp->p_monst->t.t_oldch = pp->p_ch;
         else if (pp->p_flags & F_REAL)
           addcch(ch);
         else

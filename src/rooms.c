@@ -287,12 +287,12 @@ rooms_create(void)
     if (os_rand_range(2) == 0 && (!pack_contains_amulet() || level >= level_max))
     {
       THING *gold = os_calloc_thing();
-      gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
+      gold->o.o_goldval = rooms[i].r_goldval = GOLDCALC;
       room_find_floor(&rooms[i], &rooms[i].r_gold, false, false);
-      gold->o_pos = rooms[i].r_gold;
+      gold->o.o_pos = rooms[i].r_gold;
       level_set_ch(rooms[i].r_gold.y, rooms[i].r_gold.x, GOLD);
-      gold->o_flags = ISMANY;
-      gold->o_type = GOLD;
+      gold->o.o_flags = ISMANY;
+      gold->o.o_type = GOLD;
       list_attach(&level_items, gold);
     }
 
@@ -363,11 +363,11 @@ room_enter(coord* cp)
           continue;
         }
 
-        tp->t_oldch = ch;
+        tp->t.t_oldch = ch;
         if (monster_seen_by_player(tp))
-          mvaddcch(y, x, tp->t_disguise);
+          mvaddcch(y, x, tp->t.t_disguise);
         else if (player_can_sense_monsters())
-          mvaddcch(y, x, tp->t_disguise | A_STANDOUT);
+          mvaddcch(y, x, tp->t.t_disguise | A_STANDOUT);
         else
           mvaddcch(y, x, ch);
       }

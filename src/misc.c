@@ -137,7 +137,7 @@ look(bool wakeup)
           {
             xy_ch = player_is_hallucinating()
               ? (char)(os_rand_range(26) + 'A')
-              : monster->t_disguise;
+              : monster->t.t_disguise;
           }
         }
       }
@@ -215,8 +215,8 @@ erase_lamp(coord const* pos, struct room const* room)
 THING*
 find_obj(int y, int x)
 {
-  for (THING* obj = level_items; obj != NULL; obj = obj->l_next)
-    if (obj->o_pos.y == y && obj->o_pos.x == x)
+  for (THING* obj = level_items; obj != NULL; obj = obj->o.l_next)
+    if (obj->o.o_pos.y == y && obj->o.o_pos.x == x)
       return obj;
 
   /* It should have returned by now */
@@ -227,8 +227,8 @@ find_obj(int y, int x)
 void
 aggravate(void)
 {
-  for (THING* mp = monster_list; mp != NULL; mp = mp->l_next)
-    monster_start_running(&mp->t_pos);
+  for (THING* mp = monster_list; mp != NULL; mp = mp->t.l_next)
+    monster_start_running(&mp->t.t_pos);
 }
 
 char const*
@@ -366,14 +366,14 @@ rnd_thing(void)
 bool
 is_magic(THING const* obj)
 {
-  switch (obj->o_type)
+  switch (obj->o.o_type)
   {
     case ARMOR:
-      return (bool)(obj->o_flags & ISPROT) ||
-             obj->o_arm != armor_ac((enum armor_t)obj->o_which);
+      return (bool)(obj->o.o_flags & ISPROT) ||
+             obj->o.o_arm != armor_ac((enum armor_t)obj->o.o_which);
 
     case WEAPON: case AMMO:
-      return obj->o_hplus != 0 || obj->o_dplus != 0;
+      return obj->o.o_hplus != 0 || obj->o.o_dplus != 0;
 
     case POTION: case SCROLL: case STICK: case RING: case AMULET:
       return true;
@@ -400,7 +400,7 @@ seen_stairs(void)
       return true;
 
     if (player_can_sense_monsters()      /* if she can detect monster */
-        && tp->t_oldch == STAIRS)        /* and there once were stairs */
+        && tp->t.t_oldch == STAIRS)        /* and there once were stairs */
       return true;                       /* it must have moved there */
   }
   return false;
@@ -410,10 +410,10 @@ void
 invis_on(void)
 {
   player_add_true_sight(true);
-  for (THING* mp = monster_list; mp != NULL; mp = mp->l_next)
+  for (THING* mp = monster_list; mp != NULL; mp = mp->t.l_next)
     if (monster_is_invisible(mp) && monster_seen_by_player(mp)
         && !player_is_hallucinating())
-      mvaddcch(mp->t_pos.y, mp->t_pos.x, mp->t_disguise);
+      mvaddcch(mp->t.t_pos.y, mp->t.t_pos.x, mp->t.t_disguise);
 }
 
 
@@ -444,19 +444,19 @@ waste_time(int rounds)
 void
 set_oldch(THING* tp, coord* cp)
 {
-  char old_char = tp->t_oldch;
+  char old_char = tp->t.t_oldch;
 
-  if (coord_same(&tp->t_pos, cp))
+  if (coord_same(&tp->t.t_pos, cp))
     return;
 
-  tp->t_oldch = mvincch(cp->y, cp->x);
+  tp->t.t_oldch = mvincch(cp->y, cp->x);
   if (!player_is_blind())
   {
-    if ((old_char == FLOOR || tp->t_oldch == FLOOR) &&
-        (tp->t_room->r_flags & ISDARK))
-      tp->t_oldch = SHADOW;
+    if ((old_char == FLOOR || tp->t.t_oldch == FLOOR) &&
+        (tp->t.t_room->r_flags & ISDARK))
+      tp->t.t_oldch = SHADOW;
     else if (dist_cp(cp, player_get_pos()) <= LAMPDIST)
-      tp->t_oldch = level_get_ch(cp->y, cp->x);
+      tp->t.t_oldch = level_get_ch(cp->y, cp->x);
   }
 }
 

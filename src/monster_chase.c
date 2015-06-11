@@ -65,7 +65,7 @@ chase(THING *tp, coord *ee)
   int y;
   int curdist;
   int thisdist;
-  coord *er = &tp->t_pos;
+  coord *er = &tp->t.t_pos;
   char ch;
   int plcnt = 1;
   static coord tryp;
@@ -76,8 +76,8 @@ chase(THING *tp, coord *ee)
    * Stalkers are slightly confused all of the time, and bats are
    * quite confused all the time */
   if ((monster_is_confused(tp) && os_rand_range(5) != 0)
-      || (tp->t_type == 'P' && os_rand_range(5) == 0)
-      || (tp->t_type == 'B' && os_rand_range(2) == 0))
+      || (tp->t.t_type == 'P' && os_rand_range(5) == 0)
+      || (tp->t.t_type == 'B' && os_rand_range(2) == 0))
     return chase_as_confused(tp, ee);
 
 
@@ -117,17 +117,17 @@ chase(THING *tp, coord *ee)
          * so we need to look it up to see what type it is */
         if (ch == SCROLL)
         {
-          for (obj = level_items; obj != NULL; obj = obj->l_next)
+          for (obj = level_items; obj != NULL; obj = obj->o.l_next)
           {
-            if (y == obj->o_pos.y && x == obj->o_pos.x)
+            if (y == obj->o.o_pos.y && x == obj->o.o_pos.x)
               break;
           }
-          if (obj != NULL && obj->o_which == S_SCARE)
+          if (obj != NULL && obj->o.o_which == S_SCARE)
             continue;
         }
         /* It can also be a Xeroc, which we shouldn't step on */
         obj = level_get_monster(y, x);
-        if (obj != NULL && obj->t_type == 'X')
+        if (obj != NULL && obj->t.t_type == 'X')
           continue;
 
         /* If we didn't find any scrolls at this place or it
@@ -168,18 +168,18 @@ chase_do(THING *th)
     coord delta;
 
     list_assert_monster(th);
-    rer = th->t_room;
+    rer = th->t.t_room;
 
     if (monster_is_greedy(th) && rer->r_goldval == 0)
-	th->t_dest = player_pos;	/* If gold has been taken, run after hero */
+	th->t.t_dest = player_pos;	/* If gold has been taken, run after hero */
 
-    if (th->t_dest == player_pos)	/* Find room of chasee */
+    if (th->t.t_dest == player_pos)	/* Find room of chasee */
 	ree = player_get_room();
     else
-	ree = roomin(th->t_dest);
+	ree = roomin(th->t.t_dest);
 
     /* We don't count doors as inside rooms for this routine */
-    door = (level_get_ch(th->t_pos.y, th->t_pos.x) == DOOR);
+    door = (level_get_ch(th->t.t_pos.y, th->t.t_pos.x) == DOOR);
 
     /* If the object of our desire is in a different room,
      * and we are not in a corridor, run to the door nearest to
@@ -189,7 +189,7 @@ over:
     {
 	for (cp = rer->r_exit; cp < &rer->r_exit[rer->r_nexits]; cp++)
 	{
-	    curdist = dist_cp(th->t_dest, cp);
+	    curdist = dist_cp(th->t.t_dest, cp);
 	    if (curdist < mindist)
 	    {
 		this = *cp;
@@ -198,28 +198,28 @@ over:
 	}
 	if (door)
 	{
-	    rer = &passages[level_get_flags(th->t_pos.y, th->t_pos.x) & F_PNUM];
+	    rer = &passages[level_get_flags(th->t.t_pos.y, th->t.t_pos.x) & F_PNUM];
 	    door = false;
 	    goto over;
 	}
     }
     else
     {
-	this = *th->t_dest;
+	this = *th->t.t_dest;
 	
 	/* For dragons check and see if (a) the hero is on a straight
 	 * line from it, and (b) that it is within shooting distance,
 	 * but outside of striking range */
-	if (th->t_type == 'D' && (th->t_pos.y == player_pos->y
-              || th->t_pos.x == player_pos->x
-              || abs(th->t_pos.y - player_pos->y)
-                  == abs(th->t_pos.x - player_pos->x))
-	    && dist_cp(&th->t_pos, player_pos) <= BOLT_LENGTH * BOLT_LENGTH
+	if (th->t.t_type == 'D' && (th->t.t_pos.y == player_pos->y
+              || th->t.t_pos.x == player_pos->x
+              || abs(th->t.t_pos.y - player_pos->y)
+                  == abs(th->t.t_pos.x - player_pos->x))
+	    && dist_cp(&th->t.t_pos, player_pos) <= BOLT_LENGTH * BOLT_LENGTH
 	    && !monster_is_cancelled(th) && os_rand_range(DRAGONSHOT) == 0)
 	{
-	    delta.y = sign(player_pos->y - th->t_pos.y);
-	    delta.x = sign(player_pos->x - th->t_pos.x);
-	    magic_bolt(&th->t_pos, &delta, "flame");
+	    delta.y = sign(player_pos->y - th->t.t_pos.y);
+	    delta.x = sign(player_pos->x - th->t.t_pos.x);
+	    magic_bolt(&th->t.t_pos, &delta, "flame");
 	    command_stop(true);
 	    daemon_reset_doctor();
 	    if (to_death && !monster_is_players_target(th))
@@ -237,51 +237,51 @@ over:
     {
 	if (coord_same(&this, player_pos))
 	    return( fight_against_player(th) );
-	else if (coord_same(&this, th->t_dest))
+	else if (coord_same(&this, th->t.t_dest))
 	{
-	    for (obj = level_items; obj != NULL; obj = obj->l_next)
-		if (th->t_dest == &obj->o_pos)
+	    for (obj = level_items; obj != NULL; obj = obj->o.l_next)
+		if (th->t.t_dest == &obj->o.o_pos)
 		{
 		    list_detach(&level_items, obj);
-		    list_attach(&th->t_pack, obj);
-		    level_set_ch(obj->o_pos.y, obj->o_pos.x,
-			(th->t_room->r_flags & ISGONE) ? PASSAGE : FLOOR);
+		    list_attach(&th->t.t_pack, obj);
+		    level_set_ch(obj->o.o_pos.y, obj->o.o_pos.x,
+			(th->t.t_room->r_flags & ISGONE) ? PASSAGE : FLOOR);
 		    monster_find_new_target(th);
 		    break;
 		}
-	    if (th->t_type != 'F')
+	    if (th->t.t_type != 'F')
 		stoprun = true;
 	}
     }
     else
     {
-	if (th->t_type == 'F')
+	if (th->t.t_type == 'F')
 	    return(0);
     }
 
     if (monster_is_stuck(th))
       return 1;
 
-    if (!coord_same(&ch_ret, &th->t_pos))
+    if (!coord_same(&ch_ret, &th->t.t_pos))
     {
       char ch = level_get_type(ch_ret.y, ch_ret.x);
       char fl = level_get_flags(ch_ret.y, ch_ret.x);
 
       /* Remove monster from old position */
-      mvaddcch(th->t_pos.y, th->t_pos.x, th->t_oldch);
-      level_set_monster(th->t_pos.y, th->t_pos.x, NULL);
+      mvaddcch(th->t.t_pos.y, th->t.t_pos.x, th->t.t_oldch);
+      level_set_monster(th->t.t_pos.y, th->t.t_pos.x, NULL);
 
       /* Check if we stepped in a trap */
       if (ch == TRAP || (!(fl & F_REAL) && ch == FLOOR))
       {
-        coord orig_pos = th->t_pos;
+        coord orig_pos = th->t.t_pos;
 
         trap_spring(th, &ch_ret);
         if (monster_is_dead(th))
           return -1;
 
         /* If we've been mysteriously misplaced, let's not touch anything */
-        if (!coord_same(&orig_pos, &th->t_pos))
+        if (!coord_same(&orig_pos, &th->t.t_pos))
           return 0;
       }
 
@@ -289,20 +289,20 @@ over:
 
       /* Put monster in new position */
       set_oldch(th, &ch_ret);
-      th->t_room = roomin(&ch_ret);
-      th->t_pos = ch_ret;
+      th->t.t_room = roomin(&ch_ret);
+      th->t.t_pos = ch_ret;
       level_set_monster(ch_ret.y, ch_ret.x, th);
     }
     move(ch_ret.y, ch_ret.x);
 
     if (monster_seen_by_player(th))
-      addcch(th->t_disguise);
+      addcch(th->t.t_disguise);
     else if (player_can_sense_monsters())
-      addcch(th->t_type | A_STANDOUT);
+      addcch(th->t.t_type | A_STANDOUT);
 
     /* And stop running if need be */
-    if (stoprun && coord_same(&th->t_pos, th->t_dest))
-      th->t_flags &= ~ISRUN;
+    if (stoprun && coord_same(&th->t.t_pos, th->t.t_dest))
+      th->t.t_flags &= ~ISRUN;
 
     return(0);
 }
@@ -312,7 +312,7 @@ monster_chase(THING *tp)
 {
   list_assert_monster(tp);
 
-  if (!monster_is_slow(tp) || tp->t_turn)
+  if (!monster_is_slow(tp) || tp->t.t_turn)
     if (chase_do(tp) == -1)
       return false;
 
@@ -322,7 +322,7 @@ monster_chase(THING *tp)
       return false;
 
   list_assert_monster(tp);
-  tp->t_turn ^= true;
+  tp->t.t_turn ^= true;
   return true;
 }
 

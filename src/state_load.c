@@ -264,7 +264,7 @@ rs_read_window(WINDOW* win)
 static void*
 get_list_item(THING* l, int i)
 {
-    for (int count = 0; l != NULL; count++, l = l->l_next)
+    for (int count = 0; l != NULL; count++, l = l->o.l_next)
         if (count == i)
             return l;
     return NULL;
@@ -371,19 +371,19 @@ rs_read_object(THING* o)
   assert(o != NULL);
 
   if (state_assert_int32(RSID_OBJECT) ||
-      state_load_int32(&o->_o._o_type) ||
-      state_load_coord(&o->_o._o_pos) ||
-      state_load_int32(&o->_o._o_launch) ||
-      state_load_char(&o->_o._o_packch) ||
-      state_load_structs_damage(o->_o._o_damage) ||
-      state_load_structs_damage(o->_o._o_hurldmg) ||
-      state_load_int32(&o->_o._o_count) ||
-      state_load_int32(&o->_o._o_which) ||
-      state_load_int32(&o->_o._o_hplus) ||
-      state_load_int32(&o->_o._o_dplus) ||
-      state_load_int32(&o->_o._o_arm) ||
-      state_load_int32(&o->_o._o_flags) ||
-      state_load_string(&o->_o._o_label))
+      state_load_int32(&o->o.o_type) ||
+      state_load_coord(&o->o.o_pos) ||
+      state_load_int32(&o->o.o_launch) ||
+      state_load_char(&o->o.o_packch) ||
+      state_load_structs_damage(o->o.o_damage) ||
+      state_load_structs_damage(o->o.o_hurldmg) ||
+      state_load_int32(&o->o.o_count) ||
+      state_load_int32(&o->o.o_which) ||
+      state_load_int32(&o->o.o_hplus) ||
+      state_load_int32(&o->o.o_dplus) ||
+      state_load_int32(&o->o.o_arm) ||
+      state_load_int32(&o->o.o_flags) ||
+      state_load_string(&o->o.o_label))
     return fail("rs_read_obj(%p)\r\n", o);
   return 0;
 }
@@ -427,10 +427,10 @@ state_load_list(THING** list)
   for (int i = 0; i < cnt; i++)
   {
     l = os_calloc_thing();
-    l->l_prev = previous;
+    l->o.l_prev = previous;
 
     if (previous != NULL)
-      previous->l_next = l;
+      previous->o.l_next = l;
 
     if (rs_read_object(l))
       return fail("state_load_list(list: %p[%p]) %d, i=%d\r\n",
@@ -443,7 +443,7 @@ state_load_list(THING** list)
   }
 
   if (l != NULL)
-    l->l_next = NULL;
+    l->o.l_next = NULL;
 
   *list = head;
 
@@ -465,11 +465,11 @@ state_load_thing(THING* t)
   if (index == 0)
     return 0;
 
-  if (state_load_coord(&t->_t._t_pos) ||
-      state_load_bool(&t->_t._t_turn) ||
-      state_load_char(&t->_t._t_type) ||
-      state_load_char(&t->_t._t_disguise) ||
-      state_load_char(&t->_t._t_oldch))
+  if (state_load_coord(&t->t.t_pos) ||
+      state_load_bool(&t->t.t_turn) ||
+      state_load_char(&t->t.t_type) ||
+      state_load_char(&t->t.t_disguise) ||
+      state_load_char(&t->t.t_oldch))
     return 1;
 
   /*
@@ -487,43 +487,43 @@ state_load_thing(THING* t)
   if (state_load_int32(&listid) ||
       state_load_int32(&index))
     return 1;
-  t->_t._t_reserved = -1;
+  t->t.t_reserved = -1;
 
   switch(listid)
   {
     case 0: /* hero or NULL */
-      t->_t._t_dest = index == 1
+      t->t.t_dest = index == 1
         ? player_get_pos()
         : NULL;
       break;
 
     case 1: /* monster / thing */
-      t->_t._t_dest     = NULL;
-      t->_t._t_reserved = index;
+      t->t.t_dest     = NULL;
+      t->t.t_reserved = index;
       break;
 
     case 2: /* object */
       {
         THING* item = get_list_item(level_items, index);
         if (item != NULL)
-          t->_t._t_dest = &item->o_pos;
+          t->t.t_dest = &item->o.o_pos;
       }
       break;
 
     case 3: /* gold */
-      t->_t._t_dest = &rooms[index].r_gold;
+      t->t.t_dest = &rooms[index].r_gold;
       break;
 
     default:
-      t->_t._t_dest = NULL;
+      t->t.t_dest = NULL;
       break;
   }
 
 
-  if (state_load_int32(&t->_t._t_flags) ||
-      state_load_stats(&t->_t._t_stats) ||
-      rs_read_room_reference( &t->_t._t_room) ||
-      state_load_list(&t->_t._t_pack))
+  if (state_load_int32(&t->t.t_flags) ||
+      state_load_stats(&t->t.t_stats) ||
+      rs_read_room_reference( &t->t.t_room) ||
+      state_load_list(&t->t.t_pack))
     return 1;
   return 0;
 }
@@ -531,13 +531,13 @@ state_load_thing(THING* t)
 static int
 rs_fix_thing(THING* t)
 {
-  if (t->t_reserved < 0)
+  if (t->t.t_reserved < 0)
     return 0;
 
-  THING* item = get_list_item(monster_list,t->t_reserved);
+  THING* item = get_list_item(monster_list,t->t.t_reserved);
 
   if (item != NULL)
-    t->t_dest = &item->t_pos;
+    t->t.t_dest = &item->t.t_pos;
   return 0;
 }
 
@@ -556,10 +556,10 @@ rs_read_thing_list(THING** list)
   for (int i = 0; i < cnt; i++)
   {
     l = os_calloc_thing();
-    l->l_prev = previous;
+    l->t.l_prev = previous;
 
     if (previous != NULL)
-      previous->l_next = l;
+      previous->t.l_next = l;
 
     if (state_load_thing(l))
       return 1;
@@ -570,7 +570,7 @@ rs_read_thing_list(THING** list)
   }
 
   if (l != NULL)
-    l->l_next = NULL;
+    l->t.l_next = NULL;
 
   *list = head;
 
@@ -580,7 +580,7 @@ rs_read_thing_list(THING** list)
 static int
 rs_fix_thing_list(THING* list)
 {
-  for(THING* item = list; item != NULL; item = item->l_next)
+  for(THING* item = list; item != NULL; item = item->t.l_next)
     rs_fix_thing(item);
   return 0;
 }

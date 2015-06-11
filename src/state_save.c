@@ -160,15 +160,15 @@ state_save_dest(coord const* dest)
       : SUCCESS;
 
   /* (1,i): location of a thing (monster) */
-  for (ptr = monster_list, i = 0; ptr != NULL; ptr = ptr->l_next, ++i)
-    if (&ptr->t_pos == dest)
+  for (ptr = monster_list, i = 0; ptr != NULL; ptr = ptr->t.l_next, ++i)
+    if (&ptr->t.t_pos == dest)
       return state_save_int32(1) || state_save_int32(i)
         ? fail("state_save_dest(%p)\r\n", dest)
         : SUCCESS;
 
   /* (2,i): location of an object */
-  for (ptr = level_items, i = 0; ptr != NULL; ptr = ptr->l_next, ++i)
-    if (&ptr->o_pos == dest)
+  for (ptr = level_items, i = 0; ptr != NULL; ptr = ptr->o.l_next, ++i)
+    if (&ptr->o.o_pos == dest)
       return state_save_int32(2) || state_save_int32(i)
         ? fail("state_save_dest(%p)\r\n", dest)
         : SUCCESS;
@@ -231,16 +231,16 @@ state_save_thing(THING const* t)
 
   return
     state_save_int32(1) ||
-    state_save_coord(&t->_t._t_pos) ||
-    state_save_bool(t->_t._t_turn) ||
-    state_save_char(t->_t._t_type) ||
-    state_save_char(t->_t._t_disguise) ||
-    state_save_char(t->_t._t_oldch) ||
-    state_save_dest(t->t_dest) ||
-    state_save_int32( t->_t._t_flags) ||
-    state_save_stats( &t->_t._t_stats) ||
-    state_save_room_number(t->_t._t_room) ||
-    state_save_list(t->_t._t_pack)
+    state_save_coord(&t->t.t_pos) ||
+    state_save_bool(t->t.t_turn) ||
+    state_save_char(t->t.t_type) ||
+    state_save_char(t->t.t_disguise) ||
+    state_save_char(t->t.t_oldch) ||
+    state_save_dest(t->t.t_dest) ||
+    state_save_int32( t->t.t_flags) ||
+    state_save_stats( &t->t.t_stats) ||
+    state_save_room_number(t->t.t_room) ||
+    state_save_list(t->t.t_pack)
 
     ? fail("state_save_thing(%p)\r\n", t)
     : SUCCESS;
@@ -251,19 +251,19 @@ state_save_object(THING const* o)
 {
   return
     state_save_int32(RSID_OBJECT) ||
-    state_save_int32(o->_o._o_type) ||
-    state_save_coord(&o->_o._o_pos) ||
-    state_save_int32(o->_o._o_launch) ||
-    state_save_char(o->_o._o_packch) ||
-    state_save_structs_damage(o->_o._o_damage) ||
-    state_save_structs_damage(o->_o._o_hurldmg) ||
-    state_save_int32(o->_o._o_count) ||
-    state_save_int32(o->_o._o_which) ||
-    state_save_int32(o->_o._o_hplus) ||
-    state_save_int32(o->_o._o_dplus) ||
-    state_save_int32(o->_o._o_arm) ||
-    state_save_int32(o->_o._o_flags) ||
-    state_save_string(o->_o._o_label)
+    state_save_int32(o->o.o_type) ||
+    state_save_coord(&o->o.o_pos) ||
+    state_save_int32(o->o.o_launch) ||
+    state_save_char(o->o.o_packch) ||
+    state_save_structs_damage(o->o.o_damage) ||
+    state_save_structs_damage(o->o.o_hurldmg) ||
+    state_save_int32(o->o.o_count) ||
+    state_save_int32(o->o.o_which) ||
+    state_save_int32(o->o.o_hplus) ||
+    state_save_int32(o->o.o_dplus) ||
+    state_save_int32(o->o.o_arm) ||
+    state_save_int32(o->o.o_flags) ||
+    state_save_string(o->o.o_label)
 
     ? fail("state_save_object(%p)\r\n", o)
     : SUCCESS;
@@ -434,14 +434,14 @@ state_save_list(const THING* l)
   int32_t listsize;
   THING const* ptr;
 
-  for (ptr = l, listsize = 0; ptr != NULL; ptr = ptr->l_next)
+  for (ptr = l, listsize = 0; ptr != NULL; ptr = ptr->o.l_next)
     ++listsize;
 
   if (state_save_int32(RSID_OBJECTLIST) ||
       state_save_int32(listsize))
     return fail("state_save_list(%p)\r\n", l);
 
-  for(; l != NULL; l = l->l_next)
+  for(; l != NULL; l = l->o.l_next)
     if (state_save_object(l))
       return fail("state_save_list(%p)\r\n", l);
 

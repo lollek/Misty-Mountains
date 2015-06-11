@@ -84,7 +84,7 @@ magic_bolt_hit_player(coord* start, char const* missile_name)
       if (start == player_get_pos())
         death(missile_name[0]);
       else
-        death(level_get_monster(start->y, start->x)->t_type);
+        death(level_get_monster(start->y, start->x)->t.t_type);
     }
     msg("you are hit by the %s", missile_name);
   }
@@ -95,27 +95,27 @@ magic_bolt_hit_player(coord* start, char const* missile_name)
 static void
 magic_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
 {
-  mon->t_oldch = level_get_ch(pos->y, pos->x);
+  mon->t.t_oldch = level_get_ch(pos->y, pos->x);
   if (!monster_save_throw(VS_MAGIC, mon))
   {
     THING bolt;
     memset(&bolt, 0, sizeof(bolt));
-    bolt.o_type = WEAPON;
-    bolt.o_which = FLAME;
-    bolt.o_hplus = 100;
-    bolt.o_dplus = 0;
-    bolt.o_pos = *pos;
-    bolt.o_flags |= ISMISL;
-    bolt.o_launch = -1;
-    bolt.o_hurldmg[0] = (struct damage){6,6};
+    bolt.o.o_type = WEAPON;
+    bolt.o.o_which = FLAME;
+    bolt.o.o_hplus = 100;
+    bolt.o.o_dplus = 0;
+    bolt.o.o_pos = *pos;
+    bolt.o.o_flags |= ISMISL;
+    bolt.o.o_launch = -1;
+    bolt.o.o_hurldmg[0] = (struct damage){6,6};
     weapon_info[FLAME].oi_name = missile_name;
 
-    if (mon->t_type == 'D' && strcmp(missile_name, "flame") == 0)
+    if (mon->t.t_type == 'D' && strcmp(missile_name, "flame") == 0)
       msg("the flame bounces off the dragon");
     else
       fight_against_monster(pos, &bolt, true);
   }
-  else if (level_get_type(pos->y, pos->x) != 'M' || mon->t_disguise == 'M')
+  else if (level_get_type(pos->y, pos->x) != 'M' || mon->t.t_disguise == 'M')
   {
     if (start == player_get_pos())
       monster_start_running(pos);

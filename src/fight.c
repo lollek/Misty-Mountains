@@ -53,10 +53,10 @@ add_ring_attack_modifiers(struct attack_modifier* mod)
     if (ring == NULL)
       continue;
 
-    else if (ring->o_which == R_ADDDAM)
-      mod->to_dmg += ring->o_arm;
-    else if (ring->o_which == R_ADDHIT)
-      mod->to_dmg += ring->o_arm;
+    else if (ring->o.o_which == R_ADDDAM)
+      mod->to_dmg += ring->o.o_arm;
+    else if (ring->o.o_which == R_ADDHIT)
+      mod->to_dmg += ring->o.o_arm;
   }
 }
 
@@ -100,13 +100,13 @@ calculate_attacker(THING* attacker, THING* weapon, bool thrown,
 {
   if (weapon != NULL)
   {
-    assert(sizeof(mod->damage) == sizeof(weapon->o_damage));
-    memcpy(mod->damage, weapon->o_damage, sizeof(weapon->o_damage));
-    mod->to_hit += weapon->o_hplus;
-    mod->to_dmg += weapon->o_dplus;
+    assert(sizeof(mod->damage) == sizeof(weapon->o.o_damage));
+    memcpy(mod->damage, weapon->o.o_damage, sizeof(weapon->o.o_damage));
+    mod->to_hit += weapon->o.o_hplus;
+    mod->to_dmg += weapon->o.o_dplus;
   }
 
-  add_strength_attack_modifiers(attacker->t_stats.s_str, mod);
+  add_strength_attack_modifiers(attacker->t.t_stats.s_str, mod);
 
   /* Player stuff */
   if (is_player(attacker))
@@ -115,24 +115,24 @@ calculate_attacker(THING* attacker, THING* weapon, bool thrown,
     if (thrown)
     {
       THING const* held_weapon = pack_equipped_item(EQUIPMENT_RHAND);
-      if ((weapon->o_flags & ISMISL) && held_weapon != NULL
-          && held_weapon->o_which == weapon->o_launch)
+      if ((weapon->o.o_flags & ISMISL) && held_weapon != NULL
+          && held_weapon->o.o_which == weapon->o.o_launch)
       {
-        assert(sizeof(mod->damage) == sizeof(weapon->o_hurldmg));
-        memcpy(mod->damage, weapon->o_hurldmg, sizeof(weapon->o_hurldmg));
-        mod->to_hit += held_weapon->o_hplus;
-        mod->to_dmg += held_weapon->o_dplus;
+        assert(sizeof(mod->damage) == sizeof(weapon->o.o_hurldmg));
+        memcpy(mod->damage, weapon->o.o_hurldmg, sizeof(weapon->o.o_hurldmg));
+        mod->to_hit += held_weapon->o.o_hplus;
+        mod->to_dmg += held_weapon->o.o_dplus;
       }
-      else if (weapon->o_launch == -1)
+      else if (weapon->o.o_launch == -1)
       {
-        assert(sizeof(mod->damage) == sizeof(weapon->o_hurldmg));
-        memcpy(mod->damage, weapon->o_hurldmg, sizeof(weapon->o_hurldmg));
+        assert(sizeof(mod->damage) == sizeof(weapon->o.o_hurldmg));
+        memcpy(mod->damage, weapon->o.o_hurldmg, sizeof(weapon->o.o_hurldmg));
       }
     }
   }
 
   /* Venus Flytraps have a different kind of dmg system */
-  else if (attacker->o_type == 'F')
+  else if (attacker->o.o_type == 'F')
     mod->damage[0].sides = monster_flytrap_hit;
 }
 
@@ -149,8 +149,8 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
   struct attack_modifier mod;
   mod.to_hit = 0;
   mod.to_dmg = 0;
-  assert(sizeof(mod.damage) == sizeof(attacker->t_stats.s_dmg));
-  memcpy(mod.damage, attacker->t_stats.s_dmg, sizeof(attacker->t_stats.s_dmg));
+  assert(sizeof(mod.damage) == sizeof(attacker->t.t_stats.s_dmg));
+  memcpy(mod.damage, attacker->t.t_stats.s_dmg, sizeof(attacker->t.t_stats.s_dmg));
 
   calculate_attacker(attacker, weapon, thrown, &mod);
 
@@ -171,11 +171,11 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
       continue;
 
     int defense = armor_for_thing(defender);
-    if (fight_swing_hits(attacker->t_stats.s_lvl, defense, mod.to_hit))
+    if (fight_swing_hits(attacker->t.t_stats.s_lvl, defense, mod.to_hit))
     {
       int damage = roll(dices, dice_sides) + mod.to_dmg;
       if (damage > 0)
-        defender->t_stats.s_hpt -= damage;
+        defender->t.t_stats.s_hpt -= damage;
       did_hit = true;
     }
   }
@@ -233,9 +233,9 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
   daemon_reset_doctor();
 
   /* Let him know it was really a xeroc (if it was one) */
-  if (tp->t_type == 'X' && tp->t_disguise != 'X' && !player_is_blind())
+  if (tp->t.t_type == 'X' && tp->t.t_disguise != 'X' && !player_is_blind())
   {
-      tp->t_disguise = 'X';
+      tp->t.t_disguise = 'X';
       msg("wait!  That's a xeroc!");
       if (!thrown)
           return false;
@@ -246,7 +246,7 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
 
   if (roll_attacks(player, tp, weapon, thrown))
   {
-    if (tp->t_stats.s_hpt <= 0)
+    if (tp->t.t_stats.s_hpt <= 0)
     {
       monster_on_death(tp, true);
       return true;
@@ -256,8 +256,8 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
     {
       if (thrown)
       {
-        if (weapon->o_type == WEAPON)
-          addmsg("the %s hits ", weapon_info[weapon->o_which].oi_name);
+        if (weapon->o.o_type == WEAPON)
+          addmsg("the %s hits ", weapon_info[weapon->o.o_which].oi_name);
         else
           addmsg("you hit ");
         msg("%s", mname);
@@ -303,33 +303,33 @@ fight_against_player(THING* mp)
     to_death = false;
 
   /* If it's a xeroc, tag it as known */
-  if (mp->t_type == 'X' && mp->t_disguise != 'X' && !player_is_blind()
+  if (mp->t.t_type == 'X' && mp->t.t_disguise != 'X' && !player_is_blind()
       && !player_is_hallucinating())
-    mp->t_disguise = 'X';
+    mp->t.t_disguise = 'X';
 
   char mname[MAXSTR];
   monster_name(mp, mname);
 
   if (roll_attacks(mp, NULL, NULL, false))
   {
-    if (mp->t_type != 'I' && !to_death)
+    if (mp->t.t_type != 'I' && !to_death)
       print_attack(true, mname, (char *) NULL);
 
     if (player_get_health() <= 0)
-      death(mp->t_type);
+      death(mp->t.t_type);
 
     monster_do_special_ability(&mp);
     /* N.B! mp can be null after this point! */
 
   }
 
-  else if (mp->t_type != 'I')
+  else if (mp->t.t_type != 'I')
   {
-    if (mp->t_type == 'F')
+    if (mp->t.t_type == 'F')
     {
       player_lose_health(monster_flytrap_hit);
       if (player_get_health() <= 0)
-        death(mp->t_type);
+        death(mp->t.t_type);
     }
 
     if (!to_death)
@@ -352,8 +352,8 @@ fight_swing_hits(int at_lvl, int op_arm, int wplus)
 void
 fight_missile_miss(THING const* weap, char const* mname)
 {
-  if (weap->o_type == WEAPON)
-    msg("the %s misses %s", weapon_info[weap->o_which].oi_name, mname);
+  if (weap->o.o_type == WEAPON)
+    msg("the %s misses %s", weapon_info[weap->o.o_which].oi_name, mname);
   else
     msg("you missed %s", mname);
 }

@@ -51,8 +51,8 @@ os_calloc_thing(void)
   if (item == NULL)
     fatal("No virtual memory available!\n");
 
-  assert(item->l_next == NULL);
-  assert(item->l_prev == NULL);
+  assert(item->o.l_next == NULL);
+  assert(item->o.l_prev == NULL);
 
   return item;
 }

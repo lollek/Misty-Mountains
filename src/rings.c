@@ -150,7 +150,7 @@ ring_put_on(void)
   if (obj == NULL)
     return false;
 
-  if (obj->o_type != RING)
+  if (obj->o.o_type != RING)
   {
     msg("not a ring");
     return ring_put_on();
@@ -165,9 +165,9 @@ ring_put_on(void)
   pack_remove(obj, false, true);
 
   /* Calculate the effect it has on the poor guy. */
-  switch (obj->o_which)
+  switch (obj->o.o_which)
   {
-    case R_ADDSTR: player_modify_strength(obj->o_arm); break;
+    case R_ADDSTR: player_modify_strength(obj->o.o_arm); break;
     case R_SEEINVIS: invis_on(); break;
     case R_AGGR: aggravate(); break;
     }
@@ -195,10 +195,10 @@ ring_take_off(void)
   if (!pack_unequip(ring, false))
     return false;
 
-  switch (obj->o_which)
+  switch (obj->o.o_which)
   {
     case R_ADDSTR:
-      player_modify_strength(-obj->o_arm);
+      player_modify_strength(-obj->o.o_arm);
       break;
 
     case R_SEEINVIS:
@@ -225,7 +225,7 @@ ring_drain_amount(void)
   {
     THING *ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != NULL)
-      total_eat += uses[ring->o_which];
+      total_eat += uses[ring->o.o_which];
   }
 
   return total_eat;
@@ -240,19 +240,19 @@ ring_is_known(enum ring_t ring)
 void
 ring_description(THING const* item, char* buf)
 {
-  struct obj_info* op = &ring_info[item->o_which];
-  buf += sprintf(buf, "%s ring", r_stones[item->o_which]);
+  struct obj_info* op = &ring_info[item->o.o_which];
+  buf += sprintf(buf, "%s ring", r_stones[item->o.o_which]);
 
   if (op->oi_know)
   {
     buf += sprintf(buf, " of %s", op->oi_name);
-    switch (item->o_which)
+    switch (item->o.o_which)
     {
       case R_PROTECT: case R_ADDSTR: case R_ADDDAM: case R_ADDHIT:
-        if (item->o_arm > 0)
-          buf += sprintf(buf, " [+%d]", item->o_arm);
+        if (item->o.o_arm > 0)
+          buf += sprintf(buf, " [+%d]", item->o.o_arm);
         else
-          buf += sprintf(buf, " [%d]", item->o_arm);
+          buf += sprintf(buf, " [%d]", item->o.o_arm);
         break;
       default: break;
     }
@@ -268,27 +268,27 @@ ring_create(int which, bool random_stats)
     which = (int)pick_one(ring_info, NRINGS);
 
   THING* ring = os_calloc_thing();
-  ring->o_type = RING;
-  ring->o_which = which;
+  ring->o.o_type = RING;
+  ring->o.o_which = which;
 
-  switch (ring->o_which)
+  switch (ring->o.o_which)
   {
     case R_ADDSTR: case R_PROTECT: case R_ADDHIT: case R_ADDDAM:
       if (random_stats)
       {
-        ring->o_arm = os_rand_range(3);
-        if (ring->o_arm == 0)
+        ring->o.o_arm = os_rand_range(3);
+        if (ring->o.o_arm == 0)
         {
-          ring->o_arm = -1;
-          ring->o_flags |= ISCURSED;
+          ring->o.o_arm = -1;
+          ring->o.o_flags |= ISCURSED;
         }
       }
       else
-        ring->o_arm = 1;
+        ring->o.o_arm = 1;
       break;
 
     case R_AGGR: case R_TELEPORT:
-      ring->o_flags |= ISCURSED;
+      ring->o.o_flags |= ISCURSED;
       break;
   }
 

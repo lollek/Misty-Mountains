@@ -67,9 +67,9 @@ treas_room(void)
     THING* monster = new_thing();
 
     room_find_floor(room, &monster_pos, 2 * MAXTRIES, false);
-    monster->o_pos = monster_pos;
+    monster->o.o_pos = monster_pos;
     list_attach(&level_items, monster);
-    level_set_ch(monster_pos.y, monster_pos.x, (char)monster->o_type);
+    level_set_ch(monster_pos.y, monster_pos.x, (char)monster->o.o_type);
   }
 
   /* fill up room with monsters from the next level down */
@@ -89,7 +89,7 @@ treas_room(void)
     {
       THING* tp = os_calloc_thing();
       monster_new(tp, monster_random(false), &monster_pos);
-      tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
+      tp->t.t_flags |= ISMEAN;	/* no sloughers in THIS room */
       monster_give_pack(tp);
     }
   }
@@ -121,8 +121,8 @@ put_things(void)
       list_attach(&level_items, obj);
 
       /* Put it somewhere */
-      room_find_floor((struct room *) NULL, &obj->o_pos, false, false);
-      level_set_ch(obj->o_pos.y, obj->o_pos.x, (char)obj->o_type);
+      room_find_floor((struct room *) NULL, &obj->o.o_pos, false, false);
+      level_set_ch(obj->o.o_pos.y, obj->o.o_pos.x, (char)obj->o.o_type);
     }
 
   /* If he is really deep in the dungeon and he hasn't found the
@@ -133,8 +133,8 @@ put_things(void)
     list_attach(&level_items, amulet);
 
     /* Put it somewhere */
-    room_find_floor((struct room *) NULL, &amulet->o_pos, false, false);
-    level_set_ch(amulet->o_pos.y, amulet->o_pos.x, AMULET);
+    room_find_floor((struct room *) NULL, &amulet->o.o_pos, false, false);
+    level_set_ch(amulet->o.o_pos.y, amulet->o.o_pos.x, AMULET);
   }
 }
 
@@ -159,8 +159,8 @@ level_new(void)
   clear();
 
   /* Free up the monsters on the last level */
-  for (THING* monster = monster_list; monster != NULL; monster = monster->l_next)
-    list_free_all(&monster->t_pack);
+  for (THING* mon= monster_list; mon!= NULL; mon = mon->t.l_next)
+    list_free_all(&mon->t.t_pack);
   list_free_all(&monster_list);
 
   /* Throw away stuff left on the previous level (if anything) */
@@ -200,8 +200,8 @@ level_new(void)
   room_find_floor((struct room *) NULL, &level_stairs, false, false);
   level_set_ch(level_stairs.y, level_stairs.x, STAIRS);
 
-  for (THING* monster = monster_list; monster != NULL; monster = monster->l_next)
-    monster->t_room = roomin(&monster->t_pos);
+  for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
+    mon->t.t_room = roomin(&mon->t.t_pos);
 
   coord* player_pos = player_get_pos();
   room_find_floor((struct room *) NULL, player_pos, false, true);
@@ -238,7 +238,7 @@ level_get_type(int y, int x)
   THING* monster = level_get_monster(y, x);
   return monster == NULL
     ? level_get_ch(y, x)
-    : monster->t_disguise;
+    : monster->t.t_disguise;
 }
 
 PLACE*
