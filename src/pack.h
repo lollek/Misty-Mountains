@@ -27,7 +27,7 @@ extern int                pack_gold;
 bool pack_save_state(void);
 bool pack_load_state(void);
 
-int8_t pack_list_index(THING const* thing);
+int8_t pack_list_index(item const* thing);
 THING* pack_list_element(int8_t i);
 int pack_size(void);
 
@@ -72,9 +72,12 @@ THING* pack_equipped_item(enum equipment_pos pos);
 bool pack_equip_item(THING* item);
 bool pack_unequip(enum equipment_pos pos, bool quiet_on_success);
 
-bool pack_item_is_cursed(THING const* item);
-void pack_curse_item(THING* item);
-void pack_uncurse_item(THING* item);
+static inline bool pack_item_is_cursed(item const* item)
+{ return item->o_flags & ISCURSED; }
+static inline void pack_curse_item(item *item)
+{ item->o_flags |= ISCURSED; }
+static inline void pack_uncurse_item(item *item)
+{ item->o_flags &= ~ISCURSED; }
 
 THING* pack_find_arrow(void); /* Return arrow in pack or NULL */
 void pack_identify_item(void);

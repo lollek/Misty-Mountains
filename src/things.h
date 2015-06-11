@@ -5,6 +5,9 @@
 
 #include "coord.h"
 
+typedef struct item item;
+typedef struct monster monster;
+
 struct damage
 {
   int sides;
@@ -34,26 +37,26 @@ struct stats {
 
 /* Structure for monsters and player */
 typedef union thing {
-  struct {
+  struct monster {
     /* Linked list pointers */
     union thing* l_next;
     union thing* l_prev;
 
-    struct stats t_stats;   /* Physical description */
-    coord        t_pos;     /* Position */
-    coord*       t_dest;    /* Where it is running to */
-    struct room* t_room;    /* Current room for thing */
-    union thing* t_pack;    /* What the thing is carrying */
+    struct stats    t_stats;   /* Physical description */
+    coord           t_pos;     /* Position */
+    coord*          t_dest;    /* Where it is running to */
+    struct room*    t_room;    /* Current room for thing */
+    union thing*    t_pack;    /* What the thing is carrying */
 
-    int          t_flags;   /* State word */
-    char         t_type;    /* What it is */
-    char         t_disguise;/* What mimic looks like */
-    char         t_oldch;   /* Character that was where it was */
-    bool         t_turn;    /* If slowed, is it a turn to move */
-    int          t_reserved;
+    int             t_flags;   /* State word */
+    char            t_type;    /* What it is */
+    char            t_disguise;/* What mimic looks like */
+    char            t_oldch;   /* Character that was where it was */
+    bool            t_turn;    /* If slowed, is it a turn to move */
+    int             t_reserved;
   } t;
 
-  struct {
+  struct item {
     /* Linked list pointers */
     union thing*  l_next;
     union thing*  l_prev;

@@ -73,14 +73,14 @@ pack_load_state(void)
 }
 
 int8_t
-pack_list_index(THING const* thing)
+pack_list_index(item const* thing)
 {
   if (thing == NULL)
     return -1;
 
-  THING const* ptr;
+  item const* ptr;
   int8_t i;
-  for (ptr = player_pack, i = 0; ptr != NULL; ptr = ptr->o.l_next, ++i)
+  for (ptr = &player_pack->o, i = 0; ptr != NULL; ptr = &ptr->l_next->o, ++i)
     if (ptr == thing)
       return i;
 
@@ -677,9 +677,6 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   return true;
 }
 
-bool pack_item_is_cursed(THING const*item){ return item->o.o_flags & ISCURSED; }
-void pack_curse_item(THING *item)         { item->o.o_flags |= ISCURSED; }
-void pack_uncurse_item(THING *item)       { item->o.o_flags &= ~ISCURSED; }
 
 THING*
 pack_find_arrow(void)
@@ -691,12 +688,12 @@ pack_find_arrow(void)
 }
 
 static void
-pack_identify_item_set_know(THING* obj, struct obj_info* info)
+pack_identify_item_set_know(item* item, struct obj_info* info)
 {
-  info[obj->o.o_which].oi_know = true;
-  obj->o.o_flags |= ISKNOW;
+  info[item->o_which].oi_know = true;
+  item->o_flags |= ISKNOW;
 
-  char** guess = &info[obj->o.o_which].oi_guess;
+  char** guess = &info[item->o_which].oi_guess;
   if (*guess)
   {
     free(*guess);
@@ -719,10 +716,10 @@ pack_identify_item(void)
 
   switch (obj->o.o_type)
   {
-    case SCROLL: pack_identify_item_set_know(obj, scroll_info);  break;
-    case POTION: pack_identify_item_set_know(obj, potion_info);  break;
-    case STICK:  pack_identify_item_set_know(obj, __wands_ptr());   break;
-    case RING:   pack_identify_item_set_know(obj, ring_info); break;
+    case SCROLL: pack_identify_item_set_know(&obj->o, scroll_info);  break;
+    case POTION: pack_identify_item_set_know(&obj->o, potion_info);  break;
+    case STICK:  pack_identify_item_set_know(&obj->o, __wands_ptr());   break;
+    case RING:   pack_identify_item_set_know(&obj->o, ring_info); break;
     case WEAPON: case ARMOR: obj->o.o_flags |= ISKNOW; break;
     default: break;
   }

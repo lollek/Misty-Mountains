@@ -69,7 +69,7 @@ struct obj_info weapon_info[] = {
 
 bool weapons_save_state(void)
 {
-  int8_t i = pack_list_index(last_wielded_weapon);
+  int8_t i = pack_list_index(&last_wielded_weapon->o);
 
   assert(i >= -1);
   assert(i < pack_size());
