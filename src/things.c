@@ -49,10 +49,11 @@ struct obj_info things[] = {
 char*
 inv_name(char* buf, THING* obj, bool drop)
 {
+  item* item = &obj->o;
   buf[MAXSTR -1] = '\0';
   switch (obj->o.o_type)
   {
-    case POTION: potion_description(obj, buf); break;
+    case POTION: potion_description(item, buf); break;
     case RING:   ring_description(obj, buf); break;
     case STICK:  wand_description(obj, buf); break;
     case SCROLL: scroll_description(obj, buf); break;

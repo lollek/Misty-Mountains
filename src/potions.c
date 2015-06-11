@@ -24,6 +24,7 @@
 #include "colors.h"
 #include "os.h"
 #include "rogue.h"
+#include "item.h"
 
 #include "potions.h"
 
@@ -105,11 +106,11 @@ bool potion_load_state(void)
 /** is_quaffable
  * Can we dring thing? */
 static bool
-is_quaffable(THING *thing)
+is_quaffable(item const* item)
 {
-  if (thing == NULL)
+  if (item == NULL)
     return false;
-  else if (thing->o.o_type != POTION)
+  else if (item_type(item) != POTION)
   {
     msg("that's undrinkable");
     return false;
@@ -132,7 +133,7 @@ potion_quaff_something(void)
   THING* obj = pack_get_item("quaff", POTION);
 
   /* Make certain that it is somethings that we want to drink */
-  if (!is_quaffable(obj))
+  if (!is_quaffable(&obj->o))
     return false;
 
   /* Calculate the effect it has on the poor guy. */
@@ -266,23 +267,23 @@ potion_quaff_something(void)
 }
 
 void
-potion_description(THING const* obj, char buf[])
+potion_description(item const* item, char buf[])
 {
-  struct obj_info* op = &potion_info[obj->o.o_which];
+  struct obj_info* op = &potion_info[item_subtype(item)];
   if (op->oi_know)
   {
-    if (obj->o.o_count == 1)
+    if (item_count(item) == 1)
       buf += sprintf(buf, "A potion of %s", op->oi_name);
     else
-      buf += sprintf(buf, "%d potions of %s", obj->o.o_count, op->oi_name);
+      buf += sprintf(buf, "%d potions of %s", item_count(item), op->oi_name);
   }
   else
   {
-    if (obj->o.o_count == 1)
-      buf += sprintf(buf, "A %s potion", p_colors[obj->o.o_which]);
+    if (item_subtype(item) == 1)
+      buf += sprintf(buf, "A %s potion", p_colors[item_subtype(item)]);
     else
       buf += sprintf(buf, "%d %s potions",
-                     obj->o.o_count, p_colors[obj->o.o_which]);
+                     item_count(item), p_colors[item_subtype(item)]);
   }
 
   if (op->oi_guess)

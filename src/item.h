@@ -18,6 +18,8 @@ static inline int item_type(item const* item)
 { return item->o_type; }
 static inline int item_subtype(item const* item)
 { return item->o_which; }
+static inline int item_count(item const* item)
+{ return item->o_count; }
 
 
 #endif /* _ROGUE14_ITEM_H_ */
