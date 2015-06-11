@@ -65,9 +65,6 @@ bool pack_print_equipment(void);
 bool pack_print_inventory(int type);
 void pack_clear_inventory(void);
 
-void pack_set_last_picked_item(THING* ptr);
-void pack_reset_last_picked_item(void);
-
 size_t pack_evaluate(void);
 
 THING* pack_equipped_item(enum equipment_pos pos);

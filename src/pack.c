@@ -38,8 +38,6 @@ int const PACK_RENAMEABLE = -1;
 
 int           pack_gold = 0;
 static THING* player_pack;
-static THING* last_picked_item;
-static THING* last_last_picked_item;
 
 static struct equipment_t
 {
@@ -106,19 +104,6 @@ int
 pack_size(void)
 {
   return 22;
-}
-
-void
-pack_set_last_picked_item(THING* ptr)
-{
-  last_last_picked_item = last_picked_item;
-  last_picked_item = ptr;
-}
-
-void
-pack_reset_last_picked_item(void)
-{
-  last_picked_item = last_last_picked_item;
 }
 
 static size_t
@@ -389,7 +374,6 @@ pack_remove(THING* obj, bool newobj, bool all)
 
   if (obj->o.o_count > 1 && !all)
   {
-    last_picked_item = obj;
     obj->o.o_count--;
     if (newobj)
     {
@@ -402,7 +386,6 @@ pack_remove(THING* obj, bool newobj, bool all)
   }
   else
   {
-    last_picked_item = NULL;
     pack_used[obj->o.o_packch - 'a'] = false;
     list_detach(&player_pack, obj);
   }
