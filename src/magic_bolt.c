@@ -100,14 +100,14 @@ magic_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
   {
     THING bolt;
     memset(&bolt, 0, sizeof(bolt));
-    bolt.o.o_type = WEAPON;
-    bolt.o.o_which = FLAME;
-    bolt.o.o_hplus = 100;
-    bolt.o.o_dplus = 0;
-    bolt.o.o_pos = *pos;
-    bolt.o.o_flags |= ISMISL;
-    bolt.o.o_launch = -1;
-    bolt.o.o_hurldmg[0] = (struct damage){6,6};
+    bolt.o.o_type       = WEAPON;
+    bolt.o.o_which      = FLAME;
+    bolt.o.o_hplus      = 100;
+    bolt.o.o_dplus      = 0;
+    bolt.o.o_pos        = *pos;
+    bolt.o.o_flags     |= ISMISL;
+    bolt.o.o_launch     = -1;
+    bolt.o.o_hurldmg    = (struct damage){6,6};
     weapon_info[FLAME].oi_name = missile_name;
 
     if (mon->t.t_type == 'D' && strcmp(missile_name, "flame") == 0)

@@ -375,8 +375,8 @@ rs_read_object(THING* o)
       state_load_coord(&o->o.o_pos) ||
       state_load_int32(&o->o.o_launch) ||
       state_load_char(&o->o.o_packch) ||
-      state_load_structs_damage(o->o.o_damage) ||
-      state_load_structs_damage(o->o.o_hurldmg) ||
+      state_load_struct_damage(&o->o.o_damage) ||
+      state_load_struct_damage(&o->o.o_hurldmg) ||
       state_load_int32(&o->o.o_count) ||
       state_load_int32(&o->o.o_which) ||
       state_load_int32(&o->o.o_hplus) ||

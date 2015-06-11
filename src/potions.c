@@ -301,8 +301,8 @@ potion_create(int which)
   pot->o.o_type       = POTION;
   pot->o.o_which      = which;
   pot->o.o_count      = 1;
-  pot->o.o_damage[0]  = (struct damage){1, 2};
-  pot->o.o_hurldmg[0] = (struct damage){1, 2};
+  pot->o.o_damage     = (struct damage){1, 2};
+  pot->o.o_hurldmg    = (struct damage){1, 2};
 
   return pot;
 }

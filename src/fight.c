@@ -100,8 +100,7 @@ calculate_attacker(THING* attacker, THING* weapon, bool thrown,
 {
   if (weapon != NULL)
   {
-    assert(sizeof(mod->damage) == sizeof(weapon->o.o_damage));
-    memcpy(mod->damage, weapon->o.o_damage, sizeof(weapon->o.o_damage));
+    mod->damage[0] = weapon->o.o_damage;
     mod->to_hit += weapon->o.o_hplus;
     mod->to_dmg += weapon->o.o_dplus;
   }
@@ -118,16 +117,12 @@ calculate_attacker(THING* attacker, THING* weapon, bool thrown,
       if ((weapon->o.o_flags & ISMISL) && held_weapon != NULL
           && held_weapon->o.o_which == weapon->o.o_launch)
       {
-        assert(sizeof(mod->damage) == sizeof(weapon->o.o_hurldmg));
-        memcpy(mod->damage, weapon->o.o_hurldmg, sizeof(weapon->o.o_hurldmg));
+        mod->damage[0] = weapon->o.o_hurldmg;
         mod->to_hit += held_weapon->o.o_hplus;
         mod->to_dmg += held_weapon->o.o_dplus;
       }
       else if (weapon->o.o_launch == -1)
-      {
-        assert(sizeof(mod->damage) == sizeof(weapon->o.o_hurldmg));
-        memcpy(mod->damage, weapon->o.o_hurldmg, sizeof(weapon->o.o_hurldmg));
-      }
+        mod->damage[0] = weapon->o.o_hurldmg;
     }
   }
 

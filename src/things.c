@@ -54,10 +54,10 @@ inv_name(char* buf, THING* obj, bool drop)
   switch (obj->o.o_type)
   {
     case POTION: potion_description(item, buf); break;
-    case RING:   ring_description(obj, buf); break;
-    case STICK:  wand_description(obj, buf); break;
-    case SCROLL: scroll_description(obj, buf); break;
-    case WEAPON: case AMMO: weapon_description(obj, buf); break;
+    case RING:   ring_description(item, buf); break;
+    case STICK:  wand_description(item, buf); break;
+    case SCROLL: scroll_description(item, buf); break;
+    case WEAPON: case AMMO: weapon_description(item, buf); break;
     case ARMOR:  armor_description(obj, buf); break;
     case FOOD:
     {
@@ -101,10 +101,10 @@ new_food(int which)
 THING*
 new_amulet(void)
 {
-  THING* obj = os_calloc_thing();
-  obj->o.o_damage[0] = (struct damage){1, 2};
-  obj->o.o_hurldmg[0] = (struct damage){1, 2};
-  obj->o.o_type = AMULET;
+  THING* obj       = os_calloc_thing();
+  obj->o.o_damage  = (struct damage){1, 2};
+  obj->o.o_hurldmg = (struct damage){1, 2};
+  obj->o.o_type    = AMULET;
 
   return obj;
 }
@@ -137,8 +137,8 @@ new_thing(void)
   }
 
   assert(cur != NULL);
-  assert(cur->o.o_damage[0].sides >= 0 && cur->o.o_damage[0].dices >= 0);
-  assert(cur->o.o_hurldmg[0].sides >= 0 && cur->o.o_hurldmg[0].dices >= 0);
+  assert(cur->o.o_damage.sides >= 0 && cur->o.o_damage.dices >= 0);
+  assert(cur->o.o_hurldmg.sides >= 0 && cur->o.o_hurldmg.dices >= 0);
   return cur;
 }
 

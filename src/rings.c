@@ -13,17 +13,18 @@
 #include <ctype.h>
 #include <string.h>
 
-#include "io.h"
-#include "pack.h"
 #include "daemons.h"
+#include "io.h"
+#include "item.h"
 #include "misc.h"
-#include "player.h"
-#include "weapons.h"
-#include "things.h"
-#include "state.h"
 #include "options.h"
 #include "os.h"
+#include "pack.h"
+#include "player.h"
 #include "rogue.h"
+#include "state.h"
+#include "things.h"
+#include "weapons.h"
 
 #include "rings.h"
 
@@ -173,7 +174,7 @@ ring_put_on(void)
     }
 
   char buf[MAXSTR];
-  ring_description(obj, buf);
+  ring_description(&obj->o, buf);
   buf[0] = (char)tolower(buf[0]);
   msg("now wearing %s", buf);
   return true;
@@ -238,21 +239,21 @@ ring_is_known(enum ring_t ring)
 }
 
 void
-ring_description(THING const* item, char* buf)
+ring_description(item const* item, char* buf)
 {
-  struct obj_info* op = &ring_info[item->o.o_which];
-  buf += sprintf(buf, "%s ring", r_stones[item->o.o_which]);
+  struct obj_info* op = &ring_info[item_subtype(item)];
+  buf += sprintf(buf, "%s ring", r_stones[item_subtype(item)]);
 
   if (op->oi_know)
   {
     buf += sprintf(buf, " of %s", op->oi_name);
-    switch (item->o.o_which)
+    switch (item_subtype(item))
     {
       case R_PROTECT: case R_ADDSTR: case R_ADDDAM: case R_ADDHIT:
-        if (item->o.o_arm > 0)
-          buf += sprintf(buf, " [+%d]", item->o.o_arm);
+        if (item_armor(item) > 0)
+          buf += sprintf(buf, " [+%d]", item_armor(item));
         else
-          buf += sprintf(buf, " [%d]", item->o.o_arm);
+          buf += sprintf(buf, " [%d]", item_armor(item));
         break;
       default: break;
     }

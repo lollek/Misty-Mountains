@@ -38,7 +38,7 @@ int ring_drain_amount(void); /* How much food the player's rings drain */
 
 bool ring_is_known(enum ring_t ring);
 
-void ring_description(THING const* item, char* buf);
+void ring_description(item const* item, char* buf);
 THING* ring_create(int which, bool random_stats);
 
 #endif /* _ROGUE14_RINGS_H_ */

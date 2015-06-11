@@ -255,8 +255,8 @@ state_save_object(THING const* o)
     state_save_coord(&o->o.o_pos) ||
     state_save_int32(o->o.o_launch) ||
     state_save_char(o->o.o_packch) ||
-    state_save_structs_damage(o->o.o_damage) ||
-    state_save_structs_damage(o->o.o_hurldmg) ||
+    state_save_struct_damage(&o->o.o_damage) ||
+    state_save_struct_damage(&o->o.o_hurldmg) ||
     state_save_int32(o->o.o_count) ||
     state_save_int32(o->o.o_which) ||
     state_save_int32(o->o.o_hplus) ||

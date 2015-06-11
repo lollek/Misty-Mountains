@@ -72,8 +72,8 @@ typedef union thing {
     int           o_arm;                 /* Armor protection */
     int           o_flags;               /* information about objects */
     char          o_packch;              /* What character it is in the pack */
-    struct damage o_damage[MAXATTACKS];  /* Damage if used like sword */
-    struct damage o_hurldmg[MAXATTACKS]; /* Damage if thrown */
+    struct damage o_damage;              /* Damage if used like sword */
+    struct damage o_hurldmg;             /* Damage if thrown */
   } o;
 
 } THING;

@@ -14,23 +14,24 @@
 #include <string.h>
 #include <assert.h>
 
+#include "fight.h"
 #include "io.h"
-#include "pack.h"
-#include "list.h"
-#include "monster.h"
-#include "misc.h"
-#include "passages.h"
+#include "item.h"
 #include "level.h"
+#include "list.h"
+#include "magic.h"
+#include "misc.h"
+#include "monster.h"
+#include "options.h"
+#include "os.h"
+#include "pack.h"
+#include "passages.h"
 #include "player.h"
-#include "weapons.h"
+#include "rip.h"
+#include "rogue.h"
 #include "state.h"
 #include "things.h"
-#include "rip.h"
-#include "os.h"
-#include "options.h"
-#include "fight.h"
-#include "magic.h"
-#include "rogue.h"
+#include "weapons.h"
 
 #include "wand.h"
 
@@ -137,11 +138,8 @@ wand_create(int wand)
 {
   THING* new_wand = os_calloc_thing();
 
-  memset(new_wand->o.o_damage, 0, sizeof(new_wand->o.o_damage));
-  new_wand->o.o_damage[0] = (struct damage){1, 1};
-
-  memset(new_wand->o.o_hurldmg, 0, sizeof(new_wand->o.o_hurldmg));
-  new_wand->o.o_hurldmg[0] = (struct damage){1, 1};
+  new_wand->o.o_damage  = (struct damage){1, 1};
+  new_wand->o.o_hurldmg = (struct damage){1, 1};
 
   new_wand->o.o_arm = 11;
   new_wand->o.o_count = 1;
@@ -315,12 +313,12 @@ wand_spell_magic_missile(int dy, int dx)
 {
   THING bolt;
   memset(&bolt, 0, sizeof(bolt));
-  bolt.o.o_type = '*';
-  bolt.o.o_hplus = 100;
-  bolt.o.o_dplus = 1;
-  bolt.o.o_flags = ISMISL;
-  bolt.o.o_damage[0] = (struct damage){0, 0};
-  bolt.o.o_hurldmg[0] = (struct damage){1, 4};
+  bolt.o.o_type    = '*';
+  bolt.o.o_hplus   = 100;
+  bolt.o.o_dplus   = 1;
+  bolt.o.o_flags   = ISMISL;
+  bolt.o.o_damage  = (struct damage){0, 0};
+  bolt.o.o_hurldmg = (struct damage){1, 4};
 
   THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon != NULL)
@@ -506,17 +504,17 @@ wand_zap(void)
 }
 
 char*
-wand_description(THING* obj, char* buf)
+wand_description(item const* item, char* buf)
 {
   char* ptr = buf;
-  struct obj_info oi = wands[obj->o.o_which];
+  struct obj_info oi = wands[item_subtype(item)];
 
   if (oi.oi_know || oi.oi_guess)
   {
-    if (obj->o.o_count == 1)
+    if (item_count(item))
       strcpy(ptr, "A wand");
     else
-      sprintf(ptr, "%d wands", obj->o.o_count);
+      sprintf(ptr, "%d wands", item_count(item));
 
     ptr += strlen(ptr);
     if (oi.oi_know)
@@ -525,17 +523,17 @@ wand_description(THING* obj, char* buf)
       sprintf(ptr, " called %s", oi.oi_guess);
 
     ptr += strlen(ptr);
-    if (obj->o.o_flags & ISKNOW)
-      sprintf(ptr, " [%d charges]", obj->o.o_charges);
+    if (item_is_known(item))
+      sprintf(ptr, " [%d charges]", item_charges(item));
 
     ptr += strlen(ptr);
-    sprintf(ptr, " (%s)", wand_material((enum wand_t)obj->o.o_which));
+    sprintf(ptr, " (%s)", wand_material((enum wand_t)(item_subtype(item))));
   }
-  else if (obj->o.o_count == 1)
-    sprintf(ptr, "A %s wand", wand_material((enum wand_t)obj->o.o_which));
+  else if (item_count(item) == 1)
+    sprintf(ptr, "A %s wand", wand_material((enum wand_t)(item_subtype(item))));
   else
-    sprintf(ptr, "%d %s wands", obj->o.o_count,
-            wand_material((enum wand_t)obj->o.o_which));
+    sprintf(ptr, "%d %s wands", item_count(item),
+            wand_material((enum wand_t)(item_subtype(item))));
 
   return buf;
 }

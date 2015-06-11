@@ -39,7 +39,7 @@ bool wand_save_state(void);
 char const* wand_material(enum wand_t wand);
 
 /* Returns a description of the obj (e.g. for inventory screen) */
-char* wand_description(THING* obj, char* buf);
+char* wand_description(item const* item, char* buf);
 
 /* Does the player know what the wand does? */
 void wand_set_known(enum wand_t wand);

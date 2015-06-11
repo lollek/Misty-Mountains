@@ -15,21 +15,22 @@
 #include <string.h>
 
 #include "io.h"
-#include "pack.h"
-#include "list.h"
-#include "monster.h"
-#include "misc.h"
+#include "item.h"
 #include "level.h"
+#include "list.h"
+#include "misc.h"
+#include "monster.h"
+#include "options.h"
+#include "os.h"
+#include "pack.h"
 #include "player.h"
 #include "potions.h"
 #include "rings.h"
-#include "weapons.h"
-#include "wand.h"
-#include "things.h"
-#include "os.h"
-#include "state.h"
-#include "options.h"
 #include "rogue.h"
+#include "state.h"
+#include "things.h"
+#include "wand.h"
+#include "weapons.h"
 
 #include "scrolls.h"
 
@@ -494,22 +495,22 @@ scroll_read(void)
 }
 
 void
-scroll_description(THING* obj, char* buf)
+scroll_description(item const* item, char* buf)
 {
-  struct obj_info* op = &scroll_info[obj->o.o_which];
+  struct obj_info* op = &scroll_info[item_subtype(item)];
   char* ptr = buf;
 
-  if (obj->o.o_count == 1)
+  if (item_count(item) == 1)
     ptr += sprintf(ptr, "A scroll");
   else
-    ptr += sprintf(ptr, "%d scrolls", obj->o.o_count);
+    ptr += sprintf(ptr, "%d scrolls", item_count(item));
 
   if (op->oi_know)
     ptr += sprintf(ptr, " of %s", op->oi_name);
   else if (op->oi_guess)
     ptr += sprintf(ptr, " called %s", op->oi_guess);
   else
-    ptr += sprintf(ptr, " titled '%s'", s_names[obj->o.o_which]);
+    ptr += sprintf(ptr, " titled '%s'", s_names[item_subtype(item)]);
 }
 
 THING*

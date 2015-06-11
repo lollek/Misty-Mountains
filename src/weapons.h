@@ -35,6 +35,6 @@ bool weapon_wield(THING* weapon);
 bool weapon_wield_last_used(void);
 void weapon_set_last_used(THING* weapon);
 
-void weapon_description(THING* obj, char* buf);
+void weapon_description(item const* item, char* buf);
 
 #endif /* _ROGUE14_WEAPON_H_ */

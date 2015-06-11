@@ -16,6 +16,7 @@
 
 #include "fight.h"
 #include "io.h"
+#include "item.h"
 #include "level.h"
 #include "list.h"
 #include "misc.h"
@@ -129,8 +130,8 @@ weapon_create(int which, bool random_stats)
   struct init_weaps* iwp = &init_dam[which];
   weap->o.o_launch     = iwp->iw_launch;
   weap->o.o_flags      = iwp->iw_flags;
-  weap->o.o_damage[0]  = iwp->iw_dam;
-  weap->o.o_hurldmg[0] = iwp->iw_hrl;
+  weap->o.o_damage     = iwp->iw_dam;
+  weap->o.o_hurldmg    = iwp->iw_hrl;
 
   if (weap->o.o_flags & ISMANY)
     weap->o.o_type = AMMO;
@@ -197,52 +198,51 @@ weapon_wield_last_used(void)
 }
 
 void
-weapon_description(THING* obj, char* buf)
+weapon_description(item const* item, char* buf)
 {
   char* ptr = buf;
-  char const* obj_name = weapon_info[obj->o.o_which].oi_name;
+  char const* obj_name = weapon_info[item_subtype(item)].oi_name;
 
-  if (obj->o.o_count == 1)
+  if (item_count(item) == 1)
     ptr += sprintf(ptr, "A%s %s", vowelstr(obj_name), obj_name);
   else
-    ptr += sprintf(ptr, "%d %ss", obj->o.o_count, obj_name);
+    ptr += sprintf(ptr, "%d %ss", item_count(item), obj_name);
 
-  if (obj->o.o_type == AMMO || obj->o.o_which == BOW)
+  if (item_type(item) == AMMO || item_subtype(item) == BOW)
   {
-    for (int i = 0; i < MAXATTACKS; ++i)
-      if (obj->o.o_hurldmg[i].sides != 0 && obj->o.o_hurldmg[i].dices != 0)
-        ptr += sprintf(ptr, "%s%dd%d", i == 0 ? " (" : "/",
-            obj->o.o_hurldmg[i].sides,
-            obj->o.o_hurldmg[i].dices);
-    strcpy(ptr++, ")");
+    int dices = item_throw_damage(item)->dices;
+    int sides = item_throw_damage(item)->sides;
+    ptr += sprintf(ptr, " (%dd%d)", sides, dices);
   }
-  else if (obj->o.o_type == WEAPON)
+  else if (item_type(item) == WEAPON)
   {
-    for (int i = 0; i < MAXATTACKS; ++i)
-      if (obj->o.o_damage[i].sides != 0 && obj->o.o_damage[i].dices != 0)
-        ptr += sprintf(ptr, "%s%dd%d", i == 0 ? " (" : "/",
-            obj->o.o_damage[i].sides,
-            obj->o.o_damage[i].dices);
-    strcpy(ptr++, ")");
+    int dices = item_damage(item)->dices;
+    int sides = item_damage(item)->sides;
+    ptr += sprintf(ptr, " (%dd%d)", sides, dices);
   }
   else
   {
-    (void)fail("Bad type: %p->o_type == %d\r\n", obj, obj->o.o_type);
+    (void)fail("Bad type: %p->o_type == %d\r\n", item, item_type(item));
     assert(0);
   }
 
-  if (obj->o.o_flags & ISKNOW)
+  if (item_is_known(item))
   {
+    int p_hit = item_bonus_hit(item);
+    int p_dmg = item_bonus_damage(item);
     ptr += sprintf(ptr, " (");
-    ptr += sprintf(ptr, obj->o.o_hplus < 0 ? "%d," : "+%d,", obj->o.o_hplus);
-    ptr += sprintf(ptr, obj->o.o_dplus < 0 ? "%d)" : "+%d)", obj->o.o_dplus);
+    ptr += sprintf(ptr, p_hit < 0 ? "%d," : "+%d,", p_hit);
+    ptr += sprintf(ptr, p_dmg < 0 ? "%d)" : "+%d)", p_dmg);
   }
 
-  if (obj->o.o_arm != 0)
-    ptr += sprintf(ptr, obj->o.o_arm < 0 ? " [%d]" : " [+%d]", obj->o.o_arm);
+  if (item_armor(item) != 0)
+  {
+    int p_armor = item_armor(item);
+    ptr += sprintf(ptr, p_armor < 0 ? " [%d]" : " [+%d]", p_armor);
+  }
 
-  if (obj->o.o_label != NULL)
-    ptr += sprintf(ptr, " called %s", obj->o.o_label);
+  if (item_nickname(item) != NULL)
+    ptr += sprintf(ptr, " called %s", item_nickname(item));
 
 }
 
