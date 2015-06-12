@@ -58,7 +58,7 @@ inv_name(char* buf, THING* obj, bool drop)
     case STICK:  wand_description(item, buf); break;
     case SCROLL: scroll_description(item, buf); break;
     case WEAPON: case AMMO: weapon_description(item, buf); break;
-    case ARMOR:  armor_description(obj, buf); break;
+    case ARMOR:  armor_description(item, buf); break;
     case FOOD:
     {
       char const* obj_type = obj->o.o_which == 1 ? "fruit" : "food ration";

@@ -140,9 +140,9 @@ player_save_state(void)
 }
 
 bool
-is_player(THING const* thing)
+is_player(monster const* thing)
 {
-  return thing == &player;
+  return thing == &player.t;
 }
 
 int

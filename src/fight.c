@@ -108,7 +108,7 @@ calculate_attacker(THING* attacker, THING* weapon, bool thrown,
   add_strength_attack_modifiers(attacker->t.t_stats.s_str, mod);
 
   /* Player stuff */
-  if (is_player(attacker))
+  if (is_player(&attacker->t))
   {
     add_ring_attack_modifiers(mod);
     if (thrown)
@@ -150,7 +150,8 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
   calculate_attacker(attacker, weapon, thrown, &mod);
 
   /* If defender is stuck in some way,the attacker gets a bonus to hit */
-  if ((is_player(defender) && player_turns_without_action) || monster_is_held(defender)
+  if ((is_player(&defender->t) && player_turns_without_action)
+      || monster_is_held(defender)
       || monster_is_stuck(defender))
     mod.to_hit += 4;
 
@@ -165,7 +166,7 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
     if (dice_sides == 0 && dices == 0)
       continue;
 
-    int defense = armor_for_thing(defender);
+    int defense = armor_for_monster(&defender->t);
     if (fight_swing_hits(attacker->t.t_stats.s_lvl, defense, mod.to_hit))
     {
       int damage = roll(dices, dice_sides) + mod.to_dmg;

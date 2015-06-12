@@ -161,7 +161,8 @@ trap_arrow_monster(THING* victim)
   char buf[MAXSTR];
   list_assert_monster(victim);
 
-  if (fight_swing_hits(victim->t.t_stats.s_lvl -1, armor_for_thing(victim), 1))
+  if (fight_swing_hits(victim->t.t_stats.s_lvl -1,
+        armor_for_monster(&victim->t), 1))
   {
     victim->t.t_stats.s_hpt -= roll(1,6);
     if (victim->t.t_stats.s_hpt <= 0)
@@ -249,7 +250,8 @@ trap_dart_monster(THING* victim)
   list_assert_monster(victim);
 
   /* TODO: In the future this should probably weaken the monster */
-  if (fight_swing_hits(victim->t.t_stats.s_lvl + 1, armor_for_thing(victim), 1))
+  if (fight_swing_hits(victim->t.t_stats.s_lvl + 1,
+        armor_for_monster(&victim->t), 1))
   {
     victim->t.t_stats.s_hpt -= roll(1,4);
     if (victim->t.t_stats.s_hpt <= 0)

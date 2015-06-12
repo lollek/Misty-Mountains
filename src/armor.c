@@ -13,14 +13,15 @@
 #include <string.h>
 
 #include "io.h"
-#include "pack.h"
-#include "rings.h"
+#include "item.h"
 #include "misc.h"
-#include "things.h"
 #include "options.h"
 #include "os.h"
+#include "pack.h"
 #include "player.h"
+#include "rings.h"
 #include "rogue.h"
+#include "things.h"
 
 #include "armor.h"
 
@@ -42,9 +43,9 @@ int armor_value(enum armor_t i)         { return armors[i].value; }
 int armor_probability(enum armor_t i)   { return armors[i].prob; }
 
 int
-armor_for_thing(THING* thing)
+armor_for_monster(monster const* mon)
 {
-  return is_player(thing) ? player_get_armor() : thing->t.t_stats.s_arm;
+  return is_player(mon) ? player_get_armor() : mon->t_stats.s_arm;
 }
 
 bool
@@ -113,23 +114,23 @@ armor_rust(void)
 }
 
 void
-armor_description(THING* obj, char* buf)
+armor_description(item const* item, char* buf)
 {
   char *ptr = buf;
-  char const* obj_name = armor_name((enum armor_t)obj->o.o_which);
-  int bonus_ac = armor_ac((enum armor_t)obj->o.o_which) - obj->o.o_arm;
-  int base_ac = 10 - obj->o.o_arm - bonus_ac;
+  char const* obj_name = armor_name((enum armor_t)(item_subtype(item)));
+  int bonus_ac = armor_ac((enum armor_t)(item_subtype(item))) -item_armor(item);
+  int base_ac = 10 - item_armor(item) - bonus_ac;
 
   ptr += sprintf(ptr, "A%s %s [%d]", vowelstr(obj_name), obj_name, base_ac);
 
-  if (obj->o.o_flags & ISKNOW)
+  if (item_is_known(item))
   {
     ptr -= 1;
     ptr += sprintf(ptr, bonus_ac < 0 ? ",%d]" : ",+%d]", bonus_ac);
   }
 
-  if (obj->o.o_label != NULL)
-    ptr += sprintf(ptr, " called %s", obj->o.o_label);
+  if (item_nickname(item) != NULL)
+    ptr += sprintf(ptr, " called %s", item_nickname(item));
 }
 
 THING*

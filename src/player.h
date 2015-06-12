@@ -18,7 +18,7 @@ void player_init(void);
 bool player_save_state(void);
 bool player_load_state(void);
 
-bool is_player(THING const* thing);
+bool is_player(monster const* thing);
 int player_save_throw(int which);
 
 /* Status Effects */

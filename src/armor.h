@@ -31,11 +31,11 @@ int armor_value(enum armor_t armor);
 int armor_probability(enum armor_t i);
 enum armor_t armor_type_random(void);
 
-int armor_for_thing(THING* thing); /* Returns the AC of a creature */
+int armor_for_monster(monster const* mon); /* Returns the AC of a creature */
 void armor_rust(void);             /* Rust players armor */
 bool armor_command_wear(void);     /* Let player select something to wear */
 
-void armor_description(THING* obj, char* buf);
+void armor_description(item const* item, char* buf);
 
 THING* armor_create(int which, int random_stats);
 
