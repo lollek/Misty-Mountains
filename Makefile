@@ -22,8 +22,6 @@ LDFLAGS  = -lcurses
 
 CFILES   = $(wildcard src/*.c)
 OBJS     = $(addsuffix .o, $(basename $(CFILES)))
-DOCSRC   = $(wildcard docsrc/*)
-DOCS     = $(notdir $(DOCSRC))
 MISC     = install CHANGELOG.TXT LICENSE.TXT rogue.png rogue.desktop
 
 debug: CC      = clang
@@ -37,34 +35,21 @@ $(PROGRAM): $(OBJS)
 	$(CC) -o $@ $(LDFLAGS) $(OBJS)
 
 clean:
-	$(RM) $(OBJS) $(PROGRAM) $(DOCS)
+	$(RM) $(OBJS) $(PROGRAM)
 
 final: CFLAGS += -DNDEBUG
 final: clean $(PROGRAM)
 
-doc.nroff:
-	tbl rogue.me | nroff -me | colcrt - > rogue.doc
-	nroff -man rogue.6 | colcrt - > rogue.cat
-
-doc.groff:
-	groff -P-c -t -me -Tascii rogue.me | sed -e 's/.\x08//g' > rogue.doc
-	groff -man rogue.6 | sed -e 's/.\x08//g' > rogue.cat
-
-docs:
-	$(foreach doc, $(wildcard docsrc/*), \
-	  sed -e 's/@PROGRAM@/$(PROGRAM)/' -e 's/@SCOREFILE@/.rogue14_highscore/' \
-	  $(doc) > $(notdir $(doc));)
-
-install: $(PROGRAM) docs
+install: $(PROGRAM)
 	@PREFIX=$(PREFIX) ./install
 
 remove:
 	@PREFIX=$(PREFIX) ./remove
 
-dist: final docs
-	tar czf $(PROGRAM)-$(VERSION)-linux.tar.gz $(PROGRAM) $(DOCS) $(MISC)
+dist: final
+	tar czf $(PROGRAM)-$(VERSION)-linux.tar.gz $(PROGRAM) $(MISC)
 
 lint:
 	cppcheck --enable=all --std=c99 -inconlusive src 2>lint.txt
 
-.PHONY: clean final doc.nroff doc.groff install remove dist
+.PHONY: clean final install remove dist
