@@ -279,15 +279,16 @@ potion_description(item const* item, char buf[])
   }
   else
   {
-    if (item_subtype(item) == 1)
-      buf += sprintf(buf, "A %s potion", p_colors[item_subtype(item)]);
-    else
-      buf += sprintf(buf, "%d %s potions",
-                     item_count(item), p_colors[item_subtype(item)]);
-  }
+    char const* color = p_colors[item_subtype(item)];
 
-  if (op->oi_guess)
-    sprintf(buf, " called %s", op->oi_guess);
+    if (item_count(item) == 1)
+      buf += sprintf(buf, "A%s %s potion", vowelstr(color), color);
+    else
+      buf += sprintf(buf, "%d %s potions", item_count(item), color);
+
+    if (op->oi_guess)
+      sprintf(buf, " called %s", op->oi_guess);
+  }
 }
 
 THING*
