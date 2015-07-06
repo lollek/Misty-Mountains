@@ -21,6 +21,7 @@
 #include "io.h"
 #include "state.h"
 #include "rogue.h"
+#include "wizard.h"
 
 #include "save.h"
 
