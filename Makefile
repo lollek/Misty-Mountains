@@ -36,20 +36,24 @@ $(PROGRAM): $(OBJS)
 
 clean:
 	$(RM) $(OBJS) $(PROGRAM)
+.PHONY: clean
 
 final: CFLAGS += -DNDEBUG
 final: clean $(PROGRAM)
+.PHONY: final
 
 install: $(PROGRAM)
 	@PREFIX=$(PREFIX) ./install
+.PHONY: install
 
 remove:
 	@PREFIX=$(PREFIX) ./remove
+.PHONY: remove
 
 dist: final
 	tar czf $(PROGRAM)-$(VERSION)-linux.tar.gz $(PROGRAM) $(MISC)
+.PHONY: dist
 
 lint:
 	cppcheck --enable=all --std=c99 -inconlusive src 2>lint.txt
-
-.PHONY: clean final install remove dist
+.PHONY: lint
