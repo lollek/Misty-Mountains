@@ -13,7 +13,7 @@
 PROGRAM  = rogue14
 VERSION  = 1.3.1+
 PREFIX   = /usr/local
-SCOREPATH = $(PREFIX)/share/$(PROGRAM)/rogue14.highscore
+SCOREPATH = $(PREFIX)/share/$(PROGRAM)/highscore
 
 CC       = cc
 CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic -std=c99

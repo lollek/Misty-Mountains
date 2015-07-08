@@ -13,9 +13,9 @@
 
 #define LOCKFILE ".rogue14_lockfile"
 
-static FILE *scoreboard = NULL; /* File descriptor for score file */
-static FILE *lock = NULL;
-static char scoreline[100];
+static FILE* scoreboard = NULL; /* File descriptor for score file */
+static FILE* lock = NULL;
+static char  scoreline[100];
 
 static bool
 lock_sc(void)
