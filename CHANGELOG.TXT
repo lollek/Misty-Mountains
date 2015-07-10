@@ -1,4 +1,8 @@
 v1.3.1+
+  Visual:
+    Removed tombstone
+    Changed high score texts a bit
+
   Tweaking:
     Throwing arrows now always miss (use 'a'ttack instead)
     Ring hunger is now a bit lower (and slow digestation is stronger)

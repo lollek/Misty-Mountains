@@ -13,7 +13,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <signal.h>
 #include <ctype.h>
 #include <unistd.h>
@@ -31,64 +30,9 @@
 #include "score.h"
 #include "scrolls.h"
 #include "wizard.h"
+#include "death.h"
 
 #include "rip.h"
-
-
-/** center:
- * Return the index to center the given string */
-static int
-center(char const* str)
-{
-  return 28 - (((int)strlen(str) + 1) / 2);
-}
-
-
-/** killname:
- * Convert a code to a monster name */
-static char *
-killname(char buf[], char monst, bool doart)
-{
-  struct list
-  {
-    char ch;
-    char const* description;
-    bool print;
-  } nlist[] = {
-    {'a',	"arrow",		true},
-    {'b',	"bolt",			true},
-    {'d',	"dart",			true},
-    {'f',	"flame",		false},
-    {'h',	"hypothermia",		false},
-    {'i',	"hypothermia",		false},
-    {'s',	"starvation",		false},
-  };
-
-  char const* sp;
-  bool article = true;
-  if (isupper(monst))
-    sp = monster_name_by_type(monst);
-
-  else
-  {
-    sp = "Wally the Wonder Badger";
-    article = false;
-    for (unsigned i = 0; i < sizeof(nlist) / sizeof(*nlist); ++i)
-      if (nlist[i].ch == monst)
-      {
-        sp = nlist[i].description;
-        article = nlist[i].print;
-        break;
-      }
-  }
-
-  if (doart && article)
-    sprintf(buf, "a%s ", vowelstr(sp));
-  else
-    buf[0] = '\0';
-  strcat(buf, sp);
-  return buf;
-}
 
 static bool
 score_insert(SCORE* top_ten, SCORE* endp, int amount, int flags, char monst)
@@ -125,7 +69,6 @@ score_insert(SCORE* top_ten, SCORE* endp, int amount, int flags, char monst)
 static void
 score_print(SCORE* top_ten, SCORE* endp, int flags, int prflags)
 {
-  char* reason[] = { "killed", "quit", "A total winner", "killed with Amulet" };
   char buf[2*MAXSTR];
   if (flags != -1)
     putchar('\n');
@@ -137,15 +80,22 @@ score_print(SCORE* top_ten, SCORE* endp, int flags, int prflags)
     if (!ptr->sc_score)
       break;
 
-    printf("%2d %5d %s: %s on level %d"
+    printf("%2d %5d %s: "
         ,(int)(ptr - top_ten + 1)/* Position */
         ,ptr->sc_score           /* Score */
         ,ptr->sc_name            /* Name */
-        ,reason[ptr->sc_flags]   /* Cause of death */
-        ,ptr->sc_level);         /* Death level */
+        );
 
-    if (ptr->sc_flags == 0 || ptr->sc_flags == 3)
-      printf(" by %s", killname(buf, (char) ptr->sc_monster, true));
+    if (ptr->sc_flags == 0)
+      printf("%s", death_reason(buf, ptr->sc_monster));
+    else if (ptr->sc_flags == 1)
+      printf("Quit");
+    else if (ptr->sc_flags == 2)
+      printf("A total winner");
+    else if (ptr->sc_flags == 3)
+      printf("%s while holding the amulet", death_reason(buf, ptr->sc_monster));
+
+    printf(" on level %d", ptr->sc_level);
 
     if (prflags == 2)
     {
@@ -227,72 +177,6 @@ score(int amount, int flags, char monst)
 
   free(top_ten);
   top_ten = NULL;
-}
-
-void
-death(char monst)
-{
-  char buf[2*MAXSTR];
-
-  signal(SIGINT, SIG_IGN);
-
-  pack_gold -= pack_gold / 10;
-
-  signal(SIGINT, command_signal_leave);
-
-  status();
-  refresh();
-  msg("You die!");
-  readchar(false);
-
-  clear();
-  char const* killer = killname(buf, monst, false);
-
-  time_t date;
-  time(&date);
-  struct tm* lt = localtime(&date);
-
-  move(8, 0);
-
-  char const* rip[] = {
-    "                       __________\n",
-    "                      /          \\\n",
-    "                     /    REST    \\\n",
-    "                    /      IN      \\\n",
-    "                   /     PEACE      \\\n",
-    "                  /                  \\\n",
-    "                  |                  |\n",
-    "                  |                  |\n",
-    "                  |   killed by a    |\n",
-    "                  |                  |\n",
-    "                  |       1980       |\n",
-    "                 *|     *  *  *      | *\n",
-    "         ________)/\\\\_//(\\/(/\\)/\\//\\/|_)_______\n",
-    0
-  };
-  char const** dp = rip;
-  while (*dp)
-    addstr(*dp++);
-
-  mvaddstr(17, center(killer), killer);
-  if (monst == 's' || monst == 'h')
-    mvaddcch(16, 32, ' ');
-  else
-    mvaddstr(16, 33, vowelstr(killer));
-
-  mvaddstr(14, center(whoami), whoami);
-  sprintf(buf, "%d Au", pack_gold);
-  move(15, center(buf));
-  addstr(buf);
-  sprintf(buf, "%4d", 1900+lt->tm_year);
-  mvaddstr(18, 26, buf);
-
-  mvprintw(LINES -1, 0, "[Press return to continue]");
-  refresh();
-  wait_for(KEY_ENTER);
-  pack_evaluate();
-  score(pack_gold, pack_contains_amulet() ? 3 : 0, monst);
-  exit(0);
 }
 
 

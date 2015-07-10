@@ -16,6 +16,7 @@
 #include "list.h"
 #include "os.h"
 #include "player.h"
+#include "death.h"
 
 #include "traps.h"
 
@@ -139,7 +140,7 @@ trap_arrow_player(void)
     if (player_get_health() <= 0)
     {
       msg("an arrow killed you");
-      death('a');
+      death(DEATH_ARROW);
     }
     else
       msg("oh no! An arrow shot you");
@@ -235,7 +236,7 @@ trap_dart_player(void)
     if (player_get_health() <= 0)
     {
       msg("a poisoned dart killed you");
-      death('d');
+      death(DEATH_DART);
     }
     if (!player_has_ring_with_ability(R_SUSTSTR) && !player_save_throw(VS_POISON))
       player_modify_strength(-1);

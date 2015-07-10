@@ -6,6 +6,7 @@
 #include "rip.h"
 #include "os.h"
 #include "state.h"
+#include "death.h"
 
 #include "food.h"
 
@@ -96,7 +97,7 @@ food_digest(void)
   }
 
   if (food_left < starvation_death)
-    death('s');
+    death(DEATH_HUNGER);
 }
 
 int

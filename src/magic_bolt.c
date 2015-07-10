@@ -11,6 +11,7 @@
 #include "rip.h"
 #include "things.h"
 #include "weapons.h"
+#include "death.h"
 
 #include "magic.h"
 
@@ -82,7 +83,12 @@ magic_bolt_hit_player(coord* start, char const* missile_name)
     if (player_get_health() <= 0)
     {
       if (start == player_get_pos())
-        death(missile_name[0]);
+        switch (missile_name[0])
+        {
+          case 'f': death(DEATH_FLAME);
+          case 'i': death(DEATH_ICE);
+          default:  death(DEATH_UNKNOWN);
+        }
       else
         death(level_get_monster(start->y, start->x)->t.t_type);
     }

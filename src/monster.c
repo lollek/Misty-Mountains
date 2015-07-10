@@ -32,6 +32,7 @@
 #include "rip.h"
 #include "options.h"
 #include "rogue.h"
+#include "death.h"
 
 #include "monster.h"
 #include "monster_private.h"
@@ -431,7 +432,7 @@ monster_do_special_ability(THING** monster)
       }
       player_turns_without_action += os_rand_range(2) + 2;
       if (player_turns_without_action > 50)
-        death('h');
+        death(DEATH_ICE);
       return;
 
 
