@@ -484,7 +484,7 @@ scroll_read(void)
   }
   obj = orig_obj;
   look(true);	/* put the result of the scroll on the screen */
-  status();
+  io_refresh_statusline();
 
   call_it("scroll", &scroll_info[obj->o.o_which]);
 

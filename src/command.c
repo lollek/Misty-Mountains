@@ -75,7 +75,7 @@ command(void)
     look(true);
     if (!running)
       door_stop = false;
-    status();
+    io_refresh_statusline();
     if (!(running && jump))
       refresh();
 
@@ -249,7 +249,7 @@ command_signal_quit(int sig)
   }
   else
   {
-    status();
+    io_refresh_statusline();
     io_msg_clear();
     move(oy, ox);
     refresh();

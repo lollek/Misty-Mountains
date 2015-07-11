@@ -261,7 +261,7 @@ readchar(bool is_question)
 }
 
 void
-status(void)
+io_refresh_statusline(void)
 {
   int oy, ox;
   int hpwidth = 0;
@@ -394,7 +394,7 @@ wreadstr(WINDOW* win, char* dest)
 
 __attribute__((__format__(__printf__, 1, 2)))
 void
-fatal(char const* msg, ...)
+io_fatal(char const* msg, ...)
 {
   va_list args;
 

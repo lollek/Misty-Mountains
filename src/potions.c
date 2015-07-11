@@ -256,7 +256,7 @@ potion_quaff_something(void)
       io_msg("what an odd tasting potion!");
       return true;
   }
-  status();
+  io_refresh_statusline();
 
   /* Throw the item away */
   call_it("potion", &potion_info[obj->o.o_which]);

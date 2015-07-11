@@ -333,7 +333,7 @@ fight_against_player(THING* mp)
   }
 
   command_stop(false);
-  status();
+  io_refresh_statusline();
   return(mp == NULL ? -1 : 0);
 }
 

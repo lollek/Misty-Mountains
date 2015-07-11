@@ -68,6 +68,8 @@ typedef chtype glyph;
 extern WINDOW* hw;       /* used as a scratch window */
 char const* get_homedir(void); /* returns e.g. /home/user/ */
 bool step_ok(int ch);  /* True of it's OK to step on ch */
+/* Show window and wait before returning */
+void show_win(char const* message); 
 
 /* Encrypted read/write to/from file */
 size_t io_encwrite(char const* start, size_t size, FILE* outf);
@@ -83,9 +85,10 @@ void io_msg_clear(void);                   /* Remove displayed text */
 void io_missile_motion(THING* obj, int ydelta, int xdelta);
 
 /* Kill program with an error message */
-void fatal(char const* msg, ...) __attribute__((noreturn));
-void status(void);     /* Print the status line at the bottom of the screen */
-void show_win(char const* message); /* Show window and wait before returning */
+void io_fatal(char const* msg, ...) __attribute__((noreturn));
+
+/* Print the status line at the bottom of the screen */
+void io_refresh_statusline(void);
 
 /* get input */
 bool wreadstr(WINDOW* win, char* buf);   /* interruptable string from user */

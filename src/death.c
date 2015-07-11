@@ -48,7 +48,7 @@ death(int monst)
 {
   pack_gold -= pack_gold / 10;
 
-  status();
+  io_refresh_statusline();
   refresh();
   io_msg("You die!");
   readchar(false);

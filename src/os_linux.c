@@ -49,7 +49,7 @@ os_calloc_thing(void)
   THING* item = calloc(1, sizeof *item);
 
   if (item == NULL)
-    fatal("No virtual memory available!\n");
+    io_fatal("No virtual memory available!\n");
 
   assert(item->o.l_next == NULL);
   assert(item->o.l_prev == NULL);
