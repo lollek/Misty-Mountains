@@ -36,8 +36,8 @@ save_file(FILE* savef)
 #ifdef NDEBUG
   if (wizard)
   {
-    clearmsg();
-    msg("Cannot save as a wizard");
+    io_msg_clear();
+    io_msg("Cannot save as a wizard");
     return false;
   }
 #endif
@@ -53,28 +53,28 @@ bool
 save_game(void)
 {
   FILE *savef = NULL;
-  clearmsg();
+  io_msg_clear();
   while (savef == NULL)
   {
-    msg("save to file? ");
+    io_msg("save to file? ");
     if (readstr(save_file_name) != 0)
     {
-      clearmsg();
+      io_msg_clear();
       return false;
     }
-    clearmsg();
+    io_msg_clear();
 
     /* test to see if the file exists */
     struct stat sbuf;
     if (stat(save_file_name, &sbuf) >= 0)
     {
       int c;
-      msg("File exists.  Do you wish to overwrite it? ");
+      io_msg("File exists.  Do you wish to overwrite it? ");
       while ((c = readchar(true)) != 'y' && c != 'Y')
       {
         if (c == KEY_ESCAPE || c == 'n' || c == 'N')
         {
-          clearmsg();
+          io_msg_clear();
           return false;
         }
       }
@@ -83,7 +83,7 @@ save_game(void)
 
     savef = fopen(save_file_name, "w");
     if (savef == NULL)
-      msg(strerror(errno));
+      io_msg(strerror(errno));
   }
 
   bool did_save = save_file(savef);
@@ -93,7 +93,7 @@ save_game(void)
     exit(0);
   }
   else
-    msg("Error while saving");
+    io_msg("Error while saving");
   return false;
 }
 

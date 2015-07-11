@@ -236,7 +236,7 @@ init_old_game(void)
     printf("Cannot unlink file\n");
     return false;
   }
-  clearmsg();
+  io_msg_clear();
   clearok(stdscr,true);
 
   if (player_get_health() <= 0)
@@ -247,7 +247,7 @@ init_old_game(void)
   }
 
   clearok(curscr, true);
-  msg("file name: %s", save_file_name);
+  io_msg("file name: %s", save_file_name);
   return true;
 }
 

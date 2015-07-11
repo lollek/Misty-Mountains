@@ -112,7 +112,7 @@ is_quaffable(item const* item)
     return false;
   else if (item_type(item) != POTION)
   {
-    msg("that's undrinkable");
+    io_msg("that's undrinkable");
     return false;
   }
   else
@@ -156,13 +156,13 @@ potion_quaff_something(void)
       potion_learn(P_HEALING);
       player_restore_health(roll(player_get_level(), 4), true);
       player_remove_blind();
-      msg("you begin to feel better");
+      io_msg("you begin to feel better");
       break;
 
     case P_STRENGTH:
       potion_learn(P_STRENGTH);
       player_modify_strength(1);
-      msg("you feel stronger, now.  What bulging muscles!");
+      io_msg("you feel stronger, now.  What bulging muscles!");
       break;
 
     case P_MFIND:
@@ -201,7 +201,7 @@ potion_quaff_something(void)
 
       }
       else
-        msg("you have a strange feeling for a moment, then it passes");
+        io_msg("you have a strange feeling for a moment, then it passes");
     }
     break;
 
@@ -224,7 +224,7 @@ potion_quaff_something(void)
       player_restore_health(roll(player_get_level(), 8), true);
       player_remove_blind();
       player_remove_hallucinating();
-      msg("you begin to feel much better");
+      io_msg("you begin to feel much better");
       break;
 
     case P_HASTE:
@@ -236,10 +236,10 @@ potion_quaff_something(void)
       if (player_strength_is_weakened())
       {
         player_restore_strength();
-        msg("you feel your strength returning");
+        io_msg("you feel your strength returning");
       }
       else
-        msg("you feel warm all over");
+        io_msg("you feel warm all over");
       break;
 
     case P_BLIND:
@@ -253,7 +253,7 @@ potion_quaff_something(void)
       break;
 
     default:
-      msg("what an odd tasting potion!");
+      io_msg("what an odd tasting potion!");
       return true;
   }
   status();

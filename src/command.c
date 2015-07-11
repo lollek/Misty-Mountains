@@ -44,7 +44,7 @@
 static bool
 unknown_command(char ch)
 {
-  msg_unsaved("illegal command '%s'", unctrl(ch));
+  io_msg_unsaved("illegal command '%s'", unctrl(ch));
   return false;
 }
 
@@ -83,7 +83,7 @@ command(void)
     if (player_turns_without_action && --player_turns_without_action == 0)
     {
       player_start_running();
-      msg("you can move again");
+      io_msg("you can move again");
     }
 
     coord* player_pos = player_get_pos();
@@ -98,7 +98,7 @@ command(void)
       else
       {
         ch = readchar(false);
-        clearmsg();
+        io_msg_clear();
       }
 
       /* command_do returns 0 if player did something not in-game
@@ -134,7 +134,7 @@ command_do(char ch)
     case '>': return command_use_stairs(ch);
     case '<': return command_use_stairs(ch);
     case '?': return command_help();
-    case '!': msg("Shell has been removed, use ^Z instead"); return false;
+    case '!': io_msg("Shell has been removed, use ^Z instead"); return false;
     case '^': return command_identify_trap();
 
     /* Lower case */
@@ -174,7 +174,7 @@ command_do(char ch)
     case CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
     case CTRL('Y'): case CTRL('U'): case CTRL('B'): case CTRL('N'):
       return command_run(UNCTRL(ch), true);
-    case CTRL('P'): io_last_msg(); return false;
+    case CTRL('P'): io_msg_last(); return false;
     case CTRL('R'): clearok(curscr, true); wrefresh(curscr); return false;
     case CTRL('Z'): command_shell(); return false;
 
@@ -191,13 +191,13 @@ command_wizard_do(char ch)
   switch (ch)
   {
     case '_': raise(SIGINT); break;
-    case '|': msg("@ %d,%d", player_get_pos()->y, player_get_pos()->x); break;
+    case '|': io_msg("@ %d,%d", player_get_pos()->y, player_get_pos()->x); break;
     case 'C': wizard_create_item(); break;
-    case '$': msg("inpack = %d", pack_count_items()); break;
+    case '$': io_msg("inpack = %d", pack_count_items()); break;
     case CTRL('A'): level--; level_new(); break;
     case CTRL('C'): passages_add_pass(); break;
     case CTRL('D'): level++; level_new(); break;
-    case CTRL('E'): msg("food left: %d", food_nutrition_left()); break;
+    case CTRL('E'): io_msg("food left: %d", food_nutrition_left()); break;
     case CTRL('F'): wizard_show_map(); break;
     case CTRL('I'): wizard_levels_and_gear(); break;
     case CTRL('T'): player_teleport(NULL); break;
@@ -237,8 +237,8 @@ command_signal_quit(int sig)
   (void) sig;
 
   getyx(curscr, oy, ox);
-  clearmsg();
-  msg("really quit? ");
+  io_msg_clear();
+  io_msg("really quit? ");
 
   if (readchar(true) == 'y')
   {
@@ -250,7 +250,7 @@ command_signal_quit(int sig)
   else
   {
     status();
-    clearmsg();
+    io_msg_clear();
     move(oy, ox);
     refresh();
     command_stop(true);

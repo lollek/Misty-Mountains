@@ -64,17 +64,26 @@ typedef chtype glyph;
 #define RING		'='
 #define STICK		'/'
 
-/* Variables, TODO: Remove these */
+/* TODO: (Re)move these */
 extern WINDOW* hw;       /* used as a scratch window */
+char const* get_homedir(void); /* returns e.g. /home/user/ */
+bool step_ok(int ch);  /* True of it's OK to step on ch */
+
+/* Encrypted read/write to/from file */
+size_t io_encwrite(char const* start, size_t size, FILE* outf);
+size_t io_encread(char* start, size_t size, FILE* inf);
+
+/* Messages on the top line of the screen */
+void io_msg(char const* fmt, ...);         /* Display a message */
+void io_msg_unsaved(char const* fmt, ...); /* Unsaved msg() */
+void io_msg_add(char const* fmt, ...);     /* Add text to previous message */
+void io_msg_last(void);                    /* Reshow last msg */
+void io_msg_clear(void);                   /* Remove displayed text */
 
 void io_missile_motion(THING* obj, int ydelta, int xdelta);
 
 /* Kill program with an error message */
 void fatal(char const* msg, ...) __attribute__((noreturn));
-
-char const* get_homedir(void); /* returns e.g. /home/user/ */
-
-bool step_ok(int ch);  /* True of it's OK to step on ch */
 void status(void);     /* Print the status line at the bottom of the screen */
 void show_win(char const* message); /* Show window and wait before returning */
 
@@ -90,15 +99,7 @@ void wait_for(int ch); /* Wait for the specified key */
 bool fail(char const* fmt, ...);
 #endif /* NDEBUG */
 
-size_t io_encwrite(char const* start, size_t size, FILE* outf);
-size_t io_encread(char* start, size_t size, FILE* inf);
 
-/* Message player */
-int io_last_msg(void); /* Reshow last msg */
-int clearmsg(void);            /* Remove displayed text */
-int msg(char const* fmt, ...); /* Display a message at the top of the screen. */
-int msg_unsaved(char const* fmt, ...); /* msg() which does not save the msg */
-void addmsg(char const* fmt, ...);       /* Add things to the current message */
 
 
 

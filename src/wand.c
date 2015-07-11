@@ -180,13 +180,13 @@ wand_spell_light(void)
 {
   if (player_get_room()->r_flags & ISGONE)
   {
-    msg("the corridor glows and then fades");
+    io_msg("the corridor glows and then fades");
     return;
   }
 
   player_get_room()->r_flags &= ~ISDARK;
   room_enter(player_get_pos());
-  msg("the rooms is lit by a shimmering %s light", pick_color("blue"));
+  io_msg("the rooms is lit by a shimmering %s light", pick_color("blue"));
 }
 
 /* take away 1/2 of hero's hit points, then take it away
@@ -216,13 +216,13 @@ wand_spell_drain_health(void)
   int cnt = (int)(dp - drainee);
   if (cnt == 0)
   {
-    msg("you have a tingling feeling");
+    io_msg("you have a tingling feeling");
     return;
   }
 
   *dp = NULL;
   player_lose_health(player_get_health() / 2);
-  msg("You feel an intense pain");
+  io_msg("You feel an intense pain");
   cnt = player_get_health() / cnt;
 
   /* Now zot all of the monsters */
@@ -236,7 +236,7 @@ wand_spell_drain_health(void)
     {
       monster_start_running(&mp->t.t_pos);
       char buf[MAXSTR];
-      msg("%s screams in pain", monster_name(mp, buf));
+      io_msg("%s screams in pain", monster_name(mp, buf));
     }
   }
 }
@@ -262,7 +262,7 @@ wand_spell_polymorph(THING* target)
   {
     mvaddcch(pos.y, pos.x, level_get_ch(pos.y, pos.x));
     char buf[MAXSTR];
-    addmsg("%s", monster_name(target, buf));
+    io_msg_add("%s", monster_name(target, buf));
   }
 
   char oldch = target->t.t_oldch;
@@ -275,15 +275,15 @@ wand_spell_polymorph(THING* target)
   {
     mvaddcch(pos.y, pos.x, monster);
     if (same_monster)
-      msg(" now looks a bit different");
+      io_msg(" now looks a bit different");
     else
     {
       char buf[MAXSTR];
-      msg(" turned into a %s", monster_name(target, buf));
+      io_msg(" turned into a %s", monster_name(target, buf));
     }
   }
   else if (was_seen)
-    msg(" disappeared");
+    io_msg(" disappeared");
 
   target->t.t_oldch = oldch;
   target->t.t_pack = target_pack;
@@ -327,11 +327,11 @@ wand_spell_magic_missile(int dy, int dx)
 
   THING* target = level_get_monster(bolt.o.o_pos.y, bolt.o.o_pos.x);
   if (target == NULL)
-    msg("the missle vanishes with a puff of smoke");
+    io_msg("the missle vanishes with a puff of smoke");
   else if (monster_save_throw(VS_MAGIC, target))
   {
     char buf[MAXSTR];
-    msg("the missle missed the %s", monster_name(target, buf));
+    io_msg("the missle missed the %s", monster_name(target, buf));
   }
   else
     fight_against_monster(&bolt.o.o_pos, &bolt, true);
@@ -352,12 +352,12 @@ wand_zap(void)
     return false;
   else if (obj->o.o_type != STICK)
   {
-    msg("you can't zap with that!");
+    io_msg("you can't zap with that!");
     return false;
   }
   else if (obj->o.o_charges == 0)
   {
-    msg("nothing happens");
+    io_msg("nothing happens");
     return true;
   }
 
@@ -378,7 +378,7 @@ wand_zap(void)
         wand_spell_drain_health();
       else
       {
-        msg("you are too weak to use it");
+        io_msg("you are too weak to use it");
         return true;
       }
       break;
@@ -388,7 +388,7 @@ wand_zap(void)
       if (tp != NULL)
         monster_set_invisible(tp);
       else
-        msg("You did not hit anything");
+        io_msg("You did not hit anything");
       break;
 
     case WS_POLYMORPH:
@@ -396,7 +396,7 @@ wand_zap(void)
       if (tp != NULL)
         wand_spell_polymorph(tp);
       else
-        msg("You did not hit anything");
+        io_msg("You did not hit anything");
       break;
 
     case WS_CANCEL:
@@ -404,7 +404,7 @@ wand_zap(void)
       if (tp != NULL)
         wand_spell_cancel(tp);
       else
-        msg("You did not hit anything");
+        io_msg("You did not hit anything");
       break;
 
     case WS_TELAWAY:
@@ -427,7 +427,7 @@ wand_zap(void)
         player_teleport(&new_pos);
       }
       else
-        msg("You did not hit anything");
+        io_msg("You did not hit anything");
       break;
 
     case WS_MISSILE:
@@ -447,10 +447,10 @@ wand_zap(void)
             tp->t.t_flags |= ISHASTE;
           monster_start_running(&c);
           char buf[MAXSTR];
-          msg("%s became faster", monster_name(tp, buf));
+          io_msg("%s became faster", monster_name(tp, buf));
         }
         else
-          msg("You did not hit anything");
+          io_msg("You did not hit anything");
       }
       break;
 
@@ -467,10 +467,10 @@ wand_zap(void)
           tp->t.t_turn = true;
           monster_start_running(&c);
           char buf[MAXSTR];
-          msg("%s became slower", monster_name(tp, buf));
+          io_msg("%s became slower", monster_name(tp, buf));
         }
         else
-          msg("You did not hit anything");
+          io_msg("You did not hit anything");
       }
       break;
 
@@ -490,11 +490,11 @@ wand_zap(void)
       break;
 
     case WS_NOP:
-      msg("You are usure if anything happened");
+      io_msg("You are usure if anything happened");
       break;
 
     default:
-      msg("what a bizarre schtick!");
+      io_msg("what a bizarre schtick!");
       break;
     }
 

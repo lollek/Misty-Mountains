@@ -89,7 +89,7 @@ move_do(char ch)
     if (player_turns_without_moving)
     {
 	player_turns_without_moving--;
-	msg("you are still stuck in the bear trap");
+	io_msg("you are still stuck in the bear trap");
 	return true;
     }
 
@@ -144,7 +144,7 @@ over:
     }
     else if (player_is_held() && ch != 'F')
     {
-      msg("you are being held");
+      io_msg("you are being held");
       return after;
     }
 

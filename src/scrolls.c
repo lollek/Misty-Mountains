@@ -165,16 +165,16 @@ enchant_players_armor(void)
   {
     switch (os_rand_range(3))
     {
-      case 0: msg("you are unsure if anything happened"); break;
-      case 1: msg("you feel naked"); break;
-      case 2: msg("you feel like something just touched you"); break;
+      case 0: io_msg("you are unsure if anything happened"); break;
+      case 1: io_msg("you feel naked"); break;
+      case 2: io_msg("you feel like something just touched you"); break;
     }
     return false;
   }
 
   arm->o.o_arm--;
   arm->o.o_flags &= ~ISCURSED;
-  msg("your armor glows %s for a moment", pick_color("silver"));
+  io_msg("your armor glows %s for a moment", pick_color("silver"));
   return true;
 }
 
@@ -203,16 +203,16 @@ hold_monsters(void)
   if (monsters_affected == 1)
   {
     char buf[MAXSTR];
-    msg("%s freezes", monster_name(held_monster, buf));
+    io_msg("%s freezes", monster_name(held_monster, buf));
   }
   else if (monsters_affected > 1)
-    msg("the monsters around you freeze");
+    io_msg("the monsters around you freeze");
   else /* monsters_affected == 0 */
     switch (os_rand_range(3))
     {
-      case 0: msg("you are unsure if anything happened"); break;
-      case 1: msg("you feel a strange sense of loss"); break;
-      case 2: msg("you feel a powerful aura"); break;
+      case 0: io_msg("you are unsure if anything happened"); break;
+      case 1: io_msg("you feel a strange sense of loss"); break;
+      case 2: io_msg("you feel a powerful aura"); break;
     }
 
   return monsters_affected;
@@ -243,16 +243,16 @@ create_monster(void)
   if (i == 0)
     switch (os_rand_range(3))
     {
-      case 0: msg("you are unsure if anything happened"); break;
-      case 1: msg("you hear a faint cry of anguish in the distance"); break;
-      case 2: msg("you think you felt someone's presence"); break;
+      case 0: io_msg("you are unsure if anything happened"); break;
+      case 1: io_msg("you hear a faint cry of anguish in the distance"); break;
+      case 2: io_msg("you think you felt someone's presence"); break;
     }
   else
   {
     char buf[MAXSTR];
     THING *obj = os_calloc_thing();
     monster_new(obj, monster_random(false), &mp);
-    msg("A %s appears out of thin air", monster_name(obj, buf));
+    io_msg("A %s appears out of thin air", monster_name(obj, buf));
   }
 
   return i;
@@ -340,7 +340,7 @@ food_detection(void)
   if (food_seen)
     show_win("Your nose tingles and you smell food.--More--");
   else
-    msg("your nose tingles");
+    io_msg("your nose tingles");
 
   return food_seen;
 }
@@ -353,8 +353,8 @@ player_enchant_weapon(void)
   {
     switch (os_rand_range(2))
     {
-      case 0: msg("you feel a strange sense of loss"); break;
-      case 1: msg("you are unsure if anything happened"); break;
+      case 0: io_msg("you feel a strange sense of loss"); break;
+      case 1: io_msg("you are unsure if anything happened"); break;
     }
     return false;
   }
@@ -364,7 +364,7 @@ player_enchant_weapon(void)
     weapon->o.o_hplus++;
   else
     weapon->o.o_dplus++;
-  msg("your %s glows %s for a moment",
+  io_msg("your %s glows %s for a moment",
       weapon_info[weapon->o.o_which].oi_name, pick_color("blue"));
 
   return true;
@@ -377,7 +377,7 @@ remove_curse(void)
     if (pack_equipped_item((enum equipment_pos)i) != NULL)
       pack_uncurse_item(&pack_equipped_item((enum equipment_pos)i)->o);
 
-  msg(player_is_hallucinating()
+  io_msg(player_is_hallucinating()
       ? "you feel in touch with the Universal Onenes"
       : "you feel as if somebody is watching over you");
 }
@@ -390,14 +390,14 @@ protect_armor(void)
   {
     switch (os_rand_range(2))
     {
-      case 0: msg("you feel a strange sense of loss"); break;
-      case 1: msg("you are unsure if anything happened"); break;
+      case 0: io_msg("you feel a strange sense of loss"); break;
+      case 1: io_msg("you are unsure if anything happened"); break;
     }
     return false;
   }
 
   arm->o.o_flags |= ISPROT;
-  msg("your armor is covered by a shimmering %s shield", pick_color("gold"));
+  io_msg("your armor is covered by a shimmering %s shield", pick_color("gold"));
   return true;
 }
 
@@ -410,7 +410,7 @@ scroll_read(void)
 
   if (obj->o.o_type != SCROLL)
   {
-    msg("there is nothing on it to read");
+    io_msg("there is nothing on it to read");
     return false;
   }
 
@@ -442,13 +442,13 @@ scroll_read(void)
       break;
     case S_ID:
       if (!scroll_is_known(S_ID))
-        msg("this scroll is an %s scroll", scroll_info[obj->o.o_which].oi_name);
+        io_msg("this scroll is an %s scroll", scroll_info[obj->o.o_which].oi_name);
       scroll_learn(S_ID);
       pack_identify_item();
       break;
     case S_MAP:
       scroll_learn(S_MAP);
-      msg("this scroll has a map on it");
+      io_msg("this scroll has a map on it");
       magic_mapping();
       break;
     case S_FDET:
@@ -464,7 +464,7 @@ scroll_read(void)
       break;
     case S_SCARE:
       /* Reading it is a mistake and produces laughter at her poor boo boo. */
-      msg("you hear maniacal laughter in the distance");
+      io_msg("you hear maniacal laughter in the distance");
       break;
     case S_REMOVE:
       remove_curse();
@@ -473,13 +473,13 @@ scroll_read(void)
       /* This scroll aggravates all the monsters on the current
        * level and sets them running towards the hero */
       aggravate();
-      msg("you hear a high pitched humming noise");
+      io_msg("you hear a high pitched humming noise");
       break;
     case S_PROTECT:
       protect_armor();
       break;
     default:
-      msg("what a puzzling scroll!");
+      io_msg("what a puzzling scroll!");
       return true;
   }
   obj = orig_obj;

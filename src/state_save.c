@@ -27,7 +27,7 @@
 
 #define SUCCESS 0
 
-#define rs_assert(_a) if (_a) { return msg("Error (#%d)", __LINE__); }
+#define rs_assert(_a) if (_a) { io_msg("Error (#%d)", __LINE__); return 1; }
 
 static FILE* file;
 

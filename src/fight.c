@@ -209,7 +209,7 @@ print_attack(bool hit, char const* att, char const* def)
   if (att != NULL)
     i += 4;
 
-  msg("%s %s %s",
+  io_msg("%s %s %s",
       att == NULL ? "you" : att,
       hit ? h_names[i] : m_names[i],
       def == NULL ? "you" : def);
@@ -232,7 +232,7 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
   if (tp->t.t_type == 'X' && tp->t.t_disguise != 'X' && !player_is_blind())
   {
       tp->t.t_disguise = 'X';
-      msg("wait!  That's a xeroc!");
+      io_msg("wait!  That's a xeroc!");
       if (!thrown)
           return false;
   }
@@ -253,10 +253,10 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
       if (thrown)
       {
         if (weapon->o.o_type == WEAPON)
-          addmsg("the %s hits ", weapon_info[weapon->o.o_which].oi_name);
+          io_msg_add("the %s hits ", weapon_info[weapon->o.o_which].oi_name);
         else
-          addmsg("you hit ");
-        msg("%s", mname);
+          io_msg_add("you hit ");
+        io_msg("%s", mname);
       }
       else
         print_attack(true, (char *) NULL, mname);
@@ -268,8 +268,8 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
       player_remove_confusing_attack();
       if (!player_is_blind())
       {
-        msg("your hands stop glowing %s", pick_color("red"));
-        msg("%s appears confused", mname);
+        io_msg("your hands stop glowing %s", pick_color("red"));
+        io_msg("%s appears confused", mname);
       }
     }
 
@@ -341,7 +341,7 @@ int
 fight_swing_hits(int at_lvl, int op_arm, int wplus)
 {
   int rand = os_rand_range(20);
-  /* msg("%d + %d + %d vs %d", at_lvl, wplus, rand, op_arm); */
+  /* io_msg("%d + %d + %d vs %d", at_lvl, wplus, rand, op_arm); */
   return at_lvl + wplus + rand >= op_arm;
 }
 
@@ -349,7 +349,7 @@ void
 fight_missile_miss(THING const* weap, char const* mname)
 {
   if (weap->o.o_type == WEAPON)
-    msg("the %s misses %s", weapon_info[weap->o.o_which].oi_name, mname);
+    io_msg("the %s misses %s", weapon_info[weap->o.o_which].oi_name, mname);
   else
-    msg("you missed %s", mname);
+    io_msg("you missed %s", mname);
 }

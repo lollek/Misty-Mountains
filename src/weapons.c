@@ -112,7 +112,7 @@ weapon_missile_fall(THING* obj, bool pr)
   }
 
   if (pr)
-    msg("the %s vanishes as it hits the ground",
+    io_msg("the %s vanishes as it hits the ground",
         weapon_info[obj->o.o_which].oi_name);
   os_remove_thing(&obj);
 }
@@ -173,7 +173,7 @@ weapon_wield(THING* weapon)
   pack_equip_item(weapon);
 
   char buf[MAXSTR];
-  msg("wielding %s", inv_name(buf, weapon, true));
+  io_msg("wielding %s", inv_name(buf, weapon, true));
   last_wielded_weapon = currently_wielding;
   return true;
 }
@@ -190,7 +190,7 @@ weapon_wield_last_used(void)
   if (last_wielded_weapon == NULL || !pack_contains(last_wielded_weapon))
   {
     last_wielded_weapon = NULL;
-    msg("you have no weapon to switch to");
+    io_msg("you have no weapon to switch to");
     return false;
   }
 

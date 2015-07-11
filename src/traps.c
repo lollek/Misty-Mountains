@@ -35,7 +35,7 @@ trap_door_player(void)
 {
   level++;
   level_new();
-  msg("you fell into a trap!");
+  io_msg("you fell into a trap!");
   return T_DOOR;
 }
 
@@ -47,7 +47,7 @@ trap_door_monster(THING* victim)
   if (monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    msg("%s fell through the floor", monster_name(victim, buf));
+    io_msg("%s fell through the floor", monster_name(victim, buf));
   }
   monster_remove_from_screen(&victim->t.t_pos, victim, false);
   return T_DOOR;
@@ -57,7 +57,7 @@ static enum trap_t
 trap_bear_player(void)
 {
   player_become_stuck();
-  msg("you are caught in a bear trap");
+  io_msg("you are caught in a bear trap");
   return T_BEAR;
 }
 
@@ -69,7 +69,7 @@ trap_bear_monster(THING* victim)
   if (monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    msg("%s was caught in a bear trap", monster_name(victim, buf));
+    io_msg("%s was caught in a bear trap", monster_name(victim, buf));
   }
   monster_become_stuck(victim);
   return T_BEAR;
@@ -80,17 +80,17 @@ trap_myst_player(void)
 {
   switch(os_rand_range(11))
   {
-    case 0: msg("you are suddenly in a parallel dimension"); break;
-    case 1: msg("the light in here suddenly seems %s", color_random()); break;
-    case 2: msg("you feel a sting in the side of your neck"); break;
-    case 3: msg("multi-colored lines swirl around you, then fade"); break;
-    case 4: msg("a %s light flashes in your eyes", color_random()); break;
-    case 5: msg("a spike shoots past your ear!"); break;
-    case 6: msg("%s sparks dance across your armor", color_random()); break;
-    case 7: msg("you suddenly feel very thirsty"); break;
-    case 8: msg("you feel time speed up suddenly"); break;
-    case 9: msg("time now seems to be going slower"); break;
-    case 10: msg("you pack turns %s!", color_random()); break;
+    case 0: io_msg("you are suddenly in a parallel dimension"); break;
+    case 1: io_msg("the light in here suddenly seems %s", color_random()); break;
+    case 2: io_msg("you feel a sting in the side of your neck"); break;
+    case 3: io_msg("multi-colored lines swirl around you, then fade"); break;
+    case 4: io_msg("a %s light flashes in your eyes", color_random()); break;
+    case 5: io_msg("a spike shoots past your ear!"); break;
+    case 6: io_msg("%s sparks dance across your armor", color_random()); break;
+    case 7: io_msg("you suddenly feel very thirsty"); break;
+    case 8: io_msg("you feel time speed up suddenly"); break;
+    case 9: io_msg("time now seems to be going slower"); break;
+    case 10: io_msg("you pack turns %s!", color_random()); break;
   }
   return T_MYST;
 }
@@ -103,7 +103,7 @@ trap_myst_monster(THING* victim)
   if (monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    msg("%s seems to have stepped on something", monster_name(victim, buf));
+    io_msg("%s seems to have stepped on something", monster_name(victim, buf));
   }
   return T_MYST;
 }
@@ -112,7 +112,7 @@ static enum trap_t
 trap_sleep_player(void)
 {
   player_fall_asleep();
-  addmsg("a strange white mist envelops you and ");
+  io_msg_add("a strange white mist envelops you and ");
   return T_SLEEP;
 }
 
@@ -124,7 +124,7 @@ trap_sleep_monster(THING* victim)
   if (monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    msg("%s collapsed to the ground", monster_name(victim, buf));
+    io_msg("%s collapsed to the ground", monster_name(victim, buf));
   }
   monster_become_held(victim);
   return T_SLEEP;
@@ -138,11 +138,11 @@ trap_arrow_player(void)
     player_lose_health(roll(1, 6));
     if (player_get_health() <= 0)
     {
-      msg("an arrow killed you");
+      io_msg("an arrow killed you");
       death(DEATH_ARROW);
     }
     else
-      msg("oh no! An arrow shot you");
+      io_msg("oh no! An arrow shot you");
   }
   else
   {
@@ -150,7 +150,7 @@ trap_arrow_player(void)
     arrow->o.o_count = 1;
     arrow->o.o_pos = *player_get_pos();
     weapon_missile_fall(arrow, false);
-    msg("an arrow shoots past you");
+    io_msg("an arrow shoots past you");
   }
   return T_ARROW;
 }
@@ -169,10 +169,10 @@ trap_arrow_monster(THING* victim)
     {
       monster_on_death(victim, false);
       if (monster_seen_by_player(victim))
-        msg("An arrow killed %s", monster_name(victim, buf));
+        io_msg("An arrow killed %s", monster_name(victim, buf));
     }
     else if (monster_seen_by_player(victim))
-      msg("An arrow shot %s", monster_name(victim, buf));
+      io_msg("An arrow shot %s", monster_name(victim, buf));
   }
   else
   {
@@ -181,7 +181,7 @@ trap_arrow_monster(THING* victim)
     arrow->o.o_pos = victim->t.t_pos;
     weapon_missile_fall(arrow, false);
     if (monster_seen_by_player(victim))
-      msg("An arrow barely missed %s", monster_name(victim, buf));
+      io_msg("An arrow barely missed %s", monster_name(victim, buf));
   }
   return T_ARROW;
 }
@@ -203,22 +203,22 @@ trap_telep_monster(THING* victim)
   if (was_seen)
   {
     char buf[MAXSTR];
-    addmsg("%s ", monster_name(victim, buf));
+    io_msg_add("%s ", monster_name(victim, buf));
   }
 
   monster_teleport(victim, NULL);
   if (was_seen)
   {
     if (monster_seen_by_player(victim))
-      msg("teleported a short distance");
+      io_msg("teleported a short distance");
     else
-      msg("disappeared");
+      io_msg("disappeared");
   }
 
   if (!was_seen && monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    msg("%s appeared out of thin air", monster_name(victim, buf));
+    io_msg("%s appeared out of thin air", monster_name(victim, buf));
   }
 
   return T_TELEP;
@@ -228,18 +228,18 @@ static enum trap_t
 trap_dart_player(void)
 {
   if (!fight_swing_hits(player_get_level() + 1, player_get_armor(), 1))
-    msg("a small dart whizzes by your ear and vanishes");
+    io_msg("a small dart whizzes by your ear and vanishes");
   else
   {
     player_lose_health(roll(1, 4));
     if (player_get_health() <= 0)
     {
-      msg("a poisoned dart killed you");
+      io_msg("a poisoned dart killed you");
       death(DEATH_DART);
     }
     if (!player_has_ring_with_ability(R_SUSTSTR) && !player_save_throw(VS_POISON))
       player_modify_strength(-1);
-    msg("a small dart just hit you in the shoulder");
+    io_msg("a small dart just hit you in the shoulder");
   }
   return T_DART;
 }
@@ -260,19 +260,19 @@ trap_dart_monster(THING* victim)
       if (monster_seen_by_player(victim))
       {
         char buf[MAXSTR];
-        msg("A poisoned dart killed %s", monster_name(victim, buf));
+        io_msg("A poisoned dart killed %s", monster_name(victim, buf));
       }
     }
     else if (monster_seen_by_player(victim))
     {
       char buf[MAXSTR];
-      msg("An dart hit %s", monster_name(victim, buf));
+      io_msg("An dart hit %s", monster_name(victim, buf));
     }
   }
   else if (monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    msg("A dart barely missed %s", monster_name(victim, buf));
+    io_msg("A dart barely missed %s", monster_name(victim, buf));
   }
   return T_DART;
 }
@@ -280,7 +280,7 @@ trap_dart_monster(THING* victim)
 static enum trap_t
 trap_rust_player(void)
 {
-  msg("a gush of water hits you on the head");
+  io_msg("a gush of water hits you on the head");
   armor_rust();
   return T_RUST;
 }
@@ -293,7 +293,7 @@ trap_rust_monster(THING* victim)
   if (monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    msg("a gush of water hits %s", monster_name(victim, buf));
+    io_msg("a gush of water hits %s", monster_name(victim, buf));
   }
   return T_RUST;
 }

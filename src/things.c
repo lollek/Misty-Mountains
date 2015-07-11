@@ -71,7 +71,7 @@ inv_name(char* buf, THING* obj, bool drop)
     case AMULET: strcpy(buf, "The Amulet of Yendor"); break;
     case GOLD:   sprintf(buf, "%d Gold pieces", obj->o.o_goldval); break;
     default:
-      msg("You feel a disturbance in the force");
+      io_msg("You feel a disturbance in the force");
       sprintf(buf, "Something bizarre %s", unctrl((chtype)obj->o.o_type));
       break;
   }
@@ -131,7 +131,7 @@ new_thing(void)
     case 5: cur = ring_create(-1, true); break;
     case 6: cur = wand_create(-1); break;
     default:
-      msg("Picked a bad kind of object (this should not happen)");
+      io_msg("Picked a bad kind of object (this should not happen)");
       wait_for(KEY_SPACE);
       break;
   }
@@ -203,7 +203,7 @@ discovered_by_type(char type, struct obj_info* info, int max_items)
 void
 discovered(void)
 {
-  msg("for what type of objects do you want a list? (%c%c%c%c) ",
+  io_msg("for what type of objects do you want a list? (%c%c%c%c) ",
       POTION, SCROLL, RING, STICK);
   while (true)
   {
@@ -216,11 +216,11 @@ discovered(void)
       case SCROLL: discovered_by_type(ch, scroll_info, NSCROLLS); break;
       case RING: discovered_by_type(ch, ring_info, NRINGS); break;
       case STICK: discovered_by_type(ch, __wands_ptr(), MAXSTICKS); break;
-      default: clearmsg(); return;
+      default: io_msg_clear(); return;
     }
   }
 
   touchwin(stdscr);
-  clearmsg();
+  io_msg_clear();
 }
 

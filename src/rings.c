@@ -153,14 +153,14 @@ ring_put_on(void)
 
   if (obj->o.o_type != RING)
   {
-    msg("not a ring");
+    io_msg("not a ring");
     return ring_put_on();
   }
 
   /* Try to put it on */
   if (!pack_equip_item(obj))
   {
-    msg("you already have a ring on each hand");
+    io_msg("you already have a ring on each hand");
     return false;
   }
   pack_remove(obj, false, true);
@@ -176,7 +176,7 @@ ring_put_on(void)
   char buf[MAXSTR];
   ring_description(&obj->o, buf);
   buf[0] = (char)tolower(buf[0]);
-  msg("now wearing %s", buf);
+  io_msg("now wearing %s", buf);
   return true;
 }
 

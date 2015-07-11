@@ -91,10 +91,10 @@ magic_bolt_hit_player(coord* start, char const* missile_name)
       else
         death(level_get_monster(start->y, start->x)->t.t_type);
     }
-    msg("you are hit by the %s", missile_name);
+    io_msg("you are hit by the %s", missile_name);
   }
   else
-    msg("the %s whizzes by you", missile_name);
+    io_msg("the %s whizzes by you", missile_name);
 }
 
 static void
@@ -116,7 +116,7 @@ magic_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
     weapon_info[FLAME].oi_name = missile_name;
 
     if (mon->t.t_type == 'D' && strcmp(missile_name, "flame") == 0)
-      msg("the flame bounces off the dragon");
+      io_msg("the flame bounces off the dragon");
     else
       fight_against_monster(pos, &bolt, true);
   }
@@ -127,7 +127,7 @@ magic_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
     else
     {
       char buf[MAXSTR];
-      msg("the %s whizzes past %s", missile_name, monster_name(mon, buf));
+      io_msg("the %s whizzes past %s", missile_name, monster_name(mon, buf));
     }
   }
 }
@@ -190,7 +190,7 @@ magic_bolt(coord* start, coord* dir, char* name)
     pos.x += dir->x;
 
     if (magic_bolt_handle_bounces(&pos, dir, &dirtile))
-      msg("the %s bounces", name);
+      io_msg("the %s bounces", name);
 
     /* Handle potential hits */
     if (coord_same(&pos, player_get_pos()))

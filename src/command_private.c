@@ -34,7 +34,7 @@ static bool command_attack_bow(coord const* delta)
 
   if (ptr == NULL)
   {
-    msg("you've run out of arrows!");
+    io_msg("you've run out of arrows!");
     return true;
   }
 
@@ -69,7 +69,7 @@ static bool command_attack_melee(bool fight_to_death, coord* delta)
     default: what = "air"; break;
   }
 
-  msg("you swing at the %s", what);
+  io_msg("you swing at the %s", what);
   return true;
 }
 
@@ -81,9 +81,9 @@ command_use_stairs(char up_or_down)
   assert (up_or_down == '>' || up_or_down == '<');
 
   if (player_is_levitating())
-    msg("You can't. You're floating off the ground!");
+    io_msg("You can't. You're floating off the ground!");
   else if (level_get_ch(player_pos->y, player_pos->x) != STAIRS)
-    msg("You're not standing on any stairs");
+    io_msg("You're not standing on any stairs");
 
   else if (up_or_down == '>') /* DOWN */
   {
@@ -113,7 +113,7 @@ command_use_stairs(char up_or_down)
     level_new();
 
     if (has_amulet)
-      msg("you feel a wrenching sensation in your gut");
+      io_msg("you feel a wrenching sensation in your gut");
   }
 
   return false;
@@ -150,7 +150,7 @@ command_name_item(void)
   char** guess;
   switch (obj->o.o_type)
   {
-    case FOOD: msg("Don't play with your food!"); return false;
+    case FOOD: io_msg("Don't play with your food!"); return false;
 
     case RING:
       already_known = ring_is_known((enum ring_t)obj->o.o_which);
@@ -180,11 +180,11 @@ command_name_item(void)
 
   if (already_known)
   {
-    msg("that has already been identified");
+    io_msg("that has already been identified");
     return false;
   }
 
-  msg("what do you want to call it? ");
+  io_msg("what do you want to call it? ");
 
   char tmpbuf[MAXSTR] = { '\0' };
   if (readstr(tmpbuf) == 0)
@@ -207,27 +207,27 @@ command_name_item(void)
     }
   }
 
-  clearmsg();
+  io_msg_clear();
   return false;
 }
 
 bool
 command_identify_character(void)
 {
-  msg("what do you want identified? ");
+  io_msg("what do you want identified? ");
   int ch = readchar(true);
-  clearmsg();
+  io_msg_clear();
 
   if (ch == KEY_ESCAPE)
   {
-    clearmsg();
+    io_msg_clear();
     return false;
   }
 
   if (isalpha(ch))
   {
     ch = toupper(ch);
-    msg("'%s': %s", unctrl((chtype)ch), monster_name_by_type((char)ch));
+    io_msg("'%s': %s", unctrl((chtype)ch), monster_name_by_type((char)ch));
     return false;
   }
 
@@ -250,11 +250,11 @@ command_identify_character(void)
   for (struct character_list const* ptr = ident_list; ptr->ch != '\0'; ++ptr)
     if (ptr->ch == ch)
     {
-      msg("'%s': %s", unctrl((chtype)ch), ptr->description);
+      io_msg("'%s': %s", unctrl((chtype)ch), ptr->description);
       return false;
     }
 
-  msg("'%s': %s", unctrl((chtype)ch), "unknown character");
+  io_msg("'%s': %s", unctrl((chtype)ch), "unknown character");
   return false;
 }
 
@@ -273,12 +273,12 @@ command_identify_trap(void)
   int flags = level_get_flags(delta.y, delta.x);
 
   if (level_get_ch(delta.y, delta.x) != TRAP)
-    msg("no trap there");
+    io_msg("no trap there");
   else if (player_has_confusing_attack())
-    msg(trap_names[os_rand_range(NTRAPS)]);
+    io_msg(trap_names[os_rand_range(NTRAPS)]);
   else
   {
-    msg(trap_names[flags & F_TMASK]);
+    io_msg(trap_names[flags & F_TMASK]);
     flags |= F_SEEN;
     level_set_flags(delta.y, delta.x, (char)flags);
   }
@@ -296,7 +296,7 @@ bool
 command_pick_up(void)
 {
   if (player_is_levitating())
-    msg("You can't. You're floating off the ground!");
+    io_msg("You can't. You're floating off the ground!");
 
   coord const* player_pos = player_get_pos();
 
@@ -307,7 +307,7 @@ command_pick_up(void)
       return true;
     }
 
-  msg("nothing to pick up");
+  io_msg("nothing to pick up");
   return false;
 }
 
@@ -383,9 +383,9 @@ command_help(void)
   };
   int const helpstrsize = sizeof(helpstr) / sizeof(*helpstr);
 
-  msg("character you want help for (* for all): ");
+  io_msg("character you want help for (* for all): ");
   char helpch = readchar(true);
-  clearmsg();
+  io_msg_clear();
 
   /* If its not a *, print the right help string
    * or an error if he typed a funny character. */
@@ -395,10 +395,10 @@ command_help(void)
     for (int i = 0; i < helpstrsize; ++i)
       if (helpstr[i].sym == helpch)
       {
-        msg("%s)%s", unctrl(helpstr[i].sym), helpstr[i].description);
+        io_msg("%s)%s", unctrl(helpstr[i].sym), helpstr[i].description);
         return false;
       }
-    msg("unknown character '%s'", unctrl(helpch));
+    io_msg("unknown character '%s'", unctrl(helpch));
     return false;
   }
 
@@ -436,7 +436,7 @@ command_help(void)
   wait_for(KEY_SPACE);
   clearok(stdscr, true);
 
-  clearmsg();
+  io_msg_clear();
   touchwin(stdscr);
   wrefresh(stdscr);
   return false;
@@ -468,15 +468,15 @@ command_show_inventory(void)
 {
   if (pack_is_empty())
   {
-    msg("You inventory is empty");
+    io_msg("You inventory is empty");
     return false;
   }
 
   pack_print_inventory(0);
-  msg("--Press any key to continue--");
+  io_msg("--Press any key to continue--");
   readchar(false);
   pack_clear_inventory();
-  clearmsg();
+  io_msg_clear();
   return false;
 }
 
@@ -506,7 +506,7 @@ bool command_throw(void)
 
   if (obj->o.o_type == ARMOR)
   {
-    msg("you can't throw armor");
+    io_msg("you can't throw armor");
     return false;
   }
 
@@ -534,7 +534,7 @@ bool command_throw(void)
   if (missed)
   {
     if (obj->o.o_type == POTION)
-      msg("the potion crashes into the wall");
+      io_msg("the potion crashes into the wall");
     else
       weapon_missile_fall(obj, true);
   }
@@ -554,7 +554,7 @@ command_wield(void)
 
   if (obj->o.o_type == ARMOR)
   {
-    msg("you can't wield armor");
+    io_msg("you can't wield armor");
     return command_wield();
   }
 
@@ -566,17 +566,17 @@ bool command_rest(void)
   for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
     if (monster_seen_by_player(mon))
     {
-      msg("cannot rest with monsters nearby");
+      io_msg("cannot rest with monsters nearby");
       return false;
     }
 
   if (!player_is_hurt())
   {
-    msg("you don't feel the least bit tired");
+    io_msg("you don't feel the least bit tired");
     return false;
   }
 
-  msg("you rest for a while");
+  io_msg("you rest for a while");
   player_alerted = false;
   while (!player_alerted && player_is_hurt())
   {
@@ -595,24 +595,24 @@ command_eat(void)
 
   if (obj->o.o_type != FOOD)
   {
-    msg("that's inedible!");
+    io_msg("that's inedible!");
     return false;
   }
 
   food_eat();
 
   if (obj->o.o_which == 1)
-    msg("my, that was a yummy fruit");
+    io_msg("my, that was a yummy fruit");
 
   else if (os_rand_range(100) > 70)
   {
     player_earn_exp(1);
-    msg("this food tastes awful");
+    io_msg("this food tastes awful");
     player_check_for_level_up();
   }
 
   else
-    msg("that tasted good");
+    io_msg("that tasted good");
 
   pack_remove(obj, false, false);
   return true;
@@ -639,7 +639,7 @@ bool command_drop(void)
 
   if (ch != FLOOR && ch != PASSAGE)
   {
-    msg("there is something there already");
+    io_msg("there is something there already");
     return false;
   }
 
@@ -650,9 +650,9 @@ bool command_drop(void)
   bool drop_all = false;
   if (obj->o.o_count > 1)
   {
-    msg("Drop all? (y/N) ");
+    io_msg("Drop all? (y/N) ");
     drop_all = readchar(true) == 'y';
-    clearmsg();
+    io_msg_clear();
   }
 
   obj = pack_remove(obj, true, drop_all);
@@ -668,7 +668,7 @@ bool command_drop(void)
   obj->o.o_pos = *player_pos;
 
   char buf[MAXSTR];
-  msg("dropped %s", inv_name(buf, obj, true));
+  io_msg("dropped %s", inv_name(buf, obj, true));
   return true;
 }
 

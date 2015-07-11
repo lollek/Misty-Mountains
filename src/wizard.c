@@ -109,7 +109,7 @@ print_things(void)
 int
 wizard_list_items(void)
 {
-  msg("for what type of object do you want a list? ");
+  io_msg("for what type of object do you want a list? ");
   print_things();
 
   int ch = readchar(true);
@@ -117,11 +117,11 @@ wizard_list_items(void)
   refresh();
 
   pr_spec((char)ch);
-  clearmsg();
-  msg("--Press any key to continue--");
+  io_msg_clear();
+  io_msg("--Press any key to continue--");
   readchar(false);
 
-  clearmsg();
+  io_msg_clear();
   touchwin(stdscr);
   return 0;
 }
@@ -129,21 +129,21 @@ wizard_list_items(void)
 void
 wizard_create_item(void)
 {
-  msg("type of item: ");
+  io_msg("type of item: ");
   int type = readchar(true);
-  clearmsg();
+  io_msg_clear();
 
   if (!(type == WEAPON || type == ARMOR || type == RING || type == STICK
       || type == GOLD || type == POTION || type == SCROLL || type == TRAP))
   {
-    msg("Bad pick");
+    io_msg("Bad pick");
     return;
   }
 
-  msg("which %c do you want? (0-f)", type);
+  io_msg("which %c do you want? (0-f)", type);
   char ch = readchar(true);
   int which = isdigit(ch) ? ch - '0' : ch - 'a' + 10;
-  clearmsg();
+  io_msg_clear();
 
   THING* obj = NULL;
   switch (type)
@@ -151,7 +151,7 @@ wizard_create_item(void)
     case TRAP:
       {
         if (which < 0 || which >= NTRAPS)
-          msg("Bad trap id");
+          io_msg("Bad trap id");
         else
         {
           coord *player_pos = player_get_pos();
@@ -170,9 +170,9 @@ wizard_create_item(void)
       {
         obj = weapon_create(which, false);
 
-        msg("blessing? (+,-,n)");
+        io_msg("blessing? (+,-,n)");
         char bless = readchar(true);
-        clearmsg();
+        io_msg_clear();
 
         if (bless == '-')
         {
@@ -188,9 +188,9 @@ wizard_create_item(void)
       {
         obj = armor_create(-1, false);
 
-        msg("blessing? (+,-,n)");
+        io_msg("blessing? (+,-,n)");
         char bless = readchar(true);
-        clearmsg();
+        io_msg_clear();
         if (bless == '-')
         {
           obj->o.o_flags |= ISCURSED;
@@ -207,9 +207,9 @@ wizard_create_item(void)
         switch (obj->o.o_which)
         {
           case R_PROTECT: case R_ADDSTR: case R_ADDHIT: case R_ADDDAM:
-            msg("blessing? (+,-,n)");
+            io_msg("blessing? (+,-,n)");
             char bless = readchar(true);
-            clearmsg();
+            io_msg_clear();
             if (bless == '-')
               obj->o.o_flags |= ISCURSED;
             obj->o.o_arm = (bless == '-' ? -1 : os_rand_range(2) + 1);
@@ -221,7 +221,7 @@ wizard_create_item(void)
     case GOLD:
       {
         char buf[MAXSTR] = { '\0' };
-        msg("how much?");
+        io_msg("how much?");
         if (readstr(buf) == 0)
           obj->o.o_goldval = (short) atoi(buf);
       }

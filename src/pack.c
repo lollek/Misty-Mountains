@@ -214,7 +214,7 @@ void
 pack_move_msg(THING* obj)
 {
   char buf[MAXSTR];
-  msg("moved onto %s", inv_name(buf, obj, true));
+  io_msg("moved onto %s", inv_name(buf, obj, true));
 }
 
 static void
@@ -230,7 +230,7 @@ pack_add_money(int value)
         : FLOOR);
 
   if (value > 0)
-    msg("you found %d gold pieces", value);
+    io_msg("you found %d gold pieces", value);
 }
 
 static void
@@ -269,7 +269,7 @@ pack_add(THING* obj, bool silent)
     mvaddcch(player_pos->y, player_pos->x, floor_ch());
     level_set_ch(player_pos->y, player_pos->x, floor_ch());
     os_remove_thing(&obj);
-    msg("the scroll turns to dust as you pick it up");
+    io_msg("the scroll turns to dust as you pick it up");
     return false;
   }
 
@@ -293,7 +293,7 @@ pack_add(THING* obj, bool silent)
   /* If we cannot stack it, we need to have available space in the pack */
   if (!is_picked_up && pack_count_items() == pack_size())
   {
-    msg("there's no room in your pack");
+    io_msg("there's no room in your pack");
     if (from_floor)
       pack_move_msg(obj);
     return false;
@@ -363,7 +363,7 @@ pack_add(THING* obj, bool silent)
   if (!silent)
   {
     char buf[MAXSTR];
-    msg("you now have %s (%c)", inv_name(buf, obj, true), obj->o.o_packch, true);
+    io_msg("you now have %s (%c)", inv_name(buf, obj, true), obj->o.o_packch, true);
   }
   return true;
 }
@@ -442,20 +442,20 @@ pack_get_item(char const* purpose, int type)
 {
   if (pack_count_items_of_type(type) < 1)
   {
-    msg("You have no item to %s", purpose);
+    io_msg("You have no item to %s", purpose);
     return NULL;
   }
 
   pack_print_inventory(type);
-  msg("which object do you want to %s? ", purpose);
+  io_msg("which object do you want to %s? ", purpose);
   char ch = readchar(true);
-  clearmsg();
+  io_msg_clear();
 
   pack_clear_inventory();
 
   if (ch == KEY_ESCAPE || ch == KEY_SPACE)
   {
-    clearmsg();
+    io_msg_clear();
     return NULL;
   }
 
@@ -463,7 +463,7 @@ pack_get_item(char const* purpose, int type)
     if (obj->o.o_packch == ch)
       return obj;
 
-  msg("'%s' is not a valid item",unctrl(ch));
+  io_msg("'%s' is not a valid item",unctrl(ch));
   return NULL;
 }
 
@@ -533,10 +533,10 @@ pack_print_equipment(void)
   move(orig_pos.y, orig_pos.x);
   wrefresh(equipscr);
   delwin(equipscr);
-  msg("--Press any key to continue--");
+  io_msg("--Press any key to continue--");
   readchar(false);
   touchwin(stdscr);
-  clearmsg();
+  io_msg_clear();
   return false;
 }
 
@@ -645,13 +645,13 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   THING* obj = pack_equipped_item(pos);
   if (obj == NULL)
   {
-    msg("not %s anything!", doing);
+    io_msg("not %s anything!", doing);
     return false;
   }
 
   if (obj->o.o_flags & ISCURSED)
   {
-    msg("you can't. It appears to be cursed");
+    io_msg("you can't. It appears to be cursed");
     return false;
   }
 
@@ -671,10 +671,10 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     flags |= F_DROPPED;
     level_set_flags(player_pos->y, player_pos->x, (char)flags);
     obj->o.o_pos = *player_pos;
-    msg("dropped %s", inv_name(buf, obj, true));
+    io_msg("dropped %s", inv_name(buf, obj, true));
   }
   else if (!quiet_on_success)
-    msg("no longer %s %s", doing, inv_name(buf, obj, true));
+    io_msg("no longer %s %s", doing, inv_name(buf, obj, true));
   return true;
 }
 
@@ -708,7 +708,7 @@ pack_identify_item(void)
 {
   if (pack_is_empty())
   {
-    msg("you don't have anything in your pack to identify");
+    io_msg("you don't have anything in your pack to identify");
     return;
   }
 
@@ -727,7 +727,7 @@ pack_identify_item(void)
   }
 
   char buf[MAXSTR];
-  msg(inv_name(buf, obj, false));
+  io_msg(inv_name(buf, obj, false));
 }
 
 

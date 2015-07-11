@@ -201,14 +201,14 @@ player_set_confused(bool permanent)
     if (!permanent)
       daemon_start_fuse(player_remove_confused, 0, HUHDURATION, AFTER);
   }
-  msg("wait, what's going on here. Huh? What? Who?");
+  io_msg("wait, what's going on here. Huh? What? Who?");
 }
 
 void
 player_remove_confused(void)
 {
   player.t.t_flags &= ~ISHUH;
-  msg("you feel less confused now");
+  io_msg("you feel less confused now");
 }
 
 bool player_is_held(void)     { return player.t.t_flags & ISHELD; }
@@ -238,7 +238,7 @@ player_add_sense_monsters(bool permanent)
     }
 
   if (!spotted_something)
-    msg("you have a strange feeling for a moment, then it passes");
+    io_msg("you have a strange feeling for a moment, then it passes");
 }
 
 void
@@ -267,7 +267,7 @@ player_set_hallucinating(bool permanent)
     look(false);
     if (!permanent)
       daemon_start_fuse(player_remove_hallucinating, 0, SEEDURATION, AFTER);
-    msg("Oh, wow!  Everything seems so cosmic!");
+    io_msg("Oh, wow!  Everything seems so cosmic!");
   }
 }
 
@@ -299,7 +299,7 @@ void player_remove_hallucinating(void)
     else if (player_can_sense_monsters())
       mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, tp->t.t_type | A_STANDOUT);
   }
-  msg("You feel your senses returning to normal");
+  io_msg("You feel your senses returning to normal");
 }
 
 int player_get_speed(void)    { return player_speed; }
@@ -310,14 +310,14 @@ player_increase_speed(bool permanent)
   player_speed++;
   if (!permanent)
     daemon_start_fuse(player_decrease_speed, 1, HASTEDURATION, AFTER);
-  msg("you feel yourself moving much faster");
+  io_msg("you feel yourself moving much faster");
 }
 
 void
 player_decrease_speed(void)
 {
   player_speed--;
-  msg("you feel yourself slowing down");
+  io_msg("you feel yourself slowing down");
 }
 
 bool player_is_running(void)    { return player.t.t_flags & ISRUN; }
@@ -337,7 +337,7 @@ player_set_blind(bool permanent)
     look(false);
     if (!permanent)
       daemon_start_fuse(player_remove_blind, 0, SEEDURATION, AFTER);
-    msg("a cloak of darkness falls around you");
+    io_msg("a cloak of darkness falls around you");
   }
 }
 
@@ -351,7 +351,7 @@ player_remove_blind(void)
   player.t.t_flags &= ~ISBLIND;
   if (!(player_get_room()->r_flags & ISGONE))
     room_enter(player_get_pos());
-  msg("the veil of darkness lifts");
+  io_msg("the veil of darkness lifts");
 }
 
 bool player_is_levitating(void) { return player.t.t_flags & ISLEVIT; }
@@ -367,7 +367,7 @@ player_start_levitating(bool permanent)
     look(false);
     if (!permanent)
       daemon_start_fuse(player_stop_levitating, 0, LEVITDUR, AFTER);
-    msg("you start to float in the air");
+    io_msg("you start to float in the air");
   }
 }
 void player_stop_levitating(void)
@@ -375,7 +375,7 @@ void player_stop_levitating(void)
   if (!player_is_levitating())
     return;
   player.t.t_flags &= ~ISLEVIT;
-  msg("you float gently to the ground");
+  io_msg("you float gently to the ground");
 }
 
 bool player_has_confusing_attack(void)    { return player.t.t_flags & CANHUH; }
@@ -384,7 +384,7 @@ void
 player_set_confusing_attack(void)
 {
   player.t.t_flags |= CANHUH;
-  msg("your hands begin to glow %s", pick_color("red"));
+  io_msg("your hands begin to glow %s", pick_color("red"));
 }
 
 void player_remove_confusing_attack(void) { player.t.t_flags &= ~CANHUH; }
@@ -394,7 +394,7 @@ player_fall_asleep(void)
 {
   player_turns_without_action += SLEEPTIME;
   player_stop_running();
-  msg("you fall asleep");
+  io_msg("you fall asleep");
 }
 
 void player_become_stuck(void)
@@ -406,11 +406,11 @@ void player_become_stuck(void)
 void player_become_poisoned(void)
 {
   if (player_has_ring_with_ability(R_SUSTSTR))
-    msg("you feel momentarily nauseous");
+    io_msg("you feel momentarily nauseous");
   else
   {
     player_modify_strength(-(os_rand_range(3) + 1));
-    msg("you feel very sick now");
+    io_msg("you feel very sick now");
     player_remove_hallucinating();
   }
 }
@@ -462,7 +462,7 @@ void player_teleport(coord *target)
   player_turns_without_moving = 0;
   command_stop(true);
   flushinp();
-  msg("suddenly you're somewhere else");
+  io_msg("suddenly you're somewhere else");
 }
 
 bool
@@ -487,7 +487,7 @@ player_search(void)
           if (!os_rand_range(5 + probinc))
           {
             level_set_ch(y, x, DOOR);
-            msg("a secret door");
+            io_msg("a secret door");
             found = true;
             flags |= F_REAL;
             level_set_flags(y, x, (char)flags);
@@ -500,9 +500,9 @@ player_search(void)
             level_set_ch(y, x, TRAP);
 
             if (player_is_hallucinating())
-              msg(trap_names[os_rand_range(NTRAPS)]);
+              io_msg(trap_names[os_rand_range(NTRAPS)]);
             else {
-              msg(trap_names[flags & F_TMASK]);
+              io_msg(trap_names[flags & F_TMASK]);
               flags |= F_SEEN;
               level_set_flags(y, x, (char)flags);
             }
@@ -651,7 +651,7 @@ player_raise_level(void)
 
   player.t.t_stats.s_exp = next_level;
   player_check_for_level_up();
-  msg("you suddenly feel much more skillful");
+  io_msg("you suddenly feel much more skillful");
 }
 
 void
@@ -672,7 +672,7 @@ player_check_for_level_up(void)
     int add_to_hp = roll(i - old_level, 10);
     player_modify_max_health(add_to_hp);
     player_restore_health(add_to_hp, false);
-    msg("welcome to level %d", player.t.t_stats.s_lvl);
+    io_msg("welcome to level %d", player.t.t_stats.s_lvl);
   }
 }
 

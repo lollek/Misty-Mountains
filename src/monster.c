@@ -97,7 +97,7 @@ void monster_set_invisible(THING* mon)
   if (cansee(mon->t.t_pos.y, mon->t.t_pos.x))
   {
     char buf[MAXSTR];
-    msg("%s disappeared", monster_name(mon, buf));
+    io_msg("%s disappeared", monster_name(mon, buf));
     mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, mon->t.t_oldch);
   }
 }
@@ -240,7 +240,7 @@ monster_notice_player(int y, int x)
       if (!player_save_throw(VS_MAGIC))
       {
         char buf[MAXSTR];
-        msg("%s's gaze has confused you", monster_name(monster, buf));
+        io_msg("%s's gaze has confused you", monster_name(monster, buf));
         player_set_confused(false);
       }
     }
@@ -318,7 +318,7 @@ monster_on_death(THING* monster, bool pr)
   monster_name(monster, mname);
   monster_remove_from_screen(&monster->t.t_pos, monster, true);
   if (pr)
-    msg("you have slain %s", mname);
+    io_msg("you have slain %s", mname);
 
   /* Do adjustments if he went up a level */
   player_check_for_level_up();
@@ -427,7 +427,7 @@ monster_do_special_ability(THING** monster)
       if (!player_turns_without_action)
       {
         char buf[MAXSTR];
-        msg("you are frozen by the %s", monster_name(*monster, buf));
+        io_msg("you are frozen by the %s", monster_name(*monster, buf));
       }
       player_turns_without_action += os_rand_range(2) + 2;
       if (player_turns_without_action > 50)
@@ -445,7 +445,7 @@ monster_do_special_ability(THING** monster)
         pack_gold -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
       if (pack_gold < 0)
         pack_gold = 0;
-      msg("your pack_gold feels lighter");
+      io_msg("your pack_gold feels lighter");
       return;
 
 
@@ -457,7 +457,7 @@ monster_do_special_ability(THING** monster)
         monster_remove_from_screen(&(*monster)->t.t_pos, *monster, false);
         *monster = NULL;
         pack_remove(steal, false, false);
-        msg("your pack feels lighter");
+        io_msg("your pack feels lighter");
         os_remove_thing(&steal);
       }
       return;
@@ -468,7 +468,7 @@ monster_do_special_ability(THING** monster)
           && !player_has_ring_with_ability(R_SUSTSTR))
       {
         player_modify_strength(-1);
-        msg("you feel weaker");
+        io_msg("you feel weaker");
       }
       return;
 
@@ -481,7 +481,7 @@ monster_do_special_ability(THING** monster)
         player_modify_max_health(-fewer);
         if (player_get_health() <= 0)
           death('V');
-        msg("you feel weaker");
+        io_msg("you feel weaker");
       }
       return;
 
@@ -498,7 +498,7 @@ monster_do_special_ability(THING** monster)
         player_modify_max_health(-fewer);
         if (player_get_health() <= 0)
           death('W');
-        msg("you feel weaker");
+        io_msg("you feel weaker");
       }
       return;
 

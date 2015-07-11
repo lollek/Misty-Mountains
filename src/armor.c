@@ -58,7 +58,7 @@ armor_command_wear(void)
 
   if (obj->o.o_type != ARMOR)
   {
-    msg("you can't wear that");
+    io_msg("you can't wear that");
     return armor_command_wear();
   }
 
@@ -71,7 +71,7 @@ armor_command_wear(void)
   pack_equip_item(obj);
 
   char buf[MAXSTR];
-  msg("now wearing %s", inv_name(buf, obj, true));
+  io_msg("now wearing %s", inv_name(buf, obj, true));
   return true;
 }
 
@@ -104,12 +104,12 @@ armor_rust(void)
   if ((arm->o.o_flags & ISPROT) || player_has_ring_with_ability(R_SUSTARM))
   {
     if (!to_death)
-      msg("the rust vanishes instantly");
+      io_msg("the rust vanishes instantly");
   }
   else
   {
     arm->o.o_arm++;
-    msg("your armor weakens");
+    io_msg("your armor weakens");
   }
 }
 

@@ -50,7 +50,7 @@ death(int monst)
 
   status();
   refresh();
-  msg("You die!");
+  io_msg("You die!");
   readchar(false);
 
   pack_evaluate();

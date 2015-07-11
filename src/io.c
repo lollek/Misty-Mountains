@@ -38,7 +38,7 @@ flushmsg(void)
   /* Save message in case player missed it */
   strcpy(last_msg, msgbuf);
 
-  /* TODO: Remove mpos by replacing mpos = 0 with a clearmsg() */
+  /* TODO: Remove mpos by replacing mpos = 0 with a io_msg_clear() */
   if (mpos)
   {
     look(false);
@@ -67,8 +67,8 @@ __attribute__((__format__(__printf__, 1, 0)))
 static void
 doadd(char const* fmt, va_list args, bool end_of_command)
 {
-  assert(fmt != NULL  && "Use clearmsg() instead of msg(NULL)");
-  assert(*fmt != '\0' && "Use clearmsg() instead of msg(\"\")");
+  assert(fmt != NULL  && "Use io_msg_clear() instead of io_msg(NULL)");
+  assert(*fmt != '\0' && "Use io_msg_clear() instead of io_msg(\"\")");
 
   static bool new_sentence = false;
   char const* separator = ". ";
@@ -97,10 +97,10 @@ doadd(char const* fmt, va_list args, bool end_of_command)
   new_sentence = end_of_command;
 }
 
-int
-io_last_msg(void)
+void
+io_msg_last(void)
 {
-  return msg(last_msg);
+  io_msg(last_msg);
 }
 
 char const*
@@ -185,29 +185,27 @@ fail(char const* fmt, ...)
 }
 #endif
 
-int
-clearmsg(void)
+void
+io_msg_clear(void)
 {
   move(0, 0);
   clrtoeol();
   mpos = 0;
-  return ~KEY_ESCAPE;
 }
 
 __attribute__((__format__(__printf__, 1, 2)))
-int
-msg(char const* fmt, ...)
+void
+io_msg(char const* fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
   doadd(fmt, args, true);
   va_end(args);
-  return ~KEY_ESCAPE;
 }
 
 __attribute__((__format__(__printf__, 1, 2)))
-int
-msg_unsaved(char const* fmt, ...)
+void
+io_msg_unsaved(char const* fmt, ...)
 {
   char buf[MAXSTR];
 
@@ -220,13 +218,11 @@ msg_unsaved(char const* fmt, ...)
   va_end(args);
   flushmsg();
   strcpy(last_msg, buf);
-
-  return ~KEY_ESCAPE;
 }
 
 __attribute__((__format__(__printf__, 1, 2)))
 void
-addmsg(char const* fmt, ...)
+io_msg_add(char const* fmt, ...)
 {
   va_list args;
 
@@ -319,7 +315,7 @@ show_win(const char *message)
 
   clearok(curscr, true);
   touchwin(stdscr);
-  clearmsg();
+  io_msg_clear();
 }
 
 bool

@@ -104,7 +104,7 @@ option(void)
     .y = 0,
     .x = (int)strlen(query)
   };
-  msg(query);
+  io_msg(query);
 
   WINDOW *optscr = NULL;
   optscr = dupwin(stdscr);
@@ -146,7 +146,7 @@ option(void)
   delwin(optscr);
   clearok(curscr, true);
   touchwin(stdscr);
-  clearmsg();
+  io_msg_clear();
   return false;
 }
 

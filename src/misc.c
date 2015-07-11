@@ -220,7 +220,7 @@ find_obj(int y, int x)
       return obj;
 
   /* It should have returned by now */
-  msg("DEBUG: Non-object %d,%d", y, x);
+  io_msg("DEBUG: Non-object %d,%d", y, x);
   return NULL;
 }
 
@@ -253,7 +253,7 @@ get_dir(void)
   static coord delta;
 
   char const* prompt = "which direction? ";
-  msg(prompt);
+  io_msg(prompt);
 
   bool gotit;
   do
@@ -271,12 +271,12 @@ get_dir(void)
       case 'n': case 'N': delta.y =  1; delta.x =  1; break;
 
       case KEY_ESCAPE:
-        clearmsg();
+        io_msg_clear();
         return NULL;
 
       default:
-        clearmsg();
-        msg(prompt);
+        io_msg_clear();
+        io_msg(prompt);
         gotit = false;
         break;
     }
@@ -292,7 +292,7 @@ get_dir(void)
       delta.x = os_rand_range(3) - 1;
     } while (delta.y == 0 && delta.x == 0);
 
-  clearmsg();
+  io_msg_clear();
   return &delta;
 }
 
@@ -326,7 +326,7 @@ call_it(char const* what, struct obj_info *info)
   else if (!info->oi_guess)
   {
     char tmpbuf[MAXSTR] = { '\0' };
-    msg("what do you want to name the %s? ", what);
+    io_msg("what do you want to name the %s? ", what);
     if (readstr(tmpbuf) == 0)
     {
       if (info->oi_guess != NULL)
@@ -474,7 +474,7 @@ roomin(coord* cp)
         && rp->r_pos.y <= cp->y)
       return rp;
 
-  msg("in some bizarre place (%d, %d)", cp->y, cp->x);
+  io_msg("in some bizarre place (%d, %d)", cp->y, cp->x);
   assert(0);
   return NULL;
 }

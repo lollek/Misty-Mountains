@@ -226,7 +226,7 @@ conn(int r1, int r2)
   }
 
   else
-    msg("DEBUG: error in connection tables");
+    io_msg("DEBUG: error in connection tables");
 
   /* where turn starts */
   int turn_spot = os_rand_range(distance - 1) + 1;
@@ -273,7 +273,7 @@ conn(int r1, int r2)
   curr.y += del.y;
 
   if (!coord_same(&curr, &end_pos))
-    msg("warning, connectivity problem on this level");
+    io_msg("warning, connectivity problem on this level");
 }
 
 

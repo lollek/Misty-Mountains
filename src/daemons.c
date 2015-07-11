@@ -47,7 +47,7 @@ daemon_empty_slot(void)
     if (daemons[i].d_type == EMPTY)
       return &daemons[i];
 
-  msg("DEBUG: Ran out of fuse slots :(");
+  io_msg("DEBUG: Ran out of fuse slots :(");
   return NULL;
 }
 

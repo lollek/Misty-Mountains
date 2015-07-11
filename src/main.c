@@ -174,7 +174,7 @@ main(int argc, char** argv)
   signal(SIGTERM, save_auto);
   signal(SIGINT, command_signal_quit);
 #else
-  msg("Seed: #%u", os_rand_seed);
+  io_msg("Seed: #%u", os_rand_seed);
 #endif
 
   move_pos_prev = *player_get_pos();
