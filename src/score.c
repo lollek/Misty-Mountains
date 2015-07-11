@@ -248,19 +248,23 @@ void
 score_win_and_exit(void)
 {
   clear();
-  addstr("                                                               \n");
-  addstr("  @   @               @   @           @          @@@  @     @  \n");
-  addstr("  @   @               @@ @@           @           @   @     @  \n");
-  addstr("  @   @  @@@  @   @   @ @ @  @@@   @@@@  @@@      @  @@@    @  \n");
-  addstr("   @@@@ @   @ @   @   @   @     @ @   @ @   @     @   @     @  \n");
-  addstr("      @ @   @ @   @   @   @  @@@@ @   @ @@@@@     @   @     @  \n");
-  addstr("  @   @ @   @ @  @@   @   @ @   @ @   @ @         @   @  @     \n");
-  addstr("   @@@   @@@   @@ @   @   @  @@@@  @@@@  @@@     @@@   @@   @  \n");
-  addstr("                                                               \n");
-  addstr("     Congratulations, you have made it to the light of day!    \n");
-  addstr("\nYou have joined the elite ranks of those who have escaped the\n");
-  addstr("Dungeons of Doom alive.  You journey home and sell all your loot at\n");
-  addstr("a great profit and are admitted to the Fighters' Guild.\n");
+  addstr(
+    "                                                               \n"
+    "  @   @               @   @           @          @@@  @     @  \n"
+    "  @   @               @@ @@           @           @   @     @  \n"
+    "  @   @  @@@  @   @   @ @ @  @@@   @@@@  @@@      @  @@@    @  \n"
+    "   @@@@ @   @ @   @   @   @     @ @   @ @   @     @   @     @  \n"
+    "      @ @   @ @   @   @   @  @@@@ @   @ @@@@@     @   @     @  \n"
+    "  @   @ @   @ @  @@   @   @ @   @ @   @ @         @   @  @     \n"
+    "   @@@   @@@   @@ @   @   @  @@@@  @@@@  @@@     @@@   @@   @  \n"
+    "                                                               \n"
+    "     Congratulations, you have made it to the light of day!    \n"
+    "\n"
+    "You have joined the elite ranks of those who have escaped the\n"
+    "Dungeons of Doom alive.  You journey home and sell all your loot at\n"
+    "a great profit and are admitted to the Fighters' Guild.\n"
+    );
+
   mvaddstr(LINES - 1, 0, "--Press space to continue--");
   refresh();
   wait_for(KEY_SPACE);
