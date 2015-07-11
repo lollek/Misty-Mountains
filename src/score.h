@@ -14,26 +14,10 @@
 
 #define SCORE_MAX 10 /* Number of highscore entries */
 
-typedef struct sc_ent {
-  unsigned sc_uid;
-  int sc_score;
-  int sc_flags;
-  int sc_monster;
-  char sc_name[MAXSTR];
-  int sc_level;
-  unsigned sc_time;
-} SCORE;
-
 /* Open up the score file for future use
  * We drop setgid privileges after opening the score file, so subsequent
  * open()'s will fail.  Just reuse the earlier filehandle. */
 int score_open_and_drop_setuid_setgid(void);
-
-/* Read in the score file */
-void score_read(SCORE* top_ten);
-
-/* Write out the score file */
-void score_write(SCORE* top_ten);
 
 /* Figure score and post it.  */
 void score_show_and_exit(int amount, int flags, char monst)
