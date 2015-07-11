@@ -62,7 +62,7 @@ lock_sc(void)
          "for it to become free so your score can get posted?\n"
          "If so, type \"y\"\n");
 
-  return readchar(true) == 'y'
+  return io_readchar(true) == 'y'
     ? lock_sc()
     : false;
 }
@@ -267,7 +267,7 @@ score_win_and_exit(void)
 
   mvaddstr(LINES - 1, 0, "--Press space to continue--");
   refresh();
-  wait_for(KEY_SPACE);
+  io_wait_for_key(KEY_SPACE);
   pack_gold += pack_evaluate();
   score_show_and_exit(pack_gold, 2, ' ');
 }

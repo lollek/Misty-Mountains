@@ -185,8 +185,7 @@ pack_print_evaluate_item(THING* obj)
       break;
 
     default:
-      (void)fail("Unknown type: %c(%d)", obj->o.o_type, obj->o.o_type);
-      assert(0);
+      io_debug_fatal("Unknown type: %c(%d)", obj->o.o_type, obj->o.o_type);
       break;
   }
 
@@ -421,7 +420,7 @@ pack_pick_up(THING* obj, bool force)
       return;
   }
 
-  (void)fail("Unknown type: %c(%d)", obj->o.o_type, obj->o.o_type);
+  io_debug("Unknown type: %c(%d)", obj->o.o_type, obj->o.o_type);
   assert(0);
 }
 
@@ -448,7 +447,7 @@ pack_get_item(char const* purpose, int type)
 
   pack_print_inventory(type);
   io_msg("which object do you want to %s? ", purpose);
-  char ch = readchar(true);
+  char ch = io_readchar(true);
   io_msg_clear();
 
   pack_clear_inventory();
@@ -534,7 +533,7 @@ pack_print_equipment(void)
   wrefresh(equipscr);
   delwin(equipscr);
   io_msg("--Press any key to continue--");
-  readchar(false);
+  io_readchar(false);
   touchwin(stdscr);
   io_msg_clear();
   return false;

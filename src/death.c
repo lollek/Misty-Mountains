@@ -21,7 +21,7 @@ death_reason(char buf[], int reason)
   }
   else
   {
-    char const* death_reason = NULL;
+    char const* death_reason = "???";
     switch (reason)
     {
       case 'a': case DEATH_ARROW: death_reason = "Pierced by an arrow"; break;
@@ -33,9 +33,7 @@ death_reason(char buf[], int reason)
 
       default:
       case DEATH_UNKNOWN:
-        (void)fail("Unknown death reason: %d(%c)", reason, reason);
-        assert(0);
-        death_reason = "???";
+        io_debug_fatal("Unknown death reason: %d(%c)", reason, reason);
     }
     sprintf(buf, "%s", death_reason);
   }
@@ -51,7 +49,7 @@ death(int monst)
   io_refresh_statusline();
   refresh();
   io_msg("You die!");
-  readchar(false);
+  io_readchar(false);
 
   pack_evaluate();
   score_show_and_exit(pack_gold, pack_contains_amulet() ? 3 : 0, (char)monst);

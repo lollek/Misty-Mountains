@@ -222,7 +222,7 @@ weapon_description(item const* item, char* buf)
   }
   else
   {
-    (void)fail("Bad type: %p->o_type == %d\r\n", item, item_type(item));
+    io_debug("Bad type: %p->o_type == %d\r\n", item, item_type(item));
     assert(0);
   }
 

@@ -221,7 +221,7 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
   THING* const player = NULL;
   THING* tp = level_get_monster(monster_pos->y, monster_pos->x);
   if (tp == NULL)
-    return !fail("fight_against_monster(%p, %p, %b) NULL monster\r\n",
+    return !io_fail("fight_against_monster(%p, %p, %b) NULL monster\r\n",
                  monster_pos, weapon, thrown);
 
   /* Since we are fighting, things are not quiet so no healing takes place */

@@ -85,7 +85,7 @@ potion_save_state(void)
         break;
 
     if (state_save_int32(j == color_max() ? -1 : j))
-      return fail("potion_save_state() i=%d, j=%d\r\n", i, j);
+      return io_fail("potion_save_state() i=%d, j=%d\r\n", i, j);
   }
   return 0;
 }
@@ -96,7 +96,7 @@ bool potion_load_state(void)
   {
     int32_t tmp;
     if (state_load_int32(&tmp) || tmp < -1 || tmp > color_max())
-      return fail("potion_load_state() i=%d, tmp=%d\r\n", i, tmp);
+      return io_fail("potion_load_state() i=%d, tmp=%d\r\n", i, tmp);
 
     p_colors[i] = i >= 0 ? color_get(tmp) : NULL;
   }

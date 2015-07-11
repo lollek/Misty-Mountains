@@ -52,8 +52,7 @@ bool option_autopickup(int type)
     case STICK:  return pickup_sticks;
     case AMULET: return true;
   }
-  (void)fail("option_autopickup: unknown type: %d", type);
-  assert(0);
+  io_debug_fatal("option_autopickup: unknown type: %d", type);
   return false;
 }
 
@@ -69,7 +68,7 @@ get_bool(bool* b, WINDOW* win)
 static inline bool
 get_str(char* buf, WINDOW* win)
 {
-  return wreadstr(win, buf);
+  return io_wreadstr(win, buf);
 }
 
 /** option:
@@ -127,7 +126,7 @@ option(void)
   {
     wmove(optscr, msg_pos.y, msg_pos.x);
     wrefresh(optscr);
-    c = readchar(true);
+    c = io_readchar(true);
     for (int i = 0; i < NOPTS; ++i)
       if (c == optlist[i].index)
       {

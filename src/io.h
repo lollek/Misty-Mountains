@@ -90,18 +90,29 @@ void io_fatal(char const* msg, ...) __attribute__((noreturn));
 /* Print the status line at the bottom of the screen */
 void io_refresh_statusline(void);
 
-/* get input */
-bool wreadstr(WINDOW* win, char* buf);   /* interruptable string from user */
-#define readstr(_b) wreadstr(stdscr, _b) /* wreadstr for stdscr */
-char readchar(bool is_question);   /* Interruptable getch() */
-void wait_for(int ch); /* Wait for the specified key */
+/* Interruptable read string from user */
+bool io_wreadstr(WINDOW* win, char* buf);
+static inline bool io_readstr(char* dest)
+{ return io_wreadstr(stdscr, dest); }
+
+/* Interruptable read char from user (getch) */
+char io_readchar(bool is_question);
+
+/* Wait for the specified key */
+void io_wait_for_key(int ch);
 
 #ifdef NDEBUG
-#define fail(err, ...) 1
+#  define io_fail(err, ...) 1
+#  define io_debug(err, ...)
+#  define io_debug_fatal(err, ...)
 #else
-bool fail(char const* fmt, ...);
+  /* Print debug message (if debug mode) and return 1 */
+  bool io_fail(char const* fmt, ...);
+  /* Print debug message (if debug mode) or do nothing */
+  void io_debug(char const* fmt, ...);
+  /* Print debug message and crash (if debug mode) or do nothing */
+  void io_debug_fatal(char const* fmt, ...);
 #endif /* NDEBUG */
-
 
 
 

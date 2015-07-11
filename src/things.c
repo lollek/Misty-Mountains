@@ -132,7 +132,7 @@ new_thing(void)
     case 6: cur = wand_create(-1); break;
     default:
       io_msg("Picked a bad kind of object (this should not happen)");
-      wait_for(KEY_SPACE);
+      io_wait_for_key(KEY_SPACE);
       break;
   }
 
@@ -152,7 +152,7 @@ pick_one(struct obj_info* start, int nitems)
       rand -= start[i].oi_prob;
 
   /* The functions should have returned by now */
-  assert(0);
+  io_debug_fatal("pick_one(%p, %d): bad probabilities", start, nitems);
   return 0;
 }
 
@@ -207,7 +207,7 @@ discovered(void)
       POTION, SCROLL, RING, STICK);
   while (true)
   {
-    char ch = readchar(true);
+    char ch = io_readchar(true);
     touchwin(stdscr);
     refresh();
     switch (ch)

@@ -112,14 +112,14 @@ wizard_list_items(void)
   io_msg("for what type of object do you want a list? ");
   print_things();
 
-  int ch = readchar(true);
+  int ch = io_readchar(true);
   touchwin(stdscr);
   refresh();
 
   pr_spec((char)ch);
   io_msg_clear();
   io_msg("--Press any key to continue--");
-  readchar(false);
+  io_readchar(false);
 
   io_msg_clear();
   touchwin(stdscr);
@@ -130,7 +130,7 @@ void
 wizard_create_item(void)
 {
   io_msg("type of item: ");
-  int type = readchar(true);
+  int type = io_readchar(true);
   io_msg_clear();
 
   if (!(type == WEAPON || type == ARMOR || type == RING || type == STICK
@@ -141,7 +141,7 @@ wizard_create_item(void)
   }
 
   io_msg("which %c do you want? (0-f)", type);
-  char ch = readchar(true);
+  char ch = io_readchar(true);
   int which = isdigit(ch) ? ch - '0' : ch - 'a' + 10;
   io_msg_clear();
 
@@ -171,7 +171,7 @@ wizard_create_item(void)
         obj = weapon_create(which, false);
 
         io_msg("blessing? (+,-,n)");
-        char bless = readchar(true);
+        char bless = io_readchar(true);
         io_msg_clear();
 
         if (bless == '-')
@@ -189,7 +189,7 @@ wizard_create_item(void)
         obj = armor_create(-1, false);
 
         io_msg("blessing? (+,-,n)");
-        char bless = readchar(true);
+        char bless = io_readchar(true);
         io_msg_clear();
         if (bless == '-')
         {
@@ -208,7 +208,7 @@ wizard_create_item(void)
         {
           case R_PROTECT: case R_ADDSTR: case R_ADDHIT: case R_ADDDAM:
             io_msg("blessing? (+,-,n)");
-            char bless = readchar(true);
+            char bless = io_readchar(true);
             io_msg_clear();
             if (bless == '-')
               obj->o.o_flags |= ISCURSED;
@@ -222,13 +222,13 @@ wizard_create_item(void)
       {
         char buf[MAXSTR] = { '\0' };
         io_msg("how much?");
-        if (readstr(buf) == 0)
+        if (io_readstr(buf) == 0)
           obj->o.o_goldval = (short) atoi(buf);
       }
       break;
 
     default:
-      (void)fail("Not implemented: %c(%d)\r\n", which, which);
+      io_debug("Not implemented: %c(%d)\r\n", which, which);
       assert(0);
       break;
   }

@@ -88,8 +88,8 @@ armor_type_random(void)
   }
 
   /* Error! Sum of probs was not 100 */
-  (void)fail("Error! Sum of probabilities is not 100%", 0);
-  readchar(false);
+  io_debug("Error! Sum of probabilities is not 100%", 0);
+  io_readchar(false);
   return LEATHER;
 }
 

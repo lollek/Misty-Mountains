@@ -97,7 +97,7 @@ command(void)
         ch = runch;
       else
       {
-        ch = readchar(false);
+        ch = io_readchar(false);
         io_msg_clear();
       }
 
@@ -240,7 +240,7 @@ command_signal_quit(int sig)
   io_msg_clear();
   io_msg("really quit? ");
 
-  if (readchar(true) == 'y')
+  if (io_readchar(true) == 'y')
   {
   /* Reset the signal in case we got here via an interrupt */
     signal(SIGINT, command_signal_leave);

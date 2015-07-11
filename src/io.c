@@ -175,7 +175,7 @@ colorize(const chtype ch)
 #ifndef NDEBUG
 __attribute__((__format__(__printf__, 1, 2)))
 bool
-fail(char const* fmt, ...)
+io_fail(char const* fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
@@ -183,6 +183,31 @@ fail(char const* fmt, ...)
   va_end(args);
   return 1;
 }
+
+__attribute__((__format__(__printf__, 1, 2)))
+void
+io_debug(char const* fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  vprintf(fmt, args);
+  va_end(args);
+}
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
+__attribute__((__format__(__printf__, 1, 2)))
+void
+io_debug_fatal(char const* fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  vprintf(fmt, args);
+  va_end(args);
+  assert(0);
+}
+#pragma clang diagnostic pop
+
 #endif
 
 void
@@ -242,7 +267,7 @@ step_ok(int ch)
 }
 
 char
-readchar(bool is_question)
+io_readchar(bool is_question)
 {
   flushmsg();
   if (!is_question)
@@ -285,18 +310,18 @@ io_refresh_statusline(void)
 }
 
 void
-wait_for(int ch)
+io_wait_for_key(int ch)
 {
   switch (ch)
   {
     case KEY_ENTER: case '\n':
       for (;;)
-        if ((ch = readchar(true)) == '\n' || ch == '\r')
+        if ((ch = io_readchar(true)) == '\n' || ch == '\r')
           return;
 
     default:
       for (;;)
-        if (readchar(true) == ch)
+        if (io_readchar(true) == ch)
           return;
   }
 }
@@ -311,7 +336,7 @@ show_win(const char *message)
   wrefresh(hw);
   untouchwin(stdscr);
 
-  wait_for(KEY_SPACE);
+  io_wait_for_key(KEY_SPACE);
 
   clearok(curscr, true);
   touchwin(stdscr);
@@ -319,7 +344,7 @@ show_win(const char *message)
 }
 
 bool
-wreadstr(WINDOW* win, char* dest)
+io_wreadstr(WINDOW* win, char* dest)
 {
   char buf[MAXSTR];
   int c = ~KEY_ESCAPE;
@@ -338,7 +363,7 @@ wreadstr(WINDOW* win, char* dest)
   while (c != KEY_ESCAPE)
   {
     wrefresh(win);
-    c = readchar(true);
+    c = io_readchar(true);
 
     if (c == '\n' || c == '\r' || c == -1)
       break;

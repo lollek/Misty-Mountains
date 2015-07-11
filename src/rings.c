@@ -115,7 +115,7 @@ ring_save_state(void)
         break;
 
     if (state_save_int32(j == NSTONES ? -1 : j))
-      return fail("ring_save_state(), i=%d,j=%d\r\n", i, j);
+      return io_fail("ring_save_state(), i=%d,j=%d\r\n", i, j);
   }
   return 0;
 }
@@ -127,12 +127,12 @@ ring_load_state(void)
   {
     int32_t j = 0;
     if (state_load_int32(&j))
-      return fail("ring_load_state(), i=%d,j=%d, max=%d\r\n", i, j, NSTONES);
+      return io_fail("ring_load_state(), i=%d,j=%d, max=%d\r\n", i, j, NSTONES);
     else if (j >= NSTONES)
-      return fail("ring_load_state(), i=%d,j=%d, max=%d, j >= NSTONES\r\n",
+      return io_fail("ring_load_state(), i=%d,j=%d, max=%d, j >= NSTONES\r\n",
                   i, j, NSTONES);
     else if (j < -1)
-      return fail("ring_load_state(), i=%d,j=%d, max=%d, j < -1\r\n",
+      return io_fail("ring_load_state(), i=%d,j=%d, max=%d, j < -1\r\n",
                   i, j, NSTONES);
 
     r_stones[i] = j >= 0 ? stones[j].st_name : NULL;

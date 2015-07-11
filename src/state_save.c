@@ -35,28 +35,28 @@ static bool
 state_write(void const* buf, int32_t length)
 {
   if (file == NULL)
-    return fail("rs_write(%p, %d) File is NULL\r\n", buf, length);
+    return io_fail("rs_write(%p, %d) File is NULL\r\n", buf, length);
   if (buf == NULL)
-    return fail("rs_write(%p, %d) Buffer is NULL\r\n", buf, length);
+    return io_fail("rs_write(%p, %d) Buffer is NULL\r\n", buf, length);
   if (length <= 0)
-    return fail("rs_write(%p, %d) Length is too small%d\r\n", buf, length);
+    return io_fail("rs_write(%p, %d) Length is too small%d\r\n", buf, length);
 
   return io_encwrite(buf, (size_t)length, file) == (size_t)length
     ? SUCCESS
-    : fail("rs_write(%p, %d)\r\n", buf, length);
+    : io_fail("rs_write(%p, %d)\r\n", buf, length);
 }
 
 bool state_save_int8(int8_t data)
 {
   return state_write(&data, 1)
-    ? fail("state_save_int8(%X)\r\n", data)
+    ? io_fail("state_save_int8(%X)\r\n", data)
     : SUCCESS;
 }
 
 bool state_save_int32(int32_t data)
 {
   return state_write(&data, 4)
-    ? fail("state_save_int32(%X)\r\n", data)
+    ? io_fail("state_save_int32(%X)\r\n", data)
     : SUCCESS;
 }
 
@@ -64,7 +64,7 @@ static bool
 state_save_bool(bool b)
 {
   return state_save_int8(b)
-    ? fail("state_save_bool(%b)\r\n", b)
+    ? io_fail("state_save_bool(%b)\r\n", b)
     : SUCCESS;
 }
 
@@ -72,11 +72,11 @@ bool
 state_save_bools(bool const* c, int32_t count)
 {
   if (state_save_int32(count))
-    return fail("state_save_bools(%p, %d)\r\n", c, count);
+    return io_fail("state_save_bools(%p, %d)\r\n", c, count);
 
   for (int32_t n = 0; n < count; n++)
     if (state_save_int8(c[n]))
-      return fail("state_save_bools(%p, %d)\r\n", c, count);
+      return io_fail("state_save_bools(%p, %d)\r\n", c, count);
 
   return SUCCESS;
 }
@@ -84,7 +84,7 @@ state_save_bools(bool const* c, int32_t count)
 static bool state_save_char(char c)
 {
   return state_save_int8((int8_t)c)
-    ? fail("state_save_char('%c')\r\n", c)
+    ? io_fail("state_save_char('%c')\r\n", c)
     : SUCCESS;
 }
 
@@ -93,11 +93,11 @@ state_save_chars(char const* c, int32_t len)
 {
   if (c == NULL)
     return state_save_int32(0)
-      ? fail("state_save_chars(%p, %d)\r\n", c, len)
+      ? io_fail("state_save_chars(%p, %d)\r\n", c, len)
       : SUCCESS;
 
   return state_save_int32(len) || state_write(c, len)
-    ? fail("state_save_chars(%p, %d)\r\n", c, len)
+    ? io_fail("state_save_chars(%p, %d)\r\n", c, len)
     : SUCCESS;
 }
 
@@ -107,12 +107,12 @@ state_save_string(char const* s)
   int32_t len;
   if (s == NULL)
     return state_save_int32(0) || state_save_chars(NULL, 0)
-      ? fail("state_save_string(%p)\r\n", s)
+      ? io_fail("state_save_string(%p)\r\n", s)
       : SUCCESS;
 
   len = (int32_t) strlen(s) +1;
   return state_save_int32(len) || state_save_chars(s, len)
-      ? fail("state_save_string(%p)\r\n", s)
+      ? io_fail("state_save_string(%p)\r\n", s)
       : SUCCESS;
 }
 
@@ -120,7 +120,7 @@ bool
 state_save_coord(coord const* c)
 {
   return state_save_int32(c->y) || state_save_int32(c->x)
-    ? fail("state_save_coord(%p)\r\n", c)
+    ? io_fail("state_save_coord(%p)\r\n", c)
     : SUCCESS;
 }
 
@@ -128,7 +128,7 @@ bool
 state_save_struct_damage(struct damage const* dmg)
 {
   return state_save_int32(dmg->sides) || state_save_int32(dmg->dices)
-    ? fail("state_save_struct_damage(%p)\r\n", dmg)
+    ? io_fail("state_save_struct_damage(%p)\r\n", dmg)
     : SUCCESS;
 }
 
@@ -137,7 +137,7 @@ state_save_structs_damage(struct damage const dmg[MAXATTACKS])
 {
   for (int i = 0; i < MAXATTACKS; ++i)
     if (state_save_struct_damage(&dmg[i]))
-      return fail("state_save_structs_damage(%p)\r\n", dmg);
+      return io_fail("state_save_structs_damage(%p)\r\n", dmg);
   return SUCCESS;
 }
 
@@ -150,40 +150,40 @@ state_save_dest(coord const* dest)
   /* (0,0): NULL - Not chasing anyone */
   if (dest == NULL)
     return state_save_int32(0) || state_save_int32(0)
-      ? fail("state_save_dest(%p)\r\n", dest)
+      ? io_fail("state_save_dest(%p)\r\n", dest)
       : SUCCESS;
 
   /* (0,1): location of hero */
   if (dest == player_get_pos())
     return state_save_int32(0) || state_save_int32(1)
-      ? fail("state_save_dest(%p)\r\n", dest)
+      ? io_fail("state_save_dest(%p)\r\n", dest)
       : SUCCESS;
 
   /* (1,i): location of a thing (monster) */
   for (ptr = monster_list, i = 0; ptr != NULL; ptr = ptr->t.l_next, ++i)
     if (&ptr->t.t_pos == dest)
       return state_save_int32(1) || state_save_int32(i)
-        ? fail("state_save_dest(%p)\r\n", dest)
+        ? io_fail("state_save_dest(%p)\r\n", dest)
         : SUCCESS;
 
   /* (2,i): location of an object */
   for (ptr = level_items, i = 0; ptr != NULL; ptr = ptr->o.l_next, ++i)
     if (&ptr->o.o_pos == dest)
       return state_save_int32(2) || state_save_int32(i)
-        ? fail("state_save_dest(%p)\r\n", dest)
+        ? io_fail("state_save_dest(%p)\r\n", dest)
         : SUCCESS;
 
   /* (3,i): location of gold in a room */
   for (i = 0; i < ROOMS_MAX; ++i)
     if (&rooms[i].r_gold == dest)
       return state_save_int32(3) || state_save_int32(i)
-        ? fail("state_save_dest(%p)\r\n", dest)
+        ? io_fail("state_save_dest(%p)\r\n", dest)
         : SUCCESS;
 
   /* If we haven't found who we are chasing, we probably shouldnt chase anyone.
    * This was originally set to chase the hero by default */
   return state_save_int32(0) || state_save_int32(0)
-    ? fail("state_save_dest(%p)\r\n", dest)
+    ? io_fail("state_save_dest(%p)\r\n", dest)
     : SUCCESS;
 }
 
@@ -200,7 +200,7 @@ state_save_stats(struct stats const* s)
     state_save_structs_damage(s->s_dmg) ||
     state_save_int32(s->s_maxhp)
 
-    ? fail("state_save_stats(%p)\r\n", s)
+    ? io_fail("state_save_stats(%p)\r\n", s)
     : SUCCESS;
 }
 
@@ -211,10 +211,10 @@ state_save_room_number(struct room const* room)
   for (i = 0; i < ROOMS_MAX; ++i)
     if (&rooms[i] == room)
       return state_save_int32(i)
-        ? fail("state_save_room_number(%p)\r\n", room)
+        ? io_fail("state_save_room_number(%p)\r\n", room)
         : SUCCESS;
   return state_save_int32(-1)
-    ? fail("state_save_room_number(%p)\r\n", room)
+    ? io_fail("state_save_room_number(%p)\r\n", room)
     : SUCCESS;
 }
 
@@ -222,11 +222,11 @@ bool
 state_save_thing(THING const* t)
 {
   if (state_save_int32(RSID_THING))
-    return fail("state_save_thing(%p)\r\n", t);
+    return io_fail("state_save_thing(%p)\r\n", t);
 
   if (t == NULL)
     return state_save_int32(0)
-      ? fail("state_save_thing(%p)\r\n", t)
+      ? io_fail("state_save_thing(%p)\r\n", t)
       : SUCCESS;
 
   return
@@ -242,7 +242,7 @@ state_save_thing(THING const* t)
     state_save_room_number(t->t.t_room) ||
     state_save_list(t->t.t_pack)
 
-    ? fail("state_save_thing(%p)\r\n", t)
+    ? io_fail("state_save_thing(%p)\r\n", t)
     : SUCCESS;
 }
 
@@ -265,7 +265,7 @@ state_save_object(THING const* o)
     state_save_int32(o->o.o_flags) ||
     state_save_string(o->o.o_label)
 
-    ? fail("state_save_object(%p)\r\n", o)
+    ? io_fail("state_save_object(%p)\r\n", o)
     : SUCCESS;
 }
 
@@ -275,11 +275,11 @@ state_save_equipment(enum equipment_pos slot, int32_t marker)
   THING* o = pack_equipped_item(slot);
   if (o == NULL)
     return state_save_int32(RSID_NULL)
-      ? fail("state_save_object(%d, %d)\r\n", slot, marker)
+      ? io_fail("state_save_object(%d, %d)\r\n", slot, marker)
       : SUCCESS;
 
   return state_save_int32(marker) || state_save_object(o)
-    ? fail("state_save_object(%d, %d)\r\n", slot, marker)
+    ? io_fail("state_save_object(%d, %d)\r\n", slot, marker)
     : SUCCESS;
 }
 
@@ -288,11 +288,11 @@ state_save_list_index(THING const* list, THING const* item)
 {
   if (item == NULL)
     return state_save_int32(-1)
-      ? fail("state_save_list_index(%p, %p)\r\n", list, item)
+      ? io_fail("state_save_list_index(%p, %p)\r\n", list, item)
       : SUCCESS;
 
   return state_save_int32(list_find(list, item))
-    ? fail("state_save_list_index(%p, %p)\r\n", list, item)
+    ? io_fail("state_save_list_index(%p, %p)\r\n", list, item)
     : SUCCESS;
 }
 
@@ -305,7 +305,7 @@ state_save_places(void)
     if (state_save_char(level_places[i].p_ch) ||
         state_save_char(level_places[i].p_flags) ||
         state_save_list_index(monster_list, level_places[i].p_monst))
-      return fail("state_save_places()\r\n", i);
+      return io_fail("state_save_places()\r\n", i);
   return SUCCESS;
 }
 
@@ -332,7 +332,7 @@ state_save_room(struct room const* room)
     state_save_coord(&room->r_exit[10]) ||
     state_save_coord(&room->r_exit[11])
 
-    ? fail("state_save_room(%p)\r\n", room)
+    ? io_fail("state_save_room(%p)\r\n", room)
     : SUCCESS;
 }
 
@@ -341,10 +341,10 @@ state_save_rooms(struct room const list[], int32_t number)
 {
   int i;
   if (state_save_int32(number))
-    return fail("state_save_rooms(%p, %d)\r\n", list, number);
+    return io_fail("state_save_rooms(%p, %d)\r\n", list, number);
   for (i = 0; i < number; ++i)
     if (state_save_room(&list[i]))
-      return fail("state_save_rooms(%p, %d)\r\n", list, number);
+      return io_fail("state_save_rooms(%p, %d)\r\n", list, number);
   return SUCCESS;
 }
 
@@ -355,7 +355,7 @@ state_save_daemons(struct delayed_action const* d_list, int32_t count)
 
   if (state_save_int32(RSID_DAEMONS) ||
       state_save_int32(count))
-    return fail("state_save_daemons(%p, %d)\r\n", d_list, count);
+    return io_fail("state_save_daemons(%p, %d)\r\n", d_list, count);
 
   for (i = 0; i < count; i++)
   {
@@ -375,14 +375,14 @@ state_save_daemons(struct delayed_action const* d_list, int32_t count)
     else if (d_list[i].d_func == player_stop_levitating)       func = 12;
     else if (d_list[i].d_func == daemon_change_visuals)        func = 13;
     else
-      return fail("state_save_daemons(%p, %d) Unknown Daemon\r\n",
+      return io_fail("state_save_daemons(%p, %d) Unknown Daemon\r\n",
                      d_list, count);
 
     if (state_save_int32(d_list[i].d_type) ||
         state_save_int32(func) ||
         state_save_int32(d_list[i].d_arg) ||
         state_save_int32(d_list[i].d_time))
-      return fail("state_save_daemons(%p, %d)\r\n", d_list, count);
+      return io_fail("state_save_daemons(%p, %d)\r\n", d_list, count);
   }
   return 0;
 }
@@ -398,14 +398,14 @@ state_save_window(WINDOW* win)
   if (state_save_int32(RSID_WINDOW) ||
       state_save_int32(height) ||
       state_save_int32(width))
-    return fail("state_save_window(%p)\r\n", win);
+    return io_fail("state_save_window(%p)\r\n", win);
 
   for (row = 0; row < height; row++)
     for (col = 0; col < width; col++)
     {
       int32_t sym = mvwincch(win, row, col);
       if (state_save_int32(sym))
-        return fail("state_save_window(%p)\r\n", win);
+        return io_fail("state_save_window(%p)\r\n", win);
     }
 
   return 0;
@@ -417,14 +417,14 @@ state_save_obj_info(const struct obj_info* i, int count)
 {
   if (state_save_int32(RSID_MAGICITEMS) ||
       state_save_int32(count))
-    return fail("state_save_obj_info(%p, %d)\r\n", i, count);
+    return io_fail("state_save_obj_info(%p, %d)\r\n", i, count);
 
   for (int n = 0; n < count; n++)
     if(state_save_int32(i[n].oi_prob) ||
        state_save_int32(i[n].oi_worth) ||
        state_save_string(i[n].oi_guess) ||
        state_save_int8(i[n].oi_know))
-      return fail("state_save_obj_info(%p, %d)\r\n", i, count);
+      return io_fail("state_save_obj_info(%p, %d)\r\n", i, count);
   return 0;
 }
 
@@ -439,11 +439,11 @@ state_save_list(const THING* l)
 
   if (state_save_int32(RSID_OBJECTLIST) ||
       state_save_int32(listsize))
-    return fail("state_save_list(%p)\r\n", l);
+    return io_fail("state_save_list(%p)\r\n", l);
 
   for(; l != NULL; l = l->o.l_next)
     if (state_save_object(l))
-      return fail("state_save_list(%p)\r\n", l);
+      return io_fail("state_save_list(%p)\r\n", l);
 
   return 0;
 }
@@ -457,7 +457,7 @@ state_save_index(char const** master, int max, char const* str)
       break;
 
   return state_save_int32(i == max ? -1 : i)
-    ?  fail("state_save_index(%p[%p], %d, %p)\r\n", master, *master, max, str)
+    ?  io_fail("state_save_index(%p[%p], %d, %p)\r\n", master, *master, max, str)
     : SUCCESS;
 }
 

@@ -56,7 +56,7 @@ state_load_room(struct room* room)
     state_load_coord(&room->r_exit[10]) ||
     state_load_coord(&room->r_exit[11])
 
-    ? fail("state_load_room(%p)\r\n", room)
+    ? io_fail("state_load_room(%p)\r\n", room)
     : SUCCESS;
 }
 
@@ -70,22 +70,22 @@ static bool
 state_read(void* buf, int32_t length)
 {
   if (file == NULL)
-    return fail("state_read(%p, %d) File is NULL\r\n", buf, length);
+    return io_fail("state_read(%p, %d) File is NULL\r\n", buf, length);
   if (buf == NULL)
-    return fail("state_read(%p, %d) Buffer is NULL\r\n", buf, length);
+    return io_fail("state_read(%p, %d) Buffer is NULL\r\n", buf, length);
   if (length <= 0)
-    return fail("state_read(%p, %d) Length is too short\r\n", buf, length);
+    return io_fail("state_read(%p, %d) Length is too short\r\n", buf, length);
 
   return io_encread(buf, (size_t)length, file) == (size_t)length
     ? SUCCESS
-    : fail("state_read:(buf: %p, length: %d)\r\n", buf, length);
+    : io_fail("state_read:(buf: %p, length: %d)\r\n", buf, length);
 }
 
 bool
 state_load_int8(int8_t* data)
 {
   return state_read(  data, 1)
-    ? fail("state_load_int8(%p)\r\n", data)
+    ? io_fail("state_load_int8(%p)\r\n", data)
     : SUCCESS;
 }
 
@@ -93,7 +93,7 @@ bool
 state_load_int32(int32_t* data)
 {
   return state_read(  data, 4)
-    ? fail("state_load_int32(%p)\r\n", data)
+    ? io_fail("state_load_int32(%p)\r\n", data)
     : SUCCESS;
 }
 
@@ -103,7 +103,7 @@ state_assert_int32(int32_t expected)
   int32_t found;
   state_load_int32(&found);
   return found != expected
-    ? fail("state_assert_int32: %X should have been %X\r\n", found, expected)
+    ? io_fail("state_assert_int32: %X should have been %X\r\n", found, expected)
     : SUCCESS;
 }
 
@@ -113,7 +113,7 @@ state_load_bool(bool* data)
   int8_t b;
 
   if (state_load_int8(&b))
-    return fail("state_load_bool(%p)\r\n", data);
+    return io_fail("state_load_bool(%p)\r\n", data);
 
   *data = b != 0;
   return SUCCESS;
@@ -125,11 +125,11 @@ state_load_bools(bool* i, int32_t count)
   int32_t n = 0;
 
   if (state_load_int32(&n) || n != count)
-    return fail("state_load_bools(%p, %d)\r\n", i, count);
+    return io_fail("state_load_bools(%p, %d)\r\n", i, count);
 
   for (n = 0; n < count; n++)
     if (state_load_bool(&i[n]))
-      return fail("state_load_bools(%p, %d)\r\n", i, count);
+      return io_fail("state_load_bools(%p, %d)\r\n", i, count);
 
   return SUCCESS;
 }
@@ -139,7 +139,7 @@ state_load_char(char* c)
 {
   int8_t i;
   if (state_load_int8(&i))
-    return fail("state_load_char('%p')\r\n", c);
+    return io_fail("state_load_char('%p')\r\n", c);
   *c = (char)i;
   return SUCCESS;
 }
@@ -148,11 +148,11 @@ static bool
 state_load_chars(char* c, int32_t len)
 {
   if (state_assert_int32(len))
-    return fail("state_load_chars(%c, %d)\r\n", c, len);
+    return io_fail("state_load_chars(%c, %d)\r\n", c, len);
   if (len == 0)
     return SUCCESS;
   return state_read(c, len)
-    ? fail("state_load_chars(%c, %d)\r\n", c, len)
+    ? io_fail("state_load_chars(%c, %d)\r\n", c, len)
     : SUCCESS;
 }
 
@@ -168,7 +168,7 @@ static bool state_load_stats(struct stats* s)
     state_load_structs_damage(s->s_dmg) ||
     state_load_int32(&s->s_maxhp)
 
-    ? fail("state_load_stats(%p)\r\n", s)
+    ? io_fail("state_load_stats(%p)\r\n", s)
     : SUCCESS;
 }
 
@@ -179,7 +179,7 @@ state_load_string(char** s)
   int32_t len = 0;
 
   if (state_load_int32(&len) || len < 0)
-    return fail("state_load_string(s: %p[%p]) read %d\r\n", s, *s, len);
+    return io_fail("state_load_string(s: %p[%p]) read %d\r\n", s, *s, len);
 
   if (len == 0)
     *s = NULL;
@@ -187,12 +187,12 @@ state_load_string(char** s)
   {
     *s = malloc((size_t)len);
     if (*s == NULL)
-      return fail("state_load_string(s: %p[%p]) malloc(%d) failed\r\n",
+      return io_fail("state_load_string(s: %p[%p]) malloc(%d) io_failed\r\n",
                   s, *s, len);
   }
 
   return state_load_chars(*s, len)
-    ? fail("state_load_string(s: %p[%p]) Load Chars\r\n", s, *s)
+    ? io_fail("state_load_string(s: %p[%p]) Load Chars\r\n", s, *s)
     : SUCCESS;
 }
 
@@ -200,7 +200,7 @@ bool
 state_load_coord(coord* c)
 {
   return state_load_int32(&c->y) || state_load_int32(&c->x)
-    ? fail("state_load_coord(%p)\r\n", c)
+    ? io_fail("state_load_coord(%p)\r\n", c)
     : SUCCESS;
 }
 
@@ -208,7 +208,7 @@ bool
 state_load_struct_damage(struct damage* dmg)
 {
   return state_load_int32(&dmg->sides) || state_load_int32(&dmg->dices)
-    ? fail("state_load_coord(%p)\r\n", dmg)
+    ? io_fail("state_load_coord(%p)\r\n", dmg)
     : SUCCESS;
 }
 
@@ -217,7 +217,7 @@ state_load_structs_damage(struct damage dmg[MAXATTACKS])
 {
   for (int i = 0; i < MAXATTACKS; ++i)
     if (state_load_struct_damage(&dmg[i]))
-      return fail("state_load_structs_damage(%p)\r\n", dmg);
+      return io_fail("state_load_structs_damage(%p)\r\n", dmg);
   return SUCCESS;
 }
 
@@ -247,7 +247,7 @@ rs_read_window(WINDOW* win)
   if (state_assert_int32(RSID_WINDOW) ||
       state_load_int32(&maxlines) ||
       state_load_int32(&maxcols))
-    return fail("rs_read_window(%p)\r\n", win);
+    return io_fail("rs_read_window(%p)\r\n", win);
 
   for (int row = 0; row < maxlines; row++)
     for (int col = 0; col < maxcols; col++)
@@ -278,7 +278,7 @@ rs_read_daemons(struct delayed_action* d_list, int count)
 
   if (state_assert_int32(RSID_DAEMONS) ||
       state_load_int32(&value))
-    return fail("rs_read_daemons(%p, %d)\r\n", d_list, count);
+    return io_fail("rs_read_daemons(%p, %d)\r\n", d_list, count);
 
   if (value > count)
     return 1;
@@ -330,7 +330,7 @@ state_load_obj_info(struct obj_info* mi, int count)
   if (state_assert_int32(RSID_MAGICITEMS) ||
       state_load_int32(&value) ||
       value > count)
-    return fail("state_load_obj_info(%p, %d)\r\n", mi, count);
+    return io_fail("state_load_obj_info(%p, %d)\r\n", mi, count);
 
   for (int n = 0; n < value; n++)
     if (state_load_int32(&mi[n].oi_prob) ||
@@ -384,7 +384,7 @@ rs_read_object(THING* o)
       state_load_int32(&o->o.o_arm) ||
       state_load_int32(&o->o.o_flags) ||
       state_load_string(&o->o.o_label))
-    return fail("rs_read_obj(%p)\r\n", o);
+    return io_fail("rs_read_obj(%p)\r\n", o);
   return 0;
 }
 
@@ -395,17 +395,17 @@ rs_read_equipment(int32_t marker)
   THING* item;
 
   if (state_load_int32(&disk_mark))
-    return fail("rs_read_equipment(%X)\r\n", marker);
+    return io_fail("rs_read_equipment(%X)\r\n", marker);
 
   if (disk_mark == RSID_NULL)
     return 0;
   if (disk_mark != marker)
-    return fail("rs_read_equipment(%X) expected %X found %x\r\n",
+    return io_fail("rs_read_equipment(%X) expected %X found %x\r\n",
                 marker, disk_mark);
 
   item = os_calloc_thing();
   if (rs_read_object(item))
-    return fail("rs_read_equipment(%X)\r\n", marker);
+    return io_fail("rs_read_equipment(%X)\r\n", marker);
 
   pack_equip_item(item);
   return 0;
@@ -419,7 +419,7 @@ state_load_list(THING** list)
 
   if (state_assert_int32(RSID_OBJECTLIST) ||
       state_load_int32(&cnt))
-    return fail("state_load_list(%p[%p])\r\n", list, *list);
+    return io_fail("state_load_list(%p[%p])\r\n", list, *list);
 
   THING* l = NULL;
   THING* previous = NULL;
@@ -433,7 +433,7 @@ state_load_list(THING** list)
       previous->o.l_next = l;
 
     if (rs_read_object(l))
-      return fail("state_load_list(list: %p[%p]) %d, i=%d\r\n",
+      return io_fail("state_load_list(list: %p[%p]) %d, i=%d\r\n",
                   list, *list, __LINE__, i);
 
     if (previous == NULL)
@@ -460,7 +460,7 @@ state_load_thing(THING* t)
 
   if (state_assert_int32(RSID_THING) ||
       state_load_int32(&index))
-    return fail("state_load_thing(%p)\r\n", t);
+    return io_fail("state_load_thing(%p)\r\n", t);
 
   if (index == 0)
     return 0;
@@ -551,7 +551,7 @@ rs_read_thing_list(THING** list)
 
   if (state_assert_int32(RSID_MONSTERLIST) ||
       state_load_int32(&cnt))
-    return fail("rs_read_thing_list(%p[%p])\r\n", list, *list);
+    return io_fail("rs_read_thing_list(%p[%p])\r\n", list, *list);
 
   for (int i = 0; i < cnt; i++)
   {

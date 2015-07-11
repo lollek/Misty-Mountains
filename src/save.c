@@ -57,7 +57,7 @@ save_game(void)
   while (savef == NULL)
   {
     io_msg("save to file? ");
-    if (readstr(save_file_name) != 0)
+    if (io_readstr(save_file_name) != 0)
     {
       io_msg_clear();
       return false;
@@ -70,7 +70,7 @@ save_game(void)
     {
       int c;
       io_msg("File exists.  Do you wish to overwrite it? ");
-      while ((c = readchar(true)) != 'y' && c != 'Y')
+      while ((c = io_readchar(true)) != 'y' && c != 'Y')
       {
         if (c == KEY_ESCAPE || c == 'n' || c == 'N')
         {

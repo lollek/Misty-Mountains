@@ -259,7 +259,7 @@ get_dir(void)
   do
   {
     gotit = true;
-    switch (dir_ch = readchar(false))
+    switch (dir_ch = io_readchar(false))
     {
       case 'h': case 'H': delta.y =  0; delta.x = -1; break;
       case 'j': case 'J': delta.y =  1; delta.x =  0; break;
@@ -327,7 +327,7 @@ call_it(char const* what, struct obj_info *info)
   {
     char tmpbuf[MAXSTR] = { '\0' };
     io_msg("what do you want to name the %s? ", what);
-    if (readstr(tmpbuf) == 0)
+    if (io_readstr(tmpbuf) == 0)
     {
       if (info->oi_guess != NULL)
         free(info->oi_guess);
@@ -354,11 +354,11 @@ rnd_thing(void)
     case 8: return GOLD;
     case 9:
       if (level < level_amulet)
-        (void)fail("rnd_thing: Amulet spawned at a too low level", 0);
+        io_debug("rnd_thing: Amulet spawned at a too low level", 0);
       return AMULET;
 
     default:
-      (void)fail("rnd_thing got %d, expected value between 0 and 9", 0);
+      io_debug("rnd_thing got %d, expected value between 0 and 9", 0);
       return GOLD;
   }
 }
@@ -474,8 +474,7 @@ roomin(coord* cp)
         && rp->r_pos.y <= cp->y)
       return rp;
 
-  io_msg("in some bizarre place (%d, %d)", cp->y, cp->x);
-  assert(0);
+  io_debug_fatal("in some bizarre place (%d, %d)", cp->y, cp->x);
   return NULL;
 }
 

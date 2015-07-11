@@ -187,7 +187,7 @@ command_name_item(void)
   io_msg("what do you want to call it? ");
 
   char tmpbuf[MAXSTR] = { '\0' };
-  if (readstr(tmpbuf) == 0)
+  if (io_readstr(tmpbuf) == 0)
   {
     if (obj->o.o_type == STICK)
       wand_set_name((enum wand_t)obj->o.o_which, tmpbuf);
@@ -215,7 +215,7 @@ bool
 command_identify_character(void)
 {
   io_msg("what do you want identified? ");
-  int ch = readchar(true);
+  int ch = io_readchar(true);
   io_msg_clear();
 
   if (ch == KEY_ESCAPE)
@@ -384,7 +384,7 @@ command_help(void)
   int const helpstrsize = sizeof(helpstr) / sizeof(*helpstr);
 
   io_msg("character you want help for (* for all): ");
-  char helpch = readchar(true);
+  char helpch = io_readchar(true);
   io_msg_clear();
 
   /* If its not a *, print the right help string
@@ -433,7 +433,7 @@ command_help(void)
   wmove(hw, LINES - 1, 0);
   waddstr(hw, "--Press space to continue--");
   wrefresh(hw);
-  wait_for(KEY_SPACE);
+  io_wait_for_key(KEY_SPACE);
   clearok(stdscr, true);
 
   io_msg_clear();
@@ -474,7 +474,7 @@ command_show_inventory(void)
 
   pack_print_inventory(0);
   io_msg("--Press any key to continue--");
-  readchar(false);
+  io_readchar(false);
   pack_clear_inventory();
   io_msg_clear();
   return false;
@@ -651,7 +651,7 @@ bool command_drop(void)
   if (obj->o.o_count > 1)
   {
     io_msg("Drop all? (y/N) ");
-    drop_all = readchar(true) == 'y';
+    drop_all = io_readchar(true) == 'y';
     io_msg_clear();
   }
 
