@@ -29,7 +29,7 @@ death_reason(char buf[], int reason)
       case 'd': case DEATH_DART:  death_reason = "Poisoned by a dart"; break;
       case 'f': case DEATH_FLAME: death_reason = "Burned to crisp"; break;
       case 'h': case 'i': case DEATH_ICE: death_reason = "Frozen solid"; break;
-      case 's': case DEATH_HUNGER: death_reason = "Starvated to death"; break;
+      case 's': case DEATH_HUNGER: death_reason = "Starved to death"; break;
 
       default:
       case DEATH_UNKNOWN:
