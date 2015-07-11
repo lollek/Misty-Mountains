@@ -25,7 +25,6 @@
 #include "misc.h"
 #include "rooms.h"
 #include "player.h"
-#include "rip.h"
 #include "options.h"
 #include "os.h"
 #include "move.h"
@@ -91,8 +90,7 @@ parse_args(int argc, char* const* argv)
                 break;
       case 'p': passgo = true; break;
       case 'r': game_mode = LOAD_GAME; break;
-      case 's': score(0, -1, 0);
-                exit(0);
+      case 's': score_show_and_exit(0, -1, 0); /* does not return */
       case 'S': if (wizard)
                   sscanf(optarg, "%"SCNu32, &os_rand_seed);
                 break;

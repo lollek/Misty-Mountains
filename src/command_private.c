@@ -4,27 +4,27 @@
 #include <assert.h>
 #include <signal.h>
 
-#include "potions.h"
-#include "scrolls.h"
-#include "traps.h"
-#include "options.h"
-#include "io.h"
-#include "pack.h"
-#include "list.h"
-#include "level.h"
-#include "rings.h"
-#include "misc.h"
-#include "monster.h"
-#include "player.h"
-#include "weapons.h"
-#include "wand.h"
-#include "rip.h"
 #include "daemons.h"
-#include "move.h"
 #include "fight.h"
 #include "food.h"
+#include "io.h"
+#include "level.h"
+#include "list.h"
+#include "misc.h"
+#include "monster.h"
+#include "move.h"
+#include "options.h"
 #include "os.h"
+#include "pack.h"
+#include "player.h"
+#include "potions.h"
+#include "rings.h"
 #include "rogue.h"
+#include "score.h"
+#include "scrolls.h"
+#include "traps.h"
+#include "wand.h"
+#include "weapons.h"
 
 #include "command_private.h"
 
@@ -100,7 +100,7 @@ command_use_stairs(char up_or_down)
     if (level == 1)
     {
       if (has_amulet)
-        total_winner();
+        score_win_and_exit();
       else
       {
         /* This either quits, or player did not want to leave */

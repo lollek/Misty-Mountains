@@ -12,8 +12,7 @@
 
 #include "io.h"
 
-#define SCORE_MAX         10    /* Number of highscore entries */
-#define SCORE_MAX_STRING  "Ten" /* The same number in letters  */
+#define SCORE_MAX 10 /* Number of highscore entries */
 
 typedef struct sc_ent {
   unsigned sc_uid;
@@ -35,3 +34,9 @@ void score_read(SCORE* top_ten);
 
 /* Write out the score file */
 void score_write(SCORE* top_ten);
+
+/* Figure score and post it.  */
+void score_show_and_exit(int amount, int flags, char monst)
+  __attribute__ ((noreturn));
+
+void score_win_and_exit(void) __attribute__ ((noreturn));

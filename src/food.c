@@ -3,7 +3,6 @@
 #include "pack.h"
 #include "player.h"
 #include "rings.h"
-#include "rip.h"
 #include "os.h"
 #include "state.h"
 #include "death.h"

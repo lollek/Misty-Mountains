@@ -15,28 +15,28 @@
 #include <signal.h>
 #include <ctype.h>
 
-#include "potions.h"
-#include "scrolls.h"
-#include "options.h"
-#include "io.h"
 #include "armor.h"
-#include "pack.h"
 #include "daemons.h"
-#include "list.h"
-#include "move.h"
-#include "level.h"
-#include "passages.h"
-#include "rings.h"
-#include "save.h"
-#include "misc.h"
-#include "player.h"
-#include "wizard.h"
-#include "weapons.h"
-#include "wand.h"
-#include "things.h"
-#include "rip.h"
 #include "food.h"
+#include "io.h"
+#include "level.h"
+#include "list.h"
+#include "misc.h"
+#include "move.h"
+#include "options.h"
+#include "pack.h"
+#include "passages.h"
+#include "player.h"
+#include "potions.h"
+#include "rings.h"
 #include "rogue.h"
+#include "save.h"
+#include "score.h"
+#include "scrolls.h"
+#include "things.h"
+#include "wand.h"
+#include "weapons.h"
+#include "wizard.h"
 
 #include "command.h"
 #include "command_private.h"
@@ -250,8 +250,7 @@ command_signal_quit(int sig)
   /* Reset the signal in case we got here via an interrupt */
     signal(SIGINT, command_signal_leave);
     pack_evaluate();
-    score(pack_gold, 1, 0);
-    exit(0);
+    score_show_and_exit(pack_gold, 1, 0);
   }
   else
   {

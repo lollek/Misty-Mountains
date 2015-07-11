@@ -12,7 +12,6 @@
 #include "misc.h"
 #include "weapons.h"
 #include "monster.h"
-#include "rip.h"
 #include "list.h"
 #include "os.h"
 #include "player.h"

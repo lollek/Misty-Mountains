@@ -29,7 +29,6 @@
 #include "os.h"
 #include "state.h"
 #include "armor.h"
-#include "rip.h"
 #include "options.h"
 #include "rogue.h"
 #include "death.h"

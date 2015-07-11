@@ -21,7 +21,6 @@
 #include "misc.h"
 #include "player.h"
 #include "list.h"
-#include "rip.h"
 #include "level.h"
 #include "options.h"
 #include "os.h"

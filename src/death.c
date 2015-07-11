@@ -4,10 +4,10 @@
 #include <time.h>
 
 #include "io.h"
-#include "pack.h"
-#include "monster.h"
 #include "misc.h"
-#include "rip.h"
+#include "monster.h"
+#include "pack.h"
+#include "score.h"
 
 #include "death.h"
 
@@ -54,8 +54,7 @@ death(int monst)
   readchar(false);
 
   pack_evaluate();
-  score(pack_gold, pack_contains_amulet() ? 3 : 0, (char)monst);
-  exit(0);
+  score_show_and_exit(pack_gold, pack_contains_amulet() ? 3 : 0, (char)monst);
 }
 
 

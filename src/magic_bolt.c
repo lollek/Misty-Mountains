@@ -8,7 +8,6 @@
 #include "monster.h"
 #include "os.h"
 #include "player.h"
-#include "rip.h"
 #include "things.h"
 #include "weapons.h"
 #include "death.h"

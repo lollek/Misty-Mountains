@@ -27,7 +27,6 @@
 #include "pack.h"
 #include "passages.h"
 #include "player.h"
-#include "rip.h"
 #include "rogue.h"
 #include "state.h"
 #include "things.h"
