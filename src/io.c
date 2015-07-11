@@ -20,11 +20,11 @@
 
 #include "io.h"
 
-char io_last_msg[MAXSTR] = { '\0' };
 WINDOW* hw = NULL;
 
 #define MAXMSG	(int)(NUMCOLS - sizeof " --More--")
 static char msgbuf[2*MAXMSG+1];
+static char last_msg[MAXSTR] = { '\0' };
 static int newpos = 0;
 static int mpos = 0;
 
@@ -36,7 +36,7 @@ flushmsg(void)
     return ~KEY_ESCAPE;
 
   /* Save message in case player missed it */
-  strcpy(io_last_msg, msgbuf);
+  strcpy(last_msg, msgbuf);
 
   /* TODO: Remove mpos by replacing mpos = 0 with a clearmsg() */
   if (mpos)
@@ -95,6 +95,12 @@ doadd(char const* fmt, va_list args, bool end_of_command)
   strcpy(&msgbuf[newpos], buf);
   newpos = (int) strlen(msgbuf);
   new_sentence = end_of_command;
+}
+
+int
+io_last_msg(void)
+{
+  return msg(last_msg);
 }
 
 char const*
@@ -206,14 +212,14 @@ msg_unsaved(char const* fmt, ...)
   char buf[MAXSTR];
 
   flushmsg();
-  strcpy(buf, io_last_msg);
+  strcpy(buf, last_msg);
 
   va_list args;
   va_start(args, fmt);
   doadd(fmt, args, true);
   va_end(args);
   flushmsg();
-  strcpy(io_last_msg, buf);
+  strcpy(last_msg, buf);
 
   return ~KEY_ESCAPE;
 }

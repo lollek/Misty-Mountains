@@ -65,7 +65,6 @@ typedef chtype glyph;
 #define STICK		'/'
 
 /* Variables, TODO: Remove these */
-extern char io_last_msg[MAXSTR]; /* The last message printed */
 extern WINDOW* hw;       /* used as a scratch window */
 
 void io_missile_motion(THING* obj, int ydelta, int xdelta);
@@ -95,13 +94,29 @@ size_t io_encwrite(char const* start, size_t size, FILE* outf);
 size_t io_encread(char* start, size_t size, FILE* inf);
 
 /* Message player */
+int io_last_msg(void); /* Reshow last msg */
 int clearmsg(void);            /* Remove displayed text */
 int msg(char const* fmt, ...); /* Display a message at the top of the screen. */
 int msg_unsaved(char const* fmt, ...); /* msg() which does not save the msg */
 void addmsg(char const* fmt, ...);       /* Add things to the current message */
 
+
+
 /* Helper function to colorize chars before outputting them */
 chtype colorize(const chtype ch);
+
+/* old ncurses functions, with custom color support, to be removed */
+#define incch()              (inch() & A_CHARTEXT)
+#define wincch(_w)           (winch(_w) & A_CHARTEXT)
+#define mvincch(_y, _x)      (mvinch(_y, _x) & A_CHARTEXT)
+#define mvwincch(_w, _y, _x) (mvwinch(_w, _y, _x) & A_CHARTEXT)
+
+#define addcch(_c)                addch(colorize(_c))
+#define waddcch(_w, _c)           waddch(_w, colorize(_c))
+#define mvaddcch(_y, _x, _c)      mvaddch(_y, _x, colorize(_c))
+#define mvwaddcch(_w, _y, _x, _c) mvwaddch(_w, _y, _x, colorize(_c))
+
+
 
 /* New kind of IO API for better abstraction */
 chtype io_attribute(enum attribute attribute);
@@ -122,16 +137,5 @@ io_mvaddch(int y, int x, enum tile tile, enum attribute attr)
 static inline int
 io_mvwaddch(WINDOW* win, int y, int x, enum tile tile, enum attribute attr)
 { return mvwaddch(win, y, x, io_tile(tile) | io_attribute(attr)); }
-
-/* old ncurses functions, with custom color support, to be removed */
-#define incch()              (inch() & A_CHARTEXT)
-#define wincch(_w)           (winch(_w) & A_CHARTEXT)
-#define mvincch(_y, _x)      (mvinch(_y, _x) & A_CHARTEXT)
-#define mvwincch(_w, _y, _x) (mvwinch(_w, _y, _x) & A_CHARTEXT)
-
-#define addcch(_c)                addch(colorize(_c))
-#define waddcch(_w, _c)           waddch(_w, colorize(_c))
-#define mvaddcch(_y, _x, _c)      mvaddch(_y, _x, colorize(_c))
-#define mvwaddcch(_w, _y, _x, _c) mvwaddch(_w, _y, _x, colorize(_c))
 
 #endif /* _ROGUE14_IO_H_ */
