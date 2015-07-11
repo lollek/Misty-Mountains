@@ -36,7 +36,7 @@ save_file(FILE* savef)
 #ifdef NDEBUG
   if (wizard)
   {
-    mpos = 0;
+    clearmsg();
     msg("Cannot save as a wizard");
     return false;
   }
@@ -53,7 +53,7 @@ bool
 save_game(void)
 {
   FILE *savef = NULL;
-  mpos = 0;
+  clearmsg();
   while (savef == NULL)
   {
     msg("save to file? ");
@@ -62,7 +62,7 @@ save_game(void)
       clearmsg();
       return false;
     }
-    mpos = 0;
+    clearmsg();
 
     /* test to see if the file exists */
     struct stat sbuf;

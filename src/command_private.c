@@ -216,7 +216,7 @@ command_identify_character(void)
 {
   msg("what do you want identified? ");
   int ch = readchar(true);
-  mpos = 0;
+  clearmsg();
 
   if (ch == KEY_ESCAPE)
   {
@@ -385,7 +385,7 @@ command_help(void)
 
   msg("character you want help for (* for all): ");
   char helpch = readchar(true);
-  mpos = 0;
+  clearmsg();
 
   /* If its not a *, print the right help string
    * or an error if he typed a funny character. */

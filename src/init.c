@@ -236,7 +236,7 @@ init_old_game(void)
     printf("Cannot unlink file\n");
     return false;
   }
-  mpos = 0;
+  clearmsg();
   clearok(stdscr,true);
 
   if (player_get_health() <= 0)

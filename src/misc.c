@@ -275,7 +275,7 @@ get_dir(void)
         return NULL;
 
       default:
-        mpos = 0;
+        clearmsg();
         msg(prompt);
         gotit = false;
         break;
@@ -292,7 +292,7 @@ get_dir(void)
       delta.x = os_rand_range(3) - 1;
     } while (delta.y == 0 && delta.x == 0);
 
-  mpos = 0;
+  clearmsg();
   return &delta;
 }
 

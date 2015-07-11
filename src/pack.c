@@ -449,7 +449,7 @@ pack_get_item(char const* purpose, int type)
   pack_print_inventory(type);
   msg("which object do you want to %s? ", purpose);
   char ch = readchar(true);
-  mpos = 0;
+  clearmsg();
 
   pack_clear_inventory();
 

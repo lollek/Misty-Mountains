@@ -22,11 +22,11 @@
 
 char io_last_msg[MAXSTR] = { '\0' };
 WINDOW* hw = NULL;
-int mpos = 0;
 
 #define MAXMSG	(int)(NUMCOLS - sizeof " --More--")
 static char msgbuf[2*MAXMSG+1];
 static int newpos = 0;
+static int mpos = 0;
 
 static int
 flushmsg(void)

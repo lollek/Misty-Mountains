@@ -67,7 +67,6 @@ typedef chtype glyph;
 /* Variables, TODO: Remove these */
 extern char io_last_msg[MAXSTR]; /* The last message printed */
 extern WINDOW* hw;       /* used as a scratch window */
-extern int mpos;         /* Where cursor is on top line */
 
 void io_missile_motion(THING* obj, int ydelta, int xdelta);
 

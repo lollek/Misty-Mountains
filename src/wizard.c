@@ -131,7 +131,7 @@ wizard_create_item(void)
 {
   msg("type of item: ");
   int type = readchar(true);
-  mpos = 0;
+  clearmsg();
 
   if (!(type == WEAPON || type == ARMOR || type == RING || type == STICK
       || type == GOLD || type == POTION || type == SCROLL || type == TRAP))
@@ -143,7 +143,7 @@ wizard_create_item(void)
   msg("which %c do you want? (0-f)", type);
   char ch = readchar(true);
   int which = isdigit(ch) ? ch - '0' : ch - 'a' + 10;
-  mpos = 0;
+  clearmsg();
 
   THING* obj = NULL;
   switch (type)
@@ -172,7 +172,7 @@ wizard_create_item(void)
 
         msg("blessing? (+,-,n)");
         char bless = readchar(true);
-        mpos = 0;
+        clearmsg();
 
         if (bless == '-')
         {
@@ -190,7 +190,7 @@ wizard_create_item(void)
 
         msg("blessing? (+,-,n)");
         char bless = readchar(true);
-        mpos = 0;
+        clearmsg();
         if (bless == '-')
         {
           obj->o.o_flags |= ISCURSED;
@@ -209,7 +209,7 @@ wizard_create_item(void)
           case R_PROTECT: case R_ADDSTR: case R_ADDHIT: case R_ADDDAM:
             msg("blessing? (+,-,n)");
             char bless = readchar(true);
-            mpos = 0;
+            clearmsg();
             if (bless == '-')
               obj->o.o_flags |= ISCURSED;
             obj->o.o_arm = (bless == '-' ? -1 : os_rand_range(2) + 1);

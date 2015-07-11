@@ -98,8 +98,7 @@ command(void)
       else
       {
         ch = readchar(false);
-        if (mpos != 0)
-          clearmsg();
+        clearmsg();
       }
 
       /* command_do returns 0 if player did something not in-game
