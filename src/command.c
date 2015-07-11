@@ -44,11 +44,7 @@
 static bool
 unknown_command(char ch)
 {
-  char buf[MAXSTR];
-  /* Message the player, but don't save it to ^P */
-  strcpy(buf, huh);
-  msg("illegal command '%s'", unctrl(ch));
-  strcpy(huh, buf);
+  msg_unsaved("illegal command '%s'", unctrl(ch));
   return false;
 }
 
@@ -179,7 +175,7 @@ command_do(char ch)
     case CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
     case CTRL('Y'): case CTRL('U'): case CTRL('B'): case CTRL('N'):
       return command_run(UNCTRL(ch), true);
-    case CTRL('P'): msg(huh); return false;
+    case CTRL('P'): msg(io_last_msg); return false;
     case CTRL('R'): clearok(curscr, true); wrefresh(curscr); return false;
     case CTRL('Z'): command_shell(); return false;
 

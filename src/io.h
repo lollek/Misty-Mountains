@@ -65,7 +65,7 @@ typedef chtype glyph;
 #define STICK		'/'
 
 /* Variables, TODO: Remove these */
-extern char huh[MAXSTR]; /* The last message printed */
+extern char io_last_msg[MAXSTR]; /* The last message printed */
 extern WINDOW* hw;       /* used as a scratch window */
 extern int mpos;         /* Where cursor is on top line */
 
@@ -98,6 +98,7 @@ size_t io_encread(char* start, size_t size, FILE* inf);
 /* Message player */
 int clearmsg(void);            /* Remove displayed text */
 int msg(char const* fmt, ...); /* Display a message at the top of the screen. */
+int msg_unsaved(char const* fmt, ...); /* msg() which does not save the msg */
 void addmsg(char const* fmt, ...);       /* Add things to the current message */
 
 /* Helper function to colorize chars before outputting them */

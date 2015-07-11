@@ -20,7 +20,7 @@
 
 #include "io.h"
 
-char huh[MAXSTR] = { '\0' };
+char io_last_msg[MAXSTR] = { '\0' };
 WINDOW* hw = NULL;
 int mpos = 0;
 
@@ -36,7 +36,7 @@ flushmsg(void)
     return ~KEY_ESCAPE;
 
   /* Save message in case player missed it */
-  strcpy(huh, msgbuf);
+  strcpy(io_last_msg, msgbuf);
 
   /* TODO: Remove mpos by replacing mpos = 0 with a clearmsg() */
   if (mpos)
@@ -67,6 +67,9 @@ __attribute__((__format__(__printf__, 1, 0)))
 static void
 doadd(char const* fmt, va_list args, bool end_of_command)
 {
+  assert(fmt != NULL  && "Use clearmsg() instead of msg(NULL)");
+  assert(*fmt != '\0' && "Use clearmsg() instead of msg(\"\")");
+
   static bool new_sentence = false;
   char const* separator = ". ";
   size_t separatorlen = strlen(separator);
@@ -190,14 +193,28 @@ int
 msg(char const* fmt, ...)
 {
   va_list args;
-
-  assert(fmt != NULL  && "Use clearmsg() instead of msg(NULL)");
-  assert(*fmt != '\0' && "Use clearmsg() instead of msg(\"\")");
-
-  /* otherwise add to the message */
   va_start(args, fmt);
   doadd(fmt, args, true);
   va_end(args);
+  return ~KEY_ESCAPE;
+}
+
+__attribute__((__format__(__printf__, 1, 2)))
+int
+msg_unsaved(char const* fmt, ...)
+{
+  char buf[MAXSTR];
+
+  flushmsg();
+  strcpy(buf, io_last_msg);
+
+  va_list args;
+  va_start(args, fmt);
+  doadd(fmt, args, true);
+  va_end(args);
+  flushmsg();
+  strcpy(io_last_msg, buf);
+
   return ~KEY_ESCAPE;
 }
 
