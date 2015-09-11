@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_PACK_H_
-#define _ROGUE14_PACK_H_
+#ifndef ROGUE14_PACK_H
+#define ROGUE14_PACK_H
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -82,4 +82,4 @@ static inline void pack_uncurse_item(item *item)
 THING* pack_find_arrow(void); /* Return arrow in pack or NULL */
 void pack_identify_item(void);
 
-#endif /* _ROGUE14_PACK_H_ */
+#endif /* ROGUE14_PACK_H */

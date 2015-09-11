@@ -1,5 +1,5 @@
-#ifndef _MONSTER_PRIVATE_H_
-#define _MONSTER_PRIVATE_H_
+#ifndef MONSTER_PRIVATE_H
+#define MONSTER_PRIVATE_H
 
 #include "coord.h"
 #include "things.h"
@@ -22,4 +22,4 @@ void monster_find_new_target(THING* tp);
 void monster_start_chasing(THING* monster);
 void monster_set_target(THING* mon, coord* target);
 
-#endif /* _MONSTER_PRIVATE_H_ */
+#endif /* MONSTER_PRIVATE_H */

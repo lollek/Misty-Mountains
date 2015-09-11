@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_MONSTER_H_
-#define _ROGUE14_MONSTER_H_
+#ifndef ROGUE14_MONSTER_H
+#define ROGUE14_MONSTER_H
 
 #include <stdbool.h>
 
@@ -133,4 +133,4 @@ bool monster_seen_by_player(THING const* monster);
 /** monster_chase.c **/
 bool monster_chase(THING* tp); /* Make a monster chase */
 
-#endif /* _ROGUE14_MONSTER_H_ */
+#endif /* ROGUE14_MONSTER_H */

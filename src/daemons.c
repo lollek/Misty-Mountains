@@ -238,11 +238,11 @@ daemon_change_visuals(void)
   /* change the things */
   for (THING* tp = level_items; tp != NULL; tp = tp->o.l_next)
     if (cansee(tp->o.o_pos.y, tp->o.o_pos.x))
-      mvaddcch(tp->o.o_pos.y, tp->o.o_pos.x, rnd_thing());
+      mvaddcch(tp->o.o_pos.y, tp->o.o_pos.x, (chtype) rnd_thing());
 
   /* change the stairs */
   if (seen_stairs())
-    mvaddcch(level_stairs.y, level_stairs.x, rnd_thing());
+    mvaddcch(level_stairs.y, level_stairs.x, (chtype) rnd_thing());
 
   /* change the monsters */
   bool seemonst = player_can_sense_monsters();
@@ -251,7 +251,7 @@ daemon_change_visuals(void)
     if (monster_seen_by_player(tp))
     {
       if (tp->t.t_type == 'X' && tp->t.t_disguise != 'X')
-        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, rnd_thing());
+        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) rnd_thing());
       else
         mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype)(os_rand_range(26) + 'A'));
     }

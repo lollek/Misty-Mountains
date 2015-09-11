@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_WEAPON_H_
-#define _ROGUE14_WEAPON_H_
+#ifndef ROGUE14_WEAPON_H
+#define ROGUE14_WEAPON_H
 
 #include <stdbool.h>
 
@@ -37,4 +37,4 @@ void weapon_set_last_used(THING* weapon);
 
 void weapon_description(item const* item, char* buf);
 
-#endif /* _ROGUE14_WEAPON_H_ */
+#endif /* ROGUE14_WEAPON_H */

@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_DEATH_H_
-#define _ROGUE14_DEATH_H_
+#ifndef ROGUE14_DEATH_H
+#define ROGUE14_DEATH_H
 
 /* Reasons for player dying */
 enum death_reason
@@ -19,4 +19,4 @@ char* death_reason(char buf[], int reason);
 /* Handle player death */
 void death(int monst) __attribute__((noreturn));
 
-#endif /* _ROGUE14_DEATH_H_ */
+#endif /* ROGUE14_DEATH_H */

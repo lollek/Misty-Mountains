@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_COMMAND_PRIVATE_H_
-#define _ROGUE14_COMMAND_PRIVATE_H_
+#ifndef ROGUE14_COMMAND_PRIVATE_H
+#define ROGUE14_COMMAND_PRIVATE_H
 
 #include "pack.h"
 
@@ -28,4 +28,4 @@ bool command_throw(void);                 /* Throw or shoot something*/
 bool command_use_stairs(char up_or_down); /* Go to next/previous level */
 bool command_wield(void);                 /* Asks player for weapon to wield */
 
-#endif /* _ROGUE14_COMMAND_PRIVATE_H_ */
+#endif /* ROGUE14_COMMAND_PRIVATE_H */

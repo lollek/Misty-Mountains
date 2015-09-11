@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_SAVE_H_
-#define _ROGUE14_SAVE_H_
+#ifndef ROGUE14_SAVE_H
+#define ROGUE14_SAVE_H
 
 #include <stdbool.h>
 
@@ -10,4 +10,4 @@ bool save_game(void);
 /* Automatically save a file.  This is used if a HUP signal is recieved */
 void save_auto(int signal) __attribute__((noreturn));
 
-#endif /* _ROGUE14_SAVE_H_ */
+#endif /* ROGUE14_SAVE_H */

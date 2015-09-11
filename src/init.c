@@ -67,7 +67,7 @@ sumprobs(char ch)
   for (int i = 0; i < max; ++i)
   {
     if (ch == ARMOR) sum += armor_probability((enum armor_t)i);
-    else             sum += ((struct obj_info*)ptr)[i].oi_prob;
+    else             sum += ((const struct obj_info*)ptr)[i].oi_prob;
   }
 
   /* Make sure it adds up to 100 */
@@ -88,8 +88,8 @@ sumprobs(char ch)
     }
     else
     {
-      prob = ((struct obj_info*)ptr)[i].oi_prob;
-      name = ((struct obj_info*)ptr)[i].oi_name;
+      prob = ((const struct obj_info*)ptr)[i].oi_prob;
+      name = ((const struct obj_info*)ptr)[i].oi_name;
     }
     printf("%3d%% %s\n", prob, name);
   }

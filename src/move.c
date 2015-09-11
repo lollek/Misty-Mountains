@@ -209,7 +209,7 @@ hit_bound:
 	    running = false;
 	    if (level_get_flags(player_pos->y, player_pos->x) & F_PASS)
 		room_enter(&nh);
-	    mvaddcch(player_pos->y, player_pos->x, floor_at());
+	    mvaddcch(player_pos->y, player_pos->x, (chtype) floor_at());
 	    if ((fl & F_PASS)
                 && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
 		room_leave(&nh);
@@ -222,7 +222,7 @@ hit_bound:
 	    ch = trap_spring(NULL, &nh);
 	    if (ch == T_DOOR || ch == T_TELEP)
 		return after;
-	    mvaddcch(player_pos->y, player_pos->x, floor_at());
+	    mvaddcch(player_pos->y, player_pos->x, (chtype) floor_at());
 	    if ((fl & F_PASS)
                 && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
 		room_leave(&nh);
@@ -239,7 +239,7 @@ hit_bound:
 	     */
             coord *player_pos = player_get_pos();
 	    player_set_room(roomin(player_pos));
-	    mvaddcch(player_pos->y, player_pos->x, floor_at());
+	    mvaddcch(player_pos->y, player_pos->x, (chtype) floor_at());
 	    if ((fl & F_PASS)
                 && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
 		room_leave(&nh);
@@ -251,7 +251,7 @@ hit_bound:
             coord *player_pos = player_get_pos();
 	    if (!(fl & F_REAL))
 		trap_spring(NULL, &nh);
-		mvaddcch(player_pos->y, player_pos->x, floor_at());
+		mvaddcch(player_pos->y, player_pos->x, (chtype) floor_at());
 		if ((fl & F_PASS)
                     && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
 		    room_leave(&nh);
@@ -265,7 +265,7 @@ hit_bound:
 	    else
 	    {
               coord *player_pos = player_get_pos();
-              mvaddcch(player_pos->y, player_pos->x, floor_at());
+              mvaddcch(player_pos->y, player_pos->x, (chtype) floor_at());
               if ((fl & F_PASS)
                   && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
                 room_leave(&nh);

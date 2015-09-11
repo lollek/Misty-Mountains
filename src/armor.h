@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_ARMOR_H_
-#define _ROGUE14_ARMOR_H_
+#ifndef ROGUE14_ARMOR_H
+#define ROGUE14_ARMOR_H
 
 #include "things.h"
 
@@ -39,4 +39,4 @@ void armor_description(item const* item, char* buf);
 
 THING* armor_create(int which, int random_stats);
 
-#endif /* _ROGUE14_ARMOR_H_ */
+#endif /* ROGUE14_ARMOR_H */

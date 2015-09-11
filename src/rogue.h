@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_ROGUE_H_
-#define _ROGUE14_ROGUE_H_
+#ifndef ROGUE14_ROGUE_H
+#define ROGUE14_ROGUE_H
 /*
  * Rogue definitions and variable declarations
  *
@@ -43,4 +43,4 @@ extern char whoami[];
 extern char runch;
 
 
-#endif /* _ROGUE14_ROGUE_H_ */
+#endif /* ROGUE14_ROGUE_H */

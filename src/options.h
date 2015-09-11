@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_OPTIONS_H_
-#define _ROGUE14_OPTIONS_H_
+#ifndef ROGUE14_OPTIONS_H
+#define ROGUE14_OPTIONS_H
 
 #include <stdbool.h>
 
@@ -14,4 +14,4 @@ bool option_autopickup(int type);
 
 bool option(void);
 
-#endif /* _ROGUE14_OPTIONS_H_ */
+#endif /* ROGUE14_OPTIONS_H */

@@ -319,7 +319,7 @@ def:
         if (obj != NULL)
           obj->t.t_oldch = ch;
         if (obj == NULL || !player_can_sense_monsters())
-          mvaddcch(y, x, ch);
+          mvaddcch(y, x, (chtype) ch);
       }
     }
 }

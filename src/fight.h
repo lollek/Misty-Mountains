@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_FIGHT_H_
-#define _ROGUE14_FIGHT_H_
+#ifndef ROGUE14_FIGHT_H
+#define ROGUE14_FIGHT_H
 
 #include <stdbool.h>
 
@@ -22,4 +22,4 @@ int fight_swing_hits(int at_lvl, int op_arm, int wplus);
  * A missile misses a monster */
 void fight_missile_miss(THING const* weap, char const* mname);
 
-#endif /* _ROGUE14_FIGHT_H_ */
+#endif /* ROGUE14_FIGHT_H */

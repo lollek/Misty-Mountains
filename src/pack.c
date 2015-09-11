@@ -222,7 +222,7 @@ pack_add_money(int value)
   coord const* player_pos = player_get_pos();
   pack_gold += value;
 
-  mvaddcch(player_pos->y, player_pos->x, floor_ch());
+  mvaddcch(player_pos->y, player_pos->x, (chtype) floor_ch());
   level_set_ch(player_pos->y, player_pos->x,
       (player_get_room()->r_flags & ISGONE)
         ? PASSAGE
@@ -238,7 +238,7 @@ pack_remove_from_floor(THING* obj)
   coord const* player_pos = player_get_pos();
 
   list_detach(&level_items, obj);
-  mvaddcch(player_pos->y, player_pos->x, floor_ch());
+  mvaddcch(player_pos->y, player_pos->x, (chtype) floor_ch());
   level_set_ch(player_pos->y, player_pos->x,
       (player_get_room()->r_flags & ISGONE)
         ? PASSAGE
@@ -265,7 +265,7 @@ pack_add(THING* obj, bool silent)
   if (obj->o.o_type == SCROLL && obj->o.o_which == S_SCARE && obj->o.o_flags & ISFOUND)
   {
     list_detach(&level_items, obj);
-    mvaddcch(player_pos->y, player_pos->x, floor_ch());
+    mvaddcch(player_pos->y, player_pos->x, (chtype) floor_ch());
     level_set_ch(player_pos->y, player_pos->x, floor_ch());
     os_remove_thing(&obj);
     io_msg("the scroll turns to dust as you pick it up");
@@ -462,7 +462,7 @@ pack_get_item(char const* purpose, int type)
     if (obj->o.o_packch == ch)
       return obj;
 
-  io_msg("'%s' is not a valid item",unctrl(ch));
+  io_msg("'%s' is not a valid item",unctrl((chtype) ch));
   return NULL;
 }
 

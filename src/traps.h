@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_TRAPS_H_
-#define _ROGUE14_TRAPS_H_
+#ifndef ROGUE14_TRAPS_H
+#define ROGUE14_TRAPS_H
 
 #include "coord.h"
 #include "things.h"
@@ -25,4 +25,4 @@ extern char const* trap_names[NTRAPS];
 enum trap_t trap_spring(THING* victim, coord* trap_coord);
 
 
-#endif /* _ROGUE14_TRAPS_H_ */
+#endif /* ROGUE14_TRAPS_H */

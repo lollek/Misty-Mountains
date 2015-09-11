@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_OS_H_
-#define _ROGUE14_OS_H_
+#ifndef ROGUE14_OS_H
+#define ROGUE14_OS_H
 
 #include <sys/types.h>
 
@@ -16,4 +16,4 @@ THING* os_calloc_thing(void);           /* Malloc and memset a THING */
 void   os_remove_thing(THING** thing);  /* Free a THING and set it to NULL */
 
 
-#endif /* _ROGUE14_OS_H_ */
+#endif /* ROGUE14_OS_H */

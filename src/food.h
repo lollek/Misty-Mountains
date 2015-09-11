@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_FOOD_H_
-#define _ROGUE14_FOOD_H_
+#ifndef ROGUE14_FOOD_H
+#define ROGUE14_FOOD_H
 
 #include <stdbool.h>
 
@@ -12,4 +12,4 @@ void food_digest(void);
 int food_nutrition_left(void);
 char const* food_hunger_state(void);
 
-#endif /* _ROGUE14_FOOD_H_ */
+#endif /* ROGUE14_FOOD_H */

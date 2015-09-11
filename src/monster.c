@@ -98,7 +98,7 @@ void monster_set_invisible(THING* mon)
   {
     char buf[MAXSTR];
     io_msg("%s disappeared", monster_name(mon, buf));
-    mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, mon->t.t_oldch);
+    mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
   }
 }
 void monster_become_held(THING* mon)
@@ -155,7 +155,7 @@ monster_new(THING* monster, char type, coord* pos)
   monster->t.t_type       = type;
   monster->t.t_disguise   = type;
   monster->t.t_pos        = *pos;
-  monster->t.t_oldch      = mvincch(pos->y, pos->x);
+  monster->t.t_oldch      = (char) mvincch(pos->y, pos->x);
   monster->t.t_room       = roomin(pos);
   level_set_monster(pos->y, pos->x, monster);
 
@@ -198,7 +198,7 @@ monster_new_random_wanderer(void)
     if (player_is_hallucinating())
       addcch((chtype)(os_rand_range(26) + 'A') | A_STANDOUT);
     else
-      addcch(monster->t.t_type | A_STANDOUT);
+      addcch((chtype) monster->t.t_type | A_STANDOUT);
   }
   monster_start_running(&monster->t.t_pos);
 }
@@ -342,7 +342,7 @@ monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
   }
 
   level_set_monster(mp->y, mp->x, NULL);
-  mvaddcch(mp->y, mp->x, tp->t.t_oldch);
+  mvaddcch(mp->y, mp->x, (chtype) tp->t.t_oldch);
   list_detach(&monster_list, tp);
 
   if (monster_is_players_target(tp))
@@ -382,7 +382,7 @@ monster_teleport(THING* monster, coord const* destination)
 
   /* Remove monster */
   if (monster_seen_by_player(monster))
-    mvaddcch(monster->t.t_pos.y, monster->t.t_pos.x, monster->t.t_oldch);
+    mvaddcch(monster->t.t_pos.y, monster->t.t_pos.x, (chtype) monster->t.t_oldch);
   set_oldch(monster, &new_pos);
   level_set_monster(monster->t.t_pos.y, monster->t.t_pos.x, NULL);
 
@@ -392,9 +392,9 @@ monster_teleport(THING* monster, coord const* destination)
   monster_remove_held(monster);
 
   if (monster_seen_by_player(monster))
-    mvaddcch(new_pos.y, new_pos.x, monster->t.t_disguise);
+    mvaddcch(new_pos.y, new_pos.x, (chtype) monster->t.t_disguise);
   else if (player_can_sense_monsters())
-    mvaddcch(new_pos.y, new_pos.x, monster->t.t_type | A_STANDOUT);
+    mvaddcch(new_pos.y, new_pos.x, (chtype) monster->t.t_type | A_STANDOUT);
 }
 
 void
@@ -536,7 +536,8 @@ char const*
 monster_name_by_type(char monster_type)
 {
   assert(monster_type >= 'A');
-  assert(monster_type < 'A' + NMONSTERS);
+  assert(NMONSTERS < 26);
+  assert(monster_type < (char) ('A' + NMONSTERS));
   return monsters[monster_type - 'A'].m_name;
 }
 

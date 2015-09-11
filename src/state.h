@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_STATE_H_
-#define _ROGUE14_STATE_H_
+#ifndef ROGUE14_STATE_H
+#define ROGUE14_STATE_H
 
 #include <stdint.h>
 #include <stdio.h>
@@ -68,4 +68,4 @@ static int32_t const RSID_RRING        = 0x1011EA13;
 static int32_t const RSID_LRING        = 0x1011E012;
 static int32_t const RSID_NULL         = 0x1011E000;
 
-#endif /* _ROGUE14_STATE_H_ */
+#endif /* ROGUE14_STATE_H */

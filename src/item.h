@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_ITEM_H_
-#define _ROGUE14_ITEM_H_
+#ifndef ROGUE14_ITEM_H
+#define ROGUE14_ITEM_H
 
 #include "things.h"
 
@@ -38,4 +38,4 @@ static inline bool item_is_known(item const* item)
 { return item->o_flags & ISKNOW; }
 
 
-#endif /* _ROGUE14_ITEM_H_ */
+#endif /* ROGUE14_ITEM_H */

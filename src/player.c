@@ -181,7 +181,7 @@ player_remove_true_sight(void)
   /* Hide all invisible monsters */
   for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
     if (monster_is_invisible(mon) && monster_seen_by_player(mon))
-      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, mon->t.t_oldch);
+      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
 
   /* Set flag */
   player.t.t_flags &= ~CANSEE;
@@ -231,8 +231,8 @@ player_add_sense_monsters(bool permanent)
     {
       mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x,
           (player_is_hallucinating()
-           ? (char)(os_rand_range(26) + 'A')
-           : mon->t.t_type)
+           ? (chtype) (os_rand_range(26) + 'A')
+           : (chtype) mon->t.t_type)
             | A_STANDOUT);
       spotted_something = true;
     }
@@ -248,7 +248,7 @@ player_remove_sense_monsters(void)
 
   for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
     if (!monster_seen_by_player(mon))
-      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, mon->t.t_oldch);
+      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
 }
 
 bool player_is_hallucinating(void)     { return player.t.t_flags & ISHALU; }
@@ -292,12 +292,12 @@ void player_remove_hallucinating(void)
   {
     if (cansee(tp->t.t_pos.y, tp->t.t_pos.x))
       if (!monster_is_invisible(tp) || player_has_true_sight())
-        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, tp->t.t_disguise);
+        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) tp->t.t_disguise);
       else
         mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x,
-                 level_get_ch(tp->t.t_pos.y, tp->t.t_pos.x));
+                 (chtype) level_get_ch(tp->t.t_pos.y, tp->t.t_pos.x));
     else if (player_can_sense_monsters())
-      mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, tp->t.t_type | A_STANDOUT);
+      mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) tp->t.t_type | A_STANDOUT);
   }
   io_msg("You feel your senses returning to normal");
 }
@@ -439,7 +439,7 @@ void player_teleport(coord *target)
   }
 
   /* Move target */
-  mvaddcch(player.t.t_pos.y, player.t.t_pos.x, floor_at());
+  mvaddcch(player.t.t_pos.y, player.t.t_pos.x, (chtype) floor_at());
   if (roomin(&new_pos) != player_get_room())
   {
     room_leave(player_get_pos());

@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_LEVEL_H_
-#define _ROGUE14_LEVEL_H_
+#ifndef ROGUE14_LEVEL_H
+#define ROGUE14_LEVEL_H
 
 #include "io.h"
 
@@ -45,4 +45,4 @@ void level_set_flags(int y, int x, char flags);
 char level_get_ch(int y, int x);
 void level_set_ch(int y, int x, char ch);
 
-#endif /* _ROGUE14_LEVEL_H_ */
+#endif /* ROGUE14_LEVEL_H */

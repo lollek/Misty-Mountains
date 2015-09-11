@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_PLAYER_H_
-#define _ROGUE14_PLAYER_H_
+#ifndef ROGUE14_PLAYER_H
+#define ROGUE14_PLAYER_H
 
 #include <stdbool.h>
 
@@ -108,4 +108,4 @@ void player_lower_level(void);
 int player_get_exp(void);
 void player_earn_exp(int amount);
 
-#endif /* _ROGUE14_PLAYER_H_ */
+#endif /* ROGUE14_PLAYER_H */

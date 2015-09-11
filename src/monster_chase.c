@@ -268,7 +268,7 @@ over:
       char fl = level_get_flags(ch_ret.y, ch_ret.x);
 
       /* Remove monster from old position */
-      mvaddcch(th->t.t_pos.y, th->t.t_pos.x, th->t.t_oldch);
+      mvaddcch(th->t.t_pos.y, th->t.t_pos.x, (chtype) th->t.t_oldch);
       level_set_monster(th->t.t_pos.y, th->t.t_pos.x, NULL);
 
       /* Check if we stepped in a trap */
@@ -296,9 +296,9 @@ over:
     move(ch_ret.y, ch_ret.x);
 
     if (monster_seen_by_player(th))
-      addcch(th->t.t_disguise);
+      addcch((chtype) th->t.t_disguise);
     else if (player_can_sense_monsters())
-      addcch(th->t.t_type | A_STANDOUT);
+      addcch((chtype) th->t.t_type | A_STANDOUT);
 
     /* And stop running if need be */
     if (stoprun && coord_same(&th->t.t_pos, th->t.t_dest))

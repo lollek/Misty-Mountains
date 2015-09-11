@@ -260,7 +260,7 @@ wand_spell_polymorph(THING* target)
   bool was_seen = monster_seen_by_player(target);
   if (was_seen)
   {
-    mvaddcch(pos.y, pos.x, level_get_ch(pos.y, pos.x));
+    mvaddcch(pos.y, pos.x, (chtype) level_get_ch(pos.y, pos.x));
     char buf[MAXSTR];
     io_msg_add("%s", monster_name(target, buf));
   }
@@ -273,7 +273,7 @@ wand_spell_polymorph(THING* target)
   monster_new(target, monster, &pos);
   if (monster_seen_by_player(target))
   {
-    mvaddcch(pos.y, pos.x, monster);
+    mvaddcch(pos.y, pos.x, (chtype) monster);
     if (same_monster)
       io_msg(" now looks a bit different");
     else
@@ -304,7 +304,7 @@ wand_spell_cancel(THING* target)
 
   target->t.t_disguise = target->t.t_type;
   if (monster_seen_by_player(target))
-    mvaddcch(target->t.t_pos.y, target->t.t_pos.x, target->t.t_disguise);
+    mvaddcch(target->t.t_pos.y, target->t.t_pos.x, (chtype) target->t.t_disguise);
 }
 
 static void

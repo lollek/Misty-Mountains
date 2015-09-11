@@ -202,7 +202,7 @@ magic_bolt(coord* start, coord* dir, char* name)
 
     spotpos[i].x = pos.x;
     spotpos[i].y = pos.y;
-    spotpos[i].ch = mvincch(pos.y, pos.x);
+    spotpos[i].ch = (char) mvincch(pos.y, pos.x);
     io_addch(dirtile, bolt_type);
     refresh();
   }
@@ -210,7 +210,7 @@ magic_bolt(coord* start, coord* dir, char* name)
   os_usleep(200000);
 
   for (int j = i -1; j >= 0; --j)
-    mvaddcch(spotpos[j].y, spotpos[j].x, spotpos[j].ch);
+    mvaddcch(spotpos[j].y, spotpos[j].x, (chtype) spotpos[j].ch);
 }
 
 

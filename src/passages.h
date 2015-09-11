@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_PASSAGES_H_
-#define _ROGUE14_PASSAGES_H_
+#ifndef ROGUE14_PASSAGES_H
+#define ROGUE14_PASSAGES_H
 
 #include "coord.h"
 #include "rooms.h"
@@ -12,4 +12,4 @@ void passages_add_pass(void);
 void passages_do(void);
 void passages_putpass(coord* cp);
 
-#endif /* _ROGUE14_PASSAGES_H_ */
+#endif /* ROGUE14_PASSAGES_H */

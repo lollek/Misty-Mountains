@@ -248,7 +248,7 @@ wizard_show_map(void)
       if (!(real & F_REAL))
         wstandout(hw);
       wmove(hw, y, x);
-      waddcch(hw, level_get_ch(y, x));
+      waddcch(hw, (chtype) level_get_ch(y, x));
       if (!real)
         wstandend(hw);
     }

@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_LIST_H_
-#define _ROGUE14_LIST_H_
+#ifndef ROGUE14_LIST_H
+#define ROGUE14_LIST_H
 
 #include <stdint.h>
 
@@ -29,4 +29,4 @@ THING const* list_element(THING const* list, int8_t i);
 /* Throw the whole blamed thing away */
 void list_free_all(THING** ptr);
 
-#endif /* _ROGUE14_LIST_H_ */
+#endif /* ROGUE14_LIST_H */

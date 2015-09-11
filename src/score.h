@@ -1,14 +1,5 @@
-/*
- * Score file structure
- *
- * @(#)score.h	4.6 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
+#ifndef ROGUE14_SCORE_H
+#define ROGUE14_SCORE_H
 
 #include "io.h"
 
@@ -24,3 +15,5 @@ void score_show_and_exit(int amount, int flags, char monst)
   __attribute__ ((noreturn));
 
 void score_win_and_exit(void) __attribute__ ((noreturn));
+
+#endif /* ROGUE14_SCORE_H */

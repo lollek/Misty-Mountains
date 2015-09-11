@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_THINGS_H_
-#define _ROGUE14_THINGS_H_
+#ifndef ROGUE14_THINGS_H
+#define ROGUE14_THINGS_H
 
 #include <stdbool.h>
 
@@ -133,4 +133,4 @@ unsigned pick_one(struct obj_info* start, int nitems);
 /* list what the player has discovered in this game of a certain type */
 void discovered(void);
 
-#endif /* _ROGUE14_THINGS_H_ */
+#endif /* ROGUE14_THINGS_H */

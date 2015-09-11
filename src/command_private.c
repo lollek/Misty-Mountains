@@ -395,10 +395,10 @@ command_help(void)
     for (int i = 0; i < helpstrsize; ++i)
       if (helpstr[i].sym == helpch)
       {
-        io_msg("%s)%s", unctrl(helpstr[i].sym), helpstr[i].description);
+        io_msg("%s)%s", unctrl((chtype) helpstr[i].sym), helpstr[i].description);
         return false;
       }
-    io_msg("unknown character '%s'", unctrl(helpch));
+    io_msg("unknown character '%s'", unctrl((chtype) helpch));
     return false;
   }
 
@@ -423,7 +423,7 @@ command_help(void)
 
     wmove(hw, print_i % numprint, print_i >= numprint ? COLS / 2 : 0);
     if (helpstr[i].sym)
-      waddstr(hw, unctrl(helpstr[i].sym));
+      waddstr(hw, unctrl((chtype) helpstr[i].sym));
     waddstr(hw, helpstr[i].description);
 
     if (++print_i >= numprint * 2)

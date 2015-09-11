@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_WAND_H_
-#define _ROGUE14_WAND_H_
+#ifndef ROGUE14_WAND_H
+#define ROGUE14_WAND_H
 
 #include <stdbool.h>
 
@@ -57,4 +57,4 @@ THING* wand_create(int which);
 /* Perform a zap with a wand */
 bool wand_zap(void);
 
-#endif /* _ROGUE14_WAND_H_ */
+#endif /* ROGUE14_WAND_H */

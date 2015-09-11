@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_MOVE_H_
-#define _ROGUE14_MOVE_H_
+#ifndef ROGUE14_MOVE_H
+#define ROGUE14_MOVE_H
 
 #include "rogue.h"
 
@@ -11,4 +11,4 @@ void move_random(THING* who, coord* ret);
  * consequences (fighting, picking up, etc.) */
 bool move_do(char ch);
 
-#endif /* _ROGUE14_MOVE_H_ */
+#endif /* ROGUE14_MOVE_H */

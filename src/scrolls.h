@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_SCROLLS_H_
-#define _ROGUE14_SCROLLS_H_
+#ifndef ROGUE14_SCROLLS_H
+#define ROGUE14_SCROLLS_H
 
 #include <stdbool.h>
 
@@ -43,4 +43,4 @@ void scroll_description(item const* item, char* buf);
 
 THING* scroll_create(int which);
 
-#endif /* _ROGUE14_SCROLLS_H_ */
+#endif /* ROGUE14_SCROLLS_H */

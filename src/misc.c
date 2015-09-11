@@ -148,7 +148,7 @@ look(bool wakeup)
       move(y, x);
 
       if (monster != NULL || xy_ch != incch())
-        addcch(xy_ch);
+        addcch((chtype) xy_ch);
 
       if (door_stop && !firstmove && running)
       {
@@ -413,7 +413,7 @@ invis_on(void)
   for (THING* mp = monster_list; mp != NULL; mp = mp->t.l_next)
     if (monster_is_invisible(mp) && monster_seen_by_player(mp)
         && !player_is_hallucinating())
-      mvaddcch(mp->t.t_pos.y, mp->t.t_pos.x, mp->t.t_disguise);
+      mvaddcch(mp->t.t_pos.y, mp->t.t_pos.x, (chtype) mp->t.t_disguise);
 }
 
 
@@ -449,7 +449,7 @@ set_oldch(THING* tp, coord* cp)
   if (coord_same(&tp->t.t_pos, cp))
     return;
 
-  tp->t.t_oldch = mvincch(cp->y, cp->x);
+  tp->t.t_oldch = (char) mvincch(cp->y, cp->x);
   if (!player_is_blind())
   {
     if ((old_char == FLOOR || tp->t.t_oldch == FLOOR) &&

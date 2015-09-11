@@ -359,17 +359,17 @@ room_enter(coord* cp)
 
         if (tp == NULL)
         {
-          mvaddcch(y, x, ch);
+          mvaddcch(y, x, (chtype) ch);
           continue;
         }
 
         tp->t.t_oldch = ch;
         if (monster_seen_by_player(tp))
-          mvaddcch(y, x, tp->t.t_disguise);
+          mvaddcch(y, x, (chtype) tp->t.t_disguise);
         else if (player_can_sense_monsters())
-          mvaddcch(y, x, tp->t.t_disguise | A_STANDOUT);
+          mvaddcch(y, x, (chtype) tp->t.t_disguise | A_STANDOUT);
         else
-          mvaddcch(y, x, ch);
+          mvaddcch(y, x, (chtype) ch);
       }
     }
 }
@@ -397,7 +397,7 @@ room_leave(coord* cp)
     for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
     {
       move(y, x);
-      char ch = incch();
+      char ch = (char) incch();
 
       if (ch == FLOOR)
       {
@@ -410,9 +410,9 @@ room_leave(coord* cp)
         continue;
 
       if (player_can_sense_monsters())
-        mvaddcch(y, x, ch | A_STANDOUT);
+        mvaddcch(y, x, (chtype) ch | A_STANDOUT);
       else
-        mvaddcch(y, x, level_get_ch(y, x) == DOOR ? DOOR : floor);
+        mvaddcch(y, x, (chtype) (level_get_ch(y, x) == DOOR ? DOOR : floor));
     }
 
   room_open_door(rp);

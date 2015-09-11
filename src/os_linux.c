@@ -1,4 +1,7 @@
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreserved-id-macro"
 #define _XOPEN_SOURCE 500
+#pragma clang diagnostic pop
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>

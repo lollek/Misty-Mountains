@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_POTIONS_H_
-#define _ROGUE14_POTIONS_H_
+#ifndef ROGUE14_POTIONS_H
+#define ROGUE14_POTIONS_H
 
 #include <stdbool.h>
 
@@ -39,4 +39,4 @@ void potion_description(item const* obj, char buf[]);
 
 THING* potion_create(int which);
 
-#endif /* _ROGUE14_POTIONS_H_ */
+#endif /* ROGUE14_POTIONS_H */

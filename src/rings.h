@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_RINGS_H_
-#define _ROGUE14_RINGS_H_
+#ifndef ROGUE14_RINGS_H
+#define ROGUE14_RINGS_H
 
 #include <stdbool.h>
 
@@ -41,4 +41,4 @@ bool ring_is_known(enum ring_t ring);
 void ring_description(item const* item, char* buf);
 THING* ring_create(int which, bool random_stats);
 
-#endif /* _ROGUE14_RINGS_H_ */
+#endif /* ROGUE14_RINGS_H */

@@ -44,7 +44,7 @@
 static bool
 unknown_command(char ch)
 {
-  io_msg_unsaved("illegal command '%s'", unctrl(ch));
+  io_msg_unsaved("illegal command '%s'", unctrl((chtype) ch));
   return false;
 }
 

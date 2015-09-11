@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_COORD_H_
-#define _ROGUE14_COORD_H_
+#ifndef ROGUE14_COORD_H
+#define ROGUE14_COORD_H
 
 #include <stdbool.h>
 
@@ -11,4 +11,4 @@ typedef struct {
 
 bool coord_same(coord const* a, coord const* b);
 
-#endif /* _ROGUE14_COORD_H_ */
+#endif /* ROGUE14_COORD_H */

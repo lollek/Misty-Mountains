@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_WIZARD_H_
-#define _ROGUE14_WIZARD_H_
+#ifndef ROGUE14_WIZARD_H
+#define ROGUE14_WIZARD_H
 
 extern int wizard; /* True if allows wizard commands (debug mode) */
 
@@ -14,4 +14,4 @@ void wizard_show_map(void);
 
 void wizard_levels_and_gear(void);
 
-#endif /* _ROGUE14_WIZARD_H_ */
+#endif /* ROGUE14_WIZARD_H */

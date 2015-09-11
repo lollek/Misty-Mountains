@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_ROOMS_H_
-#define _ROGUE14_ROOMS_H_
+#ifndef ROGUE14_ROOMS_H
+#define ROGUE14_ROOMS_H
 
 #include "coord.h"
 
@@ -39,4 +39,4 @@ void room_leave(coord* cp);
 /* Pick a room that is really there */
 int room_random(void);
 
-#endif /* _ROGUE14_ROOMS_H_ */
+#endif /* ROGUE14_ROOMS_H */

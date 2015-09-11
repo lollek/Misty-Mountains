@@ -405,7 +405,7 @@ passages_add_pass(void)
         if (pp->p_monst != NULL)
           pp->p_monst->t.t_oldch = pp->p_ch;
         else if (pp->p_flags & F_REAL)
-          addcch(ch);
+          addcch((chtype) ch);
         else
         {
           standout();

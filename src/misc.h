@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_MISC_H_
-#define _ROGUE14_MISC_H_
+#ifndef ROGUE14_MISC_H
+#define ROGUE14_MISC_H
 
 #include <stdbool.h>
 
@@ -54,4 +54,4 @@ char floor_at(void); /* Return the character at hero's position */
 bool fallpos(coord const* pos, coord* newpos);
 
 
-#endif /* _ROGUE14_MISC_H_ */
+#endif /* ROGUE14_MISC_H */

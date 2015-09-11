@@ -1,5 +1,5 @@
-#ifndef _ROGUE14_COMMAND_H_
-#define _ROGUE14_COMMAND_H_
+#ifndef ROGUE14_COMMAND_H
+#define ROGUE14_COMMAND_H
 
 #include <stdbool.h>
 
@@ -15,4 +15,4 @@ void command_signal_endit(int sig) __attribute__((noreturn));
 void command_signal_leave(int sig) __attribute__((noreturn));
 
 
-#endif /* _ROGUE14_COMMAND_H_ */
+#endif /* ROGUE14_COMMAND_H */
