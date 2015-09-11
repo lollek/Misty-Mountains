@@ -151,6 +151,7 @@ score_insert(struct score* top_ten, int amount, int flags, char monst)
 
       /* Write score to disk */
       score_write(top_ten);
+      break;
     }
 }
 
