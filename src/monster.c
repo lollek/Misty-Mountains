@@ -536,7 +536,6 @@ char const*
 monster_name_by_type(char monster_type)
 {
   assert(monster_type >= 'A');
-  assert(NMONSTERS < 26);
   assert(monster_type < (char) ('A' + NMONSTERS));
   return monsters[monster_type - 'A'].m_name;
 }
