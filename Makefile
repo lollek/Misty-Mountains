@@ -26,7 +26,7 @@ MISC     = install CHANGELOG.TXT LICENSE.TXT rogue.png rogue.desktop
 
 debug: CC      = clang
 debug: CFLAGS += -Weverything -g3 -Wno-padded -Wno-disabled-macro-expansion
-debug: $(PROGRAM)
+debug: $(PROGRAM) ctags
 
 .c.o:
 	$(CC) $(CFLAGS) $(DFLAGS) -c -o $*.o $*.c
@@ -57,3 +57,7 @@ dist: final
 lint:
 	cppcheck --enable=all --std=c99 -inconlusive src 2>lint.txt
 .PHONY: lint
+
+ctags:
+	@ctags -R * >/dev/null 2>&1
+.PHONY: ctags
