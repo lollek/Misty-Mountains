@@ -59,5 +59,5 @@ lint:
 .PHONY: lint
 
 ctags:
-	@ctags -R * >/dev/null 2>&1
+	@type ctags >/dev/null 2>&1 && ctags -R * || true
 .PHONY: ctags
