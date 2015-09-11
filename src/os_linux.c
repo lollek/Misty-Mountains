@@ -1,4 +1,5 @@
 #pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-pragmas"
 #pragma clang diagnostic ignored "-Wreserved-id-macro"
 #define _XOPEN_SOURCE 500
 #pragma clang diagnostic pop

@@ -3,6 +3,12 @@
 
 #include <sys/types.h>
 
+#ifdef __APPLE__
+#  include <sys/syslimits.h>
+#elif __linux
+#  include <linux/limits.h>
+#endif
+
 #include "things.h"
 
 extern unsigned os_rand_seed;
