@@ -26,24 +26,15 @@ if [[ $name == "install" ]]; then
   touch "$score_name"
 
   # Set permissions
-  echo -n "Attempting to set group to games and add sgid ..."
-  if chgrp games "$bin_name" "$score_name" &&
-     chmod 2755 "$bin_name" &&
-     chmod 0664 "$score_name"; then
-    echo "Success!"
-    echo "All players need to be added to games group for access to highscore"
-  else
-    echo "Failed!"
-    echo -n "You may want to create a $score_name with full"
-    echo " access granted in order for everyone to be able to play"
-  fi
+  chmod 0664 "$score_name"
+  echo "All players need write access to the $score_name to be able to add their highscore"
   info "[ Installation complete ]"
 
 elif [[ $name == "remove" ]]; then
   info "[ Uninstalling rogue14 from $PREFIX ]"
   rm -fv "$bin_name"
   rm -frv "$score_path"
-  [[ -d "$PREFIX/bin" ]] && rmdir "$PREFIX/bin"
-  [[ -d "$PREFIX/share" ]] && rmdir "$PREFIX/share"
+  [[ -d "$PREFIX/bin" ]] && rmdir "$PREFIX/bin" || true
+  [[ -d "$PREFIX/share" ]] && rmdir "$PREFIX/share" || true
   info "[ Uninstallation complete ]"
 fi

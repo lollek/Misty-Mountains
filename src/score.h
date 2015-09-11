@@ -5,10 +5,8 @@
 
 #define SCORE_MAX 10 /* Number of highscore entries */
 
-/* Open up the score file for future use
- * We drop setgid privileges after opening the score file, so subsequent
- * open()'s will fail.  Just reuse the earlier filehandle. */
-int score_open_and_drop_setuid_setgid(void);
+/* Open up the score file for future use */
+int score_open(void);
 
 /* Figure score and post it.  */
 void score_show_and_exit(int amount, int flags, char monst)

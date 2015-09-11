@@ -186,33 +186,16 @@ score_print(struct score* top_ten)
 }
 
 int
-score_open_and_drop_setuid_setgid(void)
+score_open(void)
 {
-  /* Open file */
   scoreboard = fopen(SCOREPATH, "r+");
-
-  if (scoreboard == NULL && errno == ENOENT) {
-    scoreboard = fopen(SCOREPATH, "w+");
-    if (scoreboard != NULL) {
-      chmod(SCOREPATH, 0664);
-      chown(SCOREPATH, geteuid(), getegid());
-    }
-  }
-
   if (scoreboard == NULL) {
-    fprintf(stderr, "Could not open %s for writing: %s\n",
+    fprintf(stderr, "Could not open %s for writing: %s\n"
+                    "Your highscore will not be saved if you die!\n"
+                    "[Press return key to continue]",
             SCOREPATH, strerror(errno));
-    fflush(stderr);
+    getchar();
     return 1;
-  }
-
-  if (os_drop_gid() != 0) {
-    perror("Could not drop group privileges.  Aborting.");
-    abort();
-  }
-  if (os_drop_uid() != 0) {
-    perror("Could not drop user privileges.  Aborting.");
-    abort();
   }
   return 0;
 }
