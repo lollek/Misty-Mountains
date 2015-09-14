@@ -71,7 +71,7 @@ armor_command_wear(void)
   pack_equip_item(obj);
 
   char buf[MAXSTR];
-  io_msg("now wearing %s", inv_name(buf, obj, true));
+  io_msg("now wearing %s", inv_name(buf, &obj->o, true));
   return true;
 }
 

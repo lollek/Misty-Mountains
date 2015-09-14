@@ -117,7 +117,7 @@ typedef union thing {
 extern struct obj_info things[NUMTHINGS];
 
 /* Return the name of something as it would appear in an inventory. */
-char* inv_name(char* buf, THING* obj, bool drop);
+char* inv_name(char* buf, item* item, bool drop);
 
 /* Put something down */
 bool drop(void);

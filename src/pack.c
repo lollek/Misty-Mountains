@@ -108,37 +108,37 @@ pack_size(void)
 }
 
 static size_t
-pack_print_evaluate_item(THING* obj)
+pack_print_evaluate_item(item* item)
 {
   int worth = 0;
   struct obj_info *op;
-  if (obj == NULL)
+  if (item == NULL)
     return 0;
 
-  switch (obj->o.o_type)
+  switch (item->o_type)
   {
     case FOOD:
-      worth = 2 * obj->o.o_count;
+      worth = 2 * item->o_count;
       break;
 
     case WEAPON: case AMMO:
-      worth = weapon_info[obj->o.o_which].oi_worth;
-      worth *= 3 * (obj->o.o_hplus + obj->o.o_dplus) + obj->o.o_count;
-      obj->o.o_flags |= ISKNOW;
+      worth = weapon_info[item->o_which].oi_worth;
+      worth *= 3 * (item->o_hplus + item->o_dplus) + item->o_count;
+      item->o_flags |= ISKNOW;
       break;
 
     case ARMOR:
-      worth = armor_value((enum armor_t)obj->o.o_which);
-      worth += (9 - obj->o.o_arm) * 100;
-      worth += (10 * (armor_ac((enum armor_t)obj->o.o_which) - obj->o.o_arm));
-      obj->o.o_flags |= ISKNOW;
+      worth = armor_value((enum armor_t)item->o_which);
+      worth += (9 - item->o_arm) * 100;
+      worth += (10 * (armor_ac((enum armor_t)item->o_which) - item->o_arm));
+      item->o_flags |= ISKNOW;
       break;
 
     case SCROLL:
       {
-        enum scroll_t scroll = (enum scroll_t)obj->o.o_which;
+        enum scroll_t scroll = (enum scroll_t)item->o_which;
         worth = scroll_value(scroll);
-        worth *= obj->o.o_count;
+        worth *= item->o_count;
         if (!scroll_is_known(scroll))
           worth /= 2;
         scroll_learn(scroll);
@@ -146,38 +146,38 @@ pack_print_evaluate_item(THING* obj)
       break;
 
     case POTION:
-      worth = potion_info[obj->o.o_which].oi_worth;
-      worth *= obj->o.o_count;
-      op = &potion_info[obj->o.o_which];
+      worth = potion_info[item->o_which].oi_worth;
+      worth *= item->o_count;
+      op = &potion_info[item->o_which];
       if (!op->oi_know)
         worth /= 2;
       op->oi_know = true;
       break;
 
     case RING:
-      op = &ring_info[obj->o.o_which];
+      op = &ring_info[item->o_which];
       worth = op->oi_worth;
-      if (obj->o.o_which == R_ADDSTR || obj->o.o_which == R_ADDDAM ||
-          obj->o.o_which == R_PROTECT || obj->o.o_which == R_ADDHIT)
+      if (item->o_which == R_ADDSTR || item->o_which == R_ADDDAM ||
+          item->o_which == R_PROTECT || item->o_which == R_ADDHIT)
       {
-        if (obj->o.o_arm > 0)
-          worth += obj->o.o_arm * 100;
+        if (item->o_arm > 0)
+          worth += item->o_arm * 100;
         else
           worth = 10;
       }
-      if (!(obj->o.o_flags & ISKNOW))
+      if (!(item->o_flags & ISKNOW))
         worth /= 2;
-      obj->o.o_flags |= ISKNOW;
+      item->o_flags |= ISKNOW;
       op->oi_know = true;
       break;
 
     case STICK:
-      wand_get_worth((enum wand_t)obj->o.o_which);
-      worth += 20 * obj->o.o_charges;
-      if (!(obj->o.o_flags & ISKNOW))
+      wand_get_worth((enum wand_t)item->o_which);
+      worth += 20 * item->o_charges;
+      if (!(item->o_flags & ISKNOW))
         worth /= 2;
-      obj->o.o_flags |= ISKNOW;
-      wand_set_known((enum wand_t)obj->o.o_which);
+      item->o_flags |= ISKNOW;
+      wand_set_known((enum wand_t)item->o_which);
       break;
 
     case AMULET:
@@ -185,7 +185,7 @@ pack_print_evaluate_item(THING* obj)
       break;
 
     default:
-      io_debug_fatal("Unknown type: %c(%d)", obj->o.o_type, obj->o.o_type);
+      io_debug_fatal("Unknown type: %c(%d)", item->o_type, item->o_type);
       break;
   }
 
@@ -194,7 +194,7 @@ pack_print_evaluate_item(THING* obj)
 
   char buf[MAXSTR];
   printw("%5d  %s\n", worth,
-      inv_name(buf, obj, false));
+      inv_name(buf, item, false));
 
   return (unsigned) worth;
 }
@@ -213,7 +213,7 @@ void
 pack_move_msg(THING* obj)
 {
   char buf[MAXSTR];
-  io_msg("moved onto %s", inv_name(buf, obj, true));
+  io_msg("moved onto %s", inv_name(buf, &obj->o, true));
 }
 
 static void
@@ -362,7 +362,7 @@ pack_add(THING* obj, bool silent)
   if (!silent)
   {
     char buf[MAXSTR];
-    io_msg("you now have %s (%c)", inv_name(buf, obj, true), obj->o.o_packch, true);
+    io_msg("you now have %s (%c)", inv_name(buf, &obj->o, true), obj->o.o_packch, true);
   }
   return true;
 }
@@ -524,7 +524,7 @@ pack_print_equipment(void)
     {
       mvwprintw(equipscr, sym - 'a' + 1, 1, "%c) %s: %s",
                 sym, equipment[i].description,
-                inv_name(buf, equipment[i].ptr, false));
+                inv_name(buf, &equipment[i].ptr->o, false));
       sym++;
     }
   }
@@ -557,7 +557,7 @@ pack_print_inventory(int type)
     {
       /* Print out the item and move to next row */
       wmove(invscr, ++num_items, 1);
-      wprintw(invscr, "%c) %s", list->o.o_packch, inv_name(buf, list, false));
+      wprintw(invscr, "%c) %s", list->o.o_packch, inv_name(buf, &list->o, false));
     }
   }
 
@@ -582,11 +582,11 @@ pack_evaluate(void)
   clear();
   mvaddstr(0, 0, "Worth  Item  [Equipment]\n");
   for (int i = 0; i < NEQUIPMENT; ++i)
-    value += pack_print_evaluate_item(pack_equipped_item((enum equipment_pos)i));
+    value += pack_print_evaluate_item(&pack_equipped_item((enum equipment_pos)i)->o);
 
   addstr("\nWorth  Item  [Inventory]\n");
   for (THING* obj = player_pack; obj != NULL; obj = obj->o.l_next)
-    value += pack_print_evaluate_item(obj);
+    value += pack_print_evaluate_item(&obj->o);
 
   printw("\n%5d  Gold Pieces          ", pack_gold);
   refresh();
@@ -670,10 +670,10 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     flags |= F_DROPPED;
     level_set_flags(player_pos->y, player_pos->x, (char)flags);
     obj->o.o_pos = *player_pos;
-    io_msg("dropped %s", inv_name(buf, obj, true));
+    io_msg("dropped %s", inv_name(buf, &obj->o, true));
   }
   else if (!quiet_on_success)
-    io_msg("no longer %s %s", doing, inv_name(buf, obj, true));
+    io_msg("no longer %s %s", doing, inv_name(buf, &obj->o, true));
   return true;
 }
 
@@ -726,7 +726,7 @@ pack_identify_item(void)
   }
 
   char buf[MAXSTR];
-  io_msg(inv_name(buf, obj, false));
+  io_msg(inv_name(buf, &obj->o, false));
 }
 
 

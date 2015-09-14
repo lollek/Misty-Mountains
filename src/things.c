@@ -47,11 +47,10 @@ struct obj_info things[] = {
 };
 
 char*
-inv_name(char* buf, THING* obj, bool drop)
+inv_name(char* buf, item* item, bool drop)
 {
-  item* item = &obj->o;
   buf[MAXSTR -1] = '\0';
-  switch (obj->o.o_type)
+  switch (item->o_type)
   {
     case POTION: potion_description(item, buf); break;
     case RING:   ring_description(item, buf); break;
@@ -61,18 +60,18 @@ inv_name(char* buf, THING* obj, bool drop)
     case ARMOR:  armor_description(item, buf); break;
     case FOOD:
     {
-      char const* obj_type = obj->o.o_which == 1 ? "fruit" : "food ration";
-      if (obj->o.o_count == 1)
+      char const* obj_type = item->o_which == 1 ? "fruit" : "food ration";
+      if (item->o_count == 1)
         sprintf(buf, "A %s", obj_type);
       else
-        sprintf(buf, "%d %ss", obj->o.o_count, obj_type);
+        sprintf(buf, "%d %ss", item->o_count, obj_type);
     }
     break;
     case AMULET: strcpy(buf, "The Amulet of Yendor"); break;
-    case GOLD:   sprintf(buf, "%d Gold pieces", obj->o.o_goldval); break;
+    case GOLD:   sprintf(buf, "%d Gold pieces", item->o_goldval); break;
     default:
       io_msg("You feel a disturbance in the force");
-      sprintf(buf, "Something bizarre %s", unctrl((chtype)obj->o.o_type));
+      sprintf(buf, "Something bizarre %s", unctrl((chtype)item->o_type));
       break;
   }
 
@@ -179,7 +178,7 @@ discovered_by_type(char type, struct obj_info* info, int max_items)
       char buf[MAXSTR];
       printable_object.o.o_which = i;
       mvwprintw(printscr, ++items_found, 1,
-                "%s", inv_name(buf, &printable_object, false));
+                "%s", inv_name(buf, &printable_object.o, false));
     }
 
   if (items_found == 0)
