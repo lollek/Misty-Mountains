@@ -11,7 +11,7 @@
 
 
 PROGRAM  = rogue14
-VERSION  = 1.3.1+
+VERSION  = 1.3.2
 PREFIX   = /usr/local
 SCOREPATH = $(PREFIX)/share/$(PROGRAM)/highscore
 
