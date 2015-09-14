@@ -180,7 +180,7 @@ player_remove_true_sight(void)
 {
   /* Hide all invisible monsters */
   for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
-    if (monster_is_invisible(mon) && monster_seen_by_player(mon))
+    if (monster_is_invisible(&mon->t) && monster_seen_by_player(&mon->t))
       mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
 
   /* Set flag */
@@ -227,7 +227,7 @@ player_add_sense_monsters(bool permanent)
 
   bool spotted_something = false;
   for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
-    if (!monster_seen_by_player(mon))
+    if (!monster_seen_by_player(&mon->t))
     {
       mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x,
           (player_is_hallucinating()
@@ -247,7 +247,7 @@ player_remove_sense_monsters(void)
   player.t.t_flags &= ~SEEMONST;
 
   for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
-    if (!monster_seen_by_player(mon))
+    if (!monster_seen_by_player(&mon->t))
       mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
 }
 
@@ -291,7 +291,7 @@ void player_remove_hallucinating(void)
   for (THING* tp = monster_list; tp != NULL; tp = tp->t.l_next)
   {
     if (cansee(tp->t.t_pos.y, tp->t.t_pos.x))
-      if (!monster_is_invisible(tp) || player_has_true_sight())
+      if (!monster_is_invisible(&tp->t) || player_has_true_sight())
         mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) tp->t.t_disguise);
       else
         mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x,

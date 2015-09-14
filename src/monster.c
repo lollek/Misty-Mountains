@@ -101,10 +101,10 @@ void monster_set_invisible(THING* mon)
     mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
   }
 }
-void monster_become_held(THING* mon)
+void monster_become_held(monster* mon)
 {
-  mon->t.t_flags &= ~ISRUN;
-  mon->t.t_flags |= ISHELD;
+  mon->t_flags &= ~ISRUN;
+  mon->t_flags |= ISHELD;
 }
 
 
@@ -213,14 +213,14 @@ monster_notice_player(int y, int x)
   coord* player_pos = player_get_pos();
 
   /* Monster can begin chasing after the player if: */
-  if (!monster_is_chasing(monster)
-      && monster_is_mean(monster)
-      && !monster_is_held(monster)
+  if (!monster_is_chasing(&monster->t)
+      && monster_is_mean(&monster->t)
+      && !monster_is_held(&monster->t)
       && !player_is_stealthy()
       && !os_rand_range(3))
   {
     monster_set_target(monster, player_pos);
-    if (!monster_is_stuck(monster))
+    if (!monster_is_stuck(&monster->t))
       monster_start_chasing(monster);
   }
 
@@ -228,15 +228,15 @@ monster_notice_player(int y, int x)
   if (monster->t.t_type == 'M'
       && !player_is_blind()
       && !player_is_hallucinating()
-      && !monster_is_found(monster)
-      && !monster_is_cancelled(monster)
-      && monster_is_chasing(monster))
+      && !monster_is_found(&monster->t)
+      && !monster_is_cancelled(&monster->t)
+      && monster_is_chasing(&monster->t))
   {
     struct room const* rp = player_get_room();
     if ((rp != NULL && !(rp->r_flags & ISDARK))
         || dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
     {
-      monster_set_found(monster);
+      monster_set_found(&monster->t);
       if (!player_save_throw(VS_MAGIC))
       {
         char buf[MAXSTR];
@@ -247,7 +247,7 @@ monster_notice_player(int y, int x)
   }
 
   /* Let greedy ones guard gold */
-  if (monster_is_greedy(monster) && !monster_is_chasing(monster))
+  if (monster_is_greedy(&monster->t) && !monster_is_chasing(&monster->t))
   {
     monster_set_target(monster, player_get_room()->r_goldval
         ? &player_get_room()->r_gold
@@ -259,17 +259,17 @@ monster_notice_player(int y, int x)
 }
 
 void
-monster_give_pack(THING* tp)
+monster_give_pack(monster* mon)
 {
   if (level >= level_max
-      && os_rand_range(100) < monsters[tp->t.t_type-'A'].m_carry)
-    list_attach(&tp->t.t_pack, new_thing());
+      && os_rand_range(100) < monsters[mon->t_type-'A'].m_carry)
+    list_attach(&mon->t_pack, new_thing());
 }
 
 int
-monster_save_throw(int which, THING const* tp)
+monster_save_throw(int which, monster const* mon)
 {
-  int need = 14 + which - tp->t.t_stats.s_lvl / 2;
+  int need = 14 + which - mon->t_stats.s_lvl / 2;
   return (roll(1, 20) >= need);
 }
 
@@ -280,9 +280,9 @@ monster_start_running(coord const* runner)
   list_assert_monster(tp);
 
   monster_find_new_target(tp);
-  if (!monster_is_stuck(tp))
+  if (!monster_is_stuck(&tp->t))
   {
-    monster_remove_held(tp);
+    monster_remove_held(&tp->t);
     monster_start_chasing(tp);
   }
 }
@@ -345,7 +345,7 @@ monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
   mvaddcch(mp->y, mp->x, (chtype) tp->t.t_oldch);
   list_detach(&monster_list, tp);
 
-  if (monster_is_players_target(tp))
+  if (monster_is_players_target(&tp->t))
   {
     to_death = false;
     if (fight_flush)
@@ -381,7 +381,7 @@ monster_teleport(THING* monster, coord const* destination)
     new_pos = *destination;
 
   /* Remove monster */
-  if (monster_seen_by_player(monster))
+  if (monster_seen_by_player(&monster->t))
     mvaddcch(monster->t.t_pos.y, monster->t.t_pos.x, (chtype) monster->t.t_oldch);
   set_oldch(monster, &new_pos);
   level_set_monster(monster->t.t_pos.y, monster->t.t_pos.x, NULL);
@@ -389,9 +389,9 @@ monster_teleport(THING* monster, coord const* destination)
   /* Add monster */
   monster->t.t_room = roomin(&new_pos);
   monster->t.t_pos = new_pos;
-  monster_remove_held(monster);
+  monster_remove_held(&monster->t);
 
-  if (monster_seen_by_player(monster))
+  if (monster_seen_by_player(&monster->t))
     mvaddcch(new_pos.y, new_pos.x, (chtype) monster->t.t_disguise);
   else if (player_can_sense_monsters())
     mvaddcch(new_pos.y, new_pos.x, (chtype) monster->t.t_type | A_STANDOUT);
@@ -402,7 +402,7 @@ monster_do_special_ability(THING** monster)
 {
   assert(*monster != NULL);
 
-  if (monster_is_cancelled(*monster))
+  if (monster_is_cancelled(&(*monster)->t))
     return;
 
   switch ((*monster)->t.t_type)
@@ -512,7 +512,7 @@ monster_name(THING const* monster, char* buf)
   assert(monster != NULL);
   assert(buf != NULL);
 
-  if (!monster_seen_by_player(monster) && !player_can_sense_monsters())
+  if (!monster_seen_by_player(&monster->t) && !player_can_sense_monsters())
     strcpy(buf, "something");
 
   else if (player_is_hallucinating())
@@ -541,11 +541,11 @@ monster_name_by_type(char monster_type)
 }
 
 bool
-monster_seen_by_player(THING const* monster)
+monster_seen_by_player(monster const* monster)
 {
   coord const* player_pos = player_get_pos();
-  int monster_y = monster->t.t_pos.y;
-  int monster_x = monster->t.t_pos.x;
+  int monster_y = monster->t_pos.y;
+  int monster_x = monster->t_pos.x;
 
   if (player_is_blind() ||
       (monster_is_invisible(monster) && !player_has_true_sight()))
@@ -560,9 +560,9 @@ monster_seen_by_player(THING const* monster)
     return true;
   }
 
-  if (monster->t.t_room != player_get_room())
+  if (monster->t_room != player_get_room())
     return false;
-  return ((bool)!(monster->t.t_room->r_flags & ISDARK));
+  return ((bool)!(monster->t_room->r_flags & ISDARK));
 }
 
 

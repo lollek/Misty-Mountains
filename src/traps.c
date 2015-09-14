@@ -44,7 +44,7 @@ trap_door_monster(THING* victim)
 {
   list_assert_monster(victim);
 
-  if (monster_seen_by_player(victim))
+  if (monster_seen_by_player(&victim->t))
   {
     char buf[MAXSTR];
     io_msg("%s fell through the floor", monster_name(victim, buf));
@@ -66,12 +66,12 @@ trap_bear_monster(THING* victim)
 {
   list_assert_monster(victim);
 
-  if (monster_seen_by_player(victim))
+  if (monster_seen_by_player(&victim->t))
   {
     char buf[MAXSTR];
     io_msg("%s was caught in a bear trap", monster_name(victim, buf));
   }
-  monster_become_stuck(victim);
+  monster_become_stuck(&victim->t);
   return T_BEAR;
 }
 
@@ -100,7 +100,7 @@ trap_myst_monster(THING* victim)
 {
   list_assert_monster(victim);
 
-  if (monster_seen_by_player(victim))
+  if (monster_seen_by_player(&victim->t))
   {
     char buf[MAXSTR];
     io_msg("%s seems to have stepped on something", monster_name(victim, buf));
@@ -121,12 +121,12 @@ trap_sleep_monster(THING* victim)
 {
   list_assert_monster(victim);
 
-  if (monster_seen_by_player(victim))
+  if (monster_seen_by_player(&victim->t))
   {
     char buf[MAXSTR];
     io_msg("%s collapsed to the ground", monster_name(victim, buf));
   }
-  monster_become_held(victim);
+  monster_become_held(&victim->t);
   return T_SLEEP;
 }
 
@@ -168,10 +168,10 @@ trap_arrow_monster(THING* victim)
     if (victim->t.t_stats.s_hpt <= 0)
     {
       monster_on_death(victim, false);
-      if (monster_seen_by_player(victim))
+      if (monster_seen_by_player(&victim->t))
         io_msg("An arrow killed %s", monster_name(victim, buf));
     }
-    else if (monster_seen_by_player(victim))
+    else if (monster_seen_by_player(&victim->t))
       io_msg("An arrow shot %s", monster_name(victim, buf));
   }
   else
@@ -180,7 +180,7 @@ trap_arrow_monster(THING* victim)
     arrow->o.o_count = 1;
     arrow->o.o_pos = victim->t.t_pos;
     weapon_missile_fall(arrow, false);
-    if (monster_seen_by_player(victim))
+    if (monster_seen_by_player(&victim->t))
       io_msg("An arrow barely missed %s", monster_name(victim, buf));
   }
   return T_ARROW;
@@ -199,7 +199,7 @@ trap_telep_monster(THING* victim)
 {
   list_assert_monster(victim);
 
-  bool was_seen = monster_seen_by_player(victim);
+  bool was_seen = monster_seen_by_player(&victim->t);
   if (was_seen)
   {
     char buf[MAXSTR];
@@ -209,13 +209,13 @@ trap_telep_monster(THING* victim)
   monster_teleport(victim, NULL);
   if (was_seen)
   {
-    if (monster_seen_by_player(victim))
+    if (monster_seen_by_player(&victim->t))
       io_msg("teleported a short distance");
     else
       io_msg("disappeared");
   }
 
-  if (!was_seen && monster_seen_by_player(victim))
+  if (!was_seen && monster_seen_by_player(&victim->t))
   {
     char buf[MAXSTR];
     io_msg("%s appeared out of thin air", monster_name(victim, buf));
@@ -257,19 +257,19 @@ trap_dart_monster(THING* victim)
     if (victim->t.t_stats.s_hpt <= 0)
     {
       monster_on_death(victim, false);
-      if (monster_seen_by_player(victim))
+      if (monster_seen_by_player(&victim->t))
       {
         char buf[MAXSTR];
         io_msg("A poisoned dart killed %s", monster_name(victim, buf));
       }
     }
-    else if (monster_seen_by_player(victim))
+    else if (monster_seen_by_player(&victim->t))
     {
       char buf[MAXSTR];
       io_msg("An dart hit %s", monster_name(victim, buf));
     }
   }
-  else if (monster_seen_by_player(victim))
+  else if (monster_seen_by_player(&victim->t))
   {
     char buf[MAXSTR];
     io_msg("A dart barely missed %s", monster_name(victim, buf));
@@ -290,7 +290,7 @@ trap_rust_monster(THING* victim)
 {
   list_assert_monster(victim);
 
-  if (monster_seen_by_player(victim))
+  if (monster_seen_by_player(&victim->t))
   {
     char buf[MAXSTR];
     io_msg("a gush of water hits %s", monster_name(victim, buf));
@@ -315,7 +315,7 @@ trap_spring(THING* victim, coord* trap_coord)
     command_stop(true);
   }
 
-  if (victim == NULL || monster_seen_by_player(victim))
+  if (victim == NULL || monster_seen_by_player(&victim->t))
   {
     pp->p_ch = TRAP;
     pp->p_flags |= F_SEEN;

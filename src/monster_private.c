@@ -15,7 +15,7 @@ monster_find_new_target(THING* monster)
 {
   int prob = monsters[monster->t.t_type - 'A'].m_carry;
   if (prob <= 0 || monster->t.t_room == player_get_room()
-      || monster_seen_by_player(monster))
+      || monster_seen_by_player(&monster->t))
   {
     monster_set_target(monster, player_get_pos());
     return;

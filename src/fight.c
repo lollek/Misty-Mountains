@@ -151,8 +151,8 @@ roll_attacks(THING* attacker, THING* defender, THING* weapon, bool thrown)
 
   /* If defender is stuck in some way,the attacker gets a bonus to hit */
   if ((is_player(&defender->t) && player_turns_without_action)
-      || monster_is_held(defender)
-      || monster_is_stuck(defender))
+      || monster_is_held(&defender->t)
+      || monster_is_stuck(&defender->t))
     mod.to_hit += 4;
 
   assert(mod.damage[0].sides != -1 && mod.damage[0].dices != -1);
@@ -264,7 +264,7 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
 
     if (player_has_confusing_attack())
     {
-      monster_set_confused(tp);
+      monster_set_confused(&tp->t);
       player_remove_confusing_attack();
       if (!player_is_blind())
       {
@@ -295,7 +295,7 @@ fight_against_player(THING* mp)
   daemon_reset_doctor();
 
   /* If we're fighting something to death and get backstabbed, return command */
-  if (to_death && !monster_is_players_target(mp))
+  if (to_death && !monster_is_players_target(&mp->t))
     to_death = false;
 
   /* If it's a xeroc, tag it as known */

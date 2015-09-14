@@ -47,7 +47,7 @@ chase_as_confused(THING *tp, coord *ee)
 
   /* Small chance that it will become un-confused */
   if (os_rand_range(20) == 0)
-    monster_remove_confused(tp);
+    monster_remove_confused(&tp->t);
 
   return curdist != 0 && !coord_same(&ch_ret, player_get_pos());
 }
@@ -75,7 +75,7 @@ chase(THING *tp, coord *ee)
   /* If the thing is confused, let it move randomly. Invisible
    * Stalkers are slightly confused all of the time, and bats are
    * quite confused all the time */
-  if ((monster_is_confused(tp) && os_rand_range(5) != 0)
+  if ((monster_is_confused(&tp->t) && os_rand_range(5) != 0)
       || (tp->t.t_type == 'P' && os_rand_range(5) == 0)
       || (tp->t.t_type == 'B' && os_rand_range(2) == 0))
     return chase_as_confused(tp, ee);
@@ -170,7 +170,7 @@ chase_do(THING *th)
     list_assert_monster(th);
     rer = th->t.t_room;
 
-    if (monster_is_greedy(th) && rer->r_goldval == 0)
+    if (monster_is_greedy(&th->t) && rer->r_goldval == 0)
 	th->t.t_dest = player_pos;	/* If gold has been taken, run after hero */
 
     if (th->t.t_dest == player_pos)	/* Find room of chasee */
@@ -215,14 +215,14 @@ over:
               || abs(th->t.t_pos.y - player_pos->y)
                   == abs(th->t.t_pos.x - player_pos->x))
 	    && dist_cp(&th->t.t_pos, player_pos) <= BOLT_LENGTH * BOLT_LENGTH
-	    && !monster_is_cancelled(th) && os_rand_range(DRAGONSHOT) == 0)
+	    && !monster_is_cancelled(&th->t) && os_rand_range(DRAGONSHOT) == 0)
 	{
 	    delta.y = sign(player_pos->y - th->t.t_pos.y);
 	    delta.x = sign(player_pos->x - th->t.t_pos.x);
 	    magic_bolt(&th->t.t_pos, &delta, "flame");
 	    command_stop(true);
 	    daemon_reset_doctor();
-	    if (to_death && !monster_is_players_target(th))
+	    if (to_death && !monster_is_players_target(&th->t))
               to_death = false;
 	    return(0);
 	}
@@ -259,7 +259,7 @@ over:
 	    return(0);
     }
 
-    if (monster_is_stuck(th))
+    if (monster_is_stuck(&th->t))
       return 1;
 
     if (!coord_same(&ch_ret, &th->t.t_pos))
@@ -295,7 +295,7 @@ over:
     }
     move(ch_ret.y, ch_ret.x);
 
-    if (monster_seen_by_player(th))
+    if (monster_seen_by_player(&th->t))
       addcch((chtype) th->t.t_disguise);
     else if (player_can_sense_monsters())
       addcch((chtype) th->t.t_type | A_STANDOUT);
@@ -312,12 +312,12 @@ monster_chase(THING *tp)
 {
   list_assert_monster(tp);
 
-  if (!monster_is_slow(tp) || tp->t.t_turn)
+  if (!monster_is_slow(&tp->t) || tp->t.t_turn)
     if (chase_do(tp) == -1)
       return false;
 
   list_assert_monster(tp);
-  if (monster_is_hasted(tp))
+  if (monster_is_hasted(&tp->t))
     if (chase_do(tp) == -1)
       return false;
 

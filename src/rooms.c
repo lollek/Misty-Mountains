@@ -303,7 +303,7 @@ rooms_create(void)
       room_find_floor(&rooms[i], &mp, false, true);
       THING *tp = os_calloc_thing();
       monster_new(tp, monster_random(false), &mp);
-      monster_give_pack(tp);
+      monster_give_pack(&tp->t);
     }
   }
 }
@@ -364,7 +364,7 @@ room_enter(coord* cp)
         }
 
         tp->t.t_oldch = ch;
-        if (monster_seen_by_player(tp))
+        if (monster_seen_by_player(&tp->t))
           mvaddcch(y, x, (chtype) tp->t.t_disguise);
         else if (player_can_sense_monsters())
           mvaddcch(y, x, (chtype) tp->t.t_disguise | A_STANDOUT);

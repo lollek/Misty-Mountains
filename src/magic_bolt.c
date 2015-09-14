@@ -101,7 +101,7 @@ static void
 magic_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
 {
   mon->t.t_oldch = level_get_ch(pos->y, pos->x);
-  if (!monster_save_throw(VS_MAGIC, mon))
+  if (!monster_save_throw(VS_MAGIC, &mon->t))
   {
     THING bolt;
     memset(&bolt, 0, sizeof(bolt));

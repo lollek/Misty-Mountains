@@ -90,7 +90,7 @@ treas_room(void)
       THING* tp = os_calloc_thing();
       monster_new(tp, monster_random(false), &monster_pos);
       tp->t.t_flags |= ISMEAN;	/* no sloughers in THIS room */
-      monster_give_pack(tp);
+      monster_give_pack(&tp->t);
     }
   }
   level--;

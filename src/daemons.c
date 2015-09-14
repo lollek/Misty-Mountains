@@ -248,7 +248,7 @@ daemon_change_visuals(void)
   bool seemonst = player_can_sense_monsters();
   for (THING* tp = monster_list; tp != NULL; tp = tp->t.l_next)
   {
-    if (monster_seen_by_player(tp))
+    if (monster_seen_by_player(&tp->t))
     {
       if (tp->t.t_type == 'X' && tp->t.t_disguise != 'X')
         mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) rnd_thing());
@@ -270,19 +270,21 @@ daemon_runners_move(void)
 
   for (THING* tp = monster_list; tp != NULL; tp = next)
   {
+    monster* tp_monster = &tp->t;
     /* remember this in case the monster's "next" is changed */
-    next = tp->t.l_next;
+    next = tp_monster->l_next;
 
-    if (!monster_is_held(tp) && monster_is_chasing(tp))
+    if (!monster_is_held(tp_monster) && monster_is_chasing(tp_monster))
     {
-      bool wastarget = monster_is_players_target(tp);
-      coord orig_pos = tp->t.t_pos;
+      bool wastarget = monster_is_players_target(tp_monster);
+      coord orig_pos = tp_monster->t_pos;
       if (!monster_chase(tp))
         continue;
 
       list_assert_monster(tp);
 
-      if (monster_is_flying(tp) && dist_cp(player_get_pos(), &tp->t.t_pos) >= 3)
+      if (monster_is_flying(tp_monster)
+          && dist_cp(player_get_pos(), &tp->t.t_pos) >= 3)
         monster_chase(tp);
 
       list_assert_monster(tp);

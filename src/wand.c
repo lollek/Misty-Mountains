@@ -231,7 +231,7 @@ wand_spell_drain_health(void)
     THING* mp = *dp;
     mp->t.t_stats.s_hpt -= cnt;
     if (mp->t.t_stats.s_hpt <= 0)
-      monster_on_death(mp, monster_seen_by_player(mp));
+      monster_on_death(mp, monster_seen_by_player(&mp->t));
     else
     {
       monster_start_running(&mp->t.t_pos);
@@ -257,7 +257,7 @@ wand_spell_polymorph(THING* target)
   THING* target_pack = target->t.t_pack;
   list_detach(&monster_list, target);
 
-  bool was_seen = monster_seen_by_player(target);
+  bool was_seen = monster_seen_by_player(&target->t);
   if (was_seen)
   {
     mvaddcch(pos.y, pos.x, (chtype) level_get_ch(pos.y, pos.x));
@@ -271,7 +271,7 @@ wand_spell_polymorph(THING* target)
   bool same_monster = monster == target->t.t_type;
 
   monster_new(target, monster, &pos);
-  if (monster_seen_by_player(target))
+  if (monster_seen_by_player(&target->t))
   {
     mvaddcch(pos.y, pos.x, (chtype) monster);
     if (same_monster)
@@ -287,7 +287,7 @@ wand_spell_polymorph(THING* target)
 
   target->t.t_oldch = oldch;
   target->t.t_pack = target_pack;
-  wands[WS_POLYMORPH].oi_know |= monster_seen_by_player(target);
+  wands[WS_POLYMORPH].oi_know |= monster_seen_by_player(&target->t);
 }
 
 static void
@@ -298,12 +298,12 @@ wand_spell_cancel(THING* target)
   if (target->t.t_type == 'F')
     player_remove_held();
 
-  monster_set_cancelled(target);
-  monster_remove_invisible(target);
-  monster_remove_confusing(target);
+  monster_set_cancelled(&target->t);
+  monster_remove_invisible(&target->t);
+  monster_remove_confusing(&target->t);
 
   target->t.t_disguise = target->t.t_type;
-  if (monster_seen_by_player(target))
+  if (monster_seen_by_player(&target->t))
     mvaddcch(target->t.t_pos.y, target->t.t_pos.x, (chtype) target->t.t_disguise);
 }
 
@@ -328,7 +328,7 @@ wand_spell_magic_missile(int dy, int dx)
   THING* target = level_get_monster(bolt.o.o_pos.y, bolt.o.o_pos.x);
   if (target == NULL)
     io_msg("the missle vanishes with a puff of smoke");
-  else if (monster_save_throw(VS_MAGIC, target))
+  else if (monster_save_throw(VS_MAGIC, &target->t))
   {
     char buf[MAXSTR];
     io_msg("the missle missed the %s", monster_name(target, buf));
@@ -441,7 +441,7 @@ wand_zap(void)
         tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
         {
-          if (monster_is_slow(tp))
+          if (monster_is_slow(&tp->t))
             tp->t.t_flags &= ~ISSLOW;
           else
             tp->t.t_flags |= ISHASTE;
@@ -460,7 +460,7 @@ wand_zap(void)
         tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
         {
-          if (monster_is_hasted(tp))
+          if (monster_is_hasted(&tp->t))
             tp->t.t_flags &= ~ISHASTE;
           else
             tp->t.t_flags |= ISSLOW;

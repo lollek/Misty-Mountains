@@ -123,7 +123,7 @@ look(bool wakeup)
         xy_ch = (char)trip_ch(y, x, xy_ch);
       else
       {
-        if (player_can_sense_monsters() && monster_is_invisible(monster))
+        if (player_can_sense_monsters() && monster_is_invisible(&monster->t))
         {
           if (door_stop && !firstmove)
             running = false;
@@ -133,7 +133,7 @@ look(bool wakeup)
         {
           if (wakeup)
             monster_notice_player(y, x);
-          if (monster_seen_by_player(monster))
+          if (monster_seen_by_player(&monster->t))
           {
             xy_ch = player_is_hallucinating()
               ? (char)(os_rand_range(26) + 'A')
@@ -396,7 +396,7 @@ seen_stairs(void)
   if (tp != NULL)
   {
     /* if it's visible and awake, it must have moved there */
-    if (monster_seen_by_player(tp) && monster_is_chasing(tp))
+    if (monster_seen_by_player(&tp->t) && monster_is_chasing(&tp->t))
       return true;
 
     if (player_can_sense_monsters()      /* if she can detect monster */
@@ -411,7 +411,7 @@ invis_on(void)
 {
   player_add_true_sight(true);
   for (THING* mp = monster_list; mp != NULL; mp = mp->t.l_next)
-    if (monster_is_invisible(mp) && monster_seen_by_player(mp)
+    if (monster_is_invisible(&mp->t) && monster_seen_by_player(&mp->t)
         && !player_is_hallucinating())
       mvaddcch(mp->t.t_pos.y, mp->t.t_pos.x, (chtype) mp->t.t_disguise);
 }

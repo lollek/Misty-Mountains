@@ -194,7 +194,7 @@ hold_monsters(void)
           THING *monster = level_get_monster(y, x);
           if (monster != NULL)
           {
-            monster_become_held(monster);
+            monster_become_held(&monster->t);
             monsters_affected++;
             held_monster = monster;
           }
