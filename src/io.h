@@ -82,7 +82,7 @@ void io_msg_add(char const* fmt, ...);     /* Add text to previous message */
 void io_msg_last(void);                    /* Reshow last msg */
 void io_msg_clear(void);                   /* Remove displayed text */
 
-void io_missile_motion(THING* obj, int ydelta, int xdelta);
+void io_missile_motion(item* item, int ydelta, int xdelta);
 
 /* Kill program with an error message */
 void io_fatal(char const* msg, ...) __attribute__((noreturn));

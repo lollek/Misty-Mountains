@@ -39,7 +39,7 @@ static bool command_attack_bow(coord const* delta)
   }
 
   THING* arrow = pack_remove(ptr, true, false);
-  io_missile_motion(arrow, delta->y, delta->x);
+  io_missile_motion(&arrow->o, delta->y, delta->x);
   THING* monster_at_pos = level_get_monster(arrow->o.o_pos.y, arrow->o.o_pos.x);
 
   if (monster_at_pos == NULL || !fight_against_monster(&arrow->o.o_pos, arrow, true))
@@ -511,7 +511,7 @@ bool command_throw(void)
   }
 
   obj = pack_remove(obj, true, false);
-  io_missile_motion(obj, ydelta, xdelta);
+  io_missile_motion(&obj->o, ydelta, xdelta);
   THING* monster_at_pos = level_get_monster(obj->o.o_pos.y, obj->o.o_pos.x);
 
   /* Throwing an arrow always misses */

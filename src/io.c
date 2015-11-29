@@ -459,34 +459,34 @@ io_tile(enum tile tile)
 }
 
 void
-io_missile_motion(THING* obj, int ydelta, int xdelta)
+io_missile_motion(item* item, int ydelta, int xdelta)
 {
   coord* player_pos = player_get_pos();
   int ch;
 
   /* Come fly with us ... */
-  obj->o.o_pos = *player_pos;
+  item->o_pos = *player_pos;
   for (;;)
   {
     /* Erase the old one */
-    if (!coord_same(&obj->o.o_pos, player_pos) &&
-        cansee(obj->o.o_pos.y, obj->o.o_pos.x))
+    if (!coord_same(&item->o_pos, player_pos) &&
+        cansee(item->o_pos.y, item->o_pos.x))
     {
-      ch = level_get_ch(obj->o.o_pos.y, obj->o.o_pos.x);
-      mvaddcch(obj->o.o_pos.y, obj->o.o_pos.x, (chtype)ch);
+      ch = level_get_ch(item->o_pos.y, item->o_pos.x);
+      mvaddcch(item->o_pos.y, item->o_pos.x, (chtype)ch);
     }
 
     /* Get the new position */
-    obj->o.o_pos.y += ydelta;
-    obj->o.o_pos.x += xdelta;
-    if (step_ok(ch = level_get_type(obj->o.o_pos.y, obj->o.o_pos.x))
+    item->o_pos.y += ydelta;
+    item->o_pos.x += xdelta;
+    if (step_ok(ch = level_get_type(item->o_pos.y, item->o_pos.x))
        && ch != DOOR)
     {
       /* It hasn't hit anything yet, so display it if it alright. */
-      if (cansee(obj->o.o_pos.y, obj->o.o_pos.x))
+      if (cansee(item->o_pos.y, item->o_pos.x))
       {
         os_usleep(10000);
-        mvaddcch(obj->o.o_pos.y, obj->o.o_pos.x, (chtype)obj->o.o_type);
+        mvaddcch(item->o_pos.y, item->o_pos.x, (chtype)item->o_type);
         refresh();
       }
       continue;
