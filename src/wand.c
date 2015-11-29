@@ -382,9 +382,8 @@ wand_zap(void)
 
     case WS_INVIS:
       {
-        int y;
-        int x;
-        THING* tp = wand_find_target(&y, &x, delta.y, delta.x);
+        coord c;
+        THING* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
           monster_set_invisible(tp);
         else
@@ -393,9 +392,8 @@ wand_zap(void)
 
     case WS_POLYMORPH:
       {
-        int y;
-        int x;
-        THING* tp = wand_find_target(&y, &x, delta.y, delta.x);
+        coord c;
+        THING* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
           wand_spell_polymorph(tp);
         else
@@ -404,9 +402,8 @@ wand_zap(void)
 
     case WS_CANCEL:
       {
-        int x;
-        int y;
-        THING* tp = wand_find_target(&y, &x, delta.y, delta.x);
+        coord c;
+        THING* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
           wand_spell_cancel(tp);
         else
