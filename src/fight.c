@@ -49,14 +49,16 @@ add_ring_attack_modifiers(struct attack_modifier* mod)
 {
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    THING* ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring == NULL)
+    THING const* ring_thing = pack_equipped_item(pack_ring_slots[i]);
+    if (ring_thing == NULL)
       continue;
 
-    else if (ring->o.o_which == R_ADDDAM)
-      mod->to_dmg += ring->o.o_arm;
-    else if (ring->o.o_which == R_ADDHIT)
-      mod->to_dmg += ring->o.o_arm;
+    item const* ring = &ring_thing->o;
+
+    if (ring->o_which == R_ADDDAM)
+      mod->to_dmg += ring->o_arm;
+    else if (ring->o_which == R_ADDHIT)
+      mod->to_dmg += ring->o_arm;
   }
 }
 
