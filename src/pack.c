@@ -62,7 +62,7 @@ enum equipment_pos pack_ring_slots[PACK_RING_SLOTS] = {
 bool
 pack_save_state(void)
 {
-  return state_save_item_list(player_pack)
+  return state_save_item_list(&player_pack->o)
     || state_save_bools(pack_used, sizeof(pack_used)/sizeof(*pack_used));
 }
 

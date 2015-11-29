@@ -217,7 +217,7 @@ level_new(void)
 bool
 level_save_state(void)
 {
-  return state_save_item_list(level_items)
+  return state_save_item_list(&level_items->o)
     || state_save_int32(level)
     || state_save_int32(level_max)
     || state_save_coord(&level_stairs);

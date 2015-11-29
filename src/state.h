@@ -37,7 +37,7 @@ bool state_load_structs_damage(struct damage dmg[MAXATTACKS]);
 bool state_save_bools(bool const* c, int32_t count);
 bool state_load_bools(bool* c, int32_t count);
 
-bool state_save_item_list(THING const* list);
+bool state_save_item_list(item const* list);
 bool state_load_item_list(THING** list);
 
 bool state_save_monster(monster const* thing);

@@ -144,7 +144,6 @@ static bool
 state_save_dest(coord const* dest)
 {
   int32_t i;
-  THING* ptr;
 
   /* (0,0): NULL - Not chasing anyone */
   if (dest == NULL)
@@ -159,15 +158,17 @@ state_save_dest(coord const* dest)
       : SUCCESS;
 
   /* (1,i): location of a thing (monster) */
-  for (ptr = monster_list, i = 0; ptr != NULL; ptr = ptr->t.l_next, ++i)
-    if (&ptr->t.t_pos == dest)
+  monster const* m_ptr;
+  for (m_ptr = &monster_list->t, i = 0; m_ptr != NULL; m_ptr = &m_ptr->l_next->t, ++i)
+    if (&m_ptr->t_pos == dest)
       return state_save_int32(1) || state_save_int32(i)
         ? io_fail("state_save_dest(%p)\r\n", dest)
         : SUCCESS;
 
   /* (2,i): location of an object */
-  for (ptr = level_items, i = 0; ptr != NULL; ptr = ptr->o.l_next, ++i)
-    if (&ptr->o.o_pos == dest)
+  item const* i_ptr;
+  for (i_ptr = &level_items->o, i = 0; i_ptr != NULL; i_ptr = &i_ptr->l_next->o, ++i)
+    if (&i_ptr->o_pos == dest)
       return state_save_int32(2) || state_save_int32(i)
         ? io_fail("state_save_dest(%p)\r\n", dest)
         : SUCCESS;
@@ -238,7 +239,7 @@ state_save_monster(monster const* t)
     state_save_int32(t->t_flags) ||
     state_save_stats(&t->t_stats) ||
     state_save_room_number(t->t_room) ||
-    state_save_item_list(t->t_pack)
+    state_save_item_list(&t->t_pack->o)
 
     ? io_fail("state_save_thing(%p)\r\n", t)
     : SUCCESS;
@@ -421,21 +422,19 @@ state_save_obj_info(const struct obj_info* i, int count)
 }
 
 bool
-state_save_item_list(THING const* l)
+state_save_item_list(item const* list)
 {
-  int32_t listsize;
-  THING const* ptr;
-
-  for (ptr = l, listsize = 0; ptr != NULL; ptr = ptr->o.l_next)
+  int32_t listsize = 0;
+  for (item const* ptr = list; ptr != NULL; ptr = &ptr->l_next->o)
     ++listsize;
 
   if (state_save_int32(RSID_ITEMLIST) ||
       state_save_int32(listsize))
-    return io_fail("state_save_list(%p)\r\n", l);
+    return io_fail("state_save_list(%p)\r\n", list);
 
-  for(; l != NULL; l = l->o.l_next)
-    if (state_save_item(&l->o))
-      return io_fail("state_save_list(%p)\r\n", l);
+  for(item const* ptr = list; ptr != NULL; ptr = &ptr->l_next->o)
+    if (state_save_item(ptr))
+      return io_fail("state_save_list(%p)\r\n", ptr);
 
   return 0;
 }
