@@ -11,7 +11,7 @@ extern int          player_turns_without_moving; /* Turns held in place */
 extern bool         player_alerted;              /* Alert the player? */
 extern struct stats player_max_stats;            /* Current max stats */
 
-void* __player_ptr(void);
+THING* __player_ptr(void);
 
 /* General */
 void player_init(void);

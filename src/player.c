@@ -40,7 +40,7 @@ struct stats player_max_stats = { 16, 0, 1, 10, 12, {{1,4}}, 12 };
 #define STUCKTIME       spread(3)   /* Stuck */
 
 
-void* __player_ptr(void) { return &player; }
+THING* __player_ptr(void) { return &player; }
 
 static int e_levels[] = {
   10L,
