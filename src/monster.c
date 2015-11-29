@@ -92,14 +92,14 @@ monsters_save_state(void)
 }
 
 void
-monster_set_invisible(THING* mon)
+monster_set_invisible(monster* mon)
 {
-  mon->t.t_flags |= ISINVIS;
-  if (cansee(mon->t.t_pos.y, mon->t.t_pos.x))
+  mon->t_flags |= ISINVIS;
+  if (cansee(mon->t_pos.y, mon->t_pos.x))
   {
     char buf[MAXSTR];
-    io_msg("%s disappeared", monster_name(&mon->t, buf));
-    mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
+    io_msg("%s disappeared", monster_name(mon, buf));
+    mvaddcch(mon->t_pos.y, mon->t_pos.x, (chtype) mon->t_oldch);
   }
 }
 
@@ -137,15 +137,15 @@ monster_random(bool wander)
 /** monster_xp_worth
  * Experience to add for this monster's level/hit points */
 static int
-monster_xp_worth(THING* tp)
+monster_xp_worth(monster* tp)
 {
-  int mod = tp->t.t_stats.s_lvl == 1
-    ? tp->t.t_stats.s_maxhp / 8
-    : tp->t.t_stats.s_maxhp / 6;
+  int mod = tp->t_stats.s_lvl == 1
+    ? tp->t_stats.s_maxhp / 8
+    : tp->t_stats.s_maxhp / 6;
 
-  if (tp->t.t_stats.s_lvl > 9)
+  if (tp->t_stats.s_lvl > 9)
     mod *= 20;
-  else if (tp->t.t_stats.s_lvl > 6)
+  else if (tp->t_stats.s_lvl > 6)
     mod *= 4;
 
   return mod;
@@ -170,7 +170,7 @@ monster_new(THING* monster, char type, coord* pos)
   new_stats->s_maxhp = new_stats->s_hpt;
   new_stats->s_arm   = template->m_armor;
   new_stats->s_str   = 10;
-  new_stats->s_exp   = template->m_basexp + monster_xp_worth(monster);
+  new_stats->s_exp   = template->m_basexp + monster_xp_worth(&monster->t);
   assert(sizeof(new_stats->s_dmg) == sizeof(template->m_dmg));
   memcpy(new_stats->s_dmg, template->m_dmg, sizeof(template->m_dmg));
 

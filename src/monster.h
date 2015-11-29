@@ -68,7 +68,7 @@ static inline void monster_set_true_seeing(monster* mon)
 { mon->t_flags |= CANSEE; }
 static inline void monster_become_stuck(monster* mon)
 { mon->t_flags |= ISSTUCK; }
-void monster_set_invisible(THING* mon);
+void monster_set_invisible(monster* mon);
 void monster_become_held(monster* monster);
 
 /* Status unsetters */
