@@ -363,9 +363,6 @@ wand_zap(void)
 
   assert(obj->o.o_which >= 0 && obj->o.o_which < MAXSTICKS);
 
-  THING* tp;
-  int y;
-  int x;
   switch (obj->o.o_which)
   {
     case WS_LIGHT:
@@ -384,28 +381,37 @@ wand_zap(void)
       break;
 
     case WS_INVIS:
-      tp = wand_find_target(&y, &x, delta.y, delta.x);
-      if (tp != NULL)
-        monster_set_invisible(tp);
-      else
-        io_msg("You did not hit anything");
-      break;
+      {
+        int y;
+        int x;
+        THING* tp = wand_find_target(&y, &x, delta.y, delta.x);
+        if (tp != NULL)
+          monster_set_invisible(tp);
+        else
+          io_msg("You did not hit anything");
+      } break;
 
     case WS_POLYMORPH:
-      tp = wand_find_target(&y, &x, delta.y, delta.x);
-      if (tp != NULL)
-        wand_spell_polymorph(tp);
-      else
-        io_msg("You did not hit anything");
-      break;
+      {
+        int y;
+        int x;
+        THING* tp = wand_find_target(&y, &x, delta.y, delta.x);
+        if (tp != NULL)
+          wand_spell_polymorph(tp);
+        else
+          io_msg("You did not hit anything");
+      } break;
 
     case WS_CANCEL:
-      tp = wand_find_target(&y, &x, delta.y, delta.x);
-      if (tp != NULL)
-        wand_spell_cancel(tp);
-      else
-        io_msg("You did not hit anything");
-      break;
+      {
+        int x;
+        int y;
+        THING* tp = wand_find_target(&y, &x, delta.y, delta.x);
+        if (tp != NULL)
+          wand_spell_cancel(tp);
+        else
+          io_msg("You did not hit anything");
+      } break;
 
     case WS_TELAWAY:
       wands[WS_TELAWAY].oi_know = true;
@@ -413,22 +419,25 @@ wand_zap(void)
       break;
 
     case WS_TELTO:
-      wands[WS_TELTO].oi_know = true;
-      tp = wand_find_target(&y, &x, delta.y, delta.x);
-      if (tp != NULL)
       {
-        coord new_pos;
-        new_pos.y = y - delta.y;
-        new_pos.x = x - delta.x;
+        wands[WS_TELTO].oi_know = true;
+        int x;
+        int y;
+        THING* tp = wand_find_target(&y, &x, delta.y, delta.x);
+        if (tp != NULL)
+        {
+          coord new_pos;
+          new_pos.y = y - delta.y;
+          new_pos.x = x - delta.x;
 
-        tp->t.t_dest = player_get_pos();
-        tp->t.t_flags |= ISRUN;
+          tp->t.t_dest = player_get_pos();
+          tp->t.t_flags |= ISRUN;
 
-        player_teleport(&new_pos);
-      }
-      else
-        io_msg("You did not hit anything");
-      break;
+          player_teleport(&new_pos);
+        }
+        else
+          io_msg("You did not hit anything");
+      } break;
 
     case WS_MISSILE:
       wands[WS_MISSILE].oi_know = true;
@@ -438,7 +447,7 @@ wand_zap(void)
     case WS_HASTE_M:
       {
         coord c;
-        tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
+        THING* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
         {
           if (monster_is_slow(&tp->t))
@@ -457,7 +466,7 @@ wand_zap(void)
     case WS_SLOW_M:
       {
         coord c;
-        tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
+        THING* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
         {
           if (monster_is_hasted(&tp->t))
