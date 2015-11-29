@@ -132,7 +132,11 @@ new_thing(void)
         cur = os_item_to_thing(&armor);
       } break;
     case 5: cur = ring_create(-1, true); break;
-    case 6: cur = wand_create(-1); break;
+    case 6:
+      {
+        item* wand = wand_create(-1);
+        cur = os_item_to_thing(&wand);
+      } break;
     default:
       io_msg("Picked a bad kind of object (this should not happen)");
       io_wait_for_key(KEY_SPACE);

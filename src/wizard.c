@@ -162,7 +162,11 @@ wizard_create_item(void)
         }
         return;
       }
-    case STICK: obj = wand_create(which); break;
+    case STICK:
+      {
+        item* wand = wand_create(which);
+        obj = os_item_to_thing(&wand);
+      } break;
     case SCROLL: obj = scroll_create(which); break;
     case POTION: obj = potion_create(which); break;
     case FOOD: obj = new_food(which); break;

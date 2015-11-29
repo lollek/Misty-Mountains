@@ -132,27 +132,27 @@ wand_material(enum wand_t wand)
   return _wand_material[wand];
 }
 
-THING*
+item*
 wand_create(int wand)
 {
-  THING* new_wand = os_calloc_thing();
+  item* new_wand = os_calloc_item();
 
-  new_wand->o.o_damage  = (struct damage){1, 1};
-  new_wand->o.o_hurldmg = (struct damage){1, 1};
+  new_wand->o_damage  = (struct damage){1, 1};
+  new_wand->o_hurldmg = (struct damage){1, 1};
 
-  new_wand->o.o_arm = 11;
-  new_wand->o.o_count = 1;
+  new_wand->o_arm = 11;
+  new_wand->o_count = 1;
 
-  new_wand->o.o_type = STICK;
+  new_wand->o_type = STICK;
   if (wand < 0 || wand >= MAXSTICKS)
-    new_wand->o.o_which = (int)pick_one(wands, MAXSTICKS);
+    new_wand->o_which = (int)pick_one(wands, MAXSTICKS);
   else
-    new_wand->o.o_which = wand;
+    new_wand->o_which = wand;
 
-  switch (new_wand->o.o_which)
+  switch (new_wand->o_which)
   {
-    case WS_LIGHT: new_wand->o.o_charges = os_rand_range(10) + 10; break;
-    default:       new_wand->o.o_charges = os_rand_range(5) + 3;   break;
+    case WS_LIGHT: new_wand->o_charges = os_rand_range(10) + 10; break;
+    default:       new_wand->o_charges = os_rand_range(5) + 3;   break;
   }
 
   return new_wand;

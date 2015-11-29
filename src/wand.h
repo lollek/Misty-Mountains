@@ -52,7 +52,7 @@ int wand_get_worth(enum wand_t wand);
 void wand_set_name(enum wand_t wand, char const* new_name);
 
 /* Set up a new wand */
-THING* wand_create(int which);
+item* wand_create(int which);
 
 /* Perform a zap with a wand */
 bool wand_zap(void);
