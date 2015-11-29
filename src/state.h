@@ -37,11 +37,11 @@ bool state_load_structs_damage(struct damage dmg[MAXATTACKS]);
 bool state_save_bools(bool const* c, int32_t count);
 bool state_load_bools(bool* c, int32_t count);
 
-bool state_save_list(THING const* list);
-bool state_load_list(THING** list);
+bool state_save_item_list(THING const* list);
+bool state_load_item_list(THING** list);
 
-bool state_save_thing(THING const* thing);
-bool state_load_thing(THING* thing);
+bool state_save_monster(monster const* thing);
+bool state_load_monster(THING* thing);
 
 static int32_t const RSID_PACK         = 0x1011E001;
 static int32_t const RSID_POTIONS      = 0x1011E002;
@@ -55,10 +55,10 @@ static int32_t const RSID_LEVEL        = 0x1011E009;
 static int32_t const RSID_FOOD         = 0x1011E00A;
 
 static int32_t const RSID_STATS        = 0x1011EA01;
-static int32_t const RSID_THING        = 0x1011EA02;
-static int32_t const RSID_OBJECT       = 0x1011EA03;
+static int32_t const RSID_MONSTER      = 0x1011EA02;
+static int32_t const RSID_ITEM         = 0x1011EA03;
 static int32_t const RSID_MAGICITEMS   = 0x1011EA04;
-static int32_t const RSID_OBJECTLIST   = 0x1011EA05;
+static int32_t const RSID_ITEMLIST     = 0x1011EA05;
 static int32_t const RSID_MONSTERLIST  = 0x1011EA09;
 static int32_t const RSID_WINDOW       = 0x1011EA0D;
 static int32_t const RSID_DAEMONS      = 0x1011EA0E;

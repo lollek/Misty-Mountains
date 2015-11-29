@@ -85,7 +85,7 @@ monsters_save_state(void)
     return 1;
 
   for (ptr = monster_list; ptr != NULL; ptr = ptr->t.l_next)
-    if (state_save_thing(ptr))
+    if (state_save_monster(&ptr->t))
       return 1;
 
   return 0;

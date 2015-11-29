@@ -370,7 +370,7 @@ rs_read_object(THING* o)
 {
   assert(o != NULL);
 
-  if (state_assert_int32(RSID_OBJECT) ||
+  if (state_assert_int32(RSID_ITEM) ||
       state_load_int32(&o->o.o_type) ||
       state_load_coord(&o->o.o_pos) ||
       state_load_int32(&o->o.o_launch) ||
@@ -413,11 +413,11 @@ rs_read_equipment(int32_t marker)
 
 
 bool
-state_load_list(THING** list)
+state_load_item_list(THING** list)
 {
   int cnt;
 
-  if (state_assert_int32(RSID_OBJECTLIST) ||
+  if (state_assert_int32(RSID_ITEMLIST) ||
       state_load_int32(&cnt))
     return io_fail("state_load_list(%p[%p])\r\n", list, *list);
 
@@ -451,14 +451,14 @@ state_load_list(THING** list)
 }
 
 bool
-state_load_thing(THING* t)
+state_load_monster(THING* t)
 {
   int32_t listid = 0;
   int32_t index = -1;
 
   assert(t != NULL);
 
-  if (state_assert_int32(RSID_THING) ||
+  if (state_assert_int32(RSID_MONSTER) ||
       state_load_int32(&index))
     return io_fail("state_load_thing(%p)\r\n", t);
 
@@ -523,7 +523,7 @@ state_load_thing(THING* t)
   if (state_load_int32(&t->t.t_flags) ||
       state_load_stats(&t->t.t_stats) ||
       rs_read_room_reference( &t->t.t_room) ||
-      state_load_list(&t->t.t_pack))
+      state_load_item_list(&t->t.t_pack))
     return 1;
   return 0;
 }
@@ -561,7 +561,7 @@ rs_read_thing_list(THING** list)
     if (previous != NULL)
       previous->t.l_next = l;
 
-    if (state_load_thing(l))
+    if (state_load_monster(l))
       return 1;
 
     if (previous == NULL)

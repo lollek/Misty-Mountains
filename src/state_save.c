@@ -104,13 +104,12 @@ state_save_chars(char const* c, int32_t len)
 bool
 state_save_string(char const* s)
 {
-  int32_t len;
   if (s == NULL)
     return state_save_int32(0) || state_save_chars(NULL, 0)
       ? io_fail("state_save_string(%p)\r\n", s)
       : SUCCESS;
 
-  len = (int32_t) strlen(s) +1;
+  int32_t len = (int32_t) strlen(s) +1;
   return state_save_int32(len) || state_save_chars(s, len)
       ? io_fail("state_save_string(%p)\r\n", s)
       : SUCCESS;
@@ -207,8 +206,7 @@ state_save_stats(struct stats const* s)
 static bool
 state_save_room_number(struct room const* room)
 {
-  int i;
-  for (i = 0; i < ROOMS_MAX; ++i)
+  for (int i = 0; i < ROOMS_MAX; ++i)
     if (&rooms[i] == room)
       return state_save_int32(i)
         ? io_fail("state_save_room_number(%p)\r\n", room)
@@ -219,9 +217,9 @@ state_save_room_number(struct room const* room)
 }
 
 bool
-state_save_thing(THING const* t)
+state_save_monster(monster const* t)
 {
-  if (state_save_int32(RSID_THING))
+  if (state_save_int32(RSID_MONSTER))
     return io_fail("state_save_thing(%p)\r\n", t);
 
   if (t == NULL)
@@ -231,41 +229,41 @@ state_save_thing(THING const* t)
 
   return
     state_save_int32(1) ||
-    state_save_coord(&t->t.t_pos) ||
-    state_save_bool(t->t.t_turn) ||
-    state_save_char(t->t.t_type) ||
-    state_save_char(t->t.t_disguise) ||
-    state_save_char(t->t.t_oldch) ||
-    state_save_dest(t->t.t_dest) ||
-    state_save_int32( t->t.t_flags) ||
-    state_save_stats( &t->t.t_stats) ||
-    state_save_room_number(t->t.t_room) ||
-    state_save_list(t->t.t_pack)
+    state_save_coord(&t->t_pos) ||
+    state_save_bool(t->t_turn) ||
+    state_save_char(t->t_type) ||
+    state_save_char(t->t_disguise) ||
+    state_save_char(t->t_oldch) ||
+    state_save_dest(t->t_dest) ||
+    state_save_int32(t->t_flags) ||
+    state_save_stats(&t->t_stats) ||
+    state_save_room_number(t->t_room) ||
+    state_save_item_list(t->t_pack)
 
     ? io_fail("state_save_thing(%p)\r\n", t)
     : SUCCESS;
 }
 
 static bool
-state_save_object(THING const* o)
+state_save_item(item const* o)
 {
   return
-    state_save_int32(RSID_OBJECT) ||
-    state_save_int32(o->o.o_type) ||
-    state_save_coord(&o->o.o_pos) ||
-    state_save_int32(o->o.o_launch) ||
-    state_save_char(o->o.o_packch) ||
-    state_save_struct_damage(&o->o.o_damage) ||
-    state_save_struct_damage(&o->o.o_hurldmg) ||
-    state_save_int32(o->o.o_count) ||
-    state_save_int32(o->o.o_which) ||
-    state_save_int32(o->o.o_hplus) ||
-    state_save_int32(o->o.o_dplus) ||
-    state_save_int32(o->o.o_arm) ||
-    state_save_int32(o->o.o_flags) ||
-    state_save_string(o->o.o_label)
+    state_save_int32(RSID_ITEM) ||
+    state_save_int32(o->o_type) ||
+    state_save_coord(&o->o_pos) ||
+    state_save_int32(o->o_launch) ||
+    state_save_char(o->o_packch) ||
+    state_save_struct_damage(&o->o_damage) ||
+    state_save_struct_damage(&o->o_hurldmg) ||
+    state_save_int32(o->o_count) ||
+    state_save_int32(o->o_which) ||
+    state_save_int32(o->o_hplus) ||
+    state_save_int32(o->o_dplus) ||
+    state_save_int32(o->o_arm) ||
+    state_save_int32(o->o_flags) ||
+    state_save_string(o->o_label)
 
-    ? io_fail("state_save_object(%p)\r\n", o)
+    ? io_fail("state_save_item(%p)\r\n", o)
     : SUCCESS;
 }
 
@@ -275,11 +273,11 @@ state_save_equipment(enum equipment_pos slot, int32_t marker)
   THING* o = pack_equipped_item(slot);
   if (o == NULL)
     return state_save_int32(RSID_NULL)
-      ? io_fail("state_save_object(%d, %d)\r\n", slot, marker)
+      ? io_fail("state_save_item(%d, %d)\r\n", slot, marker)
       : SUCCESS;
 
-  return state_save_int32(marker) || state_save_object(o)
-    ? io_fail("state_save_object(%d, %d)\r\n", slot, marker)
+  return state_save_int32(marker) || state_save_item(&o->o)
+    ? io_fail("state_save_item(%d, %d)\r\n", slot, marker)
     : SUCCESS;
 }
 
@@ -300,8 +298,7 @@ static bool
 state_save_places(void)
 {
   int end = MAXLINES * MAXCOLS;
-  int i;
-  for (i = 0; i < end; ++i)
+  for (int i = 0; i < end; ++i)
     if (state_save_char(level_places[i].p_ch) ||
         state_save_char(level_places[i].p_flags) ||
         state_save_list_index(monster_list, level_places[i].p_monst))
@@ -339,10 +336,9 @@ state_save_room(struct room const* room)
 static bool
 state_save_rooms(struct room const list[], int32_t number)
 {
-  int i;
   if (state_save_int32(number))
     return io_fail("state_save_rooms(%p, %d)\r\n", list, number);
-  for (i = 0; i < number; ++i)
+  for (int i = 0; i < number; ++i)
     if (state_save_room(&list[i]))
       return io_fail("state_save_rooms(%p, %d)\r\n", list, number);
   return SUCCESS;
@@ -351,13 +347,11 @@ state_save_rooms(struct room const list[], int32_t number)
 static bool
 state_save_daemons(struct delayed_action const* d_list, int32_t count)
 {
-  int i = 0;
-
   if (state_save_int32(RSID_DAEMONS) ||
       state_save_int32(count))
     return io_fail("state_save_daemons(%p, %d)\r\n", d_list, count);
 
-  for (i = 0; i < count; i++)
+  for (int i = 0; i < count; i++)
   {
     int func;
     if (d_list[i].d_func == NULL)                              func = 0;
@@ -390,8 +384,6 @@ state_save_daemons(struct delayed_action const* d_list, int32_t count)
 static bool
 state_save_window(WINDOW* win)
 {
-  int row;
-  int col;
   int32_t height = getmaxy(win);
   int32_t width  = getmaxx(win);
 
@@ -400,8 +392,8 @@ state_save_window(WINDOW* win)
       state_save_int32(width))
     return io_fail("state_save_window(%p)\r\n", win);
 
-  for (row = 0; row < height; row++)
-    for (col = 0; col < width; col++)
+  for (int row = 0; row < height; row++)
+    for (int col = 0; col < width; col++)
     {
       int32_t sym = mvwincch(win, row, col);
       if (state_save_int32(sym))
@@ -429,7 +421,7 @@ state_save_obj_info(const struct obj_info* i, int count)
 }
 
 bool
-state_save_list(const THING* l)
+state_save_item_list(THING const* l)
 {
   int32_t listsize;
   THING const* ptr;
@@ -437,12 +429,12 @@ state_save_list(const THING* l)
   for (ptr = l, listsize = 0; ptr != NULL; ptr = ptr->o.l_next)
     ++listsize;
 
-  if (state_save_int32(RSID_OBJECTLIST) ||
+  if (state_save_int32(RSID_ITEMLIST) ||
       state_save_int32(listsize))
     return io_fail("state_save_list(%p)\r\n", l);
 
   for(; l != NULL; l = l->o.l_next)
-    if (state_save_object(l))
+    if (state_save_item(&l->o))
       return io_fail("state_save_list(%p)\r\n", l);
 
   return 0;

@@ -129,14 +129,14 @@ player_init(void)
 bool
 player_load_state(void)
 {
-  return state_load_thing(&player)
+  return state_load_monster(&player)
     || state_load_int32(&player_speed);
 }
 
 bool
 player_save_state(void)
 {
-  return state_save_thing(&player)
+  return state_save_monster(&player.t)
     || state_save_int32(player_speed);
 }
 
