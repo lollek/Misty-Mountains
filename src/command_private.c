@@ -520,7 +520,7 @@ bool command_throw(void)
     if (monster_at_pos && !to_death)
     {
       char buf[MAXSTR];
-      fight_missile_miss(obj, monster_name(monster_at_pos, buf));
+      fight_missile_miss(&obj->o, monster_name(monster_at_pos, buf));
     }
     weapon_missile_fall(obj, true);
     return true;

@@ -279,7 +279,7 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
   monster_start_running(monster_pos);
 
   if (thrown && !to_death)
-    fight_missile_miss(weapon, mname);
+    fight_missile_miss(&weapon->o, mname);
   else if (!to_death)
     print_attack(false, (char *) NULL, mname);
   return false;
@@ -346,10 +346,10 @@ fight_swing_hits(int at_lvl, int op_arm, int wplus)
 }
 
 void
-fight_missile_miss(THING const* weap, char const* mname)
+fight_missile_miss(item const* weap, char const* mname)
 {
-  if (weap->o.o_type == WEAPON)
-    io_msg("the %s misses %s", weapon_info[weap->o.o_which].oi_name, mname);
+  if (weap->o_type == WEAPON)
+    io_msg("the %s misses %s", weapon_info[weap->o_which].oi_name, mname);
   else
     io_msg("you missed %s", mname);
 }
