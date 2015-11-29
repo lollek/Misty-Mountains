@@ -74,18 +74,18 @@ struct monster_template monsters[] =
 bool
 monsters_save_state(void)
 {
-  THING const* ptr;
+  monster const* ptr;
   int length;
 
-  for (ptr = monster_list, length = 0; ptr != NULL; ptr = ptr->t.l_next)
+  for (ptr = &monster_list->t, length = 0; ptr != NULL; ptr = &ptr->l_next->t)
     ++length;
 
   if (state_save_int32(RSID_MONSTERLIST) ||
       state_save_int32(length))
     return 1;
 
-  for (ptr = monster_list; ptr != NULL; ptr = ptr->t.l_next)
-    if (state_save_monster(&ptr->t))
+  for (ptr = &monster_list->t; ptr != NULL; ptr = &ptr->l_next->t)
+    if (state_save_monster(ptr))
       return 1;
 
   return 0;
