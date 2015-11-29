@@ -186,7 +186,8 @@ wizard_create_item(void)
 
     case ARMOR:
       {
-        obj = armor_create(-1, false);
+        item* armor = armor_create(-1, false);
+        obj = os_item_to_thing(&armor);
 
         io_msg("blessing? (+,-,n)");
         char bless = io_readchar(true);
@@ -273,7 +274,8 @@ wizard_levels_and_gear(void)
   /* And his suit of armor */
   if (pack_equipped_item(EQUIPMENT_ARMOR) == NULL)
   {
-    THING* obj = armor_create(PLATE_MAIL, false);
+    item* armor = armor_create(PLATE_MAIL, false);
+    THING* obj = os_item_to_thing(&armor);
     obj->o.o_arm = -5;
     obj->o.o_flags |= ISKNOW;
     obj->o.o_count = 1;

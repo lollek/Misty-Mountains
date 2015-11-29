@@ -37,6 +37,6 @@ bool armor_command_wear(void);     /* Let player select something to wear */
 
 void armor_description(item const* item, char* buf);
 
-THING* armor_create(int which, int random_stats);
+item* armor_create(int which, int random_stats);
 
 #endif /* ROGUE14_ARMOR_H */

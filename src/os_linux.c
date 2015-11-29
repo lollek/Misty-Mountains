@@ -103,3 +103,17 @@ os_remove_monster(monster** monster)
   free(*monster);
   *monster = NULL;
 }
+
+
+THING*
+os_item_to_thing(item** item)
+{
+  assert(item != NULL);
+  assert(*item != NULL);
+
+  THING* return_value = os_calloc_thing();
+  return_value->o = **item;
+  os_remove_item(item);
+
+  return return_value;
+}

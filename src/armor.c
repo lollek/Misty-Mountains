@@ -133,27 +133,27 @@ armor_description(item const* item, char* buf)
     ptr += sprintf(ptr, " called %s", item_nickname(item));
 }
 
-THING*
+item*
 armor_create(int which, int random_stats)
 {
   if (which == -1)
     which = armor_type_random();
 
-  THING* armor = os_calloc_thing();
-  armor->o.o_type = ARMOR;
-  armor->o.o_which = which;
-  armor->o.o_arm = armor_ac((enum armor_t)armor->o.o_which);
+  item* armor = os_calloc_item();
+  armor->o_type = ARMOR;
+  armor->o_which = which;
+  armor->o_arm = armor_ac((enum armor_t)armor->o_which);
 
   if (random_stats)
   {
     int rand = os_rand_range(100);
     if (rand < 20)
     {
-      armor->o.o_flags |= ISCURSED;
-      armor->o.o_arm += os_rand_range(3) + 1;
+      armor->o_flags |= ISCURSED;
+      armor->o_arm += os_rand_range(3) + 1;
     }
     else if (rand < 28)
-      armor->o.o_arm -= os_rand_range(3) + 1;
+      armor->o_arm -= os_rand_range(3) + 1;
   }
 
   return armor;

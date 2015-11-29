@@ -126,7 +126,11 @@ new_thing(void)
     case 1: cur = scroll_create(-1); break;
     case 2: cur = new_food(-1); break;
     case 3: cur = weapon_create(-1, true); break;
-    case 4: cur = armor_create(-1, true); break;
+    case 4:
+      {
+        item* armor = armor_create(-1, true);
+        cur = os_item_to_thing(&armor);
+      } break;
     case 5: cur = ring_create(-1, true); break;
     case 6: cur = wand_create(-1); break;
     default:
