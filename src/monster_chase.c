@@ -42,7 +42,7 @@ chase_as_confused(THING *tp, coord *ee)
   int curdist;
 
   /* get a valid random move */
-  move_random(tp, &ch_ret);
+  move_random(&tp->t, &ch_ret);
   curdist = dist_cp(&ch_ret, ee);
 
   /* Small chance that it will become un-confused */

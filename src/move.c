@@ -96,7 +96,9 @@ move_do(char ch)
     if (player_is_confused() && os_rand_range(5) != 0)
     {
       /* TODO: Remove __player_ptr() */
-	move_random(__player_ptr(), &nh);
+        THING *player_thing = __player_ptr();
+        monster *player = &player_thing->t;
+	move_random(player, &nh);
 	if (coord_same(&nh, player_get_pos()))
 	{
 	    running = false;
@@ -281,29 +283,29 @@ hit_bound:
 /** move_random:
  * Move in a random direction if the monster/person is confused */
 void
-move_random(THING* who, coord* ret)
+move_random(monster* who, coord* ret)
 {
   assert(who != NULL);
 
   /* Now check to see if that's a legal move.
    * If not, don't move.(I.e., bump into the wall or whatever) */
-  int x = ret->x = who->t.t_pos.x + os_rand_range(3) - 1;
-  int y = ret->y = who->t.t_pos.y + os_rand_range(3) - 1;
-  if (y == who->t.t_pos.y && x == who->t.t_pos.x)
+  int x = ret->x = who->t_pos.x + os_rand_range(3) - 1;
+  int y = ret->y = who->t_pos.y + os_rand_range(3) - 1;
+  if (y == who->t_pos.y && x == who->t_pos.x)
     return;
 
-  if (!diag_ok(&who->t.t_pos, ret))
+  if (!diag_ok(&who->t_pos, ret))
   {
-    ret->x = who->t.t_pos.x;
-    ret->y = who->t.t_pos.y;
+    ret->x = who->t_pos.x;
+    ret->y = who->t_pos.y;
     return;
   }
 
   char ch = level_get_type(y, x);
   if (!step_ok(ch))
   {
-    ret->x = who->t.t_pos.x;
-    ret->y = who->t.t_pos.y;
+    ret->x = who->t_pos.x;
+    ret->y = who->t_pos.y;
     return;
   }
 
@@ -316,8 +318,8 @@ move_random(THING* who, coord* ret)
 
     if (obj != NULL && obj->o.o_which == S_SCARE)
     {
-      ret->x = who->t.t_pos.x;
-      ret->y = who->t.t_pos.y;
+      ret->x = who->t_pos.x;
+      ret->y = who->t_pos.y;
       return;
     }
   }
