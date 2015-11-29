@@ -203,7 +203,7 @@ hold_monsters(void)
   if (monsters_affected == 1)
   {
     char buf[MAXSTR];
-    io_msg("%s freezes", monster_name(held_monster, buf));
+    io_msg("%s freezes", monster_name(&held_monster->t, buf));
   }
   else if (monsters_affected > 1)
     io_msg("the monsters around you freeze");
@@ -252,7 +252,7 @@ create_monster(void)
     char buf[MAXSTR];
     THING *obj = os_calloc_thing();
     monster_new(obj, monster_random(false), &mp);
-    io_msg("A %s appears out of thin air", monster_name(obj, buf));
+    io_msg("A %s appears out of thin air", monster_name(&obj->t, buf));
   }
 
   return i;

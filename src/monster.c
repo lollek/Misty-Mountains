@@ -91,17 +91,20 @@ monsters_save_state(void)
   return 0;
 }
 
-void monster_set_invisible(THING* mon)
+void
+monster_set_invisible(THING* mon)
 {
   mon->t.t_flags |= ISINVIS;
   if (cansee(mon->t.t_pos.y, mon->t.t_pos.x))
   {
     char buf[MAXSTR];
-    io_msg("%s disappeared", monster_name(mon, buf));
+    io_msg("%s disappeared", monster_name(&mon->t, buf));
     mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
   }
 }
-void monster_become_held(monster* mon)
+
+void
+monster_become_held(monster* mon)
 {
   mon->t_flags &= ~ISRUN;
   mon->t_flags |= ISHELD;
@@ -240,7 +243,7 @@ monster_notice_player(int y, int x)
       if (!player_save_throw(VS_MAGIC))
       {
         char buf[MAXSTR];
-        io_msg("%s's gaze has confused you", monster_name(monster, buf));
+        io_msg("%s's gaze has confused you", monster_name(&monster->t, buf));
         player_set_confused(false);
       }
     }
@@ -315,7 +318,7 @@ monster_on_death(THING* monster, bool pr)
 
   /* Get rid of the monster. */
   char mname[MAXSTR];
-  monster_name(monster, mname);
+  monster_name(&monster->t, mname);
   monster_remove_from_screen(&monster->t.t_pos, monster, true);
   if (pr)
     io_msg("you have slain %s", mname);
@@ -427,7 +430,7 @@ monster_do_special_ability(THING** monster)
       if (!player_turns_without_action)
       {
         char buf[MAXSTR];
-        io_msg("you are frozen by the %s", monster_name(*monster, buf));
+        io_msg("you are frozen by the %s", monster_name(&(*monster)->t, buf));
       }
       player_turns_without_action += os_rand_range(2) + 2;
       if (player_turns_without_action > 50)
@@ -507,17 +510,17 @@ monster_do_special_ability(THING** monster)
 }
 
 char const*
-monster_name(THING const* monster, char* buf)
+monster_name(monster const* monster, char* buf)
 {
   assert(monster != NULL);
   assert(buf != NULL);
 
-  if (!monster_seen_by_player(&monster->t) && !player_can_sense_monsters())
+  if (!monster_seen_by_player(monster) && !player_can_sense_monsters())
     strcpy(buf, "something");
 
   else if (player_is_hallucinating())
   {
-    int ch = mvincch(monster->t.t_pos.y, monster->t.t_pos.x);
+    int ch = mvincch(monster->t_pos.y, monster->t_pos.x);
     if (!isupper(ch))
       ch = os_rand_range(NMONSTERS);
     else
@@ -527,7 +530,7 @@ monster_name(THING const* monster, char* buf)
   }
 
   else
-    sprintf(buf, "the %s", monster_name_by_type(monster->t.t_type));
+    sprintf(buf, "the %s", monster_name_by_type(monster->t_type));
 
   return buf;
 }

@@ -126,7 +126,7 @@ void monster_teleport(THING* monster, coord const* destination);
 
 void monster_do_special_ability(THING** monster);
 
-char const* monster_name(THING const* tp, char* buf);
+char const* monster_name(monster const* monster, char* buf);
 char const* monster_name_by_type(char monster_type);
 bool monster_seen_by_player(monster const* monster);
 

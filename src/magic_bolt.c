@@ -127,7 +127,7 @@ magic_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
     else
     {
       char buf[MAXSTR];
-      io_msg("the %s whizzes past %s", missile_name, monster_name(mon, buf));
+      io_msg("the %s whizzes past %s", missile_name, monster_name(&mon->t, buf));
     }
   }
 }

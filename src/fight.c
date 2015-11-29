@@ -240,7 +240,7 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
   }
 
   char mname[MAXSTR];
-  monster_name(tp, mname);
+  monster_name(&tp->t, mname);
 
   if (roll_attacks(player, tp, weapon, thrown))
   {
@@ -306,7 +306,7 @@ fight_against_player(THING* mp)
     mp->t.t_disguise = 'X';
 
   char mname[MAXSTR];
-  monster_name(mp, mname);
+  monster_name(&mp->t, mname);
 
   if (roll_attacks(mp, NULL, NULL, false))
   {

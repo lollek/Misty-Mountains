@@ -236,7 +236,7 @@ wand_spell_drain_health(void)
     {
       monster_start_running(&mp->t.t_pos);
       char buf[MAXSTR];
-      io_msg("%s screams in pain", monster_name(mp, buf));
+      io_msg("%s screams in pain", monster_name(&mp->t, buf));
     }
   }
 }
@@ -262,7 +262,7 @@ wand_spell_polymorph(THING* target)
   {
     mvaddcch(pos.y, pos.x, (chtype) level_get_ch(pos.y, pos.x));
     char buf[MAXSTR];
-    io_msg_add("%s", monster_name(target, buf));
+    io_msg_add("%s", monster_name(&target->t, buf));
   }
 
   char oldch = target->t.t_oldch;
@@ -279,7 +279,7 @@ wand_spell_polymorph(THING* target)
     else
     {
       char buf[MAXSTR];
-      io_msg(" turned into a %s", monster_name(target, buf));
+      io_msg(" turned into a %s", monster_name(&target->t, buf));
     }
   }
   else if (was_seen)
@@ -331,7 +331,7 @@ wand_spell_magic_missile(int dy, int dx)
   else if (monster_save_throw(VS_MAGIC, &target->t))
   {
     char buf[MAXSTR];
-    io_msg("the missle missed the %s", monster_name(target, buf));
+    io_msg("the missle missed the %s", monster_name(&target->t, buf));
   }
   else
     fight_against_monster(&bolt.o.o_pos, &bolt, true);
@@ -453,7 +453,7 @@ wand_zap(void)
             tp->t.t_flags |= ISHASTE;
           monster_start_running(&c);
           char buf[MAXSTR];
-          io_msg("%s became faster", monster_name(tp, buf));
+          io_msg("%s became faster", monster_name(&tp->t, buf));
         }
         else
           io_msg("You did not hit anything");
@@ -473,7 +473,7 @@ wand_zap(void)
           tp->t.t_turn = true;
           monster_start_running(&c);
           char buf[MAXSTR];
-          io_msg("%s became slower", monster_name(tp, buf));
+          io_msg("%s became slower", monster_name(&tp->t, buf));
         }
         else
           io_msg("You did not hit anything");
