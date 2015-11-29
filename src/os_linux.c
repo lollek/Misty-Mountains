@@ -3,6 +3,7 @@
 #pragma clang diagnostic ignored "-Wreserved-id-macro"
 #define _XOPEN_SOURCE 500
 #pragma clang diagnostic pop
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -47,10 +48,58 @@ os_calloc_thing(void)
   return item;
 }
 
-void os_remove_thing(THING** thing)
+item*
+os_calloc_item(void)
+{
+  item* item = calloc(1, sizeof *item);
+
+  if (item == NULL)
+    io_fatal("No virtual memory available!\n");
+
+  assert(item->l_next == NULL);
+  assert(item->l_prev == NULL);
+
+  return item;
+}
+
+monster*
+os_calloc_monster(void)
+{
+  monster* monster = calloc(1, sizeof *monster);
+
+  if (monster == NULL)
+    io_fatal("No virtual memory available!\n");
+
+  assert(monster->l_next == NULL);
+  assert(monster->l_prev == NULL);
+
+  return monster;
+}
+
+
+void
+os_remove_thing(THING** thing)
 {
   assert(thing != NULL);
 
   free(*thing);
   *thing = NULL;
+}
+
+void
+os_remove_item(item** item)
+{
+  assert(item != NULL);
+
+  free(*item);
+  *item = NULL;
+}
+
+void
+os_remove_monster(monster** monster)
+{
+  assert(monster != NULL);
+
+  free(*monster);
+  *monster = NULL;
 }
