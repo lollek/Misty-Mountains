@@ -60,12 +60,6 @@ state_load_room(struct room* room)
     : SUCCESS;
 }
 
-#define rs_assert_read_places(_p, _n) \
-  for (temp_i = 0; temp_i < _n; ++temp_i) \
-    rs_assert(state_load_char(&(_p)[temp_i].p_ch) || \
-              state_load_char(&(_p)[temp_i].p_flags) || \
-              rs_read_thing_reference( monster_list, &(_p)[temp_i].p_monst))
-
 static bool
 state_read(void* buf, int32_t length)
 {
@@ -261,10 +255,19 @@ rs_read_window(WINDOW* win)
   return 0;
 }
 
-static void*
-get_list_item(THING* l, int i)
+static item*
+get_list_item(item* l, int i)
 {
-    for (int count = 0; l != NULL; count++, l = l->o.l_next)
+    for (int count = 0; l != NULL; count++, l = &l->l_next->o)
+        if (count == i)
+            return l;
+    return NULL;
+}
+
+static monster*
+get_list_monster(monster* l, int i)
+{
+    for (int count = 0; l != NULL; count++, l = &l->l_next->t)
         if (count == i)
             return l;
     return NULL;
@@ -504,9 +507,9 @@ state_load_monster(THING* t)
 
     case 2: /* object */
       {
-        THING* item = get_list_item(level_items, index);
+        item* item = get_list_item(&level_items->o, index);
         if (item != NULL)
-          t->t.t_dest = &item->o.o_pos;
+          t->t.t_dest = &item->o_pos;
       }
       break;
 
@@ -534,10 +537,10 @@ rs_fix_thing(THING* t)
   if (t->t.t_reserved < 0)
     return 0;
 
-  THING* item = get_list_item(monster_list,t->t.t_reserved);
+  monster* monster = get_list_monster(&monster_list->t, t->t.t_reserved);
 
-  if (item != NULL)
-    t->t.t_dest = &item->t.t_pos;
+  if (monster != NULL)
+    t->t.t_dest = &monster->t_pos;
   return 0;
 }
 
@@ -593,15 +596,33 @@ rs_read_thing_reference(THING* list, THING** item)
   if (state_load_int32(&i))
     return 1;
 
-  *item = i == -1 ? NULL : get_list_item(list, i);
+  if (i != -1)
+  {
+    monster* mon = get_list_monster(&list->t, i);
+    *item = mon ? os_monster_to_thing(&mon) : NULL;
+  }
+  else
+  {
+    *item = NULL;
+  }
   return 0;
+}
+
+static bool
+state_load_places(PLACE* place, int num_places)
+{
+  for (int i = 0; i < num_places; ++i)
+    if (state_load_char(&place[i].p_ch) ||
+        state_load_char(&place[i].p_flags) ||
+        rs_read_thing_reference( monster_list, &place[i].p_monst))
+      return io_fail("state_load_places(%p, %d) Failed to load PLACE\r\n",
+                     place, num_places);
+  return SUCCESS;
 }
 
 bool
 state_load_file(FILE* inf)
 {
-  int32_t temp_i = 0; /* Used as buffer for macros */
-
   assert(inf != NULL);
   assert(file == NULL);
 
@@ -637,7 +658,7 @@ state_load_file(FILE* inf)
   rs_assert(rs_fix_thing(__player_ptr()))
   rs_assert(weapons_load_state());
   rs_assert(rs_fix_thing_list(monster_list))
-  rs_assert_read_places(level_places,MAXLINES*MAXCOLS)
+  rs_assert(state_load_places(level_places, MAXLINES*MAXCOLS))
   rs_assert(state_load_stats(&player_max_stats))
   rs_assert(rs_read_rooms(rooms, ROOMS_MAX))
   rs_assert(rs_read_room_reference(&room_prev))

@@ -117,3 +117,15 @@ os_item_to_thing(item** item)
 
   return return_value;
 }
+
+THING* os_monster_to_thing(monster** monster)
+{
+  assert(monster != NULL);
+  assert(*monster != NULL);
+
+  THING* return_value = os_calloc_thing();
+  return_value->t = **monster;
+  os_remove_monster(monster);
+
+  return return_value;
+}

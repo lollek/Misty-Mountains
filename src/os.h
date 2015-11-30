@@ -29,5 +29,6 @@ void os_remove_monster(monster** monster);
 
 /* Temporary functions for transforming */
 THING* os_item_to_thing(item** item);
+THING* os_monster_to_thing(monster** monster);
 
 #endif /* ROGUE14_OS_H */
