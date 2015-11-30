@@ -369,25 +369,25 @@ rs_read_room_reference(struct room** rp)
 }
 
 static int
-rs_read_object(THING* o)
+rs_read_item(item* item)
 {
-  assert(o != NULL);
+  assert(item != NULL);
 
   if (state_assert_int32(RSID_ITEM) ||
-      state_load_int32(&o->o.o_type) ||
-      state_load_coord(&o->o.o_pos) ||
-      state_load_int32(&o->o.o_launch) ||
-      state_load_char(&o->o.o_packch) ||
-      state_load_struct_damage(&o->o.o_damage) ||
-      state_load_struct_damage(&o->o.o_hurldmg) ||
-      state_load_int32(&o->o.o_count) ||
-      state_load_int32(&o->o.o_which) ||
-      state_load_int32(&o->o.o_hplus) ||
-      state_load_int32(&o->o.o_dplus) ||
-      state_load_int32(&o->o.o_arm) ||
-      state_load_int32(&o->o.o_flags) ||
-      state_load_string(&o->o.o_label))
-    return io_fail("rs_read_obj(%p)\r\n", o);
+      state_load_int32(&item->o_type) ||
+      state_load_coord(&item->o_pos) ||
+      state_load_int32(&item->o_launch) ||
+      state_load_char(&item->o_packch) ||
+      state_load_struct_damage(&item->o_damage) ||
+      state_load_struct_damage(&item->o_hurldmg) ||
+      state_load_int32(&item->o_count) ||
+      state_load_int32(&item->o_which) ||
+      state_load_int32(&item->o_hplus) ||
+      state_load_int32(&item->o_dplus) ||
+      state_load_int32(&item->o_arm) ||
+      state_load_int32(&item->o_flags) ||
+      state_load_string(&item->o_label))
+    return io_fail("rs_read_obj(%p)\r\n", item);
   return 0;
 }
 
@@ -407,7 +407,7 @@ rs_read_equipment(int32_t marker)
                 marker, disk_mark);
 
   item = os_calloc_thing();
-  if (rs_read_object(item))
+  if (rs_read_item(&item->o))
     return io_fail("rs_read_equipment(%X)\r\n", marker);
 
   pack_equip_item(item);
@@ -435,7 +435,7 @@ state_load_item_list(THING** list)
     if (previous != NULL)
       previous->o.l_next = l;
 
-    if (rs_read_object(l))
+    if (rs_read_item(&l->o))
       return io_fail("state_load_list(list: %p[%p]) %d, i=%d\r\n",
                   list, *list, __LINE__, i);
 
