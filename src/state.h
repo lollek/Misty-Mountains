@@ -41,7 +41,7 @@ bool state_save_item_list(item const* list);
 bool state_load_item_list(THING** list);
 
 bool state_save_monster(monster const* thing);
-bool state_load_monster(THING* thing);
+bool state_load_monster(monster* thing);
 
 static int32_t const RSID_PACK         = 0x1011E001;
 static int32_t const RSID_POTIONS      = 0x1011E002;

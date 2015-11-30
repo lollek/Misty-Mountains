@@ -129,7 +129,7 @@ player_init(void)
 bool
 player_load_state(void)
 {
-  return state_load_monster(&player)
+  return state_load_monster(&player.t)
     || state_load_int32(&player_speed);
 }
 

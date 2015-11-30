@@ -454,7 +454,7 @@ state_load_item_list(THING** list)
 }
 
 bool
-state_load_monster(THING* t)
+state_load_monster(monster* t)
 {
   int32_t listid = 0;
   int32_t index = -1;
@@ -463,16 +463,16 @@ state_load_monster(THING* t)
 
   if (state_assert_int32(RSID_MONSTER) ||
       state_load_int32(&index))
-    return io_fail("state_load_thing(%p)\r\n", t);
+    return io_fail("state_load_monster(%p)\r\n", t);
 
   if (index == 0)
     return 0;
 
-  if (state_load_coord(&t->t.t_pos) ||
-      state_load_bool(&t->t.t_turn) ||
-      state_load_char(&t->t.t_type) ||
-      state_load_char(&t->t.t_disguise) ||
-      state_load_char(&t->t.t_oldch))
+  if (state_load_coord(&t->t_pos) ||
+      state_load_bool(&t->t_turn) ||
+      state_load_char(&t->t_type) ||
+      state_load_char(&t->t_disguise) ||
+      state_load_char(&t->t_oldch))
     return 1;
 
   /*
@@ -490,43 +490,43 @@ state_load_monster(THING* t)
   if (state_load_int32(&listid) ||
       state_load_int32(&index))
     return 1;
-  t->t.t_reserved = -1;
+  t->t_reserved = -1;
 
   switch(listid)
   {
     case 0: /* hero or NULL */
-      t->t.t_dest = index == 1
+      t->t_dest = index == 1
         ? player_get_pos()
         : NULL;
       break;
 
     case 1: /* monster / thing */
-      t->t.t_dest     = NULL;
-      t->t.t_reserved = index;
+      t->t_dest     = NULL;
+      t->t_reserved = index;
       break;
 
     case 2: /* object */
       {
         item* item = get_list_item(&level_items->o, index);
         if (item != NULL)
-          t->t.t_dest = &item->o_pos;
+          t->t_dest = &item->o_pos;
       }
       break;
 
     case 3: /* gold */
-      t->t.t_dest = &rooms[index].r_gold;
+      t->t_dest = &rooms[index].r_gold;
       break;
 
     default:
-      t->t.t_dest = NULL;
+      t->t_dest = NULL;
       break;
   }
 
 
-  if (state_load_int32(&t->t.t_flags) ||
-      state_load_stats(&t->t.t_stats) ||
-      rs_read_room_reference( &t->t.t_room) ||
-      state_load_item_list(&t->t.t_pack))
+  if (state_load_int32(&t->t_flags) ||
+      state_load_stats(&t->t_stats) ||
+      rs_read_room_reference(&t->t_room) ||
+      state_load_item_list(&t->t_pack))
     return 1;
   return 0;
 }
@@ -564,7 +564,7 @@ rs_read_thing_list(THING** list)
     if (previous != NULL)
       previous->t.l_next = l;
 
-    if (state_load_monster(l))
+    if (state_load_monster(&l->t))
       return 1;
 
     if (previous == NULL)
