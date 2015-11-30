@@ -387,7 +387,7 @@ rs_read_item(item* item)
       state_load_int32(&item->o_arm) ||
       state_load_int32(&item->o_flags) ||
       state_load_string(&item->o_label))
-    return io_fail("rs_read_obj(%p)\r\n", item);
+    return io_fail("rs_read_item(%p)\r\n", item);
   return 0;
 }
 
