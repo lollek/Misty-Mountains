@@ -137,6 +137,8 @@ monsters_load_state(void)
 void
 monster_set_invisible(monster* mon)
 {
+  assert(mon != NULL);
+
   mon->t_flags |= ISINVIS;
   if (cansee(mon->t_pos.y, mon->t_pos.x))
   {
@@ -149,6 +151,8 @@ monster_set_invisible(monster* mon)
 void
 monster_become_held(monster* mon)
 {
+  assert(mon != NULL);
+
   mon->t_flags &= ~ISRUN;
   mon->t_flags |= ISHELD;
 }
@@ -182,6 +186,8 @@ monster_random(bool wander)
 static int
 monster_xp_worth(monster* tp)
 {
+  assert(tp != NULL);
+
   int mod = tp->t_stats.s_lvl == 1
     ? tp->t_stats.s_maxhp / 8
     : tp->t_stats.s_maxhp / 6;
@@ -197,6 +203,9 @@ monster_xp_worth(monster* tp)
 void
 monster_new(THING* monster, char type, coord* pos)
 {
+  assert(monster != NULL);
+  assert(pos != NULL);
+
   list_attach(&monster_list, monster);
   monster->t.t_type       = type;
   monster->t.t_disguise   = type;
@@ -307,6 +316,8 @@ monster_notice_player(int y, int x)
 void
 monster_give_pack(monster* mon)
 {
+  assert(mon != NULL);
+
   if (level >= level_max
       && os_rand_range(100) < monsters[mon->t_type-'A'].m_carry)
     list_attach(&mon->t_pack, new_thing());
@@ -315,6 +326,8 @@ monster_give_pack(monster* mon)
 int
 monster_save_throw(int which, monster const* mon)
 {
+  assert(mon != NULL);
+
   int need = 14 + which - mon->t_stats.s_lvl / 2;
   return (roll(1, 20) >= need);
 }
@@ -336,6 +349,8 @@ monster_start_running(coord const* runner)
 void
 monster_on_death(THING* monster, bool pr)
 {
+  assert(monster != NULL);
+
   player_earn_exp(monster->t.t_stats.s_exp);
 
   switch (monster->t.t_type)
@@ -375,6 +390,9 @@ monster_on_death(THING* monster, bool pr)
 void
 monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
 {
+  assert(mp != NULL);
+  assert(tp != NULL);
+
   THING* nexti;
   for (THING* obj = tp->t.t_pack; obj != NULL; obj = nexti)
   {
@@ -446,6 +464,7 @@ monster_teleport(THING* monster, coord const* destination)
 void
 monster_do_special_ability(THING** monster)
 {
+  assert(monster != NULL);
   assert(*monster != NULL);
 
   if (monster_is_cancelled(&(*monster)->t))
@@ -589,6 +608,8 @@ monster_name_by_type(char monster_type)
 bool
 monster_seen_by_player(monster const* monster)
 {
+  assert(monster != NULL);
+
   coord const* player_pos = player_get_pos();
   int monster_y = monster->t_pos.y;
   int monster_x = monster->t_pos.x;
@@ -788,9 +809,8 @@ monster_get_nth_in_list(int i)
 int
 monster_return_index_with_position(coord const* pos)
 {
-  THING const* ptr;
   int index = 0;
-  for (ptr = monster_list; ptr != NULL; ptr = ptr->t.l_next, ++index)
+  for (THING const* ptr = monster_list; ptr != NULL; ptr = ptr->t.l_next, ++index)
     if (&ptr->t.t_pos == pos)
       return index;
   return -1;
@@ -824,6 +844,7 @@ monster_assert_exists(THING const* monster)
 int
 monster_add_nearby(THING** nearby_monsters, struct room const* room)
 {
+  assert(nearby_monsters != NULL);
   bool inpass = player_get_room()->r_flags & ISGONE;
   THING** nearby_monsters_start = nearby_monsters;
 
