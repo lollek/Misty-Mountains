@@ -224,13 +224,6 @@ find_obj(int y, int x)
   return NULL;
 }
 
-void
-aggravate(void)
-{
-  for (THING* mp = monster_list; mp != NULL; mp = mp->t.l_next)
-    monster_start_running(&mp->t.t_pos);
-}
-
 char const*
 vowelstr(char const* str)
 {
@@ -410,10 +403,7 @@ void
 invis_on(void)
 {
   player_add_true_sight(true);
-  for (THING* mp = monster_list; mp != NULL; mp = mp->t.l_next)
-    if (monster_is_invisible(&mp->t) && monster_seen_by_player(&mp->t)
-        && !player_is_hallucinating())
-      mvaddcch(mp->t.t_pos.y, mp->t.t_pos.x, (chtype) mp->t.t_disguise);
+  monster_show_all_hidden();
 }
 
 

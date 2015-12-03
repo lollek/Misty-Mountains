@@ -354,9 +354,7 @@ pack_add(THING* obj, bool silent)
 
   /* If this was the object of something's desire, that monster will
    * get mad and run at the hero.  */
-  for (THING* op = monster_list; op != NULL; op = op->t.l_next)
-    if (op->t.t_dest == &obj->o.o_pos)
-      op->t.t_dest = player_pos;
+  monster_aggro_all_which_desire_item(&obj->o);
 
   /* Notify the user */
   if (!silent)

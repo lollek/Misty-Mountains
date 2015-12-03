@@ -167,7 +167,7 @@ chase_do(THING *th)
     coord *player_pos = player_get_pos();
     coord delta;
 
-    list_assert_monster(th);
+    monster_assert_exists(th);
     rer = th->t.t_room;
 
     if (monster_is_greedy(&th->t) && rer->r_goldval == 0)
@@ -285,7 +285,7 @@ over:
           return 0;
       }
 
-      list_assert_monster(th);
+      monster_assert_exists(th);
 
       /* Put monster in new position */
       set_oldch(th, &ch_ret);
@@ -310,18 +310,18 @@ over:
 bool
 monster_chase(THING *tp)
 {
-  list_assert_monster(tp);
+  monster_assert_exists(tp);
 
   if (!monster_is_slow(&tp->t) || tp->t.t_turn)
     if (chase_do(tp) == -1)
       return false;
 
-  list_assert_monster(tp);
+  monster_assert_exists(tp);
   if (monster_is_hasted(&tp->t))
     if (chase_do(tp) == -1)
       return false;
 
-  list_assert_monster(tp);
+  monster_assert_exists(tp);
   tp->t.t_turn ^= true;
   return true;
 }

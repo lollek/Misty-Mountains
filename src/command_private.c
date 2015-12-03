@@ -563,12 +563,11 @@ command_wield(void)
 
 bool command_rest(void)
 {
-  for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
-    if (monster_seen_by_player(&mon->t))
-    {
-      io_msg("cannot rest with monsters nearby");
-      return false;
-    }
+  if (monster_is_anyone_seen_by_player())
+  {
+    io_msg("cannot rest with monsters nearby");
+    return false;
+  }
 
   if (!player_is_hurt())
   {

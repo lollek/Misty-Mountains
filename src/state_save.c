@@ -158,12 +158,11 @@ state_save_dest(coord const* dest)
       : SUCCESS;
 
   /* (1,i): location of a thing (monster) */
-  monster const* m_ptr;
-  for (m_ptr = &monster_list->t, i = 0; m_ptr != NULL; m_ptr = &m_ptr->l_next->t, ++i)
-    if (&m_ptr->t_pos == dest)
-      return state_save_int32(1) || state_save_int32(i)
-        ? io_fail("state_save_dest(%p)\r\n", dest)
-        : SUCCESS;
+  i = monster_return_index_with_position(dest);
+  if (i != -1)
+    return state_save_int32(1) || state_save_int32(i)
+      ? io_fail("state_save_dest(%p)\r\n", dest)
+      : SUCCESS;
 
   /* (2,i): location of an object */
   item const* i_ptr;
@@ -283,26 +282,13 @@ state_save_equipment(enum equipment_pos slot, int32_t marker)
 }
 
 static bool
-state_save_list_index(THING const* list, THING const* item)
-{
-  if (item == NULL)
-    return state_save_int32(-1)
-      ? io_fail("state_save_list_index(%p, %p)\r\n", list, item)
-      : SUCCESS;
-
-  return state_save_int32(list_find(list, item))
-    ? io_fail("state_save_list_index(%p, %p)\r\n", list, item)
-    : SUCCESS;
-}
-
-static bool
 state_save_places(void)
 {
   int end = MAXLINES * MAXCOLS;
   for (int i = 0; i < end; ++i)
     if (state_save_char(level_places[i].p_ch) ||
         state_save_char(level_places[i].p_flags) ||
-        state_save_list_index(monster_list, level_places[i].p_monst))
+        state_save_int32(monster_index(level_places[i].p_monst)))
       return io_fail("state_save_places()\r\n", i);
   return SUCCESS;
 }

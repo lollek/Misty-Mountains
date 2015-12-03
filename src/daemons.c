@@ -245,20 +245,7 @@ daemon_change_visuals(void)
     mvaddcch(level_stairs.y, level_stairs.x, (chtype) rnd_thing());
 
   /* change the monsters */
-  bool seemonst = player_can_sense_monsters();
-  for (THING* tp = monster_list; tp != NULL; tp = tp->t.l_next)
-  {
-    if (monster_seen_by_player(&tp->t))
-    {
-      if (tp->t.t_type == 'X' && tp->t.t_disguise != 'X')
-        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) rnd_thing());
-      else
-        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype)(os_rand_range(26) + 'A'));
-    }
-    else if (seemonst)
-      mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x,
-          (chtype)(os_rand_range(26) + 'A') | A_STANDOUT);
-  }
+  monster_show_all_as_trippy();
 }
 
 /** daemon_runners_move
@@ -266,36 +253,7 @@ daemon_change_visuals(void)
 void
 daemon_runners_move(void)
 {
-  THING* next;
-
-  for (THING* tp = monster_list; tp != NULL; tp = next)
-  {
-    monster* tp_monster = &tp->t;
-    /* remember this in case the monster's "next" is changed */
-    next = tp_monster->l_next;
-
-    if (!monster_is_held(tp_monster) && monster_is_chasing(tp_monster))
-    {
-      bool wastarget = monster_is_players_target(tp_monster);
-      coord orig_pos = tp_monster->t_pos;
-      if (!monster_chase(tp))
-        continue;
-
-      list_assert_monster(tp);
-
-      if (monster_is_flying(tp_monster)
-          && dist_cp(player_get_pos(), &tp->t.t_pos) >= 3)
-        monster_chase(tp);
-
-      list_assert_monster(tp);
-
-      if (wastarget && !coord_same(&orig_pos, &tp->t.t_pos))
-      {
-        tp->t.t_flags &= ~ISTARGET;
-        to_death = false;
-      }
-    }
-  }
+  monster_move_all();
 }
 
 void daemon_ring_abilities(void)

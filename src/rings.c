@@ -25,6 +25,7 @@
 #include "state.h"
 #include "things.h"
 #include "weapons.h"
+#include "monster.h"
 
 #include "rings.h"
 
@@ -170,7 +171,7 @@ ring_put_on(void)
   {
     case R_ADDSTR: player_modify_strength(obj->o.o_arm); break;
     case R_SEEINVIS: invis_on(); break;
-    case R_AGGR: aggravate(); break;
+    case R_AGGR: monster_aggravate_all(); break;
     }
 
   char buf[MAXSTR];

@@ -202,18 +202,9 @@ wand_spell_drain_health(void)
   struct room *corp = level_get_ch(player_pos->y, player_pos->x) == DOOR
     ? &passages[level_get_flags(player_pos->y, player_pos->x) & F_PNUM]
     : NULL;
-  bool inpass = player_get_room()->r_flags & ISGONE;
   THING** dp = drainee;
 
-  for (THING* mp = monster_list; mp != NULL; mp = mp->t.l_next)
-    if (mp->t.t_room == player_get_room()
-        || mp->t.t_room == corp
-        ||(inpass && level_get_ch(mp->t.t_pos.y, mp->t.t_pos.x) == DOOR &&
-          &passages[level_get_flags(mp->t.t_pos.y, mp->t.t_pos.x) & F_PNUM]
-          == player_get_room()))
-      *dp++ = mp;
-
-  int cnt = (int)(dp - drainee);
+  int cnt = monster_add_nearby(dp, corp);
   if (cnt == 0)
   {
     io_msg("you have a tingling feeling");
@@ -245,48 +236,7 @@ static void
 wand_spell_polymorph(THING* target)
 {
   assert(target != NULL);
-
-  coord pos = {
-    .y = target->t.t_pos.y,
-    .x = target->t.t_pos.x
-  };
-
-  if (target->t.t_type == 'F')
-    player_remove_held();
-
-  THING* target_pack = target->t.t_pack;
-  list_detach(&monster_list, target);
-
-  bool was_seen = monster_seen_by_player(&target->t);
-  if (was_seen)
-  {
-    mvaddcch(pos.y, pos.x, (chtype) level_get_ch(pos.y, pos.x));
-    char buf[MAXSTR];
-    io_msg_add("%s", monster_name(&target->t, buf));
-  }
-
-  char oldch = target->t.t_oldch;
-
-  char monster = (char)(os_rand_range(26) + 'A');
-  bool same_monster = monster == target->t.t_type;
-
-  monster_new(target, monster, &pos);
-  if (monster_seen_by_player(&target->t))
-  {
-    mvaddcch(pos.y, pos.x, (chtype) monster);
-    if (same_monster)
-      io_msg(" now looks a bit different");
-    else
-    {
-      char buf[MAXSTR];
-      io_msg(" turned into a %s", monster_name(&target->t, buf));
-    }
-  }
-  else if (was_seen)
-    io_msg(" disappeared");
-
-  target->t.t_oldch = oldch;
-  target->t.t_pack = target_pack;
+  monster_polymorph(target);
   wands[WS_POLYMORPH].oi_know |= monster_seen_by_player(&target->t);
 }
 

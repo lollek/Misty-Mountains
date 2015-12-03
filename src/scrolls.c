@@ -472,7 +472,7 @@ scroll_read(void)
     case S_AGGR:
       /* This scroll aggravates all the monsters on the current
        * level and sets them running towards the hero */
-      aggravate();
+      monster_aggravate_all();
       io_msg("you hear a high pitched humming noise");
       break;
     case S_PROTECT:

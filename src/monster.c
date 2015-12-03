@@ -32,12 +32,12 @@
 #include "options.h"
 #include "rogue.h"
 #include "death.h"
+#include "passages.h"
 
 #include "monster.h"
 #include "monster_private.h"
 
 int    monster_flytrap_hit = 0; /* Number of time flytrap has hit */
-THING* monster_list = NULL;
 
 #define NMONSTERS sizeof(monsters) / sizeof(*monsters)
 struct monster_template monsters[] =
@@ -85,6 +85,51 @@ monsters_save_state(void)
   for (THING const* ptr = monster_list; ptr != NULL; ptr = ptr->t.l_next)
     if (state_save_monster(&ptr->t))
       return 1;
+
+  return 0;
+}
+
+bool
+monsters_load_state(void)
+{
+  int length;
+  if (state_assert_int32(RSID_MONSTERLIST) ||
+      state_load_int32(&length))
+    return io_fail("monsters_load_state() failed\r\n");
+
+  THING* ptr = NULL;
+  THING* ptr_prev = NULL;
+  for (int i = 0; i < length; ++i)
+  {
+    ptr = os_calloc_thing();
+    ptr->t.l_prev = ptr_prev;
+
+    if (ptr_prev != NULL)
+      ptr_prev->t.l_next = ptr;
+
+    if (state_load_monster(&ptr->t))
+      return io_fail("monsters_load_state(): state_load_monster failed\r\n");
+
+    if (ptr_prev == NULL)
+      monster_list = ptr;
+
+    ptr_prev = ptr;
+  }
+
+  if (ptr != NULL)
+    ptr->t.l_next = NULL;
+
+  /* Set all targets. This needs to be done when monster list is fully populated
+   * */
+  for (THING* monster = monster_list; monster != NULL; monster = monster->t.l_next)
+  {
+    THING* target = monster_list;
+    for (int count = 0; target != NULL && count < monster->t.t_reserved; ++count)
+      target = target->t.l_next;
+
+    if (target != NULL)
+      monster->t.t_dest = &target->t.t_pos;
+  }
 
   return 0;
 }
@@ -209,7 +254,7 @@ monster_notice_player(int y, int x)
 {
   THING *monster = level_get_monster(y, x);
 
-  list_assert_monster(monster);
+  monster_assert_exists(monster);
 
   coord* player_pos = player_get_pos();
 
@@ -278,7 +323,7 @@ void
 monster_start_running(coord const* runner)
 {
   THING *tp = level_get_monster(runner->y, runner->x);
-  list_assert_monster(tp);
+  monster_assert_exists(tp);
 
   monster_find_new_target(tp);
   if (!monster_is_stuck(&tp->t))
@@ -566,4 +611,277 @@ monster_seen_by_player(monster const* monster)
   return ((bool)!(monster->t_room->r_flags & ISDARK));
 }
 
+bool
+monster_is_anyone_seen_by_player(void)
+{
+  for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
+    if (monster_seen_by_player(&mon->t))
+      return true;
+  return false;
+}
 
+void
+monster_show_all_as_trippy(void)
+{
+  bool seemonst = player_can_sense_monsters();
+  for (THING* tp = monster_list; tp != NULL; tp = tp->t.l_next)
+  {
+    if (monster_seen_by_player(&tp->t))
+    {
+      if (tp->t.t_type == 'X' && tp->t.t_disguise != 'X')
+        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) rnd_thing());
+      else
+        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype)(os_rand_range(26) + 'A'));
+    }
+    else if (seemonst)
+      mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x,
+          (chtype)(os_rand_range(26) + 'A') | A_STANDOUT);
+  }
+}
+
+void
+monster_move_all(void)
+{
+  THING* next;
+
+  for (THING* tp = monster_list; tp != NULL; tp = next)
+  {
+    monster* tp_monster = &tp->t;
+    /* remember this in case the monster's "next" is changed */
+    next = tp_monster->l_next;
+
+    if (!monster_is_held(tp_monster) && monster_is_chasing(tp_monster))
+    {
+      bool wastarget = monster_is_players_target(tp_monster);
+      coord orig_pos = tp_monster->t_pos;
+      if (!monster_chase(tp))
+        continue;
+
+      monster_assert_exists(tp);
+
+      if (monster_is_flying(tp_monster)
+          && dist_cp(player_get_pos(), &tp->t.t_pos) >= 3)
+        monster_chase(tp);
+
+      monster_assert_exists(tp);
+
+      if (wastarget && !coord_same(&orig_pos, &tp->t.t_pos))
+      {
+        tp->t.t_flags &= ~ISTARGET;
+        to_death = false;
+      }
+    }
+  }
+}
+
+void
+monster_remove_all(void)
+{
+  for (THING* mon = monster_list; mon!= NULL; mon = mon->t.l_next)
+    list_free_all(&mon->t.t_pack);
+  list_free_all(&monster_list);
+}
+
+void
+monster_set_all_rooms(void)
+{
+  for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
+    mon->t.t_room = roomin(&mon->t.t_pos);
+}
+
+void
+monster_aggravate_all(void)
+{
+  for (THING* mp = monster_list; mp != NULL; mp = mp->t.l_next)
+    monster_start_running(&mp->t.t_pos);
+}
+
+void
+monster_show_all_hidden(void)
+{
+  for (THING* mp = monster_list; mp != NULL; mp = mp->t.l_next)
+    if (monster_is_invisible(&mp->t) && monster_seen_by_player(&mp->t)
+        && !player_is_hallucinating())
+      mvaddcch(mp->t.t_pos.y, mp->t.t_pos.x, (chtype) mp->t.t_disguise);
+}
+
+void
+monster_aggro_all_which_desire_item(item* item)
+{
+  for (THING* op = monster_list; op != NULL; op = op->t.l_next)
+    if (op->t.t_dest == &item->o_pos)
+      op->t.t_dest = player_get_pos();
+}
+
+void
+monster_hide_all_invisible(void)
+{
+  for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
+    if (monster_is_invisible(&mon->t) && monster_seen_by_player(&mon->t))
+      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
+}
+
+bool
+monster_sense_all_hidden(void)
+{
+  bool spotted_something = false;
+  for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
+    if (!monster_seen_by_player(&mon->t))
+    {
+      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x,
+          (player_is_hallucinating()
+           ? (chtype) (os_rand_range(26) + 'A')
+           : (chtype) mon->t.t_type)
+            | A_STANDOUT);
+      spotted_something = true;
+    }
+  return spotted_something;
+}
+
+void
+monster_unsense_all_hidden(void)
+{
+  for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
+    if (!monster_seen_by_player(&mon->t))
+      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
+}
+
+void
+monster_print_all(void)
+{
+  for (THING* tp = monster_list; tp != NULL; tp = tp->t.l_next)
+  {
+    if (cansee(tp->t.t_pos.y, tp->t.t_pos.x))
+      if (!monster_is_invisible(&tp->t) || player_has_true_sight())
+        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) tp->t.t_disguise);
+      else
+        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x,
+                 (chtype) level_get_ch(tp->t.t_pos.y, tp->t.t_pos.x));
+    else if (player_can_sense_monsters())
+      mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) tp->t.t_type | A_STANDOUT);
+  }
+}
+
+bool
+monster_show_if_magic_inventory(void)
+{
+  bool atleast_one = false;
+  for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
+    for (THING* item = mon->t.t_pack; item != NULL; item = item->o.l_next)
+      if (is_magic(item))
+      {
+        atleast_one = true;
+        mvwaddcch(hw, mon->t.t_pos.y, mon->t.t_pos.x, MAGIC);
+      }
+  return atleast_one;
+}
+
+THING*
+monster_get_nth_in_list(int i)
+{
+  THING* ptr = monster_list;
+  for (int count = 0; ptr != NULL && count < i; ++count)
+    ptr = ptr->t.l_next;
+  return ptr;
+}
+
+int
+monster_return_index_with_position(coord const* pos)
+{
+  THING const* ptr;
+  int index = 0;
+  for (ptr = monster_list; ptr != NULL; ptr = ptr->t.l_next, ++index)
+    if (&ptr->t.t_pos == pos)
+      return index;
+  return -1;
+}
+
+int
+monster_index(THING const* monster)
+{
+  int index = 0;
+  for (THING const* ptr = monster_list; ptr != NULL; ptr = ptr->t.l_next, index++)
+    if (ptr == monster)
+      return index;
+  return -1;
+}
+
+#ifndef NDEBUG
+void
+monster_assert_exists(THING const* monster)
+{
+  assert(monster != NULL);
+  assert(monster_list != NULL);
+
+  for (THING const* ptr = monster_list; ptr != NULL; ptr = ptr->t.l_next)
+    if (ptr == monster)
+      return;
+
+  io_fatal("expected monster does not exist in monster_list");
+}
+#endif /* NDEBUG */
+
+int
+monster_add_nearby(THING** nearby_monsters, struct room const* room)
+{
+  bool inpass = player_get_room()->r_flags & ISGONE;
+  THING** nearby_monsters_start = nearby_monsters;
+
+  for (THING* mp = monster_list; mp != NULL; mp = mp->t.l_next)
+    if (mp->t.t_room == player_get_room()
+        || mp->t.t_room == room
+        ||(inpass && level_get_ch(mp->t.t_pos.y, mp->t.t_pos.x) == DOOR &&
+          &passages[level_get_flags(mp->t.t_pos.y, mp->t.t_pos.x) & F_PNUM]
+          == player_get_room()))
+      *nearby_monsters++ = mp;
+
+  return (int)(nearby_monsters_start - nearby_monsters);
+}
+
+void
+monster_polymorph(THING* target)
+{
+  assert(target != NULL);
+
+  coord pos = {
+    .y = target->t.t_pos.y,
+    .x = target->t.t_pos.x
+  };
+
+  if (target->t.t_type == 'F')
+    player_remove_held();
+
+  THING* target_pack = target->t.t_pack;
+  list_detach(&monster_list, target);
+
+  bool was_seen = monster_seen_by_player(&target->t);
+  if (was_seen)
+  {
+    mvaddcch(pos.y, pos.x, (chtype) level_get_ch(pos.y, pos.x));
+    char buf[MAXSTR];
+    io_msg_add("%s", monster_name(&target->t, buf));
+  }
+
+  char oldch = target->t.t_oldch;
+
+  char monster = (char)(os_rand_range(26) + 'A');
+  bool same_monster = monster == target->t.t_type;
+
+  monster_new(target, monster, &pos);
+  if (monster_seen_by_player(&target->t))
+  {
+    mvaddcch(pos.y, pos.x, (chtype) monster);
+    if (same_monster)
+      io_msg(" now looks a bit different");
+    else
+    {
+      char buf[MAXSTR];
+      io_msg(" turned into a %s", monster_name(&target->t, buf));
+    }
+  }
+  else if (was_seen)
+    io_msg(" disappeared");
+
+  target->t.t_oldch = oldch;
+  target->t.t_pack = target_pack;
+}

@@ -185,14 +185,9 @@ potion_quaff_something(void)
             potion_learn(P_TFIND);
           }
 
-        for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
-          for (THING* item = mon->t.t_pack; item != NULL; item = item->o.l_next)
-            if (is_magic(item))
-            {
-              show = true;
-              mvwaddcch(hw, mon->t.t_pos.y, mon->t.t_pos.x, MAGIC);
-            }
-      }
+        if (monster_show_if_magic_inventory())
+          show = true;
+     }
 
       if (show)
       {

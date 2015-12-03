@@ -10,6 +10,8 @@
 #include "monster.h"
 #include "monster_private.h"
 
+THING* monster_list = NULL;
+
 void
 monster_find_new_target(THING* monster)
 {

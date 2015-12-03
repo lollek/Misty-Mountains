@@ -6,10 +6,10 @@
 #include "rogue.h"
 
 /* Variables, TODO: Remove these */
-extern THING* monster_list;  /* List of monsters on the level */
 extern int    monster_flytrap_hit;
 
 bool monsters_save_state(void);
+bool monsters_load_state(void);
 
 /* Status getters */
 static inline bool monster_is_blind(monster const* mon)
@@ -129,6 +129,53 @@ void monster_do_special_ability(THING** monster);
 char const* monster_name(monster const* monster, char* buf);
 char const* monster_name_by_type(char monster_type);
 bool monster_seen_by_player(monster const* monster);
+
+/* Is any monster seen by the player? */
+bool monster_is_anyone_seen_by_player(void);
+/* Change all monster visuals due to player tripping */
+void monster_show_all_as_trippy(void);
+/* Make all monsters take their turn */
+void monster_move_all(void);
+/* Remove all monsters from the map */
+void monster_remove_all(void);
+/* Set monster room for all monsters */
+void monster_set_all_rooms(void);
+/* Make all monsters start chasing the player */
+void monster_aggravate_all(void);
+/* Show all monsters as they truly are */
+void monster_show_all_hidden(void);
+/* Does any monster desire this item? If so, aggro player */
+void monster_aggro_all_which_desire_item(item* item);
+/* Hide all invisible monsters */
+void monster_hide_all_invisible(void);
+/* Show all monsters that the player does not currently sees
+ * Return true if there was atleast one, else false */
+bool monster_sense_all_hidden(void);
+void monster_unsense_all_hidden(void);
+/* Print all monsters as they look (or hide, is in disguise) */
+void monster_print_all(void);
+/* Print a $ where there is a monster with a magic item
+ * Returns true if there was atleast one, else false */
+bool monster_show_if_magic_inventory(void);
+/* Return the nth monster spawned */
+THING* monster_get_nth_in_list(int i);
+/* Return the index of monster which has the given position
+ * or -1 if not found */
+int monster_return_index_with_position(coord const* pos);
+/* Returns index of monster at the moment or -1 if not found */
+int monster_index(THING const* monster);
+
+#ifndef NDEBUG
+void monster_assert_exists(THING const* monster);
+#else
+#define monster_assert_exists(monster)
+#endif
+
+/* Add nearby monsters to the given list. Returns the number of results */
+int monster_add_nearby(THING** nearby_monsters, struct room const* room);
+
+/* Transform the monster into something else */
+void monster_polymorph(THING* monster);
 
 /** monster_chase.c **/
 bool monster_chase(THING* tp); /* Make a monster chase */

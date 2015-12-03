@@ -179,12 +179,7 @@ player_add_true_sight(bool permanent)
 void
 player_remove_true_sight(void)
 {
-  /* Hide all invisible monsters */
-  for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
-    if (monster_is_invisible(&mon->t) && monster_seen_by_player(&mon->t))
-      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
-
-  /* Set flag */
+  monster_hide_all_invisible();
   player.t.t_flags &= ~CANSEE;
 }
 
@@ -226,18 +221,7 @@ player_add_sense_monsters(bool permanent)
 
   player.t.t_flags |= SEEMONST;
 
-  bool spotted_something = false;
-  for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
-    if (!monster_seen_by_player(&mon->t))
-    {
-      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x,
-          (player_is_hallucinating()
-           ? (chtype) (os_rand_range(26) + 'A')
-           : (chtype) mon->t.t_type)
-            | A_STANDOUT);
-      spotted_something = true;
-    }
-
+  bool spotted_something = monster_sense_all_hidden();
   if (!spotted_something)
     io_msg("you have a strange feeling for a moment, then it passes");
 }
@@ -246,10 +230,7 @@ void
 player_remove_sense_monsters(void)
 {
   player.t.t_flags &= ~SEEMONST;
-
-  for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
-    if (!monster_seen_by_player(&mon->t))
-      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
+  monster_unsense_all_hidden();
 }
 
 bool player_is_hallucinating(void)     { return player.t.t_flags & ISHALU; }
@@ -289,17 +270,7 @@ void player_remove_hallucinating(void)
       mvaddcch(tp->o.o_pos.y, tp->o.o_pos.x, (chtype)tp->o.o_type);
 
   /* undo the monsters */
-  for (THING* tp = monster_list; tp != NULL; tp = tp->t.l_next)
-  {
-    if (cansee(tp->t.t_pos.y, tp->t.t_pos.x))
-      if (!monster_is_invisible(&tp->t) || player_has_true_sight())
-        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) tp->t.t_disguise);
-      else
-        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x,
-                 (chtype) level_get_ch(tp->t.t_pos.y, tp->t.t_pos.x));
-    else if (player_can_sense_monsters())
-      mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) tp->t.t_type | A_STANDOUT);
-  }
+  monster_print_all();
   io_msg("You feel your senses returning to normal");
 }
 

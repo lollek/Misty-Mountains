@@ -4,6 +4,8 @@
 #include "coord.h"
 #include "things.h"
 
+extern THING* monster_list;  /* List of monsters on the level */
+
 struct monster_template {
     char const*   m_name;             /* What to call the monster */
     int           m_carry;            /* Probability of carrying something */

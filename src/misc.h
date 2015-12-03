@@ -14,7 +14,6 @@ void erase_lamp(coord const* pos, struct room const* room);
 
 THING* find_obj(int y, int x); /* Find the unclaimed object at y, x */
 
-void aggravate(void);          /* Aggravate all the monsters on this level */
 char const* vowelstr(char const *str); /* Return "n" if vowel else "" */
 
 /* Set up the direction co_ordinate for use in varios "prefix" commands */

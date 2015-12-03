@@ -5,8 +5,6 @@
 
 #include "things.h"
 
-#define list_assert_monster(a) list_assert_attached(monster_list, a)
-
 #ifndef NDEBUG
 #define list_assert_attached(a, b) _list_assert_attached(a, b)
 void _list_assert_attached(THING const* list, THING const* item);
