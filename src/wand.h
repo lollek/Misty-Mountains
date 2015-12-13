@@ -25,7 +25,7 @@ enum wand_t
 };
 
 /* TODO: Remove this */
-void* __wands_ptr(void);
+struct obj_info* __wands_ptr(void);
 
 /* Sets up wands for use
  * wand_init or wand_load_state should run before wands are used */

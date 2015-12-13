@@ -69,7 +69,7 @@ static struct obj_info wands[] = {
     { "cancellation",		 5, 280, NULL, false },
 };
 
-void* __wands_ptr(void) { return wands; }
+struct obj_info* __wands_ptr(void) { return wands; }
 
 void wand_init(void)
 {
