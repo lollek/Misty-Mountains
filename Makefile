@@ -15,30 +15,31 @@ VERSION  = 1.3.2+
 PREFIX   = /usr/local
 SCOREPATH = $(PREFIX)/share/$(PROGRAM)/highscore
 
-CC       = cc
-CFLAGS   = -O3 -Wall -Wextra -Werror -pedantic -std=c99
+CXX      = c++
+CXXFLAGS = -O2 -Wall -Wextra -Werror -pedantic -std=c++11
 DFLAGS   = -DVERSION=\"$(VERSION)\" -DSCOREPATH=\"$(SCOREPATH)\"
 LDFLAGS  = -lcurses
 
-CFILES   = $(wildcard src/*.c)
-OBJS     = $(addsuffix .o, $(basename $(CFILES)))
+CXXFILES = $(wildcard src/*.cc)
+OBJS     = $(addsuffix .o, $(basename $(CXXFILES)))
 MISC     = install CHANGELOG.TXT LICENSE.TXT rogue.png rogue.desktop
 
-debug: CC      = clang
-debug: CFLAGS += -Weverything -g3 -Wno-padded -Wno-disabled-macro-expansion
+debug: CXX       = clang++
+#debug: CXXFLAGS  = -Weverything -g3 -Wno-padded -Wno-disabled-macro-expansion
+debug: CXXFLAGS  = -Weverything -g3 -Wno-c++98-compat-pedantic -Wno-c++11-extensions -Wno-padded -ferror-limit=1
 debug: $(PROGRAM) ctags
 
 .c.o:
-	$(CC) $(CFLAGS) $(DFLAGS) -c -o $*.o $*.c
+	$(CXX) $(CXXFLAGS) $(DFLAGS) -c -o $*.o $*.c
 
 $(PROGRAM): $(OBJS)
-	$(CC) -o $@ $(LDFLAGS) $(OBJS)
+	$(CXX) -o $@ $(LDFLAGS) $(OBJS)
 
 clean:
 	$(RM) $(OBJS) $(PROGRAM)
 .PHONY: clean
 
-final: CFLAGS += -DNDEBUG
+final: CXXFLAGS += -DNDEBUG
 final: clean $(PROGRAM)
 .PHONY: final
 
@@ -55,7 +56,7 @@ dist: final
 .PHONY: dist
 
 lint:
-	cppcheck --enable=all --std=c99 -inconlusive src 2>lint.txt
+	cppcheck --enable=all --std=c++11 -inconlusive src 2>lint.txt
 .PHONY: lint
 
 ctags:
