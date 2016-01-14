@@ -3,7 +3,9 @@
 /* Coordinate data type */
 class Coordinate {
 public:
+  Coordinate() = default;
   Coordinate(int x, int y);
+
   ~Coordinate() = default;
   Coordinate(Coordinate const&) = default;
   Coordinate& operator=(Coordinate const&) = default;
