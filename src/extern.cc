@@ -11,7 +11,6 @@
  */
 
 #include "io.h"
-#include "coord.h"
 #include "rogue.h"
 
 bool door_stop = false;			/* Stop running when we pass a door */

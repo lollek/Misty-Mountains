@@ -16,7 +16,7 @@ death_reason(char buf[], int reason)
 {
   if (isupper(reason))
   {
-    char const* monster = monster_name_by_type((char)reason);
+    char const* monster = monster_name_by_type(static_cast<char>(reason));
     sprintf(buf, "Killed by a%s %s", vowelstr(monster), monster);
   }
   else
@@ -52,7 +52,7 @@ death(int monst)
   io_readchar(false);
 
   pack_evaluate();
-  score_show_and_exit(pack_gold, pack_contains_amulet() ? 3 : 0, (char)monst);
+  score_show_and_exit(pack_gold, pack_contains_amulet() ? 3 : 0, static_cast<char>(monst));
 }
 
 

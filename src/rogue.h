@@ -15,7 +15,7 @@
 #include <stdbool.h>
 #include <ncurses.h>
 
-#include "coord.h"
+#include "Coordinate.h"
 
 /* Various constants */
 #define WANDERTIME	spread(70)

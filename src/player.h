@@ -65,7 +65,7 @@ void player_remove_confusing_attack(void);
 void player_fall_asleep(void);
 void player_become_stuck(void);
 void player_become_poisoned(void);
-void player_teleport(coord* target);
+void player_teleport(Coordinate* target);
 bool player_search(void);
 
 bool player_is_stealthy(void);
@@ -74,8 +74,8 @@ bool player_has_ring_with_ability(int ability);
 /* Position */
 int player_y(void);
 int player_x(void);
-coord* player_get_pos(void);
-void player_set_pos(coord* new_pos);
+Coordinate* player_get_pos(void);
+void player_set_pos(Coordinate* new_pos);
 
 /* Current Room */
 struct room* player_get_room(void);

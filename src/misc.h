@@ -10,14 +10,14 @@ int roll(int number, int sides); /* Roll a number of dice */
 void look(bool wakeup);          /* A quick glance all around the player */
 
 /* Erase the area shown by a lamp in a dark room. */
-void erase_lamp(coord const* pos, struct room const* room);
+void erase_lamp(Coordinate const* pos, struct room const* room);
 
 THING* find_obj(int y, int x); /* Find the unclaimed object at y, x */
 
 char const* vowelstr(char const *str); /* Return "n" if vowel else "" */
 
 /* Set up the direction co_ordinate for use in varios "prefix" commands */
-coord const* get_dir(void);
+Coordinate const* get_dir(void);
 
 int sign(int nm);              /* Return the sign of the number */
 int spread(int nm);            /* Give a spread around a given number (+/- 20%) */
@@ -33,11 +33,11 @@ void invis_on(void);         /* Turn on the ability to see invisible */
 void strucpy(char* s1, char const* s2, int len);
 
 void waste_time(int rounds);
-void set_oldch(THING* tp, coord* cp); /* Set oldch for a monster */
+void set_oldch(THING* tp, Coordinate* cp); /* Set oldch for a monster */
 
-struct room* roomin(coord* cp); /* Find what room some coords are in, NULL means no room */
-bool diag_ok(coord const* sp, coord const* ep); /* Check if move is legal if diagonal */
-bool cansee(int y, int x); /* True if player can see coord */
+struct room* roomin(Coordinate* cp); /* Find what room some Coordinate are in, NULL means no room */
+bool diag_ok(Coordinate const* sp, Coordinate const* ep); /* Check if move is legal if diagonal */
+bool cansee(int y, int x); /* True if player can see Coordinate */
 /** Dist
  * Calculate the "distance" between to points.  Actually,
  * this calculates d^2, not d, but that's good enough for
@@ -49,8 +49,8 @@ const char *pick_color(const char *col); /* Return given color (or random if hal
 char floor_ch(void); /* Floor-type at hero's position */
 char floor_at(void); /* Return the character at hero's position */
 
-/* Pick a random position around the give (y, x) coordinates */
-bool fallpos(coord const* pos, coord* newpos);
+/* Pick a random position around the give (y, x) Coordinate */
+bool fallpos(Coordinate const* pos, Coordinate* newpos);
 
 
 #endif /* ROGUE14_MISC_H */

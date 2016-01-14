@@ -1,14 +1,3 @@
-/*
- * This file contains misc functions for dealing with armor
- * @(#)armor.c	4.14 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -43,21 +32,18 @@ int armor_value(enum armor_t i)         { return armors[i].value; }
 int armor_probability(enum armor_t i)   { return armors[i].prob; }
 
 int
-armor_for_monster(monster const* mon)
-{
+armor_for_monster(monster const* mon) {
   return is_player(mon) ? player_get_armor() : mon->t_stats.s_arm;
 }
 
 bool
-armor_command_wear(void)
-{
+armor_command_wear() {
   THING* obj = pack_get_item("wear", ARMOR);
 
   if (obj == NULL)
     return false;
 
-  if (obj->o.o_type != ARMOR)
-  {
+  if (obj->o.o_type != ARMOR) {
     io_msg("you can't wear that");
     return armor_command_wear();
   }
@@ -76,11 +62,11 @@ armor_command_wear(void)
 }
 
 enum armor_t
-armor_type_random(void)
-{
+armor_type_random() {
   int value = os_rand_range(100);
-  for (enum armor_t i = 0; i < NARMORS; ++i)
-  {
+  for (enum armor_t i = static_cast<armor_t>(0);
+       i < NARMORS;
+       i = static_cast<armor_t>(static_cast<int>(i) + 1)) {
     if (value < armors[i].prob)
       return i;
     else
@@ -94,37 +80,32 @@ armor_type_random(void)
 }
 
 void
-armor_rust(void)
-{
+armor_rust() {
   THING* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == NULL || arm->o.o_type != ARMOR || arm->o.o_which == LEATHER ||
       arm->o.o_arm >= 9)
     return;
 
-  if ((arm->o.o_flags & ISPROT) || player_has_ring_with_ability(R_SUSTARM))
-  {
+  if ((arm->o.o_flags & ISPROT) || player_has_ring_with_ability(R_SUSTARM)) {
     if (!to_death)
       io_msg("the rust vanishes instantly");
   }
-  else
-  {
+  else {
     arm->o.o_arm++;
     io_msg("your armor weakens");
   }
 }
 
 void
-armor_description(item const* item, char* buf)
-{
+armor_description(item const* item, char* buf) {
   char *ptr = buf;
-  char const* obj_name = armor_name((enum armor_t)(item_subtype(item)));
-  int bonus_ac = armor_ac((enum armor_t)(item_subtype(item))) -item_armor(item);
+  char const* obj_name = armor_name(static_cast<armor_t>(item_subtype(item)));
+  int bonus_ac = armor_ac(static_cast<armor_t>(item_subtype(item))) -item_armor(item);
   int base_ac = 10 - item_armor(item) - bonus_ac;
 
   ptr += sprintf(ptr, "A%s %s [%d]", vowelstr(obj_name), obj_name, base_ac);
 
-  if (item_is_known(item))
-  {
+  if (item_is_known(item)) {
     ptr -= 1;
     ptr += sprintf(ptr, bonus_ac < 0 ? ",%d]" : ",+%d]", bonus_ac);
   }
@@ -134,21 +115,18 @@ armor_description(item const* item, char* buf)
 }
 
 item*
-armor_create(int which, int random_stats)
-{
+armor_create(int which, int random_stats) {
   if (which == -1)
     which = armor_type_random();
 
   item* armor = os_calloc_item();
   armor->o_type = ARMOR;
   armor->o_which = which;
-  armor->o_arm = armor_ac((enum armor_t)armor->o_which);
+  armor->o_arm = armor_ac(static_cast<armor_t>(armor->o_which));
 
-  if (random_stats)
-  {
+  if (random_stats) {
     int rand = os_rand_range(100);
-    if (rand < 20)
-    {
+    if (rand < 20) {
       armor->o_flags |= ISCURSED;
       armor->o_arm += os_rand_range(3) + 1;
     }

@@ -1,5 +1,4 @@
-#ifndef ROGUE14_ITEM_H
-#define ROGUE14_ITEM_H
+#pragma once
 
 #include "things.h"
 
@@ -10,7 +9,7 @@ static inline union thing* item_prev(item const* item)
 { return item->l_prev; }
 
 /* Data */
-static inline coord* item_pos(item* item)
+static inline Coordinate* item_pos(item* item)
 { return &item->o_pos; }
 static inline char const* item_nickname(item const* item)
 { return item->o_label; }
@@ -36,6 +35,3 @@ static inline int item_bonus_damage(item const* item)
 /* Flags */
 static inline bool item_is_known(item const* item)
 { return item->o_flags & ISKNOW; }
-
-
-#endif /* ROGUE14_ITEM_H */

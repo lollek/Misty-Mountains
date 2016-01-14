@@ -36,12 +36,12 @@ static int quiet_rounds = 0;
 
 static struct delayed_action daemons[MAXDAEMONS];
 
-void* __daemons_ptr(void) { return daemons; }
+void* __daemons_ptr() { return daemons; }
 
 /** daemon_empty_slot:
  * Find an empty slot in the daemon/fuse list */
 static struct delayed_action*
-daemon_empty_slot(void)
+daemon_empty_slot()
 {
   for (int i = 0; i < MAXDAEMONS; ++i)
     if (daemons[i].d_type == EMPTY)
@@ -54,7 +54,7 @@ daemon_empty_slot(void)
 /** daemon_find_slot:
  * Find a particular slot in the table */
 static struct delayed_action*
-daemon_find_slot(void (*func)())
+daemon_find_slot(void (*func)(int))
 {
   for (int i = 0; i < MAXDAEMONS; ++i)
     if (daemons[i].d_type != EMPTY && daemons[i].d_func == func)
@@ -88,13 +88,13 @@ daemon_run_fuses(int flag)
     }
 }
 
-void daemon_run_before(void)
+void daemon_run_before()
 {
   daemon_run_all(BEFORE);
   daemon_run_fuses(BEFORE);
 }
 
-void daemon_run_after(void)
+void daemon_run_after()
 {
   daemon_run_all(AFTER);
   daemon_run_fuses(AFTER);
@@ -104,7 +104,7 @@ void daemon_run_after(void)
 /** daemon_start:
  * Start a daemon, takes a function. */
 void
-daemon_start(void (*func)(), int arg, int type)
+daemon_start(void (*func)(int), int arg, int type)
 {
   struct delayed_action* dev = daemon_empty_slot();
   if (dev != NULL)
@@ -119,7 +119,7 @@ daemon_start(void (*func)(), int arg, int type)
 /** daemon_kill:
  * Remove a daemon from the list */
 void
-daemon_kill(void (*func)())
+daemon_kill(void (*func)(int))
 {
   struct delayed_action* dev = daemon_find_slot(func);
   if (dev != NULL)
@@ -130,7 +130,7 @@ daemon_kill(void (*func)())
 /** fuse:
  * Start a fuse to go off in a certain number of turns */
 void
-daemon_start_fuse(void (*func)(), int arg, int time, int type)
+daemon_start_fuse(void (*func)(int), int arg, int time, int type)
 {
   struct delayed_action* wire = daemon_empty_slot();
   if (wire != NULL)
@@ -145,7 +145,7 @@ daemon_start_fuse(void (*func)(), int arg, int time, int type)
 /** daemon_lengthen_fuse:
  * Increase the time until a fuse goes off */
 void
-daemon_lengthen_fuse(void (*func)(), int xtime)
+daemon_lengthen_fuse(void (*func)(int), int xtime)
 {
   struct delayed_action* wire = daemon_find_slot(func);
   if (wire != NULL)
@@ -155,7 +155,7 @@ daemon_lengthen_fuse(void (*func)(), int xtime)
 /** daemon_extinguish_fuse:
  * Put out a fuse */
 void
-daemon_extinguish_fuse(void (*func)())
+daemon_extinguish_fuse(void (*func)(int))
 {
   struct delayed_action* wire = daemon_find_slot(func);
   if (wire != NULL)
@@ -166,7 +166,7 @@ daemon_extinguish_fuse(void (*func)())
 /** daemon_reset_doctor
  * Stop the daemon doctor from healing */
 void
-daemon_reset_doctor(void)
+daemon_reset_doctor(__attribute__((unused)) int)
 {
   quiet_rounds = 0;
 }
@@ -174,7 +174,7 @@ daemon_reset_doctor(void)
 /** daemon_doctor:
  * A healing daemon that restors hit points after rest */
 void
-daemon_doctor(void)
+daemon_doctor(__attribute__((unused)) int)
 {
   int ohp = player_get_health();
   if (ohp == player_get_max_health())
@@ -203,7 +203,7 @@ daemon_doctor(void)
 /** daemon_start_wanderer
  * Called when it is time to start rolling for wandering monsters */
 void
-daemon_start_wanderer(void)
+daemon_start_wanderer(__attribute__((unused)) int)
 {
   daemon_start(daemon_rollwand, 0, BEFORE);
 }
@@ -211,7 +211,7 @@ daemon_start_wanderer(void)
 /** daemon_rollwand:
  * Called to roll to see if a wandering monster starts up */
 void
-daemon_rollwand(void)
+daemon_rollwand(__attribute__((unused)) int)
 {
   static int between = 4;
 
@@ -230,19 +230,19 @@ daemon_rollwand(void)
 /** daemon_change_visuals:
  * change the characters for the player */
 void
-daemon_change_visuals(void)
+daemon_change_visuals(__attribute__((unused)) int)
 {
   if (running && jump)
     return;
 
   /* change the things */
   for (THING* tp = level_items; tp != NULL; tp = tp->o.l_next)
-    if (cansee(tp->o.o_pos.y, tp->o.o_pos.x))
-      mvaddcch(tp->o.o_pos.y, tp->o.o_pos.x, (chtype) rnd_thing());
+    if (cansee(tp->o.o_pos.get_y(), tp->o.o_pos.get_x()))
+      mvaddcch(tp->o.o_pos.get_y(), tp->o.o_pos.get_x(), static_cast<chtype>(rnd_thing()));
 
   /* change the stairs */
   if (seen_stairs())
-    mvaddcch(level_stairs.y, level_stairs.x, (chtype) rnd_thing());
+    mvaddcch(level_stairs.get_y(), level_stairs.get_x(), static_cast<chtype>(rnd_thing()));
 
   /* change the monsters */
   monster_show_all_as_trippy();
@@ -251,12 +251,12 @@ daemon_change_visuals(void)
 /** daemon_runners_move
  * Make all running monsters move */
 void
-daemon_runners_move(void)
+daemon_runners_move(__attribute__((unused)) int)
 {
   monster_move_all();
 }
 
-void daemon_ring_abilities(void)
+void daemon_ring_abilities(__attribute__((unused)) int)
 {
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {

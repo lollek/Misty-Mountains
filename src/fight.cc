@@ -218,17 +218,17 @@ print_attack(bool hit, char const* att, char const* def)
 }
 
 int
-fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
+fight_against_monster(Coordinate const* monster_pos, THING* weapon, bool thrown)
 {
   THING* const player = NULL;
-  THING* tp = level_get_monster(monster_pos->y, monster_pos->x);
+  THING* tp = level_get_monster(monster_pos->get_y(), monster_pos->get_x());
   if (tp == NULL)
     return !io_fail("fight_against_monster(%p, %p, %b) NULL monster\r\n",
                  monster_pos, weapon, thrown);
 
   /* Since we are fighting, things are not quiet so no healing takes place */
   command_stop(false);
-  daemon_reset_doctor();
+  daemon_reset_doctor(0);
 
   /* Let him know it was really a xeroc (if it was one) */
   if (tp->t.t_type == 'X' && tp->t.t_disguise != 'X' && !player_is_blind())
@@ -261,7 +261,7 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
         io_msg("%s", mname);
       }
       else
-        print_attack(true, (char *) NULL, mname);
+        print_attack(true, NULL, mname);
     }
 
     if (player_has_confusing_attack())
@@ -283,7 +283,7 @@ fight_against_monster(coord const* monster_pos, THING* weapon, bool thrown)
   if (thrown && !to_death)
     fight_missile_miss(&weapon->o, mname);
   else if (!to_death)
-    print_attack(false, (char *) NULL, mname);
+    print_attack(false, NULL, mname);
   return false;
 }
 
@@ -294,7 +294,7 @@ fight_against_player(THING* mp)
    * going on at the time */
   player_alerted = true;
   command_stop(false);
-  daemon_reset_doctor();
+  daemon_reset_doctor(0);
 
   /* If we're fighting something to death and get backstabbed, return command */
   if (to_death && !monster_is_players_target(&mp->t))
@@ -311,7 +311,7 @@ fight_against_player(THING* mp)
   if (roll_attacks(mp, NULL, NULL, false))
   {
     if (mp->t.t_type != 'I' && !to_death)
-      print_attack(true, mname, (char *) NULL);
+      print_attack(true, mname, NULL);
 
     if (player_get_health() <= 0)
       death(mp->t.t_type);
@@ -331,7 +331,7 @@ fight_against_player(THING* mp)
     }
 
     if (!to_death)
-      print_attack(false, mname, (char *) NULL);
+      print_attack(false, mname, NULL);
   }
 
   command_stop(false);

@@ -3,35 +3,35 @@
 
 struct delayed_action {
     int d_type;
-    void (*d_func)();
+    void (*d_func)(int);
     int d_arg;
     int d_time;
 };
 
-void* __daemons_ptr(void);
+void* __daemons_ptr();
 
 /* API */
-void daemon_run_before(void);
-void daemon_run_after(void);
+void daemon_run_before();
+void daemon_run_after();
 
 /* Daemons */
-void daemon_start(void (*func)(), int arg, int type);
-void daemon_kill(void (*func)());
+void daemon_start(void (*func)(int), int arg, int type);
+void daemon_kill(void (*func)(int));
 
 /* Fuses */
-void daemon_start_fuse(void (*func)(), int arg, int time, int type);
-void daemon_extinguish_fuse(void (*func)());
-void daemon_lengthen_fuse(void (*func)(), int xtime);
+void daemon_start_fuse(void (*func)(int), int arg, int time, int type);
+void daemon_extinguish_fuse(void (*func)(int));
+void daemon_lengthen_fuse(void (*func)(int), int xtime);
 
 /* Daemon actions */
-void daemon_doctor(void);
-void daemon_start_wanderer(void);
-void daemon_rollwand(void);
-void daemon_change_visuals(void);
-void daemon_runners_move(void);
-void daemon_ring_abilities(void);
+void daemon_doctor(int unused);
+void daemon_start_wanderer(int unused);
+void daemon_rollwand(int unused);
+void daemon_change_visuals(int unused);
+void daemon_runners_move(int unused);
+void daemon_ring_abilities(int unused);
 
 /* Daemon action affectors */
-void daemon_reset_doctor(void);
+void daemon_reset_doctor(int unused);
 
 #endif /* ROGUE14_DAEMONS_H */

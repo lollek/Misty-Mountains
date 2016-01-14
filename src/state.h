@@ -25,8 +25,8 @@ bool state_save_int32(int32_t data);
 bool state_load_int32(int32_t* data);
 bool state_assert_int32(int32_t data);
 
-bool state_load_coord(coord* c);
-bool state_save_coord(coord const* c);
+bool state_load_coord(Coordinate* c);
+bool state_save_coord(Coordinate const* c);
 
 bool state_save_struct_damage(struct damage const* dmg);
 bool state_load_struct_damage(struct damage* dmg);

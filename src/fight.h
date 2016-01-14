@@ -3,12 +3,12 @@
 
 #include <stdbool.h>
 
-#include "coord.h"
+#include "Coordinate.h"
 #include "things.h"
 
 /** fight_against_monster:
  * The player attacks the monster. */
-int fight_against_monster(coord const* mp, THING* weap, bool thrown);
+int fight_against_monster(Coordinate const* mp, THING* weap, bool thrown);
 
 /** fight_against_player:
  * The monster attacks the player */

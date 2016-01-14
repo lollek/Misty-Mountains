@@ -1,16 +1,15 @@
-#ifndef ROGUE14_ROOMS_H
-#define ROGUE14_ROOMS_H
+#pragma once
 
-#include "coord.h"
+#include "Coordinate.h"
 
 struct room {
-  coord r_pos;      /* Upper left corner */
-  coord r_max;      /* Size of room */
-  coord r_gold;     /* Where the gold is */
+  Coordinate r_pos;      /* Upper left corner */
+  Coordinate r_max;      /* Size of room */
+  Coordinate r_gold;     /* Where the gold is */
   int r_goldval;    /* How much the gold is worth */
   int r_flags;      /* info about the room */
   int r_nexits;     /* Number of exits */
-  coord r_exit[12]; /* Where the exits are */
+  Coordinate r_exit[12]; /* Where the exits are */
 };
 
 /* flags for rooms */
@@ -28,15 +27,13 @@ void rooms_create(void);
 
 /* Find a valid floor spot in this room.  If rp is NULL, then
  * pick a new room each time around the loop.  */
-bool room_find_floor(struct room* rp, coord* cp, int limit, bool monst);
+bool room_find_floor(struct room* rp, Coordinate* cp, int limit, bool monst);
 
 /* Code that is executed whenver you appear in a room */
-void room_enter(coord* cp);
+void room_enter(Coordinate* cp);
 
 /* Code for when we exit a room */
-void room_leave(coord* cp);
+void room_leave(Coordinate* cp);
 
 /* Pick a room that is really there */
 int room_random(void);
-
-#endif /* ROGUE14_ROOMS_H */

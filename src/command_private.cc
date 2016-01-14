@@ -4,6 +4,9 @@
 #include <assert.h>
 #include <signal.h>
 
+#include <string>
+
+#include "Coordinate.h"
 #include "daemons.h"
 #include "fight.h"
 #include "food.h"
@@ -28,7 +31,7 @@
 
 #include "command_private.h"
 
-static bool command_attack_bow(coord const* delta)
+static bool command_attack_bow(Coordinate const* delta)
 {
   THING* ptr = pack_find_arrow();
 
@@ -39,8 +42,8 @@ static bool command_attack_bow(coord const* delta)
   }
 
   THING* arrow = pack_remove(ptr, true, false);
-  io_missile_motion(&arrow->o, delta->y, delta->x);
-  THING* monster_at_pos = level_get_monster(arrow->o.o_pos.y, arrow->o.o_pos.x);
+  io_missile_motion(&arrow->o, delta->get_y(), delta->get_x());
+  THING* monster_at_pos = level_get_monster(arrow->o.o_pos.get_y(), arrow->o.o_pos.get_x());
 
   if (monster_at_pos == NULL || !fight_against_monster(&arrow->o.o_pos, arrow, true))
     weapon_missile_fall(arrow, true);
@@ -48,9 +51,9 @@ static bool command_attack_bow(coord const* delta)
   return true;
 }
 
-static bool command_attack_melee(bool fight_to_death, coord* delta)
+static bool command_attack_melee(bool fight_to_death, Coordinate* delta)
 {
-  THING* mp = level_get_monster(delta->y, delta->x);
+  THING* mp = level_get_monster(delta->get_y(), delta->get_x());
   if (mp != NULL && diag_ok(player_get_pos(), delta))
   {
     if (fight_to_death)
@@ -63,7 +66,7 @@ static bool command_attack_melee(bool fight_to_death, coord* delta)
   }
 
   char const* what;
-  switch (mvincch(delta->y, delta->x))
+  switch (mvincch(delta->get_y(), delta->get_x()))
   {
     case SHADOW: case HWALL: case VWALL: what = "wall"; break;
     default: what = "air"; break;
@@ -76,13 +79,13 @@ static bool command_attack_melee(bool fight_to_death, coord* delta)
 bool
 command_use_stairs(char up_or_down)
 {
-  coord* player_pos = player_get_pos();
+  Coordinate* player_pos = player_get_pos();
 
   assert (up_or_down == '>' || up_or_down == '<');
 
   if (player_is_levitating())
     io_msg("You can't. You're floating off the ground!");
-  else if (level_get_ch(player_pos->y, player_pos->x) != STAIRS)
+  else if (level_get_ch(player_pos->get_y(), player_pos->get_x()) != STAIRS)
     io_msg("You're not standing on any stairs");
 
   else if (up_or_down == '>') /* DOWN */
@@ -122,14 +125,11 @@ command_use_stairs(char up_or_down)
 bool
 command_attack(bool fight_to_death)
 {
-  coord const* dir = get_dir();
+  Coordinate const* dir = get_dir();
   if (dir == NULL)
     return false;
 
-  coord delta = {
-    .y = player_y() + dir->y,
-    .x = player_x() + dir->x
-  };
+  Coordinate delta ( player_x() + dir->get_x(), player_y() + dir->get_y() );
 
   THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
@@ -153,7 +153,7 @@ command_name_item(void)
     case FOOD: io_msg("Don't play with your food!"); return false;
 
     case RING:
-      already_known = ring_is_known((enum ring_t)obj->o.o_which);
+      already_known = ring_is_known(static_cast<ring_t>(obj->o.o_which));
       guess =        &ring_info[obj->o.o_which].oi_guess;
       break;
 
@@ -163,12 +163,12 @@ command_name_item(void)
       break;
 
     case SCROLL:
-      already_known = scroll_is_known((enum scroll_t)obj->o.o_which);
+      already_known = scroll_is_known(static_cast<scroll_t>(obj->o.o_which));
       guess =         NULL;
       break;
 
     case STICK:
-      already_known = wand_is_known((enum wand_t)obj->o.o_which);
+      already_known = wand_is_known(static_cast<wand_t>(obj->o.o_which));
       guess =         NULL;
       break;
 
@@ -190,9 +190,9 @@ command_name_item(void)
   if (io_readstr(tmpbuf) == 0)
   {
     if (obj->o.o_type == STICK)
-      wand_set_name((enum wand_t)obj->o.o_which, tmpbuf);
+      wand_set_name(static_cast<wand_t>(obj->o.o_which), tmpbuf);
     else if (obj->o.o_type == SCROLL)
-      scroll_set_name((enum scroll_t)obj->o.o_which, tmpbuf);
+      scroll_set_name(static_cast<scroll_t>(obj->o.o_which), tmpbuf);
     else if (guess != NULL)
     {
       if (*guess != NULL) {
@@ -201,7 +201,7 @@ command_name_item(void)
       }
       if (strlen(tmpbuf) > 0)
       {
-        *guess = malloc(strlen(tmpbuf) + 1);
+        *guess = new char[strlen(tmpbuf) + 1];
         strcpy(*guess, tmpbuf);
       }
     }
@@ -227,7 +227,7 @@ command_identify_character(void)
   if (isalpha(ch))
   {
     ch = toupper(ch);
-    io_msg("'%s': %s", unctrl((chtype)ch), monster_name_by_type((char)ch));
+    io_msg("'%s': %s", unctrl(static_cast<chtype>(ch)), monster_name_by_type(static_cast<char>(ch)));
     return false;
   }
 
@@ -250,29 +250,26 @@ command_identify_character(void)
   for (struct character_list const* ptr = ident_list; ptr->ch != '\0'; ++ptr)
     if (ptr->ch == ch)
     {
-      io_msg("'%s': %s", unctrl((chtype)ch), ptr->description);
+      io_msg("'%s': %s", unctrl(static_cast<chtype>(ch)), ptr->description);
       return false;
     }
 
-  io_msg("'%s': %s", unctrl((chtype)ch), "unknown character");
+  io_msg("'%s': %s", unctrl(static_cast<chtype>(ch)), "unknown character");
   return false;
 }
 
 bool
 command_identify_trap(void)
 {
-  const coord* dir = get_dir();
+  const Coordinate* dir = get_dir();
   if (dir == NULL)
     return false;
 
-  coord delta = {
-    .y = player_y() + dir->y,
-    .x = player_x() + dir->x
-  };
+  Coordinate delta (player_x() + dir->get_x(), player_y() + dir->get_y());
 
-  int flags = level_get_flags(delta.y, delta.x);
+  int flags = level_get_flags(delta.get_y(), delta.get_x());
 
-  if (level_get_ch(delta.y, delta.x) != TRAP)
+  if (level_get_ch(delta.get_y(), delta.get_x()) != TRAP)
     io_msg("no trap there");
   else if (player_has_confusing_attack())
     io_msg(trap_names[os_rand_range(NTRAPS)]);
@@ -280,7 +277,7 @@ command_identify_trap(void)
   {
     io_msg(trap_names[flags & F_TMASK]);
     flags |= F_SEEN;
-    level_set_flags(delta.y, delta.x, (char)flags);
+    level_set_flags(delta.get_y(), delta.get_x(), static_cast<char>(flags));
   }
   return false;
 }
@@ -298,10 +295,10 @@ command_pick_up(void)
   if (player_is_levitating())
     io_msg("You can't. You're floating off the ground!");
 
-  coord const* player_pos = player_get_pos();
+  Coordinate const* player_pos = player_get_pos();
 
   for (THING* obj = level_items; obj != NULL; obj = obj->o.l_next)
-    if (coord_same(&obj->o.o_pos, player_pos))
+    if (obj->o.o_pos == *player_pos)
     {
       pack_pick_up(obj, true);
       return true;
@@ -317,7 +314,7 @@ command_help(void)
   struct list
   {
     char sym;
-    char *description;
+    std::string description;
     bool print;
   } const helpstr[] = {
     {',',	"	pick something up",			true},
@@ -395,10 +392,11 @@ command_help(void)
     for (int i = 0; i < helpstrsize; ++i)
       if (helpstr[i].sym == helpch)
       {
-        io_msg("%s)%s", unctrl((chtype) helpstr[i].sym), helpstr[i].description);
+        io_msg("%s)%s", unctrl(static_cast<chtype>(helpstr[i].sym)), 
+               helpstr[i].description.c_str());
         return false;
       }
-    io_msg("unknown character '%s'", unctrl((chtype) helpch));
+    io_msg("unknown character '%s'", unctrl(static_cast<chtype>(helpch)));
     return false;
   }
 
@@ -423,8 +421,8 @@ command_help(void)
 
     wmove(hw, print_i % numprint, print_i >= numprint ? COLS / 2 : 0);
     if (helpstr[i].sym)
-      waddstr(hw, unctrl((chtype) helpstr[i].sym));
-    waddstr(hw, helpstr[i].description);
+      waddstr(hw, unctrl(static_cast<chtype>(helpstr[i].sym)));
+    waddstr(hw, helpstr[i].description.c_str());
 
     if (++print_i >= numprint * 2)
       break;
@@ -492,12 +490,12 @@ command_take_off(enum equipment_pos pos)
 
 bool command_throw(void)
 {
-  const coord* dir = get_dir();
+  const Coordinate* dir = get_dir();
   if (dir == NULL)
     return false;
 
-  int ydelta = dir->y;
-  int xdelta = dir->x;
+  int ydelta = dir->get_y();
+  int xdelta = dir->get_x();
   dir = NULL;
 
   THING* obj = pack_get_item("throw", 0);
@@ -512,7 +510,7 @@ bool command_throw(void)
 
   obj = pack_remove(obj, true, false);
   io_missile_motion(&obj->o, ydelta, xdelta);
-  THING* monster_at_pos = level_get_monster(obj->o.o_pos.y, obj->o.o_pos.x);
+  THING* monster_at_pos = level_get_monster(obj->o.o_pos.get_y(), obj->o.o_pos.get_x());
 
   /* Throwing an arrow always misses */
   if (obj->o.o_which == ARROW)
@@ -627,14 +625,14 @@ command_run(char ch, bool cautiously)
   }
 
   running = true;
-  runch = (char)tolower(ch);
+  runch = static_cast<char>(tolower(ch));
   return move_do(runch);
 }
 
 bool command_drop(void)
 {
-  coord* player_pos = player_get_pos();
-  char ch = level_get_ch(player_pos->y, player_pos->x);
+  Coordinate* player_pos = player_get_pos();
+  char ch = level_get_ch(player_pos->get_y(), player_pos->get_x());
 
   if (ch != FLOOR && ch != PASSAGE)
   {
@@ -659,10 +657,10 @@ bool command_drop(void)
   /* Link it into the level object list */
   list_attach(&level_items, obj);
 
-  level_set_ch(player_pos->y, player_pos->x, (char)obj->o.o_type);
-  int flags = level_get_flags(player_pos->y, player_pos->x);
+  level_set_ch(player_pos->get_y(), player_pos->get_x(), static_cast<char>(obj->o.o_type));
+  int flags = level_get_flags(player_pos->get_y(), player_pos->get_x());
   flags |= F_DROPPED;
-  level_set_flags(player_pos->y, player_pos->x, (char)flags);
+  level_set_flags(player_pos->get_y(), player_pos->get_x(), static_cast<char>(flags));
 
   obj->o.o_pos = *player_pos;
 

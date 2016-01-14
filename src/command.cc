@@ -44,7 +44,7 @@
 static bool
 unknown_command(char ch)
 {
-  io_msg_unsaved("illegal command '%s'", unctrl((chtype) ch));
+  io_msg_unsaved("illegal command '%s'", unctrl(static_cast<chtype>(ch)));
   return false;
 }
 
@@ -86,8 +86,8 @@ command(void)
       io_msg("you can move again");
     }
 
-    coord* player_pos = player_get_pos();
-    move(player_pos->y, player_pos->x);
+    Coordinate* player_pos = player_get_pos();
+    move(player_pos->get_y(), player_pos->get_x());
 
     if (!player_turns_without_action)
     {
@@ -191,7 +191,7 @@ command_wizard_do(char ch)
   switch (ch)
   {
     case '_': raise(SIGINT); break;
-    case '|': io_msg("@ %d,%d", player_get_pos()->y, player_get_pos()->x); break;
+    case '|': io_msg("@ %d,%d", player_get_pos()->get_y(), player_get_pos()->get_x()); break;
     case 'C': wizard_create_item(); break;
     case '$': io_msg("inpack = %d", pack_count_items()); break;
     case CTRL('A'): level--; level_new(); break;

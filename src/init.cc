@@ -66,8 +66,8 @@ sumprobs(char ch)
   int sum = 0;
   for (int i = 0; i < max; ++i)
   {
-    if (ch == ARMOR) sum += armor_probability((enum armor_t)i);
-    else             sum += ((const struct obj_info*)ptr)[i].oi_prob;
+    if (ch == ARMOR) sum += armor_probability(static_cast<armor_t>(i));
+    else             sum += (static_cast<const obj_info*>(ptr))[i].oi_prob;
   }
 
   /* Make sure it adds up to 100 */
@@ -83,13 +83,13 @@ sumprobs(char ch)
     char const* name;
     if (ch == ARMOR)
     {
-      prob = armor_probability((enum armor_t)i);
-      name = armor_name((enum armor_t)i);
+      prob = armor_probability(static_cast<armor_t>(i));
+      name = armor_name(static_cast<armor_t>(i));
     }
     else
     {
-      prob = ((const struct obj_info*)ptr)[i].oi_prob;
-      name = ((const struct obj_info*)ptr)[i].oi_name;
+      prob = (static_cast<const obj_info*>(ptr))[i].oi_prob;
+      name = (static_cast<const obj_info*>(ptr))[i].oi_name;
     }
     printf("%3d%% %s\n", prob, name);
   }
@@ -165,7 +165,7 @@ init_new_game(void)
     struct passwd const* pw = getpwuid(getuid());
     char const* name = pw ? pw->pw_name : "nobody";
 
-    strucpy(whoami, name, (int)strlen(name));
+    strucpy(whoami, name, static_cast<int>(strlen(name)));
   }
 
   printf("Hello %s, just a moment while I dig the dungeon...", whoami);
@@ -208,7 +208,7 @@ init_old_game(void)
   }
 
   fflush(stdout);
-  io_encread(buf, sizeof(GAME_VERSION), inf);
+  io_encread(buf, strlen(GAME_VERSION), inf);
   if (strcmp(buf, GAME_VERSION))
   {
     printf("Sorry, saved game is out of date.\n");

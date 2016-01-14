@@ -1,8 +1,7 @@
 #ifndef ROGUE14_MONSTER_H
 #define ROGUE14_MONSTER_H
 
-#include <stdbool.h>
-
+#include "Coordinate.h"
 #include "rogue.h"
 
 /* Variables, TODO: Remove these */
@@ -97,7 +96,7 @@ static inline void monster_remove_held(monster* mon)
 char monster_random(bool wander);
 
 /* Pick a new monster and add it to the monster list */
-void monster_new(THING* tp, char type, coord* cp);
+void monster_new(THING* tp, char type, Coordinate* cp);
 
 /* Create a new wandering monster and aim it at the player */
 void monster_new_random_wanderer(void);
@@ -112,17 +111,17 @@ void monster_give_pack(monster* mon);
 int monster_save_throw(int which, monster const* mon);
 
 /* Make monster start running (towards hero?) */
-void monster_start_running(coord const* runner);
+void monster_start_running(Coordinate const* runner);
 
 /* Called to put a monster to death */
 void monster_on_death(THING* tp, bool pr);
 
 /* Remove a monster from the screen */
-void monster_remove_from_screen(coord* mp, THING* tp, bool waskill);
+void monster_remove_from_screen(Coordinate* mp, THING* tp, bool waskill);
 
 bool monster_is_dead(THING const* monster);
 
-void monster_teleport(THING* monster, coord const* destination);
+void monster_teleport(THING* monster, Coordinate const* destination);
 
 void monster_do_special_ability(THING** monster);
 
@@ -161,7 +160,7 @@ bool monster_show_if_magic_inventory(void);
 THING* monster_get_nth_in_list(int i);
 /* Return the index of monster which has the given position
  * or -1 if not found */
-int monster_return_index_with_position(coord const* pos);
+int monster_return_index_with_position(Coordinate const* pos);
 /* Returns index of monster at the moment or -1 if not found */
 int monster_index(THING const* monster);
 

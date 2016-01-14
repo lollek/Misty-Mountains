@@ -21,7 +21,7 @@
 
 WINDOW* hw = NULL;
 
-#define MAXMSG	(int)(NUMCOLS - sizeof " --More--")
+#define MAXMSG	static_cast<int>(NUMCOLS - sizeof " --More--")
 static char msgbuf[2*MAXMSG+1];
 static char last_msg[MAXSTR] = { '\0' };
 static int newpos = 0;
@@ -52,7 +52,7 @@ flushmsg(void)
   /* All messages should start with uppercase, except ones that
    * start with a pack addressing character */
   if (islower(msgbuf[0]) && msgbuf[1] != ')')
-    msgbuf[0] = (char) toupper(msgbuf[0]);
+    msgbuf[0] = static_cast<char>(toupper(msgbuf[0]));
   mvaddstr(0, 0, msgbuf);
   clrtoeol();
   mpos = newpos;
@@ -76,7 +76,7 @@ doadd(char const* fmt, va_list args, bool end_of_command)
   char buf[MAXSTR];
   vsprintf(buf, fmt, args);
 
-  int msgsize = newpos + (int)strlen(buf);
+  int msgsize = newpos + static_cast<int>(strlen(buf));
   if (new_sentence)
     msgsize += separatorlen;
 
@@ -87,12 +87,12 @@ doadd(char const* fmt, va_list args, bool end_of_command)
   {
     strcpy(&msgbuf[newpos], separator);
     newpos += separatorlen;
-    buf[0] = (char) toupper(buf[0]);
+    buf[0] = static_cast<char>(toupper(buf[0]));
     new_sentence = false;
   }
 
   strcpy(&msgbuf[newpos], buf);
-  newpos = (int) strlen(msgbuf);
+  newpos = static_cast<int>(strlen(msgbuf));
   new_sentence = end_of_command;
 }
 
@@ -272,7 +272,7 @@ io_readchar(bool is_question)
   if (!is_question)
     move(player_y(), player_x());
 
-  char ch = (char) getch();
+  char ch = static_cast<char>(getch());
   switch (ch)
   {
     case 3:
@@ -347,7 +347,7 @@ io_wreadstr(WINDOW* win, char* dest)
 {
   char buf[MAXSTR];
   int c = ~KEY_ESCAPE;
-  int i = (int)strlen(dest);
+  int i = static_cast<int>(strlen(dest));
   int oy, ox;
 
   assert(i >= 0);
@@ -390,23 +390,23 @@ io_wreadstr(WINDOW* win, char* dest)
 
     else if (i < MAXINP && (isprint(c) || c == ' '))
     {
-      buf[i++] = (char)c;
-      waddch(win, (chtype)c);
+      buf[i++] = static_cast<char>(c);
+      waddch(win, static_cast<chtype>(c));
     }
 
 #ifndef NDEBUG
-    coord currpos;
-    getyx(stdscr, currpos.y, currpos.x);
-    coord maxpos;
-    getmaxyx(stdscr, maxpos.y, maxpos.x);
-    assert(currpos.y >= 0 && currpos.y < maxpos.y);
-    assert(currpos.x >= 0 && currpos.x < maxpos.x);
+    int tmp_x, tmp_y;
+    getyx(stdscr, tmp_y, tmp_x);
+    Coordinate currpos(tmp_x, tmp_y);
+    Coordinate maxpos = currpos;
+    assert(currpos.get_y() >= 0 && currpos.get_y() < maxpos.get_y());
+    assert(currpos.get_x() >= 0 && currpos.get_x() < maxpos.get_x());
 #endif
   }
 
   buf[i] = '\0';
   if (i > 0) /* only change option if something has been typed */
-    strucpy(dest, buf, (int) strlen(buf));
+    strucpy(dest, buf, static_cast<int>(strlen(buf)));
   else
     waddstr(win, dest);
   if (win == stdscr)
