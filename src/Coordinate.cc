@@ -1,7 +1,7 @@
-#include "coord.h"
+#include "Coordinate.h"
 
-Coordinate::Coordinate(int x, int y)
-  : x(x), y(y)
+Coordinate::Coordinate(int _x, int _y)
+  : x(_x), y(_y)
 {}
 
 bool Coordinate::operator==(Coordinate const& other) const {
