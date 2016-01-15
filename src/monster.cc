@@ -145,7 +145,7 @@ monster_new(monster* monster, char type, Coordinate* pos)
   assert(monster != NULL);
   assert(pos != NULL);
 
-  monster_list.attach(monster);
+  monster_list.push_back(monster);
   monster->t_type       = type;
   monster->t_disguise   = type;
   monster->t_pos        = *pos;
@@ -339,7 +339,7 @@ monster_remove_from_screen(Coordinate* mp, monster* tp, bool waskill)
   level_set_monster(mp->y, mp->x, NULL);
   mvaddcch(mp->y, mp->x, static_cast<chtype>(tp->t_oldch));
 
-  monster_list.detach(tp);
+  monster_list.remove(tp);
 
   if (monster_is_players_target(tp))
   {
@@ -357,7 +357,8 @@ monster_is_dead(monster const* monster)
   if (monster == NULL)
     return true;
 
-  return !monster_list.contains(monster);
+  return !(find(monster_list.cbegin(), monster_list.cend(), monster) ==
+          monster_list.cend());
 }
 
 void
@@ -761,15 +762,15 @@ monster_polymorph(monster* target)
   if (target->t_type == 'F')
     player_remove_held();
 
-  THING* target_pack = target->t_pack;
-  list_detach(&monster_list, target);
+  list<item*> target_pack = target->t_pack;
+  monster_list.remove(target);
 
-  bool was_seen = monster_seen_by_player(&target->t);
+  bool was_seen = monster_seen_by_player(target);
   if (was_seen)
   {
     mvaddcch(pos.y, pos.x, static_cast<chtype>(level_get_ch(pos.y, pos.x)));
     char buf[MAXSTR];
-    io_msg_add("%s", monster_name(&target->t, buf));
+    io_msg_add("%s", monster_name(target, buf));
   }
 
   char oldch = target->t_oldch;
@@ -778,7 +779,7 @@ monster_polymorph(monster* target)
   bool same_monster = monster == target->t_type;
 
   monster_new(target, monster, &pos);
-  if (monster_seen_by_player(&target->t))
+  if (monster_seen_by_player(target))
   {
     mvaddcch(pos.y, pos.x, static_cast<chtype>(monster));
     if (same_monster)
@@ -786,7 +787,7 @@ monster_polymorph(monster* target)
     else
     {
       char buf[MAXSTR];
-      io_msg(" turned into a %s", monster_name(&target->t, buf));
+      io_msg(" turned into a %s", monster_name(target, buf));
     }
   }
   else if (was_seen)

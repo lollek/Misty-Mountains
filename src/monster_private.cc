@@ -1,4 +1,4 @@
-#include <vector>
+#include <list>
 
 using namespace std;
 
@@ -14,21 +14,19 @@ using namespace std;
 #include "monster.h"
 #include "monster_private.h"
 
-MonsterList monster_list;
+list<monster*> monster_list;
 
 void
-monster_find_new_target(THING* monster)
+monster_find_new_target(monster* monster)
 {
-  int prob = monsters[monster->t.t_type - 'A'].m_carry;
-  if (prob <= 0 || monster->t.t_room == player_get_room()
-      || monster_seen_by_player(&monster->t))
-  {
+  int prob = monsters[monster->t_type - 'A'].m_carry;
+  if (prob <= 0 || monster->t_room == player_get_room()
+      || monster_seen_by_player(monster)) {
     monster_set_target(monster, player_get_pos());
     return;
   }
 
-  for (THING* obj = level_items; obj != NULL; obj = obj->o.l_next)
-  {
+  for (item* obj : level_items) {
     if (obj->o.o_type == SCROLL && obj->o.o_which == S_SCARE)
       continue;
 

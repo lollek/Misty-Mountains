@@ -14,7 +14,7 @@
 #include <assert.h>
 
 #include <string>
-#include <vector>
+#include <list>
 
 using namespace std;
 
@@ -45,7 +45,7 @@ using namespace std;
 int const PACK_RENAMEABLE = -1;
 
 int                  pack_gold = 0;
-static vector<item*> player_pack;
+static list<item*> player_pack;
 
 static struct equipment_t
 {

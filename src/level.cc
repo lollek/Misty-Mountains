@@ -14,7 +14,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include <vector>
+#include <list>
 
 using namespace std;
 
@@ -45,7 +45,7 @@ int const level_amulet = 26;
 
 PLACE          level_places[MAXLINES*MAXCOLS];
 Coordinate     level_stairs;
-vector<item*>  level_items;
+list<item*>    level_items;
 int            level = 1;
 int            level_max = 1;
 int            levels_without_food = 0;

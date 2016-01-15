@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <list>
 #include <string>
 
 #include "Coordinate.h"
@@ -54,7 +54,7 @@ struct monster {
   Coordinate         t_pos;     /* Position */
   Coordinate*        t_dest;    /* Where it is running to */
   room*              t_room;    /* Current room for thing */
-  std::vector<item*> t_pack;    /* What the thing is carrying */
+  std::list<item*> t_pack;    /* What the thing is carrying */
 
   int                t_flags;   /* State word */
   char               t_type;    /* What it is */

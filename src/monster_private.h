@@ -2,13 +2,12 @@
 #define MONSTER_PRIVATE_H
 
 #include <string>
-#include <vector>
+#include <list>
 
 #include "Coordinate.h"
-#include "MonsterList.h"
 #include "things.h"
 
-extern MonsterList monster_list;  /* List of monsters on the level */
+extern list<monster*> monster_list;  /* List of monsters on the level */
 
 struct monster_template {
     std::string const  m_name;             /* What to call the monster */
