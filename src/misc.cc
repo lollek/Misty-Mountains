@@ -123,7 +123,7 @@ look(bool wakeup)
       }
 
       monster* monster = xy_pos->p_monst;
-      if (monster == NULL)
+      if (monster == nullptr)
         xy_ch = static_cast<char>(trip_ch(y, x, xy_ch));
       else
       {
@@ -151,7 +151,7 @@ look(bool wakeup)
 
       move(y, x);
 
-      if (monster != NULL || xy_ch != incch())
+      if (monster != nullptr || xy_ch != incch())
         addcch(static_cast<chtype>(xy_ch));
 
       if (door_stop && !firstmove && running)
@@ -225,7 +225,7 @@ find_obj(int y, int x)
 
   /* It should have returned by now */
   io_msg("DEBUG: Non-object %d,%d", y, x);
-  return NULL;
+  return nullptr;
 }
 
 string
@@ -269,7 +269,7 @@ get_dir(void)
 
       case KEY_ESCAPE:
         io_msg_clear();
-        return NULL;
+        return nullptr;
 
       default:
         io_msg_clear();
@@ -378,7 +378,7 @@ seen_stairs(void)
     return true;
 
   /* if a monster is on the stairs, this gets hairy */
-  if (tp != NULL)
+  if (tp != nullptr)
   {
     /* if it's visible and awake, it must have moved there */
     if (monster_seen_by_player(tp) && monster_is_chasing(tp))
@@ -457,7 +457,7 @@ roomin(Coordinate* cp)
       return rp;
 
   io_debug_fatal("in some bizarre place (%d, %d)", cp->y, cp->x);
-  return NULL;
+  return nullptr;
 }
 
 bool

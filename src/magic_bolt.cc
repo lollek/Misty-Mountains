@@ -202,7 +202,7 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
       magic_bolt_hit_player(start, name);
 
     monster* tp = level_get_monster(pos.y, pos.x);
-    if (tp != NULL)
+    if (tp != nullptr)
       magic_bolt_hit_monster(tp, start, &pos, name);
 
     spotpos[i].x = pos.x;

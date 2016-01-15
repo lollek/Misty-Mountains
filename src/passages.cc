@@ -150,7 +150,7 @@ conn(int r1, int r2)
   }
 
   struct room* room_from = &rooms[rm];
-  struct room* room_to = NULL;           /* room pointer of dest */
+  struct room* room_to = nullptr;           /* room pointer of dest */
   Coordinate start_pos;                  /* start of move */
   Coordinate end_pos;                    /* end of move */
   Coordinate turn_delta;                 /* direction to turn */
@@ -309,7 +309,7 @@ passages_do(void)
   struct rdes* r1 = &rdes[os_rand_range(ROOMS_MAX)];
   r1->ingraph = true;
 
-  struct rdes* r2 = NULL;
+  struct rdes* r2 = nullptr;
   do
     {
       /* find a room to connect with */
@@ -398,7 +398,7 @@ passages_add_pass(void)
           ch = PASSAGE;
         pp->p_flags |= F_SEEN;
         move(y, x);
-        if (pp->p_monst != NULL)
+        if (pp->p_monst != nullptr)
           pp->p_monst->t_oldch = pp->p_ch;
         else if (pp->p_flags & F_REAL)
           addcch(static_cast<chtype>(ch));

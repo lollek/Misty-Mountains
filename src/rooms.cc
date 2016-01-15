@@ -299,7 +299,7 @@ room_find_floor(struct room* rp, Coordinate* cp, int limit, bool monst)
 {
   int cnt = limit;
   char compchar = 0;
-  bool pickroom = rp == NULL;
+  bool pickroom = rp == nullptr;
 
   if (!pickroom)
     compchar = ((rp->r_flags & ISMAZE) ? PASSAGE : FLOOR);
@@ -319,7 +319,7 @@ room_find_floor(struct room* rp, Coordinate* cp, int limit, bool monst)
     PLACE* pp = level_get_place(cp->y, cp->x);
     if (monst)
     {
-      if (pp->p_monst == NULL && step_ok(pp->p_ch))
+      if (pp->p_monst == nullptr && step_ok(pp->p_ch))
         return true;
     }
     else if (pp->p_ch == compchar)
@@ -343,7 +343,7 @@ room_enter(Coordinate* cp)
         monster* tp = level_get_monster(y, x);
         char ch = level_get_ch(y, x);
 
-        if (tp == NULL)
+        if (tp == nullptr)
         {
           mvaddcch(y, x, static_cast<chtype>(ch));
           continue;

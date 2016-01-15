@@ -78,7 +78,7 @@ potions_init(void)
 static bool
 is_quaffable(item const* item)
 {
-  if (item == NULL)
+  if (item == nullptr)
     return false;
   else if (item_type(item) != POTION)
   {

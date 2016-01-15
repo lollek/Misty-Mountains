@@ -53,7 +53,7 @@ add_ring_attack_modifiers(struct attack_modifier* mod)
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
     item const* ring_thing = pack_equipped_item(pack_ring_slots[i]);
-    if (ring_thing == NULL)
+    if (ring_thing == nullptr)
       continue;
 
     item const* ring = ring_thing;
@@ -103,7 +103,7 @@ static void
 calculate_attacker(monster* attacker, item* weapon, bool thrown,
                   struct attack_modifier* mod)
 {
-  if (weapon != NULL)
+  if (weapon != nullptr)
   {
     mod->damage[0] = weapon->o_damage;
     mod->to_hit += weapon->o_hplus;
@@ -119,7 +119,7 @@ calculate_attacker(monster* attacker, item* weapon, bool thrown,
     if (thrown)
     {
       item const* held_weapon = pack_equipped_item(EQUIPMENT_RHAND);
-      if ((weapon->o_flags & ISMISL) && held_weapon != NULL
+      if ((weapon->o_flags & ISMISL) && held_weapon != nullptr
           && held_weapon->o_which == weapon->o_launch)
       {
         mod->damage[0] = weapon->o_hurldmg;
@@ -138,13 +138,13 @@ calculate_attacker(monster* attacker, item* weapon, bool thrown,
 
 /* Roll attackers attack vs defenders defense and then take damage if it hits
  *
- * Attacker or defender can be NULL, in that case it's the player */
+ * Attacker or defender can be nullptr, in that case it's the player */
 static bool
 roll_attacks(monster* attacker, monster* defender, item* weapon, bool thrown)
 {
   /* TODO: remove __player_ptr reference */
-       if (attacker == NULL) attacker = __player_ptr();
-  else if (defender == NULL) defender = __player_ptr();
+       if (attacker == nullptr) attacker = __player_ptr();
+  else if (defender == nullptr) defender = __player_ptr();
 
   struct attack_modifier mod;
   mod.to_hit = 0;
@@ -211,22 +211,22 @@ print_attack(bool hit, char const* att, char const* def)
   };
 
   int i = os_rand_range(4);
-  if (att != NULL)
+  if (att != nullptr)
     i += 4;
 
   io_msg("%s %s %s",
-      att == NULL ? "you" : att,
+      att == nullptr ? "you" : att,
       hit ? h_names[i] : m_names[i],
-      def == NULL ? "you" : def);
+      def == nullptr ? "you" : def);
 }
 
 int
 fight_against_monster(Coordinate const* monster_pos, item* weapon, bool thrown)
 {
-  monster* const player = NULL;
+  monster* const player = nullptr;
   monster* tp = level_get_monster(monster_pos->y, monster_pos->x);
-  if (tp == NULL)
-    return !io_fail("fight_against_monster(%p, %p, %b) NULL monster\r\n",
+  if (tp == nullptr)
+    return !io_fail("fight_against_monster(%p, %p, %b) nullptr monster\r\n",
                  monster_pos, weapon, thrown);
 
   /* Since we are fighting, things are not quiet so no healing takes place */
@@ -264,7 +264,7 @@ fight_against_monster(Coordinate const* monster_pos, item* weapon, bool thrown)
         io_msg("%s", mname);
       }
       else
-        print_attack(true, NULL, mname);
+        print_attack(true, nullptr, mname);
     }
 
     if (player_has_confusing_attack())
@@ -286,7 +286,7 @@ fight_against_monster(Coordinate const* monster_pos, item* weapon, bool thrown)
   if (thrown && !to_death)
     fight_missile_miss(weapon, mname);
   else if (!to_death)
-    print_attack(false, NULL, mname);
+    print_attack(false, nullptr, mname);
   return false;
 }
 
@@ -311,10 +311,10 @@ fight_against_player(monster* mp)
   char mname[MAXSTR];
   monster_name(mp, mname);
 
-  if (roll_attacks(mp, NULL, NULL, false))
+  if (roll_attacks(mp, nullptr, nullptr, false))
   {
     if (mp->t_type != 'I' && !to_death)
-      print_attack(true, mname, NULL);
+      print_attack(true, mname, nullptr);
 
     if (player_get_health() <= 0)
       death(mp->t_type);
@@ -334,12 +334,12 @@ fight_against_player(monster* mp)
     }
 
     if (!to_death)
-      print_attack(false, mname, NULL);
+      print_attack(false, mname, nullptr);
   }
 
   command_stop(false);
   io_refresh_statusline();
-  return(mp == NULL ? -1 : 0);
+  return(mp == nullptr ? -1 : 0);
 }
 
 int

@@ -75,7 +75,7 @@ static inline void pack_curse_item(item *item)
 static inline void pack_uncurse_item(item *item)
 { item->o_flags &= ~ISCURSED; }
 
-item* pack_find_arrow(void); /* Return arrow in pack or NULL */
+item* pack_find_arrow(void); /* Return arrow in pack or nullptr */
 void pack_identify_item(void);
 
 #endif /* ROGUE14_PACK_H */

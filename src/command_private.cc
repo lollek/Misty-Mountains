@@ -36,7 +36,7 @@ static bool command_attack_bow(Coordinate const* delta)
 {
   item* ptr = pack_find_arrow();
 
-  if (ptr == NULL)
+  if (ptr == nullptr)
   {
     io_msg("you've run out of arrows!");
     return true;
@@ -46,7 +46,7 @@ static bool command_attack_bow(Coordinate const* delta)
   io_missile_motion(arrow, delta->y, delta->x);
   monster* monster_at_pos = level_get_monster(arrow->o_pos.y, arrow->o_pos.x);
 
-  if (monster_at_pos == NULL || !fight_against_monster(&arrow->o_pos, arrow, true))
+  if (monster_at_pos == nullptr || !fight_against_monster(&arrow->o_pos, arrow, true))
     weapon_missile_fall(arrow, true);
 
   return true;
@@ -55,7 +55,7 @@ static bool command_attack_bow(Coordinate const* delta)
 static bool command_attack_melee(bool fight_to_death, Coordinate* delta)
 {
   monster* mp = level_get_monster(delta->y, delta->x);
-  if (mp != NULL && diag_ok(player_get_pos(), delta))
+  if (mp != nullptr && diag_ok(player_get_pos(), delta))
   {
     if (fight_to_death)
     {
@@ -127,14 +127,14 @@ bool
 command_attack(bool fight_to_death)
 {
   Coordinate const* dir = get_dir();
-  if (dir == NULL)
+  if (dir == nullptr)
     return false;
 
   Coordinate delta ( player_x() + dir->x, player_y() + dir->y );
 
   item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
-  return weapon != NULL && weapon->o_which == BOW
+  return weapon != nullptr && weapon->o_which == BOW
     ? command_attack_bow(dir)
     : command_attack_melee(fight_to_death, &delta);
 }
@@ -251,7 +251,7 @@ bool
 command_identify_trap(void)
 {
   const Coordinate* dir = get_dir();
-  if (dir == NULL)
+  if (dir == nullptr)
     return false;
 
   Coordinate delta (player_x() + dir->x, player_y() + dir->y);
@@ -470,25 +470,25 @@ command_show_inventory(void)
 bool
 command_take_off(enum equipment_pos pos)
 {
-  if (pack_equipped_item(pos) == NULL)
+  if (pack_equipped_item(pos) == nullptr)
     return false;
 
   pack_unequip(pos, false);
-  return pack_equipped_item(pos) != NULL;
+  return pack_equipped_item(pos) != nullptr;
 }
 
 bool command_throw(void)
 {
   const Coordinate* dir = get_dir();
-  if (dir == NULL)
+  if (dir == nullptr)
     return false;
 
   int ydelta = dir->y;
   int xdelta = dir->x;
-  dir = NULL;
+  dir = nullptr;
 
   item* obj = pack_get_item("throw", 0);
-  if (obj == NULL)
+  if (obj == nullptr)
     return false;
 
   if (obj->o_type == ARMOR)
@@ -515,7 +515,7 @@ bool command_throw(void)
 
   /* AHA! Here it has hit something.  If it is a wall or a door,
    * or if it misses (combat) the monster, put it on the floor */
-  bool missed = monster_at_pos == NULL ||
+  bool missed = monster_at_pos == nullptr ||
     !fight_against_monster(&obj->o_pos, obj, true);
 
   if (missed)
@@ -536,7 +536,7 @@ command_wield(void)
 {
   item* obj = pack_get_item("wield", WEAPON);
 
-  if (obj == NULL)
+  if (obj == nullptr)
     return false;
 
   if (obj->o_type == ARMOR)
@@ -576,7 +576,7 @@ bool
 command_eat(void)
 {
   item* obj = pack_get_item("eat", FOOD);
-  if (obj == NULL)
+  if (obj == nullptr)
     return false;
 
   if (obj->o_type != FOOD)
@@ -630,7 +630,7 @@ bool command_drop(void)
   }
 
   item* obj = pack_get_item("drop", 0);
-  if (obj == NULL)
+  if (obj == nullptr)
     return false;
 
   bool drop_all = false;

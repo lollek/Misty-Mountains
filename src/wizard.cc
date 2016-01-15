@@ -149,7 +149,7 @@ wizard_create_item(void)
   int which = isdigit(ch) ? ch - '0' : ch - 'a' + 10;
   io_msg_clear();
 
-  item* obj = NULL;
+  item* obj = nullptr;
   switch (type)
   {
     case TRAP:
@@ -237,7 +237,7 @@ wizard_create_item(void)
       break;
   }
 
-  assert(obj != NULL);
+  assert(obj != nullptr);
   pack_add(obj, false);
 }
 
@@ -266,7 +266,7 @@ wizard_levels_and_gear(void)
     player_raise_level();
 
   /* Give him a sword (+1,+1) */
-  if (pack_equipped_item(EQUIPMENT_RHAND) == NULL)
+  if (pack_equipped_item(EQUIPMENT_RHAND) == nullptr)
   {
     item* obj = weapon_create(TWOSWORD, false);
     obj->o_hplus = 1;
@@ -275,7 +275,7 @@ wizard_levels_and_gear(void)
   }
 
   /* And his suit of armor */
-  if (pack_equipped_item(EQUIPMENT_ARMOR) == NULL)
+  if (pack_equipped_item(EQUIPMENT_ARMOR) == nullptr)
   {
     item* obj = armor_create(PLATE_MAIL, false);
     obj->o_arm = -5;

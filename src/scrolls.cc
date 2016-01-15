@@ -1,15 +1,3 @@
-/*
- * Read a scroll and let it happen
- *
- * @(#)scrolls.c	4.44 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -41,20 +29,20 @@ using namespace std;
 static vector<string> s_names(NSCROLLS);
 
 vector<obj_info> scroll_info = {
-    { "monster confusion",		 7, 140, NULL, false },
-    { "magic mapping",			 4, 150, NULL, false },
-    { "hold monster",			 2, 180, NULL, false },
-    { "sleep",				 3,   5, NULL, false },
-    { "enchant armor",			 7, 160, NULL, false },
-    { "identify",			43, 115, NULL, false },
-    { "scare monster",			 3, 200, NULL, false },
-    { "food detection",			 2,  60, NULL, false },
-    { "teleportation",			 5, 165, NULL, false },
-    { "enchant weapon",			 8, 150, NULL, false },
-    { "create monster",			 4,  75, NULL, false },
-    { "remove curse",			 7, 105, NULL, false },
-    { "aggravate monsters",		 3,  20, NULL, false },
-    { "protect armor",			 2, 250, NULL, false },
+    { "monster confusion",		 7, 140, "", false },
+    { "magic mapping",			 4, 150, "", false },
+    { "hold monster",			 2, 180, "", false },
+    { "sleep",				 3,   5, "", false },
+    { "enchant armor",			 7, 160, "", false },
+    { "identify",			43, 115, "", false },
+    { "scare monster",			 3, 200, "", false },
+    { "food detection",			 2,  60, "", false },
+    { "teleportation",			 5, 165, "", false },
+    { "enchant weapon",			 8, 150, "", false },
+    { "create monster",			 4,  75, "", false },
+    { "remove curse",			 7, 105, "", false },
+    { "aggravate monsters",		 3,  20, "", false },
+    { "protect armor",			 2, 250, "", false },
 };
 
 void
@@ -133,7 +121,7 @@ static bool
 enchant_players_armor(void)
 {
   item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  if (arm == NULL)
+  if (arm == nullptr)
   {
     switch (os_rand_range(3))
     {
@@ -156,7 +144,7 @@ hold_monsters(void)
 {
   Coordinate *player_pos = player_get_pos();
   int monsters_affected = 0;
-  monster* held_monster = NULL;
+  monster* held_monster = nullptr;
 
   for (int x = player_pos->x - 2; x <= player_pos->x + 2; x++)
     if (x >= 0 && x < NUMCOLS)
@@ -164,7 +152,7 @@ hold_monsters(void)
         if (y >= 0 && y <= NUMLINES - 1)
         {
           monster *monster = level_get_monster(y, x);
-          if (monster != NULL)
+          if (monster != nullptr)
           {
             monster_become_held(monster);
             monsters_affected++;
@@ -288,9 +276,9 @@ def:
       if (ch != SHADOW)
       {
         monster* obj = pp->p_monst;
-        if (obj != NULL)
+        if (obj != nullptr)
           obj->t_oldch = ch;
-        if (obj == NULL || !player_can_sense_monsters())
+        if (obj == nullptr || !player_can_sense_monsters())
           mvaddcch(y, x, static_cast<chtype>(ch));
       }
     }
@@ -322,7 +310,7 @@ static bool
 player_enchant_weapon(void)
 {
   item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
-  if (weapon == NULL)
+  if (weapon == nullptr)
   {
     switch (os_rand_range(2))
     {
@@ -347,7 +335,7 @@ static void
 remove_curse(void)
 {
   for (int i = 0; i < NEQUIPMENT; ++i)
-    if (pack_equipped_item(static_cast<equipment_pos>(i)) != NULL)
+    if (pack_equipped_item(static_cast<equipment_pos>(i)) != nullptr)
       pack_uncurse_item(pack_equipped_item(static_cast<equipment_pos>(i)));
 
   io_msg(player_is_hallucinating()
@@ -359,7 +347,7 @@ static bool
 protect_armor(void)
 {
   item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  if (arm == NULL)
+  if (arm == nullptr)
   {
     switch (os_rand_range(2))
     {
@@ -378,7 +366,7 @@ bool
 scroll_read(void)
 {
   item* obj = pack_get_item("read", SCROLL);
-  if (obj == NULL)
+  if (obj == nullptr)
     return false;
 
   if (obj->o_type != SCROLL)
@@ -430,7 +418,7 @@ scroll_read(void)
       break;
     case S_TELEP:
       scroll_learn(S_TELEP);
-      player_teleport(NULL);
+      player_teleport(nullptr);
       break;
     case S_ENCH:
       player_enchant_weapon();

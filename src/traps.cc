@@ -182,7 +182,7 @@ trap_arrow_monster(monster* victim)
 static enum trap_t
 trap_telep_player(Coordinate* trap_coord)
 {
-  player_teleport(NULL);
+  player_teleport(nullptr);
   mvaddcch(trap_coord->y, trap_coord->x, TRAP); /* Mark trap before we leave */
   return T_TELEP;
 }
@@ -197,7 +197,7 @@ trap_telep_monster(monster* victim)
     io_msg_add("%s ", monster_name(victim, buf));
   }
 
-  monster_teleport(victim, NULL);
+  monster_teleport(victim, nullptr);
   if (was_seen)
   {
     if (monster_seen_by_player(victim))
@@ -288,9 +288,9 @@ trap_rust_monster(monster* victim)
 enum trap_t
 trap_spring(monster* victim, Coordinate* trap_coord)
 {
-  assert(trap_coord != NULL);
+  assert(trap_coord != nullptr);
 
-  bool player = victim == NULL;
+  bool player = victim == nullptr;
   PLACE* pp = level_get_place(trap_coord->y, trap_coord->x);
   char tr = pp->p_flags & F_TMASK;
 
@@ -302,7 +302,7 @@ trap_spring(monster* victim, Coordinate* trap_coord)
     command_stop(true);
   }
 
-  if (victim == NULL || monster_seen_by_player(victim))
+  if (victim == nullptr || monster_seen_by_player(victim))
   {
     pp->p_ch = TRAP;
     pp->p_flags |= F_SEEN;

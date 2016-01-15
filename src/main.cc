@@ -77,7 +77,7 @@ parse_args(int argc, char* const* argv)
     switch (c)
     {
       case 'c': use_colors = false; break;
-      case 'E': ESCDELAY = optarg == NULL ? 64 : atoi(optarg); break;
+      case 'E': ESCDELAY = optarg == nullptr ? 64 : atoi(optarg); break;
       case 'f': fight_flush = true; break;
       case 'j': jump = false; break;
       case 'n': if (strlen(optarg))

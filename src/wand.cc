@@ -153,7 +153,7 @@ wand_spell_drain_health(void)
   /* First cnt how many things we need to spread the hit points among */
   struct room *corp = level_get_ch(player_pos->y, player_pos->x) == DOOR
     ? &passages[level_get_flags(player_pos->y, player_pos->x) & F_PNUM]
-    : NULL;
+    : nullptr;
   monster** dp = drainee;
 
   int cnt = monster_add_nearby(dp, corp);
@@ -163,7 +163,7 @@ wand_spell_drain_health(void)
     return;
   }
 
-  *dp = NULL;
+  *dp = nullptr;
   player_lose_health(player_get_health() / 2);
   io_msg("You feel an intense pain");
   cnt = player_get_health() / cnt;
@@ -187,7 +187,7 @@ wand_spell_drain_health(void)
 static void
 wand_spell_polymorph(monster* target)
 {
-  assert(target != NULL);
+  assert(target != nullptr);
   monster_polymorph(target);
   wands_info.at(WS_POLYMORPH).oi_know |= monster_seen_by_player(target);
 }
@@ -195,7 +195,7 @@ wand_spell_polymorph(monster* target)
 static void
 wand_spell_cancel(monster* target)
 {
-  assert(target != NULL);
+  assert(target != nullptr);
 
   if (target->t_type == 'F')
     player_remove_held();
@@ -222,13 +222,13 @@ wand_spell_magic_missile(int dy, int dx)
   bolt.o_hurldmg = {1, 4};
 
   item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
-  if (weapon != NULL)
+  if (weapon != nullptr)
     bolt.o_launch = weapon->o_which;
 
   io_missile_motion(&bolt, dy, dx);
 
   monster* target = level_get_monster(bolt.o_pos.y, bolt.o_pos.x);
-  if (target == NULL)
+  if (target == nullptr)
     io_msg("the missle vanishes with a puff of smoke");
   else if (monster_save_throw(VS_MAGIC, target))
   {
@@ -245,12 +245,12 @@ bool
 wand_zap(void)
 {
   Coordinate const* dir = get_dir();
-  if (dir == NULL)
+  if (dir == nullptr)
     return false;
   Coordinate delta = *dir;
 
   item* obj = pack_get_item("zap with", STICK);
-  if (obj == NULL)
+  if (obj == nullptr)
     return false;
   else if (obj->o_type != STICK)
   {
@@ -286,7 +286,7 @@ wand_zap(void)
       {
         Coordinate c;
         monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
-        if (tp != NULL)
+        if (tp != nullptr)
           monster_set_invisible(tp);
         else
           io_msg("You did not hit anything");
@@ -296,7 +296,7 @@ wand_zap(void)
       {
         Coordinate c;
         monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
-        if (tp != NULL)
+        if (tp != nullptr)
           wand_spell_polymorph(tp);
         else
           io_msg("You did not hit anything");
@@ -306,7 +306,7 @@ wand_zap(void)
       {
         Coordinate c;
         monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
-        if (tp != NULL)
+        if (tp != nullptr)
           wand_spell_cancel(tp);
         else
           io_msg("You did not hit anything");
@@ -314,7 +314,7 @@ wand_zap(void)
 
     case WS_TELAWAY:
       wands_info.at(WS_TELAWAY).oi_know = true;
-      player_teleport(NULL);
+      player_teleport(nullptr);
       break;
 
     case WS_TELTO:
@@ -323,7 +323,7 @@ wand_zap(void)
         int x;
         int y;
         monster* tp = wand_find_target(&y, &x, delta.y, delta.x);
-        if (tp != NULL)
+        if (tp != nullptr)
         {
           Coordinate new_pos;
           new_pos.y = y - delta.y;
@@ -347,7 +347,7 @@ wand_zap(void)
       {
         Coordinate c;
         monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
-        if (tp != NULL)
+        if (tp != nullptr)
         {
           if (monster_is_slow(tp))
             tp->t_flags &= ~ISSLOW;
@@ -366,7 +366,7 @@ wand_zap(void)
       {
         Coordinate c;
         monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
-        if (tp != NULL)
+        if (tp != nullptr)
         {
           if (monster_is_hasted(tp))
             tp->t_flags &= ~ISHASTE;

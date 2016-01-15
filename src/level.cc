@@ -156,7 +156,7 @@ level_new(void)
   {
       pp->p_ch = SHADOW;
       pp->p_flags = F_REAL;
-      pp->p_monst = NULL;
+      pp->p_monst = nullptr;
   }
   clear();
 
@@ -217,7 +217,7 @@ char
 level_get_type(int y, int x)
 {
   monster* monster = level_get_monster(y, x);
-  return monster == NULL
+  return monster == nullptr
     ? level_get_ch(y, x)
     : monster->t_disguise;
 }

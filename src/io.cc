@@ -19,7 +19,7 @@
 
 #include "io.h"
 
-WINDOW* hw = NULL;
+WINDOW* hw = nullptr;
 
 #define MAXMSG	static_cast<int>(NUMCOLS - sizeof " --More--")
 static char msgbuf[2*MAXMSG+1];
@@ -66,7 +66,7 @@ __attribute__((__format__(__printf__, 1, 0)))
 static void
 doadd(char const* fmt, va_list args, bool end_of_command)
 {
-  assert(fmt != NULL  && "Use io_msg_clear() instead of io_msg(NULL)");
+  assert(fmt != nullptr  && "Use io_msg_clear() instead of io_msg(nullptr)");
   assert(*fmt != '\0' && "Use io_msg_clear() instead of io_msg(\"\")");
 
   static bool new_sentence = false;
@@ -112,11 +112,11 @@ get_homedir(void)
   {
     size_t len;
     struct passwd const* pw = getpwuid(getuid());
-    char const* h = pw == NULL ? NULL : pw->pw_dir;
+    char const* h = pw == nullptr ? nullptr : pw->pw_dir;
 
-    if (h == NULL || *h == '\0' || !strcmp(h, "/"))
+    if (h == nullptr || *h == '\0' || !strcmp(h, "/"))
       h = getenv("HOME");
-    if (h == NULL || !strcmp(h, "/"))
+    if (h == nullptr || !strcmp(h, "/"))
       h = "";
 
     /* PATH_MAX is not a hard limit,

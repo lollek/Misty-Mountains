@@ -76,7 +76,7 @@ struct monster_template monsters[] =
 void
 monster_set_invisible(monster* mon)
 {
-  assert(mon != NULL);
+  assert(mon != nullptr);
 
   mon->t_flags |= ISINVIS;
   if (cansee(mon->t_pos.y, mon->t_pos.x))
@@ -90,7 +90,7 @@ monster_set_invisible(monster* mon)
 void
 monster_become_held(monster* mon)
 {
-  assert(mon != NULL);
+  assert(mon != nullptr);
 
   mon->t_flags &= ~ISRUN;
   mon->t_flags |= ISHELD;
@@ -125,7 +125,7 @@ monster_random(bool wander)
 static int
 monster_xp_worth(monster* tp)
 {
-  assert(tp != NULL);
+  assert(tp != nullptr);
 
   int mod = tp->t_stats.s_lvl == 1
     ? tp->t_stats.s_maxhp / 8
@@ -142,8 +142,8 @@ monster_xp_worth(monster* tp)
 void
 monster_new(monster* monster, char type, Coordinate* pos)
 {
-  assert(monster != NULL);
-  assert(pos != NULL);
+  assert(monster != nullptr);
+  assert(pos != nullptr);
 
   monster_list.push_back(monster);
   monster->t_type       = type;
@@ -224,7 +224,7 @@ monster_notice_player(int y, int x)
       && monster_is_chasing(monster))
   {
     struct room const* rp = player_get_room();
-    if ((rp != NULL && !(rp->r_flags & ISDARK))
+    if ((rp != nullptr && !(rp->r_flags & ISDARK))
         || dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
     {
       monster_set_found(monster);
@@ -252,7 +252,7 @@ monster_notice_player(int y, int x)
 void
 monster_give_pack(monster* mon)
 {
-  assert(mon != NULL);
+  assert(mon != nullptr);
 
   if (level >= level_max && os_rand_range(100) < monsters[mon->t_type-'A'].m_carry)
     mon->t_pack.push_back(new_thing());
@@ -261,7 +261,7 @@ monster_give_pack(monster* mon)
 int
 monster_save_throw(int which, monster const* mon)
 {
-  assert(mon != NULL);
+  assert(mon != nullptr);
 
   int need = 14 + which - mon->t_stats.s_lvl / 2;
   return (roll(1, 20) >= need);
@@ -283,7 +283,7 @@ monster_start_running(Coordinate const* runner)
 void
 monster_on_death(monster* monster, bool pr)
 {
-  assert(monster != NULL);
+  assert(monster != nullptr);
 
   player_earn_exp(monster->t_stats.s_exp);
 
@@ -324,8 +324,8 @@ monster_on_death(monster* monster, bool pr)
 void
 monster_remove_from_screen(Coordinate* mp, monster* tp, bool waskill)
 {
-  assert(mp != NULL);
-  assert(tp != NULL);
+  assert(mp != nullptr);
+  assert(tp != nullptr);
 
   for (item* obj : tp->t_pack) {
     obj->o_pos = tp->t_pos;
@@ -336,7 +336,7 @@ monster_remove_from_screen(Coordinate* mp, monster* tp, bool waskill)
   }
   tp->t_pack.clear();
 
-  level_set_monster(mp->y, mp->x, NULL);
+  level_set_monster(mp->y, mp->x, nullptr);
   mvaddcch(mp->y, mp->x, static_cast<chtype>(tp->t_oldch));
 
   monster_list.remove(tp);
@@ -354,7 +354,7 @@ monster_remove_from_screen(Coordinate* mp, monster* tp, bool waskill)
 bool
 monster_is_dead(monster const* monster)
 {
-  if (monster == NULL)
+  if (monster == nullptr)
     return true;
 
   return !(find(monster_list.cbegin(), monster_list.cend(), monster) ==
@@ -366,9 +366,9 @@ monster_teleport(monster* monster, Coordinate const* destination)
 {
   /* Select destination */
   Coordinate new_pos;
-  if (destination == NULL)
+  if (destination == nullptr)
     do
-      room_find_floor(NULL, &new_pos, false, true);
+      room_find_floor(nullptr, &new_pos, false, true);
     while (new_pos == monster->t_pos);
   else
     new_pos = *destination;
@@ -377,7 +377,7 @@ monster_teleport(monster* monster, Coordinate const* destination)
   if (monster_seen_by_player(monster))
     mvaddcch(monster->t_pos.y, monster->t_pos.x, static_cast<chtype>(monster->t_oldch));
   set_oldch(monster, &new_pos);
-  level_set_monster(monster->t_pos.y, monster->t_pos.x, NULL);
+  level_set_monster(monster->t_pos.y, monster->t_pos.x, nullptr);
 
   /* Add monster */
   monster->t_room = roomin(&new_pos);
@@ -393,8 +393,8 @@ monster_teleport(monster* monster, Coordinate const* destination)
 void
 monster_do_special_ability(monster** monster)
 {
-  assert(monster != NULL);
-  assert(*monster != NULL);
+  assert(monster != nullptr);
+  assert(*monster != nullptr);
 
   if (monster_is_cancelled(*monster))
     return;
@@ -432,7 +432,7 @@ monster_do_special_ability(monster** monster)
     /* Leperachaun steals some gold and disappears */
     case 'L':
       monster_remove_from_screen(&(*monster)->t_pos, *monster, false);
-      *monster = NULL;
+      *monster = nullptr;
 
       pack_gold -= GOLDCALC;
       if (!player_save_throw(VS_MAGIC))
@@ -446,10 +446,10 @@ monster_do_special_ability(monster** monster)
     /* Nymph's steal a magic item and disappears */
     case 'N': {
       item* steal = pack_find_magic_item();
-      if (steal != NULL)
+      if (steal != nullptr)
       {
         monster_remove_from_screen(&(*monster)->t_pos, *monster, false);
-        *monster = NULL;
+        *monster = nullptr;
         pack_remove(steal, false, false);
         io_msg("your pack feels lighter");
         delete steal;
@@ -504,8 +504,8 @@ monster_do_special_ability(monster** monster)
 char const*
 monster_name(monster const* monster, char* buf)
 {
-  assert(monster != NULL);
-  assert(buf != NULL);
+  assert(monster != nullptr);
+  assert(buf != nullptr);
 
   if (!monster_seen_by_player(monster) && !player_can_sense_monsters())
     strcpy(buf, "something");
@@ -538,7 +538,7 @@ monster_name_by_type(char monster_type)
 bool
 monster_seen_by_player(monster const* monster)
 {
-  assert(monster != NULL);
+  assert(monster != nullptr);
 
   Coordinate const* player_pos = player_get_pos();
   int monster_y = monster->t_pos.y;
@@ -735,7 +735,7 @@ monster_show_if_magic_inventory(void)
 int
 monster_add_nearby(monster** nearby_monsters, struct room const* room)
 {
-  assert(nearby_monsters != NULL);
+  assert(nearby_monsters != nullptr);
   bool inpass = player_get_room()->r_flags & ISGONE;
   monster** nearby_monsters_start = nearby_monsters;
 
@@ -755,7 +755,7 @@ monster_add_nearby(monster** nearby_monsters, struct room const* room)
 void
 monster_polymorph(monster* target)
 {
-  assert(target != NULL);
+  assert(target != nullptr);
 
   Coordinate pos(target->t_pos.x, target->t_pos.y);
 

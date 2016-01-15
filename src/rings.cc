@@ -97,7 +97,7 @@ ring_put_on(void)
   item* obj = pack_get_item("put on", RING);
 
   /* Make certain that it is somethings that we want to wear */
-  if (obj == NULL)
+  if (obj == nullptr)
     return false;
 
   if (obj->o_type != RING)
@@ -135,7 +135,7 @@ ring_take_off(void)
   enum equipment_pos ring;
 
   /* Try right, then left */
-  if (pack_equipped_item(EQUIPMENT_RRING) != NULL)
+  if (pack_equipped_item(EQUIPMENT_RRING) != nullptr)
     ring = EQUIPMENT_RRING;
   else
     ring = EQUIPMENT_LRING;
@@ -174,7 +174,7 @@ ring_drain_amount(void)
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
     item *ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != NULL)
+    if (ring != nullptr)
       total_eat += uses[ring->o_which];
   }
 

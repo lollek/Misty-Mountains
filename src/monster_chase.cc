@@ -130,7 +130,7 @@ chase(monster *tp, Coordinate *ee)
         }
         /* It can also be a Xeroc, which we shouldn't step on */
         monster* obj = level_get_monster(y, x);
-        if (obj != NULL && obj->t_type == 'X')
+        if (obj != nullptr && obj->t_type == 'X')
           continue;
 
         /* If we didn't find any scrolls at this place or it
@@ -270,7 +270,7 @@ over:
 
       /* Remove monster from old position */
       mvaddcch(th->t_pos.y, th->t_pos.x, static_cast<chtype>(th->t_oldch));
-      level_set_monster(th->t_pos.y, th->t_pos.x, NULL);
+      level_set_monster(th->t_pos.y, th->t_pos.x, nullptr);
 
       /* Check if we stepped in a trap */
       if (ch == TRAP || (!(fl & F_REAL) && ch == FLOOR))

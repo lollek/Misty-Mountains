@@ -27,21 +27,21 @@ struct score {
   unsigned time;
 };
 
-static FILE* scoreboard = NULL; /* File descriptor for score file */
-static FILE* lock = NULL;
+static FILE* scoreboard = nullptr; /* File descriptor for score file */
+static FILE* lock = nullptr;
 
 static bool
 lock_sc(void)
 {
   lock = fopen(LOCKFILE, "w+");
-  if (lock != NULL)
+  if (lock != nullptr)
     return true;
 
   for (int cnt = 0; cnt < 5; cnt++)
   {
     sleep(1);
     lock = fopen(LOCKFILE, "w+");
-    if (lock != NULL)
+    if (lock != nullptr)
       return true;
   }
 
@@ -52,7 +52,7 @@ lock_sc(void)
     return true;
   }
 
-  if (time(NULL) - sbuf.st_mtime > 10)
+  if (time(nullptr) - sbuf.st_mtime > 10)
     return unlink(LOCKFILE) < 0
       ? false
       : lock_sc();
@@ -70,16 +70,16 @@ lock_sc(void)
 static void
 unlock_sc(void)
 {
-  if (lock != NULL)
+  if (lock != nullptr)
     fclose(lock);
-  lock = NULL;
+  lock = nullptr;
   unlink(LOCKFILE);
 }
 
 static void
 score_read(struct score* top_ten)
 {
-  if (scoreboard == NULL || !lock_sc())
+  if (scoreboard == nullptr || !lock_sc())
     return;
 
   rewind(scoreboard);
@@ -103,7 +103,7 @@ score_read(struct score* top_ten)
 static void
 score_write(struct score* top_ten)
 {
-  if (scoreboard == NULL || !lock_sc())
+  if (scoreboard == nullptr || !lock_sc())
     return;
 
   rewind(scoreboard);
@@ -189,7 +189,7 @@ int
 score_open(void)
 {
   scoreboard = fopen(SCOREPATH, "r+");
-  if (scoreboard == NULL) {
+  if (scoreboard == nullptr) {
     fprintf(stderr, "Could not open %s for writing: %s\n"
                     "Your highscore will not be saved if you die!\n"
                     "[Press return key to continue]",

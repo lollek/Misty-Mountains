@@ -197,7 +197,7 @@ command_wizard_do(char ch)
     case CTRL('E'): io_msg("food left: %d", food_nutrition_left()); break;
     case CTRL('F'): wizard_show_map(); break;
     case CTRL('I'): wizard_levels_and_gear(); break;
-    case CTRL('T'): player_teleport(NULL); break;
+    case CTRL('T'): player_teleport(nullptr); break;
     case CTRL('W'): pack_identify_item(); break;
     case CTRL('X'): player_can_sense_monsters()
                     ? player_remove_sense_monsters(0)
@@ -207,7 +207,7 @@ command_wizard_do(char ch)
     case CTRL('~'):
      {
        item* item = pack_get_item("charge", STICK);
-       if (item != NULL)
+       if (item != nullptr)
          item->o_charges = 10000;
      }
      break;

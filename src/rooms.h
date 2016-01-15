@@ -25,7 +25,7 @@ extern struct room rooms[ROOMS_MAX];   /* One for each room -- A level */
 /* Create rooms and corridors with a connectivity graph */
 void rooms_create(void);
 
-/* Find a valid floor spot in this room.  If rp is NULL, then
+/* Find a valid floor spot in this room.  If rp is nullptr, then
  * pick a new room each time around the loop.  */
 bool room_find_floor(struct room* rp, Coordinate* cp, int limit, bool monst);
 

@@ -23,7 +23,7 @@ using namespace std;
 
 #include "weapons.h"
 
-static item* last_wielded_weapon = NULL;
+static item* last_wielded_weapon = nullptr;
 
 #define NO_WEAPON '\0'
 
@@ -45,17 +45,17 @@ static struct init_weaps {
 };
 
 vector<obj_info> weapon_info = {
-    { "mace",				11,   8, NULL, false },
-    { "long sword",			11,  15, NULL, false },
-    { "short bow",			12,  15, NULL, false },
-    { "arrow",				12,   1, NULL, false },
-    { "dagger",				 8,   3, NULL, false },
-    { "two handed sword",		10,  75, NULL, false },
-    { "dart",				12,   2, NULL, false },
-    { "shuriken",			12,   5, NULL, false },
-    { "spear",				12,   5, NULL, false },
+    { "mace",				11,   8, "", false },
+    { "long sword",			11,  15, "", false },
+    { "short bow",			12,  15, "", false },
+    { "arrow",				12,   1, "", false },
+    { "dagger",				 8,   3, "", false },
+    { "two handed sword",		10,  75, "", false },
+    { "dart",				12,   2, "", false },
+    { "shuriken",			12,   5, "", false },
+    { "spear",				12,   5, "", false },
     /* DO NOT REMOVE: fake entry for dragon's breath */
-    { NULL,				0,    0, NULL, false },	
+    { "",				0,    0, "", false },	
 };
 
 void
@@ -69,7 +69,7 @@ weapon_missile_fall(item* obj, bool pr)
     obj->o_pos = fpos;
     if (cansee(fpos.y, fpos.x))
     {
-      if (pp->p_monst != NULL)
+      if (pp->p_monst != nullptr)
         pp->p_monst->t_oldch = static_cast<char>(obj->o_type);
       else
         mvaddcch(fpos.y, fpos.x, static_cast<chtype>(obj->o_type));
@@ -132,7 +132,7 @@ bool
 weapon_wield(item* weapon)
 {
   item* currently_wielding = pack_equipped_item(EQUIPMENT_RHAND);
-  if (currently_wielding != NULL)
+  if (currently_wielding != nullptr)
     if (!pack_unequip(EQUIPMENT_RHAND, true))
       return true;
 
@@ -154,9 +154,9 @@ weapon_set_last_used(item* weapon)
 bool
 weapon_wield_last_used(void)
 {
-  if (last_wielded_weapon == NULL || !pack_contains(last_wielded_weapon))
+  if (last_wielded_weapon == nullptr || !pack_contains(last_wielded_weapon))
   {
-    last_wielded_weapon = NULL;
+    last_wielded_weapon = nullptr;
     io_msg("you have no weapon to switch to");
     return false;
   }

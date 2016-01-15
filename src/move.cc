@@ -222,7 +222,7 @@ hit_bound:
 	case TRAP:
           {
             Coordinate *player_pos = player_get_pos();
-	    ch = trap_spring(NULL, &nh);
+	    ch = trap_spring(nullptr, &nh);
 	    if (ch == T_DOOR || ch == T_TELEP)
 		return after;
 	    mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
@@ -253,7 +253,7 @@ hit_bound:
           {
             Coordinate *player_pos = player_get_pos();
 	    if (!(fl & F_REAL))
-		trap_spring(NULL, &nh);
+		trap_spring(nullptr, &nh);
 		mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
 		if ((fl & F_PASS)
                     && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
@@ -286,7 +286,7 @@ hit_bound:
 void
 move_random(monster* who, Coordinate* ret)
 {
-  assert(who != NULL);
+  assert(who != nullptr);
 
   /* Now check to see if that's a legal move.
    * If not, don't move.(I.e., bump into the wall or whatever) */

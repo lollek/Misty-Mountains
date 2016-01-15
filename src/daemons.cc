@@ -47,7 +47,7 @@ daemon_empty_slot()
       return &daemons[i];
 
   io_msg("DEBUG: Ran out of fuse slots :(");
-  return NULL;
+  return nullptr;
 }
 
 /** daemon_find_slot:
@@ -59,7 +59,7 @@ daemon_find_slot(void (*func)(int))
     if (daemons[i].d_type != EMPTY && daemons[i].d_func == func)
       return &daemons[i];
 
-  return NULL;
+  return nullptr;
 }
 
 /** daemon_run_all:
@@ -106,7 +106,7 @@ void
 daemon_start(void (*func)(int), int arg, int type)
 {
   struct delayed_action* dev = daemon_empty_slot();
-  if (dev != NULL)
+  if (dev != nullptr)
   {
     dev->d_type = type;
     dev->d_func = func;
@@ -121,7 +121,7 @@ void
 daemon_kill(void (*func)(int))
 {
   struct delayed_action* dev = daemon_find_slot(func);
-  if (dev != NULL)
+  if (dev != nullptr)
     dev->d_type = EMPTY;
 }
 
@@ -132,7 +132,7 @@ void
 daemon_start_fuse(void (*func)(int), int arg, int time, int type)
 {
   struct delayed_action* wire = daemon_empty_slot();
-  if (wire != NULL)
+  if (wire != nullptr)
   {
     wire->d_type = type;
     wire->d_func = func;
@@ -147,7 +147,7 @@ void
 daemon_lengthen_fuse(void (*func)(int), int xtime)
 {
   struct delayed_action* wire = daemon_find_slot(func);
-  if (wire != NULL)
+  if (wire != nullptr)
     wire->d_time += xtime;
 }
 
@@ -157,7 +157,7 @@ void
 daemon_extinguish_fuse(void (*func)(int))
 {
   struct delayed_action* wire = daemon_find_slot(func);
-  if (wire != NULL)
+  if (wire != nullptr)
     wire->d_type = EMPTY;
 }
 
@@ -191,7 +191,7 @@ daemon_doctor(__attribute__((unused)) int)
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
     item *ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != NULL && ring->o_which == R_REGEN)
+    if (ring != nullptr && ring->o_which == R_REGEN)
       player_restore_health(1, false);
   }
 
@@ -260,12 +260,12 @@ void daemon_ring_abilities(__attribute__((unused)) int)
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
     item* obj = pack_equipped_item(pack_ring_slots[i]);
-    if (obj == NULL)
+    if (obj == nullptr)
       continue;
 
     else if (obj->o_which == R_SEARCH)
       player_search();
     else if (obj->o_which == R_TELEPORT && os_rand_range(50) == 0)
-      player_teleport(NULL);
+      player_teleport(nullptr);
   }
 }

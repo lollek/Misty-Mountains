@@ -124,7 +124,7 @@ new_thing(void)
   else
     r = static_cast<int>(pick_one(things, things.size()));
 
-  item* cur = NULL;
+  item* cur = nullptr;
   switch (r)
   {
     case 0: cur = potion_create(-1); break;
@@ -140,7 +140,7 @@ new_thing(void)
       break;
   }
 
-  assert(cur != NULL);
+  assert(cur != nullptr);
   assert(cur->o_damage.sides >= 0 && cur->o_damage.dices >= 0);
   assert(cur->o_hurldmg.sides >= 0 && cur->o_hurldmg.dices >= 0);
   return cur;
@@ -186,7 +186,7 @@ discovered_by_type(char type, vector<obj_info>& info, size_t max_items)
 
   if (items_found == 0)
   {
-    char const* type_as_str = NULL;
+    char const* type_as_str = nullptr;
     switch (type)
     {
       case POTION: type_as_str = "potion"; break;

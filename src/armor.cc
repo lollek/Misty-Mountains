@@ -40,7 +40,7 @@ bool
 armor_command_wear() {
   item* obj = pack_get_item("wear", ARMOR);
 
-  if (obj == NULL)
+  if (obj == nullptr)
     return false;
 
   if (obj->o_type != ARMOR) {
@@ -48,7 +48,7 @@ armor_command_wear() {
     return armor_command_wear();
   }
 
-  if (pack_equipped_item(EQUIPMENT_ARMOR) != NULL)
+  if (pack_equipped_item(EQUIPMENT_ARMOR) != nullptr)
     if (!pack_unequip(EQUIPMENT_ARMOR, false))
       return true;
 
@@ -82,7 +82,7 @@ armor_type_random() {
 void
 armor_rust() {
   item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  if (arm == NULL || arm->o_type != ARMOR || arm->o_which == LEATHER ||
+  if (arm == nullptr || arm->o_type != ARMOR || arm->o_which == LEATHER ||
       arm->o_arm >= 9)
     return;
 

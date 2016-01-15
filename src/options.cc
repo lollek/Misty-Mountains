@@ -101,7 +101,7 @@ option(void)
   Coordinate const msg_pos (static_cast<int>(strlen(query)), 0);
   io_msg(query);
 
-  WINDOW *optscr = NULL;
+  WINDOW *optscr = nullptr;
   optscr = dupwin(stdscr);
 
   /* Display current values of options */

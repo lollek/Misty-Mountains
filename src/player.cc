@@ -71,7 +71,7 @@ player_get_strength_bonuses(void)
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
     item const* ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != NULL && ring->o_which == R_ADDSTR)
+    if (ring != nullptr && ring->o_which == R_ADDSTR)
       bonuses += ring->o_arm;
   }
   return bonuses;
@@ -133,7 +133,7 @@ player_save_throw(int which)
     for (int i = 0; i < PACK_RING_SLOTS; ++i)
     {
       item* ring = pack_equipped_item(pack_ring_slots[i]);
-      if (ring != NULL && ring->o_which == R_PROTECT)
+      if (ring != nullptr && ring->o_which == R_PROTECT)
         which -= ring->o_arm;
     }
 
@@ -384,9 +384,9 @@ void player_teleport(Coordinate *target)
   Coordinate const* player_pos = player_get_pos();
 
   /* Set target location */
-  if (target == NULL)
+  if (target == nullptr)
     do
-      room_find_floor(NULL, &new_pos, false, true);
+      room_find_floor(nullptr, &new_pos, false, true);
     while (new_pos == *player_pos);
   else
   {
@@ -585,7 +585,7 @@ player_get_armor(void)
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
     item const* ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != NULL && ring->o_which == R_PROTECT)
+    if (ring != nullptr && ring->o_which == R_PROTECT)
       ac -= ring->o_arm;
   }
 
@@ -662,7 +662,7 @@ player_has_ring_with_ability(int ability)
   for (i = 0; i < PACK_RING_SLOTS; ++i)
   {
     item* ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != NULL && ring->o_which == ability)
+    if (ring != nullptr && ring->o_which == ability)
       return true;
   }
   return false;

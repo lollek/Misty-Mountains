@@ -75,7 +75,7 @@ pack_print_evaluate_item(item* item)
 {
   int worth = 0;
   struct obj_info *op;
-  if (item == NULL)
+  if (item == nullptr)
     return 0;
 
   switch (item->o_type)
@@ -216,10 +216,10 @@ pack_add(item* obj, bool silent)
   bool is_picked_up = false;
 
   /* Either obj is an item or we try to take something from the floor */
-  if (obj == NULL)
+  if (obj == nullptr)
   {
     obj = find_obj(player_pos->y, player_pos->x);
-    if (obj == NULL)
+    if (obj == nullptr)
       return false;
     from_floor = true;
   }
@@ -316,7 +316,7 @@ pack_pick_up(item* obj, bool force)
   switch (obj->o_type)
   {
     case GOLD:
-      if (obj != NULL)
+      if (obj != nullptr)
       {
         pack_add_money(obj->o_goldval);
         level_items.remove(obj);
@@ -359,7 +359,7 @@ pack_get_item(std::string const& purpose, int type)
   if (pack_count_items_of_type(type) < 1)
   {
     io_msg("You have no item to %s", purpose.c_str());
-    return NULL;
+    return nullptr;
   }
 
   pack_print_inventory(type);
@@ -372,7 +372,7 @@ pack_get_item(std::string const& purpose, int type)
   if (ch == KEY_ESCAPE || ch == KEY_SPACE)
   {
     io_msg_clear();
-    return NULL;
+    return nullptr;
   }
 
   for (item* obj : player_pack) {
@@ -382,7 +382,7 @@ pack_get_item(std::string const& purpose, int type)
   }
 
   io_msg("'%s' is not a valid item",unctrl(static_cast<chtype>(ch)));
-  return NULL;
+  return nullptr;
 }
 
 bool
@@ -438,7 +438,7 @@ pack_print_equipment(void)
   char sym = 'a';
   for (unsigned i = 0; i < NEQUIPMENT; ++i)
   {
-    if (equipment[i].ptr != NULL)
+    if (equipment[i].ptr != nullptr)
     {
       mvwprintw(equipscr, sym - 'a' + 1, 1, "%c) %s: %s",
                 sym, equipment[i].description.c_str(),
@@ -532,7 +532,7 @@ pack_equip_item(item* item)
       break;
 
     case RING:
-      pos = equipment[EQUIPMENT_RRING].ptr == NULL
+      pos = equipment[EQUIPMENT_RRING].ptr == nullptr
         ? EQUIPMENT_RRING
         : EQUIPMENT_LRING;
       break;
@@ -559,7 +559,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     : "wearing";
 
   item* obj = pack_equipped_item(pos);
-  if (obj == NULL)
+  if (obj == nullptr)
   {
     io_msg("not %s anything!", doing);
     return false;
@@ -571,7 +571,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     return false;
   }
 
-  equipment[pos].ptr = NULL;
+  equipment[pos].ptr = nullptr;
 
   /* Waste time if armor - since they take a while */
   if (pos == EQUIPMENT_ARMOR)
@@ -624,7 +624,7 @@ pack_identify_item(void)
   }
 
   item* obj = pack_get_item("identify", 0);
-  if (obj == NULL)
+  if (obj == nullptr)
     return;
 
   switch (obj->o_type)
