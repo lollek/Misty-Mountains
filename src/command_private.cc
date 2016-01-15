@@ -173,7 +173,6 @@ command_name_item(void)
 
     default:
       already_known = false;
-      guess = &obj->o_label;
       break;
   }
 
@@ -188,12 +187,17 @@ command_name_item(void)
   char tmpbuf[MAXSTR] = { '\0' };
   if (io_readstr(tmpbuf) == 0)
   {
-    if (obj->o_type == STICK)
+    if (obj->o_type == STICK) {
       wand_set_name(static_cast<wand_t>(obj->o_which), tmpbuf);
-    else if (obj->o_type == SCROLL)
+    } else if (obj->o_type == SCROLL) {
       scroll_set_name(static_cast<scroll_t>(obj->o_which), tmpbuf);
-    else if (guess != nullptr && strlen(tmpbuf) > 0)
-      *guess += tmpbuf;
+    } else if (strlen(tmpbuf) > 0) {
+      if (guess != nullptr) {
+        *guess += tmpbuf;
+      } else {
+        obj->set_nickname(tmpbuf);
+      }
+    }
   }
 
   io_msg_clear();

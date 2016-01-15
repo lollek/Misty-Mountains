@@ -33,13 +33,14 @@ public:
   void set_pos(Coordinate const&);
   void set_x(int);
   void set_y(int);
+  void set_nickname(std::string const&);
 
   /* Getters */
-  Coordinate const& get_pos() const;
-  int               get_x() const;
-  int               get_y() const;
+  Coordinate const&  get_pos() const;
+  int                get_x() const;
+  int                get_y() const;
+  std::string const& get_nickname() const;
 
-  std::string   o_label;               /* Label for object */
   int           o_type;                /* What kind of object it is */
   int           o_launch;              /* What you need to launch it */
   int           o_count;               /* count for plural objects */
@@ -54,11 +55,9 @@ public:
 
 private:
   Coordinate    position_on_screen;
+  std::string   nickname;
 };
 
-/* Data */
-static inline std::string const& item_nickname(Item const* item)
-{ return item->o_label; }
 static inline int item_type(Item const* item)
 { return item->o_type; }
 static inline int item_subtype(Item const* item)

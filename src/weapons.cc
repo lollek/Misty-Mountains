@@ -208,8 +208,8 @@ weapon_description(Item const* item, char* buf)
     ptr += sprintf(ptr, p_armor < 0 ? " [%d]" : " [+%d]", p_armor);
   }
 
-  if (!item_nickname(item).empty())
-    ptr += sprintf(ptr, " called %s", item_nickname(item).c_str());
+  if (!item->get_nickname().empty())
+    ptr += sprintf(ptr, " called %s", item->get_nickname().c_str());
 
 }
 

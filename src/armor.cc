@@ -110,8 +110,8 @@ armor_description(Item const* item, char* buf) {
     ptr += sprintf(ptr, bonus_ac < 0 ? ",%d]" : ",+%d]", bonus_ac);
   }
 
-  if (!item_nickname(item).empty())
-    ptr += sprintf(ptr, " called %s", item_nickname(item).c_str());
+  if (!item->get_nickname().empty())
+    ptr += sprintf(ptr, " called %s", item->get_nickname().c_str());
 }
 
 Item*
