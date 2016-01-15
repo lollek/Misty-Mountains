@@ -111,7 +111,7 @@ wand_create(int wand)
 }
 
 /* This can only be used inside the wand_zap() function */
-static monster*
+static Monster*
 wand_find_target(int* y, int* x, int dy, int dx)
 {
   *y = player_y();
@@ -147,14 +147,14 @@ wand_spell_light(void)
 static void
 wand_spell_drain_health(void)
 {
-  monster* drainee[40];
+  Monster* drainee[40];
   Coordinate* player_pos = player_get_pos();
 
   /* First cnt how many things we need to spread the hit points among */
   struct room *corp = level_get_ch(player_pos->y, player_pos->x) == DOOR
     ? &passages[level_get_flags(player_pos->y, player_pos->x) & F_PNUM]
     : nullptr;
-  monster** dp = drainee;
+  Monster** dp = drainee;
 
   int cnt = monster_add_nearby(dp, corp);
   if (cnt == 0)
@@ -171,7 +171,7 @@ wand_spell_drain_health(void)
   /* Now zot all of the monsters */
   for (dp = drainee; *dp; dp++)
   {
-    monster* mp = *dp;
+    Monster* mp = *dp;
     mp->t_stats.s_hpt -= cnt;
     if (mp->t_stats.s_hpt <= 0)
       monster_on_death(mp, monster_seen_by_player(mp));
@@ -185,7 +185,7 @@ wand_spell_drain_health(void)
 }
 
 static void
-wand_spell_polymorph(monster* target)
+wand_spell_polymorph(Monster* target)
 {
   assert(target != nullptr);
   monster_polymorph(target);
@@ -193,7 +193,7 @@ wand_spell_polymorph(monster* target)
 }
 
 static void
-wand_spell_cancel(monster* target)
+wand_spell_cancel(Monster* target)
 {
   assert(target != nullptr);
 
@@ -227,7 +227,7 @@ wand_spell_magic_missile(int dy, int dx)
 
   io_missile_motion(&bolt, dy, dx);
 
-  monster* target = level_get_monster(bolt.get_y(), bolt.get_x());
+  Monster* target = level_get_monster(bolt.get_y(), bolt.get_x());
   if (target == nullptr)
     io_msg("the missle vanishes with a puff of smoke");
   else if (monster_save_throw(VS_MAGIC, target))
@@ -285,7 +285,7 @@ wand_zap(void)
     case WS_INVIS:
       {
         Coordinate c;
-        monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
+        Monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != nullptr)
           monster_set_invisible(tp);
         else
@@ -295,7 +295,7 @@ wand_zap(void)
     case WS_POLYMORPH:
       {
         Coordinate c;
-        monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
+        Monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != nullptr)
           wand_spell_polymorph(tp);
         else
@@ -305,7 +305,7 @@ wand_zap(void)
     case WS_CANCEL:
       {
         Coordinate c;
-        monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
+        Monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != nullptr)
           wand_spell_cancel(tp);
         else
@@ -322,7 +322,7 @@ wand_zap(void)
         wands_info.at(WS_TELTO).oi_know = true;
         int x;
         int y;
-        monster* tp = wand_find_target(&y, &x, delta.y, delta.x);
+        Monster* tp = wand_find_target(&y, &x, delta.y, delta.x);
         if (tp != nullptr)
         {
           Coordinate new_pos;
@@ -346,7 +346,7 @@ wand_zap(void)
     case WS_HASTE_M:
       {
         Coordinate c;
-        monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
+        Monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != nullptr)
         {
           if (monster_is_slow(tp))
@@ -365,7 +365,7 @@ wand_zap(void)
     case WS_SLOW_M:
       {
         Coordinate c;
-        monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
+        Monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != nullptr)
         {
           if (monster_is_hasted(tp))

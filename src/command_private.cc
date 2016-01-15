@@ -44,7 +44,7 @@ static bool command_attack_bow(Coordinate const* delta)
 
   Item* arrow = pack_remove(ptr, true, false);
   io_missile_motion(arrow, delta->y, delta->x);
-  monster* monster_at_pos = level_get_monster(arrow->get_y(), arrow->get_x());
+  Monster* monster_at_pos = level_get_monster(arrow->get_y(), arrow->get_x());
 
   if (monster_at_pos == nullptr || !fight_against_monster(&arrow->get_pos(), arrow, true))
     weapon_missile_fall(arrow, true);
@@ -54,7 +54,7 @@ static bool command_attack_bow(Coordinate const* delta)
 
 static bool command_attack_melee(bool fight_to_death, Coordinate* delta)
 {
-  monster* mp = level_get_monster(delta->y, delta->x);
+  Monster* mp = level_get_monster(delta->y, delta->x);
   if (mp != nullptr && diag_ok(player_get_pos(), delta))
   {
     if (fight_to_death)
@@ -503,7 +503,7 @@ bool command_throw(void)
 
   obj = pack_remove(obj, true, false);
   io_missile_motion(obj, ydelta, xdelta);
-  monster* monster_at_pos = level_get_monster(obj->get_y(), obj->get_x());
+  Monster* monster_at_pos = level_get_monster(obj->get_y(), obj->get_x());
 
   /* Throwing an arrow always misses */
   if (obj->o_which == ARROW)

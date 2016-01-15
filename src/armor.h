@@ -1,6 +1,6 @@
 #pragma once
 
-#include "things.h"
+#include "monster.h"
 
 enum armor_t
 {
@@ -30,7 +30,7 @@ int armor_value(enum armor_t armor);
 int armor_probability(enum armor_t i);
 enum armor_t armor_type_random();
 
-int armor_for_monster(monster const* mon); /* Returns the AC of a creature */
+int armor_for_monster(Monster const* mon); /* Returns the AC of a creature */
 void armor_rust();             /* Rust players armor */
 bool armor_command_wear();     /* Let player select something to wear */
 

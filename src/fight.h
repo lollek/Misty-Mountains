@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Coordinate.h"
-#include "things.h"
+#include "monster.h"
 
 /** fight_against_monster:
  * The player attacks the monster. */
@@ -11,7 +11,7 @@ int fight_against_monster(Coordinate const* mp, Item* weap, bool thrown);
 
 /** fight_against_player:
  * The monster attacks the player */
-int fight_against_player(monster* mp);
+int fight_against_player(Monster* mp);
 
 /** fight_swing_hits:
  * Returns true if the swing hits */

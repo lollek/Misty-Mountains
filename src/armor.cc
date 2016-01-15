@@ -32,7 +32,7 @@ int armor_value(enum armor_t i)         { return armors[i].value; }
 int armor_probability(enum armor_t i)   { return armors[i].prob; }
 
 int
-armor_for_monster(monster const* mon) {
+armor_for_monster(Monster const* mon) {
   return mon == player ? player_get_armor() : mon->t_stats.s_arm;
 }
 

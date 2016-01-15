@@ -42,7 +42,7 @@ trap_door_player(void)
 }
 
 static enum trap_t
-trap_door_monster(monster* victim)
+trap_door_monster(Monster* victim)
 {
   if (monster_seen_by_player(victim))
   {
@@ -62,7 +62,7 @@ trap_bear_player(void)
 }
 
 static enum trap_t
-trap_bear_monster(monster* victim)
+trap_bear_monster(Monster* victim)
 {
   if (monster_seen_by_player(victim))
   {
@@ -94,7 +94,7 @@ trap_myst_player(void)
 }
 
 static enum trap_t
-trap_myst_monster(monster* victim)
+trap_myst_monster(Monster* victim)
 {
   if (monster_seen_by_player(victim))
   {
@@ -113,7 +113,7 @@ trap_sleep_player(void)
 }
 
 static enum trap_t
-trap_sleep_monster(monster* victim)
+trap_sleep_monster(Monster* victim)
 {
   if (monster_seen_by_player(victim))
   {
@@ -150,7 +150,7 @@ trap_arrow_player(void)
 }
 
 static enum trap_t
-trap_arrow_monster(monster* victim)
+trap_arrow_monster(Monster* victim)
 {
   char buf[MAXSTR];
 
@@ -188,7 +188,7 @@ trap_telep_player(Coordinate* trap_coord)
 }
 
 static enum trap_t
-trap_telep_monster(monster* victim)
+trap_telep_monster(Monster* victim)
 {
   bool was_seen = monster_seen_by_player(victim);
   if (was_seen)
@@ -236,7 +236,7 @@ trap_dart_player(void)
 }
 
 static enum trap_t
-trap_dart_monster(monster* victim)
+trap_dart_monster(Monster* victim)
 {
   /* TODO: In the future this should probably weaken the monster */
   if (fight_swing_hits(victim->t_stats.s_lvl + 1,
@@ -275,7 +275,7 @@ trap_rust_player(void)
 }
 
 static enum trap_t
-trap_rust_monster(monster* victim)
+trap_rust_monster(Monster* victim)
 {
   if (monster_seen_by_player(victim))
   {
@@ -286,7 +286,7 @@ trap_rust_monster(monster* victim)
 }
 
 enum trap_t
-trap_spring(monster* victim, Coordinate* trap_coord)
+trap_spring(Monster* victim, Coordinate* trap_coord)
 {
   assert(trap_coord != nullptr);
 

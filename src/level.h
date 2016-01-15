@@ -2,6 +2,7 @@
 
 #include <list>
 
+#include "monster.h"
 #include "io.h"
 
 /* Flags for level map */
@@ -17,7 +18,7 @@
 typedef struct {
     char     p_ch;
     char     p_flags;
-    monster* p_monst;
+    Monster* p_monst;
 } PLACE;
 
 extern int const level_amulet;                    /* Level where amulet starts */
@@ -35,8 +36,8 @@ char level_get_type(int y, int x);
 
 PLACE* level_get_place(int y, int x);
 
-monster* level_get_monster(int y, int x);
-void level_set_monster(int y, int x, monster* monster);
+Monster* level_get_monster(int y, int x);
+void level_set_monster(int y, int x, Monster* monster);
 
 char level_get_flags(int y, int x);
 void level_set_flags(int y, int x, char flags);

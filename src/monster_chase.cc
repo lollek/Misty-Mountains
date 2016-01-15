@@ -40,7 +40,7 @@ using namespace std;
 static Coordinate ch_ret;   /* Where chasing takes you */
 
 static bool
-chase_as_confused(monster *tp, Coordinate *ee)
+chase_as_confused(Monster *tp, Coordinate *ee)
 {
   int curdist;
 
@@ -61,7 +61,7 @@ chase_as_confused(monster *tp, Coordinate *ee)
  * Returns true if we want to keep on chasing later 
  * TODO: Clean up this monster */
 static bool
-chase(monster *tp, Coordinate *ee)
+chase(Monster *tp, Coordinate *ee)
 {
   int x;
   int y;
@@ -129,7 +129,7 @@ chase(monster *tp, Coordinate *ee)
           }
         }
         /* It can also be a Xeroc, which we shouldn't step on */
-        monster* obj = level_get_monster(y, x);
+        Monster* obj = level_get_monster(y, x);
         if (obj != nullptr && obj->t_type == 'X')
           continue;
 
@@ -156,7 +156,7 @@ chase(monster *tp, Coordinate *ee)
 
 /* TODO: Clean up this monster */
 static int
-chase_do(monster *th)
+chase_do(Monster *th)
 {
     Coordinate *cp;
     room *rer; /* room of chaser, */
@@ -311,7 +311,7 @@ over:
 }
 
 bool
-monster_chase(monster *tp)
+monster_chase(Monster *tp)
 {
   if (!monster_is_slow(tp) || tp->t_turn)
     if (chase_do(tp) == -1)

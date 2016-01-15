@@ -278,7 +278,7 @@ rooms_create(void)
     if (os_rand_range(100) < (rooms[i].r_goldval > 0 ? 80 : 25)) {
       Coordinate mp;
       room_find_floor(&rooms[i], &mp, false, true);
-      monster* tp = new monster();
+      Monster* tp = new Monster();
       monster_new(tp, monster_random(false), &mp);
       monster_give_pack(tp);
     }
@@ -334,7 +334,7 @@ room_enter(Coordinate* cp)
       move(y, rp->r_pos.x);
       for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
       {
-        monster* tp = level_get_monster(y, x);
+        Monster* tp = level_get_monster(y, x);
         char ch = level_get_ch(y, x);
 
         if (tp == nullptr)

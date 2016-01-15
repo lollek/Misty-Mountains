@@ -3,7 +3,7 @@
 #include <string>
 
 #include "rooms.h"
-#include "things.h"
+#include "monster.h"
 
 int roll(int number, int sides); /* Roll a number of dice */
 void look(bool wakeup);          /* A quick glance all around the player */
@@ -32,7 +32,7 @@ void invis_on(void);         /* Turn on the ability to see invisible */
 void strucpy(char* s1, char const* s2, int len);
 
 void waste_time(int rounds);
-void set_oldch(monster* tp, Coordinate* cp); /* Set oldch for a monster */
+void set_oldch(Monster* tp, Coordinate* cp); /* Set oldch for a monster */
 
 struct room* roomin(Coordinate const* cp); /* Find what room some Coordinate are in, nullptr means no room */
 bool diag_ok(Coordinate const* sp, Coordinate const* ep); /* Check if move is legal if diagonal */

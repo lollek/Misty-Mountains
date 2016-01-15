@@ -89,7 +89,7 @@ treas_room(void)
     spots = 0;
     if (room_find_floor(room, &monster_pos, MAXTRIES, true))
     {
-      monster* tp = new monster();
+      Monster* tp = new Monster();
       monster_new(tp, monster_random(false), &monster_pos);
       tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
       monster_give_pack(tp);
@@ -220,7 +220,7 @@ level_new(void)
 char
 level_get_type(int y, int x)
 {
-  monster* monster = level_get_monster(y, x);
+  Monster* monster = level_get_monster(y, x);
   return monster == nullptr
     ? level_get_ch(y, x)
     : monster->t_disguise;
@@ -232,14 +232,14 @@ level_get_place(int y, int x)
   return &level_places[((x) << 5) + (y)];
 }
 
-monster*
+Monster*
 level_get_monster(int y, int x)
 {
   return level_places[(x << 5) + y].p_monst;
 }
 
 void
-level_set_monster(int y, int x, monster* monster)
+level_set_monster(int y, int x, Monster* monster)
 {
   level_places[(x << 5) + y].p_monst = monster;
 }

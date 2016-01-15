@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Coordinate.h"
-#include "things.h"
+#include "monster.h"
 
 /* Trap types */
 enum trap_t
@@ -23,4 +23,4 @@ extern std::string const trap_names[NTRAPS];
 
 /* Trap victim with trap at position (since it has not yet moved there).
  * if player, victim should be nullptr */
-enum trap_t trap_spring(monster* victim, Coordinate* trap_coord);
+enum trap_t trap_spring(Monster* victim, Coordinate* trap_coord);

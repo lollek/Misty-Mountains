@@ -122,7 +122,7 @@ look(bool wakeup)
           continue;
       }
 
-      monster* monster = xy_pos->p_monst;
+      Monster* monster = xy_pos->p_monst;
       if (monster == nullptr)
         xy_ch = static_cast<char>(trip_ch(y, x, xy_ch));
       else
@@ -369,7 +369,7 @@ is_magic(Item const* obj)
 bool
 seen_stairs(void)
 {
-  monster* tp = level_get_monster(level_stairs.y, level_stairs.x);
+  Monster* tp = level_get_monster(level_stairs.y, level_stairs.x);
 
   move(level_stairs.y, level_stairs.x);
   if (incch() == STAIRS)  /* it's on the map */
@@ -424,7 +424,7 @@ waste_time(int rounds)
 }
 
 void
-set_oldch(monster* tp, Coordinate* cp)
+set_oldch(Monster* tp, Coordinate* cp)
 {
   char old_char = tp->t_oldch;
 

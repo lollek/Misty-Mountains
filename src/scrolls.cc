@@ -144,14 +144,14 @@ hold_monsters(void)
 {
   Coordinate *player_pos = player_get_pos();
   int monsters_affected = 0;
-  monster* held_monster = nullptr;
+  Monster* held_monster = nullptr;
 
   for (int x = player_pos->x - 2; x <= player_pos->x + 2; x++)
     if (x >= 0 && x < NUMCOLS)
       for (int y = player_pos->y - 2; y <= player_pos->y + 2; y++)
         if (y >= 0 && y <= NUMLINES - 1)
         {
-          monster *monster = level_get_monster(y, x);
+          Monster *monster = level_get_monster(y, x);
           if (monster != nullptr)
           {
             monster_become_held(monster);
@@ -210,7 +210,7 @@ create_monster(void)
   else
   {
     char buf[MAXSTR];
-    monster *obj = new monster();
+    Monster *obj = new Monster();
     monster_new(obj, monster_random(false), &mp);
     io_msg("A %s appears out of thin air", monster_name(obj, buf));
   }
@@ -275,7 +275,7 @@ def:
 
       if (ch != SHADOW)
       {
-        monster* obj = pp->p_monst;
+        Monster* obj = pp->p_monst;
         if (obj != nullptr)
           obj->t_oldch = ch;
         if (obj == nullptr || !player_can_sense_monsters())

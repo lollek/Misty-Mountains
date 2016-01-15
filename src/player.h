@@ -1,8 +1,9 @@
 #pragma once
 
 #include "rogue.h"
+#include "monster.h"
 
-class Player : public monster {
+class Player : public Monster {
 public:
   explicit Player();
 

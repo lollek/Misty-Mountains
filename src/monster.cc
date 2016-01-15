@@ -74,7 +74,7 @@ struct monster_template monsters[] =
 };
 
 void
-monster_set_invisible(monster* mon)
+monster_set_invisible(Monster* mon)
 {
   assert(mon != nullptr);
 
@@ -88,7 +88,7 @@ monster_set_invisible(monster* mon)
 }
 
 void
-monster_become_held(monster* mon)
+monster_become_held(Monster* mon)
 {
   assert(mon != nullptr);
 
@@ -123,7 +123,7 @@ monster_random(bool wander)
 /** monster_xp_worth
  * Experience to add for this monster's level/hit points */
 static int
-monster_xp_worth(monster* tp)
+monster_xp_worth(Monster* tp)
 {
   assert(tp != nullptr);
 
@@ -140,7 +140,7 @@ monster_xp_worth(monster* tp)
 }
 
 void
-monster_new(monster* monster, char type, Coordinate* pos)
+monster_new(Monster* monster, char type, Coordinate* pos)
 {
   assert(monster != nullptr);
   assert(pos != nullptr);
@@ -184,7 +184,7 @@ monster_new_random_wanderer(void)
     room_find_floor(nullptr, &monster_pos, false, true);
   while (roomin(&monster_pos) == player_get_room());
 
-  monster* monster = new struct monster();
+  Monster* monster = new Monster();
   monster_new(monster, monster_random(true), &monster_pos);
   if (player_can_sense_monsters())
   {
@@ -196,10 +196,10 @@ monster_new_random_wanderer(void)
   monster_start_running(&monster->t_pos);
 }
 
-monster*
+Monster*
 monster_notice_player(int y, int x)
 {
-  monster *monster = level_get_monster(y, x);
+  Monster *monster = level_get_monster(y, x);
 
   Coordinate* player_pos = player_get_pos();
 
@@ -250,7 +250,7 @@ monster_notice_player(int y, int x)
 }
 
 void
-monster_give_pack(monster* mon)
+monster_give_pack(Monster* mon)
 {
   assert(mon != nullptr);
 
@@ -259,7 +259,7 @@ monster_give_pack(monster* mon)
 }
 
 int
-monster_save_throw(int which, monster const* mon)
+monster_save_throw(int which, Monster const* mon)
 {
   assert(mon != nullptr);
 
@@ -270,7 +270,7 @@ monster_save_throw(int which, monster const* mon)
 void
 monster_start_running(Coordinate const* runner)
 {
-  monster *tp = level_get_monster(runner->y, runner->x);
+  Monster *tp = level_get_monster(runner->y, runner->x);
 
   monster_find_new_target(tp);
   if (!monster_is_stuck(tp))
@@ -281,7 +281,7 @@ monster_start_running(Coordinate const* runner)
 }
 
 void
-monster_on_death(monster* monster, bool pr)
+monster_on_death(Monster* monster, bool pr)
 {
   assert(monster != nullptr);
 
@@ -322,7 +322,7 @@ monster_on_death(monster* monster, bool pr)
 }
 
 void
-monster_remove_from_screen(Coordinate* mp, monster* tp, bool waskill)
+monster_remove_from_screen(Coordinate* mp, Monster* tp, bool waskill)
 {
   assert(mp != nullptr);
   assert(tp != nullptr);
@@ -352,7 +352,7 @@ monster_remove_from_screen(Coordinate* mp, monster* tp, bool waskill)
 }
 
 bool
-monster_is_dead(monster const* monster)
+monster_is_dead(Monster const* monster)
 {
   if (monster == nullptr)
     return true;
@@ -362,7 +362,7 @@ monster_is_dead(monster const* monster)
 }
 
 void
-monster_teleport(monster* monster, Coordinate const* destination)
+monster_teleport(Monster* monster, Coordinate const* destination)
 {
   /* Select destination */
   Coordinate new_pos;
@@ -391,7 +391,7 @@ monster_teleport(monster* monster, Coordinate const* destination)
 }
 
 void
-monster_do_special_ability(monster** monster)
+monster_do_special_ability(Monster** monster)
 {
   assert(monster != nullptr);
   assert(*monster != nullptr);
@@ -502,7 +502,7 @@ monster_do_special_ability(monster** monster)
 }
 
 char const*
-monster_name(monster const* monster, char* buf)
+monster_name(Monster const* monster, char* buf)
 {
   assert(monster != nullptr);
   assert(buf != nullptr);
@@ -536,7 +536,7 @@ monster_name_by_type(char monster_type)
 }
 
 bool
-monster_seen_by_player(monster const* monster)
+monster_seen_by_player(Monster const* monster)
 {
   assert(monster != nullptr);
 
@@ -565,7 +565,7 @@ monster_seen_by_player(monster const* monster)
 bool
 monster_is_anyone_seen_by_player(void)
 {
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
     if (monster_seen_by_player(mon)) {
       return true;
     }
@@ -577,7 +577,7 @@ void
 monster_show_all_as_trippy(void)
 {
   bool seemonst = player_can_sense_monsters();
-  for (monster const* tp : monster_list) {
+  for (Monster const* tp : monster_list) {
 
     if (monster_seen_by_player(tp)) {
       chtype symbol = (tp->t_type == 'X' && tp->t_disguise != 'X')
@@ -595,7 +595,7 @@ monster_show_all_as_trippy(void)
 void
 monster_move_all(void)
 {
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
 
     if (!monster_is_held(mon) && monster_is_chasing(mon))
     {
@@ -620,7 +620,7 @@ monster_move_all(void)
 void
 monster_remove_all(void)
 {
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
     delete mon;
   }
   monster_list.clear();
@@ -629,7 +629,7 @@ monster_remove_all(void)
 void
 monster_set_all_rooms(void)
 {
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
     mon->t_room = roomin(&mon->t_pos);
   }
 }
@@ -637,7 +637,7 @@ monster_set_all_rooms(void)
 void
 monster_aggravate_all(void)
 {
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
     monster_start_running(&mon->t_pos);
   }
 }
@@ -645,7 +645,7 @@ monster_aggravate_all(void)
 void
 monster_show_all_hidden(void)
 {
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
     if (monster_is_invisible(mon) && monster_seen_by_player(mon)
         && !player_is_hallucinating())
       mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_disguise));
@@ -655,7 +655,7 @@ monster_show_all_hidden(void)
 void
 monster_aggro_all_which_desire_item(Item* item)
 {
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
     if (mon->t_dest == item->get_pos()) {
       mon->t_dest = *player_get_pos();
     }
@@ -665,7 +665,7 @@ monster_aggro_all_which_desire_item(Item* item)
 void
 monster_hide_all_invisible(void)
 {
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
     if (monster_is_invisible(mon) && monster_seen_by_player(mon)) {
       mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_oldch));
     }
@@ -676,7 +676,7 @@ bool
 monster_sense_all_hidden(void)
 {
   bool spotted_something = false;
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
     if (!monster_seen_by_player(mon)) {
       mvaddcch(mon->t_pos.y, mon->t_pos.x,
           (player_is_hallucinating()
@@ -692,7 +692,7 @@ monster_sense_all_hidden(void)
 void
 monster_unsense_all_hidden(void)
 {
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
     if (!monster_seen_by_player(mon)) {
       mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_oldch));
     }
@@ -702,7 +702,7 @@ monster_unsense_all_hidden(void)
 void
 monster_print_all(void)
 {
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
 
     if (cansee(mon->t_pos.y, mon->t_pos.x)) {
       chtype symbol = (!monster_is_invisible(mon) || player_has_true_sight())
@@ -720,7 +720,7 @@ bool
 monster_show_if_magic_inventory(void)
 {
   bool atleast_one = false;
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
     for (Item* item : mon->t_pack) {
       if (is_magic(item))
       {
@@ -733,13 +733,13 @@ monster_show_if_magic_inventory(void)
 }
 
 int
-monster_add_nearby(monster** nearby_monsters, struct room const* room)
+monster_add_nearby(Monster** nearby_monsters, struct room const* room)
 {
   assert(nearby_monsters != nullptr);
   bool inpass = player_get_room()->r_flags & ISGONE;
-  monster** nearby_monsters_start = nearby_monsters;
+  Monster** nearby_monsters_start = nearby_monsters;
 
-  for (monster* mon : monster_list) {
+  for (Monster* mon : monster_list) {
     if (mon->t_room == player_get_room()
         || mon->t_room == room
         ||(inpass && level_get_ch(mon->t_pos.y, mon->t_pos.x) == DOOR &&
@@ -753,7 +753,7 @@ monster_add_nearby(monster** nearby_monsters, struct room const* room)
 }
 
 void
-monster_polymorph(monster* target)
+monster_polymorph(Monster* target)
 {
   assert(target != nullptr);
 

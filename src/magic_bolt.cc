@@ -103,7 +103,7 @@ magic_bolt_hit_player(Coordinate* start, string const& missile_name)
 }
 
 static void
-magic_bolt_hit_monster(monster* mon, Coordinate* start, Coordinate* pos, string const& missile_name)
+magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string const& missile_name)
 {
   mon->t_oldch = level_get_ch(pos->y, pos->x);
   if (!monster_save_throw(VS_MAGIC, mon))
@@ -201,7 +201,7 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
     if (pos == *player_get_pos())
       magic_bolt_hit_player(start, name);
 
-    monster* tp = level_get_monster(pos.y, pos.x);
+    Monster* tp = level_get_monster(pos.y, pos.x);
     if (tp != nullptr)
       magic_bolt_hit_monster(tp, start, &pos, name);
 

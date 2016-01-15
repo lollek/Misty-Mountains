@@ -281,7 +281,7 @@ hit_bound:
 /** move_random:
  * Move in a random direction if the monster/person is confused */
 void
-move_random(monster* who, Coordinate* ret)
+move_random(Monster* who, Coordinate* ret)
 {
   assert(who != nullptr);
 

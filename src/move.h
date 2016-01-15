@@ -4,7 +4,7 @@
 
 extern Coordinate move_pos_prev; /* Position before last look() call */
 
-void move_random(monster* who, Coordinate* ret);
+void move_random(Monster* who, Coordinate* ret);
 
 /* Check to see that a move is legal.  If it is handle the 
  * consequences (fighting, picking up, etc.) */

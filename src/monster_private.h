@@ -6,7 +6,7 @@
 #include "Coordinate.h"
 #include "things.h"
 
-extern list<monster*> monster_list;  /* List of monsters on the level */
+extern list<Monster*> monster_list;  /* List of monsters on the level */
 
 struct monster_template {
     std::string const  m_name;             /* What to call the monster */
@@ -21,7 +21,7 @@ struct monster_template {
 extern struct monster_template monsters[26];
 
 /* Find proper destination for monster */
-void monster_find_new_target(monster* tp);
+void monster_find_new_target(Monster* tp);
 
-void monster_start_chasing(monster* monster);
-void monster_set_target(monster* mon, Coordinate const& target);
+void monster_start_chasing(Monster* monster);
+void monster_set_target(Monster* mon, Coordinate const& target);

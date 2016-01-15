@@ -100,7 +100,7 @@ add_strength_attack_modifiers(int strength, struct attack_modifier* mod)
 }
 
 static void
-calculate_attacker(monster* attacker, Item* weapon, bool thrown,
+calculate_attacker(Monster* attacker, Item* weapon, bool thrown,
                   struct attack_modifier* mod)
 {
   if (weapon != nullptr)
@@ -140,7 +140,7 @@ calculate_attacker(monster* attacker, Item* weapon, bool thrown,
  *
  * Attacker or defender can be nullptr, in that case it's the player */
 static bool
-roll_attacks(monster* attacker, monster* defender, Item* weapon, bool thrown)
+roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown)
 {
        if (attacker == nullptr) attacker = player;
   else if (defender == nullptr) defender = player;
@@ -222,7 +222,7 @@ print_attack(bool hit, char const* att, char const* def)
 int
 fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
 {
-  monster* tp = level_get_monster(monster_pos->y, monster_pos->x);
+  Monster* tp = level_get_monster(monster_pos->y, monster_pos->x);
   if (tp == nullptr)
     return !io_fail("fight_against_monster(%p, %p, %b) nullptr monster\r\n",
                  monster_pos, weapon, thrown);
@@ -289,7 +289,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
 }
 
 int
-fight_against_player(monster* mp)
+fight_against_player(Monster* mp)
 {
   /* Since this is an attack, stop running and any healing that was
    * going on at the time */
