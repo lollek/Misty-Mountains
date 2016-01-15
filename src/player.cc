@@ -49,6 +49,14 @@ Player::Player() {
   pack_add(arrow, true);
 }
 
+int Player::get_exp() const {
+  return this->t_stats.s_exp;
+}
+
+void Player::earn_exp(int amount) {
+  this->t_stats.s_exp += amount;
+}
+
 Player* player;
 
 static const int player_min_strength = 3;
@@ -634,15 +642,7 @@ player_lower_level()
     player->t_stats.s_exp = e_levels[player->t_stats.s_lvl-1] +1L;
 }
 
-int player_get_exp()
-{
-  return player->t_stats.s_exp;
-}
 
-void player_earn_exp(int amount)
-{
-  player->t_stats.s_exp += amount;
-}
 
 bool
 player_has_ring_with_ability(int ability)

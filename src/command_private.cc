@@ -596,7 +596,7 @@ command_eat(void)
 
   else if (os_rand_range(100) > 70)
   {
-    player_earn_exp(1);
+    player->earn_exp(1);
     io_msg("this food tastes awful");
     player_check_for_level_up();
   }

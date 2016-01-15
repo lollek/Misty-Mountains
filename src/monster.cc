@@ -285,7 +285,7 @@ monster_on_death(monster* monster, bool pr)
 {
   assert(monster != nullptr);
 
-  player_earn_exp(monster->t_stats.s_exp);
+  player->earn_exp(monster->t_stats.s_exp);
 
   switch (monster->t_type)
   {
@@ -484,7 +484,7 @@ monster_do_special_ability(monster** monster)
     case 'W':
       if (os_rand_range(100) < 15)
       {
-        if (player_get_exp() == 0)
+        if (player->get_exp() == 0)
           death('W');  /* Death by no exp */
         player_lower_level();
 

@@ -9,6 +9,14 @@ public:
   Player(Player const&) = delete;
   Player& operator=(Player const&) = delete;
 
+  /* Getters */
+  int get_exp() const;
+
+  /* Modifiers */
+  void earn_exp(int amount);
+
+
+  /* TODO: Make private */
   int speed = 0;
 
 private:
@@ -107,6 +115,3 @@ void player_raise_level();
 void player_check_for_level_up();
 void player_lower_level();
 
-/* Experience */
-int player_get_exp();
-void player_earn_exp(int amount);
