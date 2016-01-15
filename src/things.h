@@ -6,12 +6,9 @@
 
 #include "Coordinate.h"
 #include "rooms.h"
+#include "damage.h"
+#include "item.h"
 
-struct damage
-{
-  int sides;
-  int dices;
-};
 #define MAXATTACKS 3
 
 /* Stuff about objects */
@@ -34,22 +31,6 @@ struct stats {
   int           s_maxhp;           /* Max hit points */
 };
 
-struct item {
-  Coordinate    o_pos;                 /* Where it lives on the screen */
-  std::string   o_label;               /* Label for object */
-  int           o_type;                /* What kind of object it is */
-  int           o_launch;              /* What you need to launch it */
-  int           o_count;               /* count for plural objects */
-  int           o_which;               /* Which object of a type it is */
-  int           o_hplus;               /* Plusses to hit */
-  int           o_dplus;               /* Plusses to damage */
-  int           o_arm;                 /* Armor protection */
-  int           o_flags;               /* information about objects */
-  char          o_packch;              /* What character it is in the pack */
-  damage        o_damage;              /* Damage if used like sword */
-  damage        o_hurldmg;             /* Damage if thrown */
-};
-
 struct monster {
   stats              t_stats;   /* Physical description */
   Coordinate         t_pos;     /* Position */
@@ -65,17 +46,6 @@ struct monster {
   int                t_reserved;
 };
 
-
-#define o_charges	o_arm
-#define o_goldval	o_arm
-
-/* flags for objects */
-#define ISCURSED 000001		/* object is cursed */
-#define ISKNOW	0000002		/* player knows details about the object */
-#define ISMISL	0000004		/* object is a missile type */
-#define ISMANY	0000010		/* object comes in groups */
-/*	ISFOUND 0000020		...is used for both objects and creatures */
-#define ISPROT	0000040		/* armor is permanently protected */
 
 /* flags for creatures */
 #define CANHUH	0000001		/* creature can confuse */
