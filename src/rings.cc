@@ -81,7 +81,7 @@ ring_init(void)
     {
       int stone = os_rand_range(NSTONES);
 
-      if (find(begin(r_stones), end(r_stones), stones[stone].st_name) == end(r_stones))
+      if (find(begin(r_stones), end(r_stones), stones[stone].st_name) != end(r_stones))
         continue;
 
       r_stones.push_back(stones[stone].st_name);
