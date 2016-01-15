@@ -95,7 +95,7 @@ static int e_levels[] = {
 
 
 static int
-player_get_strength_bonuses(void)
+player_get_strength_bonuses()
 {
   int bonuses = 0;
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
@@ -108,7 +108,7 @@ player_get_strength_bonuses(void)
 }
 
 static void
-player_update_max_strength(void)
+player_update_max_strength()
 {
   int bonuses = player_get_strength_bonuses();
   if (player->t_stats.s_str - bonuses > player_max_stats.s_str)
@@ -130,7 +130,7 @@ player_save_throw(int which)
   return (roll(1, 20) >= need);
 }
 
-bool player_has_true_sight(void) { return player->t_flags & CANSEE; }
+bool player_has_true_sight() { return player->t_flags & CANSEE; }
 
 void
 player_add_true_sight(bool permanent)
@@ -152,7 +152,7 @@ player_remove_true_sight(__attribute__((unused)) int)
   player->t_flags &= ~CANSEE;
 }
 
-bool player_is_confused(void) { return player->t_flags & ISHUH; }
+bool player_is_confused() { return player->t_flags & ISHUH; }
 
 void
 player_set_confused(bool permanent)
@@ -176,11 +176,11 @@ player_remove_confused(__attribute__((unused)) int)
   io_msg("you feel less confused now");
 }
 
-bool player_is_held(void)     { return player->t_flags & ISHELD; }
-void player_set_held(void)    { player->t_flags |= ISHELD; }
-void player_remove_held(void) { player->t_flags &= ~ISHELD; }
+bool player_is_held()     { return player->t_flags & ISHELD; }
+void player_set_held()    { player->t_flags |= ISHELD; }
+void player_remove_held() { player->t_flags &= ~ISHELD; }
 
-bool player_can_sense_monsters(void)    { return player->t_flags & SEEMONST; }
+bool player_can_sense_monsters()    { return player->t_flags & SEEMONST; }
 
 void
 player_add_sense_monsters(bool permanent)
@@ -202,7 +202,7 @@ player_remove_sense_monsters(__attribute__((unused)) int)
   monster_unsense_all_hidden();
 }
 
-bool player_is_hallucinating(void)     { return player->t_flags & ISHALU; }
+bool player_is_hallucinating()     { return player->t_flags & ISHALU; }
 
 void
 player_set_hallucinating(bool permanent)
@@ -247,7 +247,7 @@ void player_remove_hallucinating(__attribute__((unused)) int)
   io_msg("You feel your senses returning to normal");
 }
 
-int player_get_speed(void)    { return player->speed; }
+int player_get_speed()    { return player->speed; }
 
 void
 player_increase_speed(bool permanent)
@@ -265,11 +265,11 @@ player_decrease_speed(__attribute__((unused)) int)
   io_msg("you feel yourself slowing down");
 }
 
-bool player_is_running(void)    { return player->t_flags & ISRUN; }
-void player_start_running(void) { player->t_flags |= ISRUN; }
-void player_stop_running(void)  { player->t_flags &= ~ISRUN; }
+bool player_is_running()    { return player->t_flags & ISRUN; }
+void player_start_running() { player->t_flags |= ISRUN; }
+void player_stop_running()  { player->t_flags &= ~ISRUN; }
 
-bool player_is_blind(void) { return player->t_flags & ISBLIND; }
+bool player_is_blind() { return player->t_flags & ISBLIND; }
 
 void
 player_set_blind(bool permanent)
@@ -299,7 +299,7 @@ player_remove_blind(__attribute__((unused)) int)
   io_msg("the veil of darkness lifts");
 }
 
-bool player_is_levitating(void) { return player->t_flags & ISLEVIT; }
+bool player_is_levitating() { return player->t_flags & ISLEVIT; }
 
 void
 player_start_levitating(bool permanent)
@@ -323,32 +323,32 @@ void player_stop_levitating(__attribute__((unused)) int)
   io_msg("you float gently to the ground");
 }
 
-bool player_has_confusing_attack(void)    { return player->t_flags & CANHUH; }
+bool player_has_confusing_attack()    { return player->t_flags & CANHUH; }
 
 void
-player_set_confusing_attack(void)
+player_set_confusing_attack()
 {
   player->t_flags |= CANHUH;
   io_msg("your hands begin to glow %s", pick_color("red"));
 }
 
-void player_remove_confusing_attack(void) { player->t_flags &= ~CANHUH; }
+void player_remove_confusing_attack() { player->t_flags &= ~CANHUH; }
 
 void
-player_fall_asleep(void)
+player_fall_asleep()
 {
   player_turns_without_action += SLEEPTIME;
   player_stop_running();
   io_msg("you fall asleep");
 }
 
-void player_become_stuck(void)
+void player_become_stuck()
 {
   player_turns_without_moving += STUCKTIME;
   player_stop_running();
 }
 
-void player_become_poisoned(void)
+void player_become_poisoned()
 {
   if (player_has_ring_with_ability(R_SUSTSTR))
     io_msg("you feel momentarily nauseous");
@@ -361,7 +361,7 @@ void player_become_poisoned(void)
 }
 
 bool
-player_is_stealthy(void)
+player_is_stealthy()
 {
   return player_has_ring_with_ability(R_STEALTH)
     || player_is_levitating();
@@ -411,7 +411,7 @@ void player_teleport(Coordinate *target)
 }
 
 bool
-player_search(void)
+player_search()
 {
   int probinc = (player_is_hallucinating() ? 3:0) + (player_is_blind() ? 2:0);
   bool found = false;
@@ -479,9 +479,9 @@ player_search(void)
   return true;
 }
 
-Coordinate* player_get_pos(void) { return &player->t_pos; }
-int player_y(void)          { return player->t_pos.y; }
-int player_x(void)          { return player->t_pos.x; }
+Coordinate* player_get_pos() { return &player->t_pos; }
+int player_y()          { return player->t_pos.y; }
+int player_x()          { return player->t_pos.x; }
 
 void
 player_set_pos(Coordinate* new_pos)
@@ -490,18 +490,18 @@ player_set_pos(Coordinate* new_pos)
   player->t_pos.y = new_pos->y;
 }
 
-struct room* player_get_room(void)          { return player->t_room; }
+struct room* player_get_room()          { return player->t_room; }
 void player_set_room(struct room* new_room) { player->t_room = new_room; }
-int player_get_strength(void)               { return player->t_stats.s_str; }
+int player_get_strength()               { return player->t_stats.s_str; }
 
 bool
-player_strength_is_weakened(void)
+player_strength_is_weakened()
 {
   return player->t_stats.s_str < player_max_stats.s_str;
 }
 
 void
-player_restore_strength(void)
+player_restore_strength()
 {
   player->t_stats.s_str = player_max_stats.s_str + player_get_strength_bonuses();
 }
@@ -518,8 +518,8 @@ player_modify_strength(int amount)
   player_update_max_strength();
 }
 
-int player_get_health(void)     { return player->t_stats.s_hpt; }
-int player_get_max_health(void) { return player->t_stats.s_maxhp; }
+int player_get_health()     { return player->t_stats.s_hpt; }
+int player_get_max_health() { return player->t_stats.s_maxhp; }
 
 void
 player_restore_health(int amount, bool can_raise_total)
@@ -542,7 +542,7 @@ player_restore_health(int amount, bool can_raise_total)
 }
 
 bool
-player_is_hurt(void)
+player_is_hurt()
 {
   return player_get_health() != player_get_max_health();
 }
@@ -562,7 +562,7 @@ player_lose_health(int amount)
 }
 
 int
-player_get_armor(void)
+player_get_armor()
 {
   Item const* const arm = pack_equipped_item(EQUIPMENT_ARMOR);
   Item const* const weapon = pack_equipped_item(EQUIPMENT_RHAND);
@@ -582,13 +582,13 @@ player_get_armor(void)
 }
 
 int
-player_get_level(void)
+player_get_level()
 {
   return player->t_stats.s_lvl;
 }
 
 void
-player_raise_level(void)
+player_raise_level()
 {
   int next_level = e_levels[player->t_stats.s_lvl -1] + 1L;
   if (next_level < player->t_stats.s_exp)
@@ -600,7 +600,7 @@ player_raise_level(void)
 }
 
 void
-player_check_for_level_up(void)
+player_check_for_level_up()
 {
   int i;
   int old_level = player->t_stats.s_lvl;
@@ -622,7 +622,7 @@ player_check_for_level_up(void)
 }
 
 void
-player_lower_level(void)
+player_lower_level()
 {
   --player->t_stats.s_lvl;
   if (player->t_stats.s_lvl == 0)
@@ -634,7 +634,7 @@ player_lower_level(void)
     player->t_stats.s_exp = e_levels[player->t_stats.s_lvl-1] +1L;
 }
 
-int player_get_exp(void)
+int player_get_exp()
 {
   return player->t_stats.s_exp;
 }
