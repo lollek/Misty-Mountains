@@ -16,6 +16,11 @@
 #include <ctype.h>
 #include <assert.h>
 
+#include <vector>
+
+using namespace std;
+
+#include "Coordinate.h"
 #include "potions.h"
 #include "scrolls.h"
 #include "command.h"
@@ -23,7 +28,6 @@
 #include "io.h"
 #include "armor.h"
 #include "pack.h"
-#include "list.h"
 #include "rings.h"
 #include "misc.h"
 #include "level.h"
@@ -37,47 +41,47 @@
 
 #include "wizard.h"
 
-int wizard = false;
+bool wizard = false;
 
 static void
 pr_spec(char type)
 {
   WINDOW* printscr = dupwin(stdscr);
 
-  coord orig_pos;
+  Coordinate orig_pos;
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
-  void* ptr;
-  int max;
+  vector<obj_info>* ptr;
+  size_t max;
   switch (type)
   {
-    case POTION: ptr = potion_info;          max = NPOTIONS;  break;
-    case SCROLL: ptr = scroll_info;          max = NSCROLLS;  break;
-    case RING:   ptr = ring_info;         max = NRINGS;    break;
-    case STICK:  ptr = __wands_ptr();     max = MAXSTICKS; break;
-    case ARMOR:  ptr = NULL;              max = NARMORS;   break;
-    case WEAPON: ptr = weapon_info;         max = MAXWEAPONS;break;
-    default:     ptr = NULL;              max = 0;         break;
+    case POTION: ptr = &potion_info;       max = NPOTIONS;  break;
+    case SCROLL: ptr = &scroll_info;       max = NSCROLLS;  break;
+    case RING:   ptr = &ring_info;         max = NRINGS;    break;
+    case STICK:  ptr = &wands_info;        max = MAXSTICKS; break;
+    case ARMOR:  ptr = nullptr;            max = NARMORS;   break;
+    case WEAPON: ptr = &weapon_info;       max = MAXWEAPONS;break;
+    default:     ptr = nullptr;            max = 0;         break;
   }
 
   char ch = '0';
-  for (int i = 0; i < max; ++i)
+  for (size_t i = 0; i < max; ++i)
   {
-    char const* name;
-    int prob;
-    wmove(printscr, i + 1, 1);
+    string name;
+    size_t prob;
+    wmove(printscr, static_cast<int>(i) + 1, 1);
 
     if (type == ARMOR)
     {
-      name = armor_name((enum armor_t)i);
-      prob = armor_probability((enum armor_t)i);
+      name = armor_name(static_cast<armor_t>(i));
+      prob = static_cast<size_t>(armor_probability(static_cast<armor_t>(i)));
     }
     else
     {
-      name = ((struct obj_info *)ptr)[i].oi_name;
-      prob = ((struct obj_info *)ptr)[i].oi_prob;
+      name = ptr->at(i).oi_name;
+      prob = ptr->at(i).oi_prob;
     }
-    wprintw(printscr, "%c: %s (%d%%)", ch, name, prob);
+    wprintw(printscr, "%c: %s (%d%%)", ch, name.c_str(), prob);
     ch = ch == '9' ? 'a' : (ch + 1);
   }
 
@@ -92,13 +96,13 @@ print_things(void)
   char index_to_char[] = { POTION, SCROLL, FOOD, WEAPON, ARMOR, RING, STICK };
   WINDOW* tmp = dupwin(stdscr);
 
-  coord orig_pos;
+  Coordinate orig_pos;
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
-  for (int i = 0; i < NUMTHINGS; ++i)
+  for (size_t i = 0; i < things.size(); ++i)
   {
-    wmove(tmp, i + 1, 1);
-    wprintw(tmp, "%c %s", index_to_char[i], things[i].oi_name);
+    wmove(tmp, static_cast<int>(i) + 1, 1);
+    wprintw(tmp, "%c %s", index_to_char[i], things.at(i).oi_name.c_str());
   }
 
   wmove(stdscr, orig_pos.y, orig_pos.x);
@@ -116,7 +120,7 @@ wizard_list_items(void)
   touchwin(stdscr);
   refresh();
 
-  pr_spec((char)ch);
+  pr_spec(static_cast<char>(ch));
   io_msg_clear();
   io_msg("--Press any key to continue--");
   io_readchar(false);
@@ -145,7 +149,7 @@ wizard_create_item(void)
   int which = isdigit(ch) ? ch - '0' : ch - 'a' + 10;
   io_msg_clear();
 
-  THING* obj = NULL;
+  item* obj = NULL;
   switch (type)
   {
     case TRAP:
@@ -154,7 +158,7 @@ wizard_create_item(void)
           io_msg("Bad trap id");
         else
         {
-          coord *player_pos = player_get_pos();
+          Coordinate *player_pos = player_get_pos();
           char flags = level_get_flags(player_pos->y, player_pos->x);
           flags &= ~F_REAL;
           flags |= which;
@@ -162,11 +166,7 @@ wizard_create_item(void)
         }
         return;
       }
-    case STICK:
-      {
-        item* wand = wand_create(which);
-        obj = os_item_to_thing(&wand);
-      } break;
+    case STICK: obj = wand_create(which); break;
     case SCROLL: obj = scroll_create(which); break;
     case POTION: obj = potion_create(which); break;
     case FOOD: obj = new_food(which); break;
@@ -180,44 +180,43 @@ wizard_create_item(void)
 
         if (bless == '-')
         {
-          obj->o.o_flags |= ISCURSED;
-          obj->o.o_hplus -= os_rand_range(3) + 1;
+          obj->o_flags |= ISCURSED;
+          obj->o_hplus -= os_rand_range(3) + 1;
         }
         else if (bless == '+')
-          obj->o.o_hplus += os_rand_range(3) + 1;
+          obj->o_hplus += os_rand_range(3) + 1;
       }
       break;
 
     case ARMOR:
       {
-        item* armor = armor_create(-1, false);
-        obj = os_item_to_thing(&armor);
+        obj = armor_create(-1, false);
 
         io_msg("blessing? (+,-,n)");
         char bless = io_readchar(true);
         io_msg_clear();
         if (bless == '-')
         {
-          obj->o.o_flags |= ISCURSED;
-          obj->o.o_arm += os_rand_range(3) + 1;
+          obj->o_flags |= ISCURSED;
+          obj->o_arm += os_rand_range(3) + 1;
         }
         else if (bless == '+')
-          obj->o.o_arm -= os_rand_range(3) + 1;
+          obj->o_arm -= os_rand_range(3) + 1;
       }
       break;
 
     case RING:
       {
         obj = ring_create(which, false);
-        switch (obj->o.o_which)
+        switch (obj->o_which)
         {
           case R_PROTECT: case R_ADDSTR: case R_ADDHIT: case R_ADDDAM:
             io_msg("blessing? (+,-,n)");
             char bless = io_readchar(true);
             io_msg_clear();
             if (bless == '-')
-              obj->o.o_flags |= ISCURSED;
-            obj->o.o_arm = (bless == '-' ? -1 : os_rand_range(2) + 1);
+              obj->o_flags |= ISCURSED;
+            obj->o_arm = (bless == '-' ? -1 : os_rand_range(2) + 1);
             break;
         }
       }
@@ -228,7 +227,7 @@ wizard_create_item(void)
         char buf[MAXSTR] = { '\0' };
         io_msg("how much?");
         if (io_readstr(buf) == 0)
-          obj->o.o_goldval = (short) atoi(buf);
+          obj->o_goldval = static_cast<short>(atoi(buf));
       }
       break;
 
@@ -253,7 +252,7 @@ wizard_show_map(void)
       if (!(real & F_REAL))
         wstandout(hw);
       wmove(hw, y, x);
-      waddcch(hw, (chtype) level_get_ch(y, x));
+      waddcch(hw, static_cast<chtype>(level_get_ch(y, x)));
       if (!real)
         wstandend(hw);
     }
@@ -269,20 +268,19 @@ wizard_levels_and_gear(void)
   /* Give him a sword (+1,+1) */
   if (pack_equipped_item(EQUIPMENT_RHAND) == NULL)
   {
-    THING* obj = weapon_create(TWOSWORD, false);
-    obj->o.o_hplus = 1;
-    obj->o.o_dplus = 1;
+    item* obj = weapon_create(TWOSWORD, false);
+    obj->o_hplus = 1;
+    obj->o_dplus = 1;
     pack_equip_item(obj);
   }
 
   /* And his suit of armor */
   if (pack_equipped_item(EQUIPMENT_ARMOR) == NULL)
   {
-    item* armor = armor_create(PLATE_MAIL, false);
-    THING* obj = os_item_to_thing(&armor);
-    obj->o.o_arm = -5;
-    obj->o.o_flags |= ISKNOW;
-    obj->o.o_count = 1;
+    item* obj = armor_create(PLATE_MAIL, false);
+    obj->o_arm = -5;
+    obj->o_flags |= ISKNOW;
+    obj->o_count = 1;
     pack_equip_item(obj);
   }
 }

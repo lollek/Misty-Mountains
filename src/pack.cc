@@ -85,7 +85,7 @@ pack_print_evaluate_item(item* item)
       break;
 
     case WEAPON: case AMMO:
-      worth = static_cast<int>(weapon_info[item->o_which].oi_worth);
+      worth = static_cast<int>(weapon_info[static_cast<size_t>(item->o_which)].oi_worth);
       worth *= 3 * (item->o_hplus + item->o_dplus) + item->o_count;
       item->o_flags |= ISKNOW;
       break;
@@ -100,7 +100,7 @@ pack_print_evaluate_item(item* item)
     case SCROLL:
       {
         scroll_t scroll = static_cast<scroll_t>(item->o_which);
-        worth = scroll_value(scroll);
+        worth = static_cast<int>(scroll_value(scroll));
         worth *= item->o_count;
         if (!scroll_is_known(scroll))
           worth /= 2;

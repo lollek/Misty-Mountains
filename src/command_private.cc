@@ -155,7 +155,7 @@ command_name_item(void)
 
     case RING:
       already_known = ring_is_known(static_cast<ring_t>(obj->o_which));
-      guess = &ring_info[obj->o_which].oi_guess;
+      guess = &ring_info[static_cast<size_t>(obj->o_which)].oi_guess;
       break;
 
     case POTION:
@@ -261,10 +261,10 @@ command_identify_trap(void)
   if (level_get_ch(delta.y, delta.x) != TRAP)
     io_msg("no trap there");
   else if (player_has_confusing_attack())
-    io_msg(trap_names[os_rand_range(NTRAPS)]);
+    io_msg(trap_names[os_rand_range(NTRAPS)].c_str());
   else
   {
-    io_msg(trap_names[flags & F_TMASK]);
+    io_msg(trap_names[flags & F_TMASK].c_str());
     flags |= F_SEEN;
     level_set_flags(delta.y, delta.x, static_cast<char>(flags));
   }

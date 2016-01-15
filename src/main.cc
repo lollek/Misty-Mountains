@@ -137,19 +137,12 @@ parse_args(int argc, char* const* argv)
 int
 main(int argc, char** argv)
 {
-  bool retval = false;
-
   /* Open scoreboard, so we can modify the score later */
   score_open();
 
   /* Parse args and then init new (or old) game */
-  switch (parse_args(argc, argv))
-  {
-    case LOAD_GAME: retval = init_old_game(); break;
-    case NEW_GAME:  retval = init_new_game(); break;
-  }
-
-  if (retval == false)
+  parse_args(argc, argv);
+  if (init_new_game() == false)
     return 1;
 
   /* Try to crash cleanly, and autosave if possible

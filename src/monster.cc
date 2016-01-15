@@ -514,7 +514,7 @@ monster_name(monster const* monster, char* buf)
   {
     int ch = mvincch(monster->t_pos.y, monster->t_pos.x);
     if (!isupper(ch))
-      ch = os_rand_range(NMONSTERS);
+      ch = static_cast<int>(os_rand_range(NMONSTERS));
     else
       ch -= 'A';
 

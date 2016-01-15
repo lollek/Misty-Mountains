@@ -31,7 +31,7 @@ extern std::vector<obj_info> wands_info;
 void wand_init();
 
 /* Returns the wand's material as a string */
-string const& wand_material(enum wand_t wand);
+std::string const& wand_material(enum wand_t wand);
 
 /* Returns a description of the obj (e.g. for inventory screen) */
 char* wand_description(item const* item, char* buf);

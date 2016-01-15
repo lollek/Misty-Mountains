@@ -456,9 +456,9 @@ player_search(void)
             level_set_ch(y, x, TRAP);
 
             if (player_is_hallucinating())
-              io_msg(trap_names[os_rand_range(NTRAPS)]);
+              io_msg(trap_names[os_rand_range(NTRAPS)].c_str());
             else {
-              io_msg(trap_names[flags & F_TMASK]);
+              io_msg(trap_names[flags & F_TMASK].c_str());
               flags |= F_SEEN;
               level_set_flags(y, x, static_cast<char>(flags));
             }
