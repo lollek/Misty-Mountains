@@ -398,7 +398,8 @@ io_wreadstr(WINDOW* win, char* dest)
     int tmp_x, tmp_y;
     getyx(stdscr, tmp_y, tmp_x);
     Coordinate currpos(tmp_x, tmp_y);
-    Coordinate maxpos = currpos;
+    getmaxyx(stdscr, tmp_y, tmp_x);
+    Coordinate maxpos(tmp_x, tmp_y);
     assert(currpos.y >= 0 && currpos.y < maxpos.y);
     assert(currpos.x >= 0 && currpos.x < maxpos.x);
 #endif
