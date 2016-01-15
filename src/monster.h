@@ -33,7 +33,6 @@ struct Monster {
   char               t_disguise;/* What mimic looks like */
   char               t_oldch;   /* Character that was where it was */
   bool               t_turn;    /* If slowed, is it a turn to move */
-  int                t_reserved;
 };
 
 /* flags for creatures */
