@@ -190,7 +190,7 @@ daemon_doctor(__attribute__((unused)) int)
 
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    item *ring = pack_equipped_item(pack_ring_slots[i]);
+    Item *ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != nullptr && ring->o_which == R_REGEN)
       player_restore_health(1, false);
   }
@@ -235,7 +235,7 @@ daemon_change_visuals(__attribute__((unused)) int)
     return;
 
   /* change the things */
-  for (item* tp : level_items)
+  for (Item* tp : level_items)
     if (cansee(tp->o_pos.y, tp->o_pos.x))
       mvaddcch(tp->o_pos.y, tp->o_pos.x, static_cast<chtype>(rnd_thing()));
 
@@ -259,7 +259,7 @@ void daemon_ring_abilities(__attribute__((unused)) int)
 {
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    item* obj = pack_equipped_item(pack_ring_slots[i]);
+    Item* obj = pack_equipped_item(pack_ring_slots[i]);
     if (obj == nullptr)
       continue;
 

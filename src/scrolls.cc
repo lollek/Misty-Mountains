@@ -120,7 +120,7 @@ void scroll_set_name(enum scroll_t scroll, string const& new_name)
 static bool
 enchant_players_armor(void)
 {
-  item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == nullptr)
   {
     switch (os_rand_range(3))
@@ -290,7 +290,7 @@ food_detection(void)
   bool food_seen = false;
   wclear(hw);
 
-  for (item const* obj : level_items) {
+  for (Item const* obj : level_items) {
     if (obj->o_type == FOOD)
     {
       food_seen = true;
@@ -309,7 +309,7 @@ food_detection(void)
 static bool
 player_enchant_weapon(void)
 {
-  item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
+  Item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon == nullptr)
   {
     switch (os_rand_range(2))
@@ -346,7 +346,7 @@ remove_curse(void)
 static bool
 protect_armor(void)
 {
-  item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == nullptr)
   {
     switch (os_rand_range(2))
@@ -365,7 +365,7 @@ protect_armor(void)
 bool
 scroll_read(void)
 {
-  item* obj = pack_get_item("read", SCROLL);
+  Item* obj = pack_get_item("read", SCROLL);
   if (obj == nullptr)
     return false;
 
@@ -378,7 +378,7 @@ scroll_read(void)
   /* Get rid of the thing */
   bool discardit = obj->o_count == 1;
   pack_remove(obj, false, false);
-  item* orig_obj = obj;
+  Item* orig_obj = obj;
 
   switch (obj->o_which)
   {
@@ -456,7 +456,7 @@ scroll_read(void)
 }
 
 void
-scroll_description(item const* item, char* buf)
+scroll_description(Item const* item, char* buf)
 {
   struct obj_info* op = &scroll_info[static_cast<size_t>(item_subtype(item))];
   char* ptr = buf;
@@ -474,10 +474,10 @@ scroll_description(item const* item, char* buf)
     ptr += sprintf(ptr, " titled '%s'", s_names.at(static_cast<size_t>(item_subtype(item))).c_str());
 }
 
-item*
+Item*
 scroll_create(int which)
 {
-  item* scroll = new item();
+  Item* scroll = new Item();
 
   if (which == -1)
     which = static_cast<int>(pick_one(scroll_info, NSCROLLS));

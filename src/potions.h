@@ -31,6 +31,6 @@ void potions_init(void);
 
 /* Functions */
 bool potion_quaff_something(void);  /* Quaff a potion from the pack */
-void potion_description(item const* obj, char buf[]);
+void potion_description(Item const* obj, char buf[]);
 
-item* potion_create(int which);
+Item* potion_create(int which);

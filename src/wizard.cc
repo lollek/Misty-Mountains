@@ -149,7 +149,7 @@ wizard_create_item(void)
   int which = isdigit(ch) ? ch - '0' : ch - 'a' + 10;
   io_msg_clear();
 
-  item* obj = nullptr;
+  Item* obj = nullptr;
   switch (type)
   {
     case TRAP:
@@ -268,7 +268,7 @@ wizard_levels_and_gear(void)
   /* Give him a sword (+1,+1) */
   if (pack_equipped_item(EQUIPMENT_RHAND) == nullptr)
   {
-    item* obj = weapon_create(TWOSWORD, false);
+    Item* obj = weapon_create(TWOSWORD, false);
     obj->o_hplus = 1;
     obj->o_dplus = 1;
     pack_equip_item(obj);
@@ -277,7 +277,7 @@ wizard_levels_and_gear(void)
   /* And his suit of armor */
   if (pack_equipped_item(EQUIPMENT_ARMOR) == nullptr)
   {
-    item* obj = armor_create(PLATE_MAIL, false);
+    Item* obj = armor_create(PLATE_MAIL, false);
     obj->o_arm = -5;
     obj->o_flags |= ISKNOW;
     obj->o_count = 1;

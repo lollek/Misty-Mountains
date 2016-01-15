@@ -34,7 +34,7 @@ void wand_init();
 std::string const& wand_material(enum wand_t wand);
 
 /* Returns a description of the obj (e.g. for inventory screen) */
-char* wand_description(item const* item, char* buf);
+char* wand_description(Item const* item, char* buf);
 
 /* Does the player know what the wand does? */
 void wand_set_known(enum wand_t wand);
@@ -47,7 +47,7 @@ size_t wand_get_worth(enum wand_t wand);
 void wand_set_name(enum wand_t wand, std::string const& new_name);
 
 /* Set up a new wand */
-item* wand_create(int which);
+Item* wand_create(int which);
 
 /* Perform a zap with a wand */
 bool wand_zap();

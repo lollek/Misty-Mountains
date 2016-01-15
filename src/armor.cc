@@ -38,7 +38,7 @@ armor_for_monster(monster const* mon) {
 
 bool
 armor_command_wear() {
-  item* obj = pack_get_item("wear", ARMOR);
+  Item* obj = pack_get_item("wear", ARMOR);
 
   if (obj == nullptr)
     return false;
@@ -81,7 +81,7 @@ armor_type_random() {
 
 void
 armor_rust() {
-  item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == nullptr || arm->o_type != ARMOR || arm->o_which == LEATHER ||
       arm->o_arm >= 9)
     return;
@@ -97,7 +97,7 @@ armor_rust() {
 }
 
 void
-armor_description(item const* item, char* buf) {
+armor_description(Item const* item, char* buf) {
   char *ptr = buf;
   char const* obj_name = armor_name(static_cast<armor_t>(item_subtype(item)));
   int bonus_ac = armor_ac(static_cast<armor_t>(item_subtype(item))) -item_armor(item);
@@ -114,12 +114,12 @@ armor_description(item const* item, char* buf) {
     ptr += sprintf(ptr, " called %s", item_nickname(item).c_str());
 }
 
-item*
+Item*
 armor_create(int which, int random_stats) {
   if (which == -1)
     which = armor_type_random();
 
-  item* armor = new item();
+  Item* armor = new Item();
   armor->o_type = ARMOR;
   armor->o_which = which;
   armor->o_arm = armor_ac(static_cast<armor_t>(armor->o_which));

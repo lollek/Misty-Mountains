@@ -206,7 +206,7 @@ command_wizard_do(char ch)
 
     case CTRL('~'):
      {
-       item* item = pack_get_item("charge", STICK);
+       Item* item = pack_get_item("charge", STICK);
        if (item != nullptr)
          item->o_charges = 10000;
      }

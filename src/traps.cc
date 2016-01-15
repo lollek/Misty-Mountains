@@ -140,7 +140,7 @@ trap_arrow_player(void)
   }
   else
   {
-    item* arrow = weapon_create(ARROW, false);
+    Item* arrow = weapon_create(ARROW, false);
     arrow->o_count = 1;
     arrow->o_pos = *player_get_pos();
     weapon_missile_fall(arrow, false);
@@ -169,7 +169,7 @@ trap_arrow_monster(monster* victim)
   }
   else
   {
-    item* arrow = weapon_create(ARROW, false);
+    Item* arrow = weapon_create(ARROW, false);
     arrow->o_count = 1;
     arrow->o_pos = victim->t_pos;
     weapon_missile_fall(arrow, false);

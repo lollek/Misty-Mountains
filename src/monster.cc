@@ -299,7 +299,7 @@ monster_on_death(monster* monster, bool pr)
     case 'L':
       if (fallpos(&monster->t_pos, &monster->t_room->r_gold))
       {
-        item* gold = new item();
+        Item* gold = new Item();
         gold->o_type = GOLD;
         gold->o_goldval = GOLDCALC;
         if (player_save_throw(VS_MAGIC))
@@ -327,7 +327,7 @@ monster_remove_from_screen(Coordinate* mp, monster* tp, bool waskill)
   assert(mp != nullptr);
   assert(tp != nullptr);
 
-  for (item* obj : tp->t_pack) {
+  for (Item* obj : tp->t_pack) {
     obj->o_pos = tp->t_pos;
     if (waskill)
       weapon_missile_fall(obj, false);
@@ -445,7 +445,7 @@ monster_do_special_ability(monster** monster)
 
     /* Nymph's steal a magic item and disappears */
     case 'N': {
-      item* steal = pack_find_magic_item();
+      Item* steal = pack_find_magic_item();
       if (steal != nullptr)
       {
         monster_remove_from_screen(&(*monster)->t_pos, *monster, false);
@@ -653,7 +653,7 @@ monster_show_all_hidden(void)
 }
 
 void
-monster_aggro_all_which_desire_item(item* item)
+monster_aggro_all_which_desire_item(Item* item)
 {
   for (monster* mon : monster_list) {
     if (mon->t_dest == &item->o_pos) {
@@ -721,7 +721,7 @@ monster_show_if_magic_inventory(void)
 {
   bool atleast_one = false;
   for (monster* mon : monster_list) {
-    for (item* item : mon->t_pack) {
+    for (Item* item : mon->t_pack) {
       if (is_magic(item))
       {
         atleast_one = true;
@@ -762,7 +762,7 @@ monster_polymorph(monster* target)
   if (target->t_type == 'F')
     player_remove_held();
 
-  list<item*> target_pack = target->t_pack;
+  list<Item*> target_pack = target->t_pack;
   monster_list.remove(target);
 
   bool was_seen = monster_seen_by_player(target);

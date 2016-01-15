@@ -52,11 +52,11 @@ add_ring_attack_modifiers(struct attack_modifier* mod)
 {
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    item const* ring_thing = pack_equipped_item(pack_ring_slots[i]);
+    Item const* ring_thing = pack_equipped_item(pack_ring_slots[i]);
     if (ring_thing == nullptr)
       continue;
 
-    item const* ring = ring_thing;
+    Item const* ring = ring_thing;
 
     if (ring->o_which == R_ADDDAM)
       mod->to_dmg += ring->o_arm;
@@ -100,7 +100,7 @@ add_strength_attack_modifiers(int strength, struct attack_modifier* mod)
 }
 
 static void
-calculate_attacker(monster* attacker, item* weapon, bool thrown,
+calculate_attacker(monster* attacker, Item* weapon, bool thrown,
                   struct attack_modifier* mod)
 {
   if (weapon != nullptr)
@@ -118,7 +118,7 @@ calculate_attacker(monster* attacker, item* weapon, bool thrown,
     add_ring_attack_modifiers(mod);
     if (thrown)
     {
-      item const* held_weapon = pack_equipped_item(EQUIPMENT_RHAND);
+      Item const* held_weapon = pack_equipped_item(EQUIPMENT_RHAND);
       if ((weapon->o_flags & ISMISL) && held_weapon != nullptr
           && held_weapon->o_which == weapon->o_launch)
       {
@@ -140,7 +140,7 @@ calculate_attacker(monster* attacker, item* weapon, bool thrown,
  *
  * Attacker or defender can be nullptr, in that case it's the player */
 static bool
-roll_attacks(monster* attacker, monster* defender, item* weapon, bool thrown)
+roll_attacks(monster* attacker, monster* defender, Item* weapon, bool thrown)
 {
   /* TODO: remove __player_ptr reference */
        if (attacker == nullptr) attacker = __player_ptr();
@@ -221,7 +221,7 @@ print_attack(bool hit, char const* att, char const* def)
 }
 
 int
-fight_against_monster(Coordinate const* monster_pos, item* weapon, bool thrown)
+fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
 {
   monster* const player = nullptr;
   monster* tp = level_get_monster(monster_pos->y, monster_pos->x);
@@ -351,7 +351,7 @@ fight_swing_hits(int at_lvl, int op_arm, int wplus)
 }
 
 void
-fight_missile_miss(item const* weap, string const& mname)
+fight_missile_miss(Item const* weap, string const& mname)
 {
   if (weap->o_type == WEAPON)
     io_msg("the %s misses %s", weapon_info[static_cast<size_t>(weap->o_which)].oi_name.c_str(), mname.c_str());

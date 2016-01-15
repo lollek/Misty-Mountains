@@ -273,7 +273,7 @@ rooms_create(void)
 
     /* Put the gold in */
     if (os_rand_range(2) == 0 && (!pack_contains_amulet() || level >= level_max)) {
-      item *gold = new item();
+      Item *gold = new Item();
       gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
       room_find_floor(&rooms[i], &rooms[i].r_gold, false, false);
       gold->o_pos = rooms[i].r_gold;

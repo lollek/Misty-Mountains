@@ -120,7 +120,7 @@ chase(monster *tp, Coordinate *ee)
         if (ch == SCROLL)
         {
           auto obj = find_if(level_items.cbegin(), level_items.cend(),
-                      [&] (item const* i) {
+                      [&] (Item const* i) {
                         return i->o_pos.y == y && i->o_pos.x == x;
               });
 
@@ -240,7 +240,7 @@ over:
 	    return( fight_against_player(th) );
 	else if (m_this == *th->t_dest)
 	{
-            for (item *obj : level_items)
+            for (Item *obj : level_items)
 		if (th->t_dest == &obj->o_pos)
 		{
                     level_items.remove(obj);

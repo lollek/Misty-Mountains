@@ -142,7 +142,7 @@ void monster_aggravate_all(void);
 /* Show all monsters as they truly are */
 void monster_show_all_hidden(void);
 /* Does any monster desire this item? If so, aggro player */
-void monster_aggro_all_which_desire_item(item* item);
+void monster_aggro_all_which_desire_item(Item* item);
 /* Hide all invisible monsters */
 void monster_hide_all_invisible(void);
 /* Show all monsters that the player does not currently sees

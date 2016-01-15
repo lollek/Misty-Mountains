@@ -26,7 +26,7 @@ monster_find_new_target(monster* monster)
     return;
   }
 
-  for (item* obj : level_items) {
+  for (Item* obj : level_items) {
     if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
       continue;
 

@@ -36,7 +36,7 @@ struct monster {
   Coordinate         t_pos;     /* Position */
   Coordinate*        t_dest;    /* Where it is running to */
   room*              t_room;    /* Current room for thing */
-  std::list<item*> t_pack;    /* What the thing is carrying */
+  std::list<Item*> t_pack;    /* What the thing is carrying */
 
   int                t_flags;   /* State word */
   char               t_type;    /* What it is */
@@ -74,15 +74,15 @@ struct monster {
 extern std::vector<obj_info> things;
 
 /* Return the name of something as it would appear in an inventory. */
-char* inv_name(char* buf, item const* item, bool drop);
+char* inv_name(char* buf, Item const* item, bool drop);
 
 /* Put something down */
 bool drop(void);
 
 /* Return a new thing */
-item* new_thing(void);
-item* new_amulet(void);
-item* new_food(int which);
+Item* new_thing(void);
+Item* new_amulet(void);
+Item* new_food(int which);
 
 /* Pick an item out of a list of nitems possible objects */
 size_t pick_one(std::vector<obj_info>& start, size_t nitems);

@@ -45,7 +45,7 @@ int const level_amulet = 26;
 
 PLACE          level_places[MAXLINES*MAXCOLS];
 Coordinate     level_stairs;
-list<item*>    level_items;
+list<Item*>    level_items;
 int            level = 1;
 int            level_max = 1;
 int            levels_without_food = 0;
@@ -66,7 +66,7 @@ treas_room(void)
   for (int i = 0; i < num_monsters; ++i)
   {
     Coordinate monster_pos;
-    item* item = new_thing();
+    Item* item = new_thing();
 
     room_find_floor(room, &monster_pos, 2 * MAXTRIES, false);
     item->o_pos = monster_pos;
@@ -119,7 +119,7 @@ put_things(void)
     if (os_rand_range(100) < 36)
     {
       /* Pick a new object and link it in the list */
-      item* obj = new_thing();
+      Item* obj = new_thing();
       level_items.push_back(obj);
 
       /* Put it somewhere */
@@ -131,7 +131,7 @@ put_things(void)
    * amulet yet, put it somewhere on the ground */
   if (level >= level_amulet && !pack_contains_amulet())
   {
-    item* amulet = new_amulet();
+    Item* amulet = new_amulet();
     level_items.push_back(amulet);
 
     /* Put it somewhere */

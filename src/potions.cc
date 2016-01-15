@@ -76,7 +76,7 @@ potions_init(void)
 /** is_quaffable
  * Can we dring thing? */
 static bool
-is_quaffable(item const* item)
+is_quaffable(Item const* item)
 {
   if (item == nullptr)
     return false;
@@ -100,7 +100,7 @@ potion_learn(enum potion_t potion)
 bool
 potion_quaff_something(void)
 {
-  item* obj = pack_get_item("quaff", POTION);
+  Item* obj = pack_get_item("quaff", POTION);
 
   /* Make certain that it is somethings that we want to drink */
   if (!is_quaffable(obj))
@@ -147,7 +147,7 @@ potion_quaff_something(void)
       if (!level_items.empty())
       {
         wclear(hw);
-        for (item* item : level_items) {
+        for (Item* item : level_items) {
           if (is_magic(item))
           {
             show = true;
@@ -233,7 +233,7 @@ potion_quaff_something(void)
 }
 
 void
-potion_description(item const* item, char buf[])
+potion_description(Item const* item, char buf[])
 {
   struct obj_info* op = &potion_info.at(static_cast<size_t>(item_subtype(item)));
   if (op->oi_know)
@@ -257,10 +257,10 @@ potion_description(item const* item, char buf[])
   }
 }
 
-item*
+Item*
 potion_create(int which)
 {
-  item* pot = new item();
+  Item* pot = new Item();
 
   if (which == -1)
     which = static_cast<int>(pick_one(potion_info, NPOTIONS));

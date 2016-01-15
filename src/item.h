@@ -19,7 +19,8 @@
 #define ISPROT	0000040		/* armor is permanently protected */
 
 
-struct item {
+class Item {
+public:
   Coordinate    o_pos;                 /* Where it lives on the screen */
   std::string   o_label;               /* Label for object */
   int           o_type;                /* What kind of object it is */
@@ -33,32 +34,34 @@ struct item {
   char          o_packch;              /* What character it is in the pack */
   damage        o_damage;              /* Damage if used like sword */
   damage        o_hurldmg;             /* Damage if thrown */
+
+private:
 };
 
 /* Data */
-static inline Coordinate* item_pos(item* item)
+static inline Coordinate* item_pos(Item* item)
 { return &item->o_pos; }
-static inline std::string const& item_nickname(item const* item)
+static inline std::string const& item_nickname(Item const* item)
 { return item->o_label; }
-static inline int item_type(item const* item)
+static inline int item_type(Item const* item)
 { return item->o_type; }
-static inline int item_subtype(item const* item)
+static inline int item_subtype(Item const* item)
 { return item->o_which; }
-static inline int item_count(item const* item)
+static inline int item_count(Item const* item)
 { return item->o_count; }
-static inline int item_charges(item const* item)
+static inline int item_charges(Item const* item)
 { return item->o_charges; }
-static inline int item_armor(item const* item)
+static inline int item_armor(Item const* item)
 { return item->o_arm; }
-static inline struct damage const* item_throw_damage(item const* item)
+static inline struct damage const* item_throw_damage(Item const* item)
 { return &item->o_hurldmg; }
-static inline struct damage const* item_damage(item const* item)
+static inline struct damage const* item_damage(Item const* item)
 { return &item->o_damage; }
-static inline int item_bonus_hit(item const* item)
+static inline int item_bonus_hit(Item const* item)
 { return item->o_hplus; }
-static inline int item_bonus_damage(item const* item)
+static inline int item_bonus_damage(Item const* item)
 { return item->o_dplus; }
 
 /* Flags */
-static inline bool item_is_known(item const* item)
+static inline bool item_is_known(Item const* item)
 { return item->o_flags & ISKNOW; }

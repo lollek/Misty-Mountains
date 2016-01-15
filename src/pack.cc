@@ -43,11 +43,11 @@ using namespace std;
 int const PACK_RENAMEABLE = -1;
 
 int                  pack_gold = 0;
-static list<item*> player_pack;
+static list<Item*> player_pack;
 
 static struct equipment_t
 {
-  item* ptr;
+  Item* ptr;
   string const description;
 } equipment[NEQUIPMENT] = {
   { nullptr, "Body" },
@@ -71,7 +71,7 @@ pack_size(void)
 }
 
 static size_t
-pack_print_evaluate_item(item* item)
+pack_print_evaluate_item(Item* item)
 {
   int worth = 0;
   struct obj_info *op;
@@ -173,7 +173,7 @@ pack_char(void)
 }
 
 void
-pack_move_msg(item* obj)
+pack_move_msg(Item* obj)
 {
   char buf[MAXSTR];
   io_msg("moved onto %s", inv_name(buf, obj, true));
@@ -196,7 +196,7 @@ pack_add_money(int value)
 }
 
 static void
-pack_remove_from_floor(item* obj)
+pack_remove_from_floor(Item* obj)
 {
   Coordinate const* player_pos = player_get_pos();
 
@@ -209,7 +209,7 @@ pack_remove_from_floor(item* obj)
 }
 
 bool
-pack_add(item* obj, bool silent)
+pack_add(Item* obj, bool silent)
 {
   Coordinate* player_pos = player_get_pos();
   bool from_floor = false;
@@ -238,7 +238,7 @@ pack_add(item* obj, bool silent)
   /* See if we can stack it with something else in the pack */
   if (obj->o_type == POTION || obj->o_type == SCROLL || obj->o_type == FOOD
       || obj->o_type == AMMO)
-    for (item* ptr : player_pack) {
+    for (Item* ptr : player_pack) {
       if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which
           && ptr->o_hplus == obj->o_hplus && ptr->o_dplus == obj->o_dplus)
       {
@@ -287,14 +287,14 @@ pack_add(item* obj, bool silent)
   return true;
 }
 
-item* pack_remove(item* obj, bool newobj, bool all) {
-  item* return_value = obj;
+Item* pack_remove(Item* obj, bool newobj, bool all) {
+  Item* return_value = obj;
 
   /* If there are several, we need to alloate a new item to hold it */
   if (obj->o_count > 1 && !all) {
     obj->o_count--;
     if (newobj) {
-      return_value = new item(*obj);
+      return_value = new Item(*obj);
       return_value->o_count = 1;
     }
 
@@ -308,7 +308,7 @@ item* pack_remove(item* obj, bool newobj, bool all) {
 
 
 void
-pack_pick_up(item* obj, bool force)
+pack_pick_up(Item* obj, bool force)
 {
   if (player_is_levitating())
     return;
@@ -340,12 +340,12 @@ pack_pick_up(item* obj, bool force)
 }
 
 
-item*
+Item*
 pack_find_magic_item(void)
 {
   int nobj = 0;
 
-  for (item* obj : player_pack) {
+  for (Item* obj : player_pack) {
     if (is_magic(obj) && os_rand_range(++nobj) == 0) {
       return obj;
     }
@@ -353,7 +353,7 @@ pack_find_magic_item(void)
   return nullptr;
 }
 
-item*
+Item*
 pack_get_item(std::string const& purpose, int type)
 {
   if (pack_count_items_of_type(type) < 1)
@@ -375,7 +375,7 @@ pack_get_item(std::string const& purpose, int type)
     return nullptr;
   }
 
-  for (item* obj : player_pack) {
+  for (Item* obj : player_pack) {
     if (obj->o_packch == ch) {
       return obj;
     }
@@ -402,7 +402,7 @@ pack_count_items_of_type(int type)
 {
   int num = 0;
 
-  for (item const* list : player_pack) {
+  for (Item const* list : player_pack) {
     if (!type || type == list->o_type ||
         (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))) {
       ++num;
@@ -415,13 +415,13 @@ bool
 pack_contains_amulet(void)
 {
   return find_if(player_pack.cbegin(), player_pack.cend(),
-      [] (item const* ptr) {
+      [] (Item const* ptr) {
     return ptr->o_type == AMULET;
   }) != player_pack.cend();
 }
 
 bool
-pack_contains(item *item)
+pack_contains(Item *item)
 {
   return find(player_pack.cbegin(), player_pack.cend(), item) != player_pack.cend();
 }
@@ -468,7 +468,7 @@ pack_print_inventory(int type)
 
   int num_items = 0;
   /* Print out all items */
-  for (item const* list : player_pack) {
+  for (Item const* list : player_pack) {
     if (!type || type == list->o_type ||
         (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))) {
       /* Print out the item and move to next row */
@@ -501,7 +501,7 @@ pack_evaluate(void)
     value += pack_print_evaluate_item(pack_equipped_item(static_cast<equipment_pos>(i)));
 
   addstr("\nWorth  Item  [Inventory]\n");
-  for (item* obj : player_pack) {
+  for (Item* obj : player_pack) {
     value += pack_print_evaluate_item(obj);
   }
 
@@ -510,7 +510,7 @@ pack_evaluate(void)
   return value;
 }
 
-item*
+Item*
 pack_equipped_item(enum equipment_pos pos)
 {
   assert (pos >= 0 && pos < (sizeof equipment / sizeof (*equipment)));
@@ -518,7 +518,7 @@ pack_equipped_item(enum equipment_pos pos)
 }
 
 bool
-pack_equip_item(item* item)
+pack_equip_item(Item* item)
 {
   enum equipment_pos pos;
   switch(item->o_type)
@@ -558,7 +558,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     ? "wielding"
     : "wearing";
 
-  item* obj = pack_equipped_item(pos);
+  Item* obj = pack_equipped_item(pos);
   if (obj == nullptr)
   {
     io_msg("not %s anything!", doing);
@@ -595,18 +595,18 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
 }
 
 
-item*
+Item*
 pack_find_arrow(void)
 {
   auto results = find_if(player_pack.begin(), player_pack.end(),
-      [] (item *i) {
+      [] (Item *i) {
     return i->o_which == ARROW;
   });
 
   return results == player_pack.end() ? nullptr : *results;
 }
 
-static void pack_identify_item_set_know(item* item, vector<obj_info>& info) {
+static void pack_identify_item_set_know(Item* item, vector<obj_info>& info) {
   size_t subtype = static_cast<size_t>(item_subtype(item));
   info.at(subtype).oi_know = true;
   item->o_flags |= ISKNOW;
@@ -623,7 +623,7 @@ pack_identify_item(void)
     return;
   }
 
-  item* obj = pack_get_item("identify", 0);
+  Item* obj = pack_get_item("identify", 0);
   if (obj == nullptr)
     return;
 

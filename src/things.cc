@@ -39,7 +39,7 @@ vector<obj_info> things = {
 };
 
 char*
-inv_name(char* buf, item const* item, bool drop)
+inv_name(char* buf, Item const* item, bool drop)
 {
   buf[MAXSTR -1] = '\0';
   switch (item->o_type)
@@ -72,13 +72,13 @@ inv_name(char* buf, item const* item, bool drop)
   return buf;
 }
 
-item*
+Item*
 new_food(int which)
 {
   /* Reset levels-without-food counter */
   levels_without_food = 0;
 
-  item* cur = new item();
+  Item* cur = new Item();
   cur->o_count = 1;
   cur->o_type = FOOD;
   switch (which)
@@ -89,10 +89,10 @@ new_food(int which)
   return cur;
 }
 
-item*
+Item*
 new_amulet(void)
 {
-  item* obj       = new item();
+  Item* obj       = new Item();
   obj->o_damage  = {1, 2};
   obj->o_hurldmg = {1, 2};
   obj->o_type    = AMULET;
@@ -100,7 +100,7 @@ new_amulet(void)
   return obj;
 }
 
-item*
+Item*
 new_thing(void)
 {
   /* Decide what kind of object it will be
@@ -111,7 +111,7 @@ new_thing(void)
   else
     r = static_cast<int>(pick_one(things, things.size()));
 
-  item* cur = nullptr;
+  Item* cur = nullptr;
   switch (r)
   {
     case 0: cur = potion_create(-1); break;
@@ -155,7 +155,7 @@ discovered_by_type(char type, vector<obj_info>& info, size_t max_items)
   Coordinate orig_pos;
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
-  item printable_object;
+  Item printable_object;
   memset(&printable_object, 0, sizeof(printable_object));
   printable_object.o_type = type;
   printable_object.o_flags = 0;

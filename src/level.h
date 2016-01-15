@@ -24,7 +24,7 @@ extern int const level_amulet;                    /* Level where amulet starts *
 
 extern PLACE              level_places[MAXLINES*MAXCOLS];  /* level map */
 extern Coordinate         level_stairs;                    /* Location of staircase */
-extern std::list<item*>   level_items;                     /* List of items on level */
+extern std::list<Item*>   level_items;                     /* List of items on level */
 extern int                level;                           /* What level she is on */
 extern int                level_max;                       /* Deepest player has gone */
 extern int                levels_without_food;             /* Levels without food */

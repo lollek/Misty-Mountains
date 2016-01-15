@@ -36,6 +36,6 @@ bool scroll_is_known(enum scroll_t scroll); /* Knows what scroll does? */
 size_t scroll_value(enum scroll_t scroll);
 void scroll_set_name(enum scroll_t wand, std::string const& new_name);
 
-void scroll_description(item const* item, char* buf);
+void scroll_description(Item const* item, char* buf);
 
-item* scroll_create(int which);
+Item* scroll_create(int which);

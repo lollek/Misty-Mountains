@@ -22,12 +22,12 @@ enum weapon_type
 extern std::vector<obj_info> weapon_info;
 
 /* Drop an item someplace around here. */
-void weapon_missile_fall(item* obj, bool pr);
+void weapon_missile_fall(Item* obj, bool pr);
 
-item* weapon_create(int which, bool random_stats);
+Item* weapon_create(int which, bool random_stats);
 
-bool weapon_wield(item* weapon);
+bool weapon_wield(Item* weapon);
 bool weapon_wield_last_used();
-void weapon_set_last_used(item* weapon);
+void weapon_set_last_used(Item* weapon);
 
-void weapon_description(item const* item, char* buf);
+void weapon_description(Item const* item, char* buf);

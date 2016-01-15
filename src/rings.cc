@@ -94,7 +94,7 @@ ring_init(void)
 bool
 ring_put_on(void)
 {
-  item* obj = pack_get_item("put on", RING);
+  Item* obj = pack_get_item("put on", RING);
 
   /* Make certain that it is somethings that we want to wear */
   if (obj == nullptr)
@@ -140,7 +140,7 @@ ring_take_off(void)
   else
     ring = EQUIPMENT_LRING;
 
-  item* obj = pack_equipped_item(ring);
+  Item* obj = pack_equipped_item(ring);
 
   if (!pack_unequip(ring, false))
     return false;
@@ -173,7 +173,7 @@ ring_drain_amount(void)
 
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    item *ring = pack_equipped_item(pack_ring_slots[i]);
+    Item *ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != nullptr)
       total_eat += uses[ring->o_which];
   }
@@ -188,7 +188,7 @@ ring_is_known(enum ring_t ring)
 }
 
 void
-ring_description(item const* item, char* buf)
+ring_description(Item const* item, char* buf)
 {
   obj_info* op = &ring_info.at(static_cast<size_t>(item_subtype(item)));
   buf += sprintf(buf, "%s ring", r_stones.at(static_cast<size_t>(item_subtype(item))).c_str());
@@ -211,13 +211,13 @@ ring_description(item const* item, char* buf)
     sprintf(buf, " called %s", op->oi_guess.c_str());
 }
 
-item*
+Item*
 ring_create(int which, bool random_stats)
 {
   if (which == -1)
     which = static_cast<int>(pick_one(ring_info, NRINGS));
 
-  item* ring = new item();
+  Item* ring = new Item();
   ring->o_type = RING;
   ring->o_which = which;
 

@@ -11,7 +11,7 @@ void look(bool wakeup);          /* A quick glance all around the player */
 /* Erase the area shown by a lamp in a dark room. */
 void erase_lamp(Coordinate const* pos, struct room const* room);
 
-item* find_obj(int y, int x); /* Find the unclaimed object at y, x */
+Item* find_obj(int y, int x); /* Find the unclaimed object at y, x */
 
 std::string vowelstr(std::string const& str); /* Return "n" if vowel else "" */
 
@@ -24,7 +24,7 @@ int spread(int nm);            /* Give a spread around a given number (+/- 20%) 
 void call_it(std::string const& what, struct obj_info *info); /* Call object something */
 
 char rnd_thing(void);         /* Pick a random thing appropriate for this level */
-bool is_magic(item const* obj);   /* Returns true if an object radiates magic */
+bool is_magic(Item const* obj);   /* Returns true if an object radiates magic */
 bool seen_stairs(void);        /* Return true if the player has seen the stairs */
 void invis_on(void);         /* Turn on the ability to see invisible */
 

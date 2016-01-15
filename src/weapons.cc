@@ -23,7 +23,7 @@ using namespace std;
 
 #include "weapons.h"
 
-static item* last_wielded_weapon = nullptr;
+static Item* last_wielded_weapon = nullptr;
 
 #define NO_WEAPON '\0'
 
@@ -59,7 +59,7 @@ vector<obj_info> weapon_info = {
 };
 
 void
-weapon_missile_fall(item* obj, bool pr)
+weapon_missile_fall(Item* obj, bool pr)
 {
   Coordinate fpos;
   if (fallpos(&obj->o_pos, &fpos))
@@ -84,13 +84,13 @@ weapon_missile_fall(item* obj, bool pr)
   delete obj;
 }
 
-item*
+Item*
 weapon_create(int which, bool random_stats)
 {
   if (which == -1)
     which = static_cast<int>(pick_one(weapon_info, MAXWEAPONS));
 
-  item* weap = new item();
+  Item* weap = new Item();
   weap->o_type  = WEAPON;
   weap->o_which = which;
 
@@ -129,9 +129,9 @@ weapon_create(int which, bool random_stats)
 }
 
 bool
-weapon_wield(item* weapon)
+weapon_wield(Item* weapon)
 {
-  item* currently_wielding = pack_equipped_item(EQUIPMENT_RHAND);
+  Item* currently_wielding = pack_equipped_item(EQUIPMENT_RHAND);
   if (currently_wielding != nullptr)
     if (!pack_unequip(EQUIPMENT_RHAND, true))
       return true;
@@ -146,7 +146,7 @@ weapon_wield(item* weapon)
 }
 
 void
-weapon_set_last_used(item* weapon)
+weapon_set_last_used(Item* weapon)
 {
   last_wielded_weapon = weapon;
 }
@@ -165,7 +165,7 @@ weapon_wield_last_used(void)
 }
 
 void
-weapon_description(item const* item, char* buf)
+weapon_description(Item const* item, char* buf)
 {
   char* ptr = buf;
   string const& obj_name = weapon_info[static_cast<size_t>(item_subtype(item))].oi_name;

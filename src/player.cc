@@ -70,7 +70,7 @@ player_get_strength_bonuses(void)
   int bonuses = 0;
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    item const* ring = pack_equipped_item(pack_ring_slots[i]);
+    Item const* ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != nullptr && ring->o_which == R_ADDSTR)
       bonuses += ring->o_arm;
   }
@@ -94,27 +94,27 @@ player_init(void)
   pack_add(new_food(-1), true);
 
   /* And his suit of armor */
-  item* armor = armor_create(RING_MAIL, false);
+  Item* armor = armor_create(RING_MAIL, false);
   armor->o_flags |= ISKNOW;
   armor->o_arm -= 1;
   pack_equip_item(armor);
 
   /* Give him his weaponry.  First a mace. */
-  item* mace = weapon_create(MACE, false);
+  Item* mace = weapon_create(MACE, false);
   mace->o_hplus  = 1;
   mace->o_dplus  = 1;
   mace->o_flags |= ISKNOW;
   pack_equip_item(mace);
 
   /* Now a +1 bow */
-  item* bow = weapon_create(BOW, false);
+  Item* bow = weapon_create(BOW, false);
   bow->o_hplus  = 1;
   bow->o_flags |= ISKNOW;
   pack_add(bow, true);
   weapon_set_last_used(bow);
 
   /* Now some arrows */
-  item* arrow = weapon_create(ARROW, false);
+  Item* arrow = weapon_create(ARROW, false);
   arrow->o_count  = os_rand_range(15) + 25;
   arrow->o_flags |= ISKNOW;
   pack_add(arrow, true);
@@ -132,7 +132,7 @@ player_save_throw(int which)
   if (which == VS_MAGIC)
     for (int i = 0; i < PACK_RING_SLOTS; ++i)
     {
-      item* ring = pack_equipped_item(pack_ring_slots[i]);
+      Item* ring = pack_equipped_item(pack_ring_slots[i]);
       if (ring != nullptr && ring->o_which == R_PROTECT)
         which -= ring->o_arm;
     }
@@ -247,7 +247,7 @@ void player_remove_hallucinating(__attribute__((unused)) int)
   }
 
   /* undo the things */
-  for (item* tp : level_items) {
+  for (Item* tp : level_items) {
     if (cansee(tp->o_pos.y, tp->o_pos.x)) {
       mvaddcch(tp->o_pos.y, tp->o_pos.x, static_cast<chtype>(tp->o_type));
     }
@@ -575,8 +575,8 @@ player_lose_health(int amount)
 int
 player_get_armor(void)
 {
-  item const* const arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  item const* const weapon = pack_equipped_item(EQUIPMENT_RHAND);
+  Item const* const arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  Item const* const weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
   int ac = arm ? arm->o_arm : player.t_stats.s_arm;
   if (weapon)
@@ -584,7 +584,7 @@ player_get_armor(void)
 
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    item const* ring = pack_equipped_item(pack_ring_slots[i]);
+    Item const* ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != nullptr && ring->o_which == R_PROTECT)
       ac -= ring->o_arm;
   }
@@ -661,7 +661,7 @@ player_has_ring_with_ability(int ability)
   int i;
   for (i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    item* ring = pack_equipped_item(pack_ring_slots[i]);
+    Item* ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != nullptr && ring->o_which == ability)
       return true;
   }

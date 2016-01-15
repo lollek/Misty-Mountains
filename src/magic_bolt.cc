@@ -108,7 +108,7 @@ magic_bolt_hit_monster(monster* mon, Coordinate* start, Coordinate* pos, string 
   mon->t_oldch = level_get_ch(pos->y, pos->x);
   if (!monster_save_throw(VS_MAGIC, mon))
   {
-    item bolt;
+    Item bolt;
     memset(&bolt, 0, sizeof(bolt));
     bolt.o_type       = WEAPON;
     bolt.o_which      = FLAME;

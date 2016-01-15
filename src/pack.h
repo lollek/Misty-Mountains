@@ -29,21 +29,21 @@ int pack_size(void);
 /* Pick up an object and add it to the pack.  If the argument is
  * non-null use it as the linked_list pointer instead of gettting
  * it off the ground. */
-bool pack_add(item* obj, bool silent);
+bool pack_add(Item* obj, bool silent);
 
-void pack_move_msg(item* obj); /* Message that we are standing on smt */
+void pack_move_msg(Item* obj); /* Message that we are standing on smt */
 
 /* take an item out of the pack */
-item* pack_remove(item* obj, bool newobj, bool all);
+Item* pack_remove(Item* obj, bool newobj, bool all);
 
 /* Add something to characters pack */
-void pack_pick_up(item* obj, bool force);
+void pack_pick_up(Item* obj, bool force);
 
 /* Find and return a magic item in the players inventory */
-item* pack_find_magic_item(void);
+Item* pack_find_magic_item(void);
 
 /* Pick something out of a pack for a purpose */
-item* pack_get_item(std::string const& purpose, int type);
+Item* pack_get_item(std::string const& purpose, int type);
 
 /* Check if she's carrying anything */
 bool pack_is_empty(void);
@@ -55,24 +55,24 @@ int pack_count_items(void);
 int pack_count_items_of_type(int type);
 
 bool pack_contains_amulet(void);
-bool pack_contains(item* item);
+bool pack_contains(Item* item);
 bool pack_print_equipment(void);
 bool pack_print_inventory(int type);
 void pack_clear_inventory(void);
 
 size_t pack_evaluate(void);
 
-item* pack_equipped_item(enum equipment_pos pos);
+Item* pack_equipped_item(enum equipment_pos pos);
 
-bool pack_equip_item(item* item);
+bool pack_equip_item(Item* item);
 bool pack_unequip(enum equipment_pos pos, bool quiet_on_success);
 
-static inline bool pack_item_is_cursed(item const* item)
+static inline bool pack_item_is_cursed(Item const* item)
 { return item->o_flags & ISCURSED; }
-static inline void pack_curse_item(item *item)
+static inline void pack_curse_item(Item *item)
 { item->o_flags |= ISCURSED; }
-static inline void pack_uncurse_item(item *item)
+static inline void pack_uncurse_item(Item *item)
 { item->o_flags &= ~ISCURSED; }
 
-item* pack_find_arrow(void); /* Return arrow in pack or nullptr */
+Item* pack_find_arrow(void); /* Return arrow in pack or nullptr */
 void pack_identify_item(void);

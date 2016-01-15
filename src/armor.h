@@ -34,6 +34,6 @@ int armor_for_monster(monster const* mon); /* Returns the AC of a creature */
 void armor_rust();             /* Rust players armor */
 bool armor_command_wear();     /* Let player select something to wear */
 
-void armor_description(item const* item, char* buf);
+void armor_description(Item const* item, char* buf);
 
-item* armor_create(int which, int random_stats);
+Item* armor_create(int which, int random_stats);

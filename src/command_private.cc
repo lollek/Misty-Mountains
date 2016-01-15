@@ -34,7 +34,7 @@ using namespace std;
 
 static bool command_attack_bow(Coordinate const* delta)
 {
-  item* ptr = pack_find_arrow();
+  Item* ptr = pack_find_arrow();
 
   if (ptr == nullptr)
   {
@@ -42,7 +42,7 @@ static bool command_attack_bow(Coordinate const* delta)
     return true;
   }
 
-  item* arrow = pack_remove(ptr, true, false);
+  Item* arrow = pack_remove(ptr, true, false);
   io_missile_motion(arrow, delta->y, delta->x);
   monster* monster_at_pos = level_get_monster(arrow->o_pos.y, arrow->o_pos.x);
 
@@ -132,7 +132,7 @@ command_attack(bool fight_to_death)
 
   Coordinate delta ( player_x() + dir->x, player_y() + dir->y );
 
-  item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
+  Item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
   return weapon != nullptr && weapon->o_which == BOW
     ? command_attack_bow(dir)
@@ -142,7 +142,7 @@ command_attack(bool fight_to_death)
 bool
 command_name_item(void)
 {
-  item* obj = pack_get_item("rename", PACK_RENAMEABLE);
+  Item* obj = pack_get_item("rename", PACK_RENAMEABLE);
 
   if (obj == nullptr)
     return false;
@@ -286,7 +286,7 @@ command_pick_up(void) {
 
   Coordinate const* player_pos = player_get_pos();
 
-  for (item* obj : level_items) {
+  for (Item* obj : level_items) {
     if (obj->o_pos == *player_pos) {
       pack_pick_up(obj, true);
       return true;
@@ -487,7 +487,7 @@ bool command_throw(void)
   int xdelta = dir->x;
   dir = nullptr;
 
-  item* obj = pack_get_item("throw", 0);
+  Item* obj = pack_get_item("throw", 0);
   if (obj == nullptr)
     return false;
 
@@ -534,7 +534,7 @@ bool command_throw(void)
 bool
 command_wield(void)
 {
-  item* obj = pack_get_item("wield", WEAPON);
+  Item* obj = pack_get_item("wield", WEAPON);
 
   if (obj == nullptr)
     return false;
@@ -575,7 +575,7 @@ bool command_rest(void)
 bool
 command_eat(void)
 {
-  item* obj = pack_get_item("eat", FOOD);
+  Item* obj = pack_get_item("eat", FOOD);
   if (obj == nullptr)
     return false;
 
@@ -629,7 +629,7 @@ bool command_drop(void)
     return false;
   }
 
-  item* obj = pack_get_item("drop", 0);
+  Item* obj = pack_get_item("drop", 0);
   if (obj == nullptr)
     return false;
 

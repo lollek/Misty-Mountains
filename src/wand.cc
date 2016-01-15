@@ -84,10 +84,10 @@ wand_material(enum wand_t wand)
   return *_wand_material.at(wand);
 }
 
-item*
+Item*
 wand_create(int wand)
 {
-  item* new_wand = new item();
+  Item* new_wand = new Item();
 
   new_wand->o_damage  = {1, 1};
   new_wand->o_hurldmg = {1, 1};
@@ -212,7 +212,7 @@ wand_spell_cancel(monster* target)
 static void
 wand_spell_magic_missile(int dy, int dx)
 {
-  item bolt;
+  Item bolt;
   memset(&bolt, 0, sizeof(bolt));
   bolt.o_type    = '*';
   bolt.o_hplus   = 100;
@@ -221,7 +221,7 @@ wand_spell_magic_missile(int dy, int dx)
   bolt.o_damage  = {0, 0};
   bolt.o_hurldmg = {1, 4};
 
-  item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
+  Item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon != nullptr)
     bolt.o_launch = weapon->o_which;
 
@@ -249,7 +249,7 @@ wand_zap(void)
     return false;
   Coordinate delta = *dir;
 
-  item* obj = pack_get_item("zap with", STICK);
+  Item* obj = pack_get_item("zap with", STICK);
   if (obj == nullptr)
     return false;
   else if (obj->o_type != STICK)
@@ -411,7 +411,7 @@ wand_zap(void)
 }
 
 char*
-wand_description(item const* item, char* buf)
+wand_description(Item const* item, char* buf)
 {
   char* ptr = buf;
   struct obj_info oi = wands_info.at(static_cast<size_t>(item_subtype(item)));

@@ -216,10 +216,10 @@ erase_lamp(Coordinate const* pos, struct room const* room)
     }
 }
 
-item*
+Item*
 find_obj(int y, int x)
 {
-  for (item* obj : level_items)
+  for (Item* obj : level_items)
     if (obj->o_pos.y == y && obj->o_pos.x == x)
       return obj;
 
@@ -349,7 +349,7 @@ rnd_thing(void)
 }
 
 bool
-is_magic(item const* obj)
+is_magic(Item const* obj)
 {
   switch (obj->o_type)
   {

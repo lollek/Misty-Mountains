@@ -459,7 +459,7 @@ io_tile(enum tile tile)
 }
 
 void
-io_missile_motion(item* item, int ydelta, int xdelta)
+io_missile_motion(Item* item, int ydelta, int xdelta)
 {
   Coordinate* player_pos = player_get_pos();
   int ch;

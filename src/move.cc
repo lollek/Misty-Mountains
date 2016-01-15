@@ -313,7 +313,7 @@ move_random(monster* who, Coordinate* ret)
   if (ch == SCROLL)
   {
     auto results = find_if(level_items.cbegin(), level_items.cend(),
-        [&] (item const* i) {
+        [&] (Item const* i) {
       return y == i->o_pos.y && x == i->o_pos.x;
     });
 
