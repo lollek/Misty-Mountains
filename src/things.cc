@@ -16,12 +16,17 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include <vector>
+#include <string>
+
+using namespace std;
+
+#include "Coordinate.h"
 #include "potions.h"
 #include "scrolls.h"
 #include "io.h"
 #include "armor.h"
 #include "pack.h"
-#include "list.h"
 #include "rings.h"
 #include "misc.h"
 #include "level.h"
@@ -35,15 +40,15 @@
 #include "things.h"
 
 /* Only oi_prob is used */
-struct obj_info things[] = {
+vector<obj_info> things = {
 /*   oi_name oi_prob oi_worth oi_guess oi_know */
-    { "potion",	26,	0,	NULL,	false },
-    { "scroll",	36,	0,	NULL,	false },
-    { "food",	16,	0,	NULL,	false },
-    { "weapon",	 7,	0,	NULL,	false },
-    { "armor",	 7,	0,	NULL,	false },
-    { "ring",	 4,	0,	NULL,	false },
-    { "stick",	 4,	0,	NULL,	false },
+    { "potion",	26,	0,	"",	false },
+    { "scroll",	36,	0,	"",	false },
+    { "food",	16,	0,	"",	false },
+    { "weapon",	 7,	0,	"",	false },
+    { "armor",	 7,	0,	"",	false },
+    { "ring",	 4,	0,	"",	false },
+    { "stick",	 4,	0,	"",	false },
 };
 
 char*
@@ -71,44 +76,44 @@ inv_name(char* buf, item const* item, bool drop)
     case GOLD:   sprintf(buf, "%d Gold pieces", item->o_goldval); break;
     default:
       io_msg("You feel a disturbance in the force");
-      sprintf(buf, "Something bizarre %s", unctrl((chtype)item->o_type));
+      sprintf(buf, "Something bizarre %s", unctrl(static_cast<chtype>(item->o_type)));
       break;
   }
 
-  buf[0] = drop ? (char)tolower(buf[0]) : (char)toupper(buf[0]);
+  buf[0] = static_cast<char>(drop ? tolower(buf[0]) : toupper(buf[0]));
   assert (buf[MAXSTR -1] == '\0');
   return buf;
 }
 
-THING*
+item*
 new_food(int which)
 {
   /* Reset levels-without-food counter */
   levels_without_food = 0;
 
-  THING* cur = os_calloc_thing();
-  cur->o.o_count = 1;
-  cur->o.o_type = FOOD;
+  item* cur = new item();
+  cur->o_count = 1;
+  cur->o_type = FOOD;
   switch (which)
   {
-    case 0: case 1: cur->o.o_which = which; break;
-    default: cur->o.o_which = os_rand_range(10) ? 0 : 1; break;
+    case 0: case 1: cur->o_which = which; break;
+    default: cur->o_which = os_rand_range(10) ? 0 : 1; break;
   }
   return cur;
 }
 
-THING*
+item*
 new_amulet(void)
 {
-  THING* obj       = os_calloc_thing();
-  obj->o.o_damage  = (struct damage){1, 2};
-  obj->o.o_hurldmg = (struct damage){1, 2};
-  obj->o.o_type    = AMULET;
+  item* obj       = new item();
+  obj->o_damage  = {1, 2};
+  obj->o_hurldmg = {1, 2};
+  obj->o_type    = AMULET;
 
   return obj;
 }
 
-THING*
+item*
 new_thing(void)
 {
   /* Decide what kind of object it will be
@@ -117,26 +122,18 @@ new_thing(void)
   if (levels_without_food > 3)
     r = 2;
   else
-    r = (int)pick_one(things, NUMTHINGS);
+    r = static_cast<int>(pick_one(things, things.size()));
 
-  THING* cur = NULL;
+  item* cur = NULL;
   switch (r)
   {
     case 0: cur = potion_create(-1); break;
     case 1: cur = scroll_create(-1); break;
     case 2: cur = new_food(-1); break;
     case 3: cur = weapon_create(-1, true); break;
-    case 4:
-      {
-        item* armor = armor_create(-1, true);
-        cur = os_item_to_thing(&armor);
-      } break;
+    case 4: cur = armor_create(-1, true); break;
     case 5: cur = ring_create(-1, true); break;
-    case 6:
-      {
-        item* wand = wand_create(-1);
-        cur = os_item_to_thing(&wand);
-      } break;
+    case 6: cur = wand_create(-1); break;
     default:
       io_msg("Picked a bad kind of object (this should not happen)");
       io_wait_for_key(KEY_SPACE);
@@ -144,49 +141,47 @@ new_thing(void)
   }
 
   assert(cur != NULL);
-  assert(cur->o.o_damage.sides >= 0 && cur->o.o_damage.dices >= 0);
-  assert(cur->o.o_hurldmg.sides >= 0 && cur->o.o_hurldmg.dices >= 0);
+  assert(cur->o_damage.sides >= 0 && cur->o_damage.dices >= 0);
+  assert(cur->o_hurldmg.sides >= 0 && cur->o_hurldmg.dices >= 0);
   return cur;
 }
 
-unsigned
-pick_one(struct obj_info* start, int nitems)
+size_t
+pick_one(vector<obj_info>& start, size_t nitems)
 {
-  for (int rand = os_rand_range(100), i = 0; i < nitems; ++i)
-    if (rand < start[i].oi_prob)
-      return (unsigned)i;
+  for (size_t rand = static_cast<size_t>(os_rand_range(100)), i = 0; i < nitems; ++i)
+    if (rand < start.at(i).oi_prob)
+      return i;
     else
-      rand -= start[i].oi_prob;
+      rand -= start.at(i).oi_prob;
 
   /* The functions should have returned by now */
-  io_debug_fatal("pick_one(%p, %d): bad probabilities", start, nitems);
-  return 0;
+  throw range_error("Probability was not in range");
 }
 
 /* list what the player has discovered of this type */
 static void
-discovered_by_type(char type, struct obj_info* info, int max_items)
+discovered_by_type(char type, vector<obj_info>& info, size_t max_items)
 {
-
   WINDOW *printscr = dupwin(stdscr);
 
-  coord orig_pos;
+  Coordinate orig_pos;
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
-  THING printable_object;
+  item printable_object;
   memset(&printable_object, 0, sizeof(printable_object));
-  printable_object.o.o_type = type;
-  printable_object.o.o_flags = 0;
-  printable_object.o.o_count = 1;
+  printable_object.o_type = type;
+  printable_object.o_flags = 0;
+  printable_object.o_count = 1;
 
   int items_found = 0;
-  for (int i = 0; i < max_items; ++i)
-    if (info[i].oi_know || info[i].oi_guess)
+  for (size_t i = 0; i < max_items; ++i)
+    if (info.at(i).oi_know || !info.at(i).oi_guess.empty())
     {
       char buf[MAXSTR];
-      printable_object.o.o_which = i;
+      printable_object.o_which = static_cast<int>(i);
       mvwprintw(printscr, ++items_found, 1,
-                "%s", inv_name(buf, &printable_object.o, false));
+                "%s", inv_name(buf, &printable_object, false));
     }
 
   if (items_found == 0)
@@ -222,7 +217,7 @@ discovered(void)
       case POTION: discovered_by_type(ch, potion_info, NPOTIONS); break;
       case SCROLL: discovered_by_type(ch, scroll_info, NSCROLLS); break;
       case RING: discovered_by_type(ch, ring_info, NRINGS); break;
-      case STICK: discovered_by_type(ch, __wands_ptr(), MAXSTICKS); break;
+      case STICK: discovered_by_type(ch, wands_info, MAXSTICKS); break;
       default: io_msg_clear(); return;
     }
   }

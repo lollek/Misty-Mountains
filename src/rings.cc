@@ -1,15 +1,3 @@
-/*
- * Routines dealing specifically with rings
- *
- * @(#)rings.c	4.19 (Berkeley) 05/29/83
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
 #include <ctype.h>
 #include <string.h>
 
@@ -33,12 +21,11 @@ using namespace std;
 
 #include "rings.h"
 
-
 static vector<string> r_stones;
 
 static struct stone {
     string st_name;
-    int st_value;
+    size_t st_value;
 } stones[] = {
   { "agate",		 25},
   { "alexandrite",	 40},
@@ -69,7 +56,7 @@ static struct stone {
 };
 static int NSTONES = (sizeof(stones) / sizeof(*stones));
 
-struct obj_info ring_info[] = {
+vector<obj_info> ring_info = {
   { "protection",		 9, 400,   "", false },
   { "add strength",		 9, 400,   "", false },
   { "sustain strength",		 5, 280,   "", false },
@@ -89,7 +76,7 @@ struct obj_info ring_info[] = {
 void
 ring_init(void)
 {
-  for (int i = 0; i < NRINGS; i++)
+  for (size_t i = 0; i < NRINGS; i++)
     for (;;)
     {
       int stone = os_rand_range(NSTONES);
@@ -98,7 +85,7 @@ ring_init(void)
         continue;
 
       r_stones.push_back(stones[stone].st_name);
-      ring_info[i].oi_worth += stones[stone].st_value;
+      ring_info.at(i).oi_worth += stones[stone].st_value;
       break;
     }
 }
@@ -203,7 +190,7 @@ ring_is_known(enum ring_t ring)
 void
 ring_description(item const* item, char* buf)
 {
-  struct obj_info* op = &ring_info[item_subtype(item)];
+  obj_info* op = &ring_info.at(static_cast<size_t>(item_subtype(item)));
   buf += sprintf(buf, "%s ring", r_stones.at(static_cast<size_t>(item_subtype(item))).c_str());
 
   if (op->oi_know)

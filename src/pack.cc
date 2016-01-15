@@ -85,7 +85,7 @@ pack_print_evaluate_item(item* item)
       break;
 
     case WEAPON: case AMMO:
-      worth = weapon_info[item->o_which].oi_worth;
+      worth = static_cast<int>(weapon_info[item->o_which].oi_worth);
       worth *= 3 * (item->o_hplus + item->o_dplus) + item->o_count;
       item->o_flags |= ISKNOW;
       break;
@@ -109,17 +109,17 @@ pack_print_evaluate_item(item* item)
       break;
 
     case POTION:
-      worth = potion_info[item->o_which].oi_worth;
+      worth = static_cast<int>(potion_info.at(static_cast<size_t>(item->o_which)).oi_worth);
       worth *= item->o_count;
-      op = &potion_info[item->o_which];
+      op = &potion_info.at(static_cast<size_t>(item->o_which));
       if (!op->oi_know)
         worth /= 2;
       op->oi_know = true;
       break;
 
     case RING:
-      op = &ring_info[item->o_which];
-      worth = op->oi_worth;
+      op = &ring_info.at(static_cast<size_t>(item->o_which));
+      worth = static_cast<int>(op->oi_worth);
       if (item->o_which == R_ADDSTR || item->o_which == R_ADDDAM ||
           item->o_which == R_PROTECT || item->o_which == R_ADDHIT)
       {
@@ -606,11 +606,9 @@ pack_find_arrow(void)
   return results == player_pack.end() ? nullptr : *results;
 }
 
-static void
-pack_identify_item_set_know(item* item, struct obj_info* info)
-{
-  int const subtype = item_subtype(item);
-  info[subtype].oi_know = true;
+static void pack_identify_item_set_know(item* item, vector<obj_info>& info) {
+  size_t subtype = static_cast<size_t>(item_subtype(item));
+  info.at(subtype).oi_know = true;
   item->o_flags |= ISKNOW;
 
   info[subtype].oi_guess.clear();
@@ -633,7 +631,7 @@ pack_identify_item(void)
   {
     case SCROLL: pack_identify_item_set_know(obj, scroll_info);  break;
     case POTION: pack_identify_item_set_know(obj, potion_info);  break;
-    case STICK:  pack_identify_item_set_know(obj, __wands_ptr());   break;
+    case STICK:  pack_identify_item_set_know(obj, wands_info);   break;
     case RING:   pack_identify_item_set_know(obj, ring_info); break;
     case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
     default: break;

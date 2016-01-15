@@ -1,7 +1,7 @@
-#ifndef ROGUE14_WAND_H
-#define ROGUE14_WAND_H
+#pragma once
 
-#include <stdbool.h>
+#include <vector>
+#include <string>
 
 #include "rogue.h"
 
@@ -24,19 +24,14 @@ enum wand_t
   MAXSTICKS
 };
 
-/* TODO: Remove this */
-struct obj_info* __wands_ptr(void);
+extern std::vector<obj_info> wands_info;
 
 /* Sets up wands for use
  * wand_init or wand_load_state should run before wands are used */
-void wand_init(void);
-bool wand_load_state(void);
-
-/* Save wand state to file */
-bool wand_save_state(void);
+void wand_init();
 
 /* Returns the wand's material as a string */
-char const* wand_material(enum wand_t wand);
+string const& wand_material(enum wand_t wand);
 
 /* Returns a description of the obj (e.g. for inventory screen) */
 char* wand_description(item const* item, char* buf);
@@ -46,15 +41,13 @@ void wand_set_known(enum wand_t wand);
 bool wand_is_known(enum wand_t wand);
 
 /* How mmuch gold is the wand worth? */
-int wand_get_worth(enum wand_t wand);
+size_t wand_get_worth(enum wand_t wand);
 
 /* Set name of wand */
-void wand_set_name(enum wand_t wand, char const* new_name);
+void wand_set_name(enum wand_t wand, std::string const& new_name);
 
 /* Set up a new wand */
 item* wand_create(int which);
 
 /* Perform a zap with a wand */
-bool wand_zap(void);
-
-#endif /* ROGUE14_WAND_H */
+bool wand_zap();

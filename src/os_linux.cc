@@ -16,21 +16,19 @@
 
 unsigned os_rand_seed;
 
-int
-os_rand_range(int max)
-{
+size_t os_rand_range(size_t max) {
+  return static_cast<size_t>(os_rand()) % max;
+}
+
+int os_rand_range(int max) {
   return max == 0 ? 0 : os_rand() % max;
 }
 
-int
-os_rand(void)
-{
+int os_rand(void) {
   return rand_r(&os_rand_seed);
 }
 
-int
-os_usleep(unsigned int usec)
-{
+int os_usleep(unsigned int usec) {
   return usleep(usec);
 }
 

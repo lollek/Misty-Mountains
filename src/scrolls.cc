@@ -15,9 +15,11 @@
 #include <string.h>
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
+#include "Coordinate.h"
 #include "io.h"
 #include "item.h"
 #include "level.h"
@@ -36,8 +38,9 @@ using namespace std;
 
 #include "scrolls.h"
 
-static string s_names[NSCROLLS];
-struct obj_info scroll_info[NSCROLLS] = {
+static vector<string> s_names(NSCROLLS);
+
+vector<obj_info> scroll_info = {
     { "monster confusion",		 7, 140, NULL, false },
     { "magic mapping",			 4, 150, NULL, false },
     { "hold monster",			 2, 180, NULL, false },
@@ -77,7 +80,7 @@ scroll_init(void)
   };
 
   int const MAXNAME = 40;
-  for (int i = 0; i < NSCROLLS; i++)
+  for (size_t i = 0; i < NSCROLLS; i++)
   {
     char tmpbuf[MAXSTR*2];
     char* cp = tmpbuf;
@@ -100,69 +103,36 @@ scroll_init(void)
     }
 
     *--cp = '\0';
-    s_names[i] = malloc((unsigned) strlen(tmpbuf)+1);
-    strcpy(s_names[i], tmpbuf);
+    s_names.at(i) = tmpbuf;
   }
-}
-
-bool
-scroll_save_state(void)
-{
-  for (int i = 0; i < NSCROLLS; i++)
-    if (state_save_string(s_names[i]))
-      return 1;
-
-  return state_save_obj_info(scroll_info, NSCROLLS);
-}
-
-bool
-scroll_load_state(void)
-{
-  for (int i = 0; i < NSCROLLS; i++)
-    if (state_load_string(&s_names[i]))
-      return 1;
-
-  return state_load_obj_info(scroll_info, NSCROLLS);
 }
 
 void scroll_learn(enum scroll_t scroll)
 {
-  scroll_info[scroll].oi_know = true;
+  scroll_info.at(scroll).oi_know = true;
 }
 
 bool
 scroll_is_known(enum scroll_t scroll)
 {
-  return scroll_info[scroll].oi_know;
+  return scroll_info.at(scroll).oi_know;
 }
 
-int
+size_t
 scroll_value(enum scroll_t scroll)
 {
-  return scroll_info[scroll].oi_worth;
+  return scroll_info.at(scroll).oi_worth;
 }
 
-void scroll_set_name(enum scroll_t scroll, char const* new_name)
+void scroll_set_name(enum scroll_t scroll, string const& new_name)
 {
-  size_t len = strlen(new_name);
-
-  if (scroll_info[scroll].oi_guess != NULL)
-  {
-    free(scroll_info[scroll].oi_guess);
-    scroll_info[scroll].oi_guess = NULL;
-  }
-
-  if (len > 0)
-  {
-    scroll_info[scroll].oi_guess = malloc(len + 1);
-    strcpy(scroll_info[scroll].oi_guess, new_name);
-  }
+  scroll_info.at(scroll).oi_guess = new_name;
 }
 
 static bool
 enchant_players_armor(void)
 {
-  THING* arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == NULL)
   {
     switch (os_rand_range(3))
@@ -174,8 +144,8 @@ enchant_players_armor(void)
     return false;
   }
 
-  arm->o.o_arm--;
-  arm->o.o_flags &= ~ISCURSED;
+  arm->o_arm--;
+  arm->o_flags &= ~ISCURSED;
   io_msg("your armor glows %s for a moment", pick_color("silver"));
   return true;
 }
@@ -184,19 +154,19 @@ enchant_players_armor(void)
 static bool
 hold_monsters(void)
 {
-  coord *player_pos = player_get_pos();
+  Coordinate *player_pos = player_get_pos();
   int monsters_affected = 0;
-  THING* held_monster = NULL;
+  monster* held_monster = NULL;
 
   for (int x = player_pos->x - 2; x <= player_pos->x + 2; x++)
     if (x >= 0 && x < NUMCOLS)
       for (int y = player_pos->y - 2; y <= player_pos->y + 2; y++)
         if (y >= 0 && y <= NUMLINES - 1)
         {
-          THING *monster = level_get_monster(y, x);
+          monster *monster = level_get_monster(y, x);
           if (monster != NULL)
           {
-            monster_become_held(&monster->t);
+            monster_become_held(monster);
             monsters_affected++;
             held_monster = monster;
           }
@@ -205,7 +175,7 @@ hold_monsters(void)
   if (monsters_affected == 1)
   {
     char buf[MAXSTR];
-    io_msg("%s freezes", monster_name(&held_monster->t, buf));
+    io_msg("%s freezes", monster_name(held_monster, buf));
   }
   else if (monsters_affected > 1)
     io_msg("the monsters around you freeze");
@@ -223,8 +193,8 @@ hold_monsters(void)
 static bool
 create_monster(void)
 {
-  const coord *player_pos = player_get_pos();
-  coord mp;
+  Coordinate const* player_pos = player_get_pos();
+  Coordinate mp;
   int i = 0;
 
   for (int y = player_pos->y - 1; y <= player_pos->y + 1; y++)
@@ -234,7 +204,7 @@ create_monster(void)
 
       if ((y == player_pos->y && x == player_pos->x)
           || !step_ok(ch)
-          || (ch == SCROLL && find_obj(y, x)->o.o_which == S_SCARE)
+          || (ch == SCROLL && find_obj(y, x)->o_which == S_SCARE)
           || os_rand_range(++i) != 0)
         continue;
 
@@ -252,9 +222,9 @@ create_monster(void)
   else
   {
     char buf[MAXSTR];
-    THING *obj = os_calloc_thing();
+    monster *obj = new monster();
     monster_new(obj, monster_random(false), &mp);
-    io_msg("A %s appears out of thin air", monster_name(&obj->t, buf));
+    io_msg("A %s appears out of thin air", monster_name(obj, buf));
   }
 
   return i;
@@ -317,11 +287,11 @@ def:
 
       if (ch != SHADOW)
       {
-        THING* obj = pp->p_monst;
+        monster* obj = pp->p_monst;
         if (obj != NULL)
-          obj->t.t_oldch = ch;
+          obj->t_oldch = ch;
         if (obj == NULL || !player_can_sense_monsters())
-          mvaddcch(y, x, (chtype) ch);
+          mvaddcch(y, x, static_cast<chtype>(ch));
       }
     }
 }
@@ -332,12 +302,13 @@ food_detection(void)
   bool food_seen = false;
   wclear(hw);
 
-  for (THING* obj = level_items; obj != NULL; obj = obj->o.l_next)
-    if (obj->o.o_type == FOOD)
+  for (item const* obj : level_items) {
+    if (obj->o_type == FOOD)
     {
       food_seen = true;
-      mvwaddcch(hw, obj->o.o_pos.y, obj->o.o_pos.x, FOOD);
+      mvwaddcch(hw, obj->o_pos.y, obj->o_pos.x, FOOD);
     }
+  }
 
   if (food_seen)
     show_win("Your nose tingles and you smell food.--More--");
@@ -350,7 +321,7 @@ food_detection(void)
 static bool
 player_enchant_weapon(void)
 {
-  THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
+  item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon == NULL)
   {
     switch (os_rand_range(2))
@@ -361,13 +332,13 @@ player_enchant_weapon(void)
     return false;
   }
 
-  weapon->o.o_flags &= ~ISCURSED;
+  weapon->o_flags &= ~ISCURSED;
   if (os_rand_range(2) == 0)
-    weapon->o.o_hplus++;
+    weapon->o_hplus++;
   else
-    weapon->o.o_dplus++;
+    weapon->o_dplus++;
   io_msg("your %s glows %s for a moment",
-      weapon_info[weapon->o.o_which].oi_name, pick_color("blue"));
+      weapon_info[weapon->o_which].oi_name.c_str(), pick_color("blue"));
 
   return true;
 }
@@ -376,8 +347,8 @@ static void
 remove_curse(void)
 {
   for (int i = 0; i < NEQUIPMENT; ++i)
-    if (pack_equipped_item((enum equipment_pos)i) != NULL)
-      pack_uncurse_item(&pack_equipped_item((enum equipment_pos)i)->o);
+    if (pack_equipped_item(static_cast<equipment_pos>(i)) != NULL)
+      pack_uncurse_item(pack_equipped_item(static_cast<equipment_pos>(i)));
 
   io_msg(player_is_hallucinating()
       ? "you feel in touch with the Universal Onenes"
@@ -387,7 +358,7 @@ remove_curse(void)
 static bool
 protect_armor(void)
 {
-  THING* arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == NULL)
   {
     switch (os_rand_range(2))
@@ -398,7 +369,7 @@ protect_armor(void)
     return false;
   }
 
-  arm->o.o_flags |= ISPROT;
+  arm->o_flags |= ISPROT;
   io_msg("your armor is covered by a shimmering %s shield", pick_color("gold"));
   return true;
 }
@@ -406,22 +377,22 @@ protect_armor(void)
 bool
 scroll_read(void)
 {
-  THING* obj = pack_get_item("read", SCROLL);
+  item* obj = pack_get_item("read", SCROLL);
   if (obj == NULL)
     return false;
 
-  if (obj->o.o_type != SCROLL)
+  if (obj->o_type != SCROLL)
   {
     io_msg("there is nothing on it to read");
     return false;
   }
 
   /* Get rid of the thing */
-  bool discardit = obj->o.o_count == 1;
+  bool discardit = obj->o_count == 1;
   pack_remove(obj, false, false);
-  THING* orig_obj = obj;
+  item* orig_obj = obj;
 
-  switch (obj->o.o_which)
+  switch (obj->o_which)
   {
     case S_CONFUSE:
       player_set_confusing_attack();
@@ -444,7 +415,7 @@ scroll_read(void)
       break;
     case S_ID:
       if (!scroll_is_known(S_ID))
-        io_msg("this scroll is an %s scroll", scroll_info[obj->o.o_which].oi_name);
+        io_msg("this scroll is an %s scroll", scroll_info.at(static_cast<size_t>(obj->o_which)).oi_name.c_str());
       scroll_learn(S_ID);
       pack_identify_item();
       break;
@@ -488,10 +459,10 @@ scroll_read(void)
   look(true);	/* put the result of the scroll on the screen */
   io_refresh_statusline();
 
-  call_it("scroll", &scroll_info[obj->o.o_which]);
+  call_it("scroll", &scroll_info[static_cast<size_t>(obj->o_which)]);
 
   if (discardit)
-    os_remove_thing(&obj);
+    delete obj;
 
   return true;
 }
@@ -499,7 +470,7 @@ scroll_read(void)
 void
 scroll_description(item const* item, char* buf)
 {
-  struct obj_info* op = &scroll_info[item_subtype(item)];
+  struct obj_info* op = &scroll_info[static_cast<size_t>(item_subtype(item))];
   char* ptr = buf;
 
   if (item_count(item) == 1)
@@ -508,24 +479,24 @@ scroll_description(item const* item, char* buf)
     ptr += sprintf(ptr, "%d scrolls", item_count(item));
 
   if (op->oi_know)
-    ptr += sprintf(ptr, " of %s", op->oi_name);
-  else if (op->oi_guess)
-    ptr += sprintf(ptr, " called %s", op->oi_guess);
+    ptr += sprintf(ptr, " of %s", op->oi_name.c_str());
+  else if (!op->oi_guess.empty())
+    ptr += sprintf(ptr, " called %s", op->oi_guess.c_str());
   else
-    ptr += sprintf(ptr, " titled '%s'", s_names[item_subtype(item)]);
+    ptr += sprintf(ptr, " titled '%s'", s_names.at(static_cast<size_t>(item_subtype(item))).c_str());
 }
 
-THING*
+item*
 scroll_create(int which)
 {
-  THING* scroll = os_calloc_thing();
+  item* scroll = new item();
 
   if (which == -1)
-    which = (int)pick_one(scroll_info, NSCROLLS);
+    which = static_cast<int>(pick_one(scroll_info, NSCROLLS));
 
-  scroll->o.o_type  = SCROLL;
-  scroll->o.o_count = 1;
-  scroll->o.o_which = which;
+  scroll->o_type  = SCROLL;
+  scroll->o_count = 1;
+  scroll->o_which = which;
   return scroll;
 }
 

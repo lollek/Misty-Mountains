@@ -13,8 +13,9 @@
 
 extern unsigned os_rand_seed;
 
-int os_rand(void);                   /* Return a pseudorandom number */
-int os_rand_range(int max);          /* Return a number [0,max[ */
-int os_usleep(unsigned int usec);    /* Sleep for nanoseconds */
+int    os_rand(void);                   /* Return a pseudorandom number */
+int    os_rand_range(int max);          /* Return a number [0,max[ */
+size_t os_rand_range(size_t max);       /* Return a number [0,max[ */
+int    os_usleep(unsigned int usec);    /* Sleep for nanoseconds */
 
 #endif /* ROGUE14_OS_H */

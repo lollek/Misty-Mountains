@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <vector>
 #include <string>
 
 #include "Coordinate.h"
@@ -16,8 +17,8 @@ struct damage
 /* Stuff about objects */
 struct obj_info {
   std::string oi_name;
-  int         oi_prob;
-  int         oi_worth;
+  size_t      oi_prob;
+  size_t      oi_worth;
   std::string oi_guess;
   bool        oi_know;
 };
@@ -100,8 +101,7 @@ struct monster {
 
 #define GOLDCALC	(os_rand_range(50 + 10 * level) + 2)
 
-#define NUMTHINGS 7
-extern struct obj_info things[NUMTHINGS];
+extern std::vector<obj_info> things;
 
 /* Return the name of something as it would appear in an inventory. */
 char* inv_name(char* buf, item const* item, bool drop);
@@ -115,7 +115,7 @@ item* new_amulet(void);
 item* new_food(int which);
 
 /* Pick an item out of a list of nitems possible objects */
-unsigned pick_one(struct obj_info* start, int nitems);
+size_t pick_one(std::vector<obj_info>& start, size_t nitems);
 
 /* list what the player has discovered in this game of a certain type */
 void discovered(void);

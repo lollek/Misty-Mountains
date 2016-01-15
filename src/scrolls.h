@@ -1,7 +1,6 @@
-#ifndef ROGUE14_SCROLLS_H
-#define ROGUE14_SCROLLS_H
+#pragma once
 
-#include <stdbool.h>
+#include <vector>
 
 #include "things.h"
 
@@ -26,21 +25,17 @@ enum scroll_t
 };
 
 /* Variables */
-extern struct obj_info scroll_info[NSCROLLS]; /* Scroll info */
+extern std::vector<obj_info> scroll_info; /* Scroll info */
 
 void scroll_init(void);
-bool scroll_save_state(void);
-bool scroll_load_state(void);
 
 /* Functions */
 bool scroll_read(void);     /* Read a scroll from the pack and do the needful */
 void scroll_learn(enum scroll_t scroll);    /* Learn scroll info */
 bool scroll_is_known(enum scroll_t scroll); /* Knows what scroll does? */
-int scroll_value(enum scroll_t scroll);
-void scroll_set_name(enum scroll_t wand, char const* new_name);
+size_t scroll_value(enum scroll_t scroll);
+void scroll_set_name(enum scroll_t wand, std::string const& new_name);
 
 void scroll_description(item const* item, char* buf);
 
 item* scroll_create(int which);
-
-#endif /* ROGUE14_SCROLLS_H */

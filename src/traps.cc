@@ -1,25 +1,27 @@
-
 #include <assert.h>
 
+#include <string>
+
+using namespace std;
+
+#include "Coordinate.h"
 #include "command.h"
 #include "io.h"
 #include "armor.h"
 #include "fight.h"
 #include "colors.h"
-#include "list.h"
 #include "level.h"
 #include "rings.h"
 #include "misc.h"
 #include "weapons.h"
 #include "monster.h"
-#include "list.h"
 #include "os.h"
 #include "player.h"
 #include "death.h"
 
 #include "traps.h"
 
-char const* trap_names[] = {
+string const trap_names[] = {
   "a trapdoor",
   "an arrow trap",
   "a sleeping gas trap",
@@ -40,16 +42,14 @@ trap_door_player(void)
 }
 
 static enum trap_t
-trap_door_monster(THING* victim)
+trap_door_monster(monster* victim)
 {
-  monster_assert_exists(victim);
-
-  if (monster_seen_by_player(&victim->t))
+  if (monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    io_msg("%s fell through the floor", monster_name(&victim->t, buf));
+    io_msg("%s fell through the floor", monster_name(victim, buf));
   }
-  monster_remove_from_screen(&victim->t.t_pos, victim, false);
+  monster_remove_from_screen(&victim->t_pos, victim, false);
   return T_DOOR;
 }
 
@@ -62,16 +62,14 @@ trap_bear_player(void)
 }
 
 static enum trap_t
-trap_bear_monster(THING* victim)
+trap_bear_monster(monster* victim)
 {
-  monster_assert_exists(victim);
-
-  if (monster_seen_by_player(&victim->t))
+  if (monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    io_msg("%s was caught in a bear trap", monster_name(&victim->t, buf));
+    io_msg("%s was caught in a bear trap", monster_name(victim, buf));
   }
-  monster_become_stuck(&victim->t);
+  monster_become_stuck(victim);
   return T_BEAR;
 }
 
@@ -96,14 +94,12 @@ trap_myst_player(void)
 }
 
 static enum trap_t
-trap_myst_monster(THING* victim)
+trap_myst_monster(monster* victim)
 {
-  monster_assert_exists(victim);
-
-  if (monster_seen_by_player(&victim->t))
+  if (monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    io_msg("%s seems to have stepped on something", monster_name(&victim->t, buf));
+    io_msg("%s seems to have stepped on something", monster_name(victim, buf));
   }
   return T_MYST;
 }
@@ -117,16 +113,14 @@ trap_sleep_player(void)
 }
 
 static enum trap_t
-trap_sleep_monster(THING* victim)
+trap_sleep_monster(monster* victim)
 {
-  monster_assert_exists(victim);
-
-  if (monster_seen_by_player(&victim->t))
+  if (monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    io_msg("%s collapsed to the ground", monster_name(&victim->t, buf));
+    io_msg("%s collapsed to the ground", monster_name(victim, buf));
   }
-  monster_become_held(&victim->t);
+  monster_become_held(victim);
   return T_SLEEP;
 }
 
@@ -146,9 +140,9 @@ trap_arrow_player(void)
   }
   else
   {
-    THING* arrow = weapon_create(ARROW, false);
-    arrow->o.o_count = 1;
-    arrow->o.o_pos = *player_get_pos();
+    item* arrow = weapon_create(ARROW, false);
+    arrow->o_count = 1;
+    arrow->o_pos = *player_get_pos();
     weapon_missile_fall(arrow, false);
     io_msg("an arrow shoots past you");
   }
@@ -156,38 +150,37 @@ trap_arrow_player(void)
 }
 
 static enum trap_t
-trap_arrow_monster(THING* victim)
+trap_arrow_monster(monster* victim)
 {
   char buf[MAXSTR];
-  monster_assert_exists(victim);
 
-  if (fight_swing_hits(victim->t.t_stats.s_lvl -1,
-        armor_for_monster(&victim->t), 1))
+  if (fight_swing_hits(victim->t_stats.s_lvl -1,
+        armor_for_monster(victim), 1))
   {
-    victim->t.t_stats.s_hpt -= roll(1,6);
-    if (victim->t.t_stats.s_hpt <= 0)
+    victim->t_stats.s_hpt -= roll(1,6);
+    if (victim->t_stats.s_hpt <= 0)
     {
       monster_on_death(victim, false);
-      if (monster_seen_by_player(&victim->t))
-        io_msg("An arrow killed %s", monster_name(&victim->t, buf));
+      if (monster_seen_by_player(victim))
+        io_msg("An arrow killed %s", monster_name(victim, buf));
     }
-    else if (monster_seen_by_player(&victim->t))
-      io_msg("An arrow shot %s", monster_name(&victim->t, buf));
+    else if (monster_seen_by_player(victim))
+      io_msg("An arrow shot %s", monster_name(victim, buf));
   }
   else
   {
-    THING* arrow = weapon_create(ARROW, false);
-    arrow->o.o_count = 1;
-    arrow->o.o_pos = victim->t.t_pos;
+    item* arrow = weapon_create(ARROW, false);
+    arrow->o_count = 1;
+    arrow->o_pos = victim->t_pos;
     weapon_missile_fall(arrow, false);
-    if (monster_seen_by_player(&victim->t))
-      io_msg("An arrow barely missed %s", monster_name(&victim->t, buf));
+    if (monster_seen_by_player(victim))
+      io_msg("An arrow barely missed %s", monster_name(victim, buf));
   }
   return T_ARROW;
 }
 
 static enum trap_t
-trap_telep_player(coord* trap_coord)
+trap_telep_player(Coordinate* trap_coord)
 {
   player_teleport(NULL);
   mvaddcch(trap_coord->y, trap_coord->x, TRAP); /* Mark trap before we leave */
@@ -195,30 +188,28 @@ trap_telep_player(coord* trap_coord)
 }
 
 static enum trap_t
-trap_telep_monster(THING* victim)
+trap_telep_monster(monster* victim)
 {
-  monster_assert_exists(victim);
-
-  bool was_seen = monster_seen_by_player(&victim->t);
+  bool was_seen = monster_seen_by_player(victim);
   if (was_seen)
   {
     char buf[MAXSTR];
-    io_msg_add("%s ", monster_name(&victim->t, buf));
+    io_msg_add("%s ", monster_name(victim, buf));
   }
 
   monster_teleport(victim, NULL);
   if (was_seen)
   {
-    if (monster_seen_by_player(&victim->t))
+    if (monster_seen_by_player(victim))
       io_msg("teleported a short distance");
     else
       io_msg("disappeared");
   }
 
-  if (!was_seen && monster_seen_by_player(&victim->t))
+  if (!was_seen && monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    io_msg("%s appeared out of thin air", monster_name(&victim->t, buf));
+    io_msg("%s appeared out of thin air", monster_name(victim, buf));
   }
 
   return T_TELEP;
@@ -245,34 +236,32 @@ trap_dart_player(void)
 }
 
 static enum trap_t
-trap_dart_monster(THING* victim)
+trap_dart_monster(monster* victim)
 {
-  monster_assert_exists(victim);
-
   /* TODO: In the future this should probably weaken the monster */
-  if (fight_swing_hits(victim->t.t_stats.s_lvl + 1,
-        armor_for_monster(&victim->t), 1))
+  if (fight_swing_hits(victim->t_stats.s_lvl + 1,
+        armor_for_monster(victim), 1))
   {
-    victim->t.t_stats.s_hpt -= roll(1,4);
-    if (victim->t.t_stats.s_hpt <= 0)
+    victim->t_stats.s_hpt -= roll(1,4);
+    if (victim->t_stats.s_hpt <= 0)
     {
       monster_on_death(victim, false);
-      if (monster_seen_by_player(&victim->t))
+      if (monster_seen_by_player(victim))
       {
         char buf[MAXSTR];
-        io_msg("A poisoned dart killed %s", monster_name(&victim->t, buf));
+        io_msg("A poisoned dart killed %s", monster_name(victim, buf));
       }
     }
-    else if (monster_seen_by_player(&victim->t))
+    else if (monster_seen_by_player(victim))
     {
       char buf[MAXSTR];
-      io_msg("An dart hit %s", monster_name(&victim->t, buf));
+      io_msg("An dart hit %s", monster_name(victim, buf));
     }
   }
-  else if (monster_seen_by_player(&victim->t))
+  else if (monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    io_msg("A dart barely missed %s", monster_name(&victim->t, buf));
+    io_msg("A dart barely missed %s", monster_name(victim, buf));
   }
   return T_DART;
 }
@@ -286,20 +275,18 @@ trap_rust_player(void)
 }
 
 static enum trap_t
-trap_rust_monster(THING* victim)
+trap_rust_monster(monster* victim)
 {
-  monster_assert_exists(victim);
-
-  if (monster_seen_by_player(&victim->t))
+  if (monster_seen_by_player(victim))
   {
     char buf[MAXSTR];
-    io_msg("a gush of water hits %s", monster_name(&victim->t, buf));
+    io_msg("a gush of water hits %s", monster_name(victim, buf));
   }
   return T_RUST;
 }
 
 enum trap_t
-trap_spring(THING* victim, coord* trap_coord)
+trap_spring(monster* victim, Coordinate* trap_coord)
 {
   assert(trap_coord != NULL);
 
@@ -315,7 +302,7 @@ trap_spring(THING* victim, coord* trap_coord)
     command_stop(true);
   }
 
-  if (victim == NULL || monster_seen_by_player(&victim->t))
+  if (victim == NULL || monster_seen_by_player(victim))
   {
     pp->p_ch = TRAP;
     pp->p_flags |= F_SEEN;

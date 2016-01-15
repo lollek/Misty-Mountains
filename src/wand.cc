@@ -1,24 +1,15 @@
-/*
- * Functions to implement the various sticks one might find
- * while wandering around the dungeon.
- *
- * @(#)sticks.c	4.39 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
-#include <string.h>
 #include <assert.h>
 
+#include <string>
+#include <vector>
+
+using namespace std;
+
+#include "Coordinate.h"
 #include "fight.h"
 #include "io.h"
 #include "item.h"
 #include "level.h"
-#include "list.h"
 #include "magic.h"
 #include "misc.h"
 #include "monster.h"
@@ -28,14 +19,12 @@
 #include "passages.h"
 #include "player.h"
 #include "rogue.h"
-#include "state.h"
 #include "things.h"
 #include "weapons.h"
 
 #include "wand.h"
 
-#define NMATERIAL ((sizeof(material)) / sizeof(*material))
-static char const* material[] = {
+static vector<string> material = {
   /* Wood */
   "avocado wood", "balsa", "bamboo", "banyan", "birch", "cedar", "cherry",
   "cinnibar", "cypress", "dogwood", "driftwood", "ebony", "elm", "eucalyptus",
@@ -50,102 +39,65 @@ static char const* material[] = {
   "zinc",
 };
 
-static char const* _wand_material[MAXSTICKS];
+static vector<string*> _wand_material(MAXSTICKS);
 
-static struct obj_info wands[] = {
-    { "light",			12, 250, NULL, false },
-    { "invisibility",		 6,   5, NULL, false },
-    { "lightning",		 3, 330, NULL, false },
-    { "fire",			 3, 330, NULL, false },
-    { "cold",			 3, 330, NULL, false },
-    { "polymorph",		15, 310, NULL, false },
-    { "magic missile",		10, 170, NULL, false },
-    { "haste monster",		10,   5, NULL, false },
-    { "slow monster",		11, 350, NULL, false },
-    { "drain life",		 9, 300, NULL, false },
-    { "nothing",		 1,   5, NULL, false },
-    { "teleport away",		 6, 340, NULL, false },
-    { "teleport to",		 6,  50, NULL, false },
-    { "cancellation",		 5, 280, NULL, false },
+vector<obj_info> wands_info = {
+    { "light",			12, 250,   "", false },
+    { "invisibility",		 6,   5,   "", false },
+    { "lightning",		 3, 330,   "", false },
+    { "fire",			 3, 330,   "", false },
+    { "cold",			 3, 330,   "", false },
+    { "polymorph",		15, 310,   "", false },
+    { "magic missile",		10, 170,   "", false },
+    { "haste monster",		10,   5,   "", false },
+    { "slow monster",		11, 350,   "", false },
+    { "drain life",		 9, 300,   "", false },
+    { "nothing",		 1,   5,   "", false },
+    { "teleport away",		 6, 340,   "", false },
+    { "teleport to",		 6,  50,   "", false },
+    { "cancellation",		 5, 280,   "", false },
 };
-
-struct obj_info* __wands_ptr(void) { return wands; }
 
 void wand_init(void)
 {
-  bool used[sizeof(material) / sizeof(*material)];
+  vector<bool> used(material.size());
 
-  assert (NMATERIAL >= MAXSTICKS);
-
-  for (size_t i = 0; i < NMATERIAL; i++)
-    used[i] = false;
+  for (size_t i = 0; i < material.size(); i++)
+    used.at(i) = false;
 
   for (size_t i = 0; i < MAXSTICKS; i++)
   {
-    int j = os_rand_range(NMATERIAL);
+    size_t j = os_rand_range(material.size());
 
-    while (used[j])
-      j = os_rand_range(NMATERIAL);
+    while (used.at(j)) {
+      j = os_rand_range(material.size());
+    }
 
-    _wand_material[i] = material[j];
-    used[j] = true;
+    _wand_material.at(i) = &material.at(j);
+    used.at(j) = true;
   }
 }
 
-bool wand_save_state(void)
-{
-  assert(MAXSTICKS > 0);
-  assert(NMATERIAL > 0);
-  assert(MAXSTICKS <= NMATERIAL);
-
-  /* Save material */
-  for (int i = 0; i < MAXSTICKS; i++)
-    if (state_save_index(material, NMATERIAL, _wand_material[i]))
-      return 1;
-
-  /* Save obj_info data */
-  state_save_obj_info(wands, MAXSTICKS);
-  return 0;
-}
-
-bool wand_load_state(void)
-{
-  assert(MAXSTICKS > 0);
-  assert(NMATERIAL > 0);
-  assert(MAXSTICKS <= NMATERIAL);
-
-  /* Load material */
-  for (int i = 0; i < MAXSTICKS; i++)
-    if (state_load_index(material, NMATERIAL, &_wand_material[i]))
-      return 1;
-
-  /* Load obj_info data */
-  state_load_obj_info(wands, MAXSTICKS);
-  return 0;
-
-}
-
-char const*
+string const&
 wand_material(enum wand_t wand)
 {
-  assert(wand >= 0 && wand < MAXSTICKS);
-  return _wand_material[wand];
+  return *_wand_material.at(wand);
 }
 
 item*
 wand_create(int wand)
 {
-  item* new_wand = os_calloc_item();
+  item* new_wand = new item();
 
-  new_wand->o_damage  = (struct damage){1, 1};
-  new_wand->o_hurldmg = (struct damage){1, 1};
+  new_wand->o_damage  = {1, 1};
+  new_wand->o_hurldmg = {1, 1};
 
   new_wand->o_arm = 11;
   new_wand->o_count = 1;
 
   new_wand->o_type = STICK;
   if (wand < 0 || wand >= MAXSTICKS)
-    new_wand->o_which = (int)pick_one(wands, MAXSTICKS);
+    new_wand->o_which = static_cast<int>(pick_one(wands_info, MAXSTICKS));
   else
     new_wand->o_which = wand;
 
@@ -159,7 +111,7 @@ wand_create(int wand)
 }
 
 /* This can only be used inside the wand_zap() function */
-static THING*
+static monster*
 wand_find_target(int* y, int* x, int dy, int dx)
 {
   *y = player_y();
@@ -195,14 +147,14 @@ wand_spell_light(void)
 static void
 wand_spell_drain_health(void)
 {
-  THING* drainee[40];
-  coord* player_pos = player_get_pos();
+  monster* drainee[40];
+  Coordinate* player_pos = player_get_pos();
 
   /* First cnt how many things we need to spread the hit points among */
   struct room *corp = level_get_ch(player_pos->y, player_pos->x) == DOOR
     ? &passages[level_get_flags(player_pos->y, player_pos->x) & F_PNUM]
     : NULL;
-  THING** dp = drainee;
+  monster** dp = drainee;
 
   int cnt = monster_add_nearby(dp, corp);
   if (cnt == 0)
@@ -219,72 +171,72 @@ wand_spell_drain_health(void)
   /* Now zot all of the monsters */
   for (dp = drainee; *dp; dp++)
   {
-    THING* mp = *dp;
-    mp->t.t_stats.s_hpt -= cnt;
-    if (mp->t.t_stats.s_hpt <= 0)
-      monster_on_death(mp, monster_seen_by_player(&mp->t));
+    monster* mp = *dp;
+    mp->t_stats.s_hpt -= cnt;
+    if (mp->t_stats.s_hpt <= 0)
+      monster_on_death(mp, monster_seen_by_player(mp));
     else
     {
-      monster_start_running(&mp->t.t_pos);
+      monster_start_running(&mp->t_pos);
       char buf[MAXSTR];
-      io_msg("%s screams in pain", monster_name(&mp->t, buf));
+      io_msg("%s screams in pain", monster_name(mp, buf));
     }
   }
 }
 
 static void
-wand_spell_polymorph(THING* target)
+wand_spell_polymorph(monster* target)
 {
   assert(target != NULL);
   monster_polymorph(target);
-  wands[WS_POLYMORPH].oi_know |= monster_seen_by_player(&target->t);
+  wands_info.at(WS_POLYMORPH).oi_know |= monster_seen_by_player(target);
 }
 
 static void
-wand_spell_cancel(THING* target)
+wand_spell_cancel(monster* target)
 {
   assert(target != NULL);
 
-  if (target->t.t_type == 'F')
+  if (target->t_type == 'F')
     player_remove_held();
 
-  monster_set_cancelled(&target->t);
-  monster_remove_invisible(&target->t);
-  monster_remove_confusing(&target->t);
+  monster_set_cancelled(target);
+  monster_remove_invisible(target);
+  monster_remove_confusing(target);
 
-  target->t.t_disguise = target->t.t_type;
-  if (monster_seen_by_player(&target->t))
-    mvaddcch(target->t.t_pos.y, target->t.t_pos.x, (chtype) target->t.t_disguise);
+  target->t_disguise = target->t_type;
+  if (monster_seen_by_player(target))
+    mvaddcch(target->t_pos.y, target->t_pos.x, static_cast<chtype>(target->t_disguise));
 }
 
 static void
 wand_spell_magic_missile(int dy, int dx)
 {
-  THING bolt;
+  item bolt;
   memset(&bolt, 0, sizeof(bolt));
-  bolt.o.o_type    = '*';
-  bolt.o.o_hplus   = 100;
-  bolt.o.o_dplus   = 1;
-  bolt.o.o_flags   = ISMISL;
-  bolt.o.o_damage  = (struct damage){0, 0};
-  bolt.o.o_hurldmg = (struct damage){1, 4};
+  bolt.o_type    = '*';
+  bolt.o_hplus   = 100;
+  bolt.o_dplus   = 1;
+  bolt.o_flags   = ISMISL;
+  bolt.o_damage  = {0, 0};
+  bolt.o_hurldmg = {1, 4};
 
-  THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
+  item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon != NULL)
-    bolt.o.o_launch = weapon->o.o_which;
+    bolt.o_launch = weapon->o_which;
 
-  io_missile_motion(&bolt.o, dy, dx);
+  io_missile_motion(&bolt, dy, dx);
 
-  THING* target = level_get_monster(bolt.o.o_pos.y, bolt.o.o_pos.x);
+  monster* target = level_get_monster(bolt.o_pos.y, bolt.o_pos.x);
   if (target == NULL)
     io_msg("the missle vanishes with a puff of smoke");
-  else if (monster_save_throw(VS_MAGIC, &target->t))
+  else if (monster_save_throw(VS_MAGIC, target))
   {
     char buf[MAXSTR];
-    io_msg("the missle missed the %s", monster_name(&target->t, buf));
+    io_msg("the missle missed the %s", monster_name(target, buf));
   }
   else
-    fight_against_monster(&bolt.o.o_pos, &bolt, true);
+    fight_against_monster(&bolt.o_pos, &bolt, true);
 }
 
 
@@ -292,31 +244,31 @@ wand_spell_magic_missile(int dy, int dx)
 bool
 wand_zap(void)
 {
-  coord const* dir = get_dir();
+  Coordinate const* dir = get_dir();
   if (dir == NULL)
     return false;
-  coord delta = *dir;
+  Coordinate delta = *dir;
 
-  THING* obj = pack_get_item("zap with", STICK);
+  item* obj = pack_get_item("zap with", STICK);
   if (obj == NULL)
     return false;
-  else if (obj->o.o_type != STICK)
+  else if (obj->o_type != STICK)
   {
     io_msg("you can't zap with that!");
     return false;
   }
-  else if (obj->o.o_charges == 0)
+  else if (obj->o_charges == 0)
   {
     io_msg("nothing happens");
     return true;
   }
 
-  assert(obj->o.o_which >= 0 && obj->o.o_which < MAXSTICKS);
+  assert(obj->o_which >= 0 && obj->o_which < MAXSTICKS);
 
-  switch (obj->o.o_which)
+  switch (obj->o_which)
   {
     case WS_LIGHT:
-      wands[WS_LIGHT].oi_know = true;
+      wands_info.at(WS_LIGHT).oi_know = true;
       wand_spell_light();
       break;
 
@@ -332,18 +284,18 @@ wand_zap(void)
 
     case WS_INVIS:
       {
-        coord c;
-        THING* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
+        Coordinate c;
+        monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
-          monster_set_invisible(&tp->t);
+          monster_set_invisible(tp);
         else
           io_msg("You did not hit anything");
       } break;
 
     case WS_POLYMORPH:
       {
-        coord c;
-        THING* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
+        Coordinate c;
+        monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
           wand_spell_polymorph(tp);
         else
@@ -352,8 +304,8 @@ wand_zap(void)
 
     case WS_CANCEL:
       {
-        coord c;
-        THING* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
+        Coordinate c;
+        monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
           wand_spell_cancel(tp);
         else
@@ -361,24 +313,24 @@ wand_zap(void)
       } break;
 
     case WS_TELAWAY:
-      wands[WS_TELAWAY].oi_know = true;
+      wands_info.at(WS_TELAWAY).oi_know = true;
       player_teleport(NULL);
       break;
 
     case WS_TELTO:
       {
-        wands[WS_TELTO].oi_know = true;
+        wands_info.at(WS_TELTO).oi_know = true;
         int x;
         int y;
-        THING* tp = wand_find_target(&y, &x, delta.y, delta.x);
+        monster* tp = wand_find_target(&y, &x, delta.y, delta.x);
         if (tp != NULL)
         {
-          coord new_pos;
+          Coordinate new_pos;
           new_pos.y = y - delta.y;
           new_pos.x = x - delta.x;
 
-          tp->t.t_dest = player_get_pos();
-          tp->t.t_flags |= ISRUN;
+          tp->t_dest = player_get_pos();
+          tp->t_flags |= ISRUN;
 
           player_teleport(&new_pos);
         }
@@ -387,23 +339,23 @@ wand_zap(void)
       } break;
 
     case WS_MISSILE:
-      wands[WS_MISSILE].oi_know = true;
+      wands_info.at(WS_MISSILE).oi_know = true;
       wand_spell_magic_missile(delta.y, delta.x);
       break;
 
     case WS_HASTE_M:
       {
-        coord c;
-        THING* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
+        Coordinate c;
+        monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
         {
-          if (monster_is_slow(&tp->t))
-            tp->t.t_flags &= ~ISSLOW;
+          if (monster_is_slow(tp))
+            tp->t_flags &= ~ISSLOW;
           else
-            tp->t.t_flags |= ISHASTE;
+            tp->t_flags |= ISHASTE;
           monster_start_running(&c);
           char buf[MAXSTR];
-          io_msg("%s became faster", monster_name(&tp->t, buf));
+          io_msg("%s became faster", monster_name(tp, buf));
         }
         else
           io_msg("You did not hit anything");
@@ -412,18 +364,18 @@ wand_zap(void)
 
     case WS_SLOW_M:
       {
-        coord c;
-        THING* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
+        Coordinate c;
+        monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != NULL)
         {
-          if (monster_is_hasted(&tp->t))
-            tp->t.t_flags &= ~ISHASTE;
+          if (monster_is_hasted(tp))
+            tp->t_flags &= ~ISHASTE;
           else
-            tp->t.t_flags |= ISSLOW;
-          tp->t.t_turn = true;
+            tp->t_flags |= ISSLOW;
+          tp->t_turn = true;
           monster_start_running(&c);
           char buf[MAXSTR];
-          io_msg("%s became slower", monster_name(&tp->t, buf));
+          io_msg("%s became slower", monster_name(tp, buf));
         }
         else
           io_msg("You did not hit anything");
@@ -431,17 +383,17 @@ wand_zap(void)
       break;
 
     case WS_ELECT:
-      wands[WS_ELECT].oi_know = true;
+      wands_info.at(WS_ELECT).oi_know = true;
       magic_bolt(player_get_pos(), &delta, "bolt");
       break;
 
     case WS_FIRE:
-      wands[WS_FIRE].oi_know = true;
+      wands_info.at(WS_FIRE).oi_know = true;
       magic_bolt(player_get_pos(), &delta, "flame");
       break;
 
     case WS_COLD:
-      wands[WS_COLD].oi_know = true;
+      wands_info.at(WS_COLD).oi_know = true;
       magic_bolt(player_get_pos(), &delta, "ice");
       break;
 
@@ -454,7 +406,7 @@ wand_zap(void)
       break;
     }
 
-    obj->o.o_charges--;
+    obj->o_charges--;
     return true;
 }
 
@@ -462,9 +414,9 @@ char*
 wand_description(item const* item, char* buf)
 {
   char* ptr = buf;
-  struct obj_info oi = wands[item_subtype(item)];
+  struct obj_info oi = wands_info.at(static_cast<size_t>(item_subtype(item)));
 
-  if (oi.oi_know || oi.oi_guess)
+  if (oi.oi_know || !oi.oi_guess.empty())
   {
     if (item_count(item))
       strcpy(ptr, "A wand");
@@ -473,53 +425,41 @@ wand_description(item const* item, char* buf)
 
     ptr += strlen(ptr);
     if (oi.oi_know)
-      sprintf(ptr, " of %s", oi.oi_name);
-    else if (oi.oi_guess)
-      sprintf(ptr, " called %s", oi.oi_guess);
+      sprintf(ptr, " of %s", oi.oi_name.c_str());
+    else if (!oi.oi_guess.empty())
+      sprintf(ptr, " called %s", oi.oi_guess.c_str());
 
     ptr += strlen(ptr);
     if (item_is_known(item))
       sprintf(ptr, " [%d charges]", item_charges(item));
 
     ptr += strlen(ptr);
-    sprintf(ptr, " (%s)", wand_material((enum wand_t)(item_subtype(item))));
+    sprintf(ptr, " (%s)", wand_material(static_cast<wand_t>(item_subtype(item))).c_str());
   }
   else if (item_count(item) == 1)
-    sprintf(ptr, "A %s wand", wand_material((enum wand_t)(item_subtype(item))));
+    sprintf(ptr, "A %s wand", wand_material(static_cast<wand_t>(item_subtype(item))).c_str());
   else
     sprintf(ptr, "%d %s wands", item_count(item),
-            wand_material((enum wand_t)(item_subtype(item))));
+            wand_material(static_cast<wand_t>(item_subtype(item))).c_str());
 
   return buf;
 }
 
 bool wand_is_known(enum wand_t wand)
 {
-  return wands[wand].oi_know;
+  return wands_info.at(wand).oi_know;
 }
 void wand_set_known(enum wand_t wand)
 {
-  wands[wand].oi_know = true;
+  wands_info.at(wand).oi_know = true;
 }
 
-void wand_set_name(enum wand_t wand, char const* new_name)
+void wand_set_name(enum wand_t wand, string const& new_name)
 {
-  size_t len = strlen(new_name);
-
-  if (wands[wand].oi_guess != NULL)
-  {
-    free(wands[wand].oi_guess);
-    wands[wand].oi_guess = NULL;
-  }
-
-  if (len > 0)
-  {
-    wands[wand].oi_guess = malloc(len + 1);
-    strcpy(wands[wand].oi_guess, new_name);
-  }
+  wands_info.at(wand).oi_guess = new_name;
 }
 
-int wand_get_worth(enum wand_t wand)
+size_t wand_get_worth(enum wand_t wand)
 {
-  return wands[wand].oi_worth;
+  return wands_info.at(wand).oi_worth;
 }

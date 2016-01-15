@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "things.h" /* struct obj_info */
 
 /* Potion types */
@@ -23,7 +25,7 @@ enum potion_t
 };
 
 /* Variables, TODO: Make these private */
-extern struct obj_info potion_info[NPOTIONS]; /* A list of potions and info */
+extern std::vector<obj_info> potion_info; /* A list of potions and info */
 
 void potions_init(void);
 

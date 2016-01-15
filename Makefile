@@ -25,9 +25,9 @@ OBJS     = $(addsuffix .o, $(basename $(CXXFILES)))
 MISC     = install CHANGELOG.TXT LICENSE.TXT rogue.png rogue.desktop
 
 debug: CXX       = clang++
-debug: CXXFLAGS  = -Weverything -g3 -std=c++11 -Wno-c++98-compat-pedantic -Wno-c++11-extensions -Wno-padded -Wno-c++11-compat -ferror-limit=1
+debug: CXXFLAGS  = -Weverything -Werror -g3 -std=c++11 -Wno-c++98-compat-pedantic -Wno-c++11-extensions -Wno-padded -Wno-c++11-compat -ferror-limit=1
 # Temporary:
-debug: CXXFLAGS += -Wno-global-constructors -Wno-exit-time-destructors
+debug: CXXFLAGS += -Wno-global-constructors -Wno-exit-time-destructors -Wno-implicit-fallthrough
 debug: $(PROGRAM) ctags
 
 .cc.o:

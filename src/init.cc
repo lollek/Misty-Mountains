@@ -18,6 +18,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include <string>
+
+using namespace std;
+
 #include "potions.h"
 #include "scrolls.h"
 #include "io.h"
@@ -36,62 +40,6 @@
 #include "rogue.h"
 
 #include "init.h"
-
-/** sumprobs:
- * Sum up the probabilities for items appearing */
-static void
-sumprobs(char ch)
-{
-  char const* str;
-  void const* ptr;
-  int max;
-
-  /* Ready the pointers */
-  switch (ch)
-  {
-    case '0':    ptr = things;         max = NUMTHINGS;  str = "things"; break;
-    case POTION: ptr = potion_info;    max = NPOTIONS;   str = "potions"; break;
-    case SCROLL: ptr = scroll_info;    max = NSCROLLS;   str = "scrolls"; break;
-    case RING:   ptr = ring_info;      max = NRINGS;     str = "rings"; break;
-    case STICK:  ptr = __wands_ptr();  max = MAXSTICKS;  str = "wands"; break;
-    case WEAPON: ptr = weapon_info;    max = MAXWEAPONS; str = "weapons"; break;
-    case ARMOR:  ptr = NULL;           max = NARMORS;    str = "armor"; break;
-    default:     ptr = NULL;           max = 0;          str = "error"; break;
-  }
-
-  /* Add upp percentage */
-  int sum = 0;
-  for (int i = 0; i < max; ++i)
-  {
-    if (ch == ARMOR) sum += armor_probability(static_cast<armor_t>(i));
-    else             sum += (static_cast<const obj_info*>(ptr))[i].oi_prob;
-  }
-
-  /* Make sure it adds up to 100 */
-  if (sum == 100)
-    return;
-
-  /* Woops, error error! */
-  endwin();
-  printf("\nBad percentages for %s (bound = %d): %d%%\n", str, max, sum);
-  for (int i = 0; i < max; ++i)
-  {
-    int prob;
-    char const* name;
-    if (ch == ARMOR)
-    {
-      prob = armor_probability(static_cast<armor_t>(i));
-      name = armor_name(static_cast<armor_t>(i));
-    }
-    else
-    {
-      prob = (static_cast<const obj_info*>(ptr))[i].oi_prob;
-      name = (static_cast<const obj_info*>(ptr))[i].oi_name.c_str();
-    }
-    printf("%3d%% %s\n", prob, name);
-  }
-  exit(1);
-}
 
 /** init_graphics:
  *  get curses running */
@@ -139,20 +87,6 @@ init_graphics(void)
   return 0;
 }
 
-/** init_probs:
- * Initialize the probabilities for the various items */
-static void
-init_probs(void)
-{
-  sumprobs('0');
-  sumprobs(POTION);
-  sumprobs(SCROLL);
-  sumprobs(RING);
-  sumprobs(STICK);
-  sumprobs(WEAPON);
-  sumprobs(ARMOR);
-}
-
 bool
 init_new_game(void)
 {
@@ -175,7 +109,6 @@ init_new_game(void)
   idlok(hw, true);
 
   /* Init stuff */
-  init_probs();                         /* Set up prob tables for objects */
   player_init();                        /* Set up initial player stats */
   scroll_init();                        /* Set up names of scrolls */
   potions_init();                       /* Set up colors of potions */

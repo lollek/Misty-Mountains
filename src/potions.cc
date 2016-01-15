@@ -10,9 +10,7 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
-#include <stdbool.h>
-#include <string.h>
-
+#include <vector>
 #include <string>
 
 using namespace std;
@@ -33,7 +31,7 @@ using namespace std;
 /* Colors of the potions */
 static string p_colors[NPOTIONS];
 
-obj_info potion_info[NPOTIONS] = {
+vector<obj_info> potion_info = {
   /* io_name,      oi_prob, oi_worth, oi_guess, oi_know */
   { "confusion",         7,        5,       "", false },
   { "hallucination",     8,        5,       "", false },
@@ -227,7 +225,7 @@ potion_quaff_something(void)
   io_refresh_statusline();
 
   /* Throw the item away */
-  call_it("potion", &potion_info[obj->o_which]);
+  call_it("potion", &potion_info.at(static_cast<size_t>(obj->o_which)));
 
   if (discardit)
     delete obj;
@@ -237,7 +235,7 @@ potion_quaff_something(void)
 void
 potion_description(item const* item, char buf[])
 {
-  struct obj_info* op = &potion_info[item_subtype(item)];
+  struct obj_info* op = &potion_info.at(static_cast<size_t>(item_subtype(item)));
   if (op->oi_know)
   {
     if (item_count(item) == 1)

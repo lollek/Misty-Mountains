@@ -1,7 +1,6 @@
-#ifndef ROGUE14_RINGS_H
-#define ROGUE14_RINGS_H
+#pragma once
 
-#include <stdbool.h>
+#include <vector>
 
 /* How many rings we can wield */
 #define CONCURRENT_RINGS 2
@@ -24,21 +23,16 @@ enum ring_t {
   NRINGS
 };
 
-/* Variables: TODO: Make these private */
-extern struct obj_info ring_info[NRINGS];
+extern std::vector<obj_info> ring_info;
 
-void ring_init(void);
-bool ring_save_state(void);
-bool ring_load_state(void);
+void ring_init();
 
-bool ring_put_on(void);
-bool ring_take_off(void);
+bool ring_put_on();
+bool ring_take_off();
 
-int ring_drain_amount(void); /* How much food the player's rings drain */
+int ring_drain_amount(); /* How much food the player's rings drain */
 
 bool ring_is_known(enum ring_t ring);
 
 void ring_description(item const* item, char* buf);
 item* ring_create(int which, bool random_stats);
-
-#endif /* ROGUE14_RINGS_H */
