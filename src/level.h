@@ -30,8 +30,6 @@ extern int                level_max;                       /* Deepest player has
 extern int                levels_without_food;             /* Levels without food */
 
 void level_new(void);
-bool level_save_state(void);
-bool level_load_state(void);
 
 char level_get_type(int y, int x);
 

@@ -3,9 +3,6 @@
 
 #include <stdbool.h>
 
-bool food_save_state(void);
-bool food_load_state(void);
-
 void food_eat(void);
 void food_digest(void);
 

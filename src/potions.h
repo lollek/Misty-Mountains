@@ -29,9 +29,6 @@ extern std::vector<obj_info> potion_info; /* A list of potions and info */
 
 void potions_init(void);
 
-bool potion_save_state(void);
-bool potion_load_state(void);
-
 /* Functions */
 bool potion_quaff_something(void);  /* Quaff a potion from the pack */
 void potion_description(item const* obj, char buf[]);
