@@ -30,15 +30,15 @@ monster_find_new_target(monster* monster)
     if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
       continue;
 
-    if (roomin(&obj->o_pos) == monster->t_room && os_rand_range(100) < prob)
+    if (roomin(&obj->get_pos()) == monster->t_room && os_rand_range(100) < prob)
     {
       auto result = find_if(monster_list.cbegin(), monster_list.cend(),
           [&] (struct monster const* m) {
-          return m->t_dest == &obj->o_pos;
+          return m->t_dest == &obj->get_pos();
       });
 
       if (result == monster_list.cend()) {
-        monster_set_target(monster, &obj->o_pos);
+        monster_set_target(monster, &obj->get_pos());
         return;
       }
     }
@@ -54,7 +54,7 @@ monster_start_chasing(monster* mon)
 }
 
 void
-monster_set_target(monster* mon, Coordinate* target)
+monster_set_target(monster* mon, Coordinate const* target)
 {
   mon->t_dest = target;
 }

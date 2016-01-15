@@ -248,8 +248,8 @@ void player_remove_hallucinating(__attribute__((unused)) int)
 
   /* undo the things */
   for (Item* tp : level_items) {
-    if (cansee(tp->o_pos.y, tp->o_pos.x)) {
-      mvaddcch(tp->o_pos.y, tp->o_pos.x, static_cast<chtype>(tp->o_type));
+    if (cansee(tp->get_y(), tp->get_x())) {
+      mvaddcch(tp->get_y(), tp->get_x(), static_cast<chtype>(tp->o_type));
     }
   }
 

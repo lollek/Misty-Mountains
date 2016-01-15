@@ -151,7 +151,7 @@ potion_quaff_something(void)
           if (is_magic(item))
           {
             show = true;
-            mvwaddcch(hw, item->o_pos.y, item->o_pos.x, MAGIC);
+            mvwaddcch(hw, item->get_y(), item->get_x(), MAGIC);
             potion_learn(P_TFIND);
           }
         }

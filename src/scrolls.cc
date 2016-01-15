@@ -294,7 +294,7 @@ food_detection(void)
     if (obj->o_type == FOOD)
     {
       food_seen = true;
-      mvwaddcch(hw, obj->o_pos.y, obj->o_pos.x, FOOD);
+      mvwaddcch(hw, obj->get_y(), obj->get_x(), FOOD);
     }
   }
 

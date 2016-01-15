@@ -142,7 +142,7 @@ trap_arrow_player(void)
   {
     Item* arrow = weapon_create(ARROW, false);
     arrow->o_count = 1;
-    arrow->o_pos = *player_get_pos();
+    arrow->set_pos(*player_get_pos());
     weapon_missile_fall(arrow, false);
     io_msg("an arrow shoots past you");
   }
@@ -171,7 +171,7 @@ trap_arrow_monster(monster* victim)
   {
     Item* arrow = weapon_create(ARROW, false);
     arrow->o_count = 1;
-    arrow->o_pos = victim->t_pos;
+    arrow->set_pos(victim->t_pos);
     weapon_missile_fall(arrow, false);
     if (monster_seen_by_player(victim))
       io_msg("An arrow barely missed %s", monster_name(victim, buf));

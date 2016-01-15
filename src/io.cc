@@ -465,28 +465,28 @@ io_missile_motion(Item* item, int ydelta, int xdelta)
   int ch;
 
   /* Come fly with us ... */
-  item->o_pos = *player_pos;
+  item->set_pos(*player_pos);
   for (;;)
   {
     /* Erase the old one */
-    if (item->o_pos ==  *player_pos &&
-        cansee(item->o_pos.y, item->o_pos.x))
+    if (item->get_pos() ==  *player_pos &&
+        cansee(item->get_y(), item->get_x()))
     {
-      ch = level_get_ch(item->o_pos.y, item->o_pos.x);
-      mvaddcch(item->o_pos.y, item->o_pos.x, static_cast<chtype>(ch));
+      ch = level_get_ch(item->get_y(), item->get_x());
+      mvaddcch(item->get_y(), item->get_x(), static_cast<chtype>(ch));
     }
 
     /* Get the new position */
-    item->o_pos.y += ydelta;
-    item->o_pos.x += xdelta;
-    if (step_ok(ch = level_get_type(item->o_pos.y, item->o_pos.x))
+    item->set_y(item->get_y() + ydelta);
+    item->set_x(item->get_x() + xdelta);
+    if (step_ok(ch = level_get_type(item->get_y(), item->get_x()))
        && ch != DOOR)
     {
       /* It hasn't hit anything yet, so display it if it alright. */
-      if (cansee(item->o_pos.y, item->o_pos.x))
+      if (cansee(item->get_y(), item->get_x()))
       {
         os_usleep(10000);
-        mvaddcch(item->o_pos.y, item->o_pos.x, static_cast<chtype>(item->o_type));
+        mvaddcch(item->get_y(), item->get_x(), static_cast<chtype>(item->o_type));
         refresh();
       }
       continue;

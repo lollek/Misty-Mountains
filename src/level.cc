@@ -69,7 +69,7 @@ treas_room(void)
     Item* item = new_thing();
 
     room_find_floor(room, &monster_pos, 2 * MAXTRIES, false);
-    item->o_pos = monster_pos;
+    item->set_pos(monster_pos);
     level_items.push_back(item);
     level_set_ch(monster_pos.y, monster_pos.x, static_cast<char>(item->o_type));
   }
@@ -123,8 +123,10 @@ put_things(void)
       level_items.push_back(obj);
 
       /* Put it somewhere */
-      room_find_floor(nullptr, &obj->o_pos, false, false);
-      level_set_ch(obj->o_pos.y, obj->o_pos.x, static_cast<char>(obj->o_type));
+      Coordinate pos;
+      room_find_floor(nullptr, &pos, false, false);
+      obj->set_pos(pos);
+      level_set_ch(obj->get_y(), obj->get_x(), static_cast<char>(obj->o_type));
     }
 
   /* If he is really deep in the dungeon and he hasn't found the
@@ -135,8 +137,10 @@ put_things(void)
     level_items.push_back(amulet);
 
     /* Put it somewhere */
-    room_find_floor(nullptr, &amulet->o_pos, false, false);
-    level_set_ch(amulet->o_pos.y, amulet->o_pos.x, AMULET);
+    Coordinate pos;
+    room_find_floor(nullptr, &pos, false, false);
+    amulet->set_pos(pos);
+    level_set_ch(amulet->get_y(), amulet->get_x(), AMULET);
   }
 }
 

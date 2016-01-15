@@ -21,7 +21,24 @@
 
 class Item {
 public:
-  Coordinate    o_pos;                 /* Where it lives on the screen */
+  Item() = default;
+  Item(Item const&) = default;
+
+  ~Item() = default;
+
+  Item& operator=(Item const&) = default;
+  Item& operator=(Item&&) = default;
+
+  /* Setters */
+  void set_pos(Coordinate const&);
+  void set_x(int);
+  void set_y(int);
+
+  /* Getters */
+  Coordinate const& get_pos() const;
+  int               get_x() const;
+  int               get_y() const;
+
   std::string   o_label;               /* Label for object */
   int           o_type;                /* What kind of object it is */
   int           o_launch;              /* What you need to launch it */
@@ -36,11 +53,10 @@ public:
   damage        o_hurldmg;             /* Damage if thrown */
 
 private:
+  Coordinate    position_on_screen;
 };
 
 /* Data */
-static inline Coordinate* item_pos(Item* item)
-{ return &item->o_pos; }
 static inline std::string const& item_nickname(Item const* item)
 { return item->o_label; }
 static inline int item_type(Item const* item)

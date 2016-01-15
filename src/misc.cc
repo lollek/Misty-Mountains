@@ -220,7 +220,7 @@ Item*
 find_obj(int y, int x)
 {
   for (Item* obj : level_items)
-    if (obj->o_pos.y == y && obj->o_pos.x == x)
+    if (obj->get_y() == y && obj->get_x() == x)
       return obj;
 
   /* It should have returned by now */
@@ -443,7 +443,7 @@ set_oldch(monster* tp, Coordinate* cp)
 }
 
 struct room*
-roomin(Coordinate* cp)
+roomin(Coordinate const* cp)
 {
   char fp = level_get_flags(cp->y, cp->x);
   if (fp & F_PASS)

@@ -114,7 +114,7 @@ magic_bolt_hit_monster(monster* mon, Coordinate* start, Coordinate* pos, string 
     bolt.o_which      = FLAME;
     bolt.o_hplus      = 100;
     bolt.o_dplus      = 0;
-    bolt.o_pos        = *pos;
+    bolt.set_pos(*pos);
     bolt.o_flags     |= ISMISL;
     bolt.o_launch     = -1;
     bolt.o_hurldmg    = {6,6};

@@ -245,7 +245,7 @@ pack_add(Item* obj, bool silent)
         if (from_floor)
           pack_remove_from_floor(obj);
         ptr->o_count += obj->o_count;
-        ptr->o_pos = obj->o_pos;
+        ptr->set_pos(obj->get_pos());
         delete obj;
         obj = ptr;
         is_picked_up = true;
@@ -586,7 +586,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     int flags = level_get_flags(player_pos->y, player_pos->x);
     flags |= F_DROPPED;
     level_set_flags(player_pos->y, player_pos->x, static_cast<char>(flags));
-    obj->o_pos = *player_pos;
+    obj->set_pos(*player_pos);
     io_msg("dropped %s", inv_name(buf, obj, true));
   }
   else if (!quiet_on_success)

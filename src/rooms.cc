@@ -142,15 +142,6 @@ room_dig(int y, int x, int starty, int startx, int maxy, int maxx)
   }
 }
 
-/** rnd_pos:
- * Pick a random spot in a room */
-static void
-rnd_pos(struct room* rp, Coordinate* cp)
-{
-  cp->x = rp->r_pos.x + os_rand_range(rp->r_max.x - 2) + 1;
-  cp->y = rp->r_pos.y + os_rand_range(rp->r_max.y - 2) + 1;
-}
-
 /* Dig a maze */
 static void
 room_do_maze(struct room* rp)
@@ -276,7 +267,7 @@ rooms_create(void)
       Item *gold = new Item();
       gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
       room_find_floor(&rooms[i], &rooms[i].r_gold, false, false);
-      gold->o_pos = rooms[i].r_gold;
+      gold->set_pos(rooms[i].r_gold);
       level_set_ch(rooms[i].r_gold.y, rooms[i].r_gold.x, GOLD);
       gold->o_flags = ISMANY;
       gold->o_type = GOLD;
@@ -315,7 +306,10 @@ room_find_floor(struct room* rp, Coordinate* cp, int limit, bool monst)
       compchar = ((rp->r_flags & ISMAZE) ? PASSAGE : FLOOR);
     }
 
-    rnd_pos(rp, cp);
+    /* Pick a random position */
+    cp->x = rp->r_pos.x + os_rand_range(rp->r_max.x - 2) + 1;
+    cp->y = rp->r_pos.y + os_rand_range(rp->r_max.y - 2) + 1;
+
     PLACE* pp = level_get_place(cp->y, cp->x);
     if (monst)
     {

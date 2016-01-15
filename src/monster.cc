@@ -328,7 +328,7 @@ monster_remove_from_screen(Coordinate* mp, monster* tp, bool waskill)
   assert(tp != nullptr);
 
   for (Item* obj : tp->t_pack) {
-    obj->o_pos = tp->t_pos;
+    obj->set_pos(tp->t_pos);
     if (waskill)
       weapon_missile_fall(obj, false);
     else
@@ -656,7 +656,7 @@ void
 monster_aggro_all_which_desire_item(Item* item)
 {
   for (monster* mon : monster_list) {
-    if (mon->t_dest == &item->o_pos) {
+    if (*mon->t_dest == item->get_pos()) {
       mon->t_dest = player_get_pos();
     }
   }

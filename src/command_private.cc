@@ -44,9 +44,9 @@ static bool command_attack_bow(Coordinate const* delta)
 
   Item* arrow = pack_remove(ptr, true, false);
   io_missile_motion(arrow, delta->y, delta->x);
-  monster* monster_at_pos = level_get_monster(arrow->o_pos.y, arrow->o_pos.x);
+  monster* monster_at_pos = level_get_monster(arrow->get_y(), arrow->get_x());
 
-  if (monster_at_pos == nullptr || !fight_against_monster(&arrow->o_pos, arrow, true))
+  if (monster_at_pos == nullptr || !fight_against_monster(&arrow->get_pos(), arrow, true))
     weapon_missile_fall(arrow, true);
 
   return true;
@@ -287,7 +287,7 @@ command_pick_up(void) {
   Coordinate const* player_pos = player_get_pos();
 
   for (Item* obj : level_items) {
-    if (obj->o_pos == *player_pos) {
+    if (obj->get_pos() == *player_pos) {
       pack_pick_up(obj, true);
       return true;
     }
@@ -499,7 +499,7 @@ bool command_throw(void)
 
   obj = pack_remove(obj, true, false);
   io_missile_motion(obj, ydelta, xdelta);
-  monster* monster_at_pos = level_get_monster(obj->o_pos.y, obj->o_pos.x);
+  monster* monster_at_pos = level_get_monster(obj->get_y(), obj->get_x());
 
   /* Throwing an arrow always misses */
   if (obj->o_which == ARROW)
@@ -516,7 +516,7 @@ bool command_throw(void)
   /* AHA! Here it has hit something.  If it is a wall or a door,
    * or if it misses (combat) the monster, put it on the floor */
   bool missed = monster_at_pos == nullptr ||
-    !fight_against_monster(&obj->o_pos, obj, true);
+    !fight_against_monster(&obj->get_pos(), obj, true);
 
   if (missed)
   {
@@ -651,7 +651,7 @@ bool command_drop(void)
   flags |= F_DROPPED;
   level_set_flags(player_pos->y, player_pos->x, static_cast<char>(flags));
 
-  obj->o_pos = *player_pos;
+  obj->set_pos(*player_pos);
 
   char buf[MAXSTR];
   io_msg("dropped %s", inv_name(buf, obj, true));

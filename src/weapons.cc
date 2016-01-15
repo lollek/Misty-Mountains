@@ -62,11 +62,11 @@ void
 weapon_missile_fall(Item* obj, bool pr)
 {
   Coordinate fpos;
-  if (fallpos(&obj->o_pos, &fpos))
+  if (fallpos(&obj->get_pos(), &fpos))
   {
     PLACE* pp = level_get_place(fpos.y, fpos.x);
     pp->p_ch = static_cast<char>(obj->o_type);
-    obj->o_pos = fpos;
+    obj->set_pos(fpos);
     if (cansee(fpos.y, fpos.x))
     {
       if (pp->p_monst != nullptr)

@@ -236,8 +236,8 @@ daemon_change_visuals(__attribute__((unused)) int)
 
   /* change the things */
   for (Item* tp : level_items)
-    if (cansee(tp->o_pos.y, tp->o_pos.x))
-      mvaddcch(tp->o_pos.y, tp->o_pos.x, static_cast<chtype>(rnd_thing()));
+    if (cansee(tp->get_y(), tp->get_x()))
+      mvaddcch(tp->get_y(), tp->get_x(), static_cast<chtype>(rnd_thing()));
 
   /* change the stairs */
   if (seen_stairs())

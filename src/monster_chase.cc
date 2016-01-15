@@ -121,7 +121,7 @@ chase(monster *tp, Coordinate *ee)
         {
           auto obj = find_if(level_items.cbegin(), level_items.cend(),
                       [&] (Item const* i) {
-                        return i->o_pos.y == y && i->o_pos.x == x;
+                        return i->get_y() == y && i->get_x() == x;
               });
 
           if (obj != level_items.cend() && (*obj)->o_which == S_SCARE) {
@@ -241,11 +241,11 @@ over:
 	else if (m_this == *th->t_dest)
 	{
             for (Item *obj : level_items)
-		if (th->t_dest == &obj->o_pos)
+		if (th->t_dest == &obj->get_pos())
 		{
                     level_items.remove(obj);
                     th->t_pack.push_back(obj);
-		    level_set_ch(obj->o_pos.y, obj->o_pos.x,
+		    level_set_ch(obj->get_y(), obj->get_x(),
 			(th->t_room->r_flags & ISGONE) ? PASSAGE : FLOOR);
 		    monster_find_new_target(th);
 		    break;

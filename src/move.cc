@@ -314,7 +314,7 @@ move_random(monster* who, Coordinate* ret)
   {
     auto results = find_if(level_items.cbegin(), level_items.cend(),
         [&] (Item const* i) {
-      return y == i->o_pos.y && x == i->o_pos.x;
+      return y == i->get_y() && x == i->get_x();
     });
 
     if (results != level_items.cend() && (*results)->o_which == S_SCARE) {

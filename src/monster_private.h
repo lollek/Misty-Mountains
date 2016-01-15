@@ -24,4 +24,4 @@ extern struct monster_template monsters[26];
 void monster_find_new_target(monster* tp);
 
 void monster_start_chasing(monster* monster);
-void monster_set_target(monster* mon, Coordinate* target);
+void monster_set_target(monster* mon, Coordinate const* target);
