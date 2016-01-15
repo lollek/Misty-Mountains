@@ -210,7 +210,7 @@ monster_notice_player(int y, int x)
       && !player_is_stealthy()
       && !os_rand_range(3))
   {
-    monster_set_target(monster, player_pos);
+    monster_set_target(monster, *player_pos);
     if (!monster_is_stuck(monster))
       monster_start_chasing(monster);
   }
@@ -241,8 +241,8 @@ monster_notice_player(int y, int x)
   if (monster_is_greedy(monster) && !monster_is_chasing(monster))
   {
     monster_set_target(monster, player_get_room()->r_goldval
-        ? &player_get_room()->r_gold
-        : player_pos);
+        ? player_get_room()->r_gold
+        : *player_pos);
     monster_start_chasing(monster);
   }
 
@@ -656,8 +656,8 @@ void
 monster_aggro_all_which_desire_item(Item* item)
 {
   for (monster* mon : monster_list) {
-    if (*mon->t_dest == item->get_pos()) {
-      mon->t_dest = player_get_pos();
+    if (mon->t_dest == item->get_pos()) {
+      mon->t_dest = *player_get_pos();
     }
   }
 }

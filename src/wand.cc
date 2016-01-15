@@ -329,7 +329,7 @@ wand_zap(void)
           new_pos.y = y - delta.y;
           new_pos.x = x - delta.x;
 
-          tp->t_dest = player_get_pos();
+          tp->t_dest = *player_get_pos();
           tp->t_flags |= ISRUN;
 
           player_teleport(&new_pos);

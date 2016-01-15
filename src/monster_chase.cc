@@ -166,18 +166,22 @@ chase_do(monster *th)
     bool stoprun = false; /* true means we are there */
     bool door;
     static Coordinate m_this; /* Temporary destination for chaser */
-    Coordinate *player_pos = player_get_pos();
     Coordinate delta;
+
+    Coordinate *player_pos = player_get_pos();
+    if (player_pos == nullptr) {
+      throw runtime_error("Player position was null");
+    }
 
     rer = th->t_room;
 
     if (monster_is_greedy(th) && rer->r_goldval == 0)
-	th->t_dest = player_pos;	/* If gold has been taken, run after hero */
+	th->t_dest = *player_pos;	/* If gold has been taken, run after hero */
 
-    if (th->t_dest == player_pos)	/* Find room of chasee */
+    if (th->t_dest == *player_pos)	/* Find room of chasee */
 	ree = player_get_room();
     else
-	ree = roomin(th->t_dest);
+	ree = roomin(&th->t_dest);
 
     /* We don't count doors as inside rooms for this routine */
     door = (level_get_ch(th->t_pos.y, th->t_pos.x) == DOOR);
@@ -190,7 +194,7 @@ over:
     {
 	for (cp = rer->r_exit; cp < &rer->r_exit[rer->r_nexits]; cp++)
 	{
-	    curdist = dist_cp(th->t_dest, cp);
+	    curdist = dist_cp(&th->t_dest, cp);
 	    if (curdist < mindist)
 	    {
 		m_this = *cp;
@@ -206,7 +210,7 @@ over:
     }
     else
     {
-	m_this = *th->t_dest;
+	m_this = th->t_dest;
 	
 	/* For dragons check and see if (a) the hero is on a straight
 	 * line from it, and (b) that it is within shooting distance,
@@ -238,10 +242,10 @@ over:
     {
 	if (m_this == *player_pos)
 	    return( fight_against_player(th) );
-	else if (m_this == *th->t_dest)
+	else if (m_this == th->t_dest)
 	{
             for (Item *obj : level_items)
-		if (th->t_dest == &obj->get_pos())
+		if (th->t_dest == obj->get_pos())
 		{
                     level_items.remove(obj);
                     th->t_pack.push_back(obj);
@@ -300,7 +304,7 @@ over:
       addcch(static_cast<chtype>(th->t_type)| A_STANDOUT);
 
     /* And stop running if need be */
-    if (stoprun && (th->t_pos == *th->t_dest))
+    if (stoprun && (th->t_pos == th->t_dest))
       th->t_flags &= ~ISRUN;
 
     return(0);

@@ -42,7 +42,9 @@ bool cansee(int y, int x); /* True if player can see Coordinate */
  * this calculates d^2, not d, but that's good enough for
  * our purposes, since it's only used comparitively. */
 int dist(int y1, int x1, int y2, int x2);
-#define dist_cp(_1, _2) dist((_1)->y, (_1)->x, (_2)->y, (_2)->x)
+inline int dist_cp(Coordinate* c1, Coordinate* c2) {
+  return dist(c1->y, c1->y, c2->y, c2->y);
+}
 
 const char *pick_color(const char *col); /* Return given color (or random if hallucinating) */
 char floor_ch(void); /* Floor-type at hero's position */

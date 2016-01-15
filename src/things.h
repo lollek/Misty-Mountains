@@ -34,9 +34,9 @@ struct stats {
 struct monster {
   stats              t_stats;   /* Physical description */
   Coordinate         t_pos;     /* Position */
-  Coordinate const*  t_dest;    /* Where it is running to */
+  Coordinate         t_dest;    /* Where it is running to */
   room*              t_room;    /* Current room for thing */
-  std::list<Item*> t_pack;    /* What the thing is carrying */
+  std::list<Item*>   t_pack;    /* What the thing is carrying */
 
   int                t_flags;   /* State word */
   char               t_type;    /* What it is */

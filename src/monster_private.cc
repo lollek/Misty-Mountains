@@ -22,7 +22,7 @@ monster_find_new_target(monster* monster)
   int prob = monsters[monster->t_type - 'A'].m_carry;
   if (prob <= 0 || monster->t_room == player_get_room()
       || monster_seen_by_player(monster)) {
-    monster_set_target(monster, player_get_pos());
+    monster_set_target(monster, *player_get_pos());
     return;
   }
 
@@ -34,17 +34,17 @@ monster_find_new_target(monster* monster)
     {
       auto result = find_if(monster_list.cbegin(), monster_list.cend(),
           [&] (struct monster const* m) {
-          return m->t_dest == &obj->get_pos();
+          return m->t_dest == obj->get_pos();
       });
 
       if (result == monster_list.cend()) {
-        monster_set_target(monster, &obj->get_pos());
+        monster_set_target(monster, obj->get_pos());
         return;
       }
     }
   }
 
-  monster_set_target(monster, player_get_pos());
+  monster_set_target(monster, *player_get_pos());
 }
 
 void
@@ -54,7 +54,7 @@ monster_start_chasing(monster* mon)
 }
 
 void
-monster_set_target(monster* mon, Coordinate const* target)
+monster_set_target(monster* mon, Coordinate const& target)
 {
   mon->t_dest = target;
 }
