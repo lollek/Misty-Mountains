@@ -1,5 +1,4 @@
-#ifndef ROGUE14_OS_H
-#define ROGUE14_OS_H
+#pragma once
 
 #include <sys/types.h>
 
@@ -17,5 +16,3 @@ int    os_rand(void);                   /* Return a pseudorandom number */
 int    os_rand_range(int max);          /* Return a number [0,max[ */
 size_t os_rand_range(size_t max);       /* Return a number [0,max[ */
 int    os_usleep(unsigned int usec);    /* Sleep for nanoseconds */
-
-#endif /* ROGUE14_OS_H */

@@ -1,5 +1,4 @@
-#ifndef ROGUE14_MONSTER_H
-#define ROGUE14_MONSTER_H
+#pragma once
 
 #include <string>
 
@@ -164,5 +163,3 @@ void monster_polymorph(monster* monster);
 
 /** monster_chase.c **/
 bool monster_chase(monster* tp); /* Make a monster chase */
-
-#endif /* ROGUE14_MONSTER_H */

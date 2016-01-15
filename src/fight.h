@@ -1,7 +1,4 @@
-#ifndef ROGUE14_FIGHT_H
-#define ROGUE14_FIGHT_H
-
-#include <stdbool.h>
+#pragma once
 
 #include <string>
 
@@ -23,5 +20,3 @@ int fight_swing_hits(int at_lvl, int op_arm, int wplus);
 /** fight_missile_miss:
  * A missile misses a monster */
 void fight_missile_miss(item const* weap, std::string const& mname);
-
-#endif /* ROGUE14_FIGHT_H */

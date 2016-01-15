@@ -1,16 +1,3 @@
-/*
- * Contains functions for dealing with things like potions, scrolls,
- * and other items.
- *
- * @(#)things.c	4.53 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>

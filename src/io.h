@@ -1,7 +1,5 @@
-#ifndef ROGUE14_IO_H
-#define ROGUE14_IO_H
+#pragma once
 
-#include <stdbool.h>
 #include <curses.h>
 
 #include "things.h"
@@ -152,5 +150,3 @@ io_mvaddch(int y, int x, enum tile tile, enum attribute attr)
 static inline int
 io_mvwaddch(WINDOW* win, int y, int x, enum tile tile, enum attribute attr)
 { return mvwaddch(win, y, x, io_tile(tile) | io_attribute(attr)); }
-
-#endif /* ROGUE14_IO_H */

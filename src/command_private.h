@@ -1,5 +1,4 @@
-#ifndef ROGUE14_COMMAND_PRIVATE_H
-#define ROGUE14_COMMAND_PRIVATE_H
+#pragma once
 
 #include "pack.h"
 
@@ -27,5 +26,3 @@ bool command_take_off(enum equipment_pos pos); /* Unequip something */
 bool command_throw(void);                 /* Throw or shoot something*/
 bool command_use_stairs(char up_or_down); /* Go to next/previous level */
 bool command_wield(void);                 /* Asks player for weapon to wield */
-
-#endif /* ROGUE14_COMMAND_PRIVATE_H */

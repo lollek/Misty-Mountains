@@ -1,5 +1,4 @@
-#ifndef ROGUE14_SCORE_H
-#define ROGUE14_SCORE_H
+#pragma once
 
 #include "io.h"
 
@@ -13,5 +12,3 @@ void score_show_and_exit(int amount, int flags, char monst)
   __attribute__ ((noreturn));
 
 void score_win_and_exit(void) __attribute__ ((noreturn));
-
-#endif /* ROGUE14_SCORE_H */

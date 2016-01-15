@@ -1,7 +1,4 @@
-#ifndef ROGUE14_PLAYER_H
-#define ROGUE14_PLAYER_H
-
-#include <stdbool.h>
+#pragma once
 
 #include "rogue.h"
 
@@ -105,5 +102,3 @@ void player_lower_level(void);
 /* Experience */
 int player_get_exp(void);
 void player_earn_exp(int amount);
-
-#endif /* ROGUE14_PLAYER_H */

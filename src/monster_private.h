@@ -1,5 +1,4 @@
-#ifndef MONSTER_PRIVATE_H
-#define MONSTER_PRIVATE_H
+#pragma once
 
 #include <string>
 #include <list>
@@ -26,5 +25,3 @@ void monster_find_new_target(monster* tp);
 
 void monster_start_chasing(monster* monster);
 void monster_set_target(monster* mon, Coordinate* target);
-
-#endif /* MONSTER_PRIVATE_H */

@@ -1,7 +1,4 @@
-#ifndef ROGUE14_OPTIONS_H
-#define ROGUE14_OPTIONS_H
-
-#include <stdbool.h>
+#pragma once
 
 /* Game Options - These are set in main.c and options.c */
 
@@ -13,5 +10,3 @@ extern bool use_colors;  /* Use ncurses colors */
 bool option_autopickup(int type);
 
 bool option(void);
-
-#endif /* ROGUE14_OPTIONS_H */
