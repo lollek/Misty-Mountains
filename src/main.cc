@@ -20,7 +20,6 @@
 #include "io.h"
 #include "pack.h"
 #include "init.h"
-#include "save.h"
 #include "score.h"
 #include "misc.h"
 #include "rooms.h"
@@ -64,10 +63,6 @@ parse_args(int argc, char* const* argv)
 
   /* Global default options */
   ESCDELAY = 0;
-
-  /* Default file name for save file */
-  strcpy(save_file_name, get_homedir());
-  strncat(save_file_name, ".rogue14_save", MAXSTR - strlen(get_homedir()) -1);
 
   /* Set seed and dungeon number */
   os_rand_seed = static_cast<unsigned>(time(nullptr) + getpid());
@@ -127,12 +122,11 @@ parse_args(int argc, char* const* argv)
     }
   }
 
-  /* If we run ./game -r ~/saved_game we should restore it
-   * otherwise, we should create a new game with ~/saved_game as file_name */
   if (optind < argc)
   {
-    strncpy(save_file_name, argv[optind], MAXSTR);
-    save_file_name[MAXSTR -1] = '\0';
+    fprintf(stderr, "Try '%s --help' for more information\n",
+            argv[0]);
+    exit(1);
   }
 
   return game_mode;

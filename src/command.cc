@@ -29,7 +29,6 @@
 #include "potions.h"
 #include "rings.h"
 #include "rogue.h"
-#include "save.h"
 #include "score.h"
 #include "scrolls.h"
 #include "things.h"
@@ -164,7 +163,6 @@ command_do(char ch)
     case 'P': return ring_put_on();
     case 'Q': return command_quit();
     case 'R': return ring_take_off();
-    case 'S': return save_game();
     case 'T': return command_take_off(EQUIPMENT_ARMOR);
     case 'W': return armor_command_wear();
     case 'Z': return command_rest();

@@ -14,7 +14,6 @@
 #include "Coordinate.h"
 #include "io.h"
 #include "pack.h"
-#include "list.h"
 #include "monster.h"
 #include "passages.h"
 #include "misc.h"
@@ -220,8 +219,7 @@ rooms_create(void)
   Coordinate const bsze(NUMCOLS / 3, NUMLINES / 3);
 
   /* Clear things for a new level */
-  for (int i = 0; i < ROOMS_MAX; ++i)
-  {
+  for (int i = 0; i < ROOMS_MAX; ++i) {
     rooms[i].r_goldval = 0;
     rooms[i].r_nexits = 0;
     rooms[i].r_flags = 0;
@@ -229,74 +227,69 @@ rooms_create(void)
 
   /* Put the gone rooms, if any, on the level */
   int left_out = os_rand_range(4);
-  for (int i = 0; i < left_out; i++)
+  for (int i = 0; i < left_out; i++) {
     rooms[room_random()].r_flags |= ISGONE;
+  }
 
   /* dig and populate all the rooms on the level */
-  for (int i = 0; i < ROOMS_MAX; i++)
-  {
+  for (int i = 0; i < ROOMS_MAX; i++) {
     /* Find upper left corner of box that this room goes in */
     Coordinate const top((i % 3) * bsze.x + 1, (i / 3) * bsze.y);
 
-    if (rooms[i].r_flags & ISGONE)
-    {
+    if (rooms[i].r_flags & ISGONE) {
       room_place_gone_room(&bsze, &top, &rooms[i]);
       continue;
     }
 
     /* set room type */
-    if (os_rand_range(10) < level - 1)
-    {
+    if (os_rand_range(10) < level - 1) {
       rooms[i].r_flags |= ISDARK;  /* dark room */
-      if (os_rand_range(15) == 0)
+      if (os_rand_range(15) == 0) {
         rooms[i].r_flags = ISMAZE; /* maze room */
+      }
     }
 
     /* Find a place and size for a random room */
-    if (rooms[i].r_flags & ISMAZE)
-    {
+    if (rooms[i].r_flags & ISMAZE) {
       rooms[i].r_max.x = bsze.x - 1;
       rooms[i].r_max.y = bsze.y - 1;
       rooms[i].r_pos.x = top.x == 1 ? 0 : top.x ;
       rooms[i].r_pos.y = top.y;
-      if (rooms[i].r_pos.y == 0)
-      {
+      if (rooms[i].r_pos.y == 0) {
         rooms[i].r_pos.y++;
         rooms[i].r_max.y--;
       }
     }
 
-    else
-      do
-      {
+    else {
+      do {
         rooms[i].r_max.x = os_rand_range(bsze.x - 4) + 4;
         rooms[i].r_max.y = os_rand_range(bsze.y - 4) + 4;
         rooms[i].r_pos.x = top.x + os_rand_range(bsze.x - rooms[i].r_max.x);
         rooms[i].r_pos.y = top.y + os_rand_range(bsze.y - rooms[i].r_max.y);
       } while (rooms[i].r_pos.y == 0);
+    }
     room_draw(&rooms[i]);
 
     /* Put the gold in */
-    if (os_rand_range(2) == 0 && (!pack_contains_amulet() || level >= level_max))
-    {
-      THING *gold = new THING();
-      gold->o.o_goldval = rooms[i].r_goldval = GOLDCALC;
+    if (os_rand_range(2) == 0 && (!pack_contains_amulet() || level >= level_max)) {
+      item *gold = new item();
+      gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
       room_find_floor(&rooms[i], &rooms[i].r_gold, false, false);
-      gold->o.o_pos = rooms[i].r_gold;
+      gold->o_pos = rooms[i].r_gold;
       level_set_ch(rooms[i].r_gold.y, rooms[i].r_gold.x, GOLD);
-      gold->o.o_flags = ISMANY;
-      gold->o.o_type = GOLD;
-      list_attach(&level_items, gold);
+      gold->o_flags = ISMANY;
+      gold->o_type = GOLD;
+      level_items.push_back(gold);
     }
 
     /* Put the monster in */
-    if (os_rand_range(100) < (rooms[i].r_goldval > 0 ? 80 : 25))
-    {
+    if (os_rand_range(100) < (rooms[i].r_goldval > 0 ? 80 : 25)) {
       Coordinate mp;
       room_find_floor(&rooms[i], &mp, false, true);
-      THING *tp = new THING();
+      monster* tp = new monster();
       monster_new(tp, monster_random(false), &mp);
-      monster_give_pack(&tp->t);
+      monster_give_pack(tp);
     }
   }
 }
@@ -347,7 +340,7 @@ room_enter(Coordinate* cp)
       move(y, rp->r_pos.x);
       for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
       {
-        THING *tp = level_get_monster(y, x);
+        monster* tp = level_get_monster(y, x);
         char ch = level_get_ch(y, x);
 
         if (tp == NULL)
@@ -356,13 +349,13 @@ room_enter(Coordinate* cp)
           continue;
         }
 
-        tp->t.t_oldch = ch;
-        if (monster_seen_by_player(&tp->t))
-          mvaddcch(y, x, (chtype) tp->t.t_disguise);
+        tp->t_oldch = ch;
+        if (monster_seen_by_player(tp))
+          mvaddcch(y, x, static_cast<chtype>(tp->t_disguise));
         else if (player_can_sense_monsters())
-          mvaddcch(y, x, (chtype) tp->t.t_disguise | A_STANDOUT);
+          mvaddcch(y, x, static_cast<chtype>(tp->t_disguise)| A_STANDOUT);
         else
-          mvaddcch(y, x, (chtype) ch);
+          mvaddcch(y, x, static_cast<chtype>(ch));
       }
     }
 }
@@ -390,7 +383,7 @@ room_leave(Coordinate* cp)
     for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
     {
       move(y, x);
-      char ch = (char) incch();
+      char ch = static_cast<char>(incch());
 
       if (ch == FLOOR)
       {
@@ -403,9 +396,9 @@ room_leave(Coordinate* cp)
         continue;
 
       if (player_can_sense_monsters())
-        mvaddcch(y, x, (chtype) ch | A_STANDOUT);
+        mvaddcch(y, x, static_cast<chtype>(ch) | A_STANDOUT);
       else
-        mvaddcch(y, x, (chtype) (level_get_ch(y, x) == DOOR ? DOOR : floor));
+        mvaddcch(y, x, static_cast<chtype>(level_get_ch(y, x) == DOOR ? DOOR : floor));
     }
 
   room_open_door(rp);

@@ -13,7 +13,7 @@ void erase_lamp(Coordinate const* pos, struct room const* room);
 
 item* find_obj(int y, int x); /* Find the unclaimed object at y, x */
 
-char const* vowelstr(char const *str); /* Return "n" if vowel else "" */
+std::string vowelstr(std::string const& str); /* Return "n" if vowel else "" */
 
 /* Set up the direction co_ordinate for use in varios "prefix" commands */
 Coordinate const* get_dir(void);

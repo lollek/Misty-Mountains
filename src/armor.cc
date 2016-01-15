@@ -103,7 +103,7 @@ armor_description(item const* item, char* buf) {
   int bonus_ac = armor_ac(static_cast<armor_t>(item_subtype(item))) -item_armor(item);
   int base_ac = 10 - item_armor(item) - bonus_ac;
 
-  ptr += sprintf(ptr, "A%s %s [%d]", vowelstr(obj_name), obj_name, base_ac);
+  ptr += sprintf(ptr, "A%s %s [%d]", vowelstr(obj_name).c_str(), obj_name, base_ac);
 
   if (item_is_known(item)) {
     ptr -= 1;

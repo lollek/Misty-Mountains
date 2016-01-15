@@ -24,7 +24,6 @@ using namespace std;
 #include "io.h"
 #include "armor.h"
 #include "potions.h"
-#include "list.h"
 #include "rings.h"
 #include "misc.h"
 #include "level.h"
@@ -35,7 +34,6 @@ using namespace std;
 #include "monster.h"
 #include "os.h"
 #include "rooms.h"
-#include "state.h"
 #include "options.h"
 #include "rogue.h"
 #include "item.h"
@@ -49,7 +47,7 @@ static list<item*> player_pack;
 
 static struct equipment_t
 {
-  THING* ptr;
+  item* ptr;
   string const description;
 } equipment[NEQUIPMENT] = {
   { nullptr, "Body" },
@@ -65,48 +63,6 @@ enum equipment_pos pack_ring_slots[PACK_RING_SLOTS] = {
   EQUIPMENT_RRING,
   EQUIPMENT_LRING
 };
-
-bool
-pack_save_state(void)
-{
-  return state_save_item_list(&player_pack->o)
-    || state_save_bools(pack_used, sizeof(pack_used)/sizeof(*pack_used));
-}
-
-bool
-pack_load_state(void)
-{
-  return state_load_item_list(&player_pack)
-    || state_load_bools(pack_used, sizeof(pack_used)/sizeof(*pack_used));
-}
-
-int8_t
-pack_list_index(item const* thing)
-{
-  if (thing == NULL)
-    return -1;
-
-  item const* ptr;
-  int8_t i;
-  for (ptr = &player_pack->o, i = 0; ptr != NULL; ptr = &ptr->l_next->o, ++i)
-    if (ptr == thing)
-      return i;
-
-  return -1;
-}
-
-THING *
-pack_list_element(int8_t i)
-{
-  if (i < 0)
-    return NULL;
-
-  for (THING* ptr = player_pack; ptr != NULL; ptr = ptr->o.l_next)
-    if (i-- == 0)
-      return ptr;
-
-  return NULL;
-}
 
 int
 pack_size(void)
@@ -217,10 +173,10 @@ pack_char(void)
 }
 
 void
-pack_move_msg(THING* obj)
+pack_move_msg(item* obj)
 {
   char buf[MAXSTR];
-  io_msg("moved onto %s", inv_name(buf, &obj->o, true));
+  io_msg("moved onto %s", inv_name(buf, obj, true));
 }
 
 static void
@@ -240,11 +196,11 @@ pack_add_money(int value)
 }
 
 static void
-pack_remove_from_floor(THING* obj)
+pack_remove_from_floor(item* obj)
 {
   Coordinate const* player_pos = player_get_pos();
 
-  list_detach(&level_items, obj);
+  level_items.remove(obj);
   mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
   level_set_ch(player_pos->y, player_pos->x,
       (player_get_room()->r_flags & ISGONE)
@@ -253,7 +209,7 @@ pack_remove_from_floor(THING* obj)
 }
 
 bool
-pack_add(THING* obj, bool silent)
+pack_add(item* obj, bool silent)
 {
   Coordinate* player_pos = player_get_pos();
   bool from_floor = false;
@@ -269,33 +225,33 @@ pack_add(THING* obj, bool silent)
   }
 
   /* Check for and deal with scare monster scrolls */
-  if (obj->o.o_type == SCROLL && obj->o.o_which == S_SCARE && obj->o.o_flags & ISFOUND)
+  if (obj->o_type == SCROLL && obj->o_which == S_SCARE && obj->o_flags & ISFOUND)
   {
-    list_detach(&level_items, obj);
+    level_items.remove(obj);
     mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
     level_set_ch(player_pos->y, player_pos->x, floor_ch());
     delete obj;
-    obj = nullptr;
     io_msg("the scroll turns to dust as you pick it up");
     return false;
   }
 
   /* See if we can stack it with something else in the pack */
-  if (obj->o.o_type == POTION || obj->o.o_type == SCROLL || obj->o.o_type == FOOD
-      || obj->o.o_type == AMMO)
-    for (THING* ptr = player_pack; ptr != NULL; ptr = ptr->o.l_next)
-      if (ptr->o.o_type == obj->o.o_type && ptr->o.o_which == obj->o.o_which
-          && ptr->o.o_hplus == obj->o.o_hplus && ptr->o.o_dplus == obj->o.o_dplus)
+  if (obj->o_type == POTION || obj->o_type == SCROLL || obj->o_type == FOOD
+      || obj->o_type == AMMO)
+    for (item* ptr : player_pack) {
+      if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which
+          && ptr->o_hplus == obj->o_hplus && ptr->o_dplus == obj->o_dplus)
       {
         if (from_floor)
           pack_remove_from_floor(obj);
-        ptr->o.o_count += obj->o.o_count;
-        ptr->o.o_pos = obj->o.o_pos;
+        ptr->o_count += obj->o_count;
+        ptr->o_pos = obj->o_pos;
         delete obj;
         obj = ptr;
         is_picked_up = true;
         break;
       }
+    }
 
   /* If we cannot stack it, we need to have available space in the pack */
   if (!is_picked_up && pack_count_items() == pack_size())
@@ -306,112 +262,64 @@ pack_add(THING* obj, bool silent)
     return false;
   }
 
-  /* Empty pack? Just insert it */
-  if (!is_picked_up && player_pack == NULL)
+  /* Otherwise, just insert it */
+  if (!is_picked_up)
   {
     if (from_floor)
       pack_remove_from_floor(obj);
-    list_attach(&player_pack, obj);
-    obj->o.o_packch = pack_char();
+    player_pack.push_back(obj);
+    obj->o_packch = pack_char();
     is_picked_up = true;
   }
 
-  /* Add thing to inventory in a sorted way */
-  else if (!is_picked_up)
-  {
-    THING* prev_ptr = NULL;
-    THING* ptr = player_pack;
-
-    /* Try to find an object of the same type */
-    while (ptr != NULL && ptr->o.o_type != obj->o.o_type)
-    {
-      prev_ptr = ptr;
-      ptr = ptr->o.l_next;
-    }
-
-    /* Move to the end of those objects, or stop if found similar item */
-    while (ptr != NULL && ptr->o.o_type == obj->o.o_type
-           && ptr->o.o_which != obj->o.o_which)
-    {
-      prev_ptr = ptr;
-      ptr = ptr->o.l_next;
-    }
-
-    /* Make object ready for insertion */
-    if (from_floor)
-      pack_remove_from_floor(obj);
-    obj->o.o_packch = pack_char();
-
-    /* Add to list */
-    if (ptr == NULL && prev_ptr == NULL)
-      list_attach(&player_pack, obj);
-    else
-    {
-      obj->o.l_next = ptr;
-      obj->o.l_prev = prev_ptr;
-      if (ptr != NULL)
-        ptr->o.l_prev = obj;
-      if (prev_ptr == NULL)
-        player_pack = obj;
-      else
-        prev_ptr->o.l_next = obj;
-    }
-  }
-
-  obj->o.o_flags |= ISFOUND;
+  obj->o_flags |= ISFOUND;
 
   /* If this was the object of something's desire, that monster will
    * get mad and run at the hero.  */
-  monster_aggro_all_which_desire_item(&obj->o);
+  monster_aggro_all_which_desire_item(obj);
 
   /* Notify the user */
   if (!silent)
   {
     char buf[MAXSTR];
-    io_msg("you now have %s (%c)", inv_name(buf, &obj->o, true), obj->o.o_packch, true);
+    io_msg("you now have %s (%c)", inv_name(buf, obj, true), obj->o_packch, true);
   }
   return true;
 }
 
-THING*
-pack_remove(THING* obj, bool newobj, bool all)
-{
-  THING* nobj = obj;
+item* pack_remove(item* obj, bool newobj, bool all) {
+  item* return_value = obj;
 
-  if (obj->o.o_count > 1 && !all)
-  {
-    obj->o.o_count--;
-    if (newobj)
-    {
-      nobj = new THING();
-      *nobj = *obj;
-      nobj->o.l_next = NULL;
-      nobj->o.l_prev = NULL;
-      nobj->o.o_count = 1;
+  /* If there are several, we need to alloate a new item to hold it */
+  if (obj->o_count > 1 && !all) {
+    obj->o_count--;
+    if (newobj) {
+      return_value = new item(*obj);
+      return_value->o_count = 1;
     }
+
+  /* Only one item? Just pop and return it */
+  } else {
+    pack_used[obj->o_packch - 'a'] = false;
+    player_pack.remove(obj);
   }
-  else
-  {
-    pack_used[obj->o.o_packch - 'a'] = false;
-    list_detach(&player_pack, obj);
-  }
-  return nobj;
+  return return_value;
 }
 
 
 void
-pack_pick_up(THING* obj, bool force)
+pack_pick_up(item* obj, bool force)
 {
   if (player_is_levitating())
     return;
 
-  switch (obj->o.o_type)
+  switch (obj->o_type)
   {
     case GOLD:
       if (obj != NULL)
       {
-        pack_add_money(obj->o.o_goldval);
-        list_detach(&level_items, obj);
+        pack_add_money(obj->o_goldval);
+        level_items.remove(obj);
         delete obj;
         obj = nullptr;
         player_get_room()->r_goldval = 0;
@@ -420,40 +328,42 @@ pack_pick_up(THING* obj, bool force)
 
     case POTION: case WEAPON: case AMMO: case FOOD: case ARMOR:
     case SCROLL: case AMULET: case RING: case STICK:
-      if (force || option_autopickup(obj->o.o_type))
+      if (force || option_autopickup(obj->o_type))
         pack_add(nullptr, false);
       else
         pack_move_msg(obj);
       return;
   }
 
-  io_debug("Unknown type: %c(%d)", obj->o.o_type, obj->o.o_type);
+  io_debug("Unknown type: %c(%d)", obj->o_type, obj->o_type);
   assert(0);
 }
 
 
-THING*
+item*
 pack_find_magic_item(void)
 {
   int nobj = 0;
 
-  for (THING* obj = player_pack; obj != NULL; obj = obj->o.l_next)
-    if (is_magic(obj) && os_rand_range(++nobj) == 0)
+  for (item* obj : player_pack) {
+    if (is_magic(obj) && os_rand_range(++nobj) == 0) {
       return obj;
-  return NULL;
+    }
+  }
+  return nullptr;
 }
 
-THING*
-pack_get_item(char const* purpose, int type)
+item*
+pack_get_item(std::string const& purpose, int type)
 {
   if (pack_count_items_of_type(type) < 1)
   {
-    io_msg("You have no item to %s", purpose);
+    io_msg("You have no item to %s", purpose.c_str());
     return NULL;
   }
 
   pack_print_inventory(type);
-  io_msg("which object do you want to %s? ", purpose);
+  io_msg("which object do you want to %s? ", purpose.c_str());
   char ch = io_readchar(true);
   io_msg_clear();
 
@@ -465,9 +375,11 @@ pack_get_item(char const* purpose, int type)
     return NULL;
   }
 
-  for (THING* obj = player_pack; obj != NULL; obj = obj->o.l_next)
-    if (obj->o.o_packch == ch)
+  for (item* obj : player_pack) {
+    if (obj->o_packch == ch) {
       return obj;
+    }
+  }
 
   io_msg("'%s' is not a valid item",unctrl(static_cast<chtype>(ch)));
   return NULL;
@@ -476,7 +388,7 @@ pack_get_item(char const* purpose, int type)
 bool
 pack_is_empty(void)
 {
-  return player_pack == NULL;
+  return player_pack.empty();
 }
 
 int
@@ -490,29 +402,28 @@ pack_count_items_of_type(int type)
 {
   int num = 0;
 
-  for (THING const* list = player_pack; list != NULL; list = list->o.l_next)
-    if (!type || type == list->o.o_type ||
-        (type == PACK_RENAMEABLE && (list->o.o_type != FOOD && list->o.o_type != AMULET)))
+  for (item const* list : player_pack) {
+    if (!type || type == list->o_type ||
+        (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))) {
       ++num;
+    }
+  }
   return num;
 }
 
 bool
 pack_contains_amulet(void)
 {
-  for (THING const* ptr = player_pack; ptr != NULL; ptr = ptr->o.l_next)
-    if (ptr->o.o_type == AMULET)
-      return true;
-  return false;
+  return find_if(player_pack.cbegin(), player_pack.cend(),
+      [] (item const* ptr) {
+    return ptr->o_type == AMULET;
+  }) != player_pack.cend();
 }
 
 bool
-pack_contains(THING *item)
+pack_contains(item *item)
 {
-  for (THING const* ptr = player_pack; ptr != NULL; ptr = ptr->o.l_next)
-    if (ptr == item)
-      return true;
-  return false;
+  return find(player_pack.cbegin(), player_pack.cend(), item) != player_pack.cend();
 }
 
 bool
@@ -530,8 +441,8 @@ pack_print_equipment(void)
     if (equipment[i].ptr != NULL)
     {
       mvwprintw(equipscr, sym - 'a' + 1, 1, "%c) %s: %s",
-                sym, equipment[i].description,
-                inv_name(buf, &equipment[i].ptr->o, false));
+                sym, equipment[i].description.c_str(),
+                inv_name(buf, equipment[i].ptr, false));
       sym++;
     }
   }
@@ -557,14 +468,12 @@ pack_print_inventory(int type)
 
   int num_items = 0;
   /* Print out all items */
-  for (THING* list = player_pack; list != NULL; list = list->o.l_next)
-  {
-    if (!type || type == list->o.o_type ||
-        (type == PACK_RENAMEABLE && (list->o.o_type != FOOD && list->o.o_type != AMULET)))
-    {
+  for (item const* list : player_pack) {
+    if (!type || type == list->o_type ||
+        (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))) {
       /* Print out the item and move to next row */
       wmove(invscr, ++num_items, 1);
-      wprintw(invscr, "%c) %s", list->o.o_packch, inv_name(buf, &list->o, false));
+      wprintw(invscr, "%c) %s", list->o_packch, inv_name(buf, list, false));
     }
   }
 
@@ -589,18 +498,19 @@ pack_evaluate(void)
   clear();
   mvaddstr(0, 0, "Worth  Item  [Equipment]\n");
   for (int i = 0; i < NEQUIPMENT; ++i)
-    value += pack_print_evaluate_item(&pack_equipped_item(static_cast<equipment_pos>(i))->o);
+    value += pack_print_evaluate_item(pack_equipped_item(static_cast<equipment_pos>(i)));
 
   addstr("\nWorth  Item  [Inventory]\n");
-  for (THING* obj = player_pack; obj != NULL; obj = obj->o.l_next)
-    value += pack_print_evaluate_item(&obj->o);
+  for (item* obj : player_pack) {
+    value += pack_print_evaluate_item(obj);
+  }
 
   printw("\n%5d  Gold Pieces          ", pack_gold);
   refresh();
   return value;
 }
 
-THING*
+item*
 pack_equipped_item(enum equipment_pos pos)
 {
   assert (pos >= 0 && pos < (sizeof equipment / sizeof (*equipment)));
@@ -608,10 +518,10 @@ pack_equipped_item(enum equipment_pos pos)
 }
 
 bool
-pack_equip_item(THING* item)
+pack_equip_item(item* item)
 {
   enum equipment_pos pos;
-  switch(item->o.o_type)
+  switch(item->o_type)
   {
     case ARMOR:
       pos = EQUIPMENT_ARMOR;
@@ -648,14 +558,14 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     ? "wielding"
     : "wearing";
 
-  THING* obj = pack_equipped_item(pos);
+  item* obj = pack_equipped_item(pos);
   if (obj == NULL)
   {
     io_msg("not %s anything!", doing);
     return false;
   }
 
-  if (obj->o.o_flags & ISCURSED)
+  if (obj->o_flags & ISCURSED)
   {
     io_msg("you can't. It appears to be cursed");
     return false;
@@ -671,27 +581,29 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   if (!pack_add(obj, true))
   {
     Coordinate const* player_pos = player_get_pos();
-    list_attach(&level_items, obj);
-    level_set_ch(player_pos->y, player_pos->x, static_cast<char>(obj->o.o_type));
+    level_items.push_back(obj);
+    level_set_ch(player_pos->y, player_pos->x, static_cast<char>(obj->o_type));
     int flags = level_get_flags(player_pos->y, player_pos->x);
     flags |= F_DROPPED;
     level_set_flags(player_pos->y, player_pos->x, static_cast<char>(flags));
-    obj->o.o_pos = *player_pos;
-    io_msg("dropped %s", inv_name(buf, &obj->o, true));
+    obj->o_pos = *player_pos;
+    io_msg("dropped %s", inv_name(buf, obj, true));
   }
   else if (!quiet_on_success)
-    io_msg("no longer %s %s", doing, inv_name(buf, &obj->o, true));
+    io_msg("no longer %s %s", doing, inv_name(buf, obj, true));
   return true;
 }
 
 
-THING*
+item*
 pack_find_arrow(void)
 {
-  for (THING* ptr = player_pack; ptr != NULL; ptr = ptr->o.l_next)
-    if (ptr->o.o_which == ARROW)
-      return ptr;
-  return NULL;
+  auto results = find_if(player_pack.begin(), player_pack.end(),
+      [] (item *i) {
+    return i->o_which == ARROW;
+  });
+
+  return results == player_pack.end() ? nullptr : *results;
 }
 
 static void
@@ -701,12 +613,7 @@ pack_identify_item_set_know(item* item, struct obj_info* info)
   info[subtype].oi_know = true;
   item->o_flags |= ISKNOW;
 
-  char** guess = &info[subtype].oi_guess;
-  if (*guess)
-  {
-    free(*guess);
-    *guess = NULL;
-  }
+  info[subtype].oi_guess.clear();
 }
 
 void
@@ -718,22 +625,22 @@ pack_identify_item(void)
     return;
   }
 
-  THING* obj = pack_get_item("identify", 0);
+  item* obj = pack_get_item("identify", 0);
   if (obj == NULL)
     return;
 
-  switch (obj->o.o_type)
+  switch (obj->o_type)
   {
-    case SCROLL: pack_identify_item_set_know(&obj->o, scroll_info);  break;
-    case POTION: pack_identify_item_set_know(&obj->o, potion_info);  break;
-    case STICK:  pack_identify_item_set_know(&obj->o, __wands_ptr());   break;
-    case RING:   pack_identify_item_set_know(&obj->o, ring_info); break;
-    case WEAPON: case ARMOR: obj->o.o_flags |= ISKNOW; break;
+    case SCROLL: pack_identify_item_set_know(obj, scroll_info);  break;
+    case POTION: pack_identify_item_set_know(obj, potion_info);  break;
+    case STICK:  pack_identify_item_set_know(obj, __wands_ptr());   break;
+    case RING:   pack_identify_item_set_know(obj, ring_info); break;
+    case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
     default: break;
   }
 
   char buf[MAXSTR];
-  io_msg(inv_name(buf, &obj->o, false));
+  io_msg(inv_name(buf, obj, false));
 }
 
 

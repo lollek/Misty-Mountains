@@ -3,7 +3,8 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-#include <stdbool.h>
+
+#include <string>
 
 #include "things.h"
 
@@ -24,11 +25,6 @@ extern int const PACK_RENAMEABLE; /* Type of item which can be renamed */
 extern enum equipment_pos pack_ring_slots[PACK_RING_SLOTS];
 extern int                pack_gold;
 
-bool pack_save_state(void);
-bool pack_load_state(void);
-
-int8_t pack_list_index(item const* thing);
-item* pack_list_element(int8_t i);
 int pack_size(void);
 
 /* Pick up an object and add it to the pack.  If the argument is
@@ -48,7 +44,7 @@ void pack_pick_up(item* obj, bool force);
 item* pack_find_magic_item(void);
 
 /* Pick something out of a pack for a purpose */
-item* pack_get_item(char const* purpose, int type);
+item* pack_get_item(std::string const& purpose, int type);
 
 /* Check if she's carrying anything */
 bool pack_is_empty(void);

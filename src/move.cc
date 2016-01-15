@@ -97,8 +97,8 @@ move_do(char ch)
     if (player_is_confused() && os_rand_range(5) != 0)
     {
       /* TODO: Remove __player_ptr() */
-        THING *player_thing = __player_ptr();
-        monster *player = &player_thing->t;
+        monster *player_thing = __player_ptr();
+        monster *player = player_thing;
 	move_random(player, &nh);
 	if (nh == *player_get_pos())
 	{
@@ -312,13 +312,12 @@ move_random(monster* who, Coordinate* ret)
 
   if (ch == SCROLL)
   {
-    THING* obj;
-    for (obj = level_items; obj != NULL; obj = obj->o.l_next)
-      if (y == obj->o.o_pos.y && x == obj->o.o_pos.x)
-        break;
+    auto results = find_if(level_items.cbegin(), level_items.cend(),
+        [&] (item const* i) {
+      return y == i->o_pos.y && x == i->o_pos.x;
+    });
 
-    if (obj != NULL && obj->o.o_which == S_SCARE)
-    {
+    if (results != level_items.cend() && (*results)->o_which == S_SCARE) {
       ret->x = who->t_pos.x;
       ret->y = who->t_pos.y;
       return;

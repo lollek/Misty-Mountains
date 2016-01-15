@@ -228,8 +228,8 @@ find_obj(int y, int x)
   return NULL;
 }
 
-char const*
-vowelstr(char const* str)
+string
+vowelstr(string const& str)
 {
   switch (str[0])
   {

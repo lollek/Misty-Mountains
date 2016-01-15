@@ -27,7 +27,6 @@ using namespace std;
 #include "pack.h"
 #include "player.h"
 #include "rogue.h"
-#include "state.h"
 #include "things.h"
 #include "weapons.h"
 #include "monster.h"
@@ -104,54 +103,17 @@ ring_init(void)
     }
 }
 
-bool
-ring_save_state(void)
-{
-  for (int i = 0; i < NRINGS; i++)
-  {
-    int32_t j;
-    for (j = 0; j < NSTONES; ++j)
-      if (r_stones.at(static_cast<size_t>(i)) == stones[j].st_name)
-        break;
-
-    if (state_save_int32(j == NSTONES ? -1 : j))
-      return io_fail("ring_save_state(), i=%d,j=%d\r\n", i, j);
-  }
-  return 0;
-}
-
-bool
-ring_load_state(void)
-{
-  for (int i = 0; i < NRINGS; i++)
-  {
-    int32_t j = 0;
-    if (state_load_int32(&j))
-      return io_fail("ring_load_state(), i=%d,j=%d, max=%d\r\n", i, j, NSTONES);
-    else if (j >= NSTONES)
-      return io_fail("ring_load_state(), i=%d,j=%d, max=%d, j >= NSTONES\r\n",
-                  i, j, NSTONES);
-    else if (j < -1)
-      return io_fail("ring_load_state(), i=%d,j=%d, max=%d, j < -1\r\n",
-                  i, j, NSTONES);
-
-    r_stones.at(static_cast<size_t>(i)) = j >= 0 ? stones[j].st_name : NULL;
-  }
-  return 0;
-}
-
-
 
 bool
 ring_put_on(void)
 {
-  THING* obj = pack_get_item("put on", RING);
+  item* obj = pack_get_item("put on", RING);
 
   /* Make certain that it is somethings that we want to wear */
   if (obj == NULL)
     return false;
 
-  if (obj->o.o_type != RING)
+  if (obj->o_type != RING)
   {
     io_msg("not a ring");
     return ring_put_on();
@@ -166,15 +128,15 @@ ring_put_on(void)
   pack_remove(obj, false, true);
 
   /* Calculate the effect it has on the poor guy. */
-  switch (obj->o.o_which)
+  switch (obj->o_which)
   {
-    case R_ADDSTR: player_modify_strength(obj->o.o_arm); break;
+    case R_ADDSTR: player_modify_strength(obj->o_arm); break;
     case R_SEEINVIS: invis_on(); break;
     case R_AGGR: monster_aggravate_all(); break;
     }
 
   char buf[MAXSTR];
-  ring_description(&obj->o, buf);
+  ring_description(obj, buf);
   buf[0] = static_cast<char>(tolower(buf[0]));
   io_msg("now wearing %s", buf);
   return true;
@@ -191,15 +153,15 @@ ring_take_off(void)
   else
     ring = EQUIPMENT_LRING;
 
-  THING* obj = pack_equipped_item(ring);
+  item* obj = pack_equipped_item(ring);
 
   if (!pack_unequip(ring, false))
     return false;
 
-  switch (obj->o.o_which)
+  switch (obj->o_which)
   {
     case R_ADDSTR:
-      player_modify_strength(-obj->o.o_arm);
+      player_modify_strength(-obj->o_arm);
       break;
 
     case R_SEEINVIS:
@@ -224,9 +186,9 @@ ring_drain_amount(void)
 
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    THING *ring = pack_equipped_item(pack_ring_slots[i]);
+    item *ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != NULL)
-      total_eat += uses[ring->o.o_which];
+      total_eat += uses[ring->o_which];
   }
 
   return total_eat;
@@ -262,34 +224,34 @@ ring_description(item const* item, char* buf)
     sprintf(buf, " called %s", op->oi_guess.c_str());
 }
 
-THING*
+item*
 ring_create(int which, bool random_stats)
 {
   if (which == -1)
     which = static_cast<int>(pick_one(ring_info, NRINGS));
 
-  THING* ring = new THING();
-  ring->o.o_type = RING;
-  ring->o.o_which = which;
+  item* ring = new item();
+  ring->o_type = RING;
+  ring->o_which = which;
 
-  switch (ring->o.o_which)
+  switch (ring->o_which)
   {
     case R_ADDSTR: case R_PROTECT: case R_ADDHIT: case R_ADDDAM:
       if (random_stats)
       {
-        ring->o.o_arm = os_rand_range(3);
-        if (ring->o.o_arm == 0)
+        ring->o_arm = os_rand_range(3);
+        if (ring->o_arm == 0)
         {
-          ring->o.o_arm = -1;
-          ring->o.o_flags |= ISCURSED;
+          ring->o_arm = -1;
+          ring->o_flags |= ISCURSED;
         }
       }
       else
-        ring->o.o_arm = 1;
+        ring->o_arm = 1;
       break;
 
     case R_AGGR: case R_TELEPORT:
-      ring->o.o_flags |= ISCURSED;
+      ring->o_flags |= ISCURSED;
       break;
   }
 

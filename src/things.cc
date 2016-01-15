@@ -47,7 +47,7 @@ struct obj_info things[] = {
 };
 
 char*
-inv_name(char* buf, item* item, bool drop)
+inv_name(char* buf, item const* item, bool drop)
 {
   buf[MAXSTR -1] = '\0';
   switch (item->o_type)

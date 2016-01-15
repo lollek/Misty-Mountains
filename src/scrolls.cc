@@ -14,10 +14,13 @@
 #include <assert.h>
 #include <string.h>
 
+#include <string>
+
+using namespace std;
+
 #include "io.h"
 #include "item.h"
 #include "level.h"
-#include "list.h"
 #include "misc.h"
 #include "monster.h"
 #include "options.h"
@@ -27,14 +30,13 @@
 #include "potions.h"
 #include "rings.h"
 #include "rogue.h"
-#include "state.h"
 #include "things.h"
 #include "wand.h"
 #include "weapons.h"
 
 #include "scrolls.h"
 
-static char* s_names[NSCROLLS];
+static string s_names[NSCROLLS];
 struct obj_info scroll_info[NSCROLLS] = {
     { "monster confusion",		 7, 140, NULL, false },
     { "magic mapping",			 4, 150, NULL, false },

@@ -27,19 +27,18 @@ monster_find_new_target(monster* monster)
   }
 
   for (item* obj : level_items) {
-    if (obj->o.o_type == SCROLL && obj->o.o_which == S_SCARE)
+    if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
       continue;
 
-    if (roomin(&obj->o.o_pos) == monster->t.t_room && os_rand_range(100) < prob)
+    if (roomin(&obj->o_pos) == monster->t_room && os_rand_range(100) < prob)
     {
-      THING *someone;
-      for (someone = monster_list; someone != NULL; someone = someone->t.l_next)
-        if (someone->t.t_dest == &obj->o.o_pos)
-          break;
+      auto result = find_if(monster_list.cbegin(), monster_list.cend(),
+          [&] (struct monster const* m) {
+          return m->t_dest == &obj->o_pos;
+      });
 
-      if (someone == NULL)
-      {
-        monster_set_target(monster, &obj->o.o_pos);
+      if (result == monster_list.cend()) {
+        monster_set_target(monster, &obj->o_pos);
         return;
       }
     }
@@ -49,13 +48,13 @@ monster_find_new_target(monster* monster)
 }
 
 void
-monster_start_chasing(THING* mon)
+monster_start_chasing(monster* mon)
 {
-  mon->t.t_flags |= ISRUN;
+  mon->t_flags |= ISRUN;
 }
 
 void
-monster_set_target(THING* mon, Coordinate* target)
+monster_set_target(monster* mon, Coordinate* target)
 {
-  mon->t.t_dest = target;
+  mon->t_dest = target;
 }

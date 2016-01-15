@@ -5,7 +5,6 @@
 #include <time.h>
 #include <stdlib.h>
 
-#include "state.h"
 #include "io.h"
 #include "os.h"
 #include "wizard.h"

@@ -13,14 +13,16 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include <string>
+
+using namespace std;
+
 #include "io.h"
 #include "pack.h"
-#include "list.h"
 #include "level.h"
 #include "misc.h"
 #include "player.h"
 #include "monster.h"
-#include "state.h"
 #include "colors.h"
 #include "os.h"
 #include "rogue.h"
@@ -29,7 +31,7 @@
 #include "potions.h"
 
 /* Colors of the potions */
-static char const* p_colors[NPOTIONS];
+static string p_colors[NPOTIONS];
 
 obj_info potion_info[NPOTIONS] = {
   /* io_name,      oi_prob, oi_worth, oi_guess, oi_know */
@@ -73,36 +75,6 @@ potions_init(void)
     }
 }
 
-
-bool
-potion_save_state(void)
-{
-  for (int32_t i = 0; i < NPOTIONS; ++i)
-  {
-    int32_t j;
-    for (j = 0; j < color_max(); ++j)
-      if (p_colors[i] == color_get(j))
-        break;
-
-    if (state_save_int32(j == color_max() ? -1 : j))
-      return io_fail("potion_save_state() i=%d, j=%d\r\n", i, j);
-  }
-  return 0;
-}
-
-bool potion_load_state(void)
-{
-  for (int32_t i = 0; i < NPOTIONS; ++i)
-  {
-    int32_t tmp;
-    if (state_load_int32(&tmp) || tmp < -1 || tmp > color_max())
-      return io_fail("potion_load_state() i=%d, tmp=%d\r\n", i, tmp);
-
-    p_colors[i] = i >= 0 ? color_get(tmp) : NULL;
-  }
-  return 0;
-}
-
 /** is_quaffable
  * Can we dring thing? */
 static bool
@@ -130,16 +102,16 @@ potion_learn(enum potion_t potion)
 bool
 potion_quaff_something(void)
 {
-  THING* obj = pack_get_item("quaff", POTION);
+  item* obj = pack_get_item("quaff", POTION);
 
   /* Make certain that it is somethings that we want to drink */
-  if (!is_quaffable(&obj->o))
+  if (!is_quaffable(obj))
     return false;
 
   /* Calculate the effect it has on the poor guy. */
-  bool discardit = obj->o.o_count == 1;
+  bool discardit = obj->o_count == 1;
   pack_remove(obj, false, false);
-  switch (obj->o.o_which)
+  switch (obj->o_which)
   {
     case P_CONFUSE:
       if (!player_is_hallucinating())
@@ -174,16 +146,17 @@ potion_quaff_something(void)
     {
       /* Potion of magic detection.  Show the potions and scrolls */
       bool show = false;
-      if (level_items != NULL)
+      if (!level_items.empty())
       {
         wclear(hw);
-        for (THING* item = level_items; item != NULL; item = item->o.l_next)
+        for (item* item : level_items) {
           if (is_magic(item))
           {
             show = true;
-            mvwaddcch(hw, item->o.o_pos.y, item->o.o_pos.x, MAGIC);
+            mvwaddcch(hw, item->o_pos.y, item->o_pos.x, MAGIC);
             potion_learn(P_TFIND);
           }
+        }
 
         if (monster_show_if_magic_inventory())
           show = true;
@@ -254,7 +227,7 @@ potion_quaff_something(void)
   io_refresh_statusline();
 
   /* Throw the item away */
-  call_it("potion", &potion_info[obj->o.o_which]);
+  call_it("potion", &potion_info[obj->o_which]);
 
   if (discardit)
     delete obj;
@@ -274,31 +247,31 @@ potion_description(item const* item, char buf[])
   }
   else
   {
-    char const* color = p_colors[item_subtype(item)];
+    string color = p_colors[item_subtype(item)];
 
     if (item_count(item) == 1)
-      buf += sprintf(buf, "A%s %s potion", vowelstr(color), color);
+      buf += sprintf(buf, "A%s %s potion", vowelstr(color).c_str(), color.c_str());
     else
-      buf += sprintf(buf, "%d %s potions", item_count(item), color);
+      buf += sprintf(buf, "%d %s potions", item_count(item), color.c_str());
 
     if (!op->oi_guess.empty())
       sprintf(buf, " called %s", op->oi_guess.c_str());
   }
 }
 
-THING*
+item*
 potion_create(int which)
 {
-  THING* pot = new THING();
+  item* pot = new item();
 
   if (which == -1)
     which = static_cast<int>(pick_one(potion_info, NPOTIONS));
 
-  pot->o.o_type       = POTION;
-  pot->o.o_which      = which;
-  pot->o.o_count      = 1;
-  pot->o.o_damage     = {1, 2};
-  pot->o.o_hurldmg    = {1, 2};
+  pot->o_type       = POTION;
+  pot->o_which      = which;
+  pot->o_count      = 1;
+  pot->o_damage     = {1, 2};
+  pot->o_hurldmg    = {1, 2};
 
   return pot;
 }
