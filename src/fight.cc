@@ -113,7 +113,7 @@ calculate_attacker(monster* attacker, Item* weapon, bool thrown,
   add_strength_attack_modifiers(attacker->t_stats.s_str, mod);
 
   /* Player stuff */
-  if (is_player(attacker))
+  if (attacker == player)
   {
     add_ring_attack_modifiers(mod);
     if (thrown)
@@ -154,7 +154,7 @@ roll_attacks(monster* attacker, monster* defender, Item* weapon, bool thrown)
   calculate_attacker(attacker, weapon, thrown, &mod);
 
   /* If defender is stuck in some way,the attacker gets a bonus to hit */
-  if ((is_player(defender) && player_turns_without_action)
+  if ((defender == player && player_turns_without_action)
       || monster_is_held(defender)
       || monster_is_stuck(defender))
     mod.to_hit += 4;

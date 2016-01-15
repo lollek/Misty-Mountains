@@ -115,12 +115,6 @@ player_update_max_strength(void)
     player_max_stats.s_str = player->t_stats.s_str - bonuses;
 }
 
-bool
-is_player(monster const* thing)
-{
-  return thing == player;
-}
-
 int
 player_save_throw(int which)
 {

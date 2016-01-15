@@ -33,7 +33,7 @@ int armor_probability(enum armor_t i)   { return armors[i].prob; }
 
 int
 armor_for_monster(monster const* mon) {
-  return is_player(mon) ? player_get_armor() : mon->t_stats.s_arm;
+  return mon == player ? player_get_armor() : mon->t_stats.s_arm;
 }
 
 bool

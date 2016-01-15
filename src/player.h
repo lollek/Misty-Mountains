@@ -6,6 +6,9 @@ class Player : public monster {
 public:
   Player();
 
+  Player(Player const&) = delete;
+  Player& operator=(Player const&) = delete;
+
   int speed = 0;
 
 private:
@@ -19,7 +22,6 @@ extern int          player_turns_without_moving; /* Turns held in place */
 extern bool         player_alerted;              /* Alert the player? */
 extern stats        player_max_stats;            /* Current max stats */
 
-bool is_player(monster const* thing);
 int player_save_throw(int which);
 
 /* Status Effects */
