@@ -290,11 +290,11 @@ trap_spring(monster* victim, Coordinate* trap_coord)
 {
   assert(trap_coord != nullptr);
 
-  bool player = victim == nullptr;
+  bool is_player = victim == nullptr;
   PLACE* pp = level_get_place(trap_coord->y, trap_coord->x);
   char tr = pp->p_flags & F_TMASK;
 
-  if (player)
+  if (is_player)
   {
     /* If we're levitating, we won't trigger the trap */
     if (player_is_levitating())
@@ -311,28 +311,28 @@ trap_spring(monster* victim, Coordinate* trap_coord)
   switch (tr)
   {
     case T_DOOR:
-      if (player) return trap_door_player();
+      if (is_player) return trap_door_player();
       else        return trap_door_monster(victim);
     case T_BEAR:
-      if (player) return trap_bear_player();
+      if (is_player) return trap_bear_player();
       else        return trap_bear_monster(victim);
     case T_MYST:
-      if (player) return trap_myst_player();
+      if (is_player) return trap_myst_player();
       else        return trap_myst_monster(victim);
     case T_SLEEP:
-      if (player) return trap_sleep_player();
+      if (is_player) return trap_sleep_player();
       else        return trap_sleep_monster(victim);
     case T_ARROW:
-      if (player) return trap_arrow_player();
+      if (is_player) return trap_arrow_player();
       else        return trap_arrow_monster(victim);
     case T_TELEP:
-      if (player) return trap_telep_player(trap_coord);
+      if (is_player) return trap_telep_player(trap_coord);
       else        return trap_telep_monster(victim);
     case T_DART:
-      if (player) return trap_dart_player();
+      if (is_player) return trap_dart_player();
       else        return trap_dart_monster(victim);
     case T_RUST:
-      if (player) return trap_rust_player();
+      if (is_player) return trap_rust_player();
       else        return trap_rust_monster(victim);
     default:
       assert(0);

@@ -142,9 +142,8 @@ calculate_attacker(monster* attacker, Item* weapon, bool thrown,
 static bool
 roll_attacks(monster* attacker, monster* defender, Item* weapon, bool thrown)
 {
-  /* TODO: remove __player_ptr reference */
-       if (attacker == nullptr) attacker = __player_ptr();
-  else if (defender == nullptr) defender = __player_ptr();
+       if (attacker == nullptr) attacker = player;
+  else if (defender == nullptr) defender = player;
 
   struct attack_modifier mod;
   mod.to_hit = 0;
@@ -223,7 +222,6 @@ print_attack(bool hit, char const* att, char const* def)
 int
 fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
 {
-  monster* const player = nullptr;
   monster* tp = level_get_monster(monster_pos->y, monster_pos->x);
   if (tp == nullptr)
     return !io_fail("fight_against_monster(%p, %p, %b) nullptr monster\r\n",
@@ -245,7 +243,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
   char mname[MAXSTR];
   monster_name(tp, mname);
 
-  if (roll_attacks(player, tp, weapon, thrown))
+  if (roll_attacks(nullptr, tp, weapon, thrown))
   {
     if (tp->t_stats.s_hpt <= 0)
     {

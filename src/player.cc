@@ -16,8 +16,40 @@
 
 #include "player.h"
 
-static monster player;
-static int player_speed = 0;
+Player::Player() {
+  this->t_stats = player_max_stats;
+
+  /* Give him some food */
+  pack_add(new_food(-1), true);
+
+  /* And his suit of armor */
+  Item* armor = armor_create(RING_MAIL, false);
+  armor->o_flags |= ISKNOW;
+  armor->o_arm -= 1;
+  pack_equip_item(armor);
+
+  /* Give him his weaponry.  First a mace. */
+  Item* mace = weapon_create(MACE, false);
+  mace->o_hplus  = 1;
+  mace->o_dplus  = 1;
+  mace->o_flags |= ISKNOW;
+  pack_equip_item(mace);
+
+  /* Now a +1 bow */
+  Item* bow = weapon_create(BOW, false);
+  bow->o_hplus  = 1;
+  bow->o_flags |= ISKNOW;
+  pack_add(bow, true);
+  weapon_set_last_used(bow);
+
+  /* Now some arrows */
+  Item* arrow = weapon_create(ARROW, false);
+  arrow->o_count  = os_rand_range(15) + 25;
+  arrow->o_flags |= ISKNOW;
+  pack_add(arrow, true);
+}
+
+Player* player;
 
 static const int player_min_strength = 3;
 static const int player_max_strength = 31;
@@ -36,8 +68,6 @@ struct stats player_max_stats = { 16, 0, 1, 10, 12, {{1,4}}, 12 };
 #define SLEEPTIME       spread(7)   /* Sleep */
 #define STUCKTIME       spread(3)   /* Stuck */
 
-
-monster* __player_ptr(void) { return &player; }
 
 static int e_levels[] = {
   10L,
@@ -81,49 +111,14 @@ static void
 player_update_max_strength(void)
 {
   int bonuses = player_get_strength_bonuses();
-  if (player.t_stats.s_str - bonuses > player_max_stats.s_str)
-    player_max_stats.s_str = player.t_stats.s_str - bonuses;
-}
-
-void
-player_init(void)
-{
-  player.t_stats = player_max_stats;
-
-  /* Give him some food */
-  pack_add(new_food(-1), true);
-
-  /* And his suit of armor */
-  Item* armor = armor_create(RING_MAIL, false);
-  armor->o_flags |= ISKNOW;
-  armor->o_arm -= 1;
-  pack_equip_item(armor);
-
-  /* Give him his weaponry.  First a mace. */
-  Item* mace = weapon_create(MACE, false);
-  mace->o_hplus  = 1;
-  mace->o_dplus  = 1;
-  mace->o_flags |= ISKNOW;
-  pack_equip_item(mace);
-
-  /* Now a +1 bow */
-  Item* bow = weapon_create(BOW, false);
-  bow->o_hplus  = 1;
-  bow->o_flags |= ISKNOW;
-  pack_add(bow, true);
-  weapon_set_last_used(bow);
-
-  /* Now some arrows */
-  Item* arrow = weapon_create(ARROW, false);
-  arrow->o_count  = os_rand_range(15) + 25;
-  arrow->o_flags |= ISKNOW;
-  pack_add(arrow, true);
+  if (player->t_stats.s_str - bonuses > player_max_stats.s_str)
+    player_max_stats.s_str = player->t_stats.s_str - bonuses;
 }
 
 bool
 is_player(monster const* thing)
 {
-  return thing == &player;
+  return thing == player;
 }
 
 int
@@ -137,11 +132,11 @@ player_save_throw(int which)
         which -= ring->o_arm;
     }
 
-  int need = 14 + which - player.t_stats.s_lvl / 2;
+  int need = 14 + which - player->t_stats.s_lvl / 2;
   return (roll(1, 20) >= need);
 }
 
-bool player_has_true_sight(void) { return player.t_flags & CANSEE; }
+bool player_has_true_sight(void) { return player->t_flags & CANSEE; }
 
 void
 player_add_true_sight(bool permanent)
@@ -150,7 +145,7 @@ player_add_true_sight(bool permanent)
     daemon_lengthen_fuse(player_remove_true_sight, SEEDURATION);
   else
   {
-    player.t_flags |= CANSEE;
+    player->t_flags |= CANSEE;
     look(false);
     if (!permanent)
       daemon_start_fuse(player_remove_true_sight, 0, SEEDURATION, AFTER);
@@ -160,10 +155,10 @@ void
 player_remove_true_sight(__attribute__((unused)) int)
 {
   monster_hide_all_invisible();
-  player.t_flags &= ~CANSEE;
+  player->t_flags &= ~CANSEE;
 }
 
-bool player_is_confused(void) { return player.t_flags & ISHUH; }
+bool player_is_confused(void) { return player->t_flags & ISHUH; }
 
 void
 player_set_confused(bool permanent)
@@ -172,7 +167,7 @@ player_set_confused(bool permanent)
     daemon_lengthen_fuse(player_remove_confused, HUHDURATION);
   else
   {
-    player.t_flags |= ISHUH;
+    player->t_flags |= ISHUH;
     look(false);
     if (!permanent)
       daemon_start_fuse(player_remove_confused, 0, HUHDURATION, AFTER);
@@ -183,15 +178,15 @@ player_set_confused(bool permanent)
 void
 player_remove_confused(__attribute__((unused)) int)
 {
-  player.t_flags &= ~ISHUH;
+  player->t_flags &= ~ISHUH;
   io_msg("you feel less confused now");
 }
 
-bool player_is_held(void)     { return player.t_flags & ISHELD; }
-void player_set_held(void)    { player.t_flags |= ISHELD; }
-void player_remove_held(void) { player.t_flags &= ~ISHELD; }
+bool player_is_held(void)     { return player->t_flags & ISHELD; }
+void player_set_held(void)    { player->t_flags |= ISHELD; }
+void player_remove_held(void) { player->t_flags &= ~ISHELD; }
 
-bool player_can_sense_monsters(void)    { return player.t_flags & SEEMONST; }
+bool player_can_sense_monsters(void)    { return player->t_flags & SEEMONST; }
 
 void
 player_add_sense_monsters(bool permanent)
@@ -199,7 +194,7 @@ player_add_sense_monsters(bool permanent)
   if (!permanent)
       daemon_start_fuse(player_remove_sense_monsters, 0, MFINDDURATION, AFTER);
 
-  player.t_flags |= SEEMONST;
+  player->t_flags |= SEEMONST;
 
   bool spotted_something = monster_sense_all_hidden();
   if (!spotted_something)
@@ -209,11 +204,11 @@ player_add_sense_monsters(bool permanent)
 void
 player_remove_sense_monsters(__attribute__((unused)) int)
 {
-  player.t_flags &= ~SEEMONST;
+  player->t_flags &= ~SEEMONST;
   monster_unsense_all_hidden();
 }
 
-bool player_is_hallucinating(void)     { return player.t_flags & ISHALU; }
+bool player_is_hallucinating(void)     { return player->t_flags & ISHALU; }
 
 void
 player_set_hallucinating(bool permanent)
@@ -225,7 +220,7 @@ player_set_hallucinating(bool permanent)
     if (player_can_sense_monsters())
       player_add_sense_monsters(true);
     daemon_start(daemon_change_visuals, 0, BEFORE);
-    player.t_flags |= ISHALU;
+    player->t_flags |= ISHALU;
     look(false);
     if (!permanent)
       daemon_start_fuse(player_remove_hallucinating, 0, SEEDURATION, AFTER);
@@ -240,7 +235,7 @@ void player_remove_hallucinating(__attribute__((unused)) int)
   }
 
   daemon_kill(daemon_change_visuals);
-  player.t_flags &= ~ISHALU;
+  player->t_flags &= ~ISHALU;
 
   if (player_is_blind()) {
     return;
@@ -258,12 +253,12 @@ void player_remove_hallucinating(__attribute__((unused)) int)
   io_msg("You feel your senses returning to normal");
 }
 
-int player_get_speed(void)    { return player_speed; }
+int player_get_speed(void)    { return player->speed; }
 
 void
 player_increase_speed(bool permanent)
 {
-  player_speed++;
+  player->speed++;
   if (!permanent)
     daemon_start_fuse(player_decrease_speed, 1, HASTEDURATION, AFTER);
   io_msg("you feel yourself moving much faster");
@@ -272,15 +267,15 @@ player_increase_speed(bool permanent)
 void
 player_decrease_speed(__attribute__((unused)) int)
 {
-  player_speed--;
+  player->speed--;
   io_msg("you feel yourself slowing down");
 }
 
-bool player_is_running(void)    { return player.t_flags & ISRUN; }
-void player_start_running(void) { player.t_flags |= ISRUN; }
-void player_stop_running(void)  { player.t_flags &= ~ISRUN; }
+bool player_is_running(void)    { return player->t_flags & ISRUN; }
+void player_start_running(void) { player->t_flags |= ISRUN; }
+void player_stop_running(void)  { player->t_flags &= ~ISRUN; }
 
-bool player_is_blind(void) { return player.t_flags & ISBLIND; }
+bool player_is_blind(void) { return player->t_flags & ISBLIND; }
 
 void
 player_set_blind(bool permanent)
@@ -289,7 +284,7 @@ player_set_blind(bool permanent)
     daemon_lengthen_fuse(player_remove_blind, SEEDURATION);
   else
   {
-    player.t_flags |= ISBLIND;
+    player->t_flags |= ISBLIND;
     look(false);
     if (!permanent)
       daemon_start_fuse(player_remove_blind, 0, SEEDURATION, AFTER);
@@ -304,13 +299,13 @@ player_remove_blind(__attribute__((unused)) int)
     return;
 
   daemon_extinguish_fuse(player_remove_blind);
-  player.t_flags &= ~ISBLIND;
+  player->t_flags &= ~ISBLIND;
   if (!(player_get_room()->r_flags & ISGONE))
     room_enter(player_get_pos());
   io_msg("the veil of darkness lifts");
 }
 
-bool player_is_levitating(void) { return player.t_flags & ISLEVIT; }
+bool player_is_levitating(void) { return player->t_flags & ISLEVIT; }
 
 void
 player_start_levitating(bool permanent)
@@ -319,7 +314,7 @@ player_start_levitating(bool permanent)
     daemon_lengthen_fuse(player_stop_levitating, LEVITDUR);
   else
   {
-    player.t_flags |= ISLEVIT;
+    player->t_flags |= ISLEVIT;
     look(false);
     if (!permanent)
       daemon_start_fuse(player_stop_levitating, 0, LEVITDUR, AFTER);
@@ -330,20 +325,20 @@ void player_stop_levitating(__attribute__((unused)) int)
 {
   if (!player_is_levitating())
     return;
-  player.t_flags &= ~ISLEVIT;
+  player->t_flags &= ~ISLEVIT;
   io_msg("you float gently to the ground");
 }
 
-bool player_has_confusing_attack(void)    { return player.t_flags & CANHUH; }
+bool player_has_confusing_attack(void)    { return player->t_flags & CANHUH; }
 
 void
 player_set_confusing_attack(void)
 {
-  player.t_flags |= CANHUH;
+  player->t_flags |= CANHUH;
   io_msg("your hands begin to glow %s", pick_color("red"));
 }
 
-void player_remove_confusing_attack(void) { player.t_flags &= ~CANHUH; }
+void player_remove_confusing_attack(void) { player->t_flags &= ~CANHUH; }
 
 void
 player_fall_asleep(void)
@@ -395,7 +390,7 @@ void player_teleport(Coordinate *target)
   }
 
   /* Move target */
-  mvaddcch(player.t_pos.y, player.t_pos.x, static_cast<chtype>(floor_at()));
+  mvaddcch(player->t_pos.y, player->t_pos.x, static_cast<chtype>(floor_at()));
   if (roomin(&new_pos) != player_get_room())
   {
     room_leave(player_get_pos());
@@ -490,52 +485,52 @@ player_search(void)
   return true;
 }
 
-Coordinate* player_get_pos(void) { return &player.t_pos; }
-int player_y(void)          { return player.t_pos.y; }
-int player_x(void)          { return player.t_pos.x; }
+Coordinate* player_get_pos(void) { return &player->t_pos; }
+int player_y(void)          { return player->t_pos.y; }
+int player_x(void)          { return player->t_pos.x; }
 
 void
 player_set_pos(Coordinate* new_pos)
 {
-  player.t_pos.x = new_pos->x;
-  player.t_pos.y = new_pos->y;
+  player->t_pos.x = new_pos->x;
+  player->t_pos.y = new_pos->y;
 }
 
-struct room* player_get_room(void)          { return player.t_room; }
-void player_set_room(struct room* new_room) { player.t_room = new_room; }
-int player_get_strength(void)               { return player.t_stats.s_str; }
+struct room* player_get_room(void)          { return player->t_room; }
+void player_set_room(struct room* new_room) { player->t_room = new_room; }
+int player_get_strength(void)               { return player->t_stats.s_str; }
 
 bool
 player_strength_is_weakened(void)
 {
-  return player.t_stats.s_str < player_max_stats.s_str;
+  return player->t_stats.s_str < player_max_stats.s_str;
 }
 
 void
 player_restore_strength(void)
 {
-  player.t_stats.s_str = player_max_stats.s_str + player_get_strength_bonuses();
+  player->t_stats.s_str = player_max_stats.s_str + player_get_strength_bonuses();
 }
 
 void
 player_modify_strength(int amount)
 {
-  player.t_stats.s_str += amount;
-  if (player.t_stats.s_str < player_min_strength)
-    player.t_stats.s_str = player_min_strength;
-  else if (player.t_stats.s_str > player_max_strength)
-    player.t_stats.s_str = player_max_strength;
+  player->t_stats.s_str += amount;
+  if (player->t_stats.s_str < player_min_strength)
+    player->t_stats.s_str = player_min_strength;
+  else if (player->t_stats.s_str > player_max_strength)
+    player->t_stats.s_str = player_max_strength;
 
   player_update_max_strength();
 }
 
-int player_get_health(void)     { return player.t_stats.s_hpt; }
-int player_get_max_health(void) { return player.t_stats.s_maxhp; }
+int player_get_health(void)     { return player->t_stats.s_hpt; }
+int player_get_max_health(void) { return player->t_stats.s_maxhp; }
 
 void
 player_restore_health(int amount, bool can_raise_total)
 {
-  player.t_stats.s_hpt += amount;
+  player->t_stats.s_hpt += amount;
 
   if (can_raise_total)
   {
@@ -549,7 +544,7 @@ player_restore_health(int amount, bool can_raise_total)
   }
 
   if (player_get_health() > player_get_max_health())
-    player.t_stats.s_hpt = player_get_max_health();
+    player->t_stats.s_hpt = player_get_max_health();
 }
 
 bool
@@ -561,15 +556,15 @@ player_is_hurt(void)
 void
 player_modify_max_health(int amount)
 {
-  player.t_stats.s_maxhp += amount;
-  if (player.t_stats.s_hpt > player.t_stats.s_maxhp)
-    player.t_stats.s_hpt = player.t_stats.s_maxhp;
+  player->t_stats.s_maxhp += amount;
+  if (player->t_stats.s_hpt > player->t_stats.s_maxhp)
+    player->t_stats.s_hpt = player->t_stats.s_maxhp;
 }
 
 void
 player_lose_health(int amount)
 {
-  player.t_stats.s_hpt -= amount;
+  player->t_stats.s_hpt -= amount;
 }
 
 int
@@ -578,7 +573,7 @@ player_get_armor(void)
   Item const* const arm = pack_equipped_item(EQUIPMENT_ARMOR);
   Item const* const weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
-  int ac = arm ? arm->o_arm : player.t_stats.s_arm;
+  int ac = arm ? arm->o_arm : player->t_stats.s_arm;
   if (weapon)
     ac -= weapon->o_arm;
 
@@ -595,17 +590,17 @@ player_get_armor(void)
 int
 player_get_level(void)
 {
-  return player.t_stats.s_lvl;
+  return player->t_stats.s_lvl;
 }
 
 void
 player_raise_level(void)
 {
-  int next_level = e_levels[player.t_stats.s_lvl -1] + 1L;
-  if (next_level < player.t_stats.s_exp)
+  int next_level = e_levels[player->t_stats.s_lvl -1] + 1L;
+  if (next_level < player->t_stats.s_exp)
     return;
 
-  player.t_stats.s_exp = next_level;
+  player->t_stats.s_exp = next_level;
   player_check_for_level_up();
   io_msg("you suddenly feel much more skillful");
 }
@@ -614,45 +609,45 @@ void
 player_check_for_level_up(void)
 {
   int i;
-  int old_level = player.t_stats.s_lvl;
+  int old_level = player->t_stats.s_lvl;
 
   for (i = 0; e_levels[i] != 0; ++i)
-    if (e_levels[i] > player.t_stats.s_exp)
+    if (e_levels[i] > player->t_stats.s_exp)
       break;
 
   ++i;
-  player.t_stats.s_lvl = i;
+  player->t_stats.s_lvl = i;
 
   if (i > old_level)
   {
     int add_to_hp = roll(i - old_level, 10);
     player_modify_max_health(add_to_hp);
     player_restore_health(add_to_hp, false);
-    io_msg("welcome to level %d", player.t_stats.s_lvl);
+    io_msg("welcome to level %d", player->t_stats.s_lvl);
   }
 }
 
 void
 player_lower_level(void)
 {
-  --player.t_stats.s_lvl;
-  if (player.t_stats.s_lvl == 0)
+  --player->t_stats.s_lvl;
+  if (player->t_stats.s_lvl == 0)
   {
-    player.t_stats.s_exp = 0;
-    player.t_stats.s_lvl = 1;
+    player->t_stats.s_exp = 0;
+    player->t_stats.s_lvl = 1;
   }
   else
-    player.t_stats.s_exp = e_levels[player.t_stats.s_lvl-1] +1L;
+    player->t_stats.s_exp = e_levels[player->t_stats.s_lvl-1] +1L;
 }
 
 int player_get_exp(void)
 {
-  return player.t_stats.s_exp;
+  return player->t_stats.s_exp;
 }
 
 void player_earn_exp(int amount)
 {
-  player.t_stats.s_exp += amount;
+  player->t_stats.s_exp += amount;
 }
 
 bool

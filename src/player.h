@@ -2,16 +2,22 @@
 
 #include "rogue.h"
 
+class Player : public monster {
+public:
+  Player();
+
+  int speed = 0;
+
+private:
+};
+
+extern Player* player;
+
 /* Variable (TODO: remove these) */
 extern int          player_turns_without_action; /* Turns asleep */
 extern int          player_turns_without_moving; /* Turns held in place */
 extern bool         player_alerted;              /* Alert the player? */
 extern stats        player_max_stats;            /* Current max stats */
-
-monster* __player_ptr(void);
-
-/* General */
-void player_init(void);
 
 bool is_player(monster const* thing);
 int player_save_throw(int which);

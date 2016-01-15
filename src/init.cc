@@ -109,7 +109,7 @@ init_new_game(void)
   idlok(hw, true);
 
   /* Init stuff */
-  player_init();                        /* Set up initial player stats */
+  player = new Player();
   scroll_init();                        /* Set up names of scrolls */
   potions_init();                       /* Set up colors of potions */
   ring_init();                          /* Set up stone settings of rings */

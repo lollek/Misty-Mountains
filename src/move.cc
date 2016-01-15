@@ -96,9 +96,6 @@ move_do(char ch)
 
     if (player_is_confused() && os_rand_range(5) != 0)
     {
-      /* TODO: Remove __player_ptr() */
-        monster *player_thing = __player_ptr();
-        monster *player = player_thing;
 	move_random(player, &nh);
 	if (nh == *player_get_pos())
 	{
