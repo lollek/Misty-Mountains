@@ -1,17 +1,13 @@
 #pragma once
 
-#include "things.h"
+#include <string>
 
-/* Linked list pointers */
-static inline union thing* item_next(item const* item)
-{ return item->l_next; }
-static inline union thing* item_prev(item const* item)
-{ return item->l_prev; }
+#include "things.h"
 
 /* Data */
 static inline Coordinate* item_pos(item* item)
 { return &item->o_pos; }
-static inline char const* item_nickname(item const* item)
+static inline std::string const& item_nickname(item const* item)
 { return item->o_label; }
 static inline int item_type(item const* item)
 { return item->o_type; }

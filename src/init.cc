@@ -25,7 +25,6 @@
 #include "pack.h"
 #include "daemons.h"
 #include "colors.h"
-#include "list.h"
 #include "level.h"
 #include "rings.h"
 #include "save.h"
@@ -33,7 +32,6 @@
 #include "player.h"
 #include "weapons.h"
 #include "wand.h"
-#include "state.h"
 #include "things.h"
 #include "options.h"
 #include "rogue.h"
@@ -89,7 +87,7 @@ sumprobs(char ch)
     else
     {
       prob = (static_cast<const obj_info*>(ptr))[i].oi_prob;
-      name = (static_cast<const obj_info*>(ptr))[i].oi_name;
+      name = (static_cast<const obj_info*>(ptr))[i].oi_name.c_str();
     }
     printf("%3d%% %s\n", prob, name);
   }
@@ -194,61 +192,4 @@ init_new_game(void)
 
   return true;
 }
-
-bool
-init_old_game(void)
-{
-  FILE* inf = fopen(save_file_name, "r");
-  char buf[MAXSTR];
-
-  if (inf == NULL)
-  {
-    perror(save_file_name);
-    return false;
-  }
-
-  fflush(stdout);
-  io_encread(buf, strlen(GAME_VERSION), inf);
-  if (strcmp(buf, GAME_VERSION))
-  {
-    printf("Sorry, saved game is out of date.\n");
-    return false;
-  }
-
-  io_encread(buf, 80, inf);
-
-  if (init_graphics() != 0)
-    return false;
-
-  if (state_load_file(inf) != 0)
-  {
-    endwin();
-    printf(": Corrupted save game\n");
-    return false;
-  }
-
-  /* we do not close the file so that we will have a hold of the
-   * inode for as long as possible */
-
-  if (unlink(save_file_name) < 0)
-  {
-    endwin();
-    printf("Cannot unlink file\n");
-    return false;
-  }
-  io_msg_clear();
-  clearok(stdscr,true);
-
-  if (player_get_health() <= 0)
-  {
-    endwin();
-    printf("\n\"He's dead, Jim\"\n");
-    return false;
-  }
-
-  clearok(curscr, true);
-  io_msg("file name: %s", save_file_name);
-  return true;
-}
-
 

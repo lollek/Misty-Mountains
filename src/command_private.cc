@@ -6,13 +6,14 @@
 
 #include <string>
 
+using namespace std;
+
 #include "Coordinate.h"
 #include "daemons.h"
 #include "fight.h"
 #include "food.h"
 #include "io.h"
 #include "level.h"
-#include "list.h"
 #include "misc.h"
 #include "monster.h"
 #include "move.h"
@@ -33,7 +34,7 @@
 
 static bool command_attack_bow(Coordinate const* delta)
 {
-  THING* ptr = pack_find_arrow();
+  item* ptr = pack_find_arrow();
 
   if (ptr == NULL)
   {
@@ -41,11 +42,11 @@ static bool command_attack_bow(Coordinate const* delta)
     return true;
   }
 
-  THING* arrow = pack_remove(ptr, true, false);
-  io_missile_motion(&arrow->o, delta->y, delta->x);
-  THING* monster_at_pos = level_get_monster(arrow->o.o_pos.y, arrow->o.o_pos.x);
+  item* arrow = pack_remove(ptr, true, false);
+  io_missile_motion(arrow, delta->y, delta->x);
+  monster* monster_at_pos = level_get_monster(arrow->o_pos.y, arrow->o_pos.x);
 
-  if (monster_at_pos == NULL || !fight_against_monster(&arrow->o.o_pos, arrow, true))
+  if (monster_at_pos == NULL || !fight_against_monster(&arrow->o_pos, arrow, true))
     weapon_missile_fall(arrow, true);
 
   return true;
@@ -53,13 +54,13 @@ static bool command_attack_bow(Coordinate const* delta)
 
 static bool command_attack_melee(bool fight_to_death, Coordinate* delta)
 {
-  THING* mp = level_get_monster(delta->y, delta->x);
+  monster* mp = level_get_monster(delta->y, delta->x);
   if (mp != NULL && diag_ok(player_get_pos(), delta))
   {
     if (fight_to_death)
     {
       to_death = true;
-      mp->t.t_flags |= ISTARGET;
+      mp->t_flags |= ISTARGET;
     }
     runch = dir_ch;
     return command_do(dir_ch);
@@ -131,9 +132,9 @@ command_attack(bool fight_to_death)
 
   Coordinate delta ( player_x() + dir->x, player_y() + dir->y );
 
-  THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
+  item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
-  return weapon != NULL && weapon->o.o_which == BOW
+  return weapon != NULL && weapon->o_which == BOW
     ? command_attack_bow(dir)
     : command_attack_melee(fight_to_death, &delta);
 }
@@ -141,40 +142,38 @@ command_attack(bool fight_to_death)
 bool
 command_name_item(void)
 {
-  THING* obj = pack_get_item("rename", PACK_RENAMEABLE);
+  item* obj = pack_get_item("rename", PACK_RENAMEABLE);
 
-  if (obj == NULL)
+  if (obj == nullptr)
     return false;
 
   bool already_known;
-  char** guess;
-  switch (obj->o.o_type)
+  string* guess = nullptr;
+  switch (obj->o_type)
   {
     case FOOD: io_msg("Don't play with your food!"); return false;
 
     case RING:
-      already_known = ring_is_known(static_cast<ring_t>(obj->o.o_which));
-      guess =        &ring_info[obj->o.o_which].oi_guess;
+      already_known = ring_is_known(static_cast<ring_t>(obj->o_which));
+      guess = &ring_info[obj->o_which].oi_guess;
       break;
 
     case POTION:
-      already_known = potion_info[obj->o.o_which].oi_know;
-      guess =        &potion_info[obj->o.o_which].oi_guess;
+      already_known = potion_info[obj->o_which].oi_know;
+      guess = &potion_info[obj->o_which].oi_guess;
       break;
 
     case SCROLL:
-      already_known = scroll_is_known(static_cast<scroll_t>(obj->o.o_which));
-      guess =         NULL;
+      already_known = scroll_is_known(static_cast<scroll_t>(obj->o_which));
       break;
 
     case STICK:
-      already_known = wand_is_known(static_cast<wand_t>(obj->o.o_which));
-      guess =         NULL;
+      already_known = wand_is_known(static_cast<wand_t>(obj->o_which));
       break;
 
     default:
       already_known = false;
-      guess = &obj->o.o_label;
+      guess = &obj->o_label;
       break;
   }
 
@@ -189,22 +188,12 @@ command_name_item(void)
   char tmpbuf[MAXSTR] = { '\0' };
   if (io_readstr(tmpbuf) == 0)
   {
-    if (obj->o.o_type == STICK)
-      wand_set_name(static_cast<wand_t>(obj->o.o_which), tmpbuf);
-    else if (obj->o.o_type == SCROLL)
-      scroll_set_name(static_cast<scroll_t>(obj->o.o_which), tmpbuf);
-    else if (guess != NULL)
-    {
-      if (*guess != NULL) {
-        free(*guess);
-        *guess = NULL;
-      }
-      if (strlen(tmpbuf) > 0)
-      {
-        *guess = new char[strlen(tmpbuf) + 1];
-        strcpy(*guess, tmpbuf);
-      }
-    }
+    if (obj->o_type == STICK)
+      wand_set_name(static_cast<wand_t>(obj->o_which), tmpbuf);
+    else if (obj->o_type == SCROLL)
+      scroll_set_name(static_cast<scroll_t>(obj->o_which), tmpbuf);
+    else if (guess != nullptr && strlen(tmpbuf) > 0)
+      *guess += tmpbuf;
   }
 
   io_msg_clear();
@@ -227,7 +216,7 @@ command_identify_character(void)
   if (isalpha(ch))
   {
     ch = toupper(ch);
-    io_msg("'%s': %s", unctrl(static_cast<chtype>(ch)), monster_name_by_type(static_cast<char>(ch)));
+    io_msg("'%s': %s", unctrl(static_cast<chtype>(ch)), monster_name_by_type(static_cast<char>(ch)).c_str());
     return false;
   }
 
@@ -290,19 +279,19 @@ command_quit(void)
 }
 
 bool
-command_pick_up(void)
-{
-  if (player_is_levitating())
+command_pick_up(void) {
+  if (player_is_levitating()) {
     io_msg("You can't. You're floating off the ground!");
+  }
 
   Coordinate const* player_pos = player_get_pos();
 
-  for (THING* obj = level_items; obj != NULL; obj = obj->o.l_next)
-    if (obj->o.o_pos == *player_pos)
-    {
+  for (item* obj : level_items) {
+    if (obj->o_pos == *player_pos) {
       pack_pick_up(obj, true);
       return true;
     }
+  }
 
   io_msg("nothing to pick up");
   return false;
@@ -314,7 +303,7 @@ command_help(void)
   struct list
   {
     char sym;
-    std::string description;
+    string description;
     bool print;
   } const helpstr[] = {
     {',',	"	pick something up",			true},
@@ -498,27 +487,27 @@ bool command_throw(void)
   int xdelta = dir->x;
   dir = NULL;
 
-  THING* obj = pack_get_item("throw", 0);
+  item* obj = pack_get_item("throw", 0);
   if (obj == NULL)
     return false;
 
-  if (obj->o.o_type == ARMOR)
+  if (obj->o_type == ARMOR)
   {
     io_msg("you can't throw armor");
     return false;
   }
 
   obj = pack_remove(obj, true, false);
-  io_missile_motion(&obj->o, ydelta, xdelta);
-  THING* monster_at_pos = level_get_monster(obj->o.o_pos.y, obj->o.o_pos.x);
+  io_missile_motion(obj, ydelta, xdelta);
+  monster* monster_at_pos = level_get_monster(obj->o_pos.y, obj->o_pos.x);
 
   /* Throwing an arrow always misses */
-  if (obj->o.o_which == ARROW)
+  if (obj->o_which == ARROW)
   {
     if (monster_at_pos && !to_death)
     {
       char buf[MAXSTR];
-      fight_missile_miss(&obj->o, monster_name(&monster_at_pos->t, buf));
+      fight_missile_miss(obj, monster_name(monster_at_pos, buf));
     }
     weapon_missile_fall(obj, true);
     return true;
@@ -527,11 +516,11 @@ bool command_throw(void)
   /* AHA! Here it has hit something.  If it is a wall or a door,
    * or if it misses (combat) the monster, put it on the floor */
   bool missed = monster_at_pos == NULL ||
-    !fight_against_monster(&obj->o.o_pos, obj, true);
+    !fight_against_monster(&obj->o_pos, obj, true);
 
   if (missed)
   {
-    if (obj->o.o_type == POTION)
+    if (obj->o_type == POTION)
       io_msg("the potion crashes into the wall");
     else
       weapon_missile_fall(obj, true);
@@ -545,12 +534,12 @@ bool command_throw(void)
 bool
 command_wield(void)
 {
-  THING* obj = pack_get_item("wield", WEAPON);
+  item* obj = pack_get_item("wield", WEAPON);
 
   if (obj == NULL)
     return false;
 
-  if (obj->o.o_type == ARMOR)
+  if (obj->o_type == ARMOR)
   {
     io_msg("you can't wield armor");
     return command_wield();
@@ -586,11 +575,11 @@ bool command_rest(void)
 bool
 command_eat(void)
 {
-  THING* obj = pack_get_item("eat", FOOD);
+  item* obj = pack_get_item("eat", FOOD);
   if (obj == NULL)
     return false;
 
-  if (obj->o.o_type != FOOD)
+  if (obj->o_type != FOOD)
   {
     io_msg("that's inedible!");
     return false;
@@ -598,7 +587,7 @@ command_eat(void)
 
   food_eat();
 
-  if (obj->o.o_which == 1)
+  if (obj->o_which == 1)
     io_msg("my, that was a yummy fruit");
 
   else if (os_rand_range(100) > 70)
@@ -640,12 +629,12 @@ bool command_drop(void)
     return false;
   }
 
-  THING* obj = pack_get_item("drop", 0);
+  item* obj = pack_get_item("drop", 0);
   if (obj == NULL)
     return false;
 
   bool drop_all = false;
-  if (obj->o.o_count > 1)
+  if (obj->o_count > 1)
   {
     io_msg("Drop all? (y/N) ");
     drop_all = io_readchar(true) == 'y';
@@ -655,17 +644,17 @@ bool command_drop(void)
   obj = pack_remove(obj, true, drop_all);
 
   /* Link it into the level object list */
-  list_attach(&level_items, obj);
+  level_items.push_back(obj);
 
-  level_set_ch(player_pos->y, player_pos->x, static_cast<char>(obj->o.o_type));
+  level_set_ch(player_pos->y, player_pos->x, static_cast<char>(obj->o_type));
   int flags = level_get_flags(player_pos->y, player_pos->x);
   flags |= F_DROPPED;
   level_set_flags(player_pos->y, player_pos->x, static_cast<char>(flags));
 
-  obj->o.o_pos = *player_pos;
+  obj->o_pos = *player_pos;
 
   char buf[MAXSTR];
-  io_msg("dropped %s", inv_name(buf, &obj->o, true));
+  io_msg("dropped %s", inv_name(buf, obj, true));
   return true;
 }
 

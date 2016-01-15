@@ -17,8 +17,4 @@ int os_rand(void);                   /* Return a pseudorandom number */
 int os_rand_range(int max);          /* Return a number [0,max[ */
 int os_usleep(unsigned int usec);    /* Sleep for nanoseconds */
 
-/* Temporary functions for transforming */
-THING* os_item_to_thing(item** item);
-THING* os_monster_to_thing(monster** monster);
-
 #endif /* ROGUE14_OS_H */

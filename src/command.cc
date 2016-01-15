@@ -20,7 +20,6 @@
 #include "food.h"
 #include "io.h"
 #include "level.h"
-#include "list.h"
 #include "misc.h"
 #include "move.h"
 #include "options.h"
@@ -209,9 +208,9 @@ command_wizard_do(char ch)
 
     case CTRL('~'):
      {
-       THING* item = pack_get_item("charge", STICK);
+       item* item = pack_get_item("charge", STICK);
        if (item != NULL)
-         item->o.o_charges = 10000;
+         item->o_charges = 10000;
      }
      break;
 

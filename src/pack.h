@@ -28,27 +28,27 @@ bool pack_save_state(void);
 bool pack_load_state(void);
 
 int8_t pack_list_index(item const* thing);
-THING* pack_list_element(int8_t i);
+item* pack_list_element(int8_t i);
 int pack_size(void);
 
 /* Pick up an object and add it to the pack.  If the argument is
  * non-null use it as the linked_list pointer instead of gettting
  * it off the ground. */
-bool pack_add(THING* obj, bool silent);
+bool pack_add(item* obj, bool silent);
 
-void pack_move_msg(THING* obj); /* Message that we are standing on smt */
+void pack_move_msg(item* obj); /* Message that we are standing on smt */
 
 /* take an item out of the pack */
-THING* pack_remove(THING* obj, bool newobj, bool all);
+item* pack_remove(item* obj, bool newobj, bool all);
 
 /* Add something to characters pack */
-void pack_pick_up(THING* obj, bool force);
+void pack_pick_up(item* obj, bool force);
 
 /* Find and return a magic item in the players inventory */
-THING* pack_find_magic_item(void);
+item* pack_find_magic_item(void);
 
 /* Pick something out of a pack for a purpose */
-THING* pack_get_item(char const* purpose, int type);
+item* pack_get_item(char const* purpose, int type);
 
 /* Check if she's carrying anything */
 bool pack_is_empty(void);
@@ -60,16 +60,16 @@ int pack_count_items(void);
 int pack_count_items_of_type(int type);
 
 bool pack_contains_amulet(void);
-bool pack_contains(THING* item);
+bool pack_contains(item* item);
 bool pack_print_equipment(void);
 bool pack_print_inventory(int type);
 void pack_clear_inventory(void);
 
 size_t pack_evaluate(void);
 
-THING* pack_equipped_item(enum equipment_pos pos);
+item* pack_equipped_item(enum equipment_pos pos);
 
-bool pack_equip_item(THING* item);
+bool pack_equip_item(item* item);
 bool pack_unequip(enum equipment_pos pos, bool quiet_on_success);
 
 static inline bool pack_item_is_cursed(item const* item)
@@ -79,7 +79,7 @@ static inline void pack_curse_item(item *item)
 static inline void pack_uncurse_item(item *item)
 { item->o_flags &= ~ISCURSED; }
 
-THING* pack_find_arrow(void); /* Return arrow in pack or NULL */
+item* pack_find_arrow(void); /* Return arrow in pack or NULL */
 void pack_identify_item(void);
 
 #endif /* ROGUE14_PACK_H */

@@ -94,7 +94,7 @@ magic_bolt_hit_player(Coordinate* start, string const& missile_name)
           default:  death(DEATH_UNKNOWN);
         }
       else
-        death(level_get_monster(start->y, start->x)->t.t_type);
+        death(level_get_monster(start->y, start->x)->t_type);
     }
     io_msg("you are hit by the %s", missile_name.c_str());
   }
@@ -103,36 +103,36 @@ magic_bolt_hit_player(Coordinate* start, string const& missile_name)
 }
 
 static void
-magic_bolt_hit_monster(THING* mon, Coordinate* start, Coordinate* pos, string const& missile_name)
+magic_bolt_hit_monster(monster* mon, Coordinate* start, Coordinate* pos, string const& missile_name)
 {
-  mon->t.t_oldch = level_get_ch(pos->y, pos->x);
-  if (!monster_save_throw(VS_MAGIC, &mon->t))
+  mon->t_oldch = level_get_ch(pos->y, pos->x);
+  if (!monster_save_throw(VS_MAGIC, mon))
   {
-    THING bolt;
+    item bolt;
     memset(&bolt, 0, sizeof(bolt));
-    bolt.o.o_type       = WEAPON;
-    bolt.o.o_which      = FLAME;
-    bolt.o.o_hplus      = 100;
-    bolt.o.o_dplus      = 0;
-    bolt.o.o_pos        = *pos;
-    bolt.o.o_flags     |= ISMISL;
-    bolt.o.o_launch     = -1;
-    bolt.o.o_hurldmg    = {6,6};
+    bolt.o_type       = WEAPON;
+    bolt.o_which      = FLAME;
+    bolt.o_hplus      = 100;
+    bolt.o_dplus      = 0;
+    bolt.o_pos        = *pos;
+    bolt.o_flags     |= ISMISL;
+    bolt.o_launch     = -1;
+    bolt.o_hurldmg    = {6,6};
     weapon_info[FLAME].oi_name = const_cast<char*>(missile_name.c_str());
 
-    if (mon->t.t_type == 'D' && missile_name == "flame")
+    if (mon->t_type == 'D' && missile_name == "flame")
       io_msg("the flame bounces off the dragon");
     else
       fight_against_monster(pos, &bolt, true);
   }
-  else if (level_get_type(pos->y, pos->x) != 'M' || mon->t.t_disguise == 'M')
+  else if (level_get_type(pos->y, pos->x) != 'M' || mon->t_disguise == 'M')
   {
     if (start == player_get_pos())
       monster_start_running(pos);
     else
     {
       char buf[MAXSTR];
-      io_msg("the %s whizzes past %s", missile_name.c_str(), monster_name(&mon->t, buf));
+      io_msg("the %s whizzes past %s", missile_name.c_str(), monster_name(mon, buf));
     }
   }
 }
@@ -201,7 +201,7 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
     if (pos == *player_get_pos())
       magic_bolt_hit_player(start, name);
 
-    THING* tp = level_get_monster(pos.y, pos.x);
+    monster* tp = level_get_monster(pos.y, pos.x);
     if (tp != NULL)
       magic_bolt_hit_monster(tp, start, &pos, name);
 

@@ -35,29 +35,3 @@ os_usleep(unsigned int usec)
 }
 
 
-THING*
-os_item_to_thing(item** item)
-{
-  assert(item != NULL);
-  assert(*item != NULL);
-
-  THING* return_value = new THING();
-  return_value->o = **item;
-  delete *item;
-  *item = nullptr;
-
-  return return_value;
-}
-
-THING* os_monster_to_thing(monster** monster)
-{
-  assert(monster != NULL);
-  assert(*monster != NULL);
-
-  THING* return_value = new THING();
-  return_value->t = **monster;
-  delete *monster;
-  *monster = nullptr;
-
-  return return_value;
-}

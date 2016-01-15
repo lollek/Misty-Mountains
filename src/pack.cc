@@ -13,6 +13,11 @@
 #include <string.h>
 #include <assert.h>
 
+#include <string>
+#include <vector>
+
+using namespace std;
+
 #include "Coordinate.h"
 
 #include "scrolls.h"
@@ -39,18 +44,18 @@
 
 int const PACK_RENAMEABLE = -1;
 
-int           pack_gold = 0;
-static THING* player_pack;
+int                  pack_gold = 0;
+static vector<item*> player_pack;
 
 static struct equipment_t
 {
   THING* ptr;
-  char const* description;
+  string const description;
 } equipment[NEQUIPMENT] = {
-  { NULL, "Body" },
-  { NULL, "Right Hand" },
-  { NULL, "Right Ring" },
-  { NULL, "Left Ring" }
+  { nullptr, "Body" },
+  { nullptr, "Right Hand" },
+  { nullptr, "Right Ring" },
+  { nullptr, "Left Ring" }
 };
 
 /* Is the character used in the pack? */

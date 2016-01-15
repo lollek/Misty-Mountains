@@ -38,12 +38,12 @@ armor_for_monster(monster const* mon) {
 
 bool
 armor_command_wear() {
-  THING* obj = pack_get_item("wear", ARMOR);
+  item* obj = pack_get_item("wear", ARMOR);
 
   if (obj == NULL)
     return false;
 
-  if (obj->o.o_type != ARMOR) {
+  if (obj->o_type != ARMOR) {
     io_msg("you can't wear that");
     return armor_command_wear();
   }
@@ -57,7 +57,7 @@ armor_command_wear() {
   pack_equip_item(obj);
 
   char buf[MAXSTR];
-  io_msg("now wearing %s", inv_name(buf, &obj->o, true));
+  io_msg("now wearing %s", inv_name(buf, obj, true));
   return true;
 }
 
@@ -81,17 +81,17 @@ armor_type_random() {
 
 void
 armor_rust() {
-  THING* arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  if (arm == NULL || arm->o.o_type != ARMOR || arm->o.o_which == LEATHER ||
-      arm->o.o_arm >= 9)
+  item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  if (arm == NULL || arm->o_type != ARMOR || arm->o_which == LEATHER ||
+      arm->o_arm >= 9)
     return;
 
-  if ((arm->o.o_flags & ISPROT) || player_has_ring_with_ability(R_SUSTARM)) {
+  if ((arm->o_flags & ISPROT) || player_has_ring_with_ability(R_SUSTARM)) {
     if (!to_death)
       io_msg("the rust vanishes instantly");
   }
   else {
-    arm->o.o_arm++;
+    arm->o_arm++;
     io_msg("your armor weakens");
   }
 }
@@ -110,8 +110,8 @@ armor_description(item const* item, char* buf) {
     ptr += sprintf(ptr, bonus_ac < 0 ? ",%d]" : ",+%d]", bonus_ac);
   }
 
-  if (item_nickname(item) != NULL)
-    ptr += sprintf(ptr, " called %s", item_nickname(item));
+  if (!item_nickname(item).empty())
+    ptr += sprintf(ptr, " called %s", item_nickname(item).c_str());
 }
 
 item*

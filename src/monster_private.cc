@@ -1,3 +1,7 @@
+#include <vector>
+
+using namespace std;
+
 #include "Coordinate.h"
 #include "things.h"
 #include "player.h"
@@ -10,7 +14,7 @@
 #include "monster.h"
 #include "monster_private.h"
 
-THING* monster_list = NULL;
+MonsterList monster_list;
 
 void
 monster_find_new_target(THING* monster)

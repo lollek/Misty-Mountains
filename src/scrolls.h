@@ -41,6 +41,6 @@ void scroll_set_name(enum scroll_t wand, char const* new_name);
 
 void scroll_description(item const* item, char* buf);
 
-THING* scroll_create(int which);
+item* scroll_create(int which);
 
 #endif /* ROGUE14_SCROLLS_H */

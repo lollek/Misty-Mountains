@@ -27,13 +27,13 @@ bool weapons_save_state(void);
 bool weapons_load_state(void);
 
 /* Drop an item someplace around here. */
-void weapon_missile_fall(THING* obj, bool pr);
+void weapon_missile_fall(item* obj, bool pr);
 
-THING* weapon_create(int which, bool random_stats);
+item* weapon_create(int which, bool random_stats);
 
-bool weapon_wield(THING* weapon);
+bool weapon_wield(item* weapon);
 bool weapon_wield_last_used(void);
-void weapon_set_last_used(THING* weapon);
+void weapon_set_last_used(item* weapon);
 
 void weapon_description(item const* item, char* buf);
 

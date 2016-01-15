@@ -1,14 +1,13 @@
 #ifndef ROGUE14_MONSTER_H
 #define ROGUE14_MONSTER_H
 
+#include <string>
+
 #include "Coordinate.h"
 #include "rogue.h"
 
 /* Variables, TODO: Remove these */
 extern int    monster_flytrap_hit;
-
-bool monsters_save_state(void);
-bool monsters_load_state(void);
 
 /* Status getters */
 static inline bool monster_is_blind(monster const* mon)
@@ -96,13 +95,13 @@ static inline void monster_remove_held(monster* mon)
 char monster_random(bool wander);
 
 /* Pick a new monster and add it to the monster list */
-void monster_new(THING* tp, char type, Coordinate* cp);
+void monster_new(monster* tp, char type, Coordinate* cp);
 
 /* Create a new wandering monster and aim it at the player */
 void monster_new_random_wanderer(void);
 
 /* What to do when the hero steps next to a monster */
-THING *monster_notice_player(int y, int x);
+monster *monster_notice_player(int y, int x);
 
 /* Give a pack to a monster if it deserves one */
 void monster_give_pack(monster* mon);
@@ -114,19 +113,19 @@ int monster_save_throw(int which, monster const* mon);
 void monster_start_running(Coordinate const* runner);
 
 /* Called to put a monster to death */
-void monster_on_death(THING* tp, bool pr);
+void monster_on_death(monster* tp, bool pr);
 
 /* Remove a monster from the screen */
-void monster_remove_from_screen(Coordinate* mp, THING* tp, bool waskill);
+void monster_remove_from_screen(Coordinate* mp, monster* tp, bool waskill);
 
-bool monster_is_dead(THING const* monster);
+bool monster_is_dead(monster const* monster);
 
-void monster_teleport(THING* monster, Coordinate const* destination);
+void monster_teleport(monster* monster, Coordinate const* destination);
 
-void monster_do_special_ability(THING** monster);
+void monster_do_special_ability(monster** monster);
 
 char const* monster_name(monster const* monster, char* buf);
-char const* monster_name_by_type(char monster_type);
+std::string const& monster_name_by_type(char monster_type);
 bool monster_seen_by_player(monster const* monster);
 
 /* Is any monster seen by the player? */
@@ -156,27 +155,14 @@ void monster_print_all(void);
 /* Print a $ where there is a monster with a magic item
  * Returns true if there was atleast one, else false */
 bool monster_show_if_magic_inventory(void);
-/* Return the nth monster spawned */
-THING* monster_get_nth_in_list(int i);
-/* Return the index of monster which has the given position
- * or -1 if not found */
-int monster_return_index_with_position(Coordinate const* pos);
-/* Returns index of monster at the moment or -1 if not found */
-int monster_index(THING const* monster);
-
-#ifndef NDEBUG
-void monster_assert_exists(THING const* monster);
-#else
-#define monster_assert_exists(monster)
-#endif
 
 /* Add nearby monsters to the given list. Returns the number of results */
-int monster_add_nearby(THING** nearby_monsters, struct room const* room);
+int monster_add_nearby(monster** nearby_monsters, struct room const* room);
 
 /* Transform the monster into something else */
-void monster_polymorph(THING* monster);
+void monster_polymorph(monster* monster);
 
 /** monster_chase.c **/
-bool monster_chase(THING* tp); /* Make a monster chase */
+bool monster_chase(monster* tp); /* Make a monster chase */
 
 #endif /* ROGUE14_MONSTER_H */

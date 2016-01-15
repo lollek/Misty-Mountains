@@ -20,7 +20,6 @@
 #include "rings.h"
 #include "misc.h"
 #include "player.h"
-#include "list.h"
 #include "level.h"
 #include "options.h"
 #include "os.h"
@@ -191,8 +190,8 @@ daemon_doctor(__attribute__((unused)) int)
 
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    THING *ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != NULL && ring->o.o_which == R_REGEN)
+    item *ring = pack_equipped_item(pack_ring_slots[i]);
+    if (ring != NULL && ring->o_which == R_REGEN)
       player_restore_health(1, false);
   }
 
@@ -236,13 +235,13 @@ daemon_change_visuals(__attribute__((unused)) int)
     return;
 
   /* change the things */
-  for (THING* tp = level_items; tp != NULL; tp = tp->o.l_next)
-    if (cansee(tp->o.o_pos.get_y(), tp->o.o_pos.get_x()))
-      mvaddcch(tp->o.o_pos.get_y(), tp->o.o_pos.get_x(), static_cast<chtype>(rnd_thing()));
+  for (item* tp : level_items)
+    if (cansee(tp->o_pos.y, tp->o_pos.x))
+      mvaddcch(tp->o_pos.y, tp->o_pos.x, static_cast<chtype>(rnd_thing()));
 
   /* change the stairs */
   if (seen_stairs())
-    mvaddcch(level_stairs.get_y(), level_stairs.get_x(), static_cast<chtype>(rnd_thing()));
+    mvaddcch(level_stairs.y, level_stairs.x, static_cast<chtype>(rnd_thing()));
 
   /* change the monsters */
   monster_show_all_as_trippy();
@@ -260,13 +259,13 @@ void daemon_ring_abilities(__attribute__((unused)) int)
 {
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
-    THING* obj = pack_equipped_item(pack_ring_slots[i]);
+    item* obj = pack_equipped_item(pack_ring_slots[i]);
     if (obj == NULL)
       continue;
 
-    else if (obj->o.o_which == R_SEARCH)
+    else if (obj->o_which == R_SEARCH)
       player_search();
-    else if (obj->o.o_which == R_TELEPORT && os_rand_range(50) == 0)
+    else if (obj->o_which == R_TELEPORT && os_rand_range(50) == 0)
       player_teleport(NULL);
   }
 }

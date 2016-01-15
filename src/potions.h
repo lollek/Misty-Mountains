@@ -1,7 +1,4 @@
-#ifndef ROGUE14_POTIONS_H
-#define ROGUE14_POTIONS_H
-
-#include <stdbool.h>
+#pragma once
 
 #include "things.h" /* struct obj_info */
 
@@ -37,6 +34,4 @@ bool potion_load_state(void);
 bool potion_quaff_something(void);  /* Quaff a potion from the pack */
 void potion_description(item const* obj, char buf[]);
 
-THING* potion_create(int which);
-
-#endif /* ROGUE14_POTIONS_H */
+item* potion_create(int which);

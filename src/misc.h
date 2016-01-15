@@ -1,7 +1,6 @@
-#ifndef ROGUE14_MISC_H
-#define ROGUE14_MISC_H
+#pragma once
 
-#include <stdbool.h>
+#include <string>
 
 #include "rooms.h"
 #include "things.h"
@@ -12,7 +11,7 @@ void look(bool wakeup);          /* A quick glance all around the player */
 /* Erase the area shown by a lamp in a dark room. */
 void erase_lamp(Coordinate const* pos, struct room const* room);
 
-THING* find_obj(int y, int x); /* Find the unclaimed object at y, x */
+item* find_obj(int y, int x); /* Find the unclaimed object at y, x */
 
 char const* vowelstr(char const *str); /* Return "n" if vowel else "" */
 
@@ -22,10 +21,10 @@ Coordinate const* get_dir(void);
 int sign(int nm);              /* Return the sign of the number */
 int spread(int nm);            /* Give a spread around a given number (+/- 20%) */
 
-void call_it(char const* what, struct obj_info *info); /* Call object something */
+void call_it(std::string const& what, struct obj_info *info); /* Call object something */
 
 char rnd_thing(void);         /* Pick a random thing appropriate for this level */
-bool is_magic(THING const* obj);   /* Returns true if an object radiates magic */
+bool is_magic(item const* obj);   /* Returns true if an object radiates magic */
 bool seen_stairs(void);        /* Return true if the player has seen the stairs */
 void invis_on(void);         /* Turn on the ability to see invisible */
 
@@ -33,7 +32,7 @@ void invis_on(void);         /* Turn on the ability to see invisible */
 void strucpy(char* s1, char const* s2, int len);
 
 void waste_time(int rounds);
-void set_oldch(THING* tp, Coordinate* cp); /* Set oldch for a monster */
+void set_oldch(monster* tp, Coordinate* cp); /* Set oldch for a monster */
 
 struct room* roomin(Coordinate* cp); /* Find what room some Coordinate are in, NULL means no room */
 bool diag_ok(Coordinate const* sp, Coordinate const* ep); /* Check if move is legal if diagonal */
@@ -51,6 +50,3 @@ char floor_at(void); /* Return the character at hero's position */
 
 /* Pick a random position around the give (y, x) Coordinate */
 bool fallpos(Coordinate const* pos, Coordinate* newpos);
-
-
-#endif /* ROGUE14_MISC_H */

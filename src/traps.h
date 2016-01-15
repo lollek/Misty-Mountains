@@ -22,7 +22,7 @@ extern char const* trap_names[NTRAPS];
 
 /* Trap victim with trap at position (since it has not yet moved there).
  * if player, victim should be NULL */
-enum trap_t trap_spring(THING* victim, Coordinate* trap_coord);
+enum trap_t trap_spring(monster* victim, Coordinate* trap_coord);
 
 
 #endif /* ROGUE14_TRAPS_H */

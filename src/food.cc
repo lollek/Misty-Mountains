@@ -4,7 +4,6 @@
 #include "player.h"
 #include "rings.h"
 #include "os.h"
-#include "state.h"
 #include "death.h"
 
 #include "food.h"
@@ -35,20 +34,6 @@ static int const starvation_death = -850;
 
 static int food_left = STARTING_FOOD;
 static int hunger_state = 0;
-
-bool
-food_save_state(void)
-{
-  return state_save_int32(food_left)
-    || state_save_int32(hunger_state);
-}
-
-bool
-food_load_state(void)
-{
-  return state_load_int32(&food_left)
-    || state_load_int32(&hunger_state);
-}
 
 void
 food_eat(void)

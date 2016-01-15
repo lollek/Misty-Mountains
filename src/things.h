@@ -1,8 +1,10 @@
 #pragma once
 
+#include <vector>
 #include <string>
 
 #include "Coordinate.h"
+#include "rooms.h"
 
 struct damage
 {
@@ -27,36 +29,13 @@ struct stats {
   int           s_lvl;             /* level of mastery */
   int           s_arm;             /* Armor class */
   int           s_hpt;             /* Hit points */
-  struct damage s_dmg[MAXATTACKS]; /* String describing damage done */
+  damage        s_dmg[MAXATTACKS]; /* String describing damage done */
   int           s_maxhp;           /* Max hit points */
 };
 
-struct monster {
-  /* Linked list pointers */
-  union thing* l_next;
-  union thing* l_prev;
-
-  struct stats    t_stats;   /* Physical description */
-  Coordinate      t_pos;     /* Position */
-  Coordinate*     t_dest;    /* Where it is running to */
-  struct room*    t_room;    /* Current room for thing */
-  union thing*    t_pack;    /* What the thing is carrying */
-
-  int             t_flags;   /* State word */
-  char            t_type;    /* What it is */
-  char            t_disguise;/* What mimic looks like */
-  char            t_oldch;   /* Character that was where it was */
-  bool            t_turn;    /* If slowed, is it a turn to move */
-  int             t_reserved;
-};
-
 struct item {
-  /* Linked list pointers */
-  union thing*  l_next;
-  union thing*  l_prev;
-
   Coordinate    o_pos;                 /* Where it lives on the screen */
-  char*         o_label;               /* Label for object */
+  std::string   o_label;               /* Label for object */
   int           o_type;                /* What kind of object it is */
   int           o_launch;              /* What you need to launch it */
   int           o_count;               /* count for plural objects */
@@ -66,15 +45,25 @@ struct item {
   int           o_arm;                 /* Armor protection */
   int           o_flags;               /* information about objects */
   char          o_packch;              /* What character it is in the pack */
-  struct damage o_damage;              /* Damage if used like sword */
-  struct damage o_hurldmg;             /* Damage if thrown */
+  damage        o_damage;              /* Damage if used like sword */
+  damage        o_hurldmg;             /* Damage if thrown */
 };
 
-/* Structure for monsters and player */
-typedef union thing {
-  monster t;
-  item o;
-} THING;
+struct monster {
+  stats              t_stats;   /* Physical description */
+  Coordinate         t_pos;     /* Position */
+  Coordinate*        t_dest;    /* Where it is running to */
+  room*              t_room;    /* Current room for thing */
+  std::vector<item*> t_pack;    /* What the thing is carrying */
+
+  int                t_flags;   /* State word */
+  char               t_type;    /* What it is */
+  char               t_disguise;/* What mimic looks like */
+  char               t_oldch;   /* Character that was where it was */
+  bool               t_turn;    /* If slowed, is it a turn to move */
+  int                t_reserved;
+};
+
 
 #define o_charges	o_arm
 #define o_goldval	o_arm
@@ -121,9 +110,9 @@ char* inv_name(char* buf, item* item, bool drop);
 bool drop(void);
 
 /* Return a new thing */
-THING* new_thing(void);
-THING* new_amulet(void);
-THING* new_food(int which);
+item* new_thing(void);
+item* new_amulet(void);
+item* new_food(int which);
 
 /* Pick an item out of a list of nitems possible objects */
 unsigned pick_one(struct obj_info* start, int nitems);

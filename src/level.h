@@ -1,5 +1,6 @@
-#ifndef ROGUE14_LEVEL_H
-#define ROGUE14_LEVEL_H
+#pragma once
+
+#include <vector>
 
 #include "io.h"
 
@@ -14,19 +15,19 @@
 
 /* describe a place on the level map */
 typedef struct {
-    char p_ch;
-    char p_flags;
-    THING* p_monst;
+    char     p_ch;
+    char     p_flags;
+    monster* p_monst;
 } PLACE;
 
 extern int const level_amulet;                    /* Level where amulet starts */
 
-extern PLACE       level_places[MAXLINES*MAXCOLS];  /* level map */
-extern Coordinate  level_stairs;                    /* Location of staircase */
-extern THING*      level_items;                     /* List of items on level */
-extern int         level;                           /* What level she is on */
-extern int         level_max;                       /* Deepest player has gone */
-extern int         levels_without_food;             /* Levels without food */
+extern PLACE              level_places[MAXLINES*MAXCOLS];  /* level map */
+extern Coordinate         level_stairs;                    /* Location of staircase */
+extern std::vector<item*> level_items;                     /* List of items on level */
+extern int                level;                           /* What level she is on */
+extern int                level_max;                       /* Deepest player has gone */
+extern int                levels_without_food;             /* Levels without food */
 
 void level_new(void);
 bool level_save_state(void);
@@ -36,13 +37,11 @@ char level_get_type(int y, int x);
 
 PLACE* level_get_place(int y, int x);
 
-THING* level_get_monster(int y, int x);
-void level_set_monster(int y, int x, THING* monster);
+monster* level_get_monster(int y, int x);
+void level_set_monster(int y, int x, monster* monster);
 
 char level_get_flags(int y, int x);
 void level_set_flags(int y, int x, char flags);
 
 char level_get_ch(int y, int x);
 void level_set_ch(int y, int x, char ch);
-
-#endif /* ROGUE14_LEVEL_H */

@@ -14,11 +14,14 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include <vector>
+
+using namespace std;
+
 #include "traps.h"
 #include "io.h"
 #include "pack.h"
 #include "daemons.h"
-#include "list.h"
 #include "monster.h"
 #include "passages.h"
 #include "misc.h"
@@ -26,7 +29,6 @@
 #include "rooms.h"
 #include "things.h"
 #include "os.h"
-#include "state.h"
 #include "rogue.h"
 
 #include "level.h"
@@ -41,12 +43,12 @@
 
 int const level_amulet = 26;
 
-PLACE       level_places[MAXLINES*MAXCOLS];
-Coordinate  level_stairs;
-THING*      level_items = NULL;
-int         level = 1;
-int         level_max = 1;
-int         levels_without_food = 0;
+PLACE          level_places[MAXLINES*MAXCOLS];
+Coordinate     level_stairs;
+vector<item*>  level_items;
+int            level = 1;
+int            level_max = 1;
+int            levels_without_food = 0;
 
 
 /** treas_room:
@@ -64,12 +66,12 @@ treas_room(void)
   for (int i = 0; i < num_monsters; ++i)
   {
     Coordinate monster_pos;
-    THING* monster = new_thing();
+    item* item = new_thing();
 
     room_find_floor(room, &monster_pos, 2 * MAXTRIES, false);
-    monster->o.o_pos = monster_pos;
-    list_attach(&level_items, monster);
-    level_set_ch(monster_pos.y, monster_pos.x, static_cast<char>(monster->o.o_type));
+    item->o_pos = monster_pos;
+    level_items.push_back(item);
+    level_set_ch(monster_pos.y, monster_pos.x, static_cast<char>(item->o_type));
   }
 
   /* fill up room with monsters from the next level down */
@@ -87,10 +89,10 @@ treas_room(void)
     spots = 0;
     if (room_find_floor(room, &monster_pos, MAXTRIES, true))
     {
-      THING* tp = os_calloc_thing();
+      monster* tp = new monster();
       monster_new(tp, monster_random(false), &monster_pos);
-      tp->t.t_flags |= ISMEAN;	/* no sloughers in THIS room */
-      monster_give_pack(&tp->t);
+      tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
+      monster_give_pack(tp);
     }
   }
   level--;
@@ -117,24 +119,24 @@ put_things(void)
     if (os_rand_range(100) < 36)
     {
       /* Pick a new object and link it in the list */
-      THING* obj = new_thing();
-      list_attach(&level_items, obj);
+      item* obj = new_thing();
+      level_items.push_back(obj);
 
       /* Put it somewhere */
-      room_find_floor(nullptr, &obj->o.o_pos, false, false);
-      level_set_ch(obj->o.o_pos.y, obj->o.o_pos.x, static_cast<char>(obj->o.o_type));
+      room_find_floor(nullptr, &obj->o_pos, false, false);
+      level_set_ch(obj->o_pos.y, obj->o_pos.x, static_cast<char>(obj->o_type));
     }
 
   /* If he is really deep in the dungeon and he hasn't found the
    * amulet yet, put it somewhere on the ground */
   if (level >= level_amulet && !pack_contains_amulet())
   {
-    THING* amulet = new_amulet();
-    list_attach(&level_items, amulet);
+    item* amulet = new_amulet();
+    level_items.push_back(amulet);
 
     /* Put it somewhere */
-    room_find_floor(nullptr, &amulet->o.o_pos, false, false);
-    level_set_ch(amulet->o.o_pos.y, amulet->o.o_pos.x, AMULET);
+    room_find_floor(nullptr, &amulet->o_pos, false, false);
+    level_set_ch(amulet->o_pos.y, amulet->o_pos.x, AMULET);
   }
 }
 
@@ -162,7 +164,7 @@ level_new(void)
   monster_remove_all();
 
   /* Throw away stuff left on the previous level (if anything) */
-  list_free_all(&level_items);
+  level_items.clear();
 
   rooms_create(); /* Draw rooms */
   passages_do();  /* Draw passages */
@@ -211,31 +213,13 @@ level_new(void)
     daemon_change_visuals(0);
 }
 
-bool
-level_save_state(void)
-{
-  return state_save_item_list(&level_items->o)
-    || state_save_int32(level)
-    || state_save_int32(level_max)
-    || state_save_coord(&level_stairs);
-}
-
-bool
-level_load_state(void)
-{
-  return state_load_item_list(&level_items)
-    || state_load_int32(&level)
-    || state_load_int32(&level_max)
-    || state_load_coord(&level_stairs);
-}
-
 char
 level_get_type(int y, int x)
 {
-  THING* monster = level_get_monster(y, x);
+  monster* monster = level_get_monster(y, x);
   return monster == NULL
     ? level_get_ch(y, x)
-    : monster->t.t_disguise;
+    : monster->t_disguise;
 }
 
 PLACE*
@@ -244,14 +228,14 @@ level_get_place(int y, int x)
   return &level_places[((x) << 5) + (y)];
 }
 
-THING*
+monster*
 level_get_monster(int y, int x)
 {
   return level_places[(x << 5) + y].p_monst;
 }
 
 void
-level_set_monster(int y, int x, THING* monster)
+level_set_monster(int y, int x, monster* monster)
 {
   level_places[(x << 5) + y].p_monst = monster;
 }

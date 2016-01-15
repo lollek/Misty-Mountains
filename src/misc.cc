@@ -15,6 +15,10 @@
 #include <ctype.h>
 #include <assert.h>
 
+#include <string>
+
+using namespace std;
+
 #include "armor.h"
 #include "colors.h"
 #include "daemons.h"
@@ -118,12 +122,12 @@ look(bool wakeup)
           continue;
       }
 
-      THING* monster = xy_pos->p_monst;
+      monster* monster = xy_pos->p_monst;
       if (monster == NULL)
         xy_ch = static_cast<char>(trip_ch(y, x, xy_ch));
       else
       {
-        if (player_can_sense_monsters() && monster_is_invisible(&monster->t))
+        if (player_can_sense_monsters() && monster_is_invisible(monster))
         {
           if (door_stop && !firstmove)
             running = false;
@@ -133,11 +137,11 @@ look(bool wakeup)
         {
           if (wakeup)
             monster_notice_player(y, x);
-          if (monster_seen_by_player(&monster->t))
+          if (monster_seen_by_player(monster))
           {
             xy_ch = player_is_hallucinating()
               ? static_cast<char>(os_rand_range(26) + 'A')
-              : monster->t.t_disguise;
+              : monster->t_disguise;
           }
         }
       }
@@ -212,11 +216,11 @@ erase_lamp(Coordinate const* pos, struct room const* room)
     }
 }
 
-THING*
+item*
 find_obj(int y, int x)
 {
-  for (THING* obj = level_items; obj != NULL; obj = obj->o.l_next)
-    if (obj->o.o_pos.y == y && obj->o.o_pos.x == x)
+  for (item* obj : level_items)
+    if (obj->o_pos.y == y && obj->o_pos.x == x)
       return obj;
 
   /* It should have returned by now */
@@ -305,27 +309,15 @@ spread(int nm)
 }
 
 void
-call_it(char const* what, struct obj_info *info)
+call_it(string const& what, struct obj_info *info)
 {
-  if (info->oi_know)
-  {
-    if (info->oi_guess != NULL)
-    {
-      free(info->oi_guess);
-      info->oi_guess = NULL;
-    }
-  }
-
-  else if (!info->oi_guess)
-  {
+  if (info->oi_know) {
+    info->oi_guess.clear();
+  } else if (!info->oi_guess.empty()) {
     char tmpbuf[MAXSTR] = { '\0' };
-    io_msg("what do you want to name the %s? ", what);
-    if (io_readstr(tmpbuf) == 0)
-    {
-      if (info->oi_guess != NULL)
-        free(info->oi_guess);
-      info->oi_guess = new char[strlen(tmpbuf) + 1];
-      strcpy(info->oi_guess, tmpbuf);
+    io_msg("what do you want to name the %s? ", what.c_str());
+    if (io_readstr(tmpbuf) == 0) {
+      info->oi_guess = tmpbuf;
     }
   }
 }
@@ -357,16 +349,16 @@ rnd_thing(void)
 }
 
 bool
-is_magic(THING const* obj)
+is_magic(item const* obj)
 {
-  switch (obj->o.o_type)
+  switch (obj->o_type)
   {
     case ARMOR:
-      return static_cast<bool>(obj->o.o_flags & ISPROT) ||
-             obj->o.o_arm != armor_ac(static_cast<armor_t>(obj->o.o_which));
+      return static_cast<bool>(obj->o_flags & ISPROT) ||
+             obj->o_arm != armor_ac(static_cast<armor_t>(obj->o_which));
 
     case WEAPON: case AMMO:
-      return obj->o.o_hplus != 0 || obj->o.o_dplus != 0;
+      return obj->o_hplus != 0 || obj->o_dplus != 0;
 
     case POTION: case SCROLL: case STICK: case RING: case AMULET:
       return true;
@@ -377,7 +369,7 @@ is_magic(THING const* obj)
 bool
 seen_stairs(void)
 {
-  THING* tp = level_get_monster(level_stairs.y, level_stairs.x);
+  monster* tp = level_get_monster(level_stairs.y, level_stairs.x);
 
   move(level_stairs.y, level_stairs.x);
   if (incch() == STAIRS)  /* it's on the map */
@@ -389,11 +381,11 @@ seen_stairs(void)
   if (tp != NULL)
   {
     /* if it's visible and awake, it must have moved there */
-    if (monster_seen_by_player(&tp->t) && monster_is_chasing(&tp->t))
+    if (monster_seen_by_player(tp) && monster_is_chasing(tp))
       return true;
 
     if (player_can_sense_monsters()      /* if she can detect monster */
-        && tp->t.t_oldch == STAIRS)        /* and there once were stairs */
+        && tp->t_oldch == STAIRS)        /* and there once were stairs */
       return true;                       /* it must have moved there */
   }
   return false;
@@ -432,21 +424,21 @@ waste_time(int rounds)
 }
 
 void
-set_oldch(THING* tp, Coordinate* cp)
+set_oldch(monster* tp, Coordinate* cp)
 {
-  char old_char = tp->t.t_oldch;
+  char old_char = tp->t_oldch;
 
-  if (tp->t.t_pos == *cp)
+  if (tp->t_pos == *cp)
     return;
 
-  tp->t.t_oldch = static_cast<char>(mvincch(cp->y, cp->x));
+  tp->t_oldch = static_cast<char>(mvincch(cp->y, cp->x));
   if (!player_is_blind())
   {
-    if ((old_char == FLOOR || tp->t.t_oldch == FLOOR) &&
-        (tp->t.t_room->r_flags & ISDARK))
-      tp->t.t_oldch = SHADOW;
+    if ((old_char == FLOOR || tp->t_oldch == FLOOR) &&
+        (tp->t_room->r_flags & ISDARK))
+      tp->t_oldch = SHADOW;
     else if (dist_cp(cp, player_get_pos()) <= LAMPDIST)
-      tp->t.t_oldch = level_get_ch(cp->y, cp->x);
+      tp->t_oldch = level_get_ch(cp->y, cp->x);
   }
 }
 

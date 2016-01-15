@@ -9,9 +9,9 @@
 extern int          player_turns_without_action; /* Turns asleep */
 extern int          player_turns_without_moving; /* Turns held in place */
 extern bool         player_alerted;              /* Alert the player? */
-extern struct stats player_max_stats;            /* Current max stats */
+extern stats        player_max_stats;            /* Current max stats */
 
-THING* __player_ptr(void);
+monster* __player_ptr(void);
 
 /* General */
 void player_init(void);
