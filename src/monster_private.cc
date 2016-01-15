@@ -1,4 +1,4 @@
-#include "coord.h"
+#include "Coordinate.h"
 #include "things.h"
 #include "player.h"
 #include "level.h"
@@ -53,7 +53,7 @@ monster_start_chasing(THING* mon)
 }
 
 void
-monster_set_target(THING* mon, coord* target)
+monster_set_target(THING* mon, Coordinate* target)
 {
   mon->t.t_dest = target;
 }

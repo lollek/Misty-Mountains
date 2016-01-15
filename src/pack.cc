@@ -13,6 +13,8 @@
 #include <string.h>
 #include <assert.h>
 
+#include "Coordinate.h"
+
 #include "scrolls.h"
 #include "io.h"
 #include "armor.h"
@@ -128,15 +130,15 @@ pack_print_evaluate_item(item* item)
       break;
 
     case ARMOR:
-      worth = armor_value((enum armor_t)item->o_which);
+      worth = armor_value(static_cast<armor_t>(item->o_which));
       worth += (9 - item->o_arm) * 100;
-      worth += (10 * (armor_ac((enum armor_t)item->o_which) - item->o_arm));
+      worth += (10 * (armor_ac(static_cast<armor_t>(item->o_which)) - item->o_arm));
       item->o_flags |= ISKNOW;
       break;
 
     case SCROLL:
       {
-        enum scroll_t scroll = (enum scroll_t)item->o_which;
+        scroll_t scroll = static_cast<scroll_t>(item->o_which);
         worth = scroll_value(scroll);
         worth *= item->o_count;
         if (!scroll_is_known(scroll))
@@ -172,12 +174,12 @@ pack_print_evaluate_item(item* item)
       break;
 
     case STICK:
-      wand_get_worth((enum wand_t)item->o_which);
+      wand_get_worth(static_cast<wand_t>(item->o_which));
       worth += 20 * item->o_charges;
       if (!(item->o_flags & ISKNOW))
         worth /= 2;
       item->o_flags |= ISKNOW;
-      wand_set_known((enum wand_t)item->o_which);
+      wand_set_known(static_cast<wand_t>(item->o_which));
       break;
 
     case AMULET:
@@ -196,7 +198,7 @@ pack_print_evaluate_item(item* item)
   printw("%5d  %s\n", worth,
       inv_name(buf, item, false));
 
-  return (unsigned) worth;
+  return static_cast<unsigned>(worth);
 }
 
 static char
@@ -206,7 +208,7 @@ pack_char(void)
   for (bp = pack_used; *bp; bp++)
     ;
   *bp = true;
-  return (char)((int)(bp - pack_used) + 'a');
+  return static_cast<char>(bp - pack_used) + 'a';
 }
 
 void
@@ -219,10 +221,10 @@ pack_move_msg(THING* obj)
 static void
 pack_add_money(int value)
 {
-  coord const* player_pos = player_get_pos();
+  Coordinate const* player_pos = player_get_pos();
   pack_gold += value;
 
-  mvaddcch(player_pos->y, player_pos->x, (chtype) floor_ch());
+  mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
   level_set_ch(player_pos->y, player_pos->x,
       (player_get_room()->r_flags & ISGONE)
         ? PASSAGE
@@ -235,10 +237,10 @@ pack_add_money(int value)
 static void
 pack_remove_from_floor(THING* obj)
 {
-  coord const* player_pos = player_get_pos();
+  Coordinate const* player_pos = player_get_pos();
 
   list_detach(&level_items, obj);
-  mvaddcch(player_pos->y, player_pos->x, (chtype) floor_ch());
+  mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
   level_set_ch(player_pos->y, player_pos->x,
       (player_get_room()->r_flags & ISGONE)
         ? PASSAGE
@@ -248,7 +250,7 @@ pack_remove_from_floor(THING* obj)
 bool
 pack_add(THING* obj, bool silent)
 {
-  coord* player_pos = player_get_pos();
+  Coordinate* player_pos = player_get_pos();
   bool from_floor = false;
   bool is_picked_up = false;
 
@@ -265,9 +267,10 @@ pack_add(THING* obj, bool silent)
   if (obj->o.o_type == SCROLL && obj->o.o_which == S_SCARE && obj->o.o_flags & ISFOUND)
   {
     list_detach(&level_items, obj);
-    mvaddcch(player_pos->y, player_pos->x, (chtype) floor_ch());
+    mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
     level_set_ch(player_pos->y, player_pos->x, floor_ch());
-    os_remove_thing(&obj);
+    delete obj;
+    obj = nullptr;
     io_msg("the scroll turns to dust as you pick it up");
     return false;
   }
@@ -283,7 +286,7 @@ pack_add(THING* obj, bool silent)
           pack_remove_from_floor(obj);
         ptr->o.o_count += obj->o.o_count;
         ptr->o.o_pos = obj->o.o_pos;
-        os_remove_thing(&obj);
+        delete obj;
         obj = ptr;
         is_picked_up = true;
         break;
@@ -375,7 +378,7 @@ pack_remove(THING* obj, bool newobj, bool all)
     obj->o.o_count--;
     if (newobj)
     {
-      nobj = os_calloc_thing();
+      nobj = new THING();
       *nobj = *obj;
       nobj->o.l_next = NULL;
       nobj->o.l_prev = NULL;
@@ -404,7 +407,8 @@ pack_pick_up(THING* obj, bool force)
       {
         pack_add_money(obj->o.o_goldval);
         list_detach(&level_items, obj);
-        os_remove_thing(&obj);
+        delete obj;
+        obj = nullptr;
         player_get_room()->r_goldval = 0;
       }
       return;
@@ -412,7 +416,7 @@ pack_pick_up(THING* obj, bool force)
     case POTION: case WEAPON: case AMMO: case FOOD: case ARMOR:
     case SCROLL: case AMULET: case RING: case STICK:
       if (force || option_autopickup(obj->o.o_type))
-        pack_add((THING *) NULL, false);
+        pack_add(nullptr, false);
       else
         pack_move_msg(obj);
       return;
@@ -460,7 +464,7 @@ pack_get_item(char const* purpose, int type)
     if (obj->o.o_packch == ch)
       return obj;
 
-  io_msg("'%s' is not a valid item",unctrl((chtype) ch));
+  io_msg("'%s' is not a valid item",unctrl(static_cast<chtype>(ch)));
   return NULL;
 }
 
@@ -512,7 +516,7 @@ pack_print_equipment(void)
   char buf[MAXSTR];
   WINDOW* equipscr = dupwin(stdscr);
 
-  coord orig_pos;
+  Coordinate orig_pos;
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
   char sym = 'a';
@@ -543,7 +547,7 @@ pack_print_inventory(int type)
   char buf[MAXSTR];
   WINDOW* invscr = dupwin(stdscr);
 
-  coord orig_pos;
+  Coordinate orig_pos;
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
   int num_items = 0;
@@ -580,7 +584,7 @@ pack_evaluate(void)
   clear();
   mvaddstr(0, 0, "Worth  Item  [Equipment]\n");
   for (int i = 0; i < NEQUIPMENT; ++i)
-    value += pack_print_evaluate_item(&pack_equipped_item((enum equipment_pos)i)->o);
+    value += pack_print_evaluate_item(&pack_equipped_item(static_cast<equipment_pos>(i))->o);
 
   addstr("\nWorth  Item  [Inventory]\n");
   for (THING* obj = player_pack; obj != NULL; obj = obj->o.l_next)
@@ -661,12 +665,12 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   char buf[MAXSTR];
   if (!pack_add(obj, true))
   {
-    coord const* player_pos = player_get_pos();
+    Coordinate const* player_pos = player_get_pos();
     list_attach(&level_items, obj);
-    level_set_ch(player_pos->y, player_pos->x, (char)obj->o.o_type);
+    level_set_ch(player_pos->y, player_pos->x, static_cast<char>(obj->o.o_type));
     int flags = level_get_flags(player_pos->y, player_pos->x);
     flags |= F_DROPPED;
-    level_set_flags(player_pos->y, player_pos->x, (char)flags);
+    level_set_flags(player_pos->y, player_pos->x, static_cast<char>(flags));
     obj->o.o_pos = *player_pos;
     io_msg("dropped %s", inv_name(buf, &obj->o, true));
   }

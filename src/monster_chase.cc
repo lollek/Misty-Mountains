@@ -13,6 +13,10 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include <string>
+
+using namespace std;
+
 #include "scrolls.h"
 #include "command.h"
 #include "io.h"
@@ -34,10 +38,10 @@
 #include "monster_private.h"
 
 #define DRAGONSHOT  5  /* one chance in DRAGONSHOT that a dragon will flame */
-static coord ch_ret;   /* Where chasing takes you */
+static Coordinate ch_ret;   /* Where chasing takes you */
 
 static bool
-chase_as_confused(THING *tp, coord *ee)
+chase_as_confused(THING *tp, Coordinate *ee)
 {
   int curdist;
 
@@ -49,7 +53,7 @@ chase_as_confused(THING *tp, coord *ee)
   if (os_rand_range(20) == 0)
     monster_remove_confused(&tp->t);
 
-  return curdist != 0 && !coord_same(&ch_ret, player_get_pos());
+  return curdist != 0 && !(ch_ret == *player_get_pos());
 }
 
 
@@ -58,17 +62,17 @@ chase_as_confused(THING *tp, coord *ee)
  * Returns true if we want to keep on chasing later 
  * TODO: Clean up this monster */
 static bool
-chase(THING *tp, coord *ee)
+chase(THING *tp, Coordinate *ee)
 {
   THING *obj;
   int x;
   int y;
   int curdist;
   int thisdist;
-  coord *er = &tp->t.t_pos;
+  Coordinate *er = &tp->t.t_pos;
   char ch;
   int plcnt = 1;
-  static coord tryp;
+  static Coordinate tryp;
   int ey;
   int ex;
 
@@ -147,7 +151,7 @@ chase(THING *tp, coord *ee)
       }
     }
   }
-  return (bool)(curdist != 0 && !coord_same(&ch_ret, player_get_pos()));
+  return curdist != 0 && !(ch_ret == *player_get_pos());
 }
 
 
@@ -155,7 +159,7 @@ chase(THING *tp, coord *ee)
 static int
 chase_do(THING *th)
 {
-    coord *cp;
+    Coordinate *cp;
     struct room *rer; /* room of chaser, */
     struct room *ree; /* room of chasee */
     int mindist = 32767;
@@ -163,9 +167,9 @@ chase_do(THING *th)
     bool stoprun = false; /* true means we are there */
     bool door;
     THING *obj;
-    static coord this; /* Temporary destination for chaser */
-    coord *player_pos = player_get_pos();
-    coord delta;
+    static Coordinate m_this; /* Temporary destination for chaser */
+    Coordinate *player_pos = player_get_pos();
+    Coordinate delta;
 
     monster_assert_exists(th);
     rer = th->t.t_room;
@@ -192,7 +196,7 @@ over:
 	    curdist = dist_cp(th->t.t_dest, cp);
 	    if (curdist < mindist)
 	    {
-		this = *cp;
+		m_this = *cp;
 		mindist = curdist;
 	    }
 	}
@@ -205,7 +209,7 @@ over:
     }
     else
     {
-	this = *th->t.t_dest;
+	m_this = *th->t.t_dest;
 	
 	/* For dragons check and see if (a) the hero is on a straight
 	 * line from it, and (b) that it is within shooting distance,
@@ -221,7 +225,7 @@ over:
 	    delta.x = sign(player_pos->x - th->t.t_pos.x);
 	    magic_bolt(&th->t.t_pos, &delta, "flame");
 	    command_stop(true);
-	    daemon_reset_doctor();
+	    daemon_reset_doctor(0);
 	    if (to_death && !monster_is_players_target(&th->t))
               to_death = false;
 	    return(0);
@@ -233,11 +237,11 @@ over:
      * so we run to it.  If we hit it we either want to fight it
      * or stop running
      */
-    if (!chase(th, &this))
+    if (!chase(th, &m_this))
     {
-	if (coord_same(&this, player_pos))
+	if (m_this == *player_pos)
 	    return( fight_against_player(th) );
-	else if (coord_same(&this, th->t.t_dest))
+	else if (m_this == *th->t.t_dest)
 	{
 	    for (obj = level_items; obj != NULL; obj = obj->o.l_next)
 		if (th->t.t_dest == &obj->o.o_pos)
@@ -262,26 +266,26 @@ over:
     if (monster_is_stuck(&th->t))
       return 1;
 
-    if (!coord_same(&ch_ret, &th->t.t_pos))
+    if (!(ch_ret == th->t.t_pos))
     {
       char ch = level_get_type(ch_ret.y, ch_ret.x);
       char fl = level_get_flags(ch_ret.y, ch_ret.x);
 
       /* Remove monster from old position */
-      mvaddcch(th->t.t_pos.y, th->t.t_pos.x, (chtype) th->t.t_oldch);
+      mvaddcch(th->t.t_pos.y, th->t.t_pos.x, static_cast<chtype>(th->t.t_oldch));
       level_set_monster(th->t.t_pos.y, th->t.t_pos.x, NULL);
 
       /* Check if we stepped in a trap */
       if (ch == TRAP || (!(fl & F_REAL) && ch == FLOOR))
       {
-        coord orig_pos = th->t.t_pos;
+        Coordinate orig_pos = th->t.t_pos;
 
         trap_spring(th, &ch_ret);
         if (monster_is_dead(th))
           return -1;
 
         /* If we've been mysteriously misplaced, let's not touch anything */
-        if (!coord_same(&orig_pos, &th->t.t_pos))
+        if (!(orig_pos == th->t.t_pos))
           return 0;
       }
 
@@ -296,12 +300,12 @@ over:
     move(ch_ret.y, ch_ret.x);
 
     if (monster_seen_by_player(&th->t))
-      addcch((chtype) th->t.t_disguise);
+      addcch(static_cast<chtype>(th->t.t_disguise));
     else if (player_can_sense_monsters())
-      addcch((chtype) th->t.t_type | A_STANDOUT);
+      addcch(static_cast<chtype>(th->t.t_type)| A_STANDOUT);
 
     /* And stop running if need be */
-    if (stoprun && coord_same(&th->t.t_pos, th->t.t_dest))
+    if (stoprun && (th->t.t_pos == *th->t.t_dest))
       th->t.t_flags &= ~ISRUN;
 
     return(0);

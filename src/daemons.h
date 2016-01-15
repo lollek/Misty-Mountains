@@ -1,5 +1,4 @@
-#ifndef ROGUE14_DAEMONS_H
-#define ROGUE14_DAEMONS_H
+#pragma once
 
 struct delayed_action {
     int d_type;
@@ -33,5 +32,3 @@ void daemon_ring_abilities(int unused);
 
 /* Daemon action affectors */
 void daemon_reset_doctor(int unused);
-
-#endif /* ROGUE14_DAEMONS_H */

@@ -11,6 +11,7 @@
  */
 #include <ctype.h>
 
+#include "Coordinate.h"
 #include "io.h"
 #include "pack.h"
 #include "list.h"
@@ -29,9 +30,9 @@ struct room rooms[ROOMS_MAX];
 
 /* position matrix for maze positions */
 typedef struct spot {
-  int nexits;
-  coord exits[4];
-  int used;
+  int        nexits;
+  Coordinate exits[4];
+  int        used;
 } SPOT;
 
 static SPOT maze[NUMLINES/3+1][NUMCOLS/3+1];
@@ -71,7 +72,7 @@ static void
 room_accnt_maze(int y, int x, int ny, int nx)
 {
   SPOT* sp = &maze[y][x];
-  coord* cp;
+  Coordinate* cp;
 
   for (cp = sp->exits; cp < &sp->exits[sp->nexits]; cp++)
     if (cp->y == ny && cp->x == nx)
@@ -91,7 +92,7 @@ room_dig(int y, int x, int starty, int startx, int maxy, int maxx)
 
   for (;;)
   {
-    coord const del[4] = { {2, 0}, {-2, 0}, {0, 2}, {0, -2} };
+    Coordinate const del[4] = { {2, 0}, {-2, 0}, {0, 2}, {0, -2} };
     int cnt = 0;
     for (unsigned i = 0; i < sizeof(del)/sizeof(*del); ++i)
     {
@@ -115,7 +116,7 @@ room_dig(int y, int x, int starty, int startx, int maxy, int maxx)
     room_accnt_maze(y, x, nexty, nextx);
     room_accnt_maze(nexty, nextx, y, x);
 
-    coord pos;
+    Coordinate pos;
     if (nexty == y)
     {
       pos.y = y + starty;
@@ -145,7 +146,7 @@ room_dig(int y, int x, int starty, int startx, int maxy, int maxx)
 /** rnd_pos:
  * Pick a random spot in a room */
 static void
-rnd_pos(struct room* rp, coord* cp)
+rnd_pos(struct room* rp, Coordinate* cp)
 {
   cp->x = rp->r_pos.x + os_rand_range(rp->r_max.x - 2) + 1;
   cp->y = rp->r_pos.y + os_rand_range(rp->r_max.y - 2) + 1;
@@ -164,10 +165,8 @@ room_do_maze(struct room* rp)
   int y = (os_rand_range(rp->r_max.y) / 2) * 2;
   int x = (os_rand_range(rp->r_max.x) / 2) * 2;
 
-  coord pos = {
-    .y = y + rp->r_pos.y,
-    .x = y + rp->r_pos.x
-  };
+  // TODO: Is this a typo/incorrect? maybe x + rp->r_pos.x
+  Coordinate pos(y + rp->r_pos.x, y + rp->r_pos.y);
   passages_putpass(&pos);
 
   room_dig(y, x, rp->r_pos.y, rp->r_pos.x, rp->r_max.y, rp->r_max.x);
@@ -200,7 +199,7 @@ room_draw(struct room* rp)
 }
 
 static void
-room_place_gone_room(coord const* max_size, coord const* top, struct room* room)
+room_place_gone_room(Coordinate const* max_size, Coordinate const* top, struct room* room)
 {
   /** Place a gone room.  Make certain that there is a blank line
    * for passage drawing.  */
@@ -218,10 +217,7 @@ void
 rooms_create(void)
 {
   /* maximum room size */
-  coord const bsze = {
-    .x = NUMCOLS / 3,
-    .y = NUMLINES / 3
-  };
+  Coordinate const bsze(NUMCOLS / 3, NUMLINES / 3);
 
   /* Clear things for a new level */
   for (int i = 0; i < ROOMS_MAX; ++i)
@@ -240,10 +236,7 @@ rooms_create(void)
   for (int i = 0; i < ROOMS_MAX; i++)
   {
     /* Find upper left corner of box that this room goes in */
-    coord const top = {
-      .x = (i % 3) * bsze.x + 1,
-      .y = (i / 3) * bsze.y
-    };
+    Coordinate const top((i % 3) * bsze.x + 1, (i / 3) * bsze.y);
 
     if (rooms[i].r_flags & ISGONE)
     {
@@ -286,7 +279,7 @@ rooms_create(void)
     /* Put the gold in */
     if (os_rand_range(2) == 0 && (!pack_contains_amulet() || level >= level_max))
     {
-      THING *gold = os_calloc_thing();
+      THING *gold = new THING();
       gold->o.o_goldval = rooms[i].r_goldval = GOLDCALC;
       room_find_floor(&rooms[i], &rooms[i].r_gold, false, false);
       gold->o.o_pos = rooms[i].r_gold;
@@ -299,9 +292,9 @@ rooms_create(void)
     /* Put the monster in */
     if (os_rand_range(100) < (rooms[i].r_goldval > 0 ? 80 : 25))
     {
-      coord mp;
+      Coordinate mp;
       room_find_floor(&rooms[i], &mp, false, true);
-      THING *tp = os_calloc_thing();
+      THING *tp = new THING();
       monster_new(tp, monster_random(false), &mp);
       monster_give_pack(&tp->t);
     }
@@ -309,7 +302,7 @@ rooms_create(void)
 }
 
 bool
-room_find_floor(struct room* rp, coord* cp, int limit, bool monst)
+room_find_floor(struct room* rp, Coordinate* cp, int limit, bool monst)
 {
   int cnt = limit;
   char compchar = 0;
@@ -342,7 +335,7 @@ room_find_floor(struct room* rp, coord* cp, int limit, bool monst)
 }
 
 void
-room_enter(coord* cp)
+room_enter(Coordinate* cp)
 {
   struct room* rp = roomin(cp);
   player_set_room(rp);
@@ -359,7 +352,7 @@ room_enter(coord* cp)
 
         if (tp == NULL)
         {
-          mvaddcch(y, x, (chtype) ch);
+          mvaddcch(y, x, static_cast<chtype>(ch));
           continue;
         }
 
@@ -377,7 +370,7 @@ room_enter(coord* cp)
 /** room_leave:
  * Code for when we exit a room */
 void
-room_leave(coord* cp)
+room_leave(Coordinate* cp)
 {
   struct room* rp = player_get_room();
 

@@ -64,11 +64,11 @@ roll(int number, int sides)
 void
 look(bool wakeup)
 {
-  coord const* player_pos = player_get_pos();
+  Coordinate const* player_pos = player_get_pos();
   char const player_ch = level_get_place(player_pos->y, player_pos->x)->p_ch;
   char const player_flags = level_get_place(player_pos->y, player_pos->x)->p_flags;
 
-  if (!coord_same(&move_pos_prev, player_pos))
+  if (move_pos_prev == *player_pos)
   {
     erase_lamp(&move_pos_prev, room_prev);
     move_pos_prev = *player_pos;
@@ -120,7 +120,7 @@ look(bool wakeup)
 
       THING* monster = xy_pos->p_monst;
       if (monster == NULL)
-        xy_ch = (char)trip_ch(y, x, xy_ch);
+        xy_ch = static_cast<char>(trip_ch(y, x, xy_ch));
       else
       {
         if (player_can_sense_monsters() && monster_is_invisible(&monster->t))
@@ -136,7 +136,7 @@ look(bool wakeup)
           if (monster_seen_by_player(&monster->t))
           {
             xy_ch = player_is_hallucinating()
-              ? (char)(os_rand_range(26) + 'A')
+              ? static_cast<char>(os_rand_range(26) + 'A')
               : monster->t.t_disguise;
           }
         }
@@ -148,7 +148,7 @@ look(bool wakeup)
       move(y, x);
 
       if (monster != NULL || xy_ch != incch())
-        addcch((chtype) xy_ch);
+        addcch(static_cast<chtype>(xy_ch));
 
       if (door_stop && !firstmove && running)
       {
@@ -193,13 +193,13 @@ look(bool wakeup)
 }
 
 void
-erase_lamp(coord const* pos, struct room const* room)
+erase_lamp(Coordinate const* pos, struct room const* room)
 {
   if (!((room->r_flags & (ISGONE|ISDARK)) == ISDARK
        && !player_is_blind()))
     return;
 
-  coord const* player_pos = player_get_pos();
+  Coordinate const* player_pos = player_get_pos();
   for (int x = pos->x -1; x <= pos->x +1; x++)
     for (int y = pos->y -1; y <= pos->y +1; y++)
     {
@@ -240,10 +240,10 @@ vowelstr(char const* str)
   }
 }
 
-coord const*
+Coordinate const*
 get_dir(void)
 {
-  static coord delta;
+  static Coordinate delta;
 
   char const* prompt = "which direction? ";
   io_msg(prompt);
@@ -276,7 +276,7 @@ get_dir(void)
   } while (!gotit);
 
   if (isupper(dir_ch))
-    dir_ch = (char) tolower(dir_ch);
+    dir_ch = static_cast<char>(tolower(dir_ch));
 
   if (player_is_confused() && os_rand_range(5) == 0)
     do
@@ -324,7 +324,7 @@ call_it(char const* what, struct obj_info *info)
     {
       if (info->oi_guess != NULL)
         free(info->oi_guess);
-      info->oi_guess = malloc((unsigned int) strlen(tmpbuf) + 1);
+      info->oi_guess = new char[strlen(tmpbuf) + 1];
       strcpy(info->oi_guess, tmpbuf);
     }
   }
@@ -362,8 +362,8 @@ is_magic(THING const* obj)
   switch (obj->o.o_type)
   {
     case ARMOR:
-      return (bool)(obj->o.o_flags & ISPROT) ||
-             obj->o.o_arm != armor_ac((enum armor_t)obj->o.o_which);
+      return static_cast<bool>(obj->o.o_flags & ISPROT) ||
+             obj->o.o_arm != armor_ac(static_cast<armor_t>(obj->o.o_which));
 
     case WEAPON: case AMMO:
       return obj->o.o_hplus != 0 || obj->o.o_dplus != 0;
@@ -382,7 +382,7 @@ seen_stairs(void)
   move(level_stairs.y, level_stairs.x);
   if (incch() == STAIRS)  /* it's on the map */
     return true;
-  if (coord_same(player_get_pos(), &level_stairs)) /* It's under him */
+  if (*player_get_pos() == level_stairs) /* It's under him */
     return true;
 
   /* if a monster is on the stairs, this gets hairy */
@@ -432,14 +432,14 @@ waste_time(int rounds)
 }
 
 void
-set_oldch(THING* tp, coord* cp)
+set_oldch(THING* tp, Coordinate* cp)
 {
   char old_char = tp->t.t_oldch;
 
-  if (coord_same(&tp->t.t_pos, cp))
+  if (tp->t.t_pos == *cp)
     return;
 
-  tp->t.t_oldch = (char) mvincch(cp->y, cp->x);
+  tp->t.t_oldch = static_cast<char>(mvincch(cp->y, cp->x));
   if (!player_is_blind())
   {
     if ((old_char == FLOOR || tp->t.t_oldch == FLOOR) &&
@@ -451,7 +451,7 @@ set_oldch(THING* tp, coord* cp)
 }
 
 struct room*
-roomin(coord* cp)
+roomin(Coordinate* cp)
 {
   char fp = level_get_flags(cp->y, cp->x);
   if (fp & F_PASS)
@@ -469,20 +469,20 @@ roomin(coord* cp)
 }
 
 bool
-diag_ok(coord const* sp, coord const* ep)
+diag_ok(Coordinate const* sp, Coordinate const* ep)
 {
   if (ep->x < 0 || ep->x >= NUMCOLS || ep->y <= 0 || ep->y >= NUMLINES - 1)
     return false;
   if (ep->x == sp->x || ep->y == sp->y)
     return true;
-  return (bool)(step_ok(level_get_ch(ep->y, sp->x))
+  return (step_ok(level_get_ch(ep->y, sp->x))
              && step_ok(level_get_ch(sp->y, ep->x)));
 }
 
 bool
 cansee(int y, int x)
 {
-  coord const* player_pos = player_get_pos();
+  Coordinate const* player_pos = player_get_pos();
 
   if (player_is_blind())
     return false;
@@ -499,11 +499,7 @@ cansee(int y, int x)
 
   /* We can only see if the hero in the same room as
    * the coordinate and the room is lit or if it is close.  */
-  coord tp =
-  {
-    .y = y,
-    .x = x
-  };
+  Coordinate tp(x, y);
   struct room const* rer = roomin(&tp);
   if (rer != player_get_room())
     return false;
@@ -533,19 +529,19 @@ floor_ch(void)
 char
 floor_at(void)
 {
-  coord *player_pos = player_get_pos();
+  Coordinate *player_pos = player_get_pos();
   char ch = level_get_ch(player_pos->y, player_pos->x);
   return ch == FLOOR ? floor_ch() : ch;
 }
 
 bool
-fallpos(coord const* pos, coord* newpos)
+fallpos(Coordinate const* pos, Coordinate* newpos)
 {
   int cnt = 0;
   for (int y = pos->y - 1; y <= pos->y + 1; y++)
     for (int x = pos->x - 1; x <= pos->x + 1; x++)
     {
-      coord *player_pos = player_get_pos();
+      Coordinate *player_pos = player_get_pos();
       /*
        * check to make certain the spot is empty, if it is,
        * put the object there, set it in the level list

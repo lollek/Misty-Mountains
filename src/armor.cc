@@ -119,7 +119,7 @@ armor_create(int which, int random_stats) {
   if (which == -1)
     which = armor_type_random();
 
-  item* armor = os_calloc_item();
+  item* armor = new item();
   armor->o_type = ARMOR;
   armor->o_which = which;
   armor->o_arm = armor_ac(static_cast<armor_t>(armor->o_which));

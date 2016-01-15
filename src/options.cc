@@ -17,6 +17,8 @@
 #include <string.h>
 #include <assert.h>
 
+#include "Coordinate.h"
+
 #include "io.h"
 #include "misc.h"
 #include "player.h"
@@ -82,27 +84,23 @@ option(void)
     void* o_opt;          /* pointer to thing to set function to print value */
     enum put_t { BOOL, STR } put_type;
   } optlist[] = {
-    {'1',    "Flush typeahead during battle?....", &fight_flush,    BOOL},
-    {'2',    "Show position only at end of run?.", &jump,           BOOL},
-    {'3',    "Follow turnings in passageways?...", &passgo,         BOOL},
-    {POTION, "Pick up potions?..................", &pickup_potions, BOOL},
-    {SCROLL, "Pick up scrolls?..................", &pickup_scrolls, BOOL},
-    {FOOD,   "Pick up food?.....................", &pickup_food,    BOOL},
-    {WEAPON, "Pick up weapons?..................", &pickup_weapons, BOOL},
-    {ARMOR,  "Pick up armor?....................", &pickup_armor,   BOOL},
-    {RING,   "Pick up rings?....................", &pickup_rings,   BOOL},
-    {STICK,  "Pick up sticks?...................", &pickup_sticks,  BOOL},
-    {AMMO,   "Pick up ammo?.....................", &pickup_ammo,    BOOL},
-    {'4',    "Name..............................", whoami,          STR},
-    {'5',    "Save file.........................", save_file_name,  STR},
+    {'1',    "Flush typeahead during battle?....", &fight_flush,    option::BOOL},
+    {'2',    "Show position only at end of run?.", &jump,           option::BOOL},
+    {'3',    "Follow turnings in passageways?...", &passgo,         option::BOOL},
+    {POTION, "Pick up potions?..................", &pickup_potions, option::BOOL},
+    {SCROLL, "Pick up scrolls?..................", &pickup_scrolls, option::BOOL},
+    {FOOD,   "Pick up food?.....................", &pickup_food,    option::BOOL},
+    {WEAPON, "Pick up weapons?..................", &pickup_weapons, option::BOOL},
+    {ARMOR,  "Pick up armor?....................", &pickup_armor,   option::BOOL},
+    {RING,   "Pick up rings?....................", &pickup_rings,   option::BOOL},
+    {STICK,  "Pick up sticks?...................", &pickup_sticks,  option::BOOL},
+    {AMMO,   "Pick up ammo?.....................", &pickup_ammo,    option::BOOL},
+    {'4',    "Name..............................", whoami,          option::STR},
+    {'5',    "Save file.........................", save_file_name,  option::STR},
   };
   int const NOPTS = (sizeof optlist / sizeof (*optlist));
   char const* query = "Which value do you want to change? (ESC to exit) ";
-  coord const msg_pos =
-  {
-    .y = 0,
-    .x = (int)strlen(query)
-  };
+  Coordinate const msg_pos (static_cast<int>(strlen(query)), 0);
   io_msg(query);
 
   WINDOW *optscr = NULL;
@@ -113,15 +111,15 @@ option(void)
   for (int i = 0; i < NOPTS; ++i)
   {
     wprintw(optscr, "%c) %s", optlist[i].index, optlist[i].o_prompt);
-    if (optlist[i].put_type == BOOL)
-      waddstr(optscr, *(bool *) optlist[i].o_opt ? "True" : "False");
-    else if (optlist[i].put_type == STR)
-      waddstr(optscr, (char *) optlist[i].o_opt);
+    if (optlist[i].put_type == option::BOOL)
+      waddstr(optscr, optlist[i].o_opt ? "True" : "False");
+    else if (optlist[i].put_type == option::STR)
+      waddstr(optscr, static_cast<char *>(optlist[i].o_opt));
     waddch(optscr, '\n');
   }
 
   /* Loop and change values */
-  char c = (char)~KEY_ESCAPE;
+  char c = static_cast<char>(~KEY_ESCAPE);
   while (c != KEY_ESCAPE)
   {
     wmove(optscr, msg_pos.y, msg_pos.x);
@@ -130,11 +128,11 @@ option(void)
     for (int i = 0; i < NOPTS; ++i)
       if (c == optlist[i].index)
       {
-        wmove(optscr, i + 1, (int)strlen(optlist[i].o_prompt) + 3);
+        wmove(optscr, i + 1, static_cast<int>(strlen(optlist[i].o_prompt) + 3));
         switch (optlist[i].put_type)
         {
-          case BOOL: get_bool(optlist[i].o_opt, optscr); break;
-          case STR:  get_str(optlist[i].o_opt, optscr); break;
+          case option::BOOL: get_bool(static_cast<bool*>(optlist[i].o_opt), optscr); break;
+          case option::STR:  get_str(static_cast<char*>(optlist[i].o_opt), optscr); break;
         }
         break;
       }

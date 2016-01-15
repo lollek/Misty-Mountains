@@ -12,6 +12,8 @@
 
 #include <stdlib.h>
 
+#include "Coordinate.h"
+
 #include "io.h"
 #include "os.h"
 #include "rooms.h"
@@ -19,8 +21,6 @@
 #include "rogue.h"
 
 #include "passages.h"
-
-#define PASSAGES_MAX 12
 
 /* One for each passage */
 struct room passages[] = {
@@ -74,7 +74,7 @@ numpass(int y, int x)
     return;
 
   flags |= pnum;
-  level_set_flags(y, x, (char)flags);
+  level_set_flags(y, x, static_cast<char>(flags));
 
   /* recurse on the surrounding places */
   numpass(y + 1, x);
@@ -105,7 +105,7 @@ passnum(void)
  * Add a door or possibly a secret door.  Also enters the door in
  * the exits array of the room.  */
 static void
-door(struct room* rm, coord* cp)
+door(struct room* rm, Coordinate* cp)
 {
   rm->r_exit[rm->r_nexits++] = *cp;
   if (rm->r_flags & ISMAZE)
@@ -151,10 +151,10 @@ conn(int r1, int r2)
 
   struct room* room_from = &rooms[rm];
   struct room* room_to = NULL;           /* room pointer of dest */
-  coord start_pos;                       /* start of move */
-  coord end_pos;                         /* end of move */
-  coord turn_delta;                      /* direction to turn */
-  coord del;                             /* direction of move */
+  Coordinate start_pos;                  /* start of move */
+  Coordinate end_pos;                    /* end of move */
+  Coordinate turn_delta;                 /* direction to turn */
+  Coordinate del;                        /* direction of move */
   int distance = 0;                      /* distance to move */
   int turn_distance = 0;                 /* how far to turn */
 
@@ -244,11 +244,7 @@ conn(int r1, int r2)
     passages_putpass(&end_pos);
 
   /* Get ready to move...  */
-  coord curr =
-  {
-    .x = start_pos.x,
-    .y = start_pos.y
-  };
+  Coordinate curr(start_pos.x, start_pos.y);
   while (distance > 0)
   {
     /* Move to new position */
@@ -272,7 +268,7 @@ conn(int r1, int r2)
   curr.x += del.x;
   curr.y += del.y;
 
-  if (!coord_same(&curr, &end_pos))
+  if (!(curr == end_pos))
     io_msg("warning, connectivity problem on this level");
 }
 
@@ -336,8 +332,8 @@ passages_do(void)
       else
       {
         r2->ingraph = true;
-        int i = (int)(r1 - rdes);
-        j = (int)(r2 - rdes);
+        int i = static_cast<int>(r1 - rdes);
+        j = static_cast<int>(r2 - rdes);
         conn(i, j);
         r1->isconn[j] = true;
         r2->isconn[i] = true;
@@ -360,8 +356,8 @@ passages_do(void)
     /* if there is one, connect it and look for the next added passage */
     if (j != 0)
     {
-      int i = (int)(r1 - rdes);
-      j = (int)(r2 - rdes);
+      int i = static_cast<int>(r1 - rdes);
+      j = static_cast<int>(r2 - rdes);
       conn(i, j);
       r1->isconn[j] = true;
       r2->isconn[i] = true;
@@ -373,7 +369,7 @@ passages_do(void)
 /** passages_putpass:
  * add a passage character or secret passage here */
 void
-passages_putpass(coord* cp)
+passages_putpass(Coordinate* cp)
 {
   PLACE *pp = level_get_place(cp->y, cp->x);
   pp->p_flags |= F_PASS;
@@ -405,7 +401,7 @@ passages_add_pass(void)
         if (pp->p_monst != NULL)
           pp->p_monst->t.t_oldch = pp->p_ch;
         else if (pp->p_flags & F_REAL)
-          addcch((chtype) ch);
+          addcch(static_cast<chtype>(ch));
         else
         {
           standout();

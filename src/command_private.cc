@@ -42,8 +42,8 @@ static bool command_attack_bow(Coordinate const* delta)
   }
 
   THING* arrow = pack_remove(ptr, true, false);
-  io_missile_motion(&arrow->o, delta->get_y(), delta->get_x());
-  THING* monster_at_pos = level_get_monster(arrow->o.o_pos.get_y(), arrow->o.o_pos.get_x());
+  io_missile_motion(&arrow->o, delta->y, delta->x);
+  THING* monster_at_pos = level_get_monster(arrow->o.o_pos.y, arrow->o.o_pos.x);
 
   if (monster_at_pos == NULL || !fight_against_monster(&arrow->o.o_pos, arrow, true))
     weapon_missile_fall(arrow, true);
@@ -53,7 +53,7 @@ static bool command_attack_bow(Coordinate const* delta)
 
 static bool command_attack_melee(bool fight_to_death, Coordinate* delta)
 {
-  THING* mp = level_get_monster(delta->get_y(), delta->get_x());
+  THING* mp = level_get_monster(delta->y, delta->x);
   if (mp != NULL && diag_ok(player_get_pos(), delta))
   {
     if (fight_to_death)
@@ -66,7 +66,7 @@ static bool command_attack_melee(bool fight_to_death, Coordinate* delta)
   }
 
   char const* what;
-  switch (mvincch(delta->get_y(), delta->get_x()))
+  switch (mvincch(delta->y, delta->x))
   {
     case SHADOW: case HWALL: case VWALL: what = "wall"; break;
     default: what = "air"; break;
@@ -85,7 +85,7 @@ command_use_stairs(char up_or_down)
 
   if (player_is_levitating())
     io_msg("You can't. You're floating off the ground!");
-  else if (level_get_ch(player_pos->get_y(), player_pos->get_x()) != STAIRS)
+  else if (level_get_ch(player_pos->y, player_pos->x) != STAIRS)
     io_msg("You're not standing on any stairs");
 
   else if (up_or_down == '>') /* DOWN */
@@ -129,7 +129,7 @@ command_attack(bool fight_to_death)
   if (dir == NULL)
     return false;
 
-  Coordinate delta ( player_x() + dir->get_x(), player_y() + dir->get_y() );
+  Coordinate delta ( player_x() + dir->x, player_y() + dir->y );
 
   THING* weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
@@ -265,11 +265,11 @@ command_identify_trap(void)
   if (dir == NULL)
     return false;
 
-  Coordinate delta (player_x() + dir->get_x(), player_y() + dir->get_y());
+  Coordinate delta (player_x() + dir->x, player_y() + dir->y);
 
-  int flags = level_get_flags(delta.get_y(), delta.get_x());
+  int flags = level_get_flags(delta.y, delta.x);
 
-  if (level_get_ch(delta.get_y(), delta.get_x()) != TRAP)
+  if (level_get_ch(delta.y, delta.x) != TRAP)
     io_msg("no trap there");
   else if (player_has_confusing_attack())
     io_msg(trap_names[os_rand_range(NTRAPS)]);
@@ -277,7 +277,7 @@ command_identify_trap(void)
   {
     io_msg(trap_names[flags & F_TMASK]);
     flags |= F_SEEN;
-    level_set_flags(delta.get_y(), delta.get_x(), static_cast<char>(flags));
+    level_set_flags(delta.y, delta.x, static_cast<char>(flags));
   }
   return false;
 }
@@ -494,8 +494,8 @@ bool command_throw(void)
   if (dir == NULL)
     return false;
 
-  int ydelta = dir->get_y();
-  int xdelta = dir->get_x();
+  int ydelta = dir->y;
+  int xdelta = dir->x;
   dir = NULL;
 
   THING* obj = pack_get_item("throw", 0);
@@ -510,7 +510,7 @@ bool command_throw(void)
 
   obj = pack_remove(obj, true, false);
   io_missile_motion(&obj->o, ydelta, xdelta);
-  THING* monster_at_pos = level_get_monster(obj->o.o_pos.get_y(), obj->o.o_pos.get_x());
+  THING* monster_at_pos = level_get_monster(obj->o.o_pos.y, obj->o.o_pos.x);
 
   /* Throwing an arrow always misses */
   if (obj->o.o_which == ARROW)
@@ -632,7 +632,7 @@ command_run(char ch, bool cautiously)
 bool command_drop(void)
 {
   Coordinate* player_pos = player_get_pos();
-  char ch = level_get_ch(player_pos->get_y(), player_pos->get_x());
+  char ch = level_get_ch(player_pos->y, player_pos->x);
 
   if (ch != FLOOR && ch != PASSAGE)
   {
@@ -657,10 +657,10 @@ bool command_drop(void)
   /* Link it into the level object list */
   list_attach(&level_items, obj);
 
-  level_set_ch(player_pos->get_y(), player_pos->get_x(), static_cast<char>(obj->o.o_type));
-  int flags = level_get_flags(player_pos->get_y(), player_pos->get_x());
+  level_set_ch(player_pos->y, player_pos->x, static_cast<char>(obj->o.o_type));
+  int flags = level_get_flags(player_pos->y, player_pos->x);
   flags |= F_DROPPED;
-  level_set_flags(player_pos->get_y(), player_pos->get_x(), static_cast<char>(flags));
+  level_set_flags(player_pos->y, player_pos->x, static_cast<char>(flags));
 
   obj->o.o_pos = *player_pos;
 

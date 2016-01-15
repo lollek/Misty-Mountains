@@ -41,12 +41,12 @@
 
 int const level_amulet = 26;
 
-PLACE     level_places[MAXLINES*MAXCOLS];
-coord     level_stairs;
-THING*    level_items = NULL;
-int       level = 1;
-int       level_max = 1;
-int       levels_without_food = 0;
+PLACE       level_places[MAXLINES*MAXCOLS];
+Coordinate  level_stairs;
+THING*      level_items = NULL;
+int         level = 1;
+int         level_max = 1;
+int         levels_without_food = 0;
 
 
 /** treas_room:
@@ -63,13 +63,13 @@ treas_room(void)
 
   for (int i = 0; i < num_monsters; ++i)
   {
-    coord monster_pos;
+    Coordinate monster_pos;
     THING* monster = new_thing();
 
     room_find_floor(room, &monster_pos, 2 * MAXTRIES, false);
     monster->o.o_pos = monster_pos;
     list_attach(&level_items, monster);
-    level_set_ch(monster_pos.y, monster_pos.x, (char)monster->o.o_type);
+    level_set_ch(monster_pos.y, monster_pos.x, static_cast<char>(monster->o.o_type));
   }
 
   /* fill up room with monsters from the next level down */
@@ -83,7 +83,7 @@ treas_room(void)
   level++;
   while (nm--)
   {
-    coord monster_pos;
+    Coordinate monster_pos;
     spots = 0;
     if (room_find_floor(room, &monster_pos, MAXTRIES, true))
     {
@@ -121,8 +121,8 @@ put_things(void)
       list_attach(&level_items, obj);
 
       /* Put it somewhere */
-      room_find_floor((struct room *) NULL, &obj->o.o_pos, false, false);
-      level_set_ch(obj->o.o_pos.y, obj->o.o_pos.x, (char)obj->o.o_type);
+      room_find_floor(nullptr, &obj->o.o_pos, false, false);
+      level_set_ch(obj->o.o_pos.y, obj->o.o_pos.x, static_cast<char>(obj->o.o_type));
     }
 
   /* If he is really deep in the dungeon and he hasn't found the
@@ -133,7 +133,7 @@ put_things(void)
     list_attach(&level_items, amulet);
 
     /* Put it somewhere */
-    room_find_floor((struct room *) NULL, &amulet->o.o_pos, false, false);
+    room_find_floor(nullptr, &amulet->o.o_pos, false, false);
     level_set_ch(amulet->o.o_pos.y, amulet->o.o_pos.x, AMULET);
   }
 }
@@ -184,7 +184,7 @@ level_new(void)
        * can't actually do it.
        */
       do
-        room_find_floor((struct room *) NULL, &level_stairs, false, false);
+        room_find_floor(nullptr, &level_stairs, false, false);
       while (level_get_ch(level_stairs.y, level_stairs.x) != FLOOR);
 
       char trapflag = level_get_flags(level_stairs.y, level_stairs.x);
@@ -195,20 +195,20 @@ level_new(void)
   }
 
   /* Place the staircase down.  */
-  room_find_floor((struct room *) NULL, &level_stairs, false, false);
+  room_find_floor(nullptr, &level_stairs, false, false);
   level_set_ch(level_stairs.y, level_stairs.x, STAIRS);
 
   monster_set_all_rooms();
 
-  coord* player_pos = player_get_pos();
-  room_find_floor((struct room *) NULL, player_pos, false, true);
+  Coordinate* player_pos = player_get_pos();
+  room_find_floor(nullptr, player_pos, false, true);
   room_enter(player_pos);
   mvaddcch(player_pos->y, player_pos->x, PLAYER);
 
   if (player_can_sense_monsters())
     player_add_sense_monsters(true);
   if (player_is_hallucinating())
-    daemon_change_visuals();
+    daemon_change_visuals(0);
 }
 
 bool

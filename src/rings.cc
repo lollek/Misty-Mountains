@@ -13,6 +13,11 @@
 #include <ctype.h>
 #include <string.h>
 
+#include <vector>
+#include <string>
+
+using namespace std;
+
 #include "daemons.h"
 #include "io.h"
 #include "item.h"
@@ -30,9 +35,10 @@
 #include "rings.h"
 
 
-static char const* r_stones[NRINGS];
+static vector<string> r_stones;
+
 static struct stone {
-    char* st_name;
+    string st_name;
     int st_value;
 } stones[] = {
   { "agate",		 25},
@@ -65,20 +71,20 @@ static struct stone {
 static int NSTONES = (sizeof(stones) / sizeof(*stones));
 
 struct obj_info ring_info[] = {
-  { "protection",		 9, 400, NULL, false },
-  { "add strength",		 9, 400, NULL, false },
-  { "sustain strength",		 5, 280, NULL, false },
-  { "searching",		10, 420, NULL, false },
-  { "see invisible",		10, 310, NULL, false },
-  { "adornment",		 1,  10, NULL, false },
-  { "aggravate monster",	10,  10, NULL, false },
-  { "dexterity",		 8, 440, NULL, false },
-  { "increase damage",		 8, 400, NULL, false },
-  { "regeneration",		 4, 460, NULL, false },
-  { "slow digestion",		 9, 240, NULL, false },
-  { "teleportation",		 5,  30, NULL, false },
-  { "stealth",			 7, 470, NULL, false },
-  { "maintain armor",		 5, 380, NULL, false },
+  { "protection",		 9, 400,   "", false },
+  { "add strength",		 9, 400,   "", false },
+  { "sustain strength",		 5, 280,   "", false },
+  { "searching",		10, 420,   "", false },
+  { "see invisible",		10, 310,   "", false },
+  { "adornment",		 1,  10,   "", false },
+  { "aggravate monster",	10,  10,   "", false },
+  { "dexterity",		 8, 440,   "", false },
+  { "increase damage",		 8, 400,   "", false },
+  { "regeneration",		 4, 460,   "", false },
+  { "slow digestion",		 9, 240,   "", false },
+  { "teleportation",		 5,  30,   "", false },
+  { "stealth",			 7, 470,   "", false },
+  { "maintain armor",		 5, 380,   "", false },
 };
 
 void
@@ -89,17 +95,10 @@ ring_init(void)
     {
       int stone = os_rand_range(NSTONES);
 
-      for (int j = 0; j < i; ++j)
-        if (r_stones[j] == stones[stone].st_name)
-        {
-          stone = -1;
-          break;
-        }
-
-      if (stone == -1)
+      if (find(begin(r_stones), end(r_stones), stones[stone].st_name) == end(r_stones))
         continue;
 
-      r_stones[i] = stones[stone].st_name;
+      r_stones.push_back(stones[stone].st_name);
       ring_info[i].oi_worth += stones[stone].st_value;
       break;
     }
@@ -112,7 +111,7 @@ ring_save_state(void)
   {
     int32_t j;
     for (j = 0; j < NSTONES; ++j)
-      if (r_stones[i] == stones[j].st_name)
+      if (r_stones.at(static_cast<size_t>(i)) == stones[j].st_name)
         break;
 
     if (state_save_int32(j == NSTONES ? -1 : j))
@@ -136,7 +135,7 @@ ring_load_state(void)
       return io_fail("ring_load_state(), i=%d,j=%d, max=%d, j < -1\r\n",
                   i, j, NSTONES);
 
-    r_stones[i] = j >= 0 ? stones[j].st_name : NULL;
+    r_stones.at(static_cast<size_t>(i)) = j >= 0 ? stones[j].st_name : NULL;
   }
   return 0;
 }
@@ -176,7 +175,7 @@ ring_put_on(void)
 
   char buf[MAXSTR];
   ring_description(&obj->o, buf);
-  buf[0] = (char)tolower(buf[0]);
+  buf[0] = static_cast<char>(tolower(buf[0]));
   io_msg("now wearing %s", buf);
   return true;
 }
@@ -204,7 +203,7 @@ ring_take_off(void)
       break;
 
     case R_SEEINVIS:
-      player_remove_true_sight();
+      player_remove_true_sight(0);
       daemon_extinguish_fuse(player_remove_true_sight);
       break;
   }
@@ -243,11 +242,11 @@ void
 ring_description(item const* item, char* buf)
 {
   struct obj_info* op = &ring_info[item_subtype(item)];
-  buf += sprintf(buf, "%s ring", r_stones[item_subtype(item)]);
+  buf += sprintf(buf, "%s ring", r_stones.at(static_cast<size_t>(item_subtype(item))).c_str());
 
   if (op->oi_know)
   {
-    buf += sprintf(buf, " of %s", op->oi_name);
+    buf += sprintf(buf, " of %s", op->oi_name.c_str());
     switch (item_subtype(item))
     {
       case R_PROTECT: case R_ADDSTR: case R_ADDDAM: case R_ADDHIT:
@@ -259,17 +258,17 @@ ring_description(item const* item, char* buf)
       default: break;
     }
   }
-  else if (op->oi_guess)
-    sprintf(buf, " called %s", op->oi_guess);
+  else if (!op->oi_guess.empty())
+    sprintf(buf, " called %s", op->oi_guess.c_str());
 }
 
 THING*
 ring_create(int which, bool random_stats)
 {
   if (which == -1)
-    which = (int)pick_one(ring_info, NRINGS);
+    which = static_cast<int>(pick_one(ring_info, NRINGS));
 
-  THING* ring = os_calloc_thing();
+  THING* ring = new THING();
   ring->o.o_type = RING;
   ring->o.o_which = which;
 

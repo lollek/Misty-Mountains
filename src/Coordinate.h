@@ -1,8 +1,7 @@
 #pragma once
 
 /* Coordinate data type */
-class Coordinate {
-public:
+struct Coordinate {
   Coordinate() = default;
   Coordinate(int x, int y);
 
@@ -13,10 +12,6 @@ public:
 
   bool operator==(Coordinate const&) const;
 
-  int get_x() const;
-  int get_y() const;
-
-private:
   int x;
   int y;
 };

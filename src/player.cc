@@ -1,5 +1,6 @@
 #include <stdbool.h>
 
+#include "Coordinate.h"
 #include "pack.h"
 #include "rings.h"
 #include "misc.h"
@@ -177,7 +178,7 @@ player_add_true_sight(bool permanent)
   }
 }
 void
-player_remove_true_sight(void)
+player_remove_true_sight(__attribute__((unused)) int)
 {
   monster_hide_all_invisible();
   player.t.t_flags &= ~CANSEE;
@@ -201,7 +202,7 @@ player_set_confused(bool permanent)
 }
 
 void
-player_remove_confused(void)
+player_remove_confused(__attribute__((unused)) int)
 {
   player.t.t_flags &= ~ISHUH;
   io_msg("you feel less confused now");
@@ -227,7 +228,7 @@ player_add_sense_monsters(bool permanent)
 }
 
 void
-player_remove_sense_monsters(void)
+player_remove_sense_monsters(__attribute__((unused)) int)
 {
   player.t.t_flags &= ~SEEMONST;
   monster_unsense_all_hidden();
@@ -253,7 +254,7 @@ player_set_hallucinating(bool permanent)
   }
 }
 
-void player_remove_hallucinating(void)
+void player_remove_hallucinating(__attribute__((unused)) int)
 {
   if (!player_is_hallucinating())
     return;
@@ -267,7 +268,7 @@ void player_remove_hallucinating(void)
   /* undo the things */
   for (THING* tp = level_items; tp != NULL; tp = tp->o.l_next)
     if (cansee(tp->o.o_pos.y, tp->o.o_pos.x))
-      mvaddcch(tp->o.o_pos.y, tp->o.o_pos.x, (chtype)tp->o.o_type);
+      mvaddcch(tp->o.o_pos.y, tp->o.o_pos.x, static_cast<chtype>(tp->o.o_type));
 
   /* undo the monsters */
   monster_print_all();
@@ -286,7 +287,7 @@ player_increase_speed(bool permanent)
 }
 
 void
-player_decrease_speed(void)
+player_decrease_speed(__attribute__((unused)) int)
 {
   player_speed--;
   io_msg("you feel yourself slowing down");
@@ -314,7 +315,7 @@ player_set_blind(bool permanent)
 }
 
 void
-player_remove_blind(void)
+player_remove_blind(__attribute__((unused)) int)
 {
   if (!player_is_blind())
     return;
@@ -342,7 +343,7 @@ player_start_levitating(bool permanent)
     io_msg("you start to float in the air");
   }
 }
-void player_stop_levitating(void)
+void player_stop_levitating(__attribute__((unused)) int)
 {
   if (!player_is_levitating())
     return;
@@ -383,7 +384,7 @@ void player_become_poisoned(void)
   {
     player_modify_strength(-(os_rand_range(3) + 1));
     io_msg("you feel very sick now");
-    player_remove_hallucinating();
+    player_remove_hallucinating(0);
   }
 }
 
@@ -394,16 +395,16 @@ player_is_stealthy(void)
     || player_is_levitating();
 }
 
-void player_teleport(coord *target)
+void player_teleport(Coordinate *target)
 {
-  coord new_pos;
-  coord const* player_pos = player_get_pos();
+  Coordinate new_pos;
+  Coordinate const* player_pos = player_get_pos();
 
   /* Set target location */
   if (target == NULL)
     do
       room_find_floor(NULL, &new_pos, false, true);
-    while (coord_same(&new_pos, player_pos));
+    while (new_pos == *player_pos);
   else
   {
     new_pos.y = target->y;
@@ -411,7 +412,7 @@ void player_teleport(coord *target)
   }
 
   /* Move target */
-  mvaddcch(player.t.t_pos.y, player.t.t_pos.x, (chtype) floor_at());
+  mvaddcch(player.t.t_pos.y, player.t.t_pos.x, static_cast<chtype>(floor_at()));
   if (roomin(&new_pos) != player_get_room())
   {
     room_leave(player_get_pos());
@@ -442,7 +443,7 @@ player_search(void)
 {
   int probinc = (player_is_hallucinating() ? 3:0) + (player_is_blind() ? 2:0);
   bool found = false;
-  coord *player_pos = player_get_pos();
+  Coordinate *player_pos = player_get_pos();
 
   for (int y = player_pos->y - 1; y <= player_pos->y + 1; y++)
     for (int x = player_pos->x - 1; x <= player_pos->x + 1; x++)
@@ -462,7 +463,7 @@ player_search(void)
             io_msg("a secret door");
             found = true;
             flags |= F_REAL;
-            level_set_flags(y, x, (char)flags);
+            level_set_flags(y, x, static_cast<char>(flags));
           }
           break;
 
@@ -476,12 +477,12 @@ player_search(void)
             else {
               io_msg(trap_names[flags & F_TMASK]);
               flags |= F_SEEN;
-              level_set_flags(y, x, (char)flags);
+              level_set_flags(y, x, static_cast<char>(flags));
             }
 
             found = true;
             flags |= F_SEEN;
-            level_set_flags(y, x, (char)flags);
+            level_set_flags(y, x, static_cast<char>(flags));
           }
           break;
 
@@ -491,7 +492,7 @@ player_search(void)
             level_set_ch(y, x, PASSAGE);
             found = true;
             flags |= F_REAL;
-            level_set_flags(y, x, (char)flags);
+            level_set_flags(y, x, static_cast<char>(flags));
           }
           break;
       }
@@ -506,12 +507,12 @@ player_search(void)
   return true;
 }
 
-coord* player_get_pos(void) { return &player.t.t_pos; }
+Coordinate* player_get_pos(void) { return &player.t.t_pos; }
 int player_y(void)          { return player.t.t_pos.y; }
 int player_x(void)          { return player.t.t_pos.x; }
 
 void
-player_set_pos(coord* new_pos)
+player_set_pos(Coordinate* new_pos)
 {
   player.t.t_pos.x = new_pos->x;
   player.t.t_pos.y = new_pos->y;

@@ -144,7 +144,7 @@ monster_set_invisible(monster* mon)
   {
     char buf[MAXSTR];
     io_msg("%s disappeared", monster_name(mon, buf));
-    mvaddcch(mon->t_pos.y, mon->t_pos.x, (chtype) mon->t_oldch);
+    mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_oldch));
   }
 }
 
@@ -201,7 +201,7 @@ monster_xp_worth(monster* tp)
 }
 
 void
-monster_new(THING* monster, char type, coord* pos)
+monster_new(THING* monster, char type, Coordinate* pos)
 {
   assert(monster != NULL);
   assert(pos != NULL);
@@ -210,25 +210,25 @@ monster_new(THING* monster, char type, coord* pos)
   monster->t.t_type       = type;
   monster->t.t_disguise   = type;
   monster->t.t_pos        = *pos;
-  monster->t.t_oldch      = (char) mvincch(pos->y, pos->x);
+  monster->t.t_oldch      = static_cast<char>(mvincch(pos->y, pos->x));
   monster->t.t_room       = roomin(pos);
   level_set_monster(pos->y, pos->x, monster);
 
-  struct monster_template const* template = &monsters[monster->t.t_type - 'A'];
+  struct monster_template const* m_template = &monsters[monster->t.t_type - 'A'];
   struct stats* new_stats = &monster->t.t_stats;
 
-  new_stats->s_lvl   = template->m_level;
+  new_stats->s_lvl   = m_template->m_level;
   new_stats->s_hpt   = roll(new_stats->s_lvl, 8);
   new_stats->s_maxhp = new_stats->s_hpt;
-  new_stats->s_arm   = template->m_armor;
+  new_stats->s_arm   = m_template->m_armor;
   new_stats->s_str   = 10;
-  new_stats->s_exp   = template->m_basexp + monster_xp_worth(&monster->t);
-  assert(sizeof(new_stats->s_dmg) == sizeof(template->m_dmg));
-  memcpy(new_stats->s_dmg, template->m_dmg, sizeof(template->m_dmg));
+  new_stats->s_exp   = m_template->m_basexp + monster_xp_worth(&monster->t);
+  assert(sizeof(new_stats->s_dmg) == sizeof(m_template->m_dmg));
+  memcpy(new_stats->s_dmg, m_template->m_dmg, sizeof(m_template->m_dmg));
 
   monster->t.t_turn          = true;
   monster->t.t_pack          = NULL;
-  monster->t.t_flags         = template->m_flags;
+  monster->t.t_flags         = m_template->m_flags;
 
   if (player_has_ring_with_ability(R_AGGR))
     monster_start_running(pos);
@@ -240,10 +240,10 @@ monster_new(THING* monster, char type, coord* pos)
 void
 monster_new_random_wanderer(void)
 {
-  coord monster_pos;
+  Coordinate monster_pos;
 
   do
-    room_find_floor((struct room *) NULL, &monster_pos, false, true);
+    room_find_floor(nullptr, &monster_pos, false, true);
   while (roomin(&monster_pos) == player_get_room());
 
   THING* monster = os_calloc_thing();
@@ -251,9 +251,9 @@ monster_new_random_wanderer(void)
   if (player_can_sense_monsters())
   {
     if (player_is_hallucinating())
-      addcch((chtype)(os_rand_range(26) + 'A') | A_STANDOUT);
+      addcch(static_cast<chtype>(os_rand_range(26) + 'A') | A_STANDOUT);
     else
-      addcch((chtype) monster->t.t_type | A_STANDOUT);
+      addcch(static_cast<chtype>(monster->t.t_type) | A_STANDOUT);
   }
   monster_start_running(&monster->t.t_pos);
 }
@@ -265,7 +265,7 @@ monster_notice_player(int y, int x)
 
   monster_assert_exists(monster);
 
-  coord* player_pos = player_get_pos();
+  Coordinate* player_pos = player_get_pos();
 
   /* Monster can begin chasing after the player if: */
   if (!monster_is_chasing(&monster->t)
@@ -333,7 +333,7 @@ monster_save_throw(int which, monster const* mon)
 }
 
 void
-monster_start_running(coord const* runner)
+monster_start_running(Coordinate const* runner)
 {
   THING *tp = level_get_monster(runner->y, runner->x);
   monster_assert_exists(tp);
@@ -388,7 +388,7 @@ monster_on_death(THING* monster, bool pr)
 }
 
 void
-monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
+monster_remove_from_screen(Coordinate* mp, THING* tp, bool waskill)
 {
   assert(mp != NULL);
   assert(tp != NULL);
@@ -406,7 +406,7 @@ monster_remove_from_screen(coord* mp, THING* tp, bool waskill)
   }
 
   level_set_monster(mp->y, mp->x, NULL);
-  mvaddcch(mp->y, mp->x, (chtype) tp->t.t_oldch);
+  mvaddcch(mp->y, mp->x, static_cast<chtype>(tp->t.t_oldch));
   list_detach(&monster_list, tp);
 
   if (monster_is_players_target(&tp->t))
@@ -433,20 +433,20 @@ monster_is_dead(THING const* monster)
 }
 
 void
-monster_teleport(THING* monster, coord const* destination)
+monster_teleport(THING* monster, Coordinate const* destination)
 {
   /* Select destination */
-  coord new_pos;
+  Coordinate new_pos;
   if (destination == NULL)
     do
       room_find_floor(NULL, &new_pos, false, true);
-    while (coord_same(&new_pos, &monster->t.t_pos));
+    while (new_pos == monster->t.t_pos);
   else
     new_pos = *destination;
 
   /* Remove monster */
   if (monster_seen_by_player(&monster->t))
-    mvaddcch(monster->t.t_pos.y, monster->t.t_pos.x, (chtype) monster->t.t_oldch);
+    mvaddcch(monster->t.t_pos.y, monster->t.t_pos.x, static_cast<chtype>(monster->t.t_oldch));
   set_oldch(monster, &new_pos);
   level_set_monster(monster->t.t_pos.y, monster->t.t_pos.x, NULL);
 
@@ -456,9 +456,9 @@ monster_teleport(THING* monster, coord const* destination)
   monster_remove_held(&monster->t);
 
   if (monster_seen_by_player(&monster->t))
-    mvaddcch(new_pos.y, new_pos.x, (chtype) monster->t.t_disguise);
+    mvaddcch(new_pos.y, new_pos.x, static_cast<chtype>(monster->t.t_disguise));
   else if (player_can_sense_monsters())
-    mvaddcch(new_pos.y, new_pos.x, (chtype) monster->t.t_type | A_STANDOUT);
+    mvaddcch(new_pos.y, new_pos.x, static_cast<chtype>(monster->t.t_type)| A_STANDOUT);
 }
 
 void
@@ -515,7 +515,7 @@ monster_do_special_ability(THING** monster)
 
 
     /* Nymph's steal a magic item and disappears */
-    case 'N':;
+    case 'N': {
       THING* steal = pack_find_magic_item();
       if (steal != NULL)
       {
@@ -526,6 +526,7 @@ monster_do_special_ability(THING** monster)
         os_remove_thing(&steal);
       }
       return;
+      }
 
     /* Rattlesnakes have poisonous bites */
     case 'R':
@@ -588,7 +589,7 @@ monster_name(monster const* monster, char* buf)
     else
       ch -= 'A';
 
-    sprintf(buf, "the %s", monster_name_by_type((char)ch));
+    sprintf(buf, "the %s", monster_name_by_type(static_cast<char>(ch)));
   }
 
   else
@@ -601,7 +602,7 @@ char const*
 monster_name_by_type(char monster_type)
 {
   assert(monster_type >= 'A');
-  assert(monster_type < (char) ('A' + NMONSTERS));
+  assert(monster_type < static_cast<char>('A' + NMONSTERS));
   return monsters[monster_type - 'A'].m_name;
 }
 
@@ -610,7 +611,7 @@ monster_seen_by_player(monster const* monster)
 {
   assert(monster != NULL);
 
-  coord const* player_pos = player_get_pos();
+  Coordinate const* player_pos = player_get_pos();
   int monster_y = monster->t_pos.y;
   int monster_x = monster->t_pos.x;
 
@@ -629,7 +630,7 @@ monster_seen_by_player(monster const* monster)
 
   if (monster->t_room != player_get_room())
     return false;
-  return ((bool)!(monster->t_room->r_flags & ISDARK));
+  return !(monster->t_room->r_flags & ISDARK);
 }
 
 bool
@@ -650,13 +651,13 @@ monster_show_all_as_trippy(void)
     if (monster_seen_by_player(&tp->t))
     {
       if (tp->t.t_type == 'X' && tp->t.t_disguise != 'X')
-        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) rnd_thing());
+        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, static_cast<chtype>(rnd_thing()));
       else
-        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype)(os_rand_range(26) + 'A'));
+        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, static_cast<chtype>(os_rand_range(26) + 'A'));
     }
     else if (seemonst)
       mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x,
-          (chtype)(os_rand_range(26) + 'A') | A_STANDOUT);
+          static_cast<chtype>(os_rand_range(26) + 'A') | A_STANDOUT);
   }
 }
 
@@ -674,7 +675,7 @@ monster_move_all(void)
     if (!monster_is_held(tp_monster) && monster_is_chasing(tp_monster))
     {
       bool wastarget = monster_is_players_target(tp_monster);
-      coord orig_pos = tp_monster->t_pos;
+      Coordinate orig_pos = tp_monster->t_pos;
       if (!monster_chase(tp))
         continue;
 
@@ -686,7 +687,7 @@ monster_move_all(void)
 
       monster_assert_exists(tp);
 
-      if (wastarget && !coord_same(&orig_pos, &tp->t.t_pos))
+      if (wastarget && !(orig_pos == tp->t.t_pos))
       {
         tp->t.t_flags &= ~ISTARGET;
         to_death = false;
@@ -723,7 +724,7 @@ monster_show_all_hidden(void)
   for (THING* mp = monster_list; mp != NULL; mp = mp->t.l_next)
     if (monster_is_invisible(&mp->t) && monster_seen_by_player(&mp->t)
         && !player_is_hallucinating())
-      mvaddcch(mp->t.t_pos.y, mp->t.t_pos.x, (chtype) mp->t.t_disguise);
+      mvaddcch(mp->t.t_pos.y, mp->t.t_pos.x, static_cast<chtype>(mp->t.t_disguise));
 }
 
 void
@@ -739,7 +740,7 @@ monster_hide_all_invisible(void)
 {
   for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
     if (monster_is_invisible(&mon->t) && monster_seen_by_player(&mon->t))
-      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
+      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, static_cast<chtype>(mon->t.t_oldch));
 }
 
 bool
@@ -751,8 +752,8 @@ monster_sense_all_hidden(void)
     {
       mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x,
           (player_is_hallucinating()
-           ? (chtype) (os_rand_range(26) + 'A')
-           : (chtype) mon->t.t_type)
+           ? static_cast<chtype>(os_rand_range(26) + 'A')
+           : static_cast<chtype>(mon->t.t_type))
             | A_STANDOUT);
       spotted_something = true;
     }
@@ -764,7 +765,7 @@ monster_unsense_all_hidden(void)
 {
   for (THING* mon = monster_list; mon != NULL; mon = mon->t.l_next)
     if (!monster_seen_by_player(&mon->t))
-      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, (chtype) mon->t.t_oldch);
+      mvaddcch(mon->t.t_pos.y, mon->t.t_pos.x, static_cast<chtype>(mon->t.t_oldch));
 }
 
 void
@@ -774,12 +775,12 @@ monster_print_all(void)
   {
     if (cansee(tp->t.t_pos.y, tp->t.t_pos.x))
       if (!monster_is_invisible(&tp->t) || player_has_true_sight())
-        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) tp->t.t_disguise);
+        mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, static_cast<chtype>(tp->t.t_disguise));
       else
         mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x,
-                 (chtype) level_get_ch(tp->t.t_pos.y, tp->t.t_pos.x));
+                 static_cast<chtype>(level_get_ch(tp->t.t_pos.y, tp->t.t_pos.x)));
     else if (player_can_sense_monsters())
-      mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, (chtype) tp->t.t_type | A_STANDOUT);
+      mvaddcch(tp->t.t_pos.y, tp->t.t_pos.x, static_cast<chtype>(tp->t.t_type)| A_STANDOUT);
   }
 }
 
@@ -807,7 +808,7 @@ monster_get_nth_in_list(int i)
 }
 
 int
-monster_return_index_with_position(coord const* pos)
+monster_return_index_with_position(Coordinate const* pos)
 {
   int index = 0;
   for (THING const* ptr = monster_list; ptr != NULL; ptr = ptr->t.l_next, ++index)
@@ -856,7 +857,7 @@ monster_add_nearby(THING** nearby_monsters, struct room const* room)
           == player_get_room()))
       *nearby_monsters++ = mp;
 
-  return (int)(nearby_monsters_start - nearby_monsters);
+  return static_cast<int>(nearby_monsters_start - nearby_monsters);
 }
 
 void
@@ -864,10 +865,7 @@ monster_polymorph(THING* target)
 {
   assert(target != NULL);
 
-  coord pos = {
-    .y = target->t.t_pos.y,
-    .x = target->t.t_pos.x
-  };
+  Coordinate pos(target->t.t_pos.x, target->t.t_pos.y);
 
   if (target->t.t_type == 'F')
     player_remove_held();
@@ -878,20 +876,20 @@ monster_polymorph(THING* target)
   bool was_seen = monster_seen_by_player(&target->t);
   if (was_seen)
   {
-    mvaddcch(pos.y, pos.x, (chtype) level_get_ch(pos.y, pos.x));
+    mvaddcch(pos.y, pos.x, static_cast<chtype>(level_get_ch(pos.y, pos.x)));
     char buf[MAXSTR];
     io_msg_add("%s", monster_name(&target->t, buf));
   }
 
   char oldch = target->t.t_oldch;
 
-  char monster = (char)(os_rand_range(26) + 'A');
+  char monster = static_cast<char>(os_rand_range(26) + 'A');
   bool same_monster = monster == target->t.t_type;
 
   monster_new(target, monster, &pos);
   if (monster_seen_by_player(&target->t))
   {
-    mvaddcch(pos.y, pos.x, (chtype) monster);
+    mvaddcch(pos.y, pos.x, static_cast<chtype>(monster));
     if (same_monster)
       io_msg(" now looks a bit different");
     else

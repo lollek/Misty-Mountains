@@ -70,7 +70,7 @@ parse_args(int argc, char* const* argv)
   strncat(save_file_name, ".rogue14_save", MAXSTR - strlen(get_homedir()) -1);
 
   /* Set seed and dungeon number */
-  os_rand_seed = (unsigned)(time(NULL) + getpid());
+  os_rand_seed = static_cast<unsigned>(time(nullptr) + getpid());
 
   for (;;)
   {
@@ -86,13 +86,13 @@ parse_args(int argc, char* const* argv)
       case 'f': fight_flush = true; break;
       case 'j': jump = false; break;
       case 'n': if (strlen(optarg))
-                  strucpy(whoami, optarg, (int)strlen(optarg));
+                  strucpy(whoami, optarg, static_cast<int>(strlen(optarg)));
                 break;
       case 'p': passgo = true; break;
       case 'r': game_mode = LOAD_GAME; break;
       case 's': score_show_and_exit(0, -1, 0); /* does not return */
       case 'S': if (wizard)
-                  sscanf(optarg, "%"SCNu32, &os_rand_seed);
+                  sscanf(optarg, "%" SCNu32, &os_rand_seed);
                 break;
       case 'W': wizard = true; break;
       case '0':

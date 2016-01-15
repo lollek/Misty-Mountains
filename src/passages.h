@@ -1,5 +1,6 @@
-#ifndef ROGUE14_PASSAGES_H
-#define ROGUE14_PASSAGES_H
+#pragma once
+
+#include <vector>
 
 #include "Coordinate.h"
 #include "rooms.h"
@@ -11,5 +12,3 @@ extern struct room passages[PASSAGES_MAX];
 void passages_add_pass(void);
 void passages_do(void);
 void passages_putpass(Coordinate* cp);
-
-#endif /* ROGUE14_PASSAGES_H */

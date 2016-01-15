@@ -31,22 +31,22 @@
 /* Colors of the potions */
 static char const* p_colors[NPOTIONS];
 
-struct obj_info potion_info[NPOTIONS] = {
+obj_info potion_info[NPOTIONS] = {
   /* io_name,      oi_prob, oi_worth, oi_guess, oi_know */
-  { "confusion",         7,        5,     NULL, false },
-  { "hallucination",     8,        5,     NULL, false },
-  { "poison",            8,        5,     NULL, false },
-  { "gain strength",    13,      150,     NULL, false },
-  { "see invisible",     3,      100,     NULL, false },
-  { "healing",          13,      130,     NULL, false },
-  { "monster detection", 6,      130,     NULL, false },
-  { "magic detection",   6,      105,     NULL, false },
-  { "raise level",       2,      250,     NULL, false },
-  { "extra healing",     5,      200,     NULL, false },
-  { "haste self",        5,      190,     NULL, false },
-  { "restore strength", 13,      130,     NULL, false },
-  { "blindness",         5,        5,     NULL, false },
-  { "levitation",        6,       75,     NULL, false },
+  { "confusion",         7,        5,       "", false },
+  { "hallucination",     8,        5,       "", false },
+  { "poison",            8,        5,       "", false },
+  { "gain strength",    13,      150,       "", false },
+  { "see invisible",     3,      100,       "", false },
+  { "healing",          13,      130,       "", false },
+  { "monster detection", 6,      130,       "", false },
+  { "magic detection",   6,      105,       "", false },
+  { "raise level",       2,      250,       "", false },
+  { "extra healing",     5,      200,       "", false },
+  { "haste self",        5,      190,       "", false },
+  { "restore strength", 13,      130,       "", false },
+  { "blindness",         5,        5,       "", false },
+  { "levitation",        6,       75,       "", false },
 };
 
 void
@@ -137,7 +137,7 @@ potion_quaff_something(void)
     return false;
 
   /* Calculate the effect it has on the poor guy. */
-  bool discardit = (bool)(obj->o.o_count == 1);
+  bool discardit = obj->o.o_count == 1;
   pack_remove(obj, false, false);
   switch (obj->o.o_which)
   {
@@ -155,7 +155,7 @@ potion_quaff_something(void)
     case P_HEALING:
       potion_learn(P_HEALING);
       player_restore_health(roll(player_get_level(), 4), true);
-      player_remove_blind();
+      player_remove_blind(0);
       io_msg("you begin to feel better");
       break;
 
@@ -217,8 +217,8 @@ potion_quaff_something(void)
     case P_XHEAL:
       potion_learn(P_XHEAL);
       player_restore_health(roll(player_get_level(), 8), true);
-      player_remove_blind();
-      player_remove_hallucinating();
+      player_remove_blind(0);
+      player_remove_hallucinating(0);
       io_msg("you begin to feel much better");
       break;
 
@@ -257,7 +257,7 @@ potion_quaff_something(void)
   call_it("potion", &potion_info[obj->o.o_which]);
 
   if (discardit)
-    os_remove_thing(&obj);
+    delete obj;
   return true;
 }
 
@@ -268,9 +268,9 @@ potion_description(item const* item, char buf[])
   if (op->oi_know)
   {
     if (item_count(item) == 1)
-      buf += sprintf(buf, "A potion of %s", op->oi_name);
+      buf += sprintf(buf, "A potion of %s", op->oi_name.c_str());
     else
-      buf += sprintf(buf, "%d potions of %s", item_count(item), op->oi_name);
+      buf += sprintf(buf, "%d potions of %s", item_count(item), op->oi_name.c_str());
   }
   else
   {
@@ -281,24 +281,24 @@ potion_description(item const* item, char buf[])
     else
       buf += sprintf(buf, "%d %s potions", item_count(item), color);
 
-    if (op->oi_guess)
-      sprintf(buf, " called %s", op->oi_guess);
+    if (!op->oi_guess.empty())
+      sprintf(buf, " called %s", op->oi_guess.c_str());
   }
 }
 
 THING*
 potion_create(int which)
 {
-  THING* pot = os_calloc_thing();
+  THING* pot = new THING();
 
   if (which == -1)
-    which = (int)pick_one(potion_info, NPOTIONS);
+    which = static_cast<int>(pick_one(potion_info, NPOTIONS));
 
   pot->o.o_type       = POTION;
   pot->o.o_which      = which;
   pot->o.o_count      = 1;
-  pot->o.o_damage     = (struct damage){1, 2};
-  pot->o.o_hurldmg    = (struct damage){1, 2};
+  pot->o.o_damage     = {1, 2};
+  pot->o.o_hurldmg    = {1, 2};
 
   return pot;
 }

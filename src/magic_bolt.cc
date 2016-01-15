@@ -1,6 +1,11 @@
 #include <assert.h>
 #include <string.h>
 
+#include <string>
+
+using namespace std;
+
+#include "Coordinate.h"
 #include "fight.h"
 #include "io.h"
 #include "level.h"
@@ -15,7 +20,7 @@
 #include "magic.h"
 
 static bool
-magic_bolt_handle_bounces(coord* pos, coord* dir, tile* dirtile)
+magic_bolt_handle_bounces(Coordinate* pos, Coordinate* dir, tile* dirtile)
 {
   int num_bounces = 0;
 recursive_loop:; /* ONLY called by end of function */
@@ -74,7 +79,7 @@ recursive_loop:; /* ONLY called by end of function */
 }
 
 static void
-magic_bolt_hit_player(coord* start, char const* missile_name)
+magic_bolt_hit_player(Coordinate* start, string const& missile_name)
 {
   if (!player_save_throw(VS_MAGIC))
   {
@@ -91,14 +96,14 @@ magic_bolt_hit_player(coord* start, char const* missile_name)
       else
         death(level_get_monster(start->y, start->x)->t.t_type);
     }
-    io_msg("you are hit by the %s", missile_name);
+    io_msg("you are hit by the %s", missile_name.c_str());
   }
   else
-    io_msg("the %s whizzes by you", missile_name);
+    io_msg("the %s whizzes by you", missile_name.c_str());
 }
 
 static void
-magic_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
+magic_bolt_hit_monster(THING* mon, Coordinate* start, Coordinate* pos, string const& missile_name)
 {
   mon->t.t_oldch = level_get_ch(pos->y, pos->x);
   if (!monster_save_throw(VS_MAGIC, &mon->t))
@@ -112,10 +117,10 @@ magic_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
     bolt.o.o_pos        = *pos;
     bolt.o.o_flags     |= ISMISL;
     bolt.o.o_launch     = -1;
-    bolt.o.o_hurldmg    = (struct damage){6,6};
-    weapon_info[FLAME].oi_name = missile_name;
+    bolt.o.o_hurldmg    = {6,6};
+    weapon_info[FLAME].oi_name = const_cast<char*>(missile_name.c_str());
 
-    if (mon->t.t_type == 'D' && strcmp(missile_name, "flame") == 0)
+    if (mon->t.t_type == 'D' && missile_name == "flame")
       io_msg("the flame bounces off the dragon");
     else
       fight_against_monster(pos, &bolt, true);
@@ -127,13 +132,13 @@ magic_bolt_hit_monster(THING* mon, coord* start, coord* pos, char* missile_name)
     else
     {
       char buf[MAXSTR];
-      io_msg("the %s whizzes past %s", missile_name, monster_name(&mon->t, buf));
+      io_msg("the %s whizzes past %s", missile_name.c_str(), monster_name(&mon->t, buf));
     }
   }
 }
 
 void
-magic_bolt(coord* start, coord* dir, char* name)
+magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
 {
   tile dirtile = TILE_ERROR;
   switch (dir->y + dir->x)
@@ -150,12 +155,12 @@ magic_bolt(coord* start, coord* dir, char* name)
 
   enum attribute bolt_type = ATTR_FIRE;
 
-  if (!strcmp(name, "ice"))
+  if (name == "ice")
     bolt_type = ATTR_ICE;
-  else if (!strcmp(name, "flame"))
+  else if (name == "flame")
     bolt_type = ATTR_FIRE;
 
-  coord pos = *start;
+  Coordinate pos = *start;
   struct charcoord {
     int y;
     int x;
@@ -169,7 +174,7 @@ magic_bolt(coord* start, coord* dir, char* name)
   if (starting_pos == DOOR || starting_pos == PASSAGE)
   {
     char first_bounce = level_get_ch(start->y + dir->y, start->x + dir->x);
-    bool is_player = coord_same(start, player_get_pos());
+    bool is_player = *start ==* player_get_pos();
     if (first_bounce == HWALL || first_bounce == VWALL)
     {
       if (is_player)
@@ -190,10 +195,10 @@ magic_bolt(coord* start, coord* dir, char* name)
     pos.x += dir->x;
 
     if (magic_bolt_handle_bounces(&pos, dir, &dirtile))
-      io_msg("the %s bounces", name);
+      io_msg("the %s bounces", name.c_str());
 
     /* Handle potential hits */
-    if (coord_same(&pos, player_get_pos()))
+    if (pos == *player_get_pos())
       magic_bolt_hit_player(start, name);
 
     THING* tp = level_get_monster(pos.y, pos.x);
@@ -202,7 +207,7 @@ magic_bolt(coord* start, coord* dir, char* name)
 
     spotpos[i].x = pos.x;
     spotpos[i].y = pos.y;
-    spotpos[i].ch = (char) mvincch(pos.y, pos.x);
+    spotpos[i].ch = static_cast<char>(mvincch(pos.y, pos.x));
     io_addch(dirtile, bolt_type);
     refresh();
   }
@@ -210,7 +215,7 @@ magic_bolt(coord* start, coord* dir, char* name)
   os_usleep(200000);
 
   for (int j = i -1; j >= 0; --j)
-    mvaddcch(spotpos[j].y, spotpos[j].x, (chtype) spotpos[j].ch);
+    mvaddcch(spotpos[j].y, spotpos[j].x, static_cast<chtype>(spotpos[j].ch));
 }
 
 

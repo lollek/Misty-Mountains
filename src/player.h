@@ -24,11 +24,11 @@ int player_save_throw(int which);
 /* Status Effects */
 bool player_has_true_sight(void);
 void player_add_true_sight(bool permanent);
-void player_remove_true_sight(void);
+void player_remove_true_sight(int unused);
 
 bool player_is_confused(void);
 void player_set_confused(bool permanent);
-void player_remove_confused(void);
+void player_remove_confused(int unused);
 
 bool player_is_held(void);
 void player_set_held(void);
@@ -36,15 +36,15 @@ void player_remove_held(void);
 
 bool player_can_sense_monsters(void);
 void player_add_sense_monsters(bool permanent);
-void player_remove_sense_monsters(void);
+void player_remove_sense_monsters(int unused);
 
 bool player_is_hallucinating(void);
 void player_set_hallucinating(bool permanent);
-void player_remove_hallucinating(void);
+void player_remove_hallucinating(int unused);
 
 int player_get_speed(void);
 void player_increase_speed(bool permanent);
-void player_decrease_speed(void);
+void player_decrease_speed(int unused);
 
 bool player_is_running(void);
 void player_start_running(void);
@@ -52,11 +52,11 @@ void player_stop_running(void);
 
 bool player_is_blind(void);
 void player_set_blind(bool permanent);
-void player_remove_blind(void);
+void player_remove_blind(int unused);
 
 bool player_is_levitating(void);
 void player_start_levitating(bool permanent);
-void player_stop_levitating(void);
+void player_stop_levitating(int unused);
 
 bool player_has_confusing_attack(void);
 void player_set_confusing_attack(void);

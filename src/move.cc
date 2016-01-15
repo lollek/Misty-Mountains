@@ -13,6 +13,7 @@
 #include <ctype.h>
 #include <assert.h>
 
+#include "Coordinate.h"
 #include "scrolls.h"
 #include "command.h"
 #include "traps.h"
@@ -31,7 +32,7 @@
 #include "os.h"
 #include "rogue.h"
 
-coord move_pos_prev;
+Coordinate move_pos_prev;
 
 /** move_turn_ok:
  * Decide whether it is legal to turn onto the given space */
@@ -48,7 +49,7 @@ move_turn_ok(int y, int x)
 static void
 move_turnref(void)
 {
-  coord *player_pos = player_get_pos();
+  Coordinate *player_pos = player_get_pos();
   PLACE *pp = level_get_place(player_pos->y, player_pos->x);
 
   if (!(pp->p_flags & F_SEEN))
@@ -71,7 +72,7 @@ move_do(char ch)
     bool after = true;
     int dy = 0, dx = 0;
     char fl;
-    coord nh;
+    Coordinate nh;
 
     switch (ch)
     {
@@ -99,7 +100,7 @@ move_do(char ch)
         THING *player_thing = __player_ptr();
         monster *player = &player_thing->t;
 	move_random(player, &nh);
-	if (coord_same(&nh, player_get_pos()))
+	if (nh == *player_get_pos())
 	{
 	    running = false;
 	    to_death = false;
@@ -110,7 +111,7 @@ move_do(char ch)
     {
 over:
       {
-	coord *player_pos = player_get_pos();
+	Coordinate *player_pos = player_get_pos();
 	nh.y = player_pos->y + dy;
 	nh.x = player_pos->x + dx;
       }
@@ -127,7 +128,7 @@ over:
 	return false;
     }
 
-    if (running && coord_same(player_get_pos(), &nh))
+    if (running && (*player_get_pos() == nh))
 	after = running = false;
 
     fl = level_get_flags(nh.y, nh.x);
@@ -141,7 +142,7 @@ over:
             level_set_ch(nh.y, nh.x, ch);
             int flags = level_get_flags(nh.y, nh.x);
             flags |= F_REAL;
-            level_set_flags(nh.y, nh.x, (char)flags);
+            level_set_flags(nh.y, nh.x, static_cast<char>(flags));
 	}
     }
     else if (player_is_held() && ch != 'F')
@@ -157,15 +158,15 @@ hit_bound:
 	    if (passgo && running && (player_get_room()->r_flags & ISGONE)
 		&& !player_is_blind())
 	    {
-		coord *player_pos = player_get_pos();
+		Coordinate *player_pos = player_get_pos();
 		bool b1, b2;
 
 		switch (runch)
 		{
 		    case 'h':
 		    case 'l':
-			b1 = (bool)(player_pos->y != 1 && move_turn_ok(player_pos->y - 1, player_pos->x));
-			b2 = (bool)(player_pos->y != NUMLINES - 2 && move_turn_ok(player_pos->y + 1, player_pos->x));
+			b1 = (player_pos->y != 1 && move_turn_ok(player_pos->y - 1, player_pos->x));
+			b2 = (player_pos->y != NUMLINES - 2 && move_turn_ok(player_pos->y + 1, player_pos->x));
 			if (!(b1 ^ b2))
 			    break;
 			if (b1)
@@ -183,8 +184,8 @@ hit_bound:
 			goto over;
 		    case 'j':
 		    case 'k':
-			b1 = (bool)(player_pos->x != 0 && move_turn_ok(player_pos->y, player_pos->x - 1));
-			b2 = (bool)(player_pos->x != NUMCOLS - 1 && move_turn_ok(player_pos->y, player_pos->x + 1));
+			b1 = (player_pos->x != 0 && move_turn_ok(player_pos->y, player_pos->x - 1));
+			b2 = (player_pos->x != NUMCOLS - 1 && move_turn_ok(player_pos->y, player_pos->x + 1));
 			if (!(b1 ^ b2))
 			    break;
 			if (b1)
@@ -207,11 +208,11 @@ hit_bound:
             break;
 	case DOOR:
           {
-            coord *player_pos = player_get_pos();
+            Coordinate *player_pos = player_get_pos();
 	    running = false;
 	    if (level_get_flags(player_pos->y, player_pos->x) & F_PASS)
 		room_enter(&nh);
-	    mvaddcch(player_pos->y, player_pos->x, (chtype) floor_at());
+	    mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
 	    if ((fl & F_PASS)
                 && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
 		room_leave(&nh);
@@ -220,11 +221,11 @@ hit_bound:
             break;
 	case TRAP:
           {
-            coord *player_pos = player_get_pos();
+            Coordinate *player_pos = player_get_pos();
 	    ch = trap_spring(NULL, &nh);
 	    if (ch == T_DOOR || ch == T_TELEP)
 		return after;
-	    mvaddcch(player_pos->y, player_pos->x, (chtype) floor_at());
+	    mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
 	    if ((fl & F_PASS)
                 && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
 		room_leave(&nh);
@@ -239,9 +240,9 @@ hit_bound:
 	     * if you're leaving a maze room, so it is necessary to
 	     * always recalculate proom.
 	     */
-            coord *player_pos = player_get_pos();
+            Coordinate *player_pos = player_get_pos();
 	    player_set_room(roomin(player_pos));
-	    mvaddcch(player_pos->y, player_pos->x, (chtype) floor_at());
+	    mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
 	    if ((fl & F_PASS)
                 && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
 		room_leave(&nh);
@@ -250,10 +251,10 @@ hit_bound:
           break;
 	case FLOOR:
           {
-            coord *player_pos = player_get_pos();
+            Coordinate *player_pos = player_get_pos();
 	    if (!(fl & F_REAL))
 		trap_spring(NULL, &nh);
-		mvaddcch(player_pos->y, player_pos->x, (chtype) floor_at());
+		mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
 		if ((fl & F_PASS)
                     && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
 		    room_leave(&nh);
@@ -266,8 +267,8 @@ hit_bound:
 		fight_against_monster(&nh, pack_equipped_item(EQUIPMENT_RHAND), false);
 	    else
 	    {
-              coord *player_pos = player_get_pos();
-              mvaddcch(player_pos->y, player_pos->x, (chtype) floor_at());
+              Coordinate *player_pos = player_get_pos();
+              mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
               if ((fl & F_PASS)
                   && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
                 room_leave(&nh);
@@ -283,7 +284,7 @@ hit_bound:
 /** move_random:
  * Move in a random direction if the monster/person is confused */
 void
-move_random(monster* who, coord* ret)
+move_random(monster* who, Coordinate* ret)
 {
   assert(who != NULL);
 

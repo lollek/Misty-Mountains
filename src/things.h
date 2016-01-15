@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdbool.h>
+#include <string>
 
 #include "Coordinate.h"
 
@@ -13,11 +13,11 @@ struct damage
 
 /* Stuff about objects */
 struct obj_info {
-  char* oi_name;
-  int   oi_prob;
-  int   oi_worth;
-  char* oi_guess;
-  bool  oi_know;
+  std::string oi_name;
+  int         oi_prob;
+  int         oi_worth;
+  std::string oi_guess;
+  bool        oi_know;
 };
 
 /* Structure describing a fighting being */

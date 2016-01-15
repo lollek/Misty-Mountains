@@ -34,76 +34,6 @@ os_usleep(unsigned int usec)
   return usleep(usec);
 }
 
-THING*
-os_calloc_thing(void)
-{
-  THING* item = calloc(1, sizeof *item);
-
-  if (item == NULL)
-    io_fatal("No virtual memory available!\n");
-
-  assert(item->o.l_next == NULL);
-  assert(item->o.l_prev == NULL);
-
-  return item;
-}
-
-item*
-os_calloc_item(void)
-{
-  item* item = calloc(1, sizeof *item);
-
-  if (item == NULL)
-    io_fatal("No virtual memory available!\n");
-
-  assert(item->l_next == NULL);
-  assert(item->l_prev == NULL);
-
-  return item;
-}
-
-monster*
-os_calloc_monster(void)
-{
-  monster* monster = calloc(1, sizeof *monster);
-
-  if (monster == NULL)
-    io_fatal("No virtual memory available!\n");
-
-  assert(monster->l_next == NULL);
-  assert(monster->l_prev == NULL);
-
-  return monster;
-}
-
-
-void
-os_remove_thing(THING** thing)
-{
-  assert(thing != NULL);
-
-  free(*thing);
-  *thing = NULL;
-}
-
-void
-os_remove_item(item** item)
-{
-  assert(item != NULL);
-
-  free(*item);
-  *item = NULL;
-}
-
-void
-os_remove_monster(monster** monster)
-{
-  assert(monster != NULL);
-
-  free(*monster);
-  *monster = NULL;
-}
-
 
 THING*
 os_item_to_thing(item** item)
@@ -111,9 +41,10 @@ os_item_to_thing(item** item)
   assert(item != NULL);
   assert(*item != NULL);
 
-  THING* return_value = os_calloc_thing();
+  THING* return_value = new THING();
   return_value->o = **item;
-  os_remove_item(item);
+  delete *item;
+  *item = nullptr;
 
   return return_value;
 }
@@ -123,9 +54,10 @@ THING* os_monster_to_thing(monster** monster)
   assert(monster != NULL);
   assert(*monster != NULL);
 
-  THING* return_value = os_calloc_thing();
+  THING* return_value = new THING();
   return_value->t = **monster;
-  os_remove_monster(monster);
+  delete *monster;
+  *monster = nullptr;
 
   return return_value;
 }

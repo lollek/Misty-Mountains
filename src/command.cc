@@ -87,7 +87,7 @@ command(void)
     }
 
     Coordinate* player_pos = player_get_pos();
-    move(player_pos->get_y(), player_pos->get_x());
+    move(player_pos->y, player_pos->x);
 
     if (!player_turns_without_action)
     {
@@ -191,7 +191,7 @@ command_wizard_do(char ch)
   switch (ch)
   {
     case '_': raise(SIGINT); break;
-    case '|': io_msg("@ %d,%d", player_get_pos()->get_y(), player_get_pos()->get_x()); break;
+    case '|': io_msg("@ %d,%d", player_get_pos()->y, player_get_pos()->x); break;
     case 'C': wizard_create_item(); break;
     case '$': io_msg("inpack = %d", pack_count_items()); break;
     case CTRL('A'): level--; level_new(); break;
@@ -203,7 +203,7 @@ command_wizard_do(char ch)
     case CTRL('T'): player_teleport(NULL); break;
     case CTRL('W'): pack_identify_item(); break;
     case CTRL('X'): player_can_sense_monsters()
-                    ? player_remove_sense_monsters()
+                    ? player_remove_sense_monsters(0)
                     : player_add_sense_monsters(true); break;
     case '*' : wizard_list_items(); break;
 

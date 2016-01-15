@@ -399,8 +399,8 @@ io_wreadstr(WINDOW* win, char* dest)
     getyx(stdscr, tmp_y, tmp_x);
     Coordinate currpos(tmp_x, tmp_y);
     Coordinate maxpos = currpos;
-    assert(currpos.get_y() >= 0 && currpos.get_y() < maxpos.get_y());
-    assert(currpos.get_x() >= 0 && currpos.get_x() < maxpos.get_x());
+    assert(currpos.y >= 0 && currpos.y < maxpos.y);
+    assert(currpos.x >= 0 && currpos.x < maxpos.x);
 #endif
   }
 
@@ -461,7 +461,7 @@ io_tile(enum tile tile)
 void
 io_missile_motion(item* item, int ydelta, int xdelta)
 {
-  coord* player_pos = player_get_pos();
+  Coordinate* player_pos = player_get_pos();
   int ch;
 
   /* Come fly with us ... */
@@ -469,11 +469,11 @@ io_missile_motion(item* item, int ydelta, int xdelta)
   for (;;)
   {
     /* Erase the old one */
-    if (!coord_same(&item->o_pos, player_pos) &&
+    if (item->o_pos ==  *player_pos &&
         cansee(item->o_pos.y, item->o_pos.x))
     {
       ch = level_get_ch(item->o_pos.y, item->o_pos.x);
-      mvaddcch(item->o_pos.y, item->o_pos.x, (chtype)ch);
+      mvaddcch(item->o_pos.y, item->o_pos.x, static_cast<chtype>(ch));
     }
 
     /* Get the new position */
@@ -486,7 +486,7 @@ io_missile_motion(item* item, int ydelta, int xdelta)
       if (cansee(item->o_pos.y, item->o_pos.x))
       {
         os_usleep(10000);
-        mvaddcch(item->o_pos.y, item->o_pos.x, (chtype)item->o_type);
+        mvaddcch(item->o_pos.y, item->o_pos.x, static_cast<chtype>(item->o_type));
         refresh();
       }
       continue;
