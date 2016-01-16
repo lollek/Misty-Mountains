@@ -36,6 +36,6 @@ enum armor_t armor_type_random();
 void armor_rust();             /* Rust players armor */
 bool armor_command_wear();     /* Let player select something to wear */
 
-void armor_description(Item const* item, char* buf);
+std::string armor_description(Item const* item);
 
 Item* armor_create(int which, int random_stats);

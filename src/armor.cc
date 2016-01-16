@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -92,22 +93,29 @@ armor_rust() {
   }
 }
 
-void
-armor_description(Item const* item, char* buf) {
-  char *ptr = buf;
+string
+armor_description(Item const* item) {
+  stringstream buffer;
+
   string const& obj_name = armor_name(static_cast<armor_t>(item_subtype(item)));
   int bonus_ac = armor_ac(static_cast<armor_t>(item_subtype(item))) -item_armor(item);
   int base_ac = 10 - item_armor(item) - bonus_ac;
 
-  ptr += sprintf(ptr, "A%s %s [%d]", vowelstr(obj_name).c_str(), obj_name.c_str(), base_ac);
+  buffer << "A" << vowelstr(obj_name) << " " <<obj_name << " [" << base_ac;
 
   if (item_is_known(item)) {
-    ptr -= 1;
-    ptr += sprintf(ptr, bonus_ac < 0 ? ",%d]" : ",+%d]", bonus_ac);
+    buffer << ",";
+    if (bonus_ac > 0) {
+      buffer << "+";
+    }
+    buffer << bonus_ac;
   }
+  buffer << "]";
 
   if (!item->get_nickname().empty())
-    ptr += sprintf(ptr, " called %s", item->get_nickname().c_str());
+    buffer << " called " << item->get_nickname();
+
+  return buffer.str();
 }
 
 Item*

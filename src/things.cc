@@ -66,11 +66,7 @@ inv_name(Item const* item, bool drop)
       weapon_description(item, buf);
       buffer << buf;
     } break;
-    case ARMOR: {
-      char buf[MAXSTR];
-      armor_description(item, buf);
-      buffer << buf;
-    } break;
+    case ARMOR: buffer << armor_description(item); break;
     case FOOD: {
       string obj_type = item->o_which == 1 ? "fruit" : "food ration";
       if (item->o_count == 1) {
