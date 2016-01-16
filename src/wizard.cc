@@ -1,21 +1,3 @@
-/*
- * Special wizard commands (some of which are also non-wizard commands
- * under strange circumstances)
- *
- * @(#)wizard.c	4.30 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <assert.h>
-
 #include <vector>
 
 using namespace std;
@@ -232,12 +214,12 @@ wizard_create_item(void)
       break;
 
     default:
-      io_debug("Not implemented: %c(%d)\r\n", which, which);
-      assert(0);
-      break;
+      throw runtime_error("Unimplemented item: " + to_string(which));
   }
 
-  assert(obj != nullptr);
+  if (obj == nullptr) {
+    throw runtime_error("object was null");
+  }
   pack_add(obj, false);
 }
 
