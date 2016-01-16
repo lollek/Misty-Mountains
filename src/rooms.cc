@@ -1,17 +1,7 @@
-/*
- * Create the layout for the new level
- *
- * @(#)rooms.c	4.45 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
 #include <ctype.h>
 
-#include "Coordinate.h"
+#include "game.h"
+#include "coordinate.h"
 #include "io.h"
 #include "pack.h"
 #include "monster.h"
@@ -41,7 +31,7 @@ static void
 room_draw_vertical_line(struct room* rp, int startx)
 {
   for (int y = rp->r_pos.y + 1; y <= rp->r_max.y + rp->r_pos.y - 1; y++)
-    level_set_ch(y, startx, VWALL);
+    Game::level->set_ch(startx, y, VWALL);
 }
 
 /* Draw a horizontal line */
@@ -49,7 +39,7 @@ static void
 room_draw_horizontal_line(struct room* rp, int starty)
 {
   for (int x = rp->r_pos.x; x <= rp->r_pos.x + rp->r_max.x - 1; x++)
-    level_set_ch(starty, x, '-');
+    Game::level->set_ch(x, starty, '-');
 }
 
 /* Called to illuminate a room.
@@ -62,7 +52,7 @@ room_open_door(struct room* rp)
 
   for (int y = rp->r_pos.y; y < rp->r_pos.y + rp->r_max.y; y++)
     for (int x = rp->r_pos.x; x < rp->r_pos.x + rp->r_max.x; x++)
-      if (isupper(level_get_type(y, x)))
+      if (isupper(Game::level->get_type(x, y)))
         monster_notice_player(y, x);
 }
 
@@ -99,7 +89,7 @@ room_dig(int y, int x, int starty, int startx, int maxy, int maxx)
       int newx = x + del[i].x;
 
       if (newy < 0 || newy > maxy || newx < 0 || newx > maxx
-          || level_get_flags(newy + starty, newx + startx) & F_PASS)
+          || Game::level->get_flags(newx + startx, newy + starty) & F_PASS)
         continue;
 
       if (os_rand_range(++cnt) == 0)
@@ -185,7 +175,7 @@ room_draw(struct room* rp)
   /* Put the floor down */
   for (int y = rp->r_pos.y + 1; y < rp->r_pos.y + rp->r_max.y - 1; y++)
     for (int x = rp->r_pos.x + 1; x < rp->r_pos.x + rp->r_max.x - 1; x++)
-      level_set_ch(y, x, FLOOR);
+      Game::level->set_ch(x, y, FLOOR);
 }
 
 static void
@@ -268,7 +258,7 @@ rooms_create(void)
       gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
       room_find_floor(&rooms[i], &rooms[i].r_gold, false, false);
       gold->set_pos(rooms[i].r_gold);
-      level_set_ch(rooms[i].r_gold.y, rooms[i].r_gold.x, GOLD);
+      Game::level->set_ch(rooms[i].r_gold, GOLD);
       gold->o_flags = ISMANY;
       gold->o_type = GOLD;
       level_items.push_back(gold);
@@ -310,7 +300,7 @@ room_find_floor(struct room* rp, Coordinate* cp, int limit, bool monst)
     cp->x = rp->r_pos.x + os_rand_range(rp->r_max.x - 2) + 1;
     cp->y = rp->r_pos.y + os_rand_range(rp->r_max.y - 2) + 1;
 
-    PLACE* pp = level_get_place(cp->y, cp->x);
+    PLACE* pp = Game::level->get_place(*cp);
     if (monst)
     {
       if (pp->p_monst == nullptr && step_ok(pp->p_ch))
@@ -334,8 +324,8 @@ room_enter(Coordinate* cp)
       move(y, rp->r_pos.x);
       for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
       {
-        Monster* tp = level_get_monster(y, x);
-        char ch = level_get_ch(y, x);
+        Monster* tp = Game::level->get_monster(x, y);
+        char ch = Game::level->get_ch(x, y);
 
         if (tp == nullptr)
         {
@@ -372,7 +362,7 @@ room_leave(Coordinate* cp)
   else
     floor = SHADOW;
 
-  player_set_room(&passages[level_get_flags(cp->y, cp->x) & F_PNUM]);
+  player_set_room(&passages[Game::level->get_flags(*cp) & F_PNUM]);
   for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++)
     for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
     {
@@ -392,7 +382,7 @@ room_leave(Coordinate* cp)
       if (player_can_sense_monsters())
         mvaddcch(y, x, static_cast<chtype>(ch) | A_STANDOUT);
       else
-        mvaddcch(y, x, static_cast<chtype>(level_get_ch(y, x) == DOOR ? DOOR : floor));
+        mvaddcch(y, x, static_cast<chtype>(Game::level->get_ch(x, y) == DOOR ? DOOR : floor));
     }
 
   room_open_door(rp);

@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <assert.h>
 
+#include "game.h"
 #include "armor.h"
 #include "command.h"
 #include "food.h"
@@ -473,15 +474,14 @@ io_missile_motion(Item* item, int ydelta, int xdelta)
     if (item->get_pos() ==  *player_pos &&
         cansee(item->get_y(), item->get_x()))
     {
-      ch = level_get_ch(item->get_y(), item->get_x());
+      ch = Game::level->get_ch(item->get_pos());
       mvaddcch(item->get_y(), item->get_x(), static_cast<chtype>(ch));
     }
 
     /* Get the new position */
     item->set_y(item->get_y() + ydelta);
     item->set_x(item->get_x() + xdelta);
-    if (step_ok(ch = level_get_type(item->get_y(), item->get_x()))
-       && ch != DOOR)
+    if (step_ok(ch = Game::level->get_type(item->get_pos())) && ch != DOOR)
     {
       /* It hasn't hit anything yet, so display it if it alright. */
       if (cansee(item->get_y(), item->get_x()))

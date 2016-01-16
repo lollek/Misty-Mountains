@@ -1,19 +1,10 @@
-/*
- * Draw the connecting passages
- *
- * @(#)passages.c	4.22 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
+#include <cstdlib>
+#include <exception>
 
-#include <stdlib.h>
+using namespace std;
 
-#include "Coordinate.h"
-
+#include "game.h"
+#include "coordinate.h"
 #include "io.h"
 #include "os.h"
 #include "rooms.h"
@@ -50,7 +41,7 @@ numpass(int y, int x)
   if (x >= NUMCOLS || x < 0 || y >= NUMLINES || y <= 0)
     return;
 
-  int flags = level_get_flags(y, x);
+  int flags = Game::level->get_flags(x, y);
   if (flags & F_PNUM)
     return;
 
@@ -62,7 +53,7 @@ numpass(int y, int x)
 
   /* check to see if it is a door or secret door, i.e., a new exit,
    * or a numerable type of place */
-  char ch = level_get_ch(y, x);
+  char ch = Game::level->get_ch(x, y);
   if (ch == DOOR || (!(flags & F_REAL) && (ch == VWALL || ch == HWALL)))
   {
     struct room* rp = &passages[pnum];
@@ -74,7 +65,7 @@ numpass(int y, int x)
     return;
 
   flags |= pnum;
-  level_set_flags(y, x, static_cast<char>(flags));
+  Game::level->set_flags(x, y, static_cast<char>(flags));
 
   /* recurse on the surrounding places */
   numpass(y + 1, x);
@@ -111,7 +102,7 @@ door(struct room* rm, Coordinate* cp)
   if (rm->r_flags & ISMAZE)
     return;
 
-  PLACE* place = level_get_place(cp->y, cp->x);
+  PLACE* place = Game::level->get_place(*cp);
   if (os_rand_range(10) + 1 < Level::current_level && os_rand_range(5) == 0)
   {
     if (cp->y == rm->r_pos.y || cp->y == rm->r_pos.y + rm->r_max.y - 1)
@@ -179,13 +170,13 @@ conn(int r1, int r2)
         start_pos.y = room_from->r_pos.y + room_from->r_max.y - 1;
       }
       while ((room_from->r_flags & ISMAZE)
-             && !(level_get_flags(start_pos.y, start_pos.x) & F_PASS));
+             && !(Game::level->get_flags(start_pos) & F_PASS));
 
     if (!(room_to->r_flags & ISGONE))
       do
         end_pos.x = room_to->r_pos.x + os_rand_range(room_to->r_max.x - 2) + 1;
       while ((room_to->r_flags & ISMAZE)
-             && !(level_get_flags(end_pos.y, end_pos.x) & F_PASS));
+             && !(Game::level->get_flags(end_pos) & F_PASS));
 
     distance = abs(start_pos.y - end_pos.y) - 1;
     turn_delta.y = 0;
@@ -211,13 +202,13 @@ conn(int r1, int r2)
         start_pos.y = room_from->r_pos.y + os_rand_range(room_from->r_max.y - 2)
           + 1;
       } while ((room_from->r_flags & ISMAZE)
-               && !(level_get_flags(start_pos.y, start_pos.x) & F_PASS));
+               && !(Game::level->get_flags(start_pos) & F_PASS));
 
     if (!(room_to->r_flags & ISGONE))
       do
         end_pos.y = room_to->r_pos.y + os_rand_range(room_to->r_max.y - 2) + 1;
       while ((room_to->r_flags & ISMAZE)
-             && !(level_get_flags(end_pos.y, end_pos.x) & F_PASS));
+             && !(Game::level->get_flags(end_pos) & F_PASS));
 
     distance = abs(start_pos.x - end_pos.x) - 1;
     turn_delta.y = (start_pos.y < end_pos.y ? 1 : -1);
@@ -371,7 +362,11 @@ passages_do(void)
 void
 passages_putpass(Coordinate* cp)
 {
-  PLACE *pp = level_get_place(cp->y, cp->x);
+  if (cp == nullptr) {
+    throw runtime_error("cp was null");
+  }
+
+  PLACE *pp = Game::level->get_place(*cp);
   pp->p_flags |= F_PASS;
 
   if (os_rand_range(10) + 1 < Level::current_level && os_rand_range(40) == 0)
@@ -388,7 +383,7 @@ passages_add_pass(void)
   for (int y = 1; y < NUMLINES - 1; y++)
     for (int x = 0; x < NUMCOLS; x++)
     {
-      PLACE* pp = level_get_place(y, x);
+      PLACE* pp = Game::level->get_place(x, y);
       if ((pp->p_flags & F_PASS) || pp->p_ch == DOOR ||
           (!(pp->p_flags&F_REAL) && (pp->p_ch == VWALL ||
                                      pp->p_ch == HWALL)))

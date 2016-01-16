@@ -41,7 +41,7 @@ static bool command_attack_bow(Coordinate const* delta)
 
   Item* arrow = pack_remove(ptr, true, false);
   io_missile_motion(arrow, delta->y, delta->x);
-  Monster* monster_at_pos = level_get_monster(arrow->get_y(), arrow->get_x());
+  Monster* monster_at_pos = Game::level->get_monster(arrow->get_pos());
 
   if (monster_at_pos == nullptr || !fight_against_monster(&arrow->get_pos(), arrow, true))
     weapon_missile_fall(arrow, true);
@@ -49,10 +49,10 @@ static bool command_attack_bow(Coordinate const* delta)
   return true;
 }
 
-static bool command_attack_melee(bool fight_to_death, Coordinate* delta)
+static bool command_attack_melee(bool fight_to_death, Coordinate const& delta)
 {
-  Monster* mp = level_get_monster(delta->y, delta->x);
-  if (mp != nullptr && diag_ok(player_get_pos(), delta))
+  Monster* mp = Game::level->get_monster(delta);
+  if (mp != nullptr && diag_ok(player_get_pos(), &delta))
   {
     if (fight_to_death)
     {
@@ -64,7 +64,7 @@ static bool command_attack_melee(bool fight_to_death, Coordinate* delta)
   }
 
   char const* what;
-  switch (mvincch(delta->y, delta->x))
+  switch (mvincch(delta.y, delta.x))
   {
     case SHADOW: case HWALL: case VWALL: what = "wall"; break;
     default: what = "air"; break;
@@ -85,7 +85,7 @@ command_use_stairs(char up_or_down)
 
   if (player_is_levitating())
     io_msg("You can't. You're floating off the ground!");
-  else if (level_get_ch(player_pos->y, player_pos->x) != STAIRS)
+  else if (Game::level->get_ch(*player_pos) != STAIRS)
     io_msg("You're not standing on any stairs");
 
   else if (up_or_down == '>') /* DOWN */ {
@@ -136,7 +136,7 @@ command_attack(bool fight_to_death)
 
   return weapon != nullptr && weapon->o_which == BOW
     ? command_attack_bow(dir)
-    : command_attack_melee(fight_to_death, &delta);
+    : command_attack_melee(fight_to_death, delta);
 }
 
 bool
@@ -260,9 +260,9 @@ command_identify_trap(void)
 
   Coordinate delta (player_x() + dir->x, player_y() + dir->y);
 
-  int flags = level_get_flags(delta.y, delta.x);
+  int flags = Game::level->get_flags(delta);
 
-  if (level_get_ch(delta.y, delta.x) != TRAP)
+  if (Game::level->get_ch(delta) != TRAP)
     io_msg("no trap there");
   else if (player_has_confusing_attack())
     io_msg(trap_names[os_rand_range(NTRAPS)].c_str());
@@ -270,7 +270,7 @@ command_identify_trap(void)
   {
     io_msg(trap_names[flags & F_TMASK].c_str());
     flags |= F_SEEN;
-    level_set_flags(delta.y, delta.x, static_cast<char>(flags));
+    Game::level->set_flags(delta, static_cast<char>(flags));
   }
   return false;
 }
@@ -503,7 +503,7 @@ bool command_throw(void)
 
   obj = pack_remove(obj, true, false);
   io_missile_motion(obj, ydelta, xdelta);
-  Monster* monster_at_pos = level_get_monster(obj->get_y(), obj->get_x());
+  Monster* monster_at_pos = Game::level->get_monster(obj->get_pos());
 
   /* Throwing an arrow always misses */
   if (obj->o_which == ARROW)
@@ -625,7 +625,7 @@ command_run(char ch, bool cautiously)
 bool command_drop(void)
 {
   Coordinate* player_pos = player_get_pos();
-  char ch = level_get_ch(player_pos->y, player_pos->x);
+  char ch = Game::level->get_ch(*player_pos);
 
   if (ch != FLOOR && ch != PASSAGE)
   {
@@ -650,10 +650,10 @@ bool command_drop(void)
   /* Link it into the level object list */
   level_items.push_back(obj);
 
-  level_set_ch(player_pos->y, player_pos->x, static_cast<char>(obj->o_type));
-  int flags = level_get_flags(player_pos->y, player_pos->x);
+  Game::level->set_ch(*player_pos, static_cast<char>(obj->o_type));
+  int flags = Game::level->get_flags(*player_pos);
   flags |= F_DROPPED;
-  level_set_flags(player_pos->y, player_pos->x, static_cast<char>(flags));
+  Game::level->set_flags(*player_pos, static_cast<char>(flags));
 
   obj->set_pos(*player_pos);
 

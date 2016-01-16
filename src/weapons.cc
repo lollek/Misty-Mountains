@@ -4,7 +4,8 @@
 
 using namespace std;
 
-#include "Coordinate.h"
+#include "game.h"
+#include "coordinate.h"
 #include "fight.h"
 #include "io.h"
 #include "item.h"
@@ -60,7 +61,7 @@ weapon_missile_fall(Item* obj, bool pr) {
   Coordinate fpos;
 
   if (fallpos(&obj->get_pos(), &fpos)) {
-    PLACE* pp = level_get_place(fpos.y, fpos.x);
+    PLACE* pp = Game::level->get_place(fpos);
     pp->p_ch = static_cast<char>(obj->o_type);
     obj->set_pos(fpos);
 

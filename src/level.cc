@@ -2,6 +2,7 @@
 
 using namespace std;
 
+#include "game.h"
 #include "traps.h"
 #include "io.h"
 #include "pack.h"
@@ -25,7 +26,6 @@ using namespace std;
 #define MAXTRIES	10 /* max number of tries to put down a monster */
 #define MAXTRAPS	10
 
-PLACE          level_places[MAXLINES*MAXCOLS];
 Coordinate     level_stairs;
 list<Item*>    level_items;
 int            Level::levels_without_food = 0;
@@ -52,7 +52,7 @@ treas_room(void)
     room_find_floor(room, &monster_pos, 2 * MAXTRIES, false);
     item->set_pos(monster_pos);
     level_items.push_back(item);
-    level_set_ch(monster_pos.y, monster_pos.x, static_cast<char>(item->o_type));
+    Game::level->set_ch(monster_pos, static_cast<char>(item->o_type));
   }
 
   /* fill up room with monsters from the next level down */
@@ -107,7 +107,7 @@ put_things(void)
       Coordinate pos;
       room_find_floor(nullptr, &pos, false, false);
       obj->set_pos(pos);
-      level_set_ch(obj->get_y(), obj->get_x(), static_cast<char>(obj->o_type));
+      Game::level->set_ch(obj->get_pos(), static_cast<char>(obj->o_type));
     }
 
   /* If he is really deep in the dungeon and he hasn't found the
@@ -121,15 +121,18 @@ put_things(void)
     Coordinate pos;
     room_find_floor(nullptr, &pos, false, false);
     amulet->set_pos(pos);
-    level_set_ch(amulet->get_y(), amulet->get_x(), AMULET);
+    Game::level->set_ch(amulet->get_pos(), AMULET);
   }
 }
 
 
 
 Level::Level(int relative_level) {
+
   /* unhold when you go down just in case */
-  player_remove_held();
+  if (player != nullptr) {
+    player_remove_held();
+  }
 
   /* Set max level we've been to */
   Level::current_level += relative_level;
@@ -171,18 +174,18 @@ Level::Level(int relative_level) {
        */
       do {
         room_find_floor(nullptr, &level_stairs, false, false);
-      } while (level_get_ch(level_stairs.y, level_stairs.x) != FLOOR);
+      } while (Game::level->get_ch(level_stairs) != FLOOR);
 
-      char trapflag = level_get_flags(level_stairs.y, level_stairs.x);
+      char trapflag = Game::level->get_flags(level_stairs);
       trapflag &= ~F_REAL;
       trapflag |= os_rand_range(NTRAPS);
-      level_set_flags(level_stairs.y, level_stairs.x, trapflag);
+      Game::level->set_flags(level_stairs, trapflag);
     }
   }
 
   /* Place the staircase down.  */
   room_find_floor(nullptr, &level_stairs, false, false);
-  level_set_ch(level_stairs.y, level_stairs.x, STAIRS);
+  Game::level->set_ch(level_stairs, STAIRS);
 
   monster_set_all_rooms();
 
@@ -200,52 +203,91 @@ Level::Level(int relative_level) {
   }
 }
 
-
-char
-level_get_type(int y, int x)
-{
-  Monster* monster = level_get_monster(y, x);
-  return monster == nullptr
-    ? level_get_ch(y, x)
-    : monster->t_disguise;
+PLACE*
+Level::get_place(int x, int y) {
+  return &this->level_places[((x) << 5) + (y)];
 }
 
 PLACE*
-level_get_place(int y, int x)
-{
-  return &level_places[((x) << 5) + (y)];
+Level::get_place(Coordinate const& coord) {
+  return &this->level_places[((coord.x) << 5) + (coord.y)];
 }
 
 Monster*
-level_get_monster(int y, int x)
-{
-  return level_places[(x << 5) + y].p_monst;
+Level::get_monster(int x, int y) {
+  return this->level_places[(x << 5) + y].p_monst;
+}
+
+Monster*
+Level::get_monster(Coordinate const& coord) {
+  return this->level_places[(coord.x << 5) + coord.y].p_monst;
 }
 
 void
-level_set_monster(int y, int x, Monster* monster)
-{
-  level_places[(x << 5) + y].p_monst = monster;
+Level::set_monster(int x, int y, Monster* monster) {
+  this->level_places[(x << 5) + y].p_monst = monster;
+}
+
+void
+Level::set_monster(Coordinate const& coord, Monster* monster) {
+  this->level_places[(coord.x << 5) + coord.y].p_monst = monster;
 }
 
 char
-level_get_flags(int y, int x)
-{
-  return level_places[(x << 5) + y].p_flags;
+Level::get_flags(int x, int y) {
+  return this->level_places[(x << 5) + y].p_flags;
+}
+
+char
+Level::get_flags(Coordinate const& coord) {
+  return this->level_places[(coord.x << 5) + coord.y].p_flags;
 }
 
 void
-level_set_flags(int y, int x, char flags)
-{
-  level_places[(x << 5) + y].p_flags = flags;
+Level::set_flags(int x, int y, char flags) {
+  this->level_places[(x << 5) + y].p_flags = flags;
 }
 
-char level_get_ch(int y, int x)
-{
-  return level_places[(x << 5) + y].p_ch;
+void
+Level::set_flags(Coordinate const& coord, char flags) {
+  this->level_places[(coord.x << 5) + coord.y].p_flags = flags;
 }
 
-void level_set_ch(int y, int x, char ch)
-{
-  level_places[(x << 5) + y].p_ch = ch;
+char
+Level::get_ch(int x, int y) {
+  return this->level_places[(x << 5) + y].p_ch;
 }
+
+char
+Level::get_ch(Coordinate const& coord) {
+  return this->level_places[(coord.x << 5) + coord.y].p_ch;
+}
+
+void
+Level::set_ch(int x, int y, char ch) {
+  this->level_places[(x << 5) + y].p_ch = ch;
+}
+
+void
+Level::set_ch(Coordinate const& coord, char ch) {
+  this->level_places[(coord.x << 5) + coord.y].p_ch = ch;
+}
+
+char
+Level::get_type(int x, int y)
+{
+  Monster* monster = this->get_monster(x, y);
+  return monster == nullptr
+    ? this->get_ch(x, y)
+    : monster->t_disguise;
+}
+
+char
+Level::get_type(Coordinate const& coord)
+{
+  Monster* monster = this->get_monster(coord);
+  return monster == nullptr
+    ? this->get_ch(coord)
+    : monster->t_disguise;
+}
+

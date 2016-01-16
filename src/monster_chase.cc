@@ -1,15 +1,3 @@
-/*
- * Code for one creature to chase another
- *
- * @(#)chase.c	4.57 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
 #include <assert.h>
 #include <stdlib.h>
 
@@ -17,6 +5,7 @@
 
 using namespace std;
 
+#include "game.h"
 #include "scrolls.h"
 #include "command.h"
 #include "io.h"
@@ -112,7 +101,7 @@ chase(Monster *tp, Coordinate *ee)
       if (!diag_ok(er, &tryp))
         continue;
 
-      ch = level_get_type(y, x);
+      ch = Game::level->get_type(x, y);
       if (step_ok(ch))
       {
         /* If it is a scroll, it might be a scare monster scroll
@@ -129,7 +118,7 @@ chase(Monster *tp, Coordinate *ee)
           }
         }
         /* It can also be a Xeroc, which we shouldn't step on */
-        Monster* obj = level_get_monster(y, x);
+        Monster* obj = Game::level->get_monster(x, y);
         if (obj != nullptr && obj->t_type == 'X')
           continue;
 
@@ -184,7 +173,7 @@ chase_do(Monster *th)
 	ree = roomin(&th->t_dest);
 
     /* We don't count doors as inside rooms for this routine */
-    door = (level_get_ch(th->t_pos.y, th->t_pos.x) == DOOR);
+    door = (Game::level->get_ch(th->t_pos) == DOOR);
 
     /* If the object of our desire is in a different room,
      * and we are not in a corridor, run to the door nearest to
@@ -203,7 +192,7 @@ over:
 	}
 	if (door)
 	{
-	    rer = &passages[level_get_flags(th->t_pos.y, th->t_pos.x) & F_PNUM];
+	    rer = &passages[Game::level->get_flags(th->t_pos) & F_PNUM];
 	    door = false;
 	    goto over;
 	}
@@ -249,7 +238,7 @@ over:
 		{
                     level_items.remove(obj);
                     th->t_pack.push_back(obj);
-		    level_set_ch(obj->get_y(), obj->get_x(),
+                    Game::level->set_ch(obj->get_pos(),
 			(th->t_room->r_flags & ISGONE) ? PASSAGE : FLOOR);
 		    monster_find_new_target(th);
 		    break;
@@ -269,12 +258,12 @@ over:
 
     if (!(ch_ret == th->t_pos))
     {
-      char ch = level_get_type(ch_ret.y, ch_ret.x);
-      char fl = level_get_flags(ch_ret.y, ch_ret.x);
+      char ch = Game::level->get_type(ch_ret);
+      char fl = Game::level->get_flags(ch_ret);
 
       /* Remove monster from old position */
       mvaddcch(th->t_pos.y, th->t_pos.x, static_cast<chtype>(th->t_oldch));
-      level_set_monster(th->t_pos.y, th->t_pos.x, nullptr);
+      Game::level->set_monster(th->t_pos, nullptr);
 
       /* Check if we stepped in a trap */
       if (ch == TRAP || (!(fl & F_REAL) && ch == FLOOR))
@@ -294,7 +283,7 @@ over:
       set_oldch(th, &ch_ret);
       th->t_room = roomin(&ch_ret);
       th->t_pos = ch_ret;
-      level_set_monster(ch_ret.y, ch_ret.x, th);
+      Game::level->set_monster(ch_ret, th);
     }
     move(ch_ret.y, ch_ret.x);
 

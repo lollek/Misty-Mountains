@@ -5,8 +5,9 @@
 
 using namespace std;
 
+#include "game.h"
 #include "colors.h"
-#include "Coordinate.h"
+#include "coordinate.h"
 #include "fight.h"
 #include "io.h"
 #include "item.h"
@@ -119,13 +120,13 @@ wand_find_target(int* y, int* x, int dy, int dx)
   *x = player_x();
 
   /* "walk" in the zap direction until we find a target */
-  while (step_ok(level_get_type(*y, *x)))
+  while (step_ok(Game::level->get_type(*x, *y)))
   {
     *y += dy;
     *x += dx;
   }
 
-  return level_get_monster(*y, *x);
+  return Game::level->get_monster(*x, *y);
 }
 
 static void
@@ -153,8 +154,8 @@ wand_spell_drain_health(void)
   Coordinate* player_pos = player_get_pos();
 
   /* First cnt how many things we need to spread the hit points among */
-  struct room *corp = level_get_ch(player_pos->y, player_pos->x) == DOOR
-    ? &passages[level_get_flags(player_pos->y, player_pos->x) & F_PNUM]
+  struct room *corp = Game::level->get_ch(*player_pos) == DOOR
+    ? &passages[Game::level->get_flags(*player_pos) & F_PNUM]
     : nullptr;
   Monster** dp = drainee;
 
@@ -229,7 +230,7 @@ wand_spell_magic_missile(int dy, int dx)
 
   io_missile_motion(&bolt, dy, dx);
 
-  Monster* target = level_get_monster(bolt.get_y(), bolt.get_x());
+  Monster* target = Game::level->get_monster(bolt.get_pos());
   if (target == nullptr)
     io_msg("the missle vanishes with a puff of smoke");
   else if (monster_save_throw(VS_MAGIC, target))

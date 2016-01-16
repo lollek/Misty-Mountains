@@ -2,10 +2,12 @@
 #include <string.h>
 
 #include <string>
+#include <exception>
 
 using namespace std;
 
-#include "Coordinate.h"
+#include "game.h"
+#include "coordinate.h"
 #include "fight.h"
 #include "io.h"
 #include "level.h"
@@ -20,11 +22,11 @@ using namespace std;
 #include "magic.h"
 
 static bool
-magic_bolt_handle_bounces(Coordinate* pos, Coordinate* dir, tile* dirtile)
+magic_bolt_handle_bounces(Coordinate& pos, Coordinate* dir, tile* dirtile)
 {
   int num_bounces = 0;
 recursive_loop:; /* ONLY called by end of function */
-  char ch = level_get_type(pos->y, pos->x);
+  char ch = Game::level->get_type(pos);
   if (ch != VWALL && ch != HWALL && ch != SHADOW)
     return num_bounces != 0;
 
@@ -42,12 +44,12 @@ recursive_loop:; /* ONLY called by end of function */
       ch = HWALL;
     else
     {
-      int y = dir->y < 0 ? pos->y + 1 : pos->y - 1;
+      int y = dir->y < 0 ? pos.y + 1 : pos.y - 1;
       int y_ch;
       if (y >= NUMLINES || y <= 0)
         y_ch = HWALL;
       else
-        y_ch = level_get_ch(y, pos->x);
+        y_ch = Game::level->get_ch(pos.x, y);
 
       ch = (y_ch == HWALL || y_ch == VWALL || y_ch == SHADOW)
         ? VWALL : HWALL;
@@ -58,12 +60,12 @@ recursive_loop:; /* ONLY called by end of function */
   /* Handle potential bouncing */
   if (ch == VWALL)
   {
-    pos->x -= dir->x;
+    pos.x -= dir->x;
     dir->x = -dir->x;
   }
   else if (ch == HWALL)
   {
-    pos->y -= dir->y;
+    pos.y -= dir->y;
     dir->y = -dir->y;
   }
 
@@ -81,6 +83,10 @@ recursive_loop:; /* ONLY called by end of function */
 static void
 magic_bolt_hit_player(Coordinate* start, string const& missile_name)
 {
+  if (start == nullptr) {
+    throw runtime_error("start coord was null");
+  }
+
   if (!player_save_throw(VS_MAGIC))
   {
     player_lose_health(roll(6, 6));
@@ -94,7 +100,7 @@ magic_bolt_hit_player(Coordinate* start, string const& missile_name)
           default:  death(DEATH_UNKNOWN);
         }
       else
-        death(level_get_monster(start->y, start->x)->t_type);
+        death(Game::level->get_monster(*start)->t_type);
     }
     io_msg("you are hit by the %s", missile_name.c_str());
   }
@@ -105,7 +111,15 @@ magic_bolt_hit_player(Coordinate* start, string const& missile_name)
 static void
 magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string const& missile_name)
 {
-  mon->t_oldch = level_get_ch(pos->y, pos->x);
+  if (mon == nullptr) {
+    throw runtime_error("mon was null");
+  } else if (start == nullptr) {
+    throw runtime_error("start was null");
+  } else if (pos == nullptr) {
+    throw runtime_error("pos was null");
+  }
+
+  mon->t_oldch = Game::level->get_ch(*pos);
   if (!monster_save_throw(VS_MAGIC, mon))
   {
     Item bolt;
@@ -125,7 +139,7 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
     else
       fight_against_monster(pos, &bolt, true);
   }
-  else if (level_get_type(pos->y, pos->x) != 'M' || mon->t_disguise == 'M')
+  else if (Game::level->get_type(*pos) != 'M' || mon->t_disguise == 'M')
   {
     if (start == player_get_pos())
       monster_start_running(pos);
@@ -140,6 +154,12 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
 void
 magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
 {
+  if (start == nullptr) {
+    throw runtime_error("start was null");
+  } else if (dir == nullptr) {
+    throw runtime_error("dir was null");
+  }
+
   tile dirtile = TILE_ERROR;
   switch (dir->y + dir->x)
   {
@@ -170,10 +190,10 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
   /* Special case when someone is standing in a doorway and aims at the wall
    * nearby OR when stainding in a passage and aims at the wall
    * Note that both of those things are really stupid to do */
-  char starting_pos = level_get_ch(start->y, start->x);
+  char starting_pos = Game::level->get_ch(*start);
   if (starting_pos == DOOR || starting_pos == PASSAGE)
   {
-    char first_bounce = level_get_ch(start->y + dir->y, start->x + dir->x);
+    char first_bounce = Game::level->get_ch(start->x + dir->x, start->y + dir->y);
     bool is_player = *start ==* player_get_pos();
     if (first_bounce == HWALL || first_bounce == VWALL)
     {
@@ -182,7 +202,7 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
           magic_bolt_hit_player(start, name);
       else
         for (int i = 0; i < BOLT_LENGTH; ++i)
-          magic_bolt_hit_monster(level_get_monster(start->y, start->x),
+          magic_bolt_hit_monster(Game::level->get_monster(*start),
                                 start, start, name);
       return;
     }
@@ -194,14 +214,14 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
     pos.y += dir->y;
     pos.x += dir->x;
 
-    if (magic_bolt_handle_bounces(&pos, dir, &dirtile))
+    if (magic_bolt_handle_bounces(pos, dir, &dirtile))
       io_msg("the %s bounces", name.c_str());
 
     /* Handle potential hits */
     if (pos == *player_get_pos())
       magic_bolt_hit_player(start, name);
 
-    Monster* tp = level_get_monster(pos.y, pos.x);
+    Monster* tp = Game::level->get_monster(pos);
     if (tp != nullptr)
       magic_bolt_hit_monster(tp, start, &pos, name);
 

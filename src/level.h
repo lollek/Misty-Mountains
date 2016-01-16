@@ -26,27 +26,32 @@ public:
   Level(int relative_level); /* +1 for stairs up, -1 if you go down */
   ~Level() = default;
 
+  PLACE* get_place(int x, int y);
+  PLACE* get_place(Coordinate const& coord);
+  Monster* get_monster(int x, int y);
+  Monster* get_monster(Coordinate const& coord);
+  char get_flags(int x, int y);
+  char get_flags(Coordinate const& coord);
+  char get_ch(int x, int y);
+  char get_ch(Coordinate const& coord);
+  char get_type(int x, int y);
+  char get_type(Coordinate const& coord);
+
+  void set_monster(int x, int y, Monster* monster);
+  void set_monster(Coordinate const& coord, Monster* monster);
+  void set_flags(int x, int y, char flags);
+  void set_flags(Coordinate const& coord, char flags);
+  void set_ch(int x, int y, char ch);
+  void set_ch(Coordinate const& coord, char ch);
+
   int static constexpr amulet_min_level = 26;
   int static           levels_without_food;
   int static           max_level_visited;
   int static           current_level;
 
 private:
+  PLACE              level_places[MAXLINES*MAXCOLS];  /* level map */
 };
 
-extern PLACE              level_places[MAXLINES*MAXCOLS];  /* level map */
 extern Coordinate         level_stairs;                    /* Location of staircase */
 extern std::list<Item*>   level_items;                     /* List of items on level */
-
-char level_get_type(int y, int x);
-
-PLACE* level_get_place(int y, int x);
-
-Monster* level_get_monster(int y, int x);
-void level_set_monster(int y, int x, Monster* monster);
-
-char level_get_flags(int y, int x);
-void level_set_flags(int y, int x, char flags);
-
-char level_get_ch(int y, int x);
-void level_set_ch(int y, int x, char ch);

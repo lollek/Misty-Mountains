@@ -1,3 +1,4 @@
+#include "game.h"
 #include "Coordinate.h"
 #include "pack.h"
 #include "rings.h"
@@ -451,50 +452,50 @@ player_search()
     for (int x = player_pos->x - 1; x <= player_pos->x + 1; x++)
     {
       /* Real wall/floor/shadow */
-      int flags = level_get_flags(y, x);
+      int flags = Game::level->get_flags(x, y);
       if (flags & F_REAL)
         continue;
 
-      char chatyx = level_get_ch(y, x);
+      char chatyx = Game::level->get_ch(x, y);
       switch (chatyx)
       {
         case VWALL: case HWALL:
           if (!os_rand_range(5 + probinc))
           {
-            level_set_ch(y, x, DOOR);
+            Game::level->set_ch(x, y, DOOR);
             io_msg("a secret door");
             found = true;
             flags |= F_REAL;
-            level_set_flags(y, x, static_cast<char>(flags));
+            Game::level->set_flags(x, y, static_cast<char>(flags));
           }
           break;
 
         case FLOOR:
           if (!os_rand_range(2 + probinc))
           {
-            level_set_ch(y, x, TRAP);
+            Game::level->set_ch(x, y, TRAP);
 
             if (player_is_hallucinating())
               io_msg(trap_names[os_rand_range(NTRAPS)].c_str());
             else {
               io_msg(trap_names[flags & F_TMASK].c_str());
               flags |= F_SEEN;
-              level_set_flags(y, x, static_cast<char>(flags));
+              Game::level->set_flags(x, y, static_cast<char>(flags));
             }
 
             found = true;
             flags |= F_SEEN;
-            level_set_flags(y, x, static_cast<char>(flags));
+            Game::level->set_flags(x, y, static_cast<char>(flags));
           }
           break;
 
         case SHADOW:
           if (!os_rand_range(3 + probinc))
           {
-            level_set_ch(y, x, PASSAGE);
+            Game::level->set_ch(x, y, PASSAGE);
             found = true;
             flags |= F_REAL;
-            level_set_flags(y, x, static_cast<char>(flags));
+            Game::level->set_flags(x, y, static_cast<char>(flags));
           }
           break;
       }

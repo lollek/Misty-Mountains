@@ -1,15 +1,3 @@
-/*
- * All the fighting gets done here
- *
- * @(#)fight.c	4.67 (Berkeley) 09/06/83
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -19,6 +7,7 @@
 
 using namespace std;
 
+#include "game.h"
 #include "colors.h"
 #include "command.h"
 #include "io.h"
@@ -223,7 +212,10 @@ print_attack(bool hit, char const* att, char const* def)
 int
 fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
 {
-  Monster* tp = level_get_monster(monster_pos->y, monster_pos->x);
+  if (monster_pos == nullptr) {
+    throw runtime_error("monster_pos was null");
+  }
+  Monster* tp = Game::level->get_monster(*monster_pos);
   if (tp == nullptr)
     return !io_fail("fight_against_monster(%p, %p, %b) nullptr monster\r\n",
                  monster_pos, weapon, thrown);

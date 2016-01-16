@@ -1,19 +1,8 @@
-/*
- * hero movement commands
- *
- * @(#)move.c	4.49 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
 #include <ctype.h>
 #include <assert.h>
 
-#include "Coordinate.h"
+#include "game.h"
+#include "coordinate.h"
 #include "scrolls.h"
 #include "command.h"
 #include "traps.h"
@@ -39,7 +28,7 @@ Coordinate move_pos_prev;
 static bool
 move_turn_ok(int y, int x)
 {
-  PLACE *pp = level_get_place(y, x);
+  PLACE *pp = Game::level->get_place(x, y);
   return (pp->p_ch == DOOR
       || (pp->p_flags & (F_REAL|F_PASS)) == (F_REAL|F_PASS));
 }
@@ -50,7 +39,7 @@ static void
 move_turnref(void)
 {
   Coordinate *player_pos = player_get_pos();
-  PLACE *pp = level_get_place(player_pos->y, player_pos->x);
+  PLACE *pp = Game::level->get_place(*player_pos);
 
   if (!(pp->p_flags & F_SEEN))
   {
@@ -128,18 +117,18 @@ over:
     if (running && (*player_get_pos() == nh))
 	after = running = false;
 
-    fl = level_get_flags(nh.y, nh.x);
-    ch = level_get_type(nh.y, nh.x);
+    fl = Game::level->get_flags(nh);
+    ch = Game::level->get_type(nh);
 
     if (!(fl & F_REAL) && ch == FLOOR)
     {
 	if (!player_is_levitating())
 	{
             ch = TRAP;
-            level_set_ch(nh.y, nh.x, ch);
-            int flags = level_get_flags(nh.y, nh.x);
+            Game::level->set_ch(nh, ch);
+            int flags = Game::level->get_flags(nh);
             flags |= F_REAL;
-            level_set_flags(nh.y, nh.x, static_cast<char>(flags));
+            Game::level->set_flags(nh, static_cast<char>(flags));
 	}
     }
     else if (player_is_held() && ch != 'F')
@@ -207,11 +196,11 @@ hit_bound:
           {
             Coordinate *player_pos = player_get_pos();
 	    running = false;
-	    if (level_get_flags(player_pos->y, player_pos->x) & F_PASS)
+	    if (Game::level->get_flags(*player_pos) & F_PASS)
 		room_enter(&nh);
 	    mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
 	    if ((fl & F_PASS)
-                && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
+                && Game::level->get_ch(move_pos_prev) == DOOR)
 		room_leave(&nh);
             player_set_pos(&nh);
           }
@@ -224,7 +213,7 @@ hit_bound:
 		return after;
 	    mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
 	    if ((fl & F_PASS)
-                && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
+                && Game::level->get_ch(move_pos_prev) == DOOR)
 		room_leave(&nh);
             player_set_pos(&nh);
           }
@@ -241,7 +230,7 @@ hit_bound:
 	    player_set_room(roomin(player_pos));
 	    mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
 	    if ((fl & F_PASS)
-                && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
+                && Game::level->get_ch(move_pos_prev) == DOOR)
 		room_leave(&nh);
             player_set_pos(&nh);
           }
@@ -253,21 +242,21 @@ hit_bound:
 		trap_spring(nullptr, &nh);
 		mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
 		if ((fl & F_PASS)
-                    && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
+                    && Game::level->get_ch(move_pos_prev) == DOOR)
 		    room_leave(&nh);
                 player_set_pos(&nh);
           }
           break;
 	default:
 	    running = false;
-	    if (isupper(ch) || level_get_monster(nh.y, nh.x))
+	    if (isupper(ch) || Game::level->get_monster(nh))
 		fight_against_monster(&nh, pack_equipped_item(EQUIPMENT_RHAND), false);
 	    else
 	    {
               Coordinate *player_pos = player_get_pos();
               mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
               if ((fl & F_PASS)
-                  && level_get_ch(move_pos_prev.y, move_pos_prev.x) == DOOR)
+                  && Game::level->get_ch(move_pos_prev) == DOOR)
                 room_leave(&nh);
               player_set_pos(&nh);
               if (ch != STAIRS)
@@ -299,7 +288,7 @@ move_random(Monster* who, Coordinate* ret)
     return;
   }
 
-  char ch = level_get_type(y, x);
+  char ch = Game::level->get_type(x, y);
   if (!step_ok(ch))
   {
     ret->x = who->t_pos.x;

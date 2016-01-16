@@ -19,6 +19,7 @@
 
 using namespace std;
 
+#include "game.h"
 #include "io.h"
 #include "pack.h"
 #include "scrolls.h"
@@ -156,7 +157,7 @@ monster_new(Monster* monster, char type, Coordinate* pos)
   monster->t_pos        = *pos;
   monster->t_oldch      = static_cast<char>(mvincch(pos->y, pos->x));
   monster->t_room       = roomin(pos);
-  level_set_monster(pos->y, pos->x, monster);
+  Game::level->set_monster(*pos, monster);
 
   struct monster_template const* m_template = &monsters[monster->t_type - 'A'];
   struct stats* new_stats = &monster->t_stats;
@@ -204,7 +205,7 @@ monster_new_random_wanderer(void)
 Monster*
 monster_notice_player(int y, int x)
 {
-  Monster *monster = level_get_monster(y, x);
+  Monster *monster = Game::level->get_monster(x, y);
 
   Coordinate* player_pos = player_get_pos();
 
@@ -275,7 +276,11 @@ monster_save_throw(int which, Monster const* mon)
 void
 monster_start_running(Coordinate const* runner)
 {
-  Monster *tp = level_get_monster(runner->y, runner->x);
+  if (runner == nullptr) {
+    throw runtime_error("runner was null");
+  }
+
+  Monster *tp = Game::level->get_monster(*runner);
 
   monster_find_new_target(tp);
   if (!monster_is_stuck(tp))
@@ -341,7 +346,7 @@ monster_remove_from_screen(Coordinate* mp, Monster* tp, bool waskill)
   }
   tp->t_pack.clear();
 
-  level_set_monster(mp->y, mp->x, nullptr);
+  Game::level->set_monster(*mp, nullptr);
   mvaddcch(mp->y, mp->x, static_cast<chtype>(tp->t_oldch));
 
   monster_list.remove(tp);
@@ -382,7 +387,7 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   if (monster_seen_by_player(monster))
     mvaddcch(monster->t_pos.y, monster->t_pos.x, static_cast<chtype>(monster->t_oldch));
   set_oldch(monster, &new_pos);
-  level_set_monster(monster->t_pos.y, monster->t_pos.x, nullptr);
+  Game::level->set_monster(monster->t_pos, nullptr);
 
   /* Add monster */
   monster->t_room = roomin(&new_pos);
@@ -556,8 +561,8 @@ monster_seen_by_player(Monster const* monster)
   if (dist(monster_y, monster_x, player_pos->y, player_pos->x) < LAMPDIST)
   {
     if (monster_y != player_pos->y && monster_x != player_pos->x
-        && !step_ok(level_get_ch(monster_y, player_pos->x))
-        && !step_ok(level_get_ch(player_pos->y, monster_x)))
+        && !step_ok(Game::level->get_ch(player_pos->x, monster_y))
+        && !step_ok(Game::level->get_ch(monster_x, player_pos->y)))
       return false;
     return true;
   }
@@ -712,7 +717,7 @@ monster_print_all(void)
     if (cansee(mon->t_pos.y, mon->t_pos.x)) {
       chtype symbol = (!monster_is_invisible(mon) || player_has_true_sight())
         ? static_cast<chtype>(mon->t_disguise)
-        : static_cast<chtype>(level_get_ch(mon->t_pos.y, mon->t_pos.x));
+        : static_cast<chtype>(Game::level->get_ch(mon->t_pos));
       mvaddcch(mon->t_pos.y, mon->t_pos.x, symbol);
 
     } else if (player_can_sense_monsters()) {
@@ -747,8 +752,8 @@ monster_add_nearby(Monster** nearby_monsters, struct room const* room)
   for (Monster* mon : monster_list) {
     if (mon->t_room == player_get_room()
         || mon->t_room == room
-        ||(inpass && level_get_ch(mon->t_pos.y, mon->t_pos.x) == DOOR &&
-          &passages[level_get_flags(mon->t_pos.y, mon->t_pos.x) & F_PNUM]
+        ||(inpass && Game::level->get_ch(mon->t_pos) == DOOR &&
+          &passages[Game::level->get_flags(mon->t_pos) & F_PNUM]
           == player_get_room())) {
       *nearby_monsters++ = mon;
     }
@@ -773,7 +778,7 @@ monster_polymorph(Monster* target)
   bool was_seen = monster_seen_by_player(target);
   if (was_seen)
   {
-    mvaddcch(pos.y, pos.x, static_cast<chtype>(level_get_ch(pos.y, pos.x)));
+    mvaddcch(pos.y, pos.x, static_cast<chtype>(Game::level->get_ch(pos)));
     char buf[MAXSTR];
     io_msg_add("%s", monster_name(target, buf));
   }

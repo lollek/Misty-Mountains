@@ -7,8 +7,9 @@
 
 using namespace std;
 
+#include "game.h"
 #include "colors.h"
-#include "Coordinate.h"
+#include "coordinate.h"
 #include "io.h"
 #include "item.h"
 #include "level.h"
@@ -153,7 +154,7 @@ hold_monsters(void)
       for (int y = player_pos->y - 2; y <= player_pos->y + 2; y++)
         if (y >= 0 && y <= NUMLINES - 1)
         {
-          Monster *monster = level_get_monster(y, x);
+          Monster *monster = Game::level->get_monster(x, y);
           if (monster != nullptr)
           {
             monster_become_held(monster);
@@ -190,7 +191,7 @@ create_monster(void)
   for (int y = player_pos->y - 1; y <= player_pos->y + 1; y++)
     for (int x = player_pos->x - 1; x <= player_pos->x + 1; x++)
     {
-      char ch = level_get_type(y, x);
+      char ch = Game::level->get_type(x, y);
 
       if ((y == player_pos->y && x == player_pos->x)
           || !step_ok(ch)
@@ -227,8 +228,8 @@ magic_mapping(void)
   for (int y = 1; y < NUMLINES - 1; y++)
     for (int x = 0; x < NUMCOLS; x++)
     {
-      PLACE* pp = level_get_place(y, x);
-      char ch = level_get_ch(y, x);
+      PLACE* pp = Game::level->get_place(x, y);
+      char ch = Game::level->get_ch(x, y);
       switch (ch)
       {
         case DOOR: case STAIRS: break;

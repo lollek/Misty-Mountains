@@ -19,6 +19,7 @@
 
 using namespace std;
 
+#include "game.h"
 #include "armor.h"
 #include "colors.h"
 #include "daemons.h"
@@ -69,8 +70,8 @@ void
 look(bool wakeup)
 {
   Coordinate const* player_pos = player_get_pos();
-  char const player_ch = level_get_place(player_pos->y, player_pos->x)->p_ch;
-  char const player_flags = level_get_place(player_pos->y, player_pos->x)->p_flags;
+  char const player_ch = Game::level->get_place(*player_pos)->p_ch;
+  char const player_flags = Game::level->get_place(*player_pos)->p_flags;
 
   if (move_pos_prev == *player_pos)
   {
@@ -102,7 +103,7 @@ look(bool wakeup)
           && y == player_pos->y && x == player_pos->x)
         continue;
 
-      PLACE const* xy_pos = level_get_place(y, x);
+      PLACE const* xy_pos = Game::level->get_place(x, y);
       char xy_ch = xy_pos->p_ch;
       if (xy_ch == SHADOW)  /* nothing need be done with a ' ' */
         continue;
@@ -117,8 +118,8 @@ look(bool wakeup)
           && ((player_flags & F_PASS) || player_ch == DOOR))
       {
         if (player_pos->x != x && player_pos->y != y
-            && !step_ok(level_get_ch(y, player_pos->x))
-            && !step_ok(level_get_ch(player_pos->y, x)))
+            && !step_ok(Game::level->get_ch(player_pos->x, y))
+            && !step_ok(Game::level->get_ch(x, player_pos->y)))
           continue;
       }
 
@@ -369,7 +370,7 @@ is_magic(Item const* obj)
 bool
 seen_stairs(void)
 {
-  Monster* tp = level_get_monster(level_stairs.y, level_stairs.x);
+  Monster* tp = Game::level->get_monster(level_stairs);
 
   move(level_stairs.y, level_stairs.x);
   if (incch() == STAIRS)  /* it's on the map */
@@ -428,6 +429,12 @@ set_oldch(Monster* tp, Coordinate* cp)
 {
   char old_char = tp->t_oldch;
 
+  if (tp == nullptr) {
+    throw runtime_error("tp was null");
+  } else if (cp == nullptr) {
+    throw runtime_error("cp was null");
+  }
+
   if (tp->t_pos == *cp)
     return;
 
@@ -438,14 +445,18 @@ set_oldch(Monster* tp, Coordinate* cp)
         (tp->t_room->r_flags & ISDARK))
       tp->t_oldch = SHADOW;
     else if (dist_cp(cp, player_get_pos()) <= LAMPDIST)
-      tp->t_oldch = level_get_ch(cp->y, cp->x);
+      tp->t_oldch = Game::level->get_ch(*cp);
   }
 }
 
 struct room*
 roomin(Coordinate const* cp)
 {
-  char fp = level_get_flags(cp->y, cp->x);
+  if (cp == nullptr) {
+    throw runtime_error("cp was null");
+  }
+
+  char fp = Game::level->get_flags(*cp);
   if (fp & F_PASS)
     return &passages[fp & F_PNUM];
 
@@ -467,8 +478,8 @@ diag_ok(Coordinate const* sp, Coordinate const* ep)
     return false;
   if (ep->x == sp->x || ep->y == sp->y)
     return true;
-  return (step_ok(level_get_ch(ep->y, sp->x))
-             && step_ok(level_get_ch(sp->y, ep->x)));
+  return (step_ok(Game::level->get_ch(sp->x, ep->y))
+             && step_ok(Game::level->get_ch(ep->x, sp->y)));
 }
 
 bool
@@ -481,10 +492,10 @@ cansee(int y, int x)
 
   if (dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
   {
-    if (level_get_flags(y, x) & F_PASS)
+    if (Game::level->get_flags(x, y) & F_PASS)
       if (y != player_pos->y && x != player_pos->x &&
-          !step_ok(level_get_ch(y, player_pos->x))
-          && !step_ok(level_get_ch(player_pos->y, x)))
+          !step_ok(Game::level->get_ch(player_pos->x, y))
+          && !step_ok(Game::level->get_ch(x, player_pos->y)))
         return false;
     return true;
   }
@@ -516,7 +527,7 @@ char
 floor_at(void)
 {
   Coordinate *player_pos = player_get_pos();
-  char ch = level_get_ch(player_pos->y, player_pos->x);
+  char ch = Game::level->get_ch(*player_pos);
   return ch == FLOOR ? floor_ch() : ch;
 }
 
@@ -536,7 +547,7 @@ fallpos(Coordinate const* pos, Coordinate* newpos)
       if (y == player_pos->y && x == player_pos->x)
         continue;
 
-      int ch = level_get_ch(y, x);
+      int ch = Game::level->get_ch(x, y);
       if ((ch == FLOOR || ch == PASSAGE) && os_rand_range(++cnt) == 0)
       {
         newpos->y = y;

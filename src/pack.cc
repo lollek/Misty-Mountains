@@ -18,8 +18,8 @@
 
 using namespace std;
 
-#include "Coordinate.h"
-
+#include "coordinate.h"
+#include "game.h"
 #include "scrolls.h"
 #include "io.h"
 #include "armor.h"
@@ -184,7 +184,7 @@ pack_add_money(int value)
   pack_gold += value;
 
   mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
-  level_set_ch(player_pos->y, player_pos->x,
+  Game::level->set_ch(*player_pos,
       (player_get_room()->r_flags & ISGONE)
         ? PASSAGE
         : FLOOR);
@@ -200,7 +200,7 @@ pack_remove_from_floor(Item* obj)
 
   level_items.remove(obj);
   mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
-  level_set_ch(player_pos->y, player_pos->x,
+  Game::level->set_ch(*player_pos,
       (player_get_room()->r_flags & ISGONE)
         ? PASSAGE
         : FLOOR);
@@ -227,7 +227,7 @@ pack_add(Item* obj, bool silent)
   {
     level_items.remove(obj);
     mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
-    level_set_ch(player_pos->y, player_pos->x, floor_ch());
+    Game::level->set_ch(*player_pos, floor_ch());
     delete obj;
     io_msg("the scroll turns to dust as you pick it up");
     return false;
@@ -575,10 +575,10 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   {
     Coordinate const* player_pos = player_get_pos();
     level_items.push_back(obj);
-    level_set_ch(player_pos->y, player_pos->x, static_cast<char>(obj->o_type));
-    int flags = level_get_flags(player_pos->y, player_pos->x);
+    Game::level->set_ch(*player_pos, static_cast<char>(obj->o_type));
+    int flags = Game::level->get_flags(*player_pos);
     flags |= F_DROPPED;
-    level_set_flags(player_pos->y, player_pos->x, static_cast<char>(flags));
+    Game::level->set_flags(*player_pos, static_cast<char>(flags));
     obj->set_pos(*player_pos);
     io_msg("dropped %s", inv_name(obj, true).c_str());
   }
