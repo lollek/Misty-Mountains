@@ -75,12 +75,9 @@ inv_name(Item const* item, bool drop)
         buffer << item->o_count << " " << obj_type;
       }
     } break;
-    case AMULET: {
-      buffer << "The Amulet of Yendor";
-    } break;
-    case GOLD: {
-      buffer << item->o_goldval << " Gold pieces";
-    } break;
+    case AMULET: buffer << "The Amulet of Yendor"; break;
+    case GOLD: buffer << item->o_goldval << " Gold pieces"; break;
+
     default:
       io_msg("You feel a disturbance in the force");
       buffer << "Something bizarre " << unctrl(static_cast<chtype>(item->o_type));
