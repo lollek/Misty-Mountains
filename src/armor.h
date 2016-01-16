@@ -1,6 +1,9 @@
 #pragma once
 
+#include <string>
+
 #include "monster.h"
+#include "item.h"
 
 enum armor_t
 {
@@ -17,14 +20,14 @@ enum armor_t
 
 struct armor_info_t
 {
-  char const* name;
+  std::string const& name;
   int ac;    /* Armor bonus */
   int prob;  /* probability of drop */
   int value; /* Value in gold */
   int known; /* Is it known by player? */
 };
 
-char const* armor_name(enum armor_t armor);
+std::string const& armor_name(enum armor_t armor);
 int armor_ac(enum armor_t armor);
 int armor_value(enum armor_t armor);
 int armor_probability(enum armor_t i);

@@ -1,5 +1,7 @@
-#include <stdlib.h>
-#include <string.h>
+#include <string>
+#include <vector>
+
+using namespace std;
 
 #include "io.h"
 #include "item.h"
@@ -14,7 +16,7 @@
 
 #include "armor.h"
 
-static struct armor_info_t armors[NARMORS] = {
+static vector<armor_info_t const> armors {
  /* name                   ac  prob value known */
  { "leather armor",         8, 20,   20,  false },
  { "ring mail",             7, 15,   25,  false },
@@ -26,10 +28,10 @@ static struct armor_info_t armors[NARMORS] = {
  { "plate mail",            3,  5,  150,  false },
 };
 
-char const* armor_name(enum armor_t i)  { return armors[i].name; }
-int armor_ac(enum armor_t i)            { return armors[i].ac; }
-int armor_value(enum armor_t i)         { return armors[i].value; }
-int armor_probability(enum armor_t i)   { return armors[i].prob; }
+string const& armor_name(enum armor_t i)  { return armors.at(i).name; }
+int armor_ac(enum armor_t i)              { return armors.at(i).ac; }
+int armor_value(enum armor_t i)           { return armors.at(i).value; }
+int armor_probability(enum armor_t i)     { return armors.at(i).prob; }
 
 int
 armor_for_monster(Monster const* mon) {
@@ -99,11 +101,11 @@ armor_rust() {
 void
 armor_description(Item const* item, char* buf) {
   char *ptr = buf;
-  char const* obj_name = armor_name(static_cast<armor_t>(item_subtype(item)));
+  string const& obj_name = armor_name(static_cast<armor_t>(item_subtype(item)));
   int bonus_ac = armor_ac(static_cast<armor_t>(item_subtype(item))) -item_armor(item);
   int base_ac = 10 - item_armor(item) - bonus_ac;
 
-  ptr += sprintf(ptr, "A%s %s [%d]", vowelstr(obj_name).c_str(), obj_name, base_ac);
+  ptr += sprintf(ptr, "A%s %s [%d]", vowelstr(obj_name).c_str(), obj_name.c_str(), base_ac);
 
   if (item_is_known(item)) {
     ptr -= 1;
