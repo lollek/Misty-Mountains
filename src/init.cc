@@ -1,27 +1,8 @@
-/*
- * global variable initializaton
- *
- * @(#)init.c	4.31 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <pwd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #include <string>
 
 using namespace std;
 
+#include "os.h"
 #include "potions.h"
 #include "scrolls.h"
 #include "io.h"
@@ -91,13 +72,8 @@ bool
 init_new_game(void)
 {
   /* Parse environment opts */
-  if (whoami[0] == '\0')
-  {
-    struct passwd const* pw = getpwuid(getuid());
-    char const* name = pw ? pw->pw_name : "nobody";
-
-    strucpy(whoami, name, static_cast<int>(strlen(name)));
-  }
+  string name = os_whoami();
+  strucpy(whoami, name.c_str(), name.size());
 
   printf("Hello %s, just a moment while I dig the dungeon...", whoami);
   fflush(stdout);

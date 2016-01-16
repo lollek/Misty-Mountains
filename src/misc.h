@@ -29,7 +29,7 @@ bool seen_stairs(void);        /* Return true if the player has seen the stairs 
 void invis_on(void);         /* Turn on the ability to see invisible */
 
 /* Copy string using unctrl for things */
-void strucpy(char* s1, char const* s2, int len);
+void strucpy(char* s1, char const* s2, size_t len);
 
 void waste_time(int rounds);
 void set_oldch(Monster* tp, Coordinate* cp); /* Set oldch for a monster */

@@ -347,7 +347,7 @@ io_wreadstr(WINDOW* win, char* dest)
 {
   char buf[MAXSTR];
   int c = ~KEY_ESCAPE;
-  int i = static_cast<int>(strlen(dest));
+  size_t i = strlen(dest);
   int oy, ox;
 
   assert(i >= 0);
@@ -370,7 +370,7 @@ io_wreadstr(WINDOW* win, char* dest)
     else if (c == erasechar() && i > 0)
     {
       i--;
-      wmove(win, oy, ox + i);
+      wmove(win, oy, ox + static_cast<int>(i));
       wclrtoeol(win);
     }
 
@@ -407,7 +407,7 @@ io_wreadstr(WINDOW* win, char* dest)
 
   buf[i] = '\0';
   if (i > 0) /* only change option if something has been typed */
-    strucpy(dest, buf, static_cast<int>(strlen(buf)));
+    strucpy(dest, buf, strlen(buf));
   else
     waddstr(win, dest);
   if (win == stdscr)

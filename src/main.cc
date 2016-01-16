@@ -30,19 +30,12 @@
 #include "rogue.h"
 #include "wizard.h"
 
-enum game_mode_t
-{
-  LOAD_GAME = 0,
-  NEW_GAME = 1
-};
-
 /** parse_args
  * Parse command-line arguments
  */
-static enum game_mode_t
+static void
 parse_args(int argc, char* const* argv)
 {
-  enum game_mode_t game_mode = NEW_GAME;
   int option_index = 0;
   struct option const long_options[] = {
     {"no-colors", no_argument,       0, 'c'},
@@ -81,10 +74,9 @@ parse_args(int argc, char* const* argv)
       case 'f': fight_flush = true; break;
       case 'j': jump = false; break;
       case 'n': if (strlen(optarg))
-                  strucpy(whoami, optarg, static_cast<int>(strlen(optarg)));
+                  strucpy(whoami, optarg, strlen(optarg));
                 break;
       case 'p': passgo = true; break;
-      case 'r': game_mode = LOAD_GAME; break;
       case 's': score_show_and_exit(0, -1, 0); /* does not return */
       case 'S': if (wizard)
                   sscanf(optarg, "%" SCNu32, &os_rand_seed);
@@ -128,8 +120,6 @@ parse_args(int argc, char* const* argv)
             argv[0]);
     exit(1);
   }
-
-  return game_mode;
 }
 
 /** main:

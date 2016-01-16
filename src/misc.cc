@@ -400,7 +400,7 @@ invis_on(void)
 
 
 void
-strucpy(char* dst, char const* src, int len)
+strucpy(char* dst, char const* src, size_t len)
 {
   if (len > MAXINP)
     len = MAXINP;

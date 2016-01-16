@@ -4,10 +4,16 @@
 #define _XOPEN_SOURCE 500
 #pragma clang diagnostic pop
 
-#include <stdlib.h>
 #include <unistd.h>
-#include <stdio.h>
-#include <assert.h>
+#include <pwd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <cstdlib>
+#include <string>
+
+using namespace std;
 
 #include "things.h"
 #include "io.h"
@@ -24,7 +30,7 @@ int os_rand_range(int max) {
   return max == 0 ? 0 : os_rand() % max;
 }
 
-int os_rand(void) {
+int os_rand() {
   return rand_r(&os_rand_seed);
 }
 
@@ -32,4 +38,7 @@ int os_usleep(unsigned int usec) {
   return usleep(usec);
 }
 
-
+string os_whoami() {
+  struct passwd const* pw = getpwuid(getuid());
+  return pw ? pw->pw_name : "nobody";
+}
