@@ -30,7 +30,7 @@ Coordinate     level_stairs;
 list<Item*>    level_items;
 int            level = 1;
 int            level_max = 1;
-int            levels_without_food = 0;
+int            Level::levels_without_food = 0;
 
 
 /** treas_room:
@@ -154,7 +154,7 @@ level_new(void)
 
   rooms_create(); /* Draw rooms */
   passages_do();  /* Draw passages */
-  levels_without_food++;      /* Levels with no food placed */
+  Level::levels_without_food++;      /* Levels with no food placed */
   put_things();   /* Place objects (if any) */
 
   /* Place the traps */
