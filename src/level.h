@@ -50,6 +50,8 @@ public:
   int static           current_level;
 
 private:
+  void create_rooms();
+
   PLACE              level_places[MAXLINES*MAXCOLS];  /* level map */
 };
 

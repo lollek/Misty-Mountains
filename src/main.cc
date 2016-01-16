@@ -22,7 +22,7 @@
 #include "pack.h"
 #include "score.h"
 #include "misc.h"
-#include "rooms.h"
+#include "level_rooms.h"
 #include "player.h"
 #include "options.h"
 #include "os.h"

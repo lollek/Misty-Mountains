@@ -7,7 +7,7 @@
 #include "daemons.h"
 #include "armor.h"
 #include "level.h"
-#include "rooms.h"
+#include "level_rooms.h"
 #include "monster.h"
 #include "command.h"
 #include "weapons.h"

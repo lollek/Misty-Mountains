@@ -33,7 +33,7 @@ using namespace std;
 #include "things.h"
 #include "monster.h"
 #include "os.h"
-#include "rooms.h"
+#include "level_rooms.h"
 #include "options.h"
 #include "rogue.h"
 #include "item.h"

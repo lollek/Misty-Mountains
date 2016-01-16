@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Coordinate.h"
+#include "coordinate.h"
 
 struct room {
   Coordinate r_pos;      /* Upper left corner */
@@ -21,9 +21,6 @@ struct room {
 #define ROOMS_MAX  9                   /* max rooms per level */
 extern struct room* room_prev;         /* Roomin(&oldpos) */
 extern struct room rooms[ROOMS_MAX];   /* One for each room -- A level */
-
-/* Create rooms and corridors with a connectivity graph */
-void rooms_create(void);
 
 /* Find a valid floor spot in this room.  If rp is nullptr, then
  * pick a new room each time around the loop.  */

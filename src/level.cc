@@ -11,7 +11,7 @@ using namespace std;
 #include "passages.h"
 #include "misc.h"
 #include "player.h"
-#include "rooms.h"
+#include "level_rooms.h"
 #include "things.h"
 #include "os.h"
 #include "rogue.h"
@@ -154,7 +154,7 @@ Level::Level(int relative_level) {
   /* Throw away stuff left on the previous level (if anything) */
   level_items.clear();
 
-  rooms_create(); /* Draw rooms */
+  this->create_rooms();
   passages_do();  /* Draw passages */
   Level::levels_without_food++;      /* Levels with no food placed */
   put_things();   /* Place objects (if any) */

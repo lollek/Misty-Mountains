@@ -7,7 +7,7 @@ using namespace std;
 #include "coordinate.h"
 #include "io.h"
 #include "os.h"
-#include "rooms.h"
+#include "level_rooms.h"
 #include "level.h"
 #include "rogue.h"
 

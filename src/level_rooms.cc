@@ -12,7 +12,7 @@
 #include "os.h"
 #include "rogue.h"
 
-#include "rooms.h"
+#include "level_rooms.h"
 
 struct room* room_prev;
 struct room rooms[ROOMS_MAX];
@@ -194,7 +194,7 @@ room_place_gone_room(Coordinate const* max_size, Coordinate const* top, struct r
 }
 
 void
-rooms_create(void)
+Level::create_rooms()
 {
   /* maximum room size */
   Coordinate const bsze(NUMCOLS / 3, NUMLINES / 3);
@@ -253,12 +253,13 @@ rooms_create(void)
     room_draw(&rooms[i]);
 
     /* Put the gold in */
-    if (os_rand_range(2) == 0 && (!pack_contains_amulet() || Level::current_level >= Level::max_level_visited)) {
+    if (os_rand_range(2) == 0 &&
+        (!pack_contains_amulet() || Level::current_level >= Level::max_level_visited)) {
       Item *gold = new Item();
       gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
       room_find_floor(&rooms[i], &rooms[i].r_gold, false, false);
       gold->set_pos(rooms[i].r_gold);
-      Game::level->set_ch(rooms[i].r_gold, GOLD);
+      this->set_ch(rooms[i].r_gold, GOLD);
       gold->o_flags = ISMANY;
       gold->o_type = GOLD;
       level_items.push_back(gold);

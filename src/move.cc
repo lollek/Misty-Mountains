@@ -12,7 +12,7 @@
 #include "fight.h"
 #include "monster.h"
 #include "move.h"
-#include "rooms.h"
+#include "level_rooms.h"
 #include "misc.h"
 #include "level.h"
 #include "player.h"

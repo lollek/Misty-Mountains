@@ -34,7 +34,7 @@ using namespace std;
 #include "player.h"
 #include "rings.h"
 #include "rogue.h"
-#include "rooms.h"
+#include "level_rooms.h"
 
 #include "misc.h"
 

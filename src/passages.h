@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Coordinate.h"
-#include "rooms.h"
+#include "level_rooms.h"
 
 /* upper limit on number of passages */
 #define PASSAGES_MAX 12

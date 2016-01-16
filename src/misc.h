@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include "rooms.h"
 #include "monster.h"
 
 int roll(int number, int sides); /* Roll a number of dice */

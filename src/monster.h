@@ -3,8 +3,8 @@
 #include <string>
 #include <list>
 
+#include "level_rooms.h"
 #include "Coordinate.h"
-#include "rooms.h"
 #include "item.h"
 #include "rogue.h"
 
