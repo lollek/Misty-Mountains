@@ -23,7 +23,7 @@ struct obj_info {
 extern std::vector<obj_info> things;
 
 /* Return the name of something as it would appear in an inventory. */
-char* inv_name(char* buf, Item const* item, bool drop);
+std::string inv_name(Item const* item, bool drop);
 
 /* Put something down */
 bool drop(void);

@@ -155,9 +155,8 @@ pack_print_evaluate_item(Item* item)
   if (worth < 0)
     worth = 0;
 
-  char buf[MAXSTR];
   printw("%5d  %s\n", worth,
-      inv_name(buf, item, false));
+      inv_name(item, false).c_str());
 
   return static_cast<unsigned>(worth);
 }
@@ -175,8 +174,7 @@ pack_char(void)
 void
 pack_move_msg(Item* obj)
 {
-  char buf[MAXSTR];
-  io_msg("moved onto %s", inv_name(buf, obj, true));
+  io_msg("moved onto %s", inv_name(obj, true).c_str());
 }
 
 static void
@@ -279,10 +277,8 @@ pack_add(Item* obj, bool silent)
   monster_aggro_all_which_desire_item(obj);
 
   /* Notify the user */
-  if (!silent)
-  {
-    char buf[MAXSTR];
-    io_msg("you now have %s (%c)", inv_name(buf, obj, true), obj->o_packch, true);
+  if (!silent) {
+    io_msg("you now have %s (%c)", inv_name(obj, true).c_str(), obj->o_packch, true);
   }
   return true;
 }
@@ -429,7 +425,6 @@ pack_contains(Item *item)
 bool
 pack_print_equipment(void)
 {
-  char buf[MAXSTR];
   WINDOW* equipscr = dupwin(stdscr);
 
   Coordinate orig_pos;
@@ -442,7 +437,7 @@ pack_print_equipment(void)
     {
       mvwprintw(equipscr, sym - 'a' + 1, 1, "%c) %s: %s",
                 sym, equipment[i].description.c_str(),
-                inv_name(buf, equipment[i].ptr, false));
+                inv_name(equipment[i].ptr, false).c_str());
       sym++;
     }
   }
@@ -460,7 +455,6 @@ pack_print_equipment(void)
 bool
 pack_print_inventory(int type)
 {
-  char buf[MAXSTR];
   WINDOW* invscr = dupwin(stdscr);
 
   Coordinate orig_pos;
@@ -473,7 +467,7 @@ pack_print_inventory(int type)
         (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))) {
       /* Print out the item and move to next row */
       wmove(invscr, ++num_items, 1);
-      wprintw(invscr, "%c) %s", list->o_packch, inv_name(buf, list, false));
+      wprintw(invscr, "%c) %s", list->o_packch, inv_name(list, false).c_str());
     }
   }
 
@@ -577,7 +571,6 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   if (pos == EQUIPMENT_ARMOR)
     waste_time(1);
 
-  char buf[MAXSTR];
   if (!pack_add(obj, true))
   {
     Coordinate const* player_pos = player_get_pos();
@@ -587,10 +580,10 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     flags |= F_DROPPED;
     level_set_flags(player_pos->y, player_pos->x, static_cast<char>(flags));
     obj->set_pos(*player_pos);
-    io_msg("dropped %s", inv_name(buf, obj, true));
+    io_msg("dropped %s", inv_name(obj, true).c_str());
   }
   else if (!quiet_on_success)
-    io_msg("no longer %s %s", doing, inv_name(buf, obj, true));
+    io_msg("no longer %s %s", doing, inv_name(obj, true).c_str());
   return true;
 }
 
@@ -637,8 +630,7 @@ pack_identify_item(void)
     default: break;
   }
 
-  char buf[MAXSTR];
-  io_msg(inv_name(buf, obj, false));
+  io_msg("%s", inv_name(obj, false).c_str());
 }
 
 

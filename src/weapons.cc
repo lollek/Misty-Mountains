@@ -139,8 +139,7 @@ weapon_wield(Item* weapon)
   pack_remove(weapon, false, true);
   pack_equip_item(weapon);
 
-  char buf[MAXSTR];
-  io_msg("wielding %s", inv_name(buf, weapon, true));
+  io_msg("wielding %s", inv_name(weapon, true).c_str());
   last_wielded_weapon = currently_wielding;
   return true;
 }

@@ -657,8 +657,7 @@ bool command_drop(void)
 
   obj->set_pos(*player_pos);
 
-  char buf[MAXSTR];
-  io_msg("dropped %s", inv_name(buf, obj, true));
+  io_msg("dropped %s", inv_name(obj, true).c_str());
   return true;
 }
 

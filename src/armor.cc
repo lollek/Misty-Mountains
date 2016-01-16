@@ -53,8 +53,7 @@ armor_command_wear() {
   pack_remove(obj, false, true);
   pack_equip_item(obj);
 
-  char buf[MAXSTR];
-  io_msg("now wearing %s", inv_name(buf, obj, true));
+  io_msg("now wearing %s", inv_name(obj, true).c_str());
   return true;
 }
 

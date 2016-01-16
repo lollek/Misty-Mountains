@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -33,39 +34,68 @@ vector<obj_info> things = {
     { "stick",	 4,	0,	"",	false },
 };
 
-char*
-inv_name(char* buf, Item const* item, bool drop)
+string
+inv_name(Item const* item, bool drop)
 {
-  buf[MAXSTR -1] = '\0';
+  stringstream buffer;
+
   switch (item->o_type)
   {
-    case POTION: potion_description(item, buf); break;
-    case RING:   ring_description(item, buf); break;
-    case STICK:  wand_description(item, buf); break;
-    case SCROLL: scroll_description(item, buf); break;
-    case WEAPON: case AMMO: weapon_description(item, buf); break;
-    case ARMOR:  armor_description(item, buf); break;
-    case FOOD:
-    {
-      char const* obj_type = item->o_which == 1 ? "fruit" : "food ration";
-      if (item->o_count == 1)
-        sprintf(buf, "A %s", obj_type);
-      else
-        sprintf(buf, "%d %ss", item->o_count, obj_type);
-    }
-    break;
-    case AMULET: strcpy(buf, "The Amulet of Yendor"); break;
-    case GOLD:   sprintf(buf, "%d Gold pieces", item->o_goldval); break;
+    case POTION: {
+      char buf[MAXSTR];
+      potion_description(item, buf);
+      buffer << buf;
+    } break;
+    case RING: {
+      char buf[MAXSTR];
+      ring_description(item, buf);
+      buffer << buf;
+    } break;
+    case STICK: {
+      char buf[MAXSTR];
+      wand_description(item, buf);
+      buffer << buf;
+    } break;
+    case SCROLL: {
+      char buf[MAXSTR];
+      scroll_description(item, buf);
+      buffer << buf;
+    } break;
+    case WEAPON: case AMMO: {
+      char buf[MAXSTR];
+      weapon_description(item, buf);
+      buffer << buf;
+    } break;
+    case ARMOR: {
+      char buf[MAXSTR];
+      armor_description(item, buf);
+      buffer << buf;
+    } break;
+    case FOOD: {
+      string obj_type = item->o_which == 1 ? "fruit" : "food ration";
+      if (item->o_count == 1) {
+        buffer << "A " << obj_type;
+      } else {
+        buffer << item->o_count << " " << obj_type;
+      }
+    } break;
+    case AMULET: {
+      buffer << "The Amulet of Yendor";
+    } break;
+    case GOLD: {
+      buffer << item->o_goldval << " Gold pieces";
+    } break;
     default:
       io_msg("You feel a disturbance in the force");
-      sprintf(buf, "Something bizarre %s", unctrl(static_cast<chtype>(item->o_type)));
+      buffer << "Something bizarre " << unctrl(static_cast<chtype>(item->o_type));
       break;
   }
 
-  buf[0] = static_cast<char>(drop ? tolower(buf[0]) : toupper(buf[0]));
-  if (buf[MAXSTR -1] != '\0')
-    throw runtime_error("Buffer no null-terminated");
-  return buf;
+  string return_value = buffer.str();
+  return_value.at(0) = static_cast<char>(drop
+      ? tolower(return_value.at(0))
+      : toupper(return_value.at(0)));
+  return return_value;
 }
 
 Item*
@@ -167,15 +197,14 @@ discovered_by_type(char type, vector<obj_info>& info, size_t max_items)
   for (size_t i = 0; i < max_items; ++i)
     if (info.at(i).oi_know || !info.at(i).oi_guess.empty())
     {
-      char buf[MAXSTR];
       printable_object.o_which = static_cast<int>(i);
       mvwprintw(printscr, ++items_found, 1,
-                "%s", inv_name(buf, &printable_object, false));
+                "%s", inv_name(&printable_object, false).c_str());
     }
 
   if (items_found == 0)
   {
-    char const* type_as_str = nullptr;
+    string type_as_str = nullptr;
     switch (type)
     {
       case POTION: type_as_str = "potion"; break;
@@ -183,7 +212,7 @@ discovered_by_type(char type, vector<obj_info>& info, size_t max_items)
       case RING:   type_as_str = "ring"; break;
       case STICK:  type_as_str = "stick"; break;
     }
-    mvwprintw(printscr, 1, 1, "No known %s", type_as_str);
+    mvwprintw(printscr, 1, 1, "No known %s", type_as_str.c_str());
   }
 
   move(orig_pos.y, orig_pos.x);
