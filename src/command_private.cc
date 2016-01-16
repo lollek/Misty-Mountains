@@ -1,7 +1,3 @@
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
 #include <signal.h>
 
 #include <string>
@@ -82,7 +78,9 @@ command_use_stairs(char up_or_down)
 {
   Coordinate* player_pos = player_get_pos();
 
-  assert (up_or_down == '>' || up_or_down == '<');
+  if (up_or_down != '>' && up_or_down != '<') {
+    throw runtime_error("Unknown stairs: " + to_string(up_or_down));
+  }
 
   if (player_is_levitating())
     io_msg("You can't. You're floating off the ground!");
@@ -99,7 +97,9 @@ command_use_stairs(char up_or_down)
   {
     bool has_amulet = pack_contains_amulet();
 
-    assert(level >= 0 && "Level should not go lower than 0");
+    if (level < 0) { 
+      throw runtime_error("Level should not go lower than 0");
+    }
 
     if (level == 1)
     {
