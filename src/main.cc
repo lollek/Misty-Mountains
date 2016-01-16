@@ -16,10 +16,10 @@
 #include <getopt.h>
 #include <inttypes.h>
 
+#include "Game.h"
 #include "command.h"
 #include "io.h"
 #include "pack.h"
-#include "init.h"
 #include "score.h"
 #include "misc.h"
 #include "rooms.h"
@@ -132,8 +132,7 @@ main(int argc, char** argv)
 
   /* Parse args and then init new (or old) game */
   parse_args(argc, argv);
-  if (init_new_game() == false)
-    return 1;
+  Game new_game;
 
   /* Try to crash cleanly, and autosave if possible
    * Unless we are debugging, since that messes with gdb */
