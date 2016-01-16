@@ -1,19 +1,3 @@
-/*
- * level:
- *	Dig and draw a new level
- *
- * @(#)level.c	4.38 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
-#include <string.h>
-#include <stdbool.h>
-
 #include <list>
 
 using namespace std;
@@ -40,8 +24,6 @@ using namespace std;
 #define MINTREAS	2  /* minimum number of treasures in a treasure room */
 #define MAXTRIES	10 /* max number of tries to put down a monster */
 #define MAXTRAPS	10
-
-int const level_amulet = 26;
 
 PLACE          level_places[MAXLINES*MAXCOLS];
 Coordinate     level_stairs;
@@ -131,7 +113,7 @@ put_things(void)
 
   /* If he is really deep in the dungeon and he hasn't found the
    * amulet yet, put it somewhere on the ground */
-  if (level >= level_amulet && !pack_contains_amulet())
+  if (level >= Level::amulet_min_level && !pack_contains_amulet())
   {
     Item* amulet = new_amulet();
     level_items.push_back(amulet);

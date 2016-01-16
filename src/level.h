@@ -21,7 +21,12 @@ typedef struct {
     Monster* p_monst;
 } PLACE;
 
-extern int const level_amulet;                    /* Level where amulet starts */
+class Level {
+public:
+  int static constexpr amulet_min_level = 26;
+
+private:
+};
 
 extern PLACE              level_places[MAXLINES*MAXCOLS];  /* level map */
 extern Coordinate         level_stairs;                    /* Location of staircase */
