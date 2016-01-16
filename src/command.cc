@@ -1,19 +1,4 @@
-/*
- * Read and execute the user commands
- *
- * @(#)command.c	4.73 (Berkeley) 08/06/83
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-#include <ctype.h>
+#include <csignal>
 
 #include "armor.h"
 #include "daemons.h"
@@ -61,7 +46,7 @@ command_stop(bool stop_fighting)
 }
 
 int
-command(void)
+command()
 {
   daemon_run_before();
 
@@ -219,19 +204,17 @@ command_wizard_do(char ch)
 }
 
 void
-command_signal_endit(int sig)
+command_signal_endit(__attribute__((unused)) int sig)
 {
-  (void)sig;
   endwin();
   puts("Okay, bye bye!\n");
   exit(0);
 }
 
 void
-command_signal_quit(int sig)
+command_signal_quit(__attribute__((unused)) int sig)
 {
   int oy, ox;
-  (void) sig;
 
   getyx(curscr, oy, ox);
   io_msg_clear();
@@ -255,10 +238,9 @@ command_signal_quit(int sig)
 }
 
 void
-command_signal_leave(int sig)
+command_signal_leave(__attribute__((unused)) int sig)
 {
   static char buf[BUFSIZ];
-  (void)sig;
 
   setbuf(stdout, buf);	/* throw away pending output */
 

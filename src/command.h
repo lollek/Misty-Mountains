@@ -1,6 +1,6 @@
 #pragma once
 
-int command(void); /* Processes the user commands */
+int command(); /* Processes the user commands */
 bool command_stop(bool stop_fighting);
 
 void command_signal_quit(int sig);  /* Have player make certain, then exit */
