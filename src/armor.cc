@@ -38,17 +38,20 @@ bool
 armor_command_wear() {
   Item* obj = pack_get_item("wear", ARMOR);
 
-  if (obj == nullptr)
+  if (obj == nullptr) {
     return false;
+  }
 
   if (obj->o_type != ARMOR) {
     io_msg("you can't wear that");
     return armor_command_wear();
   }
 
-  if (pack_equipped_item(EQUIPMENT_ARMOR) != nullptr)
-    if (!pack_unequip(EQUIPMENT_ARMOR, false))
+  if (pack_equipped_item(EQUIPMENT_ARMOR) != nullptr) {
+    if (!pack_unequip(EQUIPMENT_ARMOR, false)) {
       return true;
+    }
+  }
 
   waste_time(1);
   pack_remove(obj, false, true);
@@ -64,28 +67,28 @@ armor_type_random() {
   for (enum armor_t i = static_cast<armor_t>(0);
        i < NARMORS;
        i = static_cast<armor_t>(static_cast<int>(i) + 1)) {
-    if (value < armors[i].prob)
+    if (value < armors[i].prob) {
       return i;
-    else
+    } else {
       value -= armors[i].prob;
+    }
   }
 
-  /* Error! Sum of probs was not 100 */
-  io_debug("Error! Sum of probabilities is not 100%", 0);
-  io_readchar(false);
-  return LEATHER;
+  throw runtime_error("Error! Sum of probabilities is not 100%");
 }
 
 void
 armor_rust() {
   Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == nullptr || arm->o_type != ARMOR || arm->o_which == LEATHER ||
-      arm->o_arm >= 9)
+      arm->o_arm >= 9) {
     return;
+  }
 
   if ((arm->o_flags & ISPROT) || player_has_ring_with_ability(R_SUSTARM)) {
-    if (!to_death)
+    if (!to_death) {
       io_msg("the rust vanishes instantly");
+    }
   }
   else {
     arm->o_arm++;
@@ -112,16 +115,18 @@ armor_description(Item const* item) {
   }
   buffer << "]";
 
-  if (!item->get_nickname().empty())
+  if (!item->get_nickname().empty()) {
     buffer << " called " << item->get_nickname();
+  }
 
   return buffer.str();
 }
 
 Item*
 armor_create(int which, int random_stats) {
-  if (which == -1)
+  if (which == -1) {
     which = armor_type_random();
+  }
 
   Item* armor = new Item();
   armor->o_type = ARMOR;
@@ -134,8 +139,9 @@ armor_create(int which, int random_stats) {
       armor->o_flags |= ISCURSED;
       armor->o_arm += os_rand_range(3) + 1;
     }
-    else if (rand < 28)
+    else if (rand < 28) {
       armor->o_arm -= os_rand_range(3) + 1;
+    }
   }
 
   return armor;
