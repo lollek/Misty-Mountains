@@ -33,11 +33,6 @@ int armor_ac(enum armor_t i)              { return armors.at(i).ac; }
 int armor_value(enum armor_t i)           { return armors.at(i).value; }
 int armor_probability(enum armor_t i)     { return armors.at(i).prob; }
 
-int
-armor_for_monster(Monster const* mon) {
-  return mon == player ? player_get_armor() : mon->t_stats.s_arm;
-}
-
 bool
 armor_command_wear() {
   Item* obj = pack_get_item("wear", ARMOR);

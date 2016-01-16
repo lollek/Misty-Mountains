@@ -20,7 +20,7 @@ enum armor_t
 
 struct armor_info_t
 {
-  std::string const& name;
+  std::string name;
   int ac;    /* Armor bonus */
   int prob;  /* probability of drop */
   int value; /* Value in gold */
@@ -33,7 +33,6 @@ int armor_value(enum armor_t armor);
 int armor_probability(enum armor_t i);
 enum armor_t armor_type_random();
 
-int armor_for_monster(Monster const* mon); /* Returns the AC of a creature */
 void armor_rust();             /* Rust players armor */
 bool armor_command_wear();     /* Let player select something to wear */
 

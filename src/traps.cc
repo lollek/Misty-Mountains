@@ -127,7 +127,7 @@ trap_sleep_monster(Monster* victim)
 static enum trap_t
 trap_arrow_player(void)
 {
-  if (fight_swing_hits(player_get_level() - 1, player_get_armor(), 1))
+  if (fight_swing_hits(player_get_level() - 1, player->get_armor(), 1))
   {
     player_lose_health(roll(1, 6));
     if (player_get_health() <= 0)
@@ -155,7 +155,7 @@ trap_arrow_monster(Monster* victim)
   char buf[MAXSTR];
 
   if (fight_swing_hits(victim->t_stats.s_lvl -1,
-        armor_for_monster(victim), 1))
+        victim->get_armor(), 1))
   {
     victim->t_stats.s_hpt -= roll(1,6);
     if (victim->t_stats.s_hpt <= 0)
@@ -218,7 +218,7 @@ trap_telep_monster(Monster* victim)
 static enum trap_t
 trap_dart_player(void)
 {
-  if (!fight_swing_hits(player_get_level() + 1, player_get_armor(), 1))
+  if (!fight_swing_hits(player_get_level() + 1, player->get_armor(), 1))
     io_msg("a small dart whizzes by your ear and vanishes");
   else
   {
@@ -240,7 +240,7 @@ trap_dart_monster(Monster* victim)
 {
   /* TODO: In the future this should probably weaken the monster */
   if (fight_swing_hits(victim->t_stats.s_lvl + 1,
-        armor_for_monster(victim), 1))
+        victim->get_armor(), 1))
   {
     victim->t_stats.s_hpt -= roll(1,4);
     if (victim->t_stats.s_hpt <= 0)

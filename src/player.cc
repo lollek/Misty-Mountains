@@ -54,6 +54,26 @@ int Player::get_exp() const {
   return this->t_stats.s_exp;
 }
 
+int Player::get_armor() const {
+  Item const* const arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  Item const* const weapon = pack_equipped_item(EQUIPMENT_RHAND);
+
+  int ac = arm ? arm->o_arm : this->t_stats.s_arm;
+  if (weapon)
+    ac -= weapon->o_arm;
+
+  for (int i = 0; i < PACK_RING_SLOTS; ++i)
+  {
+    Item const* ring = pack_equipped_item(pack_ring_slots[i]);
+    if (ring != nullptr && ring->o_which == R_PROTECT)
+      ac -= ring->o_arm;
+  }
+
+  return 20 - ac;
+}
+
+
+
 void Player::earn_exp(int amount) {
   this->t_stats.s_exp += amount;
 }
@@ -569,26 +589,6 @@ void
 player_lose_health(int amount)
 {
   player->t_stats.s_hpt -= amount;
-}
-
-int
-player_get_armor()
-{
-  Item const* const arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  Item const* const weapon = pack_equipped_item(EQUIPMENT_RHAND);
-
-  int ac = arm ? arm->o_arm : player->t_stats.s_arm;
-  if (weapon)
-    ac -= weapon->o_arm;
-
-  for (int i = 0; i < PACK_RING_SLOTS; ++i)
-  {
-    Item const* ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != nullptr && ring->o_which == R_PROTECT)
-      ac -= ring->o_arm;
-  }
-
-  return 20 - ac;
 }
 
 int

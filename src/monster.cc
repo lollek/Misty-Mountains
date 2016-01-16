@@ -39,6 +39,11 @@ using namespace std;
 #include "monster.h"
 #include "monster_private.h"
 
+
+int Monster::get_armor() const {
+  return this->t_stats.s_arm;
+}
+
 int    monster_flytrap_hit = 0; /* Number of time flytrap has hit */
 
 #define NMONSTERS sizeof(monsters) / sizeof(*monsters)

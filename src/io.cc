@@ -301,7 +301,7 @@ io_refresh_statusline(void)
          "Exp: %d/%d  %s",
          level, pack_gold, hpwidth, player_get_health(), hpwidth,
          player_get_max_health(), player_get_strength(), player_max_stats.s_str,
-         player_get_armor(), player_get_level(), player->get_exp(),
+         player->get_armor(), player_get_level(), player->get_exp(),
          food_hunger_state());
 
   clrtoeol();

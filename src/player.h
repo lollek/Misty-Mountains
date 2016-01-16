@@ -12,6 +12,7 @@ public:
 
   /* Getters */
   int get_exp() const;
+  int get_armor() const override;
 
   /* Modifiers */
   void earn_exp(int amount);
@@ -106,9 +107,6 @@ void player_restore_health(int amount, bool can_raise_total);
 bool player_is_hurt();
 void player_modify_max_health(int amount);
 void player_lose_health(int amount);
-
-/* Armor */
-int player_get_armor();
 
 /* Level */
 int player_get_level();

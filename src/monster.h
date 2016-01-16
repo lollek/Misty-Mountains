@@ -21,7 +21,12 @@ struct stats {
   int           s_maxhp;           /* Max hit points */
 };
 
-struct Monster {
+class Monster {
+public:
+
+  virtual int get_armor() const;
+  virtual ~Monster() = default;
+
   stats              t_stats;   /* Physical description */
   Coordinate         t_pos;     /* Position */
   Coordinate         t_dest;    /* Where it is running to */
@@ -33,6 +38,8 @@ struct Monster {
   char               t_disguise;/* What mimic looks like */
   char               t_oldch;   /* Character that was where it was */
   bool               t_turn;    /* If slowed, is it a turn to move */
+
+private:
 };
 
 /* flags for creatures */

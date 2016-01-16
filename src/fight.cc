@@ -171,7 +171,7 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown)
     if (dice_sides == 0 && dices == 0)
       continue;
 
-    int defense = armor_for_monster(defender);
+    int defense = defender->get_armor();
     if (fight_swing_hits(attacker->t_stats.s_lvl, defense, mod.to_hit))
     {
       int damage = roll(dices, dice_sides) + mod.to_dmg;
