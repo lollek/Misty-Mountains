@@ -28,18 +28,18 @@ static SPOT maze[NUMLINES/3+1][NUMCOLS/3+1];
 
 /* Draw a vertical line */
 static void
-room_draw_vertical_line(struct room* rp, int startx)
+room_draw_vertical_line(Level& level, room const& rp, int startx)
 {
-  for (int y = rp->r_pos.y + 1; y <= rp->r_max.y + rp->r_pos.y - 1; y++)
-    Game::level->set_ch(startx, y, VWALL);
+  for (int y = rp.r_pos.y + 1; y <= rp.r_max.y + rp.r_pos.y - 1; y++)
+    level.set_ch(startx, y, VWALL);
 }
 
 /* Draw a horizontal line */
 static void
-room_draw_horizontal_line(struct room* rp, int starty)
+room_draw_horizontal_line(Level& level, room const& rp, int starty)
 {
-  for (int x = rp->r_pos.x; x <= rp->r_pos.x + rp->r_max.x - 1; x++)
-    Game::level->set_ch(x, starty, '-');
+  for (int x = rp.r_pos.x; x <= rp.r_pos.x + rp.r_max.x - 1; x++)
+    level.set_ch(x, starty, '-');
 }
 
 /* Called to illuminate a room.
@@ -134,7 +134,7 @@ room_dig(int y, int x, int starty, int startx, int maxy, int maxx)
 
 /* Dig a maze */
 static void
-room_do_maze(struct room* rp)
+room_do_maze(room const& rp)
 {
   for (SPOT* sp = &maze[0][0]; sp <= &maze[NUMLINES / 3][NUMCOLS / 3]; sp++)
   {
@@ -142,40 +142,42 @@ room_do_maze(struct room* rp)
     sp->nexits = 0;
   }
 
-  int y = (os_rand_range(rp->r_max.y) / 2) * 2;
-  int x = (os_rand_range(rp->r_max.x) / 2) * 2;
+  int y = (os_rand_range(rp.r_max.y) / 2) * 2;
+  int x = (os_rand_range(rp.r_max.x) / 2) * 2;
 
   // TODO: Is this a typo/incorrect? maybe x + rp->r_pos.x
-  Coordinate pos(y + rp->r_pos.x, y + rp->r_pos.y);
+  Coordinate pos(y + rp.r_pos.x, y + rp.r_pos.y);
   passages_putpass(&pos);
 
-  room_dig(y, x, rp->r_pos.y, rp->r_pos.x, rp->r_max.y, rp->r_max.x);
+  room_dig(y, x, rp.r_pos.y, rp.r_pos.x, rp.r_max.y, rp.r_max.x);
 }
 
 /* Draw a box around a room and lay down the floor for normal
  * rooms; for maze rooms, draw maze. */
 static void
-room_draw(struct room* rp)
+room_draw(Level& level, room const& rp)
 {
-  if (rp->r_flags & ISMAZE)
+  if (rp.r_flags & ISMAZE)
   {
     room_do_maze(rp);
     return;
   }
 
   /* Draw left side */
-  room_draw_vertical_line(rp, rp->r_pos.x);
+  room_draw_vertical_line(level, rp, rp.r_pos.x);
   /* Draw right side */
-  room_draw_vertical_line(rp, rp->r_pos.x + rp->r_max.x - 1);
+  room_draw_vertical_line(level, rp, rp.r_pos.x + rp.r_max.x - 1);
   /* Draw top */
-  room_draw_horizontal_line(rp, rp->r_pos.y);
+  room_draw_horizontal_line(level, rp, rp.r_pos.y);
   /* Draw bottom */
-  room_draw_horizontal_line(rp, rp->r_pos.y + rp->r_max.y - 1);
+  room_draw_horizontal_line(level, rp, rp.r_pos.y + rp.r_max.y - 1);
 
   /* Put the floor down */
-  for (int y = rp->r_pos.y + 1; y < rp->r_pos.y + rp->r_max.y - 1; y++)
-    for (int x = rp->r_pos.x + 1; x < rp->r_pos.x + rp->r_max.x - 1; x++)
-      Game::level->set_ch(x, y, FLOOR);
+  for (int y = rp.r_pos.y + 1; y < rp.r_pos.y + rp.r_max.y - 1; y++) {
+    for (int x = rp.r_pos.x + 1; x < rp.r_pos.x + rp.r_max.x - 1; x++) {
+      level.set_ch(x, y, FLOOR);
+    }
+  }
 }
 
 static void
@@ -250,7 +252,7 @@ Level::create_rooms()
         rooms[i].r_pos.y = top.y + os_rand_range(bsze.y - rooms[i].r_max.y);
       } while (rooms[i].r_pos.y == 0);
     }
-    room_draw(&rooms[i]);
+    room_draw(*this, rooms[i]);
 
     /* Put the gold in */
     if (os_rand_range(2) == 0 &&
