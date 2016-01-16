@@ -29,7 +29,7 @@ PLACE          level_places[MAXLINES*MAXCOLS];
 Coordinate     level_stairs;
 list<Item*>    level_items;
 int            level = 1;
-int            level_max = 1;
+int            Level::max_level_visited = 1;
 int            Level::levels_without_food = 0;
 
 
@@ -89,7 +89,7 @@ put_things(void)
 
   /* Once you have found the amulet, the only way to get new stuff is
    * go down into the dungeon. */
-  if (pack_contains_amulet() && level < level_max)
+  if (pack_contains_amulet() && level < Level::max_level_visited)
       return;
 
   /* check for treasure rooms, and if so, put it in. */
@@ -134,8 +134,8 @@ level_new(void)
   player_remove_held();
 
   /* Set max level we've been to */
-  if (level > level_max)
-    level_max = level;
+  if (level > Level::max_level_visited)
+    Level::max_level_visited = level;
 
   /* Clean things off from last level */
   for (PLACE* pp = level_places; pp < &level_places[MAXCOLS*MAXLINES]; pp++)

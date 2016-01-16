@@ -25,6 +25,7 @@ class Level {
 public:
   int static constexpr amulet_min_level = 26;
   int static           levels_without_food;
+  int static           max_level_visited;
 
 private:
 };
@@ -33,7 +34,6 @@ extern PLACE              level_places[MAXLINES*MAXCOLS];  /* level map */
 extern Coordinate         level_stairs;                    /* Location of staircase */
 extern std::list<Item*>   level_items;                     /* List of items on level */
 extern int                level;                           /* What level she is on */
-extern int                level_max;                       /* Deepest player has gone */
 
 void level_new(void);
 
