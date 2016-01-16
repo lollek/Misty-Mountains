@@ -1,13 +1,13 @@
-#include <stdlib.h>
-#include <stdbool.h>
+#include <string>
+#include <vector>
 
-#include "potions.h"
+using namespace std;
+
 #include "os.h"
-#include "rogue.h"
 
 #include "colors.h"
 
-static char const* rainbow[] = {
+static vector<string const> rainbow = {
     "amber",     "aquamarine", "black",      "blue",       "brown",
     "clear",     "crimson",    "cyan",       "ecru",       "gold",
     "green",     "grey",       "magenta",    "orange",     "pink",
@@ -16,22 +16,20 @@ static char const* rainbow[] = {
     "white",     "yellow",
 };
 
-#define NCOLORS (sizeof(rainbow) / sizeof(*rainbow))
-
-int
-color_max(void)
+size_t
+color_max()
 {
-  return NCOLORS;
+  return rainbow.size();
 }
 
-char const*
-color_get(int i)
+string const&
+color_get(size_t i)
 {
-  return rainbow[i];
+  return rainbow.at(i);
 }
 
-char const*
-color_random(void)
+string const&
+color_random()
 {
-  return rainbow[os_rand_range(NCOLORS)];
+  return rainbow.at(os_rand_range(rainbow.size()));
 }

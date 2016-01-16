@@ -19,6 +19,7 @@
 
 using namespace std;
 
+#include "colors.h"
 #include "command.h"
 #include "io.h"
 #include "armor.h"
@@ -271,7 +272,8 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
       player_remove_confusing_attack();
       if (!player_is_blind())
       {
-        io_msg("your hands stop glowing %s", pick_color("red"));
+        io_msg("your hands stop glowing %s",
+               player_is_hallucinating() ? color_random().c_str() : "red");
         io_msg("%s appears confused", mname);
       }
     }

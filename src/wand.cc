@@ -5,6 +5,7 @@
 
 using namespace std;
 
+#include "colors.h"
 #include "Coordinate.h"
 #include "fight.h"
 #include "io.h"
@@ -138,7 +139,8 @@ wand_spell_light(void)
 
   player_get_room()->r_flags &= ~ISDARK;
   room_enter(player_get_pos());
-  io_msg("the rooms is lit by a shimmering %s light", pick_color("blue"));
+  io_msg("the rooms is lit by a shimmering %s light",
+          player_is_hallucinating() ? color_random().c_str() : "blue");
 }
 
 /* take away 1/2 of hero's hit points, then take it away

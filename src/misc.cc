@@ -505,12 +505,6 @@ dist(int y1, int x1, int y2, int x2)
     return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
 
-const char *
-pick_color(const char *col)
-{
-  return player_is_hallucinating() ? color_random() : col;
-}
-
 char
 floor_ch(void)
 {

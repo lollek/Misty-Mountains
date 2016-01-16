@@ -79,16 +79,16 @@ trap_myst_player(void)
   switch(os_rand_range(11))
   {
     case 0: io_msg("you are suddenly in a parallel dimension"); break;
-    case 1: io_msg("the light in here suddenly seems %s", color_random()); break;
+    case 1: io_msg("the light in here suddenly seems %s", color_random().c_str()); break;
     case 2: io_msg("you feel a sting in the side of your neck"); break;
     case 3: io_msg("multi-colored lines swirl around you, then fade"); break;
-    case 4: io_msg("a %s light flashes in your eyes", color_random()); break;
+    case 4: io_msg("a %s light flashes in your eyes", color_random().c_str()); break;
     case 5: io_msg("a spike shoots past your ear!"); break;
-    case 6: io_msg("%s sparks dance across your armor", color_random()); break;
+    case 6: io_msg("%s sparks dance across your armor", color_random().c_str()); break;
     case 7: io_msg("you suddenly feel very thirsty"); break;
     case 8: io_msg("you feel time speed up suddenly"); break;
     case 9: io_msg("time now seems to be going slower"); break;
-    case 10: io_msg("you pack turns %s!", color_random()); break;
+    case 10: io_msg("you pack turns %s!", color_random().c_str()); break;
   }
   return T_MYST;
 }

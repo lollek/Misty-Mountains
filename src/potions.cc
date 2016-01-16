@@ -1,15 +1,3 @@
-/*
- * Function(s) for dealing with potions
- *
- * @(#)potions.c	4.46 (Berkeley) 06/07/83
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
 #include <vector>
 #include <string>
 
@@ -29,7 +17,7 @@ using namespace std;
 #include "potions.h"
 
 /* Colors of the potions */
-static string p_colors[NPOTIONS];
+static vector<string const*> p_colors;
 
 vector<obj_info> potion_info = {
   /* io_name,      oi_prob, oi_worth, oi_guess, oi_know */
@@ -56,19 +44,14 @@ potions_init(void)
   for (int i = 0; i < NPOTIONS; i++)
     for (;;)
     {
-      int color = os_rand_range(color_max());
+      size_t color = os_rand_range(color_max());
 
-      for (int j = 0; j < i; ++j)
-        if (p_colors[j] == color_get(color))
-        {
-          color = -1;
-          break;
-        }
-
-      if (color == -1)
+      if (find(p_colors.cbegin(), p_colors.cend(), &color_get(color)) !=
+          p_colors.cend()) {
         continue;
+      }
 
-      p_colors[i] = color_get(color);
+      p_colors.push_back(&color_get(color));
       break;
     }
 }
@@ -245,7 +228,7 @@ potion_description(Item const* item, char buf[])
   }
   else
   {
-    string color = p_colors[item_subtype(item)];
+    string color = *p_colors.at(static_cast<size_t>(item_subtype(item)));
 
     if (item_count(item) == 1)
       buf += sprintf(buf, "A%s %s potion", vowelstr(color).c_str(), color.c_str());

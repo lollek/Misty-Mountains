@@ -1,5 +1,7 @@
 #pragma once
 
-int color_max(void);
-char const* color_get(int i);
-char const* color_random(void);
+#include <string>
+
+size_t color_max();
+std::string const& color_get(size_t i);
+std::string const& color_random();

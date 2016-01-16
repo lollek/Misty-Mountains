@@ -13,6 +13,7 @@
 #include "traps.h"
 #include "os.h"
 #include "rogue.h"
+#include "colors.h"
 
 #include "player.h"
 
@@ -337,7 +338,8 @@ void
 player_set_confusing_attack()
 {
   player->t_flags |= CANHUH;
-  io_msg("your hands begin to glow %s", pick_color("red"));
+  io_msg("your hands begin to glow %s",
+         player_is_hallucinating() ? color_random().c_str() : "red");
 }
 
 void player_remove_confusing_attack() { player->t_flags &= ~CANHUH; }

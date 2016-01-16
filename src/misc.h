@@ -46,7 +46,6 @@ inline int dist_cp(Coordinate* c1, Coordinate* c2) {
   return dist(c1->y, c1->y, c2->y, c2->y);
 }
 
-const char *pick_color(const char *col); /* Return given color (or random if hallucinating) */
 char floor_ch(void); /* Floor-type at hero's position */
 char floor_at(void); /* Return the character at hero's position */
 

@@ -7,6 +7,7 @@
 
 using namespace std;
 
+#include "colors.h"
 #include "Coordinate.h"
 #include "io.h"
 #include "item.h"
@@ -134,7 +135,8 @@ enchant_players_armor(void)
 
   arm->o_arm--;
   arm->o_flags &= ~ISCURSED;
-  io_msg("your armor glows %s for a moment", pick_color("silver"));
+  io_msg("your armor glows %s for a moment",
+          player_is_hallucinating() ? color_random().c_str() : "silver");
   return true;
 }
 
@@ -326,7 +328,8 @@ player_enchant_weapon(void)
   else
     weapon->o_dplus++;
   io_msg("your %s glows %s for a moment",
-      weapon_info[static_cast<size_t>(weapon->o_which)].oi_name.c_str(), pick_color("blue"));
+         weapon_info[static_cast<size_t>(weapon->o_which)].oi_name.c_str(),
+         player_is_hallucinating() ? color_random().c_str() : "blue");
 
   return true;
 }
@@ -358,7 +361,8 @@ protect_armor(void)
   }
 
   arm->o_flags |= ISPROT;
-  io_msg("your armor is covered by a shimmering %s shield", pick_color("gold"));
+  io_msg("your armor is covered by a shimmering %s shield",
+          player_is_hallucinating() ? color_random().c_str() : "gold");
   return true;
 }
 
