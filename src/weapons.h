@@ -1,11 +1,12 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
-#include "rogue.h"
+#include "item.h"
+#include "things.h"
 
-enum weapon_type
-{
+enum weapon_type {
   MACE     = 0,
   SWORD    = 1,
   BOW      = 2,
@@ -30,4 +31,4 @@ bool weapon_wield(Item* weapon);
 bool weapon_wield_last_used();
 void weapon_set_last_used(Item* weapon);
 
-void weapon_description(Item const* item, char* buf);
+std::string weapon_description(Item const* item);
