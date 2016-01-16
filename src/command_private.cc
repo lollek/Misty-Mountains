@@ -89,7 +89,7 @@ command_use_stairs(char up_or_down)
 
   else if (up_or_down == '>') /* DOWN */
   {
-    level++;
+    Level::current_level++;
     level_new();
   }
 
@@ -97,11 +97,11 @@ command_use_stairs(char up_or_down)
   {
     bool has_amulet = pack_contains_amulet();
 
-    if (level < 0) { 
+    if (Level::current_level < 0) { 
       throw runtime_error("Level should not go lower than 0");
     }
 
-    if (level == 1)
+    if (Level::current_level == 1)
     {
       if (has_amulet)
         score_win_and_exit();
@@ -113,7 +113,7 @@ command_use_stairs(char up_or_down)
       }
     }
 
-    level--;
+    Level::current_level--;
     level_new();
 
     if (has_amulet)

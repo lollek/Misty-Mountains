@@ -114,7 +114,7 @@ monster_random(bool wander)
   int d;
   do
   {
-    d = level + (os_rand_range(10) - 6);
+    d = Level::current_level + (os_rand_range(10) - 6);
     if (d < 0)
       d = os_rand_range(5);
     if (d > 25)
@@ -259,7 +259,7 @@ monster_give_pack(Monster* mon)
 {
   assert(mon != nullptr);
 
-  if (level >= Level::max_level_visited && os_rand_range(100) < monsters[mon->t_type-'A'].m_carry)
+  if (Level::current_level >= Level::max_level_visited && os_rand_range(100) < monsters[mon->t_type-'A'].m_carry)
     mon->t_pack.push_back(new_thing());
 }
 

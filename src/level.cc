@@ -28,9 +28,9 @@ using namespace std;
 PLACE          level_places[MAXLINES*MAXCOLS];
 Coordinate     level_stairs;
 list<Item*>    level_items;
-int            level = 1;
-int            Level::max_level_visited = 1;
 int            Level::levels_without_food = 0;
+int            Level::max_level_visited = 1;
+int            Level::current_level = 1;
 
 
 /** treas_room:
@@ -64,7 +64,7 @@ treas_room(void)
   spots = (room->r_max.y - 2) * (room->r_max.x - 2);
   if (nm > spots)
     nm = spots;
-  level++;
+  Level::current_level++;
   while (nm--)
   {
     Coordinate monster_pos;
@@ -77,7 +77,7 @@ treas_room(void)
       monster_give_pack(tp);
     }
   }
-  level--;
+  Level::current_level--;
 }
 
 /** put_things:
@@ -89,7 +89,7 @@ put_things(void)
 
   /* Once you have found the amulet, the only way to get new stuff is
    * go down into the dungeon. */
-  if (pack_contains_amulet() && level < Level::max_level_visited)
+  if (pack_contains_amulet() && Level::current_level < Level::max_level_visited)
       return;
 
   /* check for treasure rooms, and if so, put it in. */
@@ -113,7 +113,7 @@ put_things(void)
 
   /* If he is really deep in the dungeon and he hasn't found the
    * amulet yet, put it somewhere on the ground */
-  if (level >= Level::amulet_min_level && !pack_contains_amulet())
+  if (Level::current_level >= Level::amulet_min_level && !pack_contains_amulet())
   {
     Item* amulet = new_amulet();
     level_items.push_back(amulet);
@@ -134,8 +134,8 @@ level_new(void)
   player_remove_held();
 
   /* Set max level we've been to */
-  if (level > Level::max_level_visited)
-    Level::max_level_visited = level;
+  if (Level::current_level > Level::max_level_visited)
+    Level::max_level_visited = Level::current_level;
 
   /* Clean things off from last level */
   for (PLACE* pp = level_places; pp < &level_places[MAXCOLS*MAXLINES]; pp++)
@@ -158,9 +158,9 @@ level_new(void)
   put_things();   /* Place objects (if any) */
 
   /* Place the traps */
-  if (os_rand_range(10) < level)
+  if (os_rand_range(10) < Level::current_level)
   {
-    int ntraps = os_rand_range(level / 4) + 1;
+    int ntraps = os_rand_range(Level::current_level / 4) + 1;
     if (ntraps > MAXTRAPS)
       ntraps = MAXTRAPS;
     while (ntraps--)

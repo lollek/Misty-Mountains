@@ -233,7 +233,7 @@ rooms_create(void)
     }
 
     /* set room type */
-    if (os_rand_range(10) < level - 1) {
+    if (os_rand_range(10) < Level::current_level - 1) {
       rooms[i].r_flags |= ISDARK;  /* dark room */
       if (os_rand_range(15) == 0) {
         rooms[i].r_flags = ISMAZE; /* maze room */
@@ -263,7 +263,7 @@ rooms_create(void)
     room_draw(&rooms[i]);
 
     /* Put the gold in */
-    if (os_rand_range(2) == 0 && (!pack_contains_amulet() || level >= Level::max_level_visited)) {
+    if (os_rand_range(2) == 0 && (!pack_contains_amulet() || Level::current_level >= Level::max_level_visited)) {
       Item *gold = new Item();
       gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
       room_find_floor(&rooms[i], &rooms[i].r_gold, false, false);

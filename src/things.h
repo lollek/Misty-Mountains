@@ -18,7 +18,7 @@ struct obj_info {
   bool        oi_know;
 };
 
-#define GOLDCALC	(os_rand_range(50 + 10 * level) + 2)
+#define GOLDCALC	(os_rand_range(50 + 10 * Level::current_level) + 2)
 
 extern std::vector<obj_info> things;
 

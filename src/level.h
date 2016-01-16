@@ -26,6 +26,7 @@ public:
   int static constexpr amulet_min_level = 26;
   int static           levels_without_food;
   int static           max_level_visited;
+  int static           current_level;
 
 private:
 };
@@ -33,7 +34,6 @@ private:
 extern PLACE              level_places[MAXLINES*MAXCOLS];  /* level map */
 extern Coordinate         level_stairs;                    /* Location of staircase */
 extern std::list<Item*>   level_items;                     /* List of items on level */
-extern int                level;                           /* What level she is on */
 
 void level_new(void);
 

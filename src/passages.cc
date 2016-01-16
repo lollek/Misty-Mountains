@@ -112,7 +112,7 @@ door(struct room* rm, Coordinate* cp)
     return;
 
   PLACE* place = level_get_place(cp->y, cp->x);
-  if (os_rand_range(10) + 1 < level && os_rand_range(5) == 0)
+  if (os_rand_range(10) + 1 < Level::current_level && os_rand_range(5) == 0)
   {
     if (cp->y == rm->r_pos.y || cp->y == rm->r_pos.y + rm->r_max.y - 1)
       place->p_ch = HWALL;
@@ -374,7 +374,7 @@ passages_putpass(Coordinate* cp)
   PLACE *pp = level_get_place(cp->y, cp->x);
   pp->p_flags |= F_PASS;
 
-  if (os_rand_range(10) + 1 < level && os_rand_range(40) == 0)
+  if (os_rand_range(10) + 1 < Level::current_level && os_rand_range(40) == 0)
     pp->p_flags &= ~F_REAL;
   else
     pp->p_ch = PASSAGE;
