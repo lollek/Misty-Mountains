@@ -20,7 +20,7 @@ enum armor_t
 
 struct armor_info_t
 {
-  std::string name;
+  std::string const name;
   int ac;    /* Armor bonus */
   int prob;  /* probability of drop */
   int value; /* Value in gold */
