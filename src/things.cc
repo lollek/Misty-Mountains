@@ -1,8 +1,3 @@
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <assert.h>
-
 #include <vector>
 #include <string>
 
@@ -68,7 +63,8 @@ inv_name(char* buf, Item const* item, bool drop)
   }
 
   buf[0] = static_cast<char>(drop ? tolower(buf[0]) : toupper(buf[0]));
-  assert (buf[MAXSTR -1] == '\0');
+  if (buf[MAXSTR -1] != '\0')
+    throw runtime_error("Buffer no null-terminated");
   return buf;
 }
 
@@ -127,9 +123,15 @@ new_thing(void)
       break;
   }
 
-  assert(cur != nullptr);
-  assert(cur->o_damage.sides >= 0 && cur->o_damage.dices >= 0);
-  assert(cur->o_hurldmg.sides >= 0 && cur->o_hurldmg.dices >= 0);
+  if (cur == nullptr) {
+    throw runtime_error("curr is null");
+  }
+  if (cur->o_damage.sides < 0 || cur->o_damage.dices < 0) {
+    throw runtime_error("cur->damage is negative");
+  }
+  if (cur->o_hurldmg.sides < 0 || cur->o_hurldmg.dices < 0) {
+    throw runtime_error("cur->hurldmg is negative");
+  }
   return cur;
 }
 
