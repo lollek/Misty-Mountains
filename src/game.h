@@ -1,5 +1,7 @@
 #pragma once
 
+#include "level.h"
+
 class Game {
 public:
   Game();
@@ -8,6 +10,8 @@ public:
   ~Game() = default;
 
   Game& operator=(Game const&) = delete;
+
+  static Level* level;
 
 private:
   int init_graphics();

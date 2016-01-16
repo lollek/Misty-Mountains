@@ -4,7 +4,8 @@
 
 using namespace std;
 
-#include "Coordinate.h"
+#include "game.h"
+#include "coordinate.h"
 #include "command.h"
 #include "io.h"
 #include "armor.h"
@@ -35,8 +36,8 @@ string const trap_names[] = {
 static enum trap_t
 trap_door_player(void)
 {
-  Level::current_level++;
-  level_new();
+  delete Game::level;
+  Game::level = new Level(1);
   io_msg("you fell into a trap!");
   return T_DOOR;
 }

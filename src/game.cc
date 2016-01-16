@@ -23,6 +23,8 @@ using namespace std;
 
 #include "Game.h"
 
+Level* Game::level = nullptr;
+
 int Game::init_graphics()
 {
   initscr();  /* Start up cursor package */
@@ -86,7 +88,9 @@ Game::Game() {
   ring_init();                          /* Set up stone settings of rings */
   wand_init();                          /* Set up materials of wands */
 
-  level_new();                          /* Draw current level */
+  if (Game::level == nullptr) {
+    Game::level = new Level(0);
+  }
 
   /* Start up daemons and fuses */
   daemon_start(daemon_runners_move, 0, AFTER);

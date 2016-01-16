@@ -23,6 +23,9 @@ typedef struct {
 
 class Level {
 public:
+  Level(int relative_level); /* +1 for stairs up, -1 if you go down */
+  ~Level() = default;
+
   int static constexpr amulet_min_level = 26;
   int static           levels_without_food;
   int static           max_level_visited;
@@ -34,8 +37,6 @@ private:
 extern PLACE              level_places[MAXLINES*MAXCOLS];  /* level map */
 extern Coordinate         level_stairs;                    /* Location of staircase */
 extern std::list<Item*>   level_items;                     /* List of items on level */
-
-void level_new(void);
 
 char level_get_type(int y, int x);
 

@@ -4,7 +4,8 @@
 
 using namespace std;
 
-#include "Coordinate.h"
+#include "game.h"
+#include "coordinate.h"
 #include "daemons.h"
 #include "fight.h"
 #include "food.h"
@@ -87,17 +88,16 @@ command_use_stairs(char up_or_down)
   else if (level_get_ch(player_pos->y, player_pos->x) != STAIRS)
     io_msg("You're not standing on any stairs");
 
-  else if (up_or_down == '>') /* DOWN */
-  {
-    Level::current_level++;
-    level_new();
+  else if (up_or_down == '>') /* DOWN */ {
+    delete Game::level;
+    Game::level = new Level(1);
   }
 
   else if (up_or_down == '<') /* UP */
   {
     bool has_amulet = pack_contains_amulet();
 
-    if (Level::current_level < 0) { 
+    if (Level::current_level < 0) {
       throw runtime_error("Level should not go lower than 0");
     }
 
@@ -113,8 +113,8 @@ command_use_stairs(char up_or_down)
       }
     }
 
-    Level::current_level--;
-    level_new();
+    delete Game::level;
+    Game::level = new Level(-1);
 
     if (has_amulet)
       io_msg("you feel a wrenching sensation in your gut");
