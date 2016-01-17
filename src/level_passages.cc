@@ -98,20 +98,21 @@ void
 Level::place_door(room* room, Coordinate* coord) {
 
   room->r_exit[room->r_nexits++] = *coord;
-  if (room->r_flags & ISMAZE)
+  if (room->r_flags & ISMAZE) {
     return;
+  }
 
   PLACE* place = this->get_place(*coord);
-  if (os_rand_range(10) + 1 < Level::current_level && os_rand_range(5) == 0)
-  {
-    if (coord->y == room->r_pos.y || coord->y == room->r_pos.y + room->r_max.y - 1)
+  if (os_rand_range(10) + 1 < Level::current_level && os_rand_range(5) == 0) {
+    if (coord->y == room->r_pos.y || coord->y == room->r_pos.y + room->r_max.y - 1) {
       place->p_ch = HWALL;
-    else
+    } else {
       place->p_ch = VWALL;
+    }
     place->p_flags &= ~F_REAL;
-  }
-  else
+  } else {
     place->p_ch = DOOR;
+  }
 }
 
 
