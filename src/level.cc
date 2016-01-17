@@ -292,7 +292,9 @@ Level::get_room(Coordinate const& coord) {
     }
   }
 
-  error("Coordinate was not in any room");
+  // Not sure if this should be an error, or just if monster is in corridor?
+  //error("Coordinate was not in any room");
+  return nullptr;
 }
 
 

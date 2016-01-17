@@ -15,10 +15,12 @@
 #define F_TMASK		0x07		/* trap number mask */
 
 /* describe a place on the level map */
-typedef struct {
-    char     p_ch;
-    char     p_flags;
-    Monster* p_monst;
+typedef struct place {
+  place() : p_ch(SHADOW), p_flags(F_REAL), p_monst(nullptr) {}
+
+  char     p_ch;
+  char     p_flags;
+  Monster* p_monst;
 } PLACE;
 
 class Level {
