@@ -34,62 +34,45 @@ static bool newpnum;
 
 /** numpass:
  * Number a passageway square and its brethren */
-static void
-numpass(int y, int x)
+void
+Level::number_passage(int x, int y)
 {
-  if (x >= NUMCOLS || x < 0 || y >= NUMLINES || y <= 0)
+  if (x >= NUMCOLS || x < 0 || y >= NUMLINES || y <= 0) {
     return;
+  }
 
-  int flags = Game::level->get_flags(x, y);
-  if (flags & F_PNUM)
+  int flags = this->get_flags(x, y);
+  if (flags & F_PNUM) {
     return;
+  }
 
-  if (newpnum)
-  {
+  if (newpnum) {
     pnum++;
     newpnum = false;
   }
 
   /* check to see if it is a door or secret door, i.e., a new exit,
    * or a numerable type of place */
-  char ch = Game::level->get_ch(x, y);
-  if (ch == DOOR || (!(flags & F_REAL) && (ch == VWALL || ch == HWALL)))
-  {
+  char ch = this->get_ch(x, y);
+  if (ch == DOOR || (!(flags & F_REAL) && (ch == VWALL || ch == HWALL))) {
     struct room* rp = &passages[pnum];
     rp->r_exit[rp->r_nexits].y = y;
     rp->r_exit[rp->r_nexits++].x = x;
   }
 
-  else if (!(flags & F_PASS))
+  else if (!(flags & F_PASS)) {
     return;
+  }
 
   flags |= pnum;
-  Game::level->set_flags(x, y, static_cast<char>(flags));
+  this->set_flags(x, y, static_cast<char>(flags));
 
   /* recurse on the surrounding places */
-  numpass(y + 1, x);
-  numpass(y - 1, x);
-  numpass(y, x + 1);
-  numpass(y, x - 1);
+  this->number_passage(x, y + 1);
+  this->number_passage(x, y - 1);
+  this->number_passage(x + 1, y);
+  this->number_passage(x - 1, y);
 }
-
-/** passnum:
- * Assign a number to each passageway */
-static void
-passnum(void)
-{
-  pnum = 0;
-  newpnum = false;
-  for (int i = 0; i < PASSAGES_MAX; ++i)
-    passages[i].r_nexits = 0;
-  for (int i = 0; i < ROOMS_MAX; ++i)
-    for (int j = 0; j < rooms[i].r_nexits; ++j)
-    {
-      newpnum = true;
-      numpass(rooms[i].r_exit[j].y, rooms[i].r_exit[j].x);
-    }
-}
-
 
 /** door:
  * Add a door or possibly a secret door.  Also enters the door in
@@ -351,7 +334,20 @@ Level::create_passages()
       r2->isconn[i] = true;
     }
   }
-  passnum();
+
+  /* Assign a number to each passageway */
+  pnum = 0;
+  newpnum = false;
+  for (int i = 0; i < PASSAGES_MAX; ++i) {
+    passages[i].r_nexits = 0;
+  }
+
+  for (int i = 0; i < ROOMS_MAX; ++i) {
+    for (int j = 0; j < rooms[i].r_nexits; ++j) {
+      newpnum = true;
+      this->number_passage(rooms[i].r_exit[j].x, rooms[i].r_exit[j].y);
+    }
+  }
 }
 
 void Level::place_passage(Coordinate* coord) {
@@ -371,12 +367,12 @@ void Level::place_passage(Coordinate* coord) {
 }
 
 void
-Level::wizard_show_passages() const {
+Level::wizard_show_passages() {
 
   for (int y = 1; y < NUMLINES - 1; y++) {
     for (int x = 0; x < NUMCOLS; x++) {
 
-      PLACE* pp = Game::level->get_place(x, y);
+      PLACE* pp = this->get_place(x, y);
       if ((pp->p_flags & F_PASS) || pp->p_ch == DOOR ||
           (!(pp->p_flags&F_REAL) && (pp->p_ch == VWALL ||
                                      pp->p_ch == HWALL))) {

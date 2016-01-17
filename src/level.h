@@ -46,7 +46,7 @@ public:
   void set_ch(int x, int y, char ch);
   void set_ch(Coordinate const& coord, char ch);
 
-  void wizard_show_passages() const;
+  void wizard_show_passages();
 
   int static constexpr amulet_min_level = 26;
   int static           levels_without_food;
@@ -68,6 +68,7 @@ private:
   void place_door(room* room, Coordinate* coord);
   void place_passage(Coordinate* coord);
   void connect_passages(int r1, int r2);
+  void number_passage(int x, int y);
 
   PLACE              level_places[MAXLINES*MAXCOLS];  /* level map */
 };
