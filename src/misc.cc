@@ -452,23 +452,26 @@ set_oldch(Monster* tp, Coordinate* cp)
 struct room*
 roomin(Coordinate const* cp)
 {
+  /* Get room from coordinate */
   if (cp == nullptr) {
     throw runtime_error("cp was null");
   }
 
   char fp = Game::level->get_flags(*cp);
-  if (fp & F_PASS)
+  if (fp & F_PASS) {
     return &passages[fp & F_PNUM];
+  }
 
-  for (struct room* rp = rooms; rp < &rooms[ROOMS_MAX]; rp++)
+  for (struct room* rp = rooms; rp < &rooms[ROOMS_MAX]; rp++) {
     if (cp->x <= rp->r_pos.x + rp->r_max.x
         && rp->r_pos.x <= cp->x
         && cp->y <= rp->r_pos.y + rp->r_max.y
-        && rp->r_pos.y <= cp->y)
+        && rp->r_pos.y <= cp->y) {
       return rp;
+    }
+  }
 
-  io_debug_fatal("in some bizarre place (%d, %d)", cp->y, cp->x);
-  return nullptr;
+  throw new runtime_error("Coordinate was not in any room");
 }
 
 bool

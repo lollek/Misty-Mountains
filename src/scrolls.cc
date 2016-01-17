@@ -214,8 +214,9 @@ create_monster(void)
   {
     char buf[MAXSTR];
     Monster *monster = new Monster();
+    monster_new(monster, monster_random(false), &mp, roomin(&mp));
     monster_list.push_back(monster);
-    monster_new(monster, monster_random(false), &mp);
+    Game::level->set_monster(mp, monster);
     io_msg("A %s appears out of thin air", monster_name(monster, buf));
   }
 

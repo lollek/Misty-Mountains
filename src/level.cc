@@ -71,10 +71,11 @@ treas_room(void)
     if (Game::level->get_random_room_coord(room, &monster_pos, MAXTRIES, true))
     {
       Monster* monster = new Monster();
-      monster_new(monster, monster_random(false), &monster_pos);
+      monster_new(monster, monster_random(false), &monster_pos, room);
       monster->t_flags |= ISMEAN;	/* no sloughers in THIS room */
-      monster_give_pack(monster);
       monster_list.push_back(monster);
+      monster_give_pack(monster);
+      Game::level->set_monster(monster_pos, monster);
     }
   }
   Level::current_level--;

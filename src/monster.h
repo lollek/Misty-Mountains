@@ -161,7 +161,7 @@ static inline void monster_remove_held(Monster* mon)
 char monster_random(bool wander);
 
 /* Pick a new monster and add it to the monster list */
-void monster_new(Monster* tp, char type, Coordinate* cp);
+void monster_new(Monster* tp, char type, Coordinate* cp, room* room);
 
 /* Create a new wandering monster and aim it at the player */
 void monster_new_random_wanderer(void);

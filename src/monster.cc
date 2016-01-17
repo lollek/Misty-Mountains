@@ -135,7 +135,7 @@ monster_xp_worth(Monster* tp)
 }
 
 void
-monster_new(Monster* monster, char type, Coordinate* pos)
+monster_new(Monster* monster, char type, Coordinate* pos, room* room)
 {
   assert(monster != nullptr);
   assert(pos != nullptr);
@@ -144,8 +144,7 @@ monster_new(Monster* monster, char type, Coordinate* pos)
   monster->t_disguise   = type;
   monster->t_pos        = *pos;
   monster->t_oldch      = static_cast<char>(mvincch(pos->y, pos->x));
-  monster->t_room       = roomin(pos);
-  Game::level->set_monster(*pos, monster);
+  monster->t_room       = room;
 
   struct monster_template const* m_template = &monsters[monster->t_type - 'A'];
   struct stats* new_stats = &monster->t_stats;
@@ -179,8 +178,9 @@ monster_new_random_wanderer(void)
   while (roomin(&monster_pos) == player_get_room());
 
   Monster* monster = new Monster();
+  monster_new(monster, monster_random(true), &monster_pos, roomin(&monster_pos));
   monster_list.push_back(monster);
-  monster_new(monster, monster_random(true), &monster_pos);
+  Game::level->set_monster(monster_pos, monster);
   if (player_can_sense_monsters())
   {
     if (player_is_hallucinating())
@@ -776,7 +776,7 @@ monster_polymorph(Monster* target)
   char monster = static_cast<char>(os_rand_range(26) + 'A');
   bool same_monster = monster == target->t_type;
 
-  monster_new(target, monster, &pos);
+  monster_new(target, monster, &pos, roomin(&pos));
   if (monster_seen_by_player(target))
   {
     mvaddcch(pos.y, pos.x, static_cast<chtype>(monster));
