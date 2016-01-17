@@ -19,12 +19,12 @@ struct room {
 
 /* Variables. TODO: Move these */
 #define ROOMS_MAX  9                   /* max rooms per level */
-extern struct room* room_prev;         /* Roomin(&oldpos) */
-extern struct room rooms[ROOMS_MAX];   /* One for each room -- A level */
+extern room* room_prev;         /* Roomin(&oldpos) */
+extern room rooms[ROOMS_MAX];   /* One for each room -- A level */
 
 /* Find a valid floor spot in this room.  If rp is nullptr, then
  * pick a new room each time around the loop.  */
-bool room_find_floor(struct room* rp, Coordinate* cp, int limit, bool monst);
+bool room_find_floor(room* rp, Coordinate* cp, int limit, bool monst);
 
 /* Code that is executed whenver you appear in a room */
 void room_enter(Coordinate* cp);
@@ -33,4 +33,4 @@ void room_enter(Coordinate* cp);
 void room_leave(Coordinate* cp);
 
 /* Pick a room that is really there */
-int room_random(void);
+int room_random();

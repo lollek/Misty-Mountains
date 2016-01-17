@@ -1,5 +1,3 @@
-#include <ctype.h>
-
 #include "game.h"
 #include "coordinate.h"
 #include "io.h"
@@ -14,58 +12,62 @@
 
 #include "level_rooms.h"
 
-struct room* room_prev;
-struct room rooms[ROOMS_MAX];
+room* room_prev;
+room rooms[ROOMS_MAX];
 
 /* position matrix for maze positions */
-typedef struct spot {
+struct spot {
   int        nexits;
   Coordinate exits[4];
   int        used;
-} SPOT;
+};
 
-static SPOT maze[NUMLINES/3+1][NUMCOLS/3+1];
+static spot maze[NUMLINES/3+1][NUMCOLS/3+1];
 
 /* Draw a vertical line */
 static void
-room_draw_vertical_line(Level& level, room const& rp, int startx)
-{
-  for (int y = rp.r_pos.y + 1; y <= rp.r_max.y + rp.r_pos.y - 1; y++)
+room_draw_vertical_line(Level& level, room const& rp, int startx) {
+  for (int y = rp.r_pos.y + 1; y <= rp.r_max.y + rp.r_pos.y - 1; y++) {
     level.set_ch(startx, y, VWALL);
+  }
 }
 
 /* Draw a horizontal line */
 static void
-room_draw_horizontal_line(Level& level, room const& rp, int starty)
-{
-  for (int x = rp.r_pos.x; x <= rp.r_pos.x + rp.r_max.x - 1; x++)
-    level.set_ch(x, starty, '-');
+room_draw_horizontal_line(Level& level, room const& rp, int starty) {
+  for (int x = rp.r_pos.x; x <= rp.r_pos.x + rp.r_max.x - 1; x++) {
+    level.set_ch(x, starty, HWALL);
+  }
 }
 
 /* Called to illuminate a room.
  * If it is dark, remove anything that might move.  */
 static void
-room_open_door(struct room* rp)
-{
-  if (rp->r_flags & ISGONE)
+room_open_door(struct room* rp) {
+  if (rp->r_flags & ISGONE) {
     return;
+  }
 
-  for (int y = rp->r_pos.y; y < rp->r_pos.y + rp->r_max.y; y++)
-    for (int x = rp->r_pos.x; x < rp->r_pos.x + rp->r_max.x; x++)
-      if (isupper(Game::level->get_type(x, y)))
+  for (int y = rp->r_pos.y; y < rp->r_pos.y + rp->r_max.y; y++) {
+    for (int x = rp->r_pos.x; x < rp->r_pos.x + rp->r_max.x; x++) {
+      if (isupper(Game::level->get_type(x, y))) {
         monster_notice_player(y, x);
+      }
+    }
+  }
 }
 
 /* Account for maze exits */
 static void
-room_accnt_maze(int y, int x, int ny, int nx)
-{
-  SPOT* sp = &maze[y][x];
+room_accnt_maze(int y, int x, int ny, int nx) {
+  spot* sp = &maze[y][x];
   Coordinate* cp;
 
-  for (cp = sp->exits; cp < &sp->exits[sp->nexits]; cp++)
-    if (cp->y == ny && cp->x == nx)
+  for (cp = sp->exits; cp < &sp->exits[sp->nexits]; cp++) {
+    if (cp->y == ny && cp->x == nx) {
       return;
+    }
+  }
 
   cp->y = ny;
   cp->x = nx;
@@ -74,53 +76,50 @@ room_accnt_maze(int y, int x, int ny, int nx)
 
 /* Dig out from around where we are now, if possible */
 static void
-room_dig(int y, int x, int starty, int startx, int maxy, int maxx)
-{
+room_dig(int y, int x, int starty, int startx, int maxy, int maxx) {
   int nexty = 0;
   int nextx = 0;
 
-  for (;;)
-  {
+  for (;;) {
     Coordinate const del[4] = { {2, 0}, {-2, 0}, {0, 2}, {0, -2} };
     int cnt = 0;
-    for (unsigned i = 0; i < sizeof(del)/sizeof(*del); ++i)
-    {
+    for (unsigned i = 0; i < sizeof(del)/sizeof(*del); ++i) {
       int newy = y + del[i].y;
       int newx = x + del[i].x;
 
       if (newy < 0 || newy > maxy || newx < 0 || newx > maxx
-          || Game::level->get_flags(newx + startx, newy + starty) & F_PASS)
+          || Game::level->get_flags(newx + startx, newy + starty) & F_PASS) {
         continue;
+      }
 
-      if (os_rand_range(++cnt) == 0)
-      {
+      if (os_rand_range(++cnt) == 0) {
         nexty = newy;
         nextx = newx;
       }
     }
 
-    if (cnt == 0)
+    if (cnt == 0) {
       return;
+    }
 
     room_accnt_maze(y, x, nexty, nextx);
     room_accnt_maze(nexty, nextx, y, x);
 
     Coordinate pos;
-    if (nexty == y)
-    {
+    if (nexty == y) {
       pos.y = y + starty;
-      if (nextx - x < 0)
+      if (nextx - x < 0) {
         pos.x = nextx + startx + 1;
-      else
+      } else {
         pos.x = nextx + startx - 1;
-    }
-    else
-    {
+      }
+    } else {
       pos.x = x + startx;
-      if (nexty - y < 0)
+      if (nexty - y < 0) {
         pos.y = nexty + starty + 1;
-      else
+      } else {
         pos.y = nexty + starty - 1;
+      }
     }
     passages_putpass(&pos);
 
@@ -134,10 +133,8 @@ room_dig(int y, int x, int starty, int startx, int maxy, int maxx)
 
 /* Dig a maze */
 static void
-room_do_maze(room const& rp)
-{
-  for (SPOT* sp = &maze[0][0]; sp <= &maze[NUMLINES / 3][NUMCOLS / 3]; sp++)
-  {
+room_do_maze(room const& rp) {
+  for (spot* sp = &maze[0][0]; sp <= &maze[NUMLINES / 3][NUMCOLS / 3]; sp++) {
     sp->used = false;
     sp->nexits = 0;
   }
@@ -155,10 +152,9 @@ room_do_maze(room const& rp)
 /* Draw a box around a room and lay down the floor for normal
  * rooms; for maze rooms, draw maze. */
 static void
-room_draw(Level& level, room const& rp)
-{
-  if (rp.r_flags & ISMAZE)
-  {
+room_draw(Level& level, room const& rp) {
+
+  if (rp.r_flags & ISMAZE) {
     room_do_maze(rp);
     return;
   }
@@ -181,23 +177,20 @@ room_draw(Level& level, room const& rp)
 }
 
 static void
-room_place_gone_room(Coordinate const* max_size, Coordinate const* top, struct room* room)
-{
+room_place_gone_room(Coordinate const* max_size, Coordinate const* top, room* room) {
   /** Place a gone room.  Make certain that there is a blank line
    * for passage drawing.  */
-  do
-  {
+  do {
     room->r_pos.x = top->x + os_rand_range(max_size->x - 3) + 1;
     room->r_pos.y = top->y + os_rand_range(max_size->y - 2) + 1;
     room->r_max.x = -NUMCOLS;
     room->r_max.y = -NUMLINES;
-  }
-  while (!(room->r_pos.y > 0 && rooms->r_pos.y < NUMLINES-1));
+  } while (!(room->r_pos.y > 0 && rooms->r_pos.y < NUMLINES-1));
 }
 
 void
-Level::create_rooms()
-{
+Level::create_rooms() {
+
   /* maximum room size */
   Coordinate const bsze(NUMCOLS / 3, NUMLINES / 3);
 
@@ -242,9 +235,8 @@ Level::create_rooms()
         rooms[i].r_pos.y++;
         rooms[i].r_max.y--;
       }
-    }
 
-    else {
+    } else {
       do {
         rooms[i].r_max.x = os_rand_range(bsze.x - 4) + 4;
         rooms[i].r_max.y = os_rand_range(bsze.y - 4) + 4;
@@ -279,22 +271,21 @@ Level::create_rooms()
 }
 
 bool
-room_find_floor(struct room* rp, Coordinate* cp, int limit, bool monst)
-{
+room_find_floor(struct room* rp, Coordinate* cp, int limit, bool monst) {
   int cnt = limit;
   char compchar = 0;
   bool pickroom = rp == nullptr;
 
-  if (!pickroom)
+  if (!pickroom) {
     compchar = ((rp->r_flags & ISMAZE) ? PASSAGE : FLOOR);
+  }
 
-  for (;;)
-  {
-    if (limit && cnt-- == 0)
+  for (;;) {
+    if (limit && cnt-- == 0) {
       return false;
+    }
 
-    if (pickroom)
-    {
+    if (pickroom) {
       rp = &rooms[room_random()];
       compchar = ((rp->r_flags & ISMAZE) ? PASSAGE : FLOOR);
     }
@@ -304,47 +295,49 @@ room_find_floor(struct room* rp, Coordinate* cp, int limit, bool monst)
     cp->y = rp->r_pos.y + os_rand_range(rp->r_max.y - 2) + 1;
 
     PLACE* pp = Game::level->get_place(*cp);
-    if (monst)
-    {
-      if (pp->p_monst == nullptr && step_ok(pp->p_ch))
+    if (monst) {
+      if (pp->p_monst == nullptr && step_ok(pp->p_ch)) {
         return true;
+      }
     }
-    else if (pp->p_ch == compchar)
+    else if (pp->p_ch == compchar) {
       return true;
+    }
   }
 }
 
 void
-room_enter(Coordinate* cp)
-{
+room_enter(Coordinate* cp) {
+
   struct room* rp = roomin(cp);
   player_set_room(rp);
   room_open_door(rp);
 
-  if (!(rp->r_flags & ISDARK) && !player_is_blind())
-    for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++)
-    {
+  if (!(rp->r_flags & ISDARK) && !player_is_blind()) {
+
+    for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
+
       move(y, rp->r_pos.x);
-      for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
-      {
+      for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
         Monster* tp = Game::level->get_monster(x, y);
         char ch = Game::level->get_ch(x, y);
 
-        if (tp == nullptr)
-        {
+        if (tp == nullptr) {
           mvaddcch(y, x, static_cast<chtype>(ch));
           continue;
         }
 
         tp->t_oldch = ch;
-        if (monster_seen_by_player(tp))
+        if (monster_seen_by_player(tp)) {
           mvaddcch(y, x, static_cast<chtype>(tp->t_disguise));
-        else if (player_can_sense_monsters())
+        } else if (player_can_sense_monsters()) {
           mvaddcch(y, x, static_cast<chtype>(tp->t_disguise)| A_STANDOUT);
-        else
+        } else {
           mvaddcch(y, x, static_cast<chtype>(ch));
+        }
       }
     }
+  }
 }
 
 /** room_leave:
@@ -354,51 +347,52 @@ room_leave(Coordinate* cp)
 {
   struct room* rp = player_get_room();
 
-  if (rp->r_flags & ISMAZE)
+  if (rp->r_flags & ISMAZE) {
     return;
+  }
 
   char floor;
-  if (rp->r_flags & ISGONE)
+  if (rp->r_flags & ISGONE) {
     floor = PASSAGE;
-  else if (!(rp->r_flags & ISDARK) || player_is_blind())
+  } else if (!(rp->r_flags & ISDARK) || player_is_blind()) {
     floor = FLOOR;
-  else
+  } else {
     floor = SHADOW;
+  }
 
   player_set_room(&passages[Game::level->get_flags(*cp) & F_PNUM]);
-  for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++)
-    for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++)
-    {
+  for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
+    for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
       move(y, x);
       char ch = static_cast<char>(incch());
 
-      if (ch == FLOOR)
-      {
-        if (floor == SHADOW)
-          mvaddcch(y, x, SHADOW);
+      if (ch == FLOOR && floor == SHADOW) {
+        mvaddcch(y, x, SHADOW);
       }
 
       /* Don't touch non-monsters */
-      else if (!isupper(ch))
+      else if (!isupper(ch)) {
         continue;
+      }
 
-      if (player_can_sense_monsters())
+      if (player_can_sense_monsters()) {
         mvaddcch(y, x, static_cast<chtype>(ch) | A_STANDOUT);
-      else
+      } else {
         mvaddcch(y, x, static_cast<chtype>(Game::level->get_ch(x, y) == DOOR ? DOOR : floor));
+      }
     }
+  }
 
   room_open_door(rp);
 }
 
 int
-room_random(void)
-{
+room_random(void) {
   int rm;
 
-  do
+  do {
     rm = os_rand_range(ROOMS_MAX);
-  while (rooms[rm].r_flags & ISGONE);
+  } while (rooms[rm].r_flags & ISGONE);
 
   return rm;
 }
