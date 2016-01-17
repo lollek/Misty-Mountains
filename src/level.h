@@ -46,16 +46,34 @@ public:
   void set_ch(int x, int y, char ch);
   void set_ch(Coordinate const& coord, char ch);
 
+  void wizard_show_passages() const;
+
   int static constexpr amulet_min_level = 26;
   int static           levels_without_food;
   int static           max_level_visited;
   int static           current_level;
 
 private:
+
+  /* Parts of constructor */
   void create_rooms();
+  void create_passages();
+
+  /* Part of create_rooms() */
+  void draw_room(room const& room);
+  void draw_maze(room const& room);
+  void draw_maze_recursive(int y, int x, int starty, int startx, int maxy, int maxx);
+
+  /* Part of create_passages() */
+  void place_door(room* room, Coordinate* coord);
+  void place_passage(Coordinate* coord);
+  void connect_passages(int r1, int r2);
 
   PLACE              level_places[MAXLINES*MAXCOLS];  /* level map */
 };
 
 extern Coordinate         level_stairs;                    /* Location of staircase */
 extern std::list<Item*>   level_items;                     /* List of items on level */
+
+#define PASSAGES_MAX 12
+extern room passages[PASSAGES_MAX];

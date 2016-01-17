@@ -23,7 +23,6 @@ using namespace std;
 #include "options.h"
 #include "rogue.h"
 #include "death.h"
-#include "passages.h"
 
 #include "monster.h"
 #include "monster_private.h"

@@ -30,7 +30,6 @@ using namespace std;
 #include "options.h"
 #include "os.h"
 #include "pack.h"
-#include "passages.h"
 #include "player.h"
 #include "rings.h"
 #include "rogue.h"

@@ -11,6 +11,7 @@ struct Coordinate {
   Coordinate& operator=(Coordinate&&) = default;
 
   bool operator==(Coordinate const&) const;
+  bool operator!=(Coordinate const&) const;
 
   int x;
   int y;

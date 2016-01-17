@@ -10,7 +10,6 @@
 #include "move.h"
 #include "options.h"
 #include "pack.h"
-#include "passages.h"
 #include "player.h"
 #include "potions.h"
 #include "rings.h"
@@ -178,7 +177,7 @@ command_wizard_do(char ch)
     case 'C': wizard_create_item(); break;
     case '$': io_msg("inpack = %d", pack_count_items()); break;
     case CTRL('A'): delete Game::level; Game::level = new Level(-1);
-    case CTRL('C'): passages_add_pass(); break;
+    case CTRL('C'): Game::level->wizard_show_passages(); break;
     case CTRL('D'): delete Game::level; Game::level = new Level(1);
     case CTRL('E'): io_msg("food left: %d", food_nutrition_left()); break;
     case CTRL('F'): wizard_show_map(); break;

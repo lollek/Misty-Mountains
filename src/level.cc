@@ -8,7 +8,6 @@ using namespace std;
 #include "pack.h"
 #include "daemons.h"
 #include "monster.h"
-#include "passages.h"
 #include "misc.h"
 #include "player.h"
 #include "level_rooms.h"
@@ -157,7 +156,7 @@ Level::Level(int relative_level) {
   level_items.clear();
 
   this->create_rooms();
-  passages_do();  /* Draw passages */
+  this->create_passages();
   Level::levels_without_food++;      /* Levels with no food placed */
   put_things();   /* Place objects (if any) */
 

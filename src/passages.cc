@@ -8,10 +8,9 @@ using namespace std;
 #include "io.h"
 #include "os.h"
 #include "level_rooms.h"
-#include "level.h"
 #include "rogue.h"
 
-#include "passages.h"
+#include "level.h"
 
 /* One for each passage */
 struct room passages[] = {
@@ -95,17 +94,17 @@ passnum(void)
 /** door:
  * Add a door or possibly a secret door.  Also enters the door in
  * the exits array of the room.  */
-static void
-door(struct room* rm, Coordinate* cp)
-{
-  rm->r_exit[rm->r_nexits++] = *cp;
-  if (rm->r_flags & ISMAZE)
+void
+Level::place_door(room* room, Coordinate* coord) {
+
+  room->r_exit[room->r_nexits++] = *coord;
+  if (room->r_flags & ISMAZE)
     return;
 
-  PLACE* place = Game::level->get_place(*cp);
+  PLACE* place = this->get_place(*coord);
   if (os_rand_range(10) + 1 < Level::current_level && os_rand_range(5) == 0)
   {
-    if (cp->y == rm->r_pos.y || cp->y == rm->r_pos.y + rm->r_max.y - 1)
+    if (coord->y == room->r_pos.y || coord->y == room->r_pos.y + room->r_max.y - 1)
       place->p_ch = HWALL;
     else
       place->p_ch = VWALL;
@@ -118,30 +117,29 @@ door(struct room* rm, Coordinate* cp)
 
 /** conn:
  * Draw a corridor from a room in a certain direction. */
-static void
-conn(int r1, int r2)
-{
+void
+Level::connect_passages(int r1, int r2) {
   int rm;
   char direc;
-  if (r1 < r2)
-  {
+  if (r1 < r2) {
     rm = r1;
-    if (r1 + 1 == r2)
+    if (r1 + 1 == r2) {
       direc = 'r';
-    else
+    } else {
       direc = 'd';
-  }
-  else
-  {
+    }
+
+  } else {
     rm = r2;
-    if (r2 + 1 == r1)
+    if (r2 + 1 == r1) {
       direc = 'r';
-    else
+    } else {
       direc = 'd';
+    }
   }
 
-  struct room* room_from = &rooms[rm];
-  struct room* room_to = nullptr;           /* room pointer of dest */
+  room* room_from = &rooms[rm];
+  room* room_to = nullptr;           /* room pointer of dest */
   Coordinate start_pos;                  /* start of move */
   Coordinate end_pos;                    /* end of move */
   Coordinate turn_delta;                 /* direction to turn */
@@ -151,8 +149,7 @@ conn(int r1, int r2)
 
     /* Set up the movement variables, in two cases:
      * first drawing one down.  */
-  if (direc == 'd')
-  {
+  if (direc == 'd') {
     room_to = &rooms[rm + 3];
     del.x = 0;
     del.y = 1;
@@ -162,32 +159,31 @@ conn(int r1, int r2)
     end_pos.y = room_to->r_pos.y;
 
     /* if not gone pick door pos */
-    if (!(room_from->r_flags & ISGONE))
-      do
-      {
+    if (!(room_from->r_flags & ISGONE)) {
+      do {
         start_pos.x = room_from->r_pos.x + os_rand_range(room_from->r_max.x - 2)
           + 1;
         start_pos.y = room_from->r_pos.y + room_from->r_max.y - 1;
-      }
-      while ((room_from->r_flags & ISMAZE)
-             && !(Game::level->get_flags(start_pos) & F_PASS));
+      } while ((room_from->r_flags & ISMAZE)
+             && !(this->get_flags(start_pos) & F_PASS));
+    }
 
-    if (!(room_to->r_flags & ISGONE))
-      do
+    if (!(room_to->r_flags & ISGONE)) {
+      do {
         end_pos.x = room_to->r_pos.x + os_rand_range(room_to->r_max.x - 2) + 1;
-      while ((room_to->r_flags & ISMAZE)
-             && !(Game::level->get_flags(end_pos) & F_PASS));
+      } while ((room_to->r_flags & ISMAZE)
+             && !(this->get_flags(end_pos) & F_PASS));
+    }
 
     distance = abs(start_pos.y - end_pos.y) - 1;
     turn_delta.y = 0;
     turn_delta.x = (start_pos.x < end_pos.x ? 1 : -1);
 
     turn_distance = abs(start_pos.x - end_pos.x);
-  }
 
   /* setup for moving right */
-  else if (direc == 'r')
-  {
+  } else if (direc == 'r') {
+
     room_to = &rooms[rm + 1];
     del.x = 1;
     del.y = 0;
@@ -195,20 +191,21 @@ conn(int r1, int r2)
     start_pos.y = room_from->r_pos.y;
     end_pos.x = room_to->r_pos.x;
     end_pos.y = room_to->r_pos.y;
-    if (!(room_from->r_flags & ISGONE))
-      do
-      {
+    if (!(room_from->r_flags & ISGONE)) {
+      do {
         start_pos.x = room_from->r_pos.x + room_from->r_max.x - 1;
         start_pos.y = room_from->r_pos.y + os_rand_range(room_from->r_max.y - 2)
           + 1;
       } while ((room_from->r_flags & ISMAZE)
-               && !(Game::level->get_flags(start_pos) & F_PASS));
+               && !(this->get_flags(start_pos) & F_PASS));
+    }
 
-    if (!(room_to->r_flags & ISGONE))
-      do
+    if (!(room_to->r_flags & ISGONE)) {
+      do {
         end_pos.y = room_to->r_pos.y + os_rand_range(room_to->r_max.y - 2) + 1;
-      while ((room_to->r_flags & ISMAZE)
-             && !(Game::level->get_flags(end_pos) & F_PASS));
+      } while ((room_to->r_flags & ISMAZE)
+             && !(this->get_flags(end_pos) & F_PASS));
+    }
 
     distance = abs(start_pos.x - end_pos.x) - 1;
     turn_delta.y = (start_pos.y < end_pos.y ? 1 : -1);
@@ -216,61 +213,61 @@ conn(int r1, int r2)
     turn_distance = abs(start_pos.y - end_pos.y);
   }
 
-  else
+  else {
     io_msg("DEBUG: error in connection tables");
+  }
 
   /* where turn starts */
   int turn_spot = os_rand_range(distance - 1) + 1;
 
   /* Draw in the doors on either side of the passage or just put #'s
    * if the rooms are gone.  */
-  if (!(room_from->r_flags & ISGONE))
-    door(room_from, &start_pos);
-  else
-    passages_putpass(&start_pos);
+  if (!(room_from->r_flags & ISGONE)) {
+    this->place_door(room_from, &start_pos);
+  } else {
+    this->place_passage(&start_pos);
+  }
 
-  if (!(room_to->r_flags & ISGONE))
-    door(room_to, &end_pos);
-  else
-    passages_putpass(&end_pos);
+  if (!(room_to->r_flags & ISGONE)) {
+    this->place_door(room_to, &end_pos);
+  } else {
+    this->place_passage(&end_pos);
+  }
 
   /* Get ready to move...  */
   Coordinate curr(start_pos.x, start_pos.y);
-  while (distance > 0)
-  {
+  while (distance > 0) {
     /* Move to new position */
     curr.x += del.x;
     curr.y += del.y;
 
     /* Check if we are at the turn place, if so do the turn */
-    if (distance == turn_spot)
-      while (turn_distance--)
-      {
-        passages_putpass(&curr);
+    if (distance == turn_spot) {
+      while (turn_distance--) {
+        this->place_passage(&curr);
         curr.x += turn_delta.x;
         curr.y += turn_delta.y;
       }
+    }
 
     /* Continue digging along */
-    passages_putpass(&curr);
+    this->place_passage(&curr);
     distance--;
   }
 
   curr.x += del.x;
   curr.y += del.y;
 
-  if (!(curr == end_pos))
-    io_msg("warning, connectivity problem on this level");
+  if (curr != end_pos) {
+    throw runtime_error("Connectivity problem");
+  }
 }
 
 
-/** passages_do:
- * Draw all the passages on a level.  */
 void
-passages_do(void)
+Level::create_passages()
 {
-  struct rdes
-  {
+  struct rdes {
     bool conn[ROOMS_MAX];  /* possible to connect to room i? */
     bool isconn[ROOMS_MAX];/* connection been made to room i? */
     bool ingraph;         /* this room in graph already? */
@@ -287,10 +284,10 @@ passages_do(void)
   };
 
   /* reinitialize room graph description */
-  for (struct rdes* ptr = rdes; ptr <= &rdes[ROOMS_MAX-1]; ptr++)
-  {
-    for (int i = 0; i < ROOMS_MAX; i++)
+  for (struct rdes* ptr = rdes; ptr <= &rdes[ROOMS_MAX-1]; ptr++) {
+    for (int i = 0; i < ROOMS_MAX; i++) {
       ptr->isconn[i] = false;
+    }
     ptr->ingraph = false;
   }
 
@@ -301,31 +298,29 @@ passages_do(void)
   r1->ingraph = true;
 
   struct rdes* r2 = nullptr;
-  do
-    {
+  do {
       /* find a room to connect with */
       int j = 0;
-      for (int i = 0; i < ROOMS_MAX; i++)
-        if (r1->conn[i] && !rdes[i].ingraph && !os_rand_range(++j))
+      for (int i = 0; i < ROOMS_MAX; i++) {
+        if (r1->conn[i] && !rdes[i].ingraph && !os_rand_range(++j)) {
           r2 = &rdes[i];
+        }
+      }
 
       /* if no adjacent rooms are outside the graph, pick a new room
        * to look from */
-      if (j == 0)
-      {
-        do
+      if (j == 0) {
+        do {
           r1 = &rdes[os_rand_range(ROOMS_MAX)];
-        while (!r1->ingraph);
-      }
+        } while (!r1->ingraph);
 
       /* otherwise, connect new room to the graph, and draw a tunnel
        * to it */
-      else
-      {
+      } else {
         r2->ingraph = true;
         int i = static_cast<int>(r1 - rdes);
         j = static_cast<int>(r2 - rdes);
-        conn(i, j);
+        this->connect_passages(i, j);
         r1->isconn[j] = true;
         r2->isconn[i] = true;
         roomcount++;
@@ -334,22 +329,23 @@ passages_do(void)
 
     /* attempt to add passages to the graph a random number of times so
      * that there isn't always just one unique passage through it.  */
-  for (roomcount = os_rand_range(5); roomcount > 0; roomcount--)
-  {
+  for (roomcount = os_rand_range(5); roomcount > 0; roomcount--) {
+
     r1 = &rdes[os_rand_range(ROOMS_MAX)];	/* a random room to look from */
 
     /* find an adjacent room not already connected */
     int j = 0;
-    for (int i = 0; i < ROOMS_MAX; i++)
-      if (r1->conn[i] && !r1->isconn[i] && os_rand_range(++j) == 0)
+    for (int i = 0; i < ROOMS_MAX; i++) {
+      if (r1->conn[i] && !r1->isconn[i] && os_rand_range(++j) == 0) {
         r2 = &rdes[i];
+      }
+    }
 
     /* if there is one, connect it and look for the next added passage */
-    if (j != 0)
-    {
+    if (j != 0) {
       int i = static_cast<int>(r1 - rdes);
       j = static_cast<int>(r2 - rdes);
-      conn(i, j);
+      this->connect_passages(i, j);
       r1->isconn[j] = true;
       r2->isconn[i] = true;
     }
@@ -357,52 +353,48 @@ passages_do(void)
   passnum();
 }
 
-/** passages_putpass:
- * add a passage character or secret passage here */
-void
-passages_putpass(Coordinate* cp)
-{
-  if (cp == nullptr) {
-    throw runtime_error("cp was null");
+void Level::place_passage(Coordinate* coord) {
+
+  if (coord == nullptr) {
+    throw runtime_error("coord was null");
   }
 
-  PLACE *pp = Game::level->get_place(*cp);
+  PLACE *pp = this->get_place(*coord);
   pp->p_flags |= F_PASS;
 
-  if (os_rand_range(10) + 1 < Level::current_level && os_rand_range(40) == 0)
+  if (os_rand_range(10) + 1 < Level::current_level && os_rand_range(40) == 0) {
     pp->p_flags &= ~F_REAL;
-  else
+  } else {
     pp->p_ch = PASSAGE;
+  }
 }
 
-/** passages_add_pass:
- * Add the passages to the current window (wizard command) */
 void
-passages_add_pass(void)
-{
-  for (int y = 1; y < NUMLINES - 1; y++)
-    for (int x = 0; x < NUMCOLS; x++)
-    {
+Level::wizard_show_passages() const {
+
+  for (int y = 1; y < NUMLINES - 1; y++) {
+    for (int x = 0; x < NUMCOLS; x++) {
+
       PLACE* pp = Game::level->get_place(x, y);
       if ((pp->p_flags & F_PASS) || pp->p_ch == DOOR ||
           (!(pp->p_flags&F_REAL) && (pp->p_ch == VWALL ||
-                                     pp->p_ch == HWALL)))
-      {
+                                     pp->p_ch == HWALL))) {
         char ch = pp->p_ch;
-        if (pp->p_flags & F_PASS)
+        if (pp->p_flags & F_PASS) {
           ch = PASSAGE;
+        }
         pp->p_flags |= F_SEEN;
         move(y, x);
-        if (pp->p_monst != nullptr)
+        if (pp->p_monst != nullptr) {
           pp->p_monst->t_oldch = pp->p_ch;
-        else if (pp->p_flags & F_REAL)
+        } else if (pp->p_flags & F_REAL) {
           addcch(static_cast<chtype>(ch));
-        else
-        {
+        } else {
           standout();
           addcch((pp->p_flags & F_PASS) ? PASSAGE : DOOR);
           standend();
         }
       }
     }
+  }
 }

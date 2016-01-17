@@ -14,7 +14,6 @@ using namespace std;
 #include "fight.h"
 #include "move.h"
 #include "misc.h"
-#include "passages.h"
 #include "level.h"
 #include "player.h"
 #include "wand.h"

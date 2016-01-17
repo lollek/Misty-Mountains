@@ -1,9 +1,12 @@
+#include <exception>
+
+using namespace std;
+
 #include "game.h"
 #include "coordinate.h"
 #include "io.h"
 #include "pack.h"
 #include "monster.h"
-#include "passages.h"
 #include "misc.h"
 #include "level.h"
 #include "player.h"
@@ -23,22 +26,6 @@ struct spot {
 };
 
 static spot maze[NUMLINES/3+1][NUMCOLS/3+1];
-
-/* Draw a vertical line */
-static void
-room_draw_vertical_line(Level& level, room const& rp, int startx) {
-  for (int y = rp.r_pos.y + 1; y <= rp.r_max.y + rp.r_pos.y - 1; y++) {
-    level.set_ch(startx, y, VWALL);
-  }
-}
-
-/* Draw a horizontal line */
-static void
-room_draw_horizontal_line(Level& level, room const& rp, int starty) {
-  for (int x = rp.r_pos.x; x <= rp.r_pos.x + rp.r_max.x - 1; x++) {
-    level.set_ch(x, starty, HWALL);
-  }
-}
 
 /* Called to illuminate a room.
  * If it is dark, remove anything that might move.  */
@@ -75,8 +62,8 @@ room_accnt_maze(int y, int x, int ny, int nx) {
 
 
 /* Dig out from around where we are now, if possible */
-static void
-room_dig(int y, int x, int starty, int startx, int maxy, int maxx) {
+void
+Level::draw_maze_recursive(int y, int x, int starty, int startx, int maxy, int maxx) {
   int nexty = 0;
   int nextx = 0;
 
@@ -121,19 +108,19 @@ room_dig(int y, int x, int starty, int startx, int maxy, int maxx) {
         pos.y = nexty + starty - 1;
       }
     }
-    passages_putpass(&pos);
+    this->place_passage(&pos);
 
     pos.y = nexty + starty;
     pos.x = nextx + startx;
-    passages_putpass(&pos);
+    this->place_passage(&pos);
 
-    room_dig(nexty, nextx, starty, startx, maxy, maxx);
+    this->draw_maze_recursive(nexty, nextx, starty, startx, maxy, maxx);
   }
 }
 
 /* Dig a maze */
-static void
-room_do_maze(room const& rp) {
+void
+Level::draw_maze(room const& rp) {
   for (spot* sp = &maze[0][0]; sp <= &maze[NUMLINES / 3][NUMCOLS / 3]; sp++) {
     sp->used = false;
     sp->nexits = 0;
@@ -144,34 +131,32 @@ room_do_maze(room const& rp) {
 
   // TODO: Is this a typo/incorrect? maybe x + rp->r_pos.x
   Coordinate pos(y + rp.r_pos.x, y + rp.r_pos.y);
-  passages_putpass(&pos);
+  this->place_passage(&pos);
 
-  room_dig(y, x, rp.r_pos.y, rp.r_pos.x, rp.r_max.y, rp.r_max.x);
+  this->draw_maze_recursive(y, x, rp.r_pos.y, rp.r_pos.x, rp.r_max.y, rp.r_max.x);
 }
 
 /* Draw a box around a room and lay down the floor for normal
  * rooms; for maze rooms, draw maze. */
-static void
-room_draw(Level& level, room const& rp) {
+void
+Level::draw_room(room const& rp) {
 
-  if (rp.r_flags & ISMAZE) {
-    room_do_maze(rp);
-    return;
+  /* Draw left + right side */
+  for (int y = rp.r_pos.y + 1; y <= rp.r_max.y + rp.r_pos.y - 1; y++) {
+    this->set_ch(rp.r_pos.x, y, VWALL);
+    this->set_ch(rp.r_pos.x + rp.r_max.x - 1, y, VWALL);
   }
 
-  /* Draw left side */
-  room_draw_vertical_line(level, rp, rp.r_pos.x);
-  /* Draw right side */
-  room_draw_vertical_line(level, rp, rp.r_pos.x + rp.r_max.x - 1);
-  /* Draw top */
-  room_draw_horizontal_line(level, rp, rp.r_pos.y);
-  /* Draw bottom */
-  room_draw_horizontal_line(level, rp, rp.r_pos.y + rp.r_max.y - 1);
+  /* Draw top + bottom side */
+  for (int x = rp.r_pos.x; x <= rp.r_pos.x + rp.r_max.x - 1; x++) {
+    this->set_ch(x, rp.r_pos.y, HWALL);
+    this->set_ch(x, rp.r_pos.y + rp.r_max.y - 1, HWALL);
+  }
 
   /* Put the floor down */
   for (int y = rp.r_pos.y + 1; y < rp.r_pos.y + rp.r_max.y - 1; y++) {
     for (int x = rp.r_pos.x + 1; x < rp.r_pos.x + rp.r_max.x - 1; x++) {
-      level.set_ch(x, y, FLOOR);
+      this->set_ch(x, y, FLOOR);
     }
   }
 }
@@ -244,7 +229,12 @@ Level::create_rooms() {
         rooms[i].r_pos.y = top.y + os_rand_range(bsze.y - rooms[i].r_max.y);
       } while (rooms[i].r_pos.y == 0);
     }
-    room_draw(*this, rooms[i]);
+
+    if (rooms[i].r_flags & ISMAZE) {
+      this->draw_maze(rooms[i]);
+    } else {
+      this->draw_room(rooms[i]);
+    }
 
     /* Put the gold in */
     if (os_rand_range(2) == 0 &&
