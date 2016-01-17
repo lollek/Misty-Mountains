@@ -28,9 +28,8 @@ Coordinate move_pos_prev;
 static bool
 move_turn_ok(int y, int x)
 {
-  PLACE *pp = Game::level->get_place(x, y);
-  return (pp->p_ch == DOOR
-      || (pp->p_flags & (F_REAL|F_PASS)) == (F_REAL|F_PASS));
+  return (Game::level->get_ch(x, y) == DOOR
+      || (Game::level->get_flags(x, y) & (F_REAL|F_PASS)) == (F_REAL|F_PASS));
 }
 
 /** move_turnref:
@@ -39,17 +38,14 @@ static void
 move_turnref(void)
 {
   Coordinate *player_pos = player_get_pos();
-  PLACE *pp = Game::level->get_place(*player_pos);
 
-  if (!(pp->p_flags & F_SEEN))
-  {
-    if (jump)
-    {
+  if (!Game::level->get_flag_seen(*player_pos)) {
+    if (jump) {
       leaveok(stdscr, true);
       refresh();
       leaveok(stdscr, false);
     }
-    pp->p_flags |= F_SEEN;
+    Game::level->set_flag_seen(*player_pos);
   }
 }
 

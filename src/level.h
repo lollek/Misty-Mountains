@@ -15,27 +15,33 @@
 #define F_TMASK		0x07		/* trap number mask */
 
 /* describe a place on the level map */
-typedef struct place {
+struct place {
   place() : p_ch(SHADOW), p_flags(F_REAL), p_monst(nullptr) {}
 
   char     p_ch;
   char     p_flags;
   Monster* p_monst;
-} PLACE;
+};
 
 class Level {
 public:
   Level();
   ~Level();
 
-  PLACE* get_place(int x, int y);
-  PLACE* get_place(Coordinate const& coord);
   Monster* get_monster(int x, int y);
   Monster* get_monster(Coordinate const& coord);
   char get_flags(int x, int y);
   char get_flags(Coordinate const& coord);
+  bool get_flag_seen(int x, int y);
+  bool get_flag_seen(Coordinate const& coord);
+  bool get_flag_passage(int x, int y);
+  bool get_flag_passage(Coordinate const& coord);
+  bool get_flag_real(int x, int y);
+  bool get_flag_real(Coordinate const& coord);
   char get_ch(int x, int y);
   char get_ch(Coordinate const& coord);
+  char get_trap_type(int x, int y);
+  char get_trap_type(Coordinate const& coord);
   char get_type(int x, int y);
   char get_type(Coordinate const& coord);
 
@@ -46,6 +52,14 @@ public:
   void set_monster(Coordinate const& coord, Monster* monster);
   void set_flags(int x, int y, char flags);
   void set_flags(Coordinate const& coord, char flags);
+  void set_flag_seen(int x, int y);
+  void set_flag_seen(Coordinate const& coord);
+  void set_flag_passage(int x, int y);
+  void set_flag_passage(Coordinate const& coord);
+  void set_flag_real(int x, int y);
+  void set_flag_real(Coordinate const& coord);
+  void set_flag_notreal(int x, int y);
+  void set_flag_notreal(Coordinate const& coord);
   void set_ch(int x, int y, char ch);
   void set_ch(Coordinate const& coord, char ch);
 
@@ -72,7 +86,7 @@ private:
   void connect_passages(int r1, int r2);
   void number_passage(int x, int y);
 
-  PLACE              level_places[MAXLINES*MAXCOLS];  /* level map */
+  place level_places[MAXLINES*MAXCOLS];  /* level map */
 };
 
 extern Coordinate         level_stairs;                    /* Location of staircase */

@@ -58,8 +58,8 @@ void
 look(bool wakeup)
 {
   Coordinate const* player_pos = player_get_pos();
-  char const player_ch = Game::level->get_place(*player_pos)->p_ch;
-  char const player_flags = Game::level->get_place(*player_pos)->p_flags;
+  char const player_ch = Game::level->get_ch(*player_pos);
+  char const player_flags = Game::level->get_flags(*player_pos);
 
   if (move_pos_prev == *player_pos)
   {
@@ -91,12 +91,11 @@ look(bool wakeup)
           && y == player_pos->y && x == player_pos->x)
         continue;
 
-      PLACE const* xy_pos = Game::level->get_place(x, y);
-      char xy_ch = xy_pos->p_ch;
+      char xy_ch = Game::level->get_ch(x, y);
       if (xy_ch == SHADOW)  /* nothing need be done with a ' ' */
         continue;
 
-      char const xy_flags = xy_pos->p_flags;
+      char const xy_flags = Game::level->get_flags(x, y);
       if (player_ch != DOOR
           && xy_ch != DOOR
           && (player_flags & F_PASS) != (xy_flags & F_PASS))
@@ -111,7 +110,7 @@ look(bool wakeup)
           continue;
       }
 
-      Monster* monster = xy_pos->p_monst;
+      Monster* monster = Game::level->get_monster(x, y);
       if (monster == nullptr)
         xy_ch = static_cast<char>(trip_ch(y, x, xy_ch));
       else

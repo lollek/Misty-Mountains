@@ -291,21 +291,19 @@ trap_spring(Monster* victim, Coordinate* trap_coord)
   assert(trap_coord != nullptr);
 
   bool is_player = victim == nullptr;
-  PLACE* pp = Game::level->get_place(*trap_coord);
-  char tr = pp->p_flags & F_TMASK;
+  char tr = Game::level->get_trap_type(*trap_coord);
 
-  if (is_player)
-  {
+  if (is_player) {
     /* If we're levitating, we won't trigger the trap */
-    if (player_is_levitating())
+    if (player_is_levitating()) {
       return T_RUST; /* this needs to be neither T_DOOR nor T_TELEP */
+    }
     command_stop(true);
   }
 
-  if (victim == nullptr || monster_seen_by_player(victim))
-  {
-    pp->p_ch = TRAP;
-    pp->p_flags |= F_SEEN;
+  if (victim == nullptr || monster_seen_by_player(victim)) {
+    Game::level->set_ch(*trap_coord, TRAP);
+    Game::level->set_flag_seen(*trap_coord);
   }
 
   switch (tr)

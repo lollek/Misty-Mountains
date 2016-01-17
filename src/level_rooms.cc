@@ -286,12 +286,12 @@ Level::get_random_room_coord(room* room, Coordinate* coord, int tries, bool mons
     coord->x = room->r_pos.x + os_rand_range(room->r_max.x - 2) + 1;
     coord->y = room->r_pos.y + os_rand_range(room->r_max.y - 2) + 1;
 
-    PLACE* pp = this->get_place(*coord);
+    char ch = this->get_ch(*coord);
     if (monst) {
-      if (pp->p_monst == nullptr && step_ok(pp->p_ch)) {
+      if (this->get_monster(*coord) == nullptr && step_ok(ch)) {
         return true;
       }
-    } else if (pp->p_ch == compchar) {
+    } else if (ch == compchar) {
       return true;
     }
   }

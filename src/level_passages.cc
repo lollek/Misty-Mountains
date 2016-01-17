@@ -86,16 +86,15 @@ Level::place_door(room* room, Coordinate* coord) {
     return;
   }
 
-  PLACE* place = this->get_place(*coord);
   if (os_rand_range(10) + 1 < Game::current_level && os_rand_range(5) == 0) {
     if (coord->y == room->r_pos.y || coord->y == room->r_pos.y + room->r_max.y - 1) {
-      place->p_ch = HWALL;
+      this->set_ch(*coord, HWALL);
     } else {
-      place->p_ch = VWALL;
+      this->set_ch(*coord, VWALL);
     }
-    place->p_flags &= ~F_REAL;
+    this->set_flag_notreal(*coord);
   } else {
-    place->p_ch = DOOR;
+    this->set_ch(*coord, DOOR);
   }
 }
 
@@ -357,13 +356,12 @@ void Level::place_passage(Coordinate* coord) {
     error("coord was null");
   }
 
-  PLACE *pp = this->get_place(*coord);
-  pp->p_flags |= F_PASS;
+  this->set_flag_passage(*coord);
 
   if (os_rand_range(10) + 1 < Game::current_level && os_rand_range(40) == 0) {
-    pp->p_flags &= ~F_REAL;
+    this->set_flag_notreal(*coord);
   } else {
-    pp->p_ch = PASSAGE;
+    this->set_ch(*coord, PASSAGE);
   }
 }
 
@@ -373,23 +371,25 @@ Level::wizard_show_passages() {
   for (int y = 1; y < NUMLINES - 1; y++) {
     for (int x = 0; x < NUMCOLS; x++) {
 
-      PLACE* pp = this->get_place(x, y);
-      if ((pp->p_flags & F_PASS) || pp->p_ch == DOOR ||
-          (!(pp->p_flags&F_REAL) && (pp->p_ch == VWALL ||
-                                     pp->p_ch == HWALL))) {
-        char ch = pp->p_ch;
-        if (pp->p_flags & F_PASS) {
+      bool is_passage = this->get_flag_passage(x, y);
+      bool is_real = this->get_flag_real(x, y);
+      char ch = this->get_ch(x, y);
+
+      if (is_passage || ch == DOOR ||
+          (!is_real && (ch == VWALL || ch == HWALL))) {
+        if (is_passage) {
           ch = PASSAGE;
         }
-        pp->p_flags |= F_SEEN;
+        this->set_flag_seen(x, y);
         move(y, x);
-        if (pp->p_monst != nullptr) {
-          pp->p_monst->t_oldch = pp->p_ch;
-        } else if (pp->p_flags & F_REAL) {
+        Monster *mon = this->get_monster(x, y);
+        if (mon != nullptr) {
+          mon->t_oldch = ch;
+        } else if (is_real) {
           addcch(static_cast<chtype>(ch));
         } else {
           standout();
-          addcch((pp->p_flags & F_PASS) ? PASSAGE : DOOR);
+          addcch(is_passage ? PASSAGE : DOOR);
           standend();
         }
       }

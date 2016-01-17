@@ -62,13 +62,13 @@ weapon_missile_fall(Item* obj, bool pr) {
   Coordinate fpos;
 
   if (fallpos(&obj->get_pos(), &fpos)) {
-    PLACE* pp = Game::level->get_place(fpos);
-    pp->p_ch = static_cast<char>(obj->o_type);
+    Game::level->set_ch(fpos, static_cast<char>(obj->o_type));
     obj->set_pos(fpos);
 
     if (cansee(fpos.y, fpos.x)) {
-      if (pp->p_monst != nullptr) {
-        pp->p_monst->t_oldch = static_cast<char>(obj->o_type);
+      Monster *monster = Game::level->get_monster(fpos);
+      if (monster != nullptr) {
+        monster->t_oldch = static_cast<char>(obj->o_type);
       } else {
         mvaddcch(fpos.y, fpos.x, static_cast<chtype>(obj->o_type));
       }

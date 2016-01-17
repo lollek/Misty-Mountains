@@ -230,57 +230,61 @@ magic_mapping(void)
   for (int y = 1; y < NUMLINES - 1; y++)
     for (int x = 0; x < NUMCOLS; x++)
     {
-      PLACE* pp = Game::level->get_place(x, y);
       char ch = Game::level->get_ch(x, y);
       switch (ch)
       {
         case DOOR: case STAIRS: break;
 
         case HWALL: case VWALL:
-          if (!(pp->p_flags & F_REAL))
-          {
-            ch = pp->p_ch = DOOR;
-            pp->p_flags |= F_REAL;
+          if (!Game::level->get_flag_real(x, y)) {
+            ch = DOOR;
+            Game::level->set_ch(x, y, DOOR);
+            Game::level->set_flag_real(x, y);
           }
           break;
 
         case SHADOW:
-          if (pp->p_flags & F_REAL)
+          if (Game::level->get_flag_real(x, y)) {
             goto def;
-          pp->p_flags |= F_REAL;
-          ch = pp->p_ch = PASSAGE;
+          }
+          ch = PASSAGE;
+          Game::level->set_ch(x, y, ch);
+          Game::level->set_flag_real(x, y);
           /* FALLTHROUGH */
 
         case PASSAGE:
 pass:
-          if (!(pp->p_flags & F_REAL))
-            pp->p_ch = PASSAGE;
-          pp->p_flags |= (F_SEEN|F_REAL);
+          if (!Game::level->get_flag_real(x, y)) {
+            Game::level->set_ch(x, y, PASSAGE);
+          }
           ch = PASSAGE;
+          Game::level->set_flag_seen(x, y);
+          Game::level->set_flag_real(x, y);
           break;
 
         case FLOOR:
-          if (pp->p_flags & F_REAL)
+          if (Game::level->get_flag_real(x, y)) {
             ch = SHADOW;
-          else
-          {
+          } else {
             ch = TRAP;
-            pp->p_ch = TRAP;
-            pp->p_flags |= (F_SEEN|F_REAL);
+            Game::level->set_ch(x, y, ch);
+            Game::level->set_flag_seen(x, y);
+            Game::level->set_flag_real(x, y);
           }
           break;
 
         default:
 def:
-          if (pp->p_flags & F_PASS)
+          if (Game::level->get_flag_passage(x, y)) {
             goto pass;
+          }
           ch = SHADOW;
           break;
       }
 
       if (ch != SHADOW)
       {
-        Monster* obj = pp->p_monst;
+        Monster* obj = Game::level->get_monster(x, y);
         if (obj != nullptr)
           obj->t_oldch = ch;
         if (obj == nullptr || !player_can_sense_monsters())
