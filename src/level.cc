@@ -162,6 +162,12 @@ Level::create_traps() {
   }
 }
 
+void
+Level::create_stairs() {
+  this->get_random_room_coord(nullptr, &level_stairs, 0, false);
+  this->set_ch(level_stairs, STAIRS);
+}
+
 
 Level::Level() {
 
@@ -172,11 +178,7 @@ Level::Level() {
   Game::levels_without_food++;      /* Levels with no food placed */
   this->create_loot();
   this->create_traps();
-
-
-  /* Place the staircase down.  */
-  this->get_random_room_coord(nullptr, &level_stairs, 0, false);
-  this->set_ch(level_stairs, STAIRS);
+  this->create_stairs();
 
   /* Set room pointers for all monsters */
   for (Monster* mon : monster_list) {

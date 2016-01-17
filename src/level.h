@@ -57,6 +57,7 @@ private:
   void create_passages();
   void create_loot();
   void create_traps();
+  void create_stairs();
 
   /* Part of create_rooms() */
   void draw_room(room const& room);
