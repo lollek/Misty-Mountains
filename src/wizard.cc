@@ -2,6 +2,7 @@
 
 using namespace std;
 
+#include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
 #include "potions.h"
@@ -215,11 +216,11 @@ wizard_create_item(void)
       break;
 
     default:
-      throw runtime_error("Unimplemented item: " + to_string(which));
+      error("Unimplemented item: " + to_string(which));
   }
 
   if (obj == nullptr) {
-    throw runtime_error("object was null");
+    error("object was null");
   }
   pack_add(obj, false);
 }

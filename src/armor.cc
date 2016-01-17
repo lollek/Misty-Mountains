@@ -4,6 +4,7 @@
 
 using namespace std;
 
+#include "error_handling.h"
 #include "io.h"
 #include "item.h"
 #include "misc.h"
@@ -74,7 +75,7 @@ armor_type_random() {
     }
   }
 
-  throw runtime_error("Error! Sum of probabilities is not 100%");
+  error("Error! Sum of probabilities is not 100%");
 }
 
 void

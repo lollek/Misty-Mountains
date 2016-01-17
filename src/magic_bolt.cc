@@ -1,11 +1,9 @@
-#include <assert.h>
-#include <string.h>
-
 #include <string>
 #include <exception>
 
 using namespace std;
 
+#include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
 #include "fight.h"
@@ -55,7 +53,9 @@ recursive_loop:; /* ONLY called by end of function */
         ? VWALL : HWALL;
     }
   }
-  assert(ch != SHADOW);
+  if (ch == SHADOW) {
+    error("ch was still SHADOW");
+  }
 
   /* Handle potential bouncing */
   if (ch == VWALL)
@@ -84,7 +84,7 @@ static void
 magic_bolt_hit_player(Coordinate* start, string const& missile_name)
 {
   if (start == nullptr) {
-    throw runtime_error("start coord was null");
+    error("start coord was null");
   }
 
   if (!player_save_throw(VS_MAGIC))
@@ -112,11 +112,11 @@ static void
 magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string const& missile_name)
 {
   if (mon == nullptr) {
-    throw runtime_error("mon was null");
+    error("mon was null");
   } else if (start == nullptr) {
-    throw runtime_error("start was null");
+    error("start was null");
   } else if (pos == nullptr) {
-    throw runtime_error("pos was null");
+    error("pos was null");
   }
 
   mon->t_oldch = Game::level->get_ch(*pos);
@@ -155,9 +155,9 @@ void
 magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
 {
   if (start == nullptr) {
-    throw runtime_error("start was null");
+    error("start was null");
   } else if (dir == nullptr) {
-    throw runtime_error("dir was null");
+    error("dir was null");
   }
 
   tile dirtile = TILE_ERROR;
@@ -171,7 +171,9 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
       break;
     case 2: case -2: dirtile = TILE_BOLT_DIAGDOWN; break;
   }
-  assert (dirtile != TILE_ERROR);
+  if (dirtile == TILE_ERROR) {
+    error("dirtile was TILE_ERROR");
+  }
 
   enum attribute bolt_type = ATTR_FIRE;
 

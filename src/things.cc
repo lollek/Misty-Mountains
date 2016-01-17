@@ -4,6 +4,7 @@
 
 using namespace std;
 
+#include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
 #include "potions.h"
@@ -145,13 +146,13 @@ new_thing(void)
   }
 
   if (cur == nullptr) {
-    throw runtime_error("curr is null");
+    error("curr is null");
   }
   if (cur->o_damage.sides < 0 || cur->o_damage.dices < 0) {
-    throw runtime_error("cur->damage is negative");
+    error("cur->damage is negative");
   }
   if (cur->o_hurldmg.sides < 0 || cur->o_hurldmg.dices < 0) {
-    throw runtime_error("cur->hurldmg is negative");
+    error("cur->hurldmg is negative");
   }
   return cur;
 }
@@ -166,7 +167,7 @@ pick_one(vector<obj_info>& start, size_t nitems)
       rand -= start.at(i).oi_prob;
 
   /* The functions should have returned by now */
-  throw range_error("Probability was not in range");
+  error("Probability was not in range");
 }
 
 /* list what the player has discovered of this type */

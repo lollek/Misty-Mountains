@@ -7,6 +7,7 @@
 
 using namespace std;
 
+#include "error_handling.h"
 #include "game.h"
 #include "io.h"
 #include "pack.h"
@@ -265,7 +266,7 @@ void
 monster_start_running(Coordinate const* runner)
 {
   if (runner == nullptr) {
-    throw runtime_error("runner was null");
+    error("runner was null");
   }
 
   Monster *tp = Game::level->get_monster(*runner);

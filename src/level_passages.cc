@@ -3,6 +3,7 @@
 
 using namespace std;
 
+#include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
 #include "io.h"
@@ -243,7 +244,7 @@ Level::connect_passages(int r1, int r2) {
   curr.y += del.y;
 
   if (curr != end_pos) {
-    throw runtime_error("Connectivity problem");
+    error("Connectivity problem");
   }
 }
 
@@ -353,7 +354,7 @@ Level::create_passages()
 void Level::place_passage(Coordinate* coord) {
 
   if (coord == nullptr) {
-    throw runtime_error("coord was null");
+    error("coord was null");
   }
 
   PLACE *pp = this->get_place(*coord);

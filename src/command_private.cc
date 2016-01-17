@@ -4,6 +4,7 @@
 
 using namespace std;
 
+#include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
 #include "daemons.h"
@@ -80,7 +81,7 @@ command_use_stairs(char up_or_down)
   Coordinate* player_pos = player_get_pos();
 
   if (up_or_down != '>' && up_or_down != '<') {
-    throw runtime_error("Unknown stairs: " + to_string(up_or_down));
+    error("Unknown stairs: " + to_string(up_or_down));
   }
 
   if (player_is_levitating())
@@ -97,7 +98,7 @@ command_use_stairs(char up_or_down)
     bool has_amulet = pack_contains_amulet();
 
     if (Game::current_level < 0) {
-      throw runtime_error("Level should not go lower than 0");
+      error("Level should not go lower than 0");
     }
 
     if (Game::current_level == 1)

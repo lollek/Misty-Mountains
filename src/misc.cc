@@ -7,6 +7,7 @@
 
 using namespace std;
 
+#include "error_handling.h"
 #include "game.h"
 #include "armor.h"
 #include "colors.h"
@@ -417,9 +418,9 @@ set_oldch(Monster* tp, Coordinate* cp)
   char old_char = tp->t_oldch;
 
   if (tp == nullptr) {
-    throw runtime_error("tp was null");
+    error("tp was null");
   } else if (cp == nullptr) {
-    throw runtime_error("cp was null");
+    error("cp was null");
   }
 
   if (tp->t_pos == *cp)

@@ -47,6 +47,19 @@ Game::new_level(int dungeon_level) {
   }
 
   Game::level = new Level();
+
+  Coordinate* player_pos = player_get_pos();
+  Game::level->get_random_room_coord(nullptr, player_pos, 0, true);
+  room_enter(player_pos);
+  mvaddcch(player_pos->y, player_pos->x, PLAYER);
+
+  if (player_can_sense_monsters()) {
+    player_add_sense_monsters(true);
+  }
+
+  if (player_is_hallucinating()) {
+    daemon_change_visuals(0);
+  }
 }
 
 int Game::init_graphics()

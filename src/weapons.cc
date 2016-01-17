@@ -4,6 +4,7 @@
 
 using namespace std;
 
+#include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
 #include "fight.h"
@@ -185,7 +186,7 @@ weapon_description(Item const* item) {
     dices = item_damage(item)->dices;
     sides = item_damage(item)->sides;
   } else {
-    throw runtime_error("Bad item type");
+    error("Bad item type");
   }
 
   buffer << " (" << sides << "d" << dices << ")";

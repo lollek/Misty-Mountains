@@ -1,10 +1,8 @@
-#include <assert.h>
-#include <stdlib.h>
-
 #include <string>
 
 using namespace std;
 
+#include "error_handling.h"
 #include "game.h"
 #include "scrolls.h"
 #include "command.h"
@@ -158,7 +156,7 @@ chase_do(Monster *th)
 
     Coordinate *player_pos = player_get_pos();
     if (player_pos == nullptr) {
-      throw runtime_error("Player position was null");
+      error("Player position was null");
     }
 
     rer = th->t_room;

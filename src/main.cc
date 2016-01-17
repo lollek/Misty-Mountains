@@ -1,13 +1,3 @@
-/*
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- *
- * @(#)main.c 4.22 (Berkeley) 02/05/99
- */
-
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
@@ -16,7 +6,12 @@
 #include <getopt.h>
 #include <inttypes.h>
 
-#include "Game.h"
+#include <iostream>
+
+using namespace std;
+
+#include "error_handling.h"
+#include "game.h"
 #include "command.h"
 #include "io.h"
 #include "pack.h"
@@ -132,30 +127,34 @@ main(int argc, char** argv)
 
   /* Parse args and then init new (or old) game */
   parse_args(argc, argv);
-  Game new_game;
+  try {
+    Game new_game;
 
-  /* Try to crash cleanly, and autosave if possible
-   * Unless we are debugging, since that messes with gdb */
+    /* Try to crash cleanly, and autosave if possible
+     * Unless we are debugging, since that messes with gdb */
 #ifdef NDEBUG
-  signal(SIGHUP, save_auto);
-  signal(SIGQUIT, command_signal_endit);
-  signal(SIGILL, save_auto);
-  signal(SIGTRAP, save_auto);
-  signal(SIGIOT, save_auto);
-  signal(SIGFPE, save_auto);
-  signal(SIGBUS, save_auto);
-  signal(SIGSEGV, save_auto);
-  signal(SIGSYS, save_auto);
-  signal(SIGTERM, save_auto);
-  signal(SIGINT, command_signal_quit);
+    signal(SIGHUP, save_auto);
+    signal(SIGQUIT, command_signal_endit);
+    signal(SIGILL, save_auto);
+    signal(SIGTRAP, save_auto);
+    signal(SIGIOT, save_auto);
+    signal(SIGFPE, save_auto);
+    signal(SIGBUS, save_auto);
+    signal(SIGSEGV, save_auto);
+    signal(SIGSYS, save_auto);
+    signal(SIGTERM, save_auto);
+    signal(SIGINT, command_signal_quit);
 #else
-  io_msg("Seed: #%u", os_rand_seed);
+    io_msg("Seed: #%u", os_rand_seed);
 #endif
 
-  move_pos_prev = *player_get_pos();
-  room_prev = Game::level->get_room(*player_get_pos());
+    move_pos_prev = *player_get_pos();
+    room_prev = Game::level->get_room(*player_get_pos());
 
-  for (;;) command();
+    for (;;) command();
+  } catch (const std::runtime_error &ex) {
+    cout << ex.what() << endl;
+  }
 
   /* CODE NOT REACHED */;
 }

@@ -1,12 +1,8 @@
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <assert.h>
-
 #include <string>
 
 using namespace std;
 
+#include "error_handling.h"
 #include "game.h"
 #include "colors.h"
 #include "command.h"
@@ -138,7 +134,10 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown)
   struct attack_modifier mod;
   mod.to_hit = 0;
   mod.to_dmg = 0;
-  assert(sizeof(mod.damage) == sizeof(attacker->t_stats.s_dmg));
+  if (sizeof(mod.damage) != sizeof(attacker->t_stats.s_dmg)) {
+    error("Size was not correct");
+  }
+
   memcpy(mod.damage, attacker->t_stats.s_dmg, sizeof(attacker->t_stats.s_dmg));
 
   calculate_attacker(attacker, weapon, thrown, &mod);
@@ -149,7 +148,9 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown)
       || monster_is_stuck(defender))
     mod.to_hit += 4;
 
-  assert(mod.damage[0].sides != -1 && mod.damage[0].dices != -1);
+  if (mod.damage[0].sides == -1 || mod.damage[0].dices == -1) {
+    error("Damage dice was negative");
+  }
 
   bool did_hit = false;
   for (int i = 0; i < MAXATTACKS; ++i)
@@ -213,7 +214,7 @@ int
 fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
 {
   if (monster_pos == nullptr) {
-    throw runtime_error("monster_pos was null");
+    error("monster_pos was null");
   }
   Monster* tp = Game::level->get_monster(*monster_pos);
   if (tp == nullptr)
