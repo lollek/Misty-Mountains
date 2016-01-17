@@ -10,6 +10,7 @@ using namespace std;
 #include "misc.h"
 #include "io.h"
 #include "os.h"
+#include "game.h"
 
 #include "monster.h"
 #include "monster_private.h"
@@ -28,7 +29,8 @@ monster_find_new_target(Monster* monster)
     if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
       continue;
 
-    if (roomin(&obj->get_pos()) == monster->t_room && os_rand_range(100) < prob)
+    if (Game::level->get_room(obj->get_pos()) == monster->t_room &&
+        os_rand_range(100) < prob)
     {
       auto result = find_if(monster_list.cbegin(), monster_list.cend(),
           [&] (Monster const* m) {

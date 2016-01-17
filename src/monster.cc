@@ -174,10 +174,10 @@ monster_new_random_wanderer(void)
 
   do
     Game::level->get_random_room_coord(nullptr, &monster_pos, 0, true);
-  while (roomin(&monster_pos) == player_get_room());
+  while (Game::level->get_room(monster_pos) == player_get_room());
 
   Monster* monster = new Monster();
-  monster_new(monster, monster_random(true), &monster_pos, roomin(&monster_pos));
+  monster_new(monster, monster_random(true), &monster_pos, Game::level->get_room(monster_pos));
   monster_list.push_back(monster);
   Game::level->set_monster(monster_pos, monster);
   if (player_can_sense_monsters())
@@ -378,7 +378,7 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   Game::level->set_monster(monster->t_pos, nullptr);
 
   /* Add monster */
-  monster->t_room = roomin(&new_pos);
+  monster->t_room = Game::level->get_room(new_pos);
   monster->t_pos = new_pos;
   monster_remove_held(monster);
 
@@ -625,14 +625,6 @@ monster_remove_all(void)
 }
 
 void
-monster_set_all_rooms(void)
-{
-  for (Monster* mon : monster_list) {
-    mon->t_room = roomin(&mon->t_pos);
-  }
-}
-
-void
 monster_aggravate_all(void)
 {
   for (Monster* mon : monster_list) {
@@ -775,7 +767,7 @@ monster_polymorph(Monster* target)
   char monster = static_cast<char>(os_rand_range(26) + 'A');
   bool same_monster = monster == target->t_type;
 
-  monster_new(target, monster, &pos, roomin(&pos));
+  monster_new(target, monster, &pos, Game::level->get_room(pos));
   if (monster_seen_by_player(target))
   {
     mvaddcch(pos.y, pos.x, static_cast<chtype>(monster));

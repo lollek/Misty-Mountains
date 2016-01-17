@@ -153,7 +153,7 @@ main(int argc, char** argv)
 #endif
 
   move_pos_prev = *player_get_pos();
-  room_prev = roomin(player_get_pos());
+  room_prev = Game::level->get_room(*player_get_pos());
 
   for (;;) command();
 

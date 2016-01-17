@@ -80,10 +80,8 @@ treas_room(void)
   Level::current_level--;
 }
 
-/** put_things:
- * Put potions and scrolls on this level */
-static void
-put_things(void)
+void
+Level::create_loot()
 {
   int i;
 
@@ -106,9 +104,9 @@ put_things(void)
 
       /* Put it somewhere */
       Coordinate pos;
-      Game::level->get_random_room_coord(nullptr, &pos, 0, false);
+      this->get_random_room_coord(nullptr, &pos, 0, false);
       obj->set_pos(pos);
-      Game::level->set_ch(obj->get_pos(), static_cast<char>(obj->o_type));
+      this->set_ch(obj->get_pos(), static_cast<char>(obj->o_type));
     }
 
   /* If he is really deep in the dungeon and he hasn't found the
@@ -120,15 +118,15 @@ put_things(void)
 
     /* Put it somewhere */
     Coordinate pos;
-    Game::level->get_random_room_coord(nullptr, &pos, 0, false);
+    this->get_random_room_coord(nullptr, &pos, 0, false);
     amulet->set_pos(pos);
-    Game::level->set_ch(amulet->get_pos(), AMULET);
+    this->set_ch(amulet->get_pos(), AMULET);
   }
 }
 
 
 
-Level::Level(int relative_level) {
+Level::Level(int dungeon_level) {
 
   /* unhold when you go down just in case */
   if (player != nullptr) {
@@ -136,7 +134,7 @@ Level::Level(int relative_level) {
   }
 
   /* Set max level we've been to */
-  Level::current_level += relative_level;
+  Level::current_level = dungeon_level;
   if (Level::current_level > Level::max_level_visited) {
     Level::max_level_visited = Level::current_level;
   }
@@ -158,7 +156,7 @@ Level::Level(int relative_level) {
   this->create_rooms();
   this->create_passages();
   Level::levels_without_food++;      /* Levels with no food placed */
-  put_things();   /* Place objects (if any) */
+  this->create_loot();
 
   /* Place the traps */
   if (os_rand_range(10) < Level::current_level) {
@@ -175,12 +173,12 @@ Level::Level(int relative_level) {
        */
       do {
         this->get_random_room_coord(nullptr, &level_stairs, 0, false);
-      } while (Game::level->get_ch(level_stairs) != FLOOR);
+      } while (this->get_ch(level_stairs) != FLOOR);
 
-      char trapflag = Game::level->get_flags(level_stairs);
+      char trapflag = this->get_flags(level_stairs);
       trapflag &= ~F_REAL;
       trapflag |= os_rand_range(NTRAPS);
-      Game::level->set_flags(level_stairs, trapflag);
+      this->set_flags(level_stairs, trapflag);
     }
   }
 
@@ -188,7 +186,10 @@ Level::Level(int relative_level) {
   this->get_random_room_coord(nullptr, &level_stairs, 0, false);
   this->set_ch(level_stairs, STAIRS);
 
-  monster_set_all_rooms();
+  /* Set room pointers for all monsters */
+  for (Monster* mon : monster_list) {
+    mon->t_room = this->get_room(mon->t_pos);
+  }
 
   Coordinate* player_pos = player_get_pos();
   this->get_random_room_coord(nullptr, player_pos, 0, true);
@@ -291,4 +292,25 @@ Level::get_type(Coordinate const& coord)
     ? this->get_ch(coord)
     : monster->t_disguise;
 }
+
+room*
+Level::get_room(Coordinate const& coord) {
+
+  char fp = this->get_flags(coord);
+  if (fp & F_PASS) {
+    return &passages[fp & F_PNUM];
+  }
+
+  for (struct room* rp = rooms; rp < &rooms[ROOMS_MAX]; rp++) {
+    if (coord.x <= rp->r_pos.x + rp->r_max.x
+        && rp->r_pos.x <= coord.x
+        && coord.y <= rp->r_pos.y + rp->r_max.y
+        && rp->r_pos.y <= coord.y) {
+      return rp;
+    }
+  }
+
+  throw new runtime_error("Coordinate was not in any room");
+}
+
 

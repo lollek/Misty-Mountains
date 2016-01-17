@@ -23,7 +23,7 @@ typedef struct {
 
 class Level {
 public:
-  Level(int relative_level); /* +1 for stairs up, -1 if you go down */
+  Level(int dungeon_level);
   ~Level() = default;
 
   PLACE* get_place(int x, int y);
@@ -38,6 +38,7 @@ public:
   char get_type(Coordinate const& coord);
 
   bool get_random_room_coord(room* room, Coordinate* coord, int tries, bool monster);
+  room* get_room(Coordinate const& coord);
 
   void set_monster(int x, int y, Monster* monster);
   void set_monster(Coordinate const& coord, Monster* monster);
@@ -58,6 +59,7 @@ private:
   /* Parts of constructor */
   void create_rooms();
   void create_passages();
+  void create_loot();
 
   /* Part of create_rooms() */
   void draw_room(room const& room);

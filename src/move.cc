@@ -227,7 +227,7 @@ hit_bound:
 	     * always recalculate proom.
 	     */
             Coordinate *player_pos = player_get_pos();
-	    player_set_room(roomin(player_pos));
+	    player_set_room(Game::level->get_room(*player_pos));
 	    mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
 	    if ((fl & F_PASS)
                 && Game::level->get_ch(move_pos_prev) == DOOR)

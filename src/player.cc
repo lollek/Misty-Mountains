@@ -416,7 +416,7 @@ void player_teleport(Coordinate *target)
 
   /* Move target */
   mvaddcch(player->t_pos.y, player->t_pos.x, static_cast<chtype>(floor_at()));
-  if (roomin(&new_pos) != player_get_room())
+  if (Game::level->get_room(new_pos) != player_get_room())
   {
     room_leave(player_get_pos());
     player_set_pos(&new_pos);

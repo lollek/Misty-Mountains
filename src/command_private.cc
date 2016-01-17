@@ -89,8 +89,7 @@ command_use_stairs(char up_or_down)
     io_msg("You're not standing on any stairs");
 
   else if (up_or_down == '>') /* DOWN */ {
-    delete Game::level;
-    Game::level = new Level(1);
+    Game::new_level(Level::current_level +1);
   }
 
   else if (up_or_down == '<') /* UP */
@@ -113,8 +112,7 @@ command_use_stairs(char up_or_down)
       }
     }
 
-    delete Game::level;
-    Game::level = new Level(-1);
+    Game::new_level(Level::current_level -1);
 
     if (has_amulet)
       io_msg("you feel a wrenching sensation in your gut");

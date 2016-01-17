@@ -11,6 +11,7 @@ public:
 
   Game& operator=(Game const&) = delete;
 
+  static void new_level(int dungeon_level);
   static Level* level;
 
 private:

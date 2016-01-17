@@ -300,7 +300,7 @@ Level::get_random_room_coord(room* room, Coordinate* coord, int tries, bool mons
 void
 room_enter(Coordinate* cp) {
 
-  struct room* rp = roomin(cp);
+  struct room* rp = Game::level->get_room(*cp);
   player_set_room(rp);
   room_open_door(rp);
 

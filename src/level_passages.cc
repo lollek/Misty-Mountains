@@ -336,12 +336,12 @@ Level::create_passages()
   }
 
   /* Assign a number to each passageway */
-  pnum = 0;
-  newpnum = false;
   for (int i = 0; i < PASSAGES_MAX; ++i) {
     passages[i].r_nexits = 0;
   }
 
+  pnum = 0;
+  newpnum = false;
   for (int i = 0; i < ROOMS_MAX; ++i) {
     for (int j = 0; j < rooms[i].r_nexits; ++j) {
       newpnum = true;

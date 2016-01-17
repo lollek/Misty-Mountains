@@ -169,7 +169,7 @@ chase_do(Monster *th)
     if (th->t_dest == *player_pos)	/* Find room of chasee */
 	ree = player_get_room();
     else
-	ree = roomin(&th->t_dest);
+	ree = Game::level->get_room(th->t_dest);
 
     /* We don't count doors as inside rooms for this routine */
     door = (Game::level->get_ch(th->t_pos) == DOOR);
@@ -280,7 +280,7 @@ over:
 
       /* Put monster in new position */
       set_oldch(th, &ch_ret);
-      th->t_room = roomin(&ch_ret);
+      th->t_room = Game::level->get_room(ch_ret);
       th->t_pos = ch_ret;
       Game::level->set_monster(ch_ret, th);
     }

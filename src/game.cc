@@ -25,6 +25,15 @@ using namespace std;
 
 Level* Game::level = nullptr;
 
+void
+Game::new_level(int dungeon_level) {
+  if (Game::level != nullptr) {
+    delete Game::level;
+  }
+
+  Game::level = new Level(dungeon_level);
+}
+
 int Game::init_graphics()
 {
   initscr();  /* Start up cursor package */
@@ -88,9 +97,7 @@ Game::Game() {
   ring_init();                          /* Set up stone settings of rings */
   wand_init();                          /* Set up materials of wands */
 
-  if (Game::level == nullptr) {
-    Game::level = new Level(0);
-  }
+  Game::new_level(1);
 
   /* Start up daemons and fuses */
   daemon_start(daemon_runners_move, 0, AFTER);

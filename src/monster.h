@@ -202,8 +202,6 @@ void monster_show_all_as_trippy(void);
 void monster_move_all(void);
 /* Remove all monsters from the map */
 void monster_remove_all(void);
-/* Set monster room for all monsters */
-void monster_set_all_rooms(void);
 /* Make all monsters start chasing the player */
 void monster_aggravate_all(void);
 /* Show all monsters as they truly are */

@@ -1,15 +1,3 @@
-/*
- * All sorts of miscellaneous routines
- *
- * @(#)misc.c	4.66 (Berkeley) 08/06/83
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -448,31 +436,6 @@ set_oldch(Monster* tp, Coordinate* cp)
   }
 }
 
-struct room*
-roomin(Coordinate const* cp)
-{
-  /* Get room from coordinate */
-  if (cp == nullptr) {
-    throw runtime_error("cp was null");
-  }
-
-  char fp = Game::level->get_flags(*cp);
-  if (fp & F_PASS) {
-    return &passages[fp & F_PNUM];
-  }
-
-  for (struct room* rp = rooms; rp < &rooms[ROOMS_MAX]; rp++) {
-    if (cp->x <= rp->r_pos.x + rp->r_max.x
-        && rp->r_pos.x <= cp->x
-        && cp->y <= rp->r_pos.y + rp->r_max.y
-        && rp->r_pos.y <= cp->y) {
-      return rp;
-    }
-  }
-
-  throw new runtime_error("Coordinate was not in any room");
-}
-
 bool
 diag_ok(Coordinate const* sp, Coordinate const* ep)
 {
@@ -505,7 +468,7 @@ cansee(int y, int x)
   /* We can only see if the hero in the same room as
    * the coordinate and the room is lit or if it is close.  */
   Coordinate tp(x, y);
-  struct room const* rer = roomin(&tp);
+  struct room const* rer = Game::level->get_room(tp);
   if (rer != player_get_room())
     return false;
 
