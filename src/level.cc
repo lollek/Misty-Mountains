@@ -49,7 +49,7 @@ treas_room(void)
     Coordinate monster_pos;
     Item* item = new_thing();
 
-    room_find_floor(room, &monster_pos, 2 * MAXTRIES, false);
+    Game::level->get_random_room_coord(room, &monster_pos, 2 * MAXTRIES, false);
     item->set_pos(monster_pos);
     level_items.push_back(item);
     Game::level->set_ch(monster_pos, static_cast<char>(item->o_type));
@@ -68,12 +68,13 @@ treas_room(void)
   {
     Coordinate monster_pos;
     spots = 0;
-    if (room_find_floor(room, &monster_pos, MAXTRIES, true))
+    if (Game::level->get_random_room_coord(room, &monster_pos, MAXTRIES, true))
     {
-      Monster* tp = new Monster();
-      monster_new(tp, monster_random(false), &monster_pos);
-      tp->t_flags |= ISMEAN;	/* no sloughers in THIS room */
-      monster_give_pack(tp);
+      Monster* monster = new Monster();
+      monster_new(monster, monster_random(false), &monster_pos);
+      monster->t_flags |= ISMEAN;	/* no sloughers in THIS room */
+      monster_give_pack(monster);
+      monster_list.push_back(monster);
     }
   }
   Level::current_level--;
@@ -105,7 +106,7 @@ put_things(void)
 
       /* Put it somewhere */
       Coordinate pos;
-      room_find_floor(nullptr, &pos, false, false);
+      Game::level->get_random_room_coord(nullptr, &pos, 0, false);
       obj->set_pos(pos);
       Game::level->set_ch(obj->get_pos(), static_cast<char>(obj->o_type));
     }
@@ -119,7 +120,7 @@ put_things(void)
 
     /* Put it somewhere */
     Coordinate pos;
-    room_find_floor(nullptr, &pos, false, false);
+    Game::level->get_random_room_coord(nullptr, &pos, 0, false);
     amulet->set_pos(pos);
     Game::level->set_ch(amulet->get_pos(), AMULET);
   }
@@ -173,7 +174,7 @@ Level::Level(int relative_level) {
        * can't actually do it.
        */
       do {
-        room_find_floor(nullptr, &level_stairs, false, false);
+        this->get_random_room_coord(nullptr, &level_stairs, 0, false);
       } while (Game::level->get_ch(level_stairs) != FLOOR);
 
       char trapflag = Game::level->get_flags(level_stairs);
@@ -184,13 +185,13 @@ Level::Level(int relative_level) {
   }
 
   /* Place the staircase down.  */
-  room_find_floor(nullptr, &level_stairs, false, false);
-  Game::level->set_ch(level_stairs, STAIRS);
+  this->get_random_room_coord(nullptr, &level_stairs, 0, false);
+  this->set_ch(level_stairs, STAIRS);
 
   monster_set_all_rooms();
 
   Coordinate* player_pos = player_get_pos();
-  room_find_floor(nullptr, player_pos, false, true);
+  this->get_random_room_coord(nullptr, player_pos, 0, true);
   room_enter(player_pos);
   mvaddcch(player_pos->y, player_pos->x, PLAYER);
 

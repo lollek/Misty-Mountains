@@ -1,15 +1,3 @@
-/*
- * File with various monster functions in it
- *
- * @(#)monsters.c	4.46 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -45,6 +33,7 @@ int Monster::get_armor() const {
   return this->t_stats.s_arm;
 }
 
+list<Monster*> monster_list;
 int    monster_flytrap_hit = 0; /* Number of time flytrap has hit */
 
 #define NMONSTERS sizeof(monsters) / sizeof(*monsters)
@@ -151,7 +140,6 @@ monster_new(Monster* monster, char type, Coordinate* pos)
   assert(monster != nullptr);
   assert(pos != nullptr);
 
-  monster_list.push_back(monster);
   monster->t_type       = type;
   monster->t_disguise   = type;
   monster->t_pos        = *pos;
@@ -187,10 +175,11 @@ monster_new_random_wanderer(void)
   Coordinate monster_pos;
 
   do
-    room_find_floor(nullptr, &monster_pos, false, true);
+    Game::level->get_random_room_coord(nullptr, &monster_pos, 0, true);
   while (roomin(&monster_pos) == player_get_room());
 
   Monster* monster = new Monster();
+  monster_list.push_back(monster);
   monster_new(monster, monster_random(true), &monster_pos);
   if (player_can_sense_monsters())
   {
@@ -378,7 +367,7 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   Coordinate new_pos;
   if (destination == nullptr)
     do
-      room_find_floor(nullptr, &new_pos, false, true);
+      Game::level->get_random_room_coord(nullptr, &new_pos, 0, true);
     while (new_pos == monster->t_pos);
   else
     new_pos = *destination;
@@ -773,7 +762,6 @@ monster_polymorph(Monster* target)
     player_remove_held();
 
   list<Item*> target_pack = target->t_pack;
-  monster_list.remove(target);
 
   bool was_seen = monster_seen_by_player(target);
   if (was_seen)

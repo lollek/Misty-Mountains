@@ -213,9 +213,10 @@ create_monster(void)
   else
   {
     char buf[MAXSTR];
-    Monster *obj = new Monster();
-    monster_new(obj, monster_random(false), &mp);
-    io_msg("A %s appears out of thin air", monster_name(obj, buf));
+    Monster *monster = new Monster();
+    monster_list.push_back(monster);
+    monster_new(monster, monster_random(false), &mp);
+    io_msg("A %s appears out of thin air", monster_name(monster, buf));
   }
 
   return i;

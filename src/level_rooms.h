@@ -22,10 +22,6 @@ struct room {
 extern room* room_prev;         /* Roomin(&oldpos) */
 extern room rooms[ROOMS_MAX];   /* One for each room -- A level */
 
-/* Find a valid floor spot in this room.  If rp is nullptr, then
- * pick a new room each time around the loop.  */
-bool room_find_floor(room* rp, Coordinate* cp, int limit, bool monst);
-
 /* Code that is executed whenver you appear in a room */
 void room_enter(Coordinate* cp);
 

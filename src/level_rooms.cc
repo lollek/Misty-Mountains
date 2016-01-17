@@ -251,7 +251,7 @@ Level::create_rooms() {
         (!pack_contains_amulet() || Level::current_level >= Level::max_level_visited)) {
       Item *gold = new Item();
       gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
-      room_find_floor(&rooms[i], &rooms[i].r_gold, false, false);
+      this->get_random_room_coord(&rooms[i], &rooms[i].r_gold, 0, false);
       gold->set_pos(rooms[i].r_gold);
       this->set_ch(rooms[i].r_gold, GOLD);
       gold->o_flags = ISMANY;
@@ -262,45 +262,45 @@ Level::create_rooms() {
     /* Put the monster in */
     if (os_rand_range(100) < (rooms[i].r_goldval > 0 ? 80 : 25)) {
       Coordinate mp;
-      room_find_floor(&rooms[i], &mp, false, true);
-      Monster* tp = new Monster();
-      monster_new(tp, monster_random(false), &mp);
-      monster_give_pack(tp);
+      this->get_random_room_coord(&rooms[i], &mp, 0, true);
+      Monster* monster = new Monster();
+      monster_list.push_back(monster);
+      monster_new(monster, monster_random(false), &mp);
+      monster_give_pack(monster);
     }
   }
 }
 
 bool
-room_find_floor(struct room* rp, Coordinate* cp, int limit, bool monst) {
-  int cnt = limit;
+Level::get_random_room_coord(room* room, Coordinate* coord, int tries, bool monst) {
+  bool limited_tries = tries > 0;
   char compchar = 0;
-  bool pickroom = rp == nullptr;
+  bool pickroom = room == nullptr;
 
   if (!pickroom) {
-    compchar = ((rp->r_flags & ISMAZE) ? PASSAGE : FLOOR);
+    compchar = ((room->r_flags & ISMAZE) ? PASSAGE : FLOOR);
   }
 
   for (;;) {
-    if (limit && cnt-- == 0) {
+    if (limited_tries && tries-- == 0) {
       return false;
     }
 
     if (pickroom) {
-      rp = &rooms[room_random()];
-      compchar = ((rp->r_flags & ISMAZE) ? PASSAGE : FLOOR);
+      room = &rooms[room_random()];
+      compchar = ((room->r_flags & ISMAZE) ? PASSAGE : FLOOR);
     }
 
     /* Pick a random position */
-    cp->x = rp->r_pos.x + os_rand_range(rp->r_max.x - 2) + 1;
-    cp->y = rp->r_pos.y + os_rand_range(rp->r_max.y - 2) + 1;
+    coord->x = room->r_pos.x + os_rand_range(room->r_max.x - 2) + 1;
+    coord->y = room->r_pos.y + os_rand_range(room->r_max.y - 2) + 1;
 
-    PLACE* pp = Game::level->get_place(*cp);
+    PLACE* pp = this->get_place(*coord);
     if (monst) {
       if (pp->p_monst == nullptr && step_ok(pp->p_ch)) {
         return true;
       }
-    }
-    else if (pp->p_ch == compchar) {
+    } else if (pp->p_ch == compchar) {
       return true;
     }
   }

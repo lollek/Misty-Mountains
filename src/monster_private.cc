@@ -14,8 +14,6 @@ using namespace std;
 #include "monster.h"
 #include "monster_private.h"
 
-list<Monster*> monster_list;
-
 void
 monster_find_new_target(Monster* monster)
 {

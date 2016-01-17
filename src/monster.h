@@ -10,6 +10,7 @@
 
 #define MAXATTACKS 3
 
+
 /* Structure describing a fighting being */
 struct stats {
   int           s_str;             /* Strength */
@@ -41,6 +42,9 @@ public:
 
 private:
 };
+
+
+extern std::list<Monster*> monster_list;  /* List of monsters on the level */
 
 /* flags for creatures */
 #define CANHUH	0000001		/* creature can confuse */

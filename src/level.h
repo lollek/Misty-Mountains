@@ -37,6 +37,8 @@ public:
   char get_type(int x, int y);
   char get_type(Coordinate const& coord);
 
+  bool get_random_room_coord(room* room, Coordinate* coord, int tries, bool monster);
+
   void set_monster(int x, int y, Monster* monster);
   void set_monster(Coordinate const& coord, Monster* monster);
   void set_flags(int x, int y, char flags);

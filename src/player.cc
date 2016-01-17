@@ -406,7 +406,7 @@ void player_teleport(Coordinate *target)
   /* Set target location */
   if (target == nullptr)
     do
-      room_find_floor(nullptr, &new_pos, false, true);
+      Game::level->get_random_room_coord(nullptr, &new_pos, 0, true);
     while (new_pos == *player_pos);
   else
   {
