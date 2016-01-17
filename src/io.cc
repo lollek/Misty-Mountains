@@ -300,7 +300,7 @@ io_refresh_statusline(void)
   move(STATLINE, 0);
   printw("Level: %d  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  Arm: %-2d  "
          "Exp: %d/%d  %s",
-         Level::current_level, pack_gold, hpwidth, player_get_health(), hpwidth,
+         Game::current_level, pack_gold, hpwidth, player_get_health(), hpwidth,
          player_get_max_health(), player_get_strength(), player_max_stats.s_str,
          player->get_armor(), player_get_level(), player->get_exp(),
          food_hunger_state());

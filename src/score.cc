@@ -5,6 +5,7 @@
 #include <time.h>
 #include <stdlib.h>
 
+#include "game.h"
 #include "io.h"
 #include "os.h"
 #include "wizard.h"
@@ -144,7 +145,7 @@ score_insert(struct score* top_ten, int amount, int flags, char monst)
       top_ten[i].flags = flags;
       top_ten[i].level = flags == 2
         ? Level::max_level_visited
-        : Level::current_level;
+        : Game::current_level;
       top_ten[i].monster = monst;
       top_ten[i].uid = uid;
 

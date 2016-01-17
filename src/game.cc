@@ -24,6 +24,7 @@ using namespace std;
 #include "Game.h"
 
 Level* Game::level = nullptr;
+int    Game::current_level = 1;
 
 void
 Game::new_level(int dungeon_level) {
@@ -97,7 +98,7 @@ Game::Game() {
   ring_init();                          /* Set up stone settings of rings */
   wand_init();                          /* Set up materials of wands */
 
-  Game::new_level(1);
+  Game::new_level(Game::current_level);
 
   /* Start up daemons and fuses */
   daemon_start(daemon_runners_move, 0, AFTER);

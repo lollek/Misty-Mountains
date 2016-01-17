@@ -36,7 +36,7 @@ string const trap_names[] = {
 static enum trap_t
 trap_door_player(void)
 {
-  Game::new_level(Level::current_level + 1);
+  Game::new_level(Game::current_level + 1);
   io_msg("you fell into a trap!");
   return T_DOOR;
 }

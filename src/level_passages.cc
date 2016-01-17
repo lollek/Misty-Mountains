@@ -86,7 +86,7 @@ Level::place_door(room* room, Coordinate* coord) {
   }
 
   PLACE* place = this->get_place(*coord);
-  if (os_rand_range(10) + 1 < Level::current_level && os_rand_range(5) == 0) {
+  if (os_rand_range(10) + 1 < Game::current_level && os_rand_range(5) == 0) {
     if (coord->y == room->r_pos.y || coord->y == room->r_pos.y + room->r_max.y - 1) {
       place->p_ch = HWALL;
     } else {
@@ -359,7 +359,7 @@ void Level::place_passage(Coordinate* coord) {
   PLACE *pp = this->get_place(*coord);
   pp->p_flags |= F_PASS;
 
-  if (os_rand_range(10) + 1 < Level::current_level && os_rand_range(40) == 0) {
+  if (os_rand_range(10) + 1 < Game::current_level && os_rand_range(40) == 0) {
     pp->p_flags &= ~F_REAL;
   } else {
     pp->p_ch = PASSAGE;

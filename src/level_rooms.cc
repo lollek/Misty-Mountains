@@ -203,7 +203,7 @@ Level::create_rooms() {
     }
 
     /* set room type */
-    if (os_rand_range(10) < Level::current_level - 1) {
+    if (os_rand_range(10) < Game::current_level - 1) {
       rooms[i].r_flags |= ISDARK;  /* dark room */
       if (os_rand_range(15) == 0) {
         rooms[i].r_flags = ISMAZE; /* maze room */
@@ -238,7 +238,7 @@ Level::create_rooms() {
 
     /* Put the gold in */
     if (os_rand_range(2) == 0 &&
-        (!pack_contains_amulet() || Level::current_level >= Level::max_level_visited)) {
+        (!pack_contains_amulet() || Game::current_level >= Level::max_level_visited)) {
       Item *gold = new Item();
       gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
       this->get_random_room_coord(&rooms[i], &rooms[i].r_gold, 0, false);

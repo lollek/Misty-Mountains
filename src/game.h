@@ -11,8 +11,11 @@ public:
 
   Game& operator=(Game const&) = delete;
 
+
   static void new_level(int dungeon_level);
+
   static Level* level;
+  static int current_level;
 
 private:
   int init_graphics();

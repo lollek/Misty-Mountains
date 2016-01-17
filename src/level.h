@@ -52,7 +52,6 @@ public:
   int static constexpr amulet_min_level = 26;
   int static           levels_without_food;
   int static           max_level_visited;
-  int static           current_level;
 
 private:
 

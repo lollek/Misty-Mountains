@@ -89,18 +89,18 @@ command_use_stairs(char up_or_down)
     io_msg("You're not standing on any stairs");
 
   else if (up_or_down == '>') /* DOWN */ {
-    Game::new_level(Level::current_level +1);
+    Game::new_level(Game::current_level +1);
   }
 
   else if (up_or_down == '<') /* UP */
   {
     bool has_amulet = pack_contains_amulet();
 
-    if (Level::current_level < 0) {
+    if (Game::current_level < 0) {
       throw runtime_error("Level should not go lower than 0");
     }
 
-    if (Level::current_level == 1)
+    if (Game::current_level == 1)
     {
       if (has_amulet)
         score_win_and_exit();
@@ -112,7 +112,7 @@ command_use_stairs(char up_or_down)
       }
     }
 
-    Game::new_level(Level::current_level -1);
+    Game::new_level(Game::current_level -1);
 
     if (has_amulet)
       io_msg("you feel a wrenching sensation in your gut");
