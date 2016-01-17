@@ -23,8 +23,8 @@ typedef struct {
 
 class Level {
 public:
-  Level(int dungeon_level);
-  ~Level() = default;
+  Level();
+  ~Level();
 
   PLACE* get_place(int x, int y);
   PLACE* get_place(Coordinate const& coord);

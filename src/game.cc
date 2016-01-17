@@ -30,11 +30,23 @@ int    Game::max_level_visited = 1;
 
 void
 Game::new_level(int dungeon_level) {
+
+  /* unhold player just in case */
+  if (player != nullptr) {
+    player_remove_held();
+  }
+
+  /* Set max level we've been to */
+  Game::current_level = dungeon_level;
+  if (Game::current_level > Game::max_level_visited) {
+    Game::max_level_visited = Game::current_level;
+  }
+
   if (Game::level != nullptr) {
     delete Game::level;
   }
 
-  Game::level = new Level(dungeon_level);
+  Game::level = new Level();
 }
 
 int Game::init_graphics()

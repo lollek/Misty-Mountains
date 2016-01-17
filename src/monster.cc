@@ -616,15 +616,6 @@ monster_move_all(void)
 }
 
 void
-monster_remove_all(void)
-{
-  for (Monster* mon : monster_list) {
-    delete mon;
-  }
-  monster_list.clear();
-}
-
-void
 monster_aggravate_all(void)
 {
   for (Monster* mon : monster_list) {

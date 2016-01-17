@@ -121,34 +121,25 @@ Level::create_loot()
   }
 }
 
+Level::~Level() {
 
-
-Level::Level(int dungeon_level) {
-
-  /* unhold when you go down just in case */
-  if (player != nullptr) {
-    player_remove_held();
+  /* Remove all monsters */
+  for (Monster* mon : monster_list) {
+    delete mon;
   }
+  monster_list.clear();
 
-  /* Set max level we've been to */
-  Game::current_level = dungeon_level;
-  if (Game::current_level > Game::max_level_visited) {
-    Game::max_level_visited = Game::current_level;
+  /* Remove all items */
+  for (Item* item : level_items) {
+    delete item;
   }
-
-  /* Clean things off from last level */
-  for (PLACE* pp = level_places; pp < &level_places[MAXCOLS*MAXLINES]; pp++) {
-      pp->p_ch = SHADOW;
-      pp->p_flags = F_REAL;
-      pp->p_monst = nullptr;
-  }
-  clear();
-
-  /* Free up the monsters on the last level */
-  monster_remove_all();
-
-  /* Throw away stuff left on the previous level (if anything) */
   level_items.clear();
+}
+
+
+Level::Level() {
+
+  clear();
 
   this->create_rooms();
   this->create_passages();

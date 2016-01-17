@@ -200,8 +200,6 @@ bool monster_is_anyone_seen_by_player(void);
 void monster_show_all_as_trippy(void);
 /* Make all monsters take their turn */
 void monster_move_all(void);
-/* Remove all monsters from the map */
-void monster_remove_all(void);
 /* Make all monsters start chasing the player */
 void monster_aggravate_all(void);
 /* Show all monsters as they truly are */
