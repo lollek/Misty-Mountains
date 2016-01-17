@@ -136,17 +136,8 @@ Level::~Level() {
   level_items.clear();
 }
 
-
-Level::Level() {
-
-  clear();
-
-  this->create_rooms();
-  this->create_passages();
-  Game::levels_without_food++;      /* Levels with no food placed */
-  this->create_loot();
-
-  /* Place the traps */
+void
+Level::create_traps() {
   if (os_rand_range(10) < Game::current_level) {
     int ntraps = os_rand_range(Game::current_level / 4) + 1;
     if (ntraps > MAXTRAPS) {
@@ -169,6 +160,19 @@ Level::Level() {
       this->set_flags(level_stairs, trapflag);
     }
   }
+}
+
+
+Level::Level() {
+
+  clear();
+
+  this->create_rooms();
+  this->create_passages();
+  Game::levels_without_food++;      /* Levels with no food placed */
+  this->create_loot();
+  this->create_traps();
+
 
   /* Place the staircase down.  */
   this->get_random_room_coord(nullptr, &level_stairs, 0, false);
