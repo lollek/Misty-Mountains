@@ -4,7 +4,8 @@
 
 using namespace std;
 
-#include "Coordinate.h"
+#include "game.h"
+#include "coordinate.h"
 #include "potions.h"
 #include "scrolls.h"
 #include "io.h"
@@ -92,7 +93,7 @@ Item*
 new_food(int which)
 {
   /* Reset levels-without-food counter */
-  Level::levels_without_food = 0;
+  Game::levels_without_food = 0;
 
   Item* cur = new Item();
   cur->o_count = 1;
@@ -122,7 +123,7 @@ new_thing(void)
   /* Decide what kind of object it will be
    * If we haven't had food for a while, let it be food. */
   int r;
-  if (Level::levels_without_food > 3)
+  if (Game::levels_without_food > 3)
     r = 2;
   else
     r = static_cast<int>(pick_one(things, things.size()));

@@ -49,9 +49,6 @@ public:
 
   void wizard_show_passages();
 
-  int static constexpr amulet_min_level = 26;
-  int static           levels_without_food;
-  int static           max_level_visited;
 
 private:
 

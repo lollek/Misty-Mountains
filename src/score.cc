@@ -144,7 +144,7 @@ score_insert(struct score* top_ten, int amount, int flags, char monst)
       strcpy(top_ten[i].name, whoami);
       top_ten[i].flags = flags;
       top_ten[i].level = flags == 2
-        ? Level::max_level_visited
+        ? Game::max_level_visited
         : Game::current_level;
       top_ten[i].monster = monst;
       top_ten[i].uid = uid;

@@ -238,7 +238,7 @@ Level::create_rooms() {
 
     /* Put the gold in */
     if (os_rand_range(2) == 0 &&
-        (!pack_contains_amulet() || Game::current_level >= Level::max_level_visited)) {
+        (!pack_contains_amulet() || Game::current_level >= Game::max_level_visited)) {
       Item *gold = new Item();
       gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
       this->get_random_room_coord(&rooms[i], &rooms[i].r_gold, 0, false);

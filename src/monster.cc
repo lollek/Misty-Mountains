@@ -248,7 +248,7 @@ monster_give_pack(Monster* mon)
 {
   assert(mon != nullptr);
 
-  if (Game::current_level >= Level::max_level_visited && os_rand_range(100) < monsters[mon->t_type-'A'].m_carry)
+  if (Game::current_level >= Game::max_level_visited && os_rand_range(100) < monsters[mon->t_type-'A'].m_carry)
     mon->t_pack.push_back(new_thing());
 }
 

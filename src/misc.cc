@@ -313,7 +313,7 @@ call_it(string const& what, struct obj_info *info)
 char
 rnd_thing(void)
 {
-  int i = os_rand_range(Game::current_level >= Level::amulet_min_level ? 10 : 9);
+  int i = os_rand_range(Game::current_level >= Game::amulet_min_level ? 10 : 9);
   switch (i)
   {
     case 0: return POTION;
@@ -326,7 +326,7 @@ rnd_thing(void)
     case 7: return STAIRS;
     case 8: return GOLD;
     case 9:
-      if (Game::current_level < Level::amulet_min_level)
+      if (Game::current_level < Game::amulet_min_level)
         io_debug("rnd_thing: Amulet spawned at a too low level", 0);
       return AMULET;
 

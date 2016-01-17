@@ -25,6 +25,8 @@ using namespace std;
 
 Level* Game::level = nullptr;
 int    Game::current_level = 1;
+int    Game::levels_without_food = 0;
+int    Game::max_level_visited = 1;
 
 void
 Game::new_level(int dungeon_level) {
