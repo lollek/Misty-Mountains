@@ -55,8 +55,6 @@ private:
 };
 
 
-extern std::list<Monster*> monster_list;  /* List of monsters on the level */
-
 /* flags for creatures */
 #define CANHUH	0000001		/* creature can confuse */
 #define CANSEE	0000002		/* creature can see invisible creatures */

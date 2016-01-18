@@ -54,7 +54,7 @@ void Level::create_treasure_room() {
       Monster* monster = new Monster();
       monster_new(monster, monster_random(false), &monster_pos, room);
       monster->t_flags |= ISMEAN;  // no sloughers in THIS room
-      monster_list.push_back(monster);
+      monsters.push_back(monster);
       monster_give_pack(monster);
       set_monster(monster_pos, monster);
     }
@@ -106,10 +106,9 @@ void Level::create_loot() {
 
 Level::~Level() {
 
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : monsters) {
     delete mon;
   }
-  monster_list.clear();
 
   for (Item* item : items) {
     delete item;
@@ -151,7 +150,7 @@ Level::Level() {
   create_stairs();
 
   // Set room pointers for all monsters
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : monsters) {
     mon->t_room = get_room(mon->t_pos);
   }
 }

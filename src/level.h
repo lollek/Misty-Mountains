@@ -76,7 +76,8 @@ public:
   void wizard_show_passages();
 
   // Variables
-  std::list<Item*> items;   // List of items on level
+  std::list<Item*>    items;    // List of items on level
+  std::list<Monster*> monsters; // List of monsters on level
 
 private:
 

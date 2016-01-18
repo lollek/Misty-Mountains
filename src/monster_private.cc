@@ -32,12 +32,12 @@ monster_find_new_target(Monster* monster)
     if (Game::level->get_room(obj->get_pos()) == monster->t_room &&
         os_rand_range(100) < prob)
     {
-      auto result = find_if(monster_list.cbegin(), monster_list.cend(),
+      auto result = find_if(Game::level->monsters.cbegin(), Game::level->monsters.cend(),
           [&] (Monster const* m) {
           return m->t_dest == obj->get_pos();
       });
 
-      if (result == monster_list.cend()) {
+      if (result == Game::level->monsters.cend()) {
         monster_set_target(monster, obj->get_pos());
         return;
       }

@@ -30,7 +30,6 @@ using namespace std;
 #include "monster.h"
 #include "monster_private.h"
 
-list<Monster*> monster_list;
 int            monster_flytrap_hit = 0; // Number of time flytrap has hit
 
 vector<monster_template> const monsters {
@@ -249,7 +248,7 @@ monster_new_random_wanderer(void)
 
   Monster* monster = new Monster();
   monster_new(monster, monster_random(true), &monster_pos, Game::level->get_room(monster_pos));
-  monster_list.push_back(monster);
+  Game::level->monsters.push_back(monster);
   Game::level->set_monster(monster_pos, monster);
   if (player_can_sense_monsters())
   {
@@ -412,7 +411,7 @@ monster_remove_from_screen(Coordinate* mp, Monster* tp, bool waskill)
   Game::level->set_monster(*mp, nullptr);
   mvaddcch(mp->y, mp->x, static_cast<chtype>(tp->t_oldch));
 
-  monster_list.remove(tp);
+  Game::level->monsters.remove(tp);
 
   if (monster_is_players_target(tp))
   {
@@ -430,8 +429,8 @@ monster_is_dead(Monster const* monster)
   if (monster == nullptr)
     return true;
 
-  return !(find(monster_list.cbegin(), monster_list.cend(), monster) ==
-          monster_list.cend());
+  return !(find(Game::level->monsters.cbegin(), Game::level->monsters.cend(), monster) ==
+          Game::level->monsters.cend());
 }
 
 void
@@ -609,7 +608,7 @@ monster_seen_by_player(Monster const* monster)
 bool
 monster_is_anyone_seen_by_player(void)
 {
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : Game::level->monsters) {
     if (monster_seen_by_player(mon)) {
       return true;
     }
@@ -621,7 +620,7 @@ void
 monster_show_all_as_trippy(void)
 {
   bool seemonst = player_can_sense_monsters();
-  for (Monster const* tp : monster_list) {
+  for (Monster const* tp : Game::level->monsters) {
 
     if (monster_seen_by_player(tp)) {
       chtype symbol = (tp->t_type == 'X' && tp->t_disguise != 'X')
@@ -639,7 +638,7 @@ monster_show_all_as_trippy(void)
 void
 monster_move_all(void)
 {
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : Game::level->monsters) {
 
     if (!monster_is_held(mon) && monster_is_chasing(mon))
     {
@@ -664,7 +663,7 @@ monster_move_all(void)
 void
 monster_aggravate_all(void)
 {
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : Game::level->monsters) {
     monster_start_running(&mon->t_pos);
   }
 }
@@ -672,7 +671,7 @@ monster_aggravate_all(void)
 void
 monster_show_all_hidden(void)
 {
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : Game::level->monsters) {
     if (monster_is_invisible(mon) && monster_seen_by_player(mon)
         && !player_is_hallucinating())
       mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_disguise));
@@ -682,7 +681,7 @@ monster_show_all_hidden(void)
 void
 monster_aggro_all_which_desire_item(Item* item)
 {
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : Game::level->monsters) {
     if (mon->t_dest == item->get_pos()) {
       mon->t_dest = *player_get_pos();
     }
@@ -692,7 +691,7 @@ monster_aggro_all_which_desire_item(Item* item)
 void
 monster_hide_all_invisible(void)
 {
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : Game::level->monsters) {
     if (monster_is_invisible(mon) && monster_seen_by_player(mon)) {
       mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_oldch));
     }
@@ -703,7 +702,7 @@ bool
 monster_sense_all_hidden(void)
 {
   bool spotted_something = false;
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : Game::level->monsters) {
     if (!monster_seen_by_player(mon)) {
       mvaddcch(mon->t_pos.y, mon->t_pos.x,
           (player_is_hallucinating()
@@ -719,7 +718,7 @@ monster_sense_all_hidden(void)
 void
 monster_unsense_all_hidden(void)
 {
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : Game::level->monsters) {
     if (!monster_seen_by_player(mon)) {
       mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_oldch));
     }
@@ -729,7 +728,7 @@ monster_unsense_all_hidden(void)
 void
 monster_print_all(void)
 {
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : Game::level->monsters) {
 
     if (player->can_see(mon->t_pos)) {
       chtype symbol = (!monster_is_invisible(mon) || player_has_true_sight())
@@ -747,7 +746,7 @@ bool
 monster_show_if_magic_inventory(void)
 {
   bool atleast_one = false;
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : Game::level->monsters) {
     for (Item* item : mon->t_pack) {
       if (item->is_magic())
       {
@@ -766,7 +765,7 @@ monster_add_nearby(Monster** nearby_monsters, struct room const* room)
   bool inpass = player_get_room()->r_flags & ISGONE;
   Monster** nearby_monsters_start = nearby_monsters;
 
-  for (Monster* mon : monster_list) {
+  for (Monster* mon : Game::level->monsters) {
     if (mon->t_room == player_get_room()
         || mon->t_room == room
         ||(inpass && Game::level->get_ch(mon->t_pos) == DOOR &&

@@ -274,9 +274,6 @@ pack_add(Item* obj, bool silent)
 
   obj->o_flags |= ISFOUND;
 
-  /* If this was the object of something's desire, that monster will
-   * get mad and run at the hero.  */
-  monster_aggro_all_which_desire_item(obj);
 
   /* Notify the user */
   if (!silent) {
@@ -310,6 +307,10 @@ pack_pick_up(Item* obj, bool force)
 {
   if (player_is_levitating())
     return;
+
+  // If this was the object of something's desire, that monster will
+  // get mad and run at the hero.
+  monster_aggro_all_which_desire_item(obj);
 
   switch (obj->o_type)
   {

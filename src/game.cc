@@ -31,11 +31,6 @@ int    Game::max_level_visited = 1;
 void
 Game::new_level(int dungeon_level) {
 
-  /* unhold player just in case */
-  if (player != nullptr) {
-    player_remove_held();
-  }
-
   /* Set max level we've been to */
   Game::current_level = dungeon_level;
   if (Game::current_level > Game::max_level_visited) {
@@ -48,10 +43,18 @@ Game::new_level(int dungeon_level) {
 
   Game::level = new Level();
 
+  // Drop player in the new dungeon level
+  if (player == nullptr) {
+    player = new Player();
+  }
+
   Coordinate* player_pos = player_get_pos();
   Game::level->get_random_room_coord(nullptr, player_pos, 0, true);
   room_enter(player_pos);
   mvaddcch(player_pos->y, player_pos->x, PLAYER);
+
+  // Unhold player just in case
+  player_remove_held();
 
   if (player_can_sense_monsters()) {
     player_add_sense_monsters(true);
@@ -119,13 +122,11 @@ Game::Game() {
   idlok(hw, true);
 
   /* Init stuff */
-  player = new Player();
-  scroll_init();                        /* Set up names of scrolls */
-  potions_init();                       /* Set up colors of potions */
-  ring_init();                          /* Set up stone settings of rings */
-  wand_init();                          /* Set up materials of wands */
-
-  Game::new_level(Game::current_level);
+  scroll_init();                        // Set up names of scrolls
+  potions_init();                       // Set up colors of potions
+  ring_init();                          // Set up stone settings of rings
+  wand_init();                          // Set up materials of wands
+  Game::new_level(Game::current_level); // Set up level (and player)
 
   /* Start up daemons and fuses */
   daemon_start(daemon_runners_move, 0, AFTER);
