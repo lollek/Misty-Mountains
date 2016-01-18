@@ -18,7 +18,7 @@ void attack_modifier::add_strength_modifiers(int strength) {
 
     default: return;
 
-    case 16:                  this->to_dmg += 1; return;
+    case 16:                    this->to_dmg += 1; return;
     case 17: this->to_hit += 1; this->to_dmg += 1; return;
     case 18: this->to_hit += 1; this->to_dmg += 2; return;
     case 19: this->to_hit += 1; this->to_dmg += 3; return;
