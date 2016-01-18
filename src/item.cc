@@ -8,46 +8,46 @@ using namespace std;
 #include "item.h"
 
 void Item::set_pos(Coordinate const& new_value) {
-  this->position_on_screen = new_value;
+  position_on_screen = new_value;
 }
 
 void Item::set_x(int new_value) {
-  this->position_on_screen.x = new_value;
+  position_on_screen.x = new_value;
 }
 
 void Item::set_y(int new_value) {
-  this->position_on_screen.y = new_value;
+  position_on_screen.y = new_value;
 }
 
 void Item::set_nickname(std::string const& new_value) {
-  this->nickname = new_value;
+  nickname = new_value;
 }
 
 
 
 Coordinate const& Item::get_pos() const {
-  return this->position_on_screen;
+  return position_on_screen;
 }
 
 int Item::get_x() const {
-  return this->position_on_screen.x;
+  return position_on_screen.x;
 }
 
 int Item::get_y() const {
-  return this->position_on_screen.y;
+  return position_on_screen.y;
 }
 
 string const& Item::get_nickname() const {
-  return this->nickname;
+  return nickname;
 }
 
 bool Item::is_magic() const {
-  switch (this->o_type) {
-    case ARMOR:   return static_cast<bool>(this->o_flags & ISPROT) ||
-                   this->o_arm != armor_ac(static_cast<armor_t>(this->o_which));
+  switch (o_type) {
+    case ARMOR:   return static_cast<bool>(o_flags & ISPROT) ||
+                   o_arm != armor_ac(static_cast<armor_t>(o_which));
 
-    case WEAPON:  return this->o_hplus != 0 || this->o_dplus != 0;
-    case AMMO:    return this->o_hplus != 0 || this->o_dplus != 0;
+    case WEAPON:  return o_hplus != 0 || o_dplus != 0;
+    case AMMO:    return o_hplus != 0 || o_dplus != 0;
 
     case POTION:  return true;
     case SCROLL:  return true;

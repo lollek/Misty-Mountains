@@ -95,13 +95,13 @@ Level::create_loot()
     {
       /* Pick a new object and link it in the list */
       Item* obj = new_thing();
-      this->items.push_back(obj);
+      items.push_back(obj);
 
       /* Put it somewhere */
       Coordinate pos;
-      this->get_random_room_coord(nullptr, &pos, 0, false);
+      get_random_room_coord(nullptr, &pos, 0, false);
       obj->set_pos(pos);
-      this->set_ch(obj->get_pos(), static_cast<char>(obj->o_type));
+      set_ch(obj->get_pos(), static_cast<char>(obj->o_type));
     }
 
   /* If he is really deep in the dungeon and he hasn't found the
@@ -109,13 +109,13 @@ Level::create_loot()
   if (Game::current_level >= Game::amulet_min_level && !pack_contains_amulet())
   {
     Item* amulet = new_amulet();
-    this->items.push_back(amulet);
+    items.push_back(amulet);
 
     /* Put it somewhere */
     Coordinate pos;
-    this->get_random_room_coord(nullptr, &pos, 0, false);
+    get_random_room_coord(nullptr, &pos, 0, false);
     amulet->set_pos(pos);
-    this->set_ch(amulet->get_pos(), AMULET);
+    set_ch(amulet->get_pos(), AMULET);
   }
 }
 
@@ -128,7 +128,7 @@ Level::~Level() {
   monster_list.clear();
 
   /* Remove all items */
-  for (Item* item : this->items) {
+  for (Item* item : items) {
     delete item;
   }
 }
@@ -148,234 +148,234 @@ Level::create_traps() {
        * can't actually do it.
        */
       do {
-        this->get_random_room_coord(nullptr, &this->stairs_coord, 0, false);
-      } while (this->get_ch(this->stairs_coord) != FLOOR);
+        get_random_room_coord(nullptr, &stairs_coord, 0, false);
+      } while (get_ch(stairs_coord) != FLOOR);
 
       size_t trap_type = static_cast<size_t>(os_rand_range(NTRAPS));
-      Game::level->set_not_real(this->stairs_coord);
-      Game::level->set_trap_type(this->stairs_coord, trap_type);
+      Game::level->set_not_real(stairs_coord);
+      Game::level->set_trap_type(stairs_coord, trap_type);
     }
   }
 }
 
 void
 Level::create_stairs() {
-  this->get_random_room_coord(nullptr, &this->stairs_coord, 0, false);
-  this->set_ch(this->stairs_coord, STAIRS);
+  get_random_room_coord(nullptr, &stairs_coord, 0, false);
+  set_ch(stairs_coord, STAIRS);
 }
 
 
 Level::Level() {
 
   clear();
-  this->places.resize(MAXLINES * MAXCOLS);
-  this->passages.resize(12);
+  places.resize(MAXLINES * MAXCOLS);
+  passages.resize(12);
 
-  this->create_rooms();
-  this->create_passages();
+  create_rooms();
+  create_passages();
   Game::levels_without_food++;      /* Levels with no food placed */
-  this->create_loot();
-  this->create_traps();
-  this->create_stairs();
+  create_loot();
+  create_traps();
+  create_stairs();
 
   /* Set room pointers for all monsters */
   for (Monster* mon : monster_list) {
-    mon->t_room = this->get_room(mon->t_pos);
+    mon->t_room = get_room(mon->t_pos);
   }
 }
 
 place& Level::get_place(int x, int y) {
   size_t pos = static_cast<size_t>((x << 5) + y);
-  return this->places.at(pos);
+  return places.at(pos);
 }
 
 Monster*
 Level::get_monster(int x, int y) {
-  return this->get_place(x, y).p_monst;
+  return get_place(x, y).p_monst;
 }
 
 Monster*
 Level::get_monster(Coordinate const& coord) {
-  return this->get_monster(coord.x, coord.y);
+  return get_monster(coord.x, coord.y);
 }
 
 Item*
 Level::get_item(int x, int y) {
-  auto results = find_if(this->items.begin(), this->items.end(),
+  auto results = find_if(items.begin(), items.end(),
       [&] (Item* i) {
     return i->get_x() == x && i->get_y() == y;
   });
 
-  return results == this->items.end()
+  return results == items.end()
     ? nullptr
     : *results;
 }
 
 Item*
 Level::get_item(Coordinate const& coord) {
-  return this->get_item(coord.x, coord.y);
+  return get_item(coord.x, coord.y);
 }
 
 void
 Level::set_monster(int x, int y, Monster* monster) {
-  this->get_place(x, y).p_monst = monster;
+  get_place(x, y).p_monst = monster;
 }
 
 void
 Level::set_monster(Coordinate const& coord, Monster* monster) {
-  this->set_monster(coord.x, coord.y, monster);
+  set_monster(coord.x, coord.y, monster);
 }
 
 bool
 Level::is_passage(int x, int y) {
-  return this->get_place(x, y).is_passage;
+  return get_place(x, y).is_passage;
 }
 
 bool
 Level::is_passage(Coordinate const& coord) {
-  return this->is_passage(coord.x, coord.y);
+  return is_passage(coord.x, coord.y);
 }
 
 bool
 Level::is_discovered(int x, int y) {
-  return this->get_place(x, y).is_discovered;
+  return get_place(x, y).is_discovered;
 }
 
 bool
 Level::is_discovered(Coordinate const& coord) {
-  return this->is_discovered(coord.x, coord.y);
+  return is_discovered(coord.x, coord.y);
 }
 
 bool
 Level::is_real(int x, int y) {
-  return this->get_place(x, y).is_real;
+  return get_place(x, y).is_real;
 }
 
 bool
 Level::is_real(Coordinate const& coord) {
-  return this->is_real(coord.x, coord.y);
+  return is_real(coord.x, coord.y);
 }
 
 void
 Level::set_passage(int x, int y) {
-  this->get_place(x, y).is_passage = true;
+  get_place(x, y).is_passage = true;
 }
 
 void
 Level::set_passage(Coordinate const& coord) {
-  this->set_passage(coord.x, coord.y);
+  set_passage(coord.x, coord.y);
 }
 
 void
 Level::set_discovered(int x, int y) {
-  this->get_place(x, y).is_discovered = true;
+  get_place(x, y).is_discovered = true;
 }
 
 void
 Level::set_discovered(Coordinate const& coord) {
-  this->set_discovered(coord.x, coord.y);
+  set_discovered(coord.x, coord.y);
 }
 
 void
 Level::set_real(int x, int y) {
-  this->get_place(x, y).is_real = true;
+  get_place(x, y).is_real = true;
 }
 
 void
 Level::set_real(Coordinate const& coord) {
-  this->set_real(coord.x, coord.y);
+  set_real(coord.x, coord.y);
 }
 
 void
 Level::set_not_real(int x, int y) {
-  this->get_place(x, y).is_real = false;
+  get_place(x, y).is_real = false;
 }
 
 void
 Level::set_not_real(Coordinate const& coord) {
-  this->set_not_real(coord.x, coord.y);
+  set_not_real(coord.x, coord.y);
 }
 
 char
 Level::get_ch(int x, int y) {
-  return this->get_place(x, y).p_ch;
+  return get_place(x, y).p_ch;
 }
 
 char
 Level::get_ch(Coordinate const& coord) {
-  return this->get_ch(coord.x, coord.y);
+  return get_ch(coord.x, coord.y);
 }
 
 void
 Level::set_ch(int x, int y, char ch) {
-  this->get_place(x, y).p_ch = ch;
+  get_place(x, y).p_ch = ch;
 }
 
 void
 Level::set_ch(Coordinate const& coord, char ch) {
-  this->set_ch(coord.x, coord.y, ch);
+  set_ch(coord.x, coord.y, ch);
 }
 
 void
 Level::set_trap_type(int x, int y, size_t type) {
-  this->get_place(x, y).trap_type = type;
+  get_place(x, y).trap_type = type;
 }
 
 void
 Level::set_trap_type(Coordinate const& coord, size_t type) {
-  this->set_trap_type(coord.x, coord.y, type);
+  set_trap_type(coord.x, coord.y, type);
 }
 
 void
 Level::set_passage_number(int x, int y, size_t num) {
-  this->get_place(x, y).passage_number = num;
+  get_place(x, y).passage_number = num;
 }
 
 void
 Level::set_passage_number(Coordinate const& coord, size_t num) {
-  this->set_passage_number(coord.x, coord.y, num);
+  set_passage_number(coord.x, coord.y, num);
 }
 
 char
 Level::get_type(int x, int y)
 {
-  Monster* monster = this->get_monster(x, y);
+  Monster* monster = get_monster(x, y);
   return monster == nullptr
-    ? this->get_ch(x, y)
+    ? get_ch(x, y)
     : monster->t_disguise;
 }
 
 char
 Level::get_type(Coordinate const& coord)
 {
-  return this->get_type(coord.x, coord.y);
+  return get_type(coord.x, coord.y);
 }
 
 size_t
 Level::get_trap_type(int x, int y) {
-  return this->get_place(x, y).trap_type;
+  return get_place(x, y).trap_type;
 }
 
 size_t
 Level::get_trap_type(Coordinate const& coord) {
-  return this->get_trap_type(coord.x, coord.y);
+  return get_trap_type(coord.x, coord.y);
 }
 
 size_t
 Level::get_passage_number(int x, int y) {
-  return this->get_place(x, y).passage_number;
+  return get_place(x, y).passage_number;
 }
 
 size_t
 Level::get_passage_number(Coordinate const& coord) {
-  return this->get_passage_number(coord.x, coord.y);
+  return get_passage_number(coord.x, coord.y);
 }
 
 room*
 Level::get_room(Coordinate const& coord) {
 
-  if (this->is_passage(coord)) {
-    return this->get_passage(coord);
+  if (is_passage(coord)) {
+    return get_passage(coord);
   }
 
   for (struct room* rp = rooms; rp < &rooms[ROOMS_MAX]; rp++) {
@@ -393,19 +393,19 @@ Level::get_room(Coordinate const& coord) {
 }
 
 room* Level::get_passage(Coordinate const& coord) {
-  return &this->passages.at(this->get_passage_number(coord));
+  return &passages.at(get_passage_number(coord));
 }
 
 Coordinate const& Level::get_stairs_pos() const {
-  return this->stairs_coord;
+  return stairs_coord;
 }
 
 int Level::get_stairs_x() const {
-  return this->stairs_coord.x;
+  return stairs_coord.x;
 }
 
 int Level::get_stairs_y() const {
-  return this->stairs_coord.y;
+  return stairs_coord.y;
 }
 
 

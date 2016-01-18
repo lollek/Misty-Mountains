@@ -23,7 +23,7 @@ using namespace std;
 #include "player.h"
 
 Player::Player() {
-  this->t_stats = player_max_stats;
+  t_stats = player_max_stats;
 
   /* Give him some food */
   pack_add(new_food(-1), true);
@@ -56,14 +56,14 @@ Player::Player() {
 }
 
 int Player::get_exp() const {
-  return this->t_stats.s_exp;
+  return t_stats.s_exp;
 }
 
 int Player::get_armor() const {
   Item const* const arm = pack_equipped_item(EQUIPMENT_ARMOR);
   Item const* const weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
-  int ac = arm ? arm->o_arm : this->t_stats.s_arm;
+  int ac = arm ? arm->o_arm : t_stats.s_arm;
   if (weapon)
     ac -= weapon->o_arm;
 
@@ -80,7 +80,7 @@ int Player::get_armor() const {
 
 
 void Player::earn_exp(int amount) {
-  this->t_stats.s_exp += amount;
+  t_stats.s_exp += amount;
 }
 
 bool Player::has_seen_stairs() const {

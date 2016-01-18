@@ -75,7 +75,7 @@ Level::draw_maze_recursive(int y, int x, int starty, int startx, int maxy, int m
       int newx = x + del[i].x;
 
       if (newy < 0 || newy > maxy || newx < 0 || newx > maxx
-          || this->is_passage(newx + startx, newy + starty)) {
+          || is_passage(newx + startx, newy + starty)) {
         continue;
       }
 
@@ -108,13 +108,13 @@ Level::draw_maze_recursive(int y, int x, int starty, int startx, int maxy, int m
         pos.y = nexty + starty - 1;
       }
     }
-    this->place_passage(&pos);
+    place_passage(&pos);
 
     pos.y = nexty + starty;
     pos.x = nextx + startx;
-    this->place_passage(&pos);
+    place_passage(&pos);
 
-    this->draw_maze_recursive(nexty, nextx, starty, startx, maxy, maxx);
+    draw_maze_recursive(nexty, nextx, starty, startx, maxy, maxx);
   }
 }
 
@@ -131,9 +131,9 @@ Level::draw_maze(room const& rp) {
 
   // TODO: Is this a typo/incorrect? maybe x + rp->r_pos.x
   Coordinate pos(y + rp.r_pos.x, y + rp.r_pos.y);
-  this->place_passage(&pos);
+  place_passage(&pos);
 
-  this->draw_maze_recursive(y, x, rp.r_pos.y, rp.r_pos.x, rp.r_max.y, rp.r_max.x);
+  draw_maze_recursive(y, x, rp.r_pos.y, rp.r_pos.x, rp.r_max.y, rp.r_max.x);
 }
 
 /* Draw a box around a room and lay down the floor for normal
@@ -143,20 +143,20 @@ Level::draw_room(room const& rp) {
 
   /* Draw left + right side */
   for (int y = rp.r_pos.y + 1; y <= rp.r_max.y + rp.r_pos.y - 1; y++) {
-    this->set_ch(rp.r_pos.x, y, VWALL);
-    this->set_ch(rp.r_pos.x + rp.r_max.x - 1, y, VWALL);
+    set_ch(rp.r_pos.x, y, VWALL);
+    set_ch(rp.r_pos.x + rp.r_max.x - 1, y, VWALL);
   }
 
   /* Draw top + bottom side */
   for (int x = rp.r_pos.x; x <= rp.r_pos.x + rp.r_max.x - 1; x++) {
-    this->set_ch(x, rp.r_pos.y, HWALL);
-    this->set_ch(x, rp.r_pos.y + rp.r_max.y - 1, HWALL);
+    set_ch(x, rp.r_pos.y, HWALL);
+    set_ch(x, rp.r_pos.y + rp.r_max.y - 1, HWALL);
   }
 
   /* Put the floor down */
   for (int y = rp.r_pos.y + 1; y < rp.r_pos.y + rp.r_max.y - 1; y++) {
     for (int x = rp.r_pos.x + 1; x < rp.r_pos.x + rp.r_max.x - 1; x++) {
-      this->set_ch(x, y, FLOOR);
+      set_ch(x, y, FLOOR);
     }
   }
 }
@@ -231,9 +231,9 @@ Level::create_rooms() {
     }
 
     if (rooms[i].r_flags & ISMAZE) {
-      this->draw_maze(rooms[i]);
+      draw_maze(rooms[i]);
     } else {
-      this->draw_room(rooms[i]);
+      draw_room(rooms[i]);
     }
 
     /* Put the gold in */
@@ -241,23 +241,23 @@ Level::create_rooms() {
         (!pack_contains_amulet() || Game::current_level >= Game::max_level_visited)) {
       Item *gold = new Item();
       gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
-      this->get_random_room_coord(&rooms[i], &rooms[i].r_gold, 0, false);
+      get_random_room_coord(&rooms[i], &rooms[i].r_gold, 0, false);
       gold->set_pos(rooms[i].r_gold);
-      this->set_ch(rooms[i].r_gold, GOLD);
+      set_ch(rooms[i].r_gold, GOLD);
       gold->o_flags = ISMANY;
       gold->o_type = GOLD;
-      this->items.push_back(gold);
+      items.push_back(gold);
     }
 
     /* Put the monster in */
     if (os_rand_range(100) < (rooms[i].r_goldval > 0 ? 80 : 25)) {
       Coordinate mp;
-      this->get_random_room_coord(&rooms[i], &mp, 0, true);
+      get_random_room_coord(&rooms[i], &mp, 0, true);
       Monster* monster = new Monster();
       monster_list.push_back(monster);
       monster_new(monster, monster_random(false), &mp, &rooms[i]);
       monster_give_pack(monster);
-      this->set_monster(mp, monster);
+      set_monster(mp, monster);
     }
   }
 }
@@ -286,9 +286,9 @@ Level::get_random_room_coord(room* room, Coordinate* coord, int tries, bool mons
     coord->x = room->r_pos.x + os_rand_range(room->r_max.x - 2) + 1;
     coord->y = room->r_pos.y + os_rand_range(room->r_max.y - 2) + 1;
 
-    char ch = this->get_ch(*coord);
+    char ch = get_ch(*coord);
     if (monst) {
-      if (this->get_monster(*coord) == nullptr && step_ok(ch)) {
+      if (get_monster(*coord) == nullptr && step_ok(ch)) {
         return true;
       }
     } else if (ch == compchar) {

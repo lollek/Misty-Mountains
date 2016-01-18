@@ -25,7 +25,7 @@ Level::number_passage(int x, int y)
     return;
   }
 
-  if (this->get_passage_number(x, y) != 0) {
+  if (get_passage_number(x, y) != 0) {
     return;
   }
 
@@ -36,24 +36,24 @@ Level::number_passage(int x, int y)
 
   /* check to see if it is a door or secret door, i.e., a new exit,
    * or a numerable type of place */
-  char ch = this->get_ch(x, y);
-  if (ch == DOOR || (!this->is_real(x, y) && (ch == VWALL || ch == HWALL))) {
-    struct room& rp = this->passages.at(static_cast<size_t>(pnum));
+  char ch = get_ch(x, y);
+  if (ch == DOOR || (!is_real(x, y) && (ch == VWALL || ch == HWALL))) {
+    struct room& rp = passages.at(static_cast<size_t>(pnum));
     rp.r_exit[rp.r_nexits].y = y;
     rp.r_exit[rp.r_nexits++].x = x;
   }
 
-  else if (!this->is_passage(x, y)) {
+  else if (!is_passage(x, y)) {
     return;
   }
 
-  this->set_passage_number(x, y, static_cast<size_t>(pnum));
+  set_passage_number(x, y, static_cast<size_t>(pnum));
 
   /* recurse on the surrounding places */
-  this->number_passage(x, y + 1);
-  this->number_passage(x, y - 1);
-  this->number_passage(x + 1, y);
-  this->number_passage(x - 1, y);
+  number_passage(x, y + 1);
+  number_passage(x, y - 1);
+  number_passage(x + 1, y);
+  number_passage(x - 1, y);
 }
 
 /** door:
@@ -69,13 +69,13 @@ Level::place_door(room* room, Coordinate* coord) {
 
   if (os_rand_range(10) + 1 < Game::current_level && os_rand_range(5) == 0) {
     if (coord->y == room->r_pos.y || coord->y == room->r_pos.y + room->r_max.y - 1) {
-      this->set_ch(*coord, HWALL);
+      set_ch(*coord, HWALL);
     } else {
-      this->set_ch(*coord, VWALL);
+      set_ch(*coord, VWALL);
     }
-    this->set_not_real(*coord);
+    set_not_real(*coord);
   } else {
-    this->set_ch(*coord, DOOR);
+    set_ch(*coord, DOOR);
   }
 }
 
@@ -130,14 +130,14 @@ Level::connect_passages(int r1, int r2) {
           + 1;
         start_pos.y = room_from->r_pos.y + room_from->r_max.y - 1;
       } while ((room_from->r_flags & ISMAZE)
-             && !this->is_passage(start_pos));
+             && !is_passage(start_pos));
     }
 
     if (!(room_to->r_flags & ISGONE)) {
       do {
         end_pos.x = room_to->r_pos.x + os_rand_range(room_to->r_max.x - 2) + 1;
       } while ((room_to->r_flags & ISMAZE)
-             && !this->is_passage(end_pos));
+             && !is_passage(end_pos));
     }
 
     distance = abs(start_pos.y - end_pos.y) - 1;
@@ -162,14 +162,14 @@ Level::connect_passages(int r1, int r2) {
         start_pos.y = room_from->r_pos.y + os_rand_range(room_from->r_max.y - 2)
           + 1;
       } while ((room_from->r_flags & ISMAZE)
-               && !this->is_passage(start_pos));
+               && !is_passage(start_pos));
     }
 
     if (!(room_to->r_flags & ISGONE)) {
       do {
         end_pos.y = room_to->r_pos.y + os_rand_range(room_to->r_max.y - 2) + 1;
       } while ((room_to->r_flags & ISMAZE)
-             && !this->is_passage(end_pos));
+             && !is_passage(end_pos));
     }
 
     distance = abs(start_pos.x - end_pos.x) - 1;
@@ -188,15 +188,15 @@ Level::connect_passages(int r1, int r2) {
   /* Draw in the doors on either side of the passage or just put #'s
    * if the rooms are gone.  */
   if (!(room_from->r_flags & ISGONE)) {
-    this->place_door(room_from, &start_pos);
+    place_door(room_from, &start_pos);
   } else {
-    this->place_passage(&start_pos);
+    place_passage(&start_pos);
   }
 
   if (!(room_to->r_flags & ISGONE)) {
-    this->place_door(room_to, &end_pos);
+    place_door(room_to, &end_pos);
   } else {
-    this->place_passage(&end_pos);
+    place_passage(&end_pos);
   }
 
   /* Get ready to move...  */
@@ -209,14 +209,14 @@ Level::connect_passages(int r1, int r2) {
     /* Check if we are at the turn place, if so do the turn */
     if (distance == turn_spot) {
       while (turn_distance--) {
-        this->place_passage(&curr);
+        place_passage(&curr);
         curr.x += turn_delta.x;
         curr.y += turn_delta.y;
       }
     }
 
     /* Continue digging along */
-    this->place_passage(&curr);
+    place_passage(&curr);
     distance--;
   }
 
@@ -248,7 +248,7 @@ Level::create_passages()
     { { 0, 0, 0, 0, 0, 1, 0, 1, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
   };
 
-  for (room& passage : this->passages) {
+  for (room& passage : passages) {
   //            r_pos   r_max   r_gold r_goldval r_flags        r_nexits r_exit[12]
     passage = { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} };
   }
@@ -290,7 +290,7 @@ Level::create_passages()
         r2->ingraph = true;
         int i = static_cast<int>(r1 - rdes);
         j = static_cast<int>(r2 - rdes);
-        this->connect_passages(i, j);
+        connect_passages(i, j);
         r1->isconn[j] = true;
         r2->isconn[i] = true;
         roomcount++;
@@ -315,14 +315,14 @@ Level::create_passages()
     if (j != 0) {
       int i = static_cast<int>(r1 - rdes);
       j = static_cast<int>(r2 - rdes);
-      this->connect_passages(i, j);
+      connect_passages(i, j);
       r1->isconn[j] = true;
       r2->isconn[i] = true;
     }
   }
 
   /* Assign a number to each passageway */
-  for (room& passage : this->passages) {
+  for (room& passage : passages) {
     passage.r_nexits = 0;
   }
 
@@ -331,7 +331,7 @@ Level::create_passages()
   for (int i = 0; i < ROOMS_MAX; ++i) {
     for (int j = 0; j < rooms[i].r_nexits; ++j) {
       newpnum = true;
-      this->number_passage(rooms[i].r_exit[j].x, rooms[i].r_exit[j].y);
+      number_passage(rooms[i].r_exit[j].x, rooms[i].r_exit[j].y);
     }
   }
 }
@@ -342,12 +342,12 @@ void Level::place_passage(Coordinate* coord) {
     error("coord was null");
   }
 
-  this->set_passage(*coord);
+  set_passage(*coord);
 
   if (os_rand_range(10) + 1 < Game::current_level && os_rand_range(40) == 0) {
-    this->set_not_real(*coord);
+    set_not_real(*coord);
   } else {
-    this->set_ch(*coord, PASSAGE);
+    set_ch(*coord, PASSAGE);
   }
 }
 
@@ -357,25 +357,23 @@ Level::wizard_show_passages() {
   for (int y = 1; y < NUMLINES - 1; y++) {
     for (int x = 0; x < NUMCOLS; x++) {
 
-      bool is_passage = this->is_passage(x, y);
-      bool is_real = this->is_real(x, y);
-      char ch = this->get_ch(x, y);
+      char ch = get_ch(x, y);
 
-      if (is_passage || ch == DOOR ||
-          (!is_real && (ch == VWALL || ch == HWALL))) {
-        if (is_passage) {
+      if (is_passage(x, y) || ch == DOOR ||
+          (!is_real(x, y) && (ch == VWALL || ch == HWALL))) {
+        if (is_passage(x, y)) {
           ch = PASSAGE;
         }
-        this->set_discovered(x, y);
+        set_discovered(x, y);
         move(y, x);
-        Monster *mon = this->get_monster(x, y);
+        Monster *mon = get_monster(x, y);
         if (mon != nullptr) {
           mon->t_oldch = ch;
-        } else if (is_real) {
+        } else if (is_real(x, y)) {
           addcch(static_cast<chtype>(ch));
         } else {
           standout();
-          addcch(is_passage ? PASSAGE : DOOR);
+          addcch(is_passage(x, y) ? PASSAGE : DOOR);
           standend();
         }
       }

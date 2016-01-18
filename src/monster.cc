@@ -66,25 +66,25 @@ vector<monster_template> const monsters {
 
 
 int Monster::get_armor() const {
-  return this->t_stats.s_arm;
+  return t_stats.s_arm;
 }
 
 void Monster::set_oldch(Coordinate &coord) {
-  char old_char = this->t_oldch;
+  char old_char = t_oldch;
 
-  if (this->t_pos == coord) {
+  if (t_pos == coord) {
     return;
   }
 
-  this->t_oldch = static_cast<char>(mvincch(coord.y, coord.x));
+  t_oldch = static_cast<char>(mvincch(coord.y, coord.x));
   if (!player_is_blind()) {
 
-    if ((old_char == FLOOR || this->t_oldch == FLOOR) &&
-        (this->t_room->r_flags & ISDARK)) {
-      this->t_oldch = SHADOW;
+    if ((old_char == FLOOR || t_oldch == FLOOR) &&
+        (t_room->r_flags & ISDARK)) {
+      t_oldch = SHADOW;
 
     } else if (dist_cp(&coord, player_get_pos()) <= LAMPDIST) {
-      this->t_oldch = Game::level->get_ch(coord);
+      t_oldch = Game::level->get_ch(coord);
     }
   }
 }
@@ -119,7 +119,7 @@ string Monster::get_name() const {
 
   } else if (player_is_hallucinating()) {
 
-    int ch = mvincch(this->t_pos.y, this->t_pos.x);
+    int ch = mvincch(t_pos.y, t_pos.x);
     if (!isupper(ch)) {
       ch = static_cast<int>(os_rand_range(monsters.size()));
     } else {
@@ -132,7 +132,7 @@ string Monster::get_name() const {
 
   } else {
     stringstream ss;
-    ss << "the " << monster_name_by_type(this->t_type);
+    ss << "the " << monster_name_by_type(t_type);
     return ss.str();
   }
 }
