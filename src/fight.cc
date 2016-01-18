@@ -1,4 +1,6 @@
 #include <string>
+#include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -175,40 +177,51 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown)
   return did_hit;
 }
 
-/** print_attack:
- * Print a message to indicate a hit or miss */
+// Print a message to indicate a hit or miss
 static void
-print_attack(bool hit, char const* att, char const* def)
+print_attack(bool hit, string const& att, string const& def)
 {
-  char const* h_names[] = {
+  vector<string> player_hit_string {
       "hit"
     , "scored an excellent hit on"
     , "have injured"
     , "swing and hit"
-    , "hits"
+  };
+  vector<string> monster_hit_string {
+      "hits"
     , "scored an excellent hit on"
     , "has injured"
     , "swings and hits"
   };
-  char const* m_names[] = {
+  vector<string> player_miss_string {
       "miss"
     , "swing and miss"
     , "barely miss"
     , "don't hit"
-    , "misses"
+  };
+  vector<string> monster_miss_string {
+      "misses"
     , "swings and misses"
     , "barely misses"
     , "doesn't hit"
   };
 
-  int i = os_rand_range(4);
-  if (att != nullptr)
-    i += 4;
+  size_t i = static_cast<size_t>(os_rand_range(4));
+  stringstream ss;
+  ss << att << " ";
 
-  io_msg("%s %s %s",
-      att == nullptr ? "you" : att,
-      hit ? h_names[i] : m_names[i],
-      def == nullptr ? "you" : def);
+  if (att == "you" && hit) {
+    ss << player_hit_string.at(i);
+  } else if (att == "you" && !hit) {
+    ss << player_miss_string.at(i);
+  } else if (att != "you" && hit) {
+    ss << monster_hit_string.at(i);
+  } else if (att != "you" && !hit) {
+    ss << monster_miss_string.at(i);
+  }
+
+  ss << " " << def;
+  io_msg("%s", ss.str().c_str());
 }
 
 int
@@ -257,7 +270,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
         io_msg("%s", mname);
       }
       else
-        print_attack(true, nullptr, mname);
+        print_attack(true, "you", mname);
     }
 
     if (player_has_confusing_attack())
@@ -280,7 +293,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
   if (thrown && !to_death)
     fight_missile_miss(weapon, mname);
   else if (!to_death)
-    print_attack(false, nullptr, mname);
+    print_attack(false, "you", mname);
   return false;
 }
 
@@ -308,7 +321,7 @@ fight_against_player(Monster* mp)
   if (roll_attacks(mp, player, nullptr, false))
   {
     if (mp->t_type != 'I' && !to_death)
-      print_attack(true, mname, nullptr);
+      print_attack(true, mname, "you");
 
     if (player_get_health() <= 0)
       death(mp->t_type);
@@ -328,7 +341,7 @@ fight_against_player(Monster* mp)
     }
 
     if (!to_death)
-      print_attack(false, mname, nullptr);
+      print_attack(false, mname, "you");
   }
 
   command_stop(false);
