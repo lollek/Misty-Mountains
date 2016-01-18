@@ -30,25 +30,26 @@ public:
   Monster& operator=(Monster const&) = delete;
   Monster& operator=(Monster&&) = delete;
 
-  /* Setters */
+  // Setters
   void set_oldch(Coordinate &coord);
 
-  /* Getters */
+  // Getters
   virtual int get_armor() const;
   virtual std::string get_attack_string(bool successful_hit) const;
   virtual std::string get_name() const;
 
-  stats              t_stats;   /* Physical description */
-  Coordinate         t_pos;     /* Position */
-  Coordinate         t_dest;    /* Where it is running to */
-  room*              t_room;    /* Current room for thing */
-  std::list<Item*>   t_pack;    /* What the thing is carrying */
+  // Variables (TODO: Make these private)
+  stats              t_stats;   // Physical description
+  Coordinate         t_pos;     // Position
+  Coordinate         t_dest;    // Where it is running to
+  room*              t_room;    // Current room for thing
+  std::list<Item*>   t_pack;    // What the thing is carrying
 
-  int                t_flags;   /* State word */
-  char               t_type;    /* What it is */
-  char               t_disguise;/* What mimic looks like */
-  char               t_oldch;   /* Character that was where it was */
-  bool               t_turn;    /* If slowed, is it a turn to move */
+  int                t_flags;   // State word
+  char               t_type;    // What it is
+  char               t_disguise;// What mimic looks like
+  char               t_oldch;   // Character that was where it was
+  bool               t_turn;    // If slowed, is it a turn to move
 
 private:
 };
