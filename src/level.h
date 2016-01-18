@@ -1,8 +1,11 @@
 #pragma once
 
 #include <list>
+#include <vector>
+#include <string>
 
 #include "monster.h"
+#include "item.h"
 #include "io.h"
 
 /* Flags for level map */
@@ -95,9 +98,12 @@ private:
   void connect_passages(int r1, int r2);
   void number_passage(int x, int y);
 
+  // Misc
+  place& get_place(int x, int y);
+
   // Variables
-  place      level_places[MAXLINES*MAXCOLS];  // level map
-  Coordinate stairs_coord;                    // Where the stairs are
+  std::vector<place> level_places;  // level map
+  Coordinate         stairs_coord;  // Where the stairs are
 };
 
 
