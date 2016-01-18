@@ -34,28 +34,29 @@ struct attack_modifier {
 
 // Add item bonuses to damage and to-hit
 static void
-add_ring_attack_modifiers(struct attack_modifier& mod)
-{
-  for (int i = 0; i < PACK_RING_SLOTS; ++i)
-  {
+add_ring_attack_modifiers(attack_modifier& mod) {
+
+  for (int i = 0; i < PACK_RING_SLOTS; ++i) {
+
     Item const* ring_thing = pack_equipped_item(pack_ring_slots[i]);
-    if (ring_thing == nullptr)
+    if (ring_thing == nullptr) {
       continue;
+    }
 
     Item const* ring = ring_thing;
 
-    if (ring->o_which == R_ADDDAM)
+    if (ring->o_which == R_ADDDAM) {
       mod.to_dmg += ring->o_arm;
-    else if (ring->o_which == R_ADDHIT)
+    } else if (ring->o_which == R_ADDHIT) {
       mod.to_dmg += ring->o_arm;
+    }
   }
 }
 
 static void
-add_strength_attack_modifiers(int strength, struct attack_modifier& mod)
-{
-  switch (strength)
-  {
+add_strength_attack_modifiers(int strength, attack_modifier& mod) {
+  switch (strength) {
+
     case  0: mod.to_hit -= 7; mod.to_dmg -= 7; return;
     case  1: mod.to_hit -= 6; mod.to_dmg -= 6; return;
     case  2: mod.to_hit -= 5; mod.to_dmg -= 5; return;
@@ -86,11 +87,9 @@ add_strength_attack_modifiers(int strength, struct attack_modifier& mod)
 }
 
 static void
-calculate_attacker(Monster* attacker, Item* weapon, bool thrown,
-                  attack_modifier& mod)
+calculate_attacker(Monster* attacker, Item* weapon, bool thrown, attack_modifier& mod)
 {
-  if (weapon != nullptr)
-  {
+  if (weapon != nullptr) {
     mod.damage[0] = weapon->o_damage;
     mod.to_hit += weapon->o_hplus;
     mod.to_dmg += weapon->o_dplus;
@@ -99,33 +98,34 @@ calculate_attacker(Monster* attacker, Item* weapon, bool thrown,
   add_strength_attack_modifiers(attacker->t_stats.s_str, mod);
 
   /* Player stuff */
-  if (attacker == player)
-  {
+  if (attacker == player) {
+
     add_ring_attack_modifiers(mod);
-    if (thrown)
-    {
+    if (thrown) {
+
       Item const* held_weapon = pack_equipped_item(EQUIPMENT_RHAND);
       if ((weapon->o_flags & ISMISL) && held_weapon != nullptr
-          && held_weapon->o_which == weapon->o_launch)
-      {
+          && held_weapon->o_which == weapon->o_launch) {
+
         mod.damage[0] = weapon->o_hurldmg;
         mod.to_hit += held_weapon->o_hplus;
         mod.to_dmg += held_weapon->o_dplus;
-      }
-      else if (weapon->o_launch == -1)
+
+      } else if (weapon->o_launch == -1) {
         mod.damage[0] = weapon->o_hurldmg;
+      }
     }
-  }
 
   /* Venus Flytraps have a different kind of dmg system */
-  else if (attacker->t_type == 'F')
+  } else if (attacker->t_type == 'F') {
     mod.damage[0].sides = monster_flytrap_hit;
+  }
 }
 
 // Roll attackers attack vs defenders defense and then take damage if it hits
 static bool
-roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown)
-{
+roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown) {
+
   if (attacker == nullptr) {
     error("Attacker was null");
   } else if (defender == nullptr) {
@@ -146,28 +146,31 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown)
   /* If defender is stuck in some way,the attacker gets a bonus to hit */
   if ((defender == player && player_turns_without_action)
       || monster_is_held(defender)
-      || monster_is_stuck(defender))
+      || monster_is_stuck(defender)) {
     mod.to_hit += 4;
+  }
 
   if (mod.damage[0].sides == -1 || mod.damage[0].dices == -1) {
     error("Damage dice was negative");
   }
 
   bool did_hit = false;
-  for (int i = 0; i < MAXATTACKS; ++i)
-  {
+  for (int i = 0; i < MAXATTACKS; ++i) {
+
     int dice_sides = mod.damage[i].sides;
     int dices = mod.damage[i].dices;
 
-    if (dice_sides == 0 && dices == 0)
+    if (dice_sides == 0 && dices == 0) {
       continue;
+    }
 
     int defense = defender->get_armor();
-    if (fight_swing_hits(attacker->t_stats.s_lvl, defense, mod.to_hit))
-    {
+    if (fight_swing_hits(attacker->t_stats.s_lvl, defense, mod.to_hit)) {
+
       int damage = roll(dices, dice_sides) + mod.to_dmg;
-      if (damage > 0)
+      if (damage > 0) {
         defender->t_stats.s_hpt -= damage;
+      }
       did_hit = true;
     }
   }
@@ -187,57 +190,60 @@ print_attack(bool hit, Monster* attacker, Monster* defender) {
 }
 
 int
-fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
-{
+fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown) {
+
   if (monster_pos == nullptr) {
     error("monster_pos was null");
   }
+
   Monster* tp = Game::level->get_monster(*monster_pos);
-  if (tp == nullptr)
+  if (tp == nullptr) {
     return !io_fail("fight_against_monster(%p, %p, %b) nullptr monster\r\n",
                  monster_pos, weapon, thrown);
+  }
 
   /* Since we are fighting, things are not quiet so no healing takes place */
   command_stop(false);
   daemon_reset_doctor(0);
 
   /* Let him know it was really a xeroc (if it was one) */
-  if (tp->t_type == 'X' && tp->t_disguise != 'X' && !player_is_blind())
-  {
-      tp->t_disguise = 'X';
-      io_msg("wait!  That's a xeroc!");
-      if (!thrown)
-          return false;
+  if (tp->t_type == 'X' && tp->t_disguise != 'X' && !player_is_blind()) {
+
+    tp->t_disguise = 'X';
+    io_msg("wait!  That's a xeroc!");
+    if (!thrown) {
+      return false;
+    }
   }
 
-  if (roll_attacks(player, tp, weapon, thrown))
-  {
-    if (tp->t_stats.s_hpt <= 0)
-    {
+  if (roll_attacks(player, tp, weapon, thrown)) {
+
+    if (tp->t_stats.s_hpt <= 0) {
       monster_on_death(tp, true);
       return true;
     }
 
-    if (!to_death)
-    {
-      if (thrown)
-      {
-        if (weapon->o_type == WEAPON)
+    if (!to_death) {
+
+      if (thrown) {
+        if (weapon->o_type == WEAPON) {
           io_msg_add("the %s hits ", weapon_info[static_cast<size_t>(weapon->o_which)].oi_name.c_str());
-        else
+        } else {
           io_msg_add("you hit ");
+        }
         io_msg("%s", tp->get_name().c_str());
-      }
-      else
+
+      } else {
         print_attack(true, player, tp);
+      }
     }
 
-    if (player_has_confusing_attack())
-    {
+    if (player_has_confusing_attack()) {
+
       monster_set_confused(tp);
       player_remove_confusing_attack();
-      if (!player_is_blind())
-      {
+      if (!player_is_blind()) {
+
         io_msg("your hands stop glowing %s",
                player_is_hallucinating() ? color_random().c_str() : "red");
         io_msg("%s appears confused", tp->get_name().c_str());
@@ -249,16 +255,17 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
   }
   monster_start_running(monster_pos);
 
-  if (thrown && !to_death)
+  if (thrown && !to_death) {
     fight_missile_miss(weapon, tp->get_name().c_str());
-  else if (!to_death)
+  } else if (!to_death) {
     print_attack(false, player, tp);
+  }
   return false;
 }
 
 int
-fight_against_player(Monster* mp)
-{
+fight_against_player(Monster* mp) {
+
   /* Since this is an attack, stop running and any healing that was
    * going on at the time */
   player_alerted = true;
@@ -266,38 +273,44 @@ fight_against_player(Monster* mp)
   daemon_reset_doctor(0);
 
   /* If we're fighting something to death and get backstabbed, return command */
-  if (to_death && !monster_is_players_target(mp))
+  if (to_death && !monster_is_players_target(mp)) {
     to_death = false;
+  }
 
   /* If it's a xeroc, tag it as known */
   if (mp->t_type == 'X' && mp->t_disguise != 'X' && !player_is_blind()
-      && !player_is_hallucinating())
+      && !player_is_hallucinating()) {
     mp->t_disguise = 'X';
+  }
 
-  if (roll_attacks(mp, player, nullptr, false))
-  {
-    if (mp->t_type != 'I' && !to_death)
+  if (roll_attacks(mp, player, nullptr, false)) {
+
+    if (mp->t_type != 'I' && !to_death) {
       print_attack(true, mp, player);
+    }
 
-    if (player_get_health() <= 0)
+    if (player_get_health() <= 0) {
       death(mp->t_type);
+    }
 
     monster_do_special_ability(&mp);
     /* N.B! mp can be null after this point! */
 
   }
 
-  else if (mp->t_type != 'I')
-  {
-    if (mp->t_type == 'F')
-    {
+  else if (mp->t_type != 'I') {
+
+    if (mp->t_type == 'F') {
+
       player_lose_health(monster_flytrap_hit);
-      if (player_get_health() <= 0)
+      if (player_get_health() <= 0) {
         death(mp->t_type);
+      }
     }
 
-    if (!to_death)
+    if (!to_death) {
       print_attack(false, mp, player);
+    }
   }
 
   command_stop(false);
@@ -306,18 +319,19 @@ fight_against_player(Monster* mp)
 }
 
 int
-fight_swing_hits(int at_lvl, int op_arm, int wplus)
-{
+fight_swing_hits(int at_lvl, int op_arm, int wplus) {
+
   int rand = os_rand_range(20);
   /* io_msg("%d + %d + %d vs %d", at_lvl, wplus, rand, op_arm); */
   return at_lvl + wplus + rand >= op_arm;
 }
 
 void
-fight_missile_miss(Item const* weap, string const& mname)
-{
-  if (weap->o_type == WEAPON)
+fight_missile_miss(Item const* weap, string const& mname) {
+
+  if (weap->o_type == WEAPON) {
     io_msg("the %s misses %s", weapon_info[static_cast<size_t>(weap->o_which)].oi_name.c_str(), mname.c_str());
-  else
+  } else {
     io_msg("you missed %s", mname.c_str());
+  }
 }
