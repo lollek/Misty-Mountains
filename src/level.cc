@@ -50,13 +50,13 @@ void Level::create_treasure_room() {
   Game::current_level++;
   for (int i = 0; i < num_monsters; ++i) {
     Coordinate monster_pos;
-    if (Game::level->get_random_room_coord(room, &monster_pos, max_monsters, true)) {
+    if (get_random_room_coord(room, &monster_pos, max_monsters, true)) {
       Monster* monster = new Monster();
       monster_new(monster, monster_random(false), &monster_pos, room);
       monster->t_flags |= ISMEAN;  // no sloughers in THIS room
       monster_list.push_back(monster);
       monster_give_pack(monster);
-      Game::level->set_monster(monster_pos, monster);
+      set_monster(monster_pos, monster);
     }
   }
   Game::current_level--;
@@ -125,8 +125,8 @@ void Level::create_traps() {
       } while (get_ch(stairs_coord) != FLOOR);
 
       size_t trap_type = static_cast<size_t>(os_rand_range(NTRAPS));
-      Game::level->set_not_real(stairs_coord);
-      Game::level->set_trap_type(stairs_coord, trap_type);
+      set_not_real(stairs_coord);
+      set_trap_type(stairs_coord, trap_type);
     }
   }
 }
