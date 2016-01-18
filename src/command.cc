@@ -177,7 +177,7 @@ command_wizard_do(char ch)
     case 'C': wizard_create_item(); break;
     case '$': io_msg("inpack = %d", pack_count_items()); break;
     case CTRL('A'): Game::new_level(Game::current_level -1); break;
-    case CTRL('C'): Game::level->wizard_show_passages(); break;
+    case CTRL('Q'): Game::level->wizard_show_passages(); break;
     case CTRL('D'): Game::new_level(Game::current_level +1); break;
     case CTRL('E'): io_msg("food left: %d", food_nutrition_left()); break;
     case CTRL('F'): wizard_show_map(); break;
