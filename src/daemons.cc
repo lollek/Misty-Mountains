@@ -240,7 +240,7 @@ daemon_change_visuals(__attribute__((unused)) int)
       mvaddcch(tp->get_y(), tp->get_x(), static_cast<chtype>(rnd_thing()));
 
   /* change the stairs */
-  if (seen_stairs())
+  if (player->has_seen_stairs())
     mvaddcch(level_stairs.y, level_stairs.x, static_cast<chtype>(rnd_thing()));
 
   /* change the monsters */

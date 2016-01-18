@@ -17,6 +17,9 @@ public:
   /* Modifiers */
   void earn_exp(int amount);
 
+  /* Misc */
+  bool has_seen_stairs() const;
+
 
   /* TODO: Make private */
   int speed = 0;

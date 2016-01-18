@@ -38,7 +38,7 @@ trip_ch(int y, int x, int ch)
       case TRAP:
         break;
       default:
-        if (y != level_stairs.y || x != level_stairs.x || !seen_stairs())
+        if (y != level_stairs.y || x != level_stairs.x || !player->has_seen_stairs())
           return rnd_thing();
     }
   return ch;
@@ -322,31 +322,6 @@ rnd_thing(void)
       io_debug("rnd_thing got %d, expected value between 0 and 9", 0);
       return GOLD;
   }
-}
-
-bool
-seen_stairs(void)
-{
-  Monster* tp = Game::level->get_monster(level_stairs);
-
-  move(level_stairs.y, level_stairs.x);
-  if (incch() == STAIRS)  /* it's on the map */
-    return true;
-  if (*player_get_pos() == level_stairs) /* It's under him */
-    return true;
-
-  /* if a monster is on the stairs, this gets hairy */
-  if (tp != nullptr)
-  {
-    /* if it's visible and awake, it must have moved there */
-    if (monster_seen_by_player(tp) && monster_is_chasing(tp))
-      return true;
-
-    if (player_can_sense_monsters()      /* if she can detect monster */
-        && tp->t_oldch == STAIRS)        /* and there once were stairs */
-      return true;                       /* it must have moved there */
-  }
-  return false;
 }
 
 void
