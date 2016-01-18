@@ -338,31 +338,6 @@ strucpy(char* dst, char const* src, size_t len)
   *dst = '\0';
 }
 
-void
-set_oldch(Monster* tp, Coordinate* cp)
-{
-  char old_char = tp->t_oldch;
-
-  if (tp == nullptr) {
-    error("tp was null");
-  } else if (cp == nullptr) {
-    error("cp was null");
-  }
-
-  if (tp->t_pos == *cp)
-    return;
-
-  tp->t_oldch = static_cast<char>(mvincch(cp->y, cp->x));
-  if (!player_is_blind())
-  {
-    if ((old_char == FLOOR || tp->t_oldch == FLOOR) &&
-        (tp->t_room->r_flags & ISDARK))
-      tp->t_oldch = SHADOW;
-    else if (dist_cp(cp, player_get_pos()) <= LAMPDIST)
-      tp->t_oldch = Game::level->get_ch(*cp);
-  }
-}
-
 bool
 diag_ok(Coordinate const* sp, Coordinate const* ep)
 {

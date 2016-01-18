@@ -277,7 +277,7 @@ over:
       }
 
       /* Put monster in new position */
-      set_oldch(th, &ch_ret);
+      th->set_oldch(ch_ret);
       th->t_room = Game::level->get_room(ch_ret);
       th->t_pos = ch_ret;
       Game::level->set_monster(ch_ret, th);

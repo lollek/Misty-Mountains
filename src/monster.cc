@@ -33,6 +33,26 @@ int Monster::get_armor() const {
   return this->t_stats.s_arm;
 }
 
+void Monster::set_oldch(Coordinate &coord) {
+  char old_char = this->t_oldch;
+
+  if (this->t_pos == coord) {
+    return;
+  }
+
+  this->t_oldch = static_cast<char>(mvincch(coord.y, coord.x));
+  if (!player_is_blind()) {
+
+    if ((old_char == FLOOR || this->t_oldch == FLOOR) &&
+        (this->t_room->r_flags & ISDARK)) {
+      this->t_oldch = SHADOW;
+
+    } else if (dist_cp(&coord, player_get_pos()) <= LAMPDIST) {
+      this->t_oldch = Game::level->get_ch(coord);
+    }
+  }
+}
+
 list<Monster*> monster_list;
 int    monster_flytrap_hit = 0; /* Number of time flytrap has hit */
 
@@ -375,7 +395,7 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   /* Remove monster */
   if (monster_seen_by_player(monster))
     mvaddcch(monster->t_pos.y, monster->t_pos.x, static_cast<chtype>(monster->t_oldch));
-  set_oldch(monster, &new_pos);
+  monster->set_oldch(new_pos);
   Game::level->set_monster(monster->t_pos, nullptr);
 
   /* Add monster */

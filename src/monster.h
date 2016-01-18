@@ -28,6 +28,8 @@ public:
   virtual int get_armor() const;
   virtual ~Monster() = default;
 
+  void set_oldch(Coordinate &coord);
+
   stats              t_stats;   /* Physical description */
   Coordinate         t_pos;     /* Position */
   Coordinate         t_dest;    /* Where it is running to */
