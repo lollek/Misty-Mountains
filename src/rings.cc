@@ -118,9 +118,12 @@ ring_put_on(void)
   switch (obj->o_which)
   {
     case R_ADDSTR: player_modify_strength(obj->o_arm); break;
-    case R_SEEINVIS: invis_on(); break;
+    case R_SEEINVIS: {
+      player_add_true_sight(true);
+      monster_show_all_hidden();
+    } break;
     case R_AGGR: monster_aggravate_all(); break;
-    }
+  }
 
   char buf[MAXSTR];
   ring_description(obj, buf);

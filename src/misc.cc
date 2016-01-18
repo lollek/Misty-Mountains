@@ -325,14 +325,6 @@ rnd_thing(void)
 }
 
 void
-invis_on(void)
-{
-  player_add_true_sight(true);
-  monster_show_all_hidden();
-}
-
-
-void
 strucpy(char* dst, char const* src, size_t len)
 {
   if (len > MAXINP)

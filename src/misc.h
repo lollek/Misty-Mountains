@@ -21,7 +21,6 @@ int spread(int nm);            /* Give a spread around a given number (+/- 20%) 
 void call_it(std::string const& what, struct obj_info *info); /* Call object something */
 
 char rnd_thing(void);         /* Pick a random thing appropriate for this level */
-void invis_on(void);         /* Turn on the ability to see invisible */
 
 /* Copy string using unctrl for things */
 void strucpy(char* s1, char const* s2, size_t len);
