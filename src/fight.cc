@@ -122,14 +122,15 @@ calculate_attacker(Monster* attacker, Item* weapon, bool thrown,
     mod->damage[0].sides = monster_flytrap_hit;
 }
 
-/* Roll attackers attack vs defenders defense and then take damage if it hits
- *
- * Attacker or defender can be nullptr, in that case it's the player */
+// Roll attackers attack vs defenders defense and then take damage if it hits
 static bool
 roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown)
 {
-       if (attacker == nullptr) attacker = player;
-  else if (defender == nullptr) defender = player;
+  if (attacker == nullptr) {
+    error("Attacker was null");
+  } else if (defender == nullptr) {
+    error("Defender was null");
+  }
 
   struct attack_modifier mod;
   mod.to_hit = 0;
@@ -237,7 +238,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
   char mname[MAXSTR];
   monster_name(tp, mname);
 
-  if (roll_attacks(nullptr, tp, weapon, thrown))
+  if (roll_attacks(player, tp, weapon, thrown))
   {
     if (tp->t_stats.s_hpt <= 0)
     {
@@ -304,7 +305,7 @@ fight_against_player(Monster* mp)
   char mname[MAXSTR];
   monster_name(mp, mname);
 
-  if (roll_attacks(mp, nullptr, nullptr, false))
+  if (roll_attacks(mp, player, nullptr, false))
   {
     if (mp->t_type != 'I' && !to_death)
       print_attack(true, mname, nullptr);
