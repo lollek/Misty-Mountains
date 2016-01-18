@@ -24,8 +24,6 @@ using namespace std;
 
 static Item* last_wielded_weapon = nullptr;
 
-#define NO_WEAPON '\0'
-
 static struct init_weaps {
     damage const iw_dam;		/* Damage when wielded */
     damage const iw_hrl;		/* Damage when thrown */
@@ -35,7 +33,7 @@ static struct init_weaps {
     { {2,4}, {1,3}, NO_WEAPON,  0,             },	/* Mace */
     { {3,4}, {1,2}, NO_WEAPON,  0,             },	/* Long sword */
     { {1,1}, {2,3}, NO_WEAPON,  0,             },	/* Bow */
-    { {0,0}, {2,3}, BOW,        ISMANY|ISMISL, },	/* Arrow */
+    { {0,0}, {1,1}, BOW,        ISMANY|ISMISL, },	/* Arrow */
     { {1,6}, {1,4}, NO_WEAPON,  ISMISL,        },	/* Dagger */
     { {4,4}, {1,2}, NO_WEAPON,  0,             },	/* 2h sword */
     { {0,0}, {1,3}, NO_WEAPON,  ISMANY|ISMISL, },	/* Dart */

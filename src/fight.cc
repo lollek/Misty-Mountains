@@ -27,9 +27,13 @@ using namespace std;
 #include "fight.h"
 
 struct attack_modifier {
-  attack_modifier(int _to_hit, int _to_dmg)
-    : to_hit(_to_hit), to_dmg(_to_dmg), damage({})
-    {}
+  attack_modifier() : to_hit(0), to_dmg(0), damage({}) {}
+  attack_modifier(attack_modifier const&) = default;
+
+  ~attack_modifier() = default;
+
+  attack_modifier& operator=(attack_modifier const&) = default;
+  attack_modifier& operator=(attack_modifier&&) = default;
 
   int            to_hit;
   int            to_dmg;
@@ -90,40 +94,57 @@ add_strength_attack_modifiers(int strength, attack_modifier& mod) {
   }
 }
 
-static void
-calculate_attacker(Monster* attacker, Item* weapon, bool thrown, attack_modifier& mod)
+static attack_modifier
+calculate_attacker(Monster* attacker, Item* weapon, bool thrown)
 {
+  attack_modifier mod;
+
+  // Weapons override base attack (at the moment, monsters shouldn't use weapons)
   if (weapon != nullptr) {
-    mod.damage[0] = weapon->o_damage;
-    mod.to_hit += weapon->o_hplus;
-    mod.to_dmg += weapon->o_dplus;
+    mod.to_hit = weapon->o_hplus;
+    mod.to_dmg = weapon->o_dplus;
+
+    if (thrown) {
+      mod.damage.push_back(weapon->o_hurldmg);
+    } else {
+      mod.damage.push_back(weapon->o_damage);
+    }
+
+  // But otherwise we use the attacker's stats (can happen to both monsters and player)
+  } else {
+    mod.damage = attacker->t_stats.s_dmg;
+    if (mod.damage.empty()) {
+      error("No damage was copied from attacker. Bad template?");
+    }
   }
 
   add_strength_attack_modifiers(attacker->t_stats.s_str, mod);
 
-  /* Player stuff */
   if (attacker == player) {
 
     add_ring_attack_modifiers(mod);
     if (thrown) {
 
       Item const* held_weapon = pack_equipped_item(EQUIPMENT_RHAND);
-      if ((weapon->o_flags & ISMISL) && held_weapon != nullptr
-          && held_weapon->o_which == weapon->o_launch) {
 
-        mod.damage[0] = weapon->o_hurldmg;
-        mod.to_hit += held_weapon->o_hplus;
-        mod.to_dmg += held_weapon->o_dplus;
+      // If the weapon was an arrow and player is holding the bow. Add
+      // modifiers
+      if (weapon->o_launch != NO_WEAPON && held_weapon != nullptr &&
+          weapon->o_launch == held_weapon->o_which) {
 
-      } else if (weapon->o_launch == -1) {
-        mod.damage[0] = weapon->o_hurldmg;
+          mod.damage.at(0)  = held_weapon->o_hurldmg;
+          mod.to_hit       += held_weapon->o_hplus;
+          mod.to_dmg       += held_weapon->o_dplus;
       }
     }
 
-  /* Venus Flytraps have a different kind of dmg system */
+  // Venus Flytraps have a different kind of dmg system. It adds damage for
+  // every successful hit
   } else if (attacker->t_type == 'F') {
     mod.damage[0].sides = monster_flytrap_hit;
   }
+
+  return mod;
 }
 
 // Roll attackers attack vs defenders defense and then take damage if it hits
@@ -136,10 +157,7 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown) {
     error("Defender was null");
   }
 
-  struct attack_modifier mod(0, 0);
-  mod.damage = attacker->t_stats.s_dmg;
-
-  calculate_attacker(attacker, weapon, thrown, mod);
+  attack_modifier mod = calculate_attacker(attacker, weapon, thrown);
 
   /* If defender is stuck in some way,the attacker gets a bonus to hit */
   if ((defender == player && player_turns_without_action)

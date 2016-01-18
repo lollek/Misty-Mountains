@@ -6,6 +6,8 @@
 #include "item.h"
 #include "things.h"
 
+#define NO_WEAPON -1
+
 enum weapon_type {
   MACE     = 0,
   SWORD    = 1,
