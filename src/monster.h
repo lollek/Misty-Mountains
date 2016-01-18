@@ -2,24 +2,22 @@
 
 #include <string>
 #include <list>
+#include <vector>
 
 #include "level_rooms.h"
 #include "Coordinate.h"
 #include "item.h"
 #include "rogue.h"
 
-#define MAXATTACKS 3
-
-
 /* Structure describing a fighting being */
 struct stats {
-  int           s_str;             /* Strength */
-  int           s_exp;             /* Experience */
-  int           s_lvl;             /* level of mastery */
-  int           s_arm;             /* Armor class */
-  int           s_hpt;             /* Hit points */
-  damage        s_dmg[MAXATTACKS]; /* String describing damage done */
-  int           s_maxhp;           /* Max hit points */
+  int                  s_str;   /* Strength */
+  int                  s_exp;   /* Experience */
+  int                  s_lvl;   /* level of mastery */
+  int                  s_arm;   /* Armor class */
+  int                  s_hpt;   /* Hit points */
+  std::vector<damage>  s_dmg;   /* Attacks */
+  int                  s_maxhp; /* Max hit points */
 };
 
 class Monster {

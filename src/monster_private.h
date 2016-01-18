@@ -2,18 +2,19 @@
 
 #include <string>
 #include <list>
+#include <vector>
 
 #include "Coordinate.h"
 #include "things.h"
 
 struct monster_template {
-    std::string const  m_name;             /* What to call the monster */
-    int                m_carry;            /* Probability of carrying something */
-    int                m_flags;            /* things about the monster */
-    int                m_basexp;           /* Base xp */
-    int                m_level;            /* Level */
-    int                m_armor;            /* Armor */
-    damage             m_dmg[MAXATTACKS];  /* Monster attacks */
+    std::string const    m_name;    /* What to call the monster */
+    int                  m_carry;   /* Probability of carrying something */
+    int                  m_flags;   /* things about the monster */
+    int                  m_basexp;  /* Base xp */
+    int                  m_level;   /* Level */
+    int                  m_armor;   /* Armor */
+    std::vector<damage>  m_dmg;     /* Monster attacks */
 };
 
 extern struct monster_template monsters[26];

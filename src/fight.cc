@@ -27,9 +27,13 @@ using namespace std;
 #include "fight.h"
 
 struct attack_modifier {
-  int    to_hit;
-  int    to_dmg;
-  damage damage[MAXATTACKS];
+  attack_modifier(int _to_hit, int _to_dmg)
+    : to_hit(_to_hit), to_dmg(_to_dmg), damage({})
+    {}
+
+  int            to_hit;
+  int            to_dmg;
+  vector<damage> damage;
 };
 
 // Add item bonuses to damage and to-hit
@@ -132,14 +136,8 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown) {
     error("Defender was null");
   }
 
-  struct attack_modifier mod;
-  mod.to_hit = 0;
-  mod.to_dmg = 0;
-  if (sizeof(mod.damage) != sizeof(attacker->t_stats.s_dmg)) {
-    error("Size was not correct");
-  }
-
-  memcpy(mod.damage, attacker->t_stats.s_dmg, sizeof(attacker->t_stats.s_dmg));
+  struct attack_modifier mod(0, 0);
+  mod.damage = attacker->t_stats.s_dmg;
 
   calculate_attacker(attacker, weapon, thrown, mod);
 
@@ -150,24 +148,23 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown) {
     mod.to_hit += 4;
   }
 
-  if (mod.damage[0].sides == -1 || mod.damage[0].dices == -1) {
+  if (mod.damage.empty()) {
+    error("No damage at all?");
+  } else if (mod.damage.at(0).sides < 0 || mod.damage.at(0).dices < 0) {
     error("Damage dice was negative");
   }
 
   bool did_hit = false;
-  for (int i = 0; i < MAXATTACKS; ++i) {
+  for (damage const& dmg : mod.damage) {
 
-    int dice_sides = mod.damage[i].sides;
-    int dices = mod.damage[i].dices;
-
-    if (dice_sides == 0 && dices == 0) {
+    if (dmg.sides == 0 && dmg.dices == 0) {
       continue;
     }
 
     int defense = defender->get_armor();
     if (fight_swing_hits(attacker->t_stats.s_lvl, defense, mod.to_hit)) {
 
-      int damage = roll(dices, dice_sides) + mod.to_dmg;
+      int damage = roll(dmg.dices, dmg.sides) + mod.to_dmg;
       if (damage > 0) {
         defender->t_stats.s_hpt -= damage;
       }

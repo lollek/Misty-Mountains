@@ -226,8 +226,7 @@ monster_new(Monster* monster, char type, Coordinate* pos, room* room)
   new_stats->s_arm   = m_template->m_armor;
   new_stats->s_str   = 10;
   new_stats->s_exp   = m_template->m_basexp + monster_xp_worth(monster);
-  assert(sizeof(new_stats->s_dmg) == sizeof(m_template->m_dmg));
-  memcpy(new_stats->s_dmg, m_template->m_dmg, sizeof(m_template->m_dmg));
+  new_stats->s_dmg   = m_template->m_dmg;
 
   monster->t_turn          = true;
   monster->t_flags         = m_template->m_flags;
