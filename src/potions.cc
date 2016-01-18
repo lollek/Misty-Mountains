@@ -13,6 +13,7 @@ using namespace std;
 #include "os.h"
 #include "rogue.h"
 #include "item.h"
+#include "game.h"
 
 #include "potions.h"
 
@@ -127,10 +128,10 @@ potion_quaff_something(void)
     {
       /* Potion of magic detection.  Show the potions and scrolls */
       bool show = false;
-      if (!level_items.empty())
+      if (!Game::level->items.empty())
       {
         wclear(hw);
-        for (Item* item : level_items) {
+        for (Item* item : Game::level->items) {
           if (item->is_magic())
           {
             show = true;

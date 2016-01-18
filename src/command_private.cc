@@ -289,7 +289,7 @@ command_pick_up(void) {
 
   Coordinate const* player_pos = player_get_pos();
 
-  for (Item* obj : level_items) {
+  for (Item* obj : Game::level->items) {
     if (obj->get_pos() == *player_pos) {
       pack_pick_up(obj, true);
       return true;
@@ -646,7 +646,7 @@ bool command_drop(void)
   obj = pack_remove(obj, true, drop_all);
 
   /* Link it into the level object list */
-  level_items.push_back(obj);
+  Game::level->items.push_back(obj);
 
   Game::level->set_ch(*player_pos, static_cast<char>(obj->o_type));
   int flags = Game::level->get_flags(*player_pos);

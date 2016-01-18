@@ -223,7 +223,7 @@ daemon_change_visuals(__attribute__((unused)) int)
     return;
 
   /* change the things */
-  for (Item* tp : level_items)
+  for (Item* tp : Game::level->items)
     if (player->can_see(tp->get_pos()))
       mvaddcch(tp->get_y(), tp->get_x(), static_cast<chtype>(rnd_thing()));
 

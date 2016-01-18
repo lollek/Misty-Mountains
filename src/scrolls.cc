@@ -319,7 +319,7 @@ food_detection(void)
   bool food_seen = false;
   wclear(hw);
 
-  for (Item const* obj : level_items) {
+  for (Item const* obj : Game::level->items) {
     if (obj->o_type == FOOD)
     {
       food_seen = true;

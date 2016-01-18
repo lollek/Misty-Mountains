@@ -105,12 +105,8 @@ chase(Monster *tp, Coordinate *ee)
          * so we need to look it up to see what type it is */
         if (ch == SCROLL)
         {
-          auto obj = find_if(level_items.cbegin(), level_items.cend(),
-                      [&] (Item const* i) {
-                        return i->get_y() == y && i->get_x() == x;
-              });
-
-          if (obj != level_items.cend() && (*obj)->o_which == S_SCARE) {
+          Item* obj = Game::level->get_item(x, y);
+          if (obj != nullptr && obj->o_which == S_SCARE) {
             continue;
           }
         }
@@ -230,10 +226,10 @@ over:
 	    return( fight_against_player(th) );
 	else if (m_this == th->t_dest)
 	{
-            for (Item *obj : level_items)
+            for (Item *obj : Game::level->items)
 		if (th->t_dest == obj->get_pos())
 		{
-                    level_items.remove(obj);
+                    Game::level->items.remove(obj);
                     th->t_pack.push_back(obj);
                     Game::level->set_ch(obj->get_pos(),
 			(th->t_room->r_flags & ISGONE) ? PASSAGE : FLOOR);

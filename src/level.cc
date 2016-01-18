@@ -26,8 +26,6 @@ using namespace std;
 #define MAXTRIES	10 /* max number of tries to put down a monster */
 #define MAXTRAPS	10
 
-list<Item*>    level_items;
-
 /** treas_room:
  * Add a treasure room */
 static void
@@ -47,7 +45,7 @@ treas_room(void)
 
     Game::level->get_random_room_coord(room, &monster_pos, 2 * MAXTRIES, false);
     item->set_pos(monster_pos);
-    level_items.push_back(item);
+    Game::level->items.push_back(item);
     Game::level->set_ch(monster_pos, static_cast<char>(item->o_type));
   }
 
@@ -97,7 +95,7 @@ Level::create_loot()
     {
       /* Pick a new object and link it in the list */
       Item* obj = new_thing();
-      level_items.push_back(obj);
+      this->items.push_back(obj);
 
       /* Put it somewhere */
       Coordinate pos;
@@ -111,7 +109,7 @@ Level::create_loot()
   if (Game::current_level >= Game::amulet_min_level && !pack_contains_amulet())
   {
     Item* amulet = new_amulet();
-    level_items.push_back(amulet);
+    this->items.push_back(amulet);
 
     /* Put it somewhere */
     Coordinate pos;
@@ -130,10 +128,9 @@ Level::~Level() {
   monster_list.clear();
 
   /* Remove all items */
-  for (Item* item : level_items) {
+  for (Item* item : this->items) {
     delete item;
   }
-  level_items.clear();
 }
 
 void
@@ -198,12 +195,12 @@ Level::get_monster(Coordinate const& coord) {
 
 Item*
 Level::get_item(int x, int y) {
-  auto results = find_if(level_items.begin(), level_items.end(),
+  auto results = find_if(this->items.begin(), this->items.end(),
       [&] (Item* i) {
     return i->get_x() == x && i->get_y() == y;
   });
 
-  return results == level_items.end()
+  return results == this->items.end()
     ? nullptr
     : *results;
 }

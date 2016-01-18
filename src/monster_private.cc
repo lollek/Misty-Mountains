@@ -25,7 +25,7 @@ monster_find_new_target(Monster* monster)
     return;
   }
 
-  for (Item* obj : level_items) {
+  for (Item* obj : Game::level->items) {
     if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
       continue;
 

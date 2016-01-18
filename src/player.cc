@@ -361,7 +361,7 @@ void player_remove_hallucinating(__attribute__((unused)) int)
   }
 
   /* undo the things */
-  for (Item* tp : level_items) {
+  for (Item* tp : Game::level->items) {
     if (player->can_see(tp->get_pos())) {
       mvaddcch(tp->get_y(), tp->get_x(), static_cast<chtype>(tp->o_type));
     }

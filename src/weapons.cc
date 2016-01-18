@@ -72,7 +72,7 @@ weapon_missile_fall(Item* obj, bool pr) {
       }
     }
 
-    level_items.push_back(obj);
+    Game::level->items.push_back(obj);
     return;
   }
 

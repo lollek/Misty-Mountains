@@ -199,7 +199,7 @@ pack_remove_from_floor(Item* obj)
 {
   Coordinate const* player_pos = player_get_pos();
 
-  level_items.remove(obj);
+  Game::level->items.remove(obj);
   mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
   Game::level->set_ch(*player_pos,
       (player_get_room()->r_flags & ISGONE)
@@ -227,7 +227,7 @@ pack_add(Item* obj, bool silent)
   /* Check for and deal with scare monster scrolls */
   if (obj->o_type == SCROLL && obj->o_which == S_SCARE && obj->o_flags & ISFOUND)
   {
-    level_items.remove(obj);
+    Game::level->items.remove(obj);
     mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
     Game::level->set_ch(*player_pos, floor_ch());
     delete obj;
@@ -317,7 +317,7 @@ pack_pick_up(Item* obj, bool force)
       if (obj != nullptr)
       {
         pack_add_money(obj->o_goldval);
-        level_items.remove(obj);
+        Game::level->items.remove(obj);
         delete obj;
         obj = nullptr;
         player_get_room()->r_goldval = 0;
@@ -576,7 +576,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   if (!pack_add(obj, true))
   {
     Coordinate const* player_pos = player_get_pos();
-    level_items.push_back(obj);
+    Game::level->items.push_back(obj);
     Game::level->set_ch(*player_pos, static_cast<char>(obj->o_type));
     int flags = Game::level->get_flags(*player_pos);
     flags |= F_DROPPED;

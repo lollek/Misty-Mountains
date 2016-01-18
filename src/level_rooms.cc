@@ -75,7 +75,7 @@ Level::draw_maze_recursive(int y, int x, int starty, int startx, int maxy, int m
       int newx = x + del[i].x;
 
       if (newy < 0 || newy > maxy || newx < 0 || newx > maxx
-          || Game::level->get_flags(newx + startx, newy + starty) & F_PASS) {
+          || this->get_flags(newx + startx, newy + starty) & F_PASS) {
         continue;
       }
 
@@ -246,7 +246,7 @@ Level::create_rooms() {
       this->set_ch(rooms[i].r_gold, GOLD);
       gold->o_flags = ISMANY;
       gold->o_type = GOLD;
-      level_items.push_back(gold);
+      this->items.push_back(gold);
     }
 
     /* Put the monster in */

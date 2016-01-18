@@ -72,6 +72,9 @@ public:
   // Misc
   void wizard_show_passages();
 
+  // Variables
+  std::list<Item*> items;   // List of items on level
+
 private:
 
   // Parts of constructor
@@ -97,7 +100,6 @@ private:
   Coordinate stairs_coord;                    // Where the stairs are
 };
 
-extern std::list<Item*>   level_items;   // List of items on level
 
 #define PASSAGES_MAX 12
 extern room passages[PASSAGES_MAX];

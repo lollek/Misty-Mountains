@@ -300,12 +300,8 @@ move_random(Monster* who, Coordinate* ret)
 
   if (ch == SCROLL)
   {
-    auto results = find_if(level_items.cbegin(), level_items.cend(),
-        [&] (Item const* i) {
-      return y == i->get_y() && x == i->get_x();
-    });
-
-    if (results != level_items.cend() && (*results)->o_which == S_SCARE) {
+    Item* item = Game::level->get_item(x, y);
+    if (item != nullptr && item->o_which == S_SCARE) {
       ret->x = who->t_pos.x;
       ret->y = who->t_pos.y;
       return;
