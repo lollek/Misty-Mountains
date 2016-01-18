@@ -105,6 +105,36 @@ bool Player::has_seen_stairs() const {
   return false;
 }
 
+bool Player::can_see(Coordinate const& coord) const {
+
+  Coordinate const* player_pos = player_get_pos();
+
+  if (player_is_blind()) {
+    return false;
+  }
+
+  if (dist(coord.y, coord.x, player_pos->y, player_pos->x) < LAMPDIST) {
+    if (Game::level->get_flags(coord) & F_PASS) {
+      if (coord.y != player_pos->y && coord.x != player_pos->x &&
+          !step_ok(Game::level->get_ch(player_pos->x, coord.y))
+          && !step_ok(Game::level->get_ch(coord.x, player_pos->y))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /* We can only see if the hero in the same room as
+   * the coordinate and the room is lit or if it is close.  */
+  struct room const* rer = Game::level->get_room(coord);
+  if (rer != player_get_room())
+    return false;
+
+  return !(rer->r_flags & ISDARK);
+}
+
+
+
 void Player::waste_time(int rounds) const {
   for (int i = 0; i < rounds; ++i) {
     daemon_run_before();
@@ -302,7 +332,7 @@ void player_remove_hallucinating(__attribute__((unused)) int)
 
   /* undo the things */
   for (Item* tp : level_items) {
-    if (cansee(tp->get_y(), tp->get_x())) {
+    if (player->can_see(tp->get_pos())) {
       mvaddcch(tp->get_y(), tp->get_x(), static_cast<chtype>(tp->o_type));
     }
   }

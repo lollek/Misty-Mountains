@@ -94,7 +94,7 @@ monster_set_invisible(Monster* mon)
   assert(mon != nullptr);
 
   mon->t_flags |= ISINVIS;
-  if (cansee(mon->t_pos.y, mon->t_pos.x))
+  if (player->can_see(mon->t_pos))
   {
     char buf[MAXSTR];
     io_msg("%s disappeared", monster_name(mon, buf));
@@ -706,7 +706,7 @@ monster_print_all(void)
 {
   for (Monster* mon : monster_list) {
 
-    if (cansee(mon->t_pos.y, mon->t_pos.x)) {
+    if (player->can_see(mon->t_pos)) {
       chtype symbol = (!monster_is_invisible(mon) || player_has_true_sight())
         ? static_cast<chtype>(mon->t_disguise)
         : static_cast<chtype>(Game::level->get_ch(mon->t_pos));

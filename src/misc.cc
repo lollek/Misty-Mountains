@@ -349,34 +349,6 @@ diag_ok(Coordinate const* sp, Coordinate const* ep)
              && step_ok(Game::level->get_ch(ep->x, sp->y)));
 }
 
-bool
-cansee(int y, int x)
-{
-  Coordinate const* player_pos = player_get_pos();
-
-  if (player_is_blind())
-    return false;
-
-  if (dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
-  {
-    if (Game::level->get_flags(x, y) & F_PASS)
-      if (y != player_pos->y && x != player_pos->x &&
-          !step_ok(Game::level->get_ch(player_pos->x, y))
-          && !step_ok(Game::level->get_ch(x, player_pos->y)))
-        return false;
-    return true;
-  }
-
-  /* We can only see if the hero in the same room as
-   * the coordinate and the room is lit or if it is close.  */
-  Coordinate tp(x, y);
-  struct room const* rer = Game::level->get_room(tp);
-  if (rer != player_get_room())
-    return false;
-
-  return !(rer->r_flags & ISDARK);
-}
-
 int
 dist(int y1, int x1, int y2, int x2)
 {

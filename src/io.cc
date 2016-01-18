@@ -472,7 +472,7 @@ io_missile_motion(Item* item, int ydelta, int xdelta)
   {
     /* Erase the old one */
     if (item->get_pos() ==  *player_pos &&
-        cansee(item->get_y(), item->get_x()))
+        player->can_see(item->get_pos()))
     {
       ch = Game::level->get_ch(item->get_pos());
       mvaddcch(item->get_y(), item->get_x(), static_cast<chtype>(ch));
@@ -484,7 +484,7 @@ io_missile_motion(Item* item, int ydelta, int xdelta)
     if (step_ok(ch = Game::level->get_type(item->get_pos())) && ch != DOOR)
     {
       /* It hasn't hit anything yet, so display it if it alright. */
-      if (cansee(item->get_y(), item->get_x()))
+      if (player->can_see(item->get_pos()))
       {
         os_usleep(10000);
         mvaddcch(item->get_y(), item->get_x(), static_cast<chtype>(item->o_type));

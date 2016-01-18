@@ -65,7 +65,7 @@ weapon_missile_fall(Item* obj, bool pr) {
     Game::level->set_ch(fpos, static_cast<char>(obj->o_type));
     obj->set_pos(fpos);
 
-    if (cansee(fpos.y, fpos.x)) {
+    if (player->can_see(fpos)) {
       Monster *monster = Game::level->get_monster(fpos);
       if (monster != nullptr) {
         monster->t_oldch = static_cast<char>(obj->o_type);

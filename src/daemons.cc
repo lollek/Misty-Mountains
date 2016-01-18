@@ -236,7 +236,7 @@ daemon_change_visuals(__attribute__((unused)) int)
 
   /* change the things */
   for (Item* tp : level_items)
-    if (cansee(tp->get_y(), tp->get_x()))
+    if (player->can_see(tp->get_pos()))
       mvaddcch(tp->get_y(), tp->get_x(), static_cast<chtype>(rnd_thing()));
 
   /* change the stairs */

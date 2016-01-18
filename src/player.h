@@ -18,8 +18,9 @@ public:
   void earn_exp(int amount);
 
   /* Misc */
-  bool has_seen_stairs() const;
   void waste_time(int rounds) const;
+  bool has_seen_stairs() const;
+  bool can_see(Coordinate const& coord) const;
 
 
   /* TODO: Make private */
