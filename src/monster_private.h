@@ -17,7 +17,7 @@ struct monster_template {
     std::vector<damage>  m_dmg;     /* Monster attacks */
 };
 
-extern struct monster_template monsters[26];
+extern std::vector<monster_template> const monsters;
 
 /* Find proper destination for monster */
 void monster_find_new_target(Monster* tp);

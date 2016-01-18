@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include <string>
+#include <vector>
 #include <sstream>
 
 using namespace std;
@@ -30,11 +31,9 @@ using namespace std;
 #include "monster_private.h"
 
 list<Monster*> monster_list;
-int    monster_flytrap_hit = 0; /* Number of time flytrap has hit */
+int            monster_flytrap_hit = 0; // Number of time flytrap has hit
 
-#define NMONSTERS sizeof(monsters) / sizeof(*monsters)
-struct monster_template monsters[] =
-{
+vector<monster_template> const monsters {
   /* Name        CARRY  FLAG                   exp lvl  amr  dmg              */
   { "aquator",       0, ISMEAN,                 20,  5,  18, {{0,1}}},
   { "bat",           0, ISFLY,                   1,  1,  17, {{1,2}}},
@@ -122,7 +121,7 @@ string Monster::get_name() const {
 
     int ch = mvincch(this->t_pos.y, this->t_pos.x);
     if (!isupper(ch)) {
-      ch = static_cast<int>(os_rand_range(NMONSTERS));
+      ch = static_cast<int>(os_rand_range(monsters.size()));
     } else {
       ch -= 'A';
     }
@@ -217,19 +216,20 @@ monster_new(Monster* monster, char type, Coordinate* pos, room* room)
   monster->t_oldch      = static_cast<char>(mvincch(pos->y, pos->x));
   monster->t_room       = room;
 
-  struct monster_template const* m_template = &monsters[monster->t_type - 'A'];
+  size_t monster_id = static_cast<size_t>(monster->t_type - 'A');
+  monster_template const& m_template = monsters.at(monster_id);
   struct stats* new_stats = &monster->t_stats;
 
-  new_stats->s_lvl   = m_template->m_level;
+  new_stats->s_lvl   = m_template.m_level;
   new_stats->s_hpt   = roll(new_stats->s_lvl, 8);
   new_stats->s_maxhp = new_stats->s_hpt;
-  new_stats->s_arm   = m_template->m_armor;
+  new_stats->s_arm   = m_template.m_armor;
   new_stats->s_str   = 10;
-  new_stats->s_exp   = m_template->m_basexp + monster_xp_worth(monster);
-  new_stats->s_dmg   = m_template->m_dmg;
+  new_stats->s_exp   = m_template.m_basexp + monster_xp_worth(monster);
+  new_stats->s_dmg   = m_template.m_dmg;
 
   monster->t_turn          = true;
-  monster->t_flags         = m_template->m_flags;
+  monster->t_flags         = m_template.m_flags;
 
   if (player_has_ring_with_ability(R_AGGR))
     monster_start_running(pos);
@@ -314,12 +314,19 @@ monster_notice_player(int y, int x)
 }
 
 void
-monster_give_pack(Monster* mon)
-{
-  assert(mon != nullptr);
+monster_give_pack(Monster* mon) {
 
-  if (Game::current_level >= Game::max_level_visited && os_rand_range(100) < monsters[mon->t_type-'A'].m_carry)
+  if (mon == nullptr) {
+    error("Monster was null");
+  }
+
+  size_t monster_id = static_cast<size_t>(mon->t_type - 'A');
+  int carry_chance = monsters.at(monster_id).m_carry;
+
+  if (Game::current_level >= Game::max_level_visited &&
+      os_rand_range(100) < carry_chance) {
     mon->t_pack.push_back(new_thing());
+  }
 }
 
 int
@@ -569,9 +576,7 @@ monster_do_special_ability(Monster** monster)
 string const&
 monster_name_by_type(char monster_type)
 {
-  assert(monster_type >= 'A');
-  assert(monster_type < static_cast<char>('A' + NMONSTERS));
-  return monsters[monster_type - 'A'].m_name;
+  return monsters.at(static_cast<size_t>(monster_type - 'A')).m_name;
 }
 
 bool
