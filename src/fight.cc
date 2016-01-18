@@ -48,39 +48,6 @@ add_ring_attack_modifiers(attack_modifier& mod) {
   }
 }
 
-static void
-add_strength_attack_modifiers(int strength, attack_modifier& mod) {
-  switch (strength) {
-
-    case  0: mod.to_hit -= 7; mod.to_dmg -= 7; return;
-    case  1: mod.to_hit -= 6; mod.to_dmg -= 6; return;
-    case  2: mod.to_hit -= 5; mod.to_dmg -= 5; return;
-    case  3: mod.to_hit -= 4; mod.to_dmg -= 4; return;
-    case  4: mod.to_hit -= 3; mod.to_dmg -= 3; return;
-    case  5: mod.to_hit -= 2; mod.to_dmg -= 2; return;
-    case  6: mod.to_hit -= 1; mod.to_dmg -= 1; return;
-
-    default: return;
-
-    case 16:                  mod.to_dmg += 1; return;
-    case 17: mod.to_hit += 1; mod.to_dmg += 1; return;
-    case 18: mod.to_hit += 1; mod.to_dmg += 2; return;
-    case 19: mod.to_hit += 1; mod.to_dmg += 3; return;
-    case 20: mod.to_hit += 1; mod.to_dmg += 3; return;
-    case 21: mod.to_hit += 2; mod.to_dmg += 4; return;
-    case 22: mod.to_hit += 2; mod.to_dmg += 5; return;
-    case 23: mod.to_hit += 2; mod.to_dmg += 5; return;
-    case 24: mod.to_hit += 2; mod.to_dmg += 5; return;
-    case 25: mod.to_hit += 2; mod.to_dmg += 5; return;
-    case 26: mod.to_hit += 2; mod.to_dmg += 5; return;
-    case 27: mod.to_hit += 2; mod.to_dmg += 5; return;
-    case 28: mod.to_hit += 2; mod.to_dmg += 5; return;
-    case 29: mod.to_hit += 2; mod.to_dmg += 5; return;
-    case 30: mod.to_hit += 2; mod.to_dmg += 5; return;
-    case 31: mod.to_hit += 3; mod.to_dmg += 6; return;
-  }
-}
-
 // Calculate the damage an attacker does.
 // Weapon can be null when no weapon was used
 static attack_modifier
@@ -107,7 +74,7 @@ calculate_attacker(Monster const& attacker, Item* weapon, bool thrown)
     }
   }
 
-  add_strength_attack_modifiers(attacker.t_stats.s_str, mod);
+  mod.add_strength_modifiers(attacker.t_stats.s_str);
 
   if (&attacker == player) {
 
