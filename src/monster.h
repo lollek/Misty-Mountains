@@ -22,12 +22,19 @@ struct stats {
 
 class Monster {
 public:
+  Monster() = default;
+  Monster(Monster const&) = delete;
 
-  virtual int get_armor() const;
   virtual ~Monster() = default;
 
+  Monster& operator=(Monster const&) = delete;
+  Monster& operator=(Monster&&) = delete;
+
+  /* Setters */
   void set_oldch(Coordinate &coord);
 
+  /* Getters */
+  virtual int get_armor() const;
   virtual std::string get_attack_string(bool successful_hit) const;
   virtual std::string get_name() const;
 
