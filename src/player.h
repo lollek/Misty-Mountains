@@ -21,6 +21,8 @@ public:
   void waste_time(int rounds) const;
   bool has_seen_stairs() const;
   bool can_see(Coordinate const& coord) const;
+  std::string get_attack_string(bool successful_hit) const override;
+  std::string get_name() const override;
 
 
   /* TODO: Make private */

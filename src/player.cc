@@ -1,3 +1,7 @@
+#include <string>
+
+using namespace std;
+
 #include "game.h"
 #include "Coordinate.h"
 #include "pack.h"
@@ -133,7 +137,32 @@ bool Player::can_see(Coordinate const& coord) const {
   return !(rer->r_flags & ISDARK);
 }
 
+string Player::get_attack_string(bool successful_hit) const {
+  vector<string> hit_string {
+      "hit"
+    , "scored an excellent hit on"
+    , "have injured"
+    , "swing and hit"
+  };
 
+  vector<string> miss_string {
+      "miss"
+    , "swing and miss"
+    , "barely miss"
+    , "don't hit"
+  };
+
+  size_t i = static_cast<size_t>(os_rand_range(4));
+  if (successful_hit) {
+    return hit_string.at(i);
+  } else {
+    return miss_string.at(i);
+  }
+}
+
+string Player::get_name() const{
+  return "you";
+}
 
 void Player::waste_time(int rounds) const {
   for (int i = 0; i < rounds; ++i) {

@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -27,31 +28,6 @@ using namespace std;
 
 #include "monster.h"
 #include "monster_private.h"
-
-
-int Monster::get_armor() const {
-  return this->t_stats.s_arm;
-}
-
-void Monster::set_oldch(Coordinate &coord) {
-  char old_char = this->t_oldch;
-
-  if (this->t_pos == coord) {
-    return;
-  }
-
-  this->t_oldch = static_cast<char>(mvincch(coord.y, coord.x));
-  if (!player_is_blind()) {
-
-    if ((old_char == FLOOR || this->t_oldch == FLOOR) &&
-        (this->t_room->r_flags & ISDARK)) {
-      this->t_oldch = SHADOW;
-
-    } else if (dist_cp(&coord, player_get_pos()) <= LAMPDIST) {
-      this->t_oldch = Game::level->get_ch(coord);
-    }
-  }
-}
 
 list<Monster*> monster_list;
 int    monster_flytrap_hit = 0; /* Number of time flytrap has hit */
@@ -88,6 +64,82 @@ struct monster_template monsters[] =
   { "zombie",        0, ISMEAN,                  6,  2,  12, {{1,8}}},
 };
 
+
+
+int Monster::get_armor() const {
+  return this->t_stats.s_arm;
+}
+
+void Monster::set_oldch(Coordinate &coord) {
+  char old_char = this->t_oldch;
+
+  if (this->t_pos == coord) {
+    return;
+  }
+
+  this->t_oldch = static_cast<char>(mvincch(coord.y, coord.x));
+  if (!player_is_blind()) {
+
+    if ((old_char == FLOOR || this->t_oldch == FLOOR) &&
+        (this->t_room->r_flags & ISDARK)) {
+      this->t_oldch = SHADOW;
+
+    } else if (dist_cp(&coord, player_get_pos()) <= LAMPDIST) {
+      this->t_oldch = Game::level->get_ch(coord);
+    }
+  }
+}
+
+string Monster::get_attack_string(bool successful_hit) const {
+  vector<string> hit_string {
+      "hits"
+    , "scored an excellent hit on"
+    , "has injured"
+    , "swings and hits"
+  };
+
+  vector<string> miss_string {
+      "misses"
+    , "swings and misses"
+    , "barely misses"
+    , "doesn't hit"
+  };
+
+  size_t i = static_cast<size_t>(os_rand_range(4));
+  if (successful_hit) {
+    return hit_string.at(i);
+  } else {
+    return miss_string.at(i);
+  }
+}
+
+string Monster::get_name() const {
+
+  if (!monster_seen_by_player(this) && !player_can_sense_monsters()) {
+    return "something";
+
+  } else if (player_is_hallucinating()) {
+
+    int ch = mvincch(this->t_pos.y, this->t_pos.x);
+    if (!isupper(ch)) {
+      ch = static_cast<int>(os_rand_range(NMONSTERS));
+    } else {
+      ch -= 'A';
+    }
+
+    stringstream ss;
+    ss << "the " << monster_name_by_type(static_cast<char>(ch));
+    return ss.str();
+
+  } else {
+    stringstream ss;
+    ss << "the " << monster_name_by_type(this->t_type);
+    return ss.str();
+  }
+}
+
+
+
 void
 monster_set_invisible(Monster* mon)
 {
@@ -96,8 +148,7 @@ monster_set_invisible(Monster* mon)
   mon->t_flags |= ISINVIS;
   if (player->can_see(mon->t_pos))
   {
-    char buf[MAXSTR];
-    io_msg("%s disappeared", monster_name(mon, buf));
+    io_msg("%s disappeared", mon->get_name().c_str());
     mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_oldch));
   }
 }
@@ -245,8 +296,7 @@ monster_notice_player(int y, int x)
       monster_set_found(monster);
       if (!player_save_throw(VS_MAGIC))
       {
-        char buf[MAXSTR];
-        io_msg("%s's gaze has confused you", monster_name(monster, buf));
+        io_msg("%s's gaze has confused you", monster->get_name().c_str());
         player_set_confused(false);
       }
     }
@@ -328,11 +378,9 @@ monster_on_death(Monster* monster, bool pr)
   }
 
   /* Get rid of the monster. */
-  char mname[MAXSTR];
-  monster_name(monster, mname);
-  monster_remove_from_screen(&monster->t_pos, monster, true);
   if (pr)
-    io_msg("you have slain %s", mname);
+    io_msg("you have slain %s", monster->get_name().c_str());
+  monster_remove_from_screen(&monster->t_pos, monster, true);
 
   /* Do adjustments if he went up a level */
   player_check_for_level_up();
@@ -439,8 +487,7 @@ monster_do_special_ability(Monster** monster)
       player_stop_running();
       if (!player_turns_without_action)
       {
-        char buf[MAXSTR];
-        io_msg("you are frozen by the %s", monster_name(*monster, buf));
+        io_msg("you are frozen by the %s", (*monster)->get_name().c_str());
       }
       player_turns_without_action += os_rand_range(2) + 2;
       if (player_turns_without_action > 50)
@@ -518,32 +565,6 @@ monster_do_special_ability(Monster** monster)
 
     default: return;
   }
-}
-
-char const*
-monster_name(Monster const* monster, char* buf)
-{
-  assert(monster != nullptr);
-  assert(buf != nullptr);
-
-  if (!monster_seen_by_player(monster) && !player_can_sense_monsters())
-    strcpy(buf, "something");
-
-  else if (player_is_hallucinating())
-  {
-    int ch = mvincch(monster->t_pos.y, monster->t_pos.x);
-    if (!isupper(ch))
-      ch = static_cast<int>(os_rand_range(NMONSTERS));
-    else
-      ch -= 'A';
-
-    sprintf(buf, "the %s", monster_name_by_type(static_cast<char>(ch)).c_str());
-  }
-
-  else
-    sprintf(buf, "the %s", monster_name_by_type(monster->t_type).c_str());
-
-  return buf;
 }
 
 string const&
@@ -770,8 +791,7 @@ monster_polymorph(Monster* target)
   if (was_seen)
   {
     mvaddcch(pos.y, pos.x, static_cast<chtype>(Game::level->get_ch(pos)));
-    char buf[MAXSTR];
-    io_msg_add("%s", monster_name(target, buf));
+    io_msg_add("%s", target->get_name().c_str());
   }
 
   char oldch = target->t_oldch;
@@ -787,8 +807,7 @@ monster_polymorph(Monster* target)
       io_msg(" now looks a bit different");
     else
     {
-      char buf[MAXSTR];
-      io_msg(" turned into a %s", monster_name(target, buf));
+      io_msg(" turned into a %s", target->get_name().c_str());
     }
   }
   else if (was_seen)

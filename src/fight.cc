@@ -179,48 +179,12 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown)
 
 // Print a message to indicate a hit or miss
 static void
-print_attack(bool hit, string const& att, string const& def)
-{
-  vector<string> player_hit_string {
-      "hit"
-    , "scored an excellent hit on"
-    , "have injured"
-    , "swing and hit"
-  };
-  vector<string> monster_hit_string {
-      "hits"
-    , "scored an excellent hit on"
-    , "has injured"
-    , "swings and hits"
-  };
-  vector<string> player_miss_string {
-      "miss"
-    , "swing and miss"
-    , "barely miss"
-    , "don't hit"
-  };
-  vector<string> monster_miss_string {
-      "misses"
-    , "swings and misses"
-    , "barely misses"
-    , "doesn't hit"
-  };
+print_attack(bool hit, Monster* attacker, Monster* defender) {
 
-  size_t i = static_cast<size_t>(os_rand_range(4));
   stringstream ss;
-  ss << att << " ";
-
-  if (att == "you" && hit) {
-    ss << player_hit_string.at(i);
-  } else if (att == "you" && !hit) {
-    ss << player_miss_string.at(i);
-  } else if (att != "you" && hit) {
-    ss << monster_hit_string.at(i);
-  } else if (att != "you" && !hit) {
-    ss << monster_miss_string.at(i);
-  }
-
-  ss << " " << def;
+  ss << attacker->get_name() << " "
+     << attacker->get_attack_string(hit) << " "
+     << defender->get_name();
   io_msg("%s", ss.str().c_str());
 }
 
@@ -248,9 +212,6 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
           return false;
   }
 
-  char mname[MAXSTR];
-  monster_name(tp, mname);
-
   if (roll_attacks(player, tp, weapon, thrown))
   {
     if (tp->t_stats.s_hpt <= 0)
@@ -267,10 +228,10 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
           io_msg_add("the %s hits ", weapon_info[static_cast<size_t>(weapon->o_which)].oi_name.c_str());
         else
           io_msg_add("you hit ");
-        io_msg("%s", mname);
+        io_msg("%s", tp->get_name().c_str());
       }
       else
-        print_attack(true, "you", mname);
+        print_attack(true, player, tp);
     }
 
     if (player_has_confusing_attack())
@@ -281,7 +242,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
       {
         io_msg("your hands stop glowing %s",
                player_is_hallucinating() ? color_random().c_str() : "red");
-        io_msg("%s appears confused", mname);
+        io_msg("%s appears confused", tp->get_name().c_str());
       }
     }
 
@@ -291,9 +252,9 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown)
   monster_start_running(monster_pos);
 
   if (thrown && !to_death)
-    fight_missile_miss(weapon, mname);
+    fight_missile_miss(weapon, tp->get_name().c_str());
   else if (!to_death)
-    print_attack(false, "you", mname);
+    print_attack(false, player, tp);
   return false;
 }
 
@@ -315,13 +276,10 @@ fight_against_player(Monster* mp)
       && !player_is_hallucinating())
     mp->t_disguise = 'X';
 
-  char mname[MAXSTR];
-  monster_name(mp, mname);
-
   if (roll_attacks(mp, player, nullptr, false))
   {
     if (mp->t_type != 'I' && !to_death)
-      print_attack(true, mname, "you");
+      print_attack(true, mp, player);
 
     if (player_get_health() <= 0)
       death(mp->t_type);
@@ -341,7 +299,7 @@ fight_against_player(Monster* mp)
     }
 
     if (!to_death)
-      print_attack(false, mname, "you");
+      print_attack(false, mp, player);
   }
 
   command_stop(false);

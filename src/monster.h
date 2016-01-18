@@ -30,6 +30,9 @@ public:
 
   void set_oldch(Coordinate &coord);
 
+  virtual std::string get_attack_string(bool successful_hit) const;
+  virtual std::string get_name() const;
+
   stats              t_stats;   /* Physical description */
   Coordinate         t_pos;     /* Position */
   Coordinate         t_dest;    /* Where it is running to */
@@ -192,7 +195,6 @@ void monster_teleport(Monster* monster, Coordinate const* destination);
 
 void monster_do_special_ability(Monster** monster);
 
-char const* monster_name(Monster const* monster, char* buf);
 std::string const& monster_name_by_type(char monster_type);
 bool monster_seen_by_player(Monster const* monster);
 

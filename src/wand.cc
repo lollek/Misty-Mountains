@@ -180,8 +180,7 @@ wand_spell_drain_health(void)
     else
     {
       monster_start_running(&mp->t_pos);
-      char buf[MAXSTR];
-      io_msg("%s screams in pain", monster_name(mp, buf));
+      io_msg("%s screams in pain", mp->get_name().c_str());
     }
   }
 }
@@ -234,8 +233,7 @@ wand_spell_magic_missile(int dy, int dx)
     io_msg("the missle vanishes with a puff of smoke");
   else if (monster_save_throw(VS_MAGIC, target))
   {
-    char buf[MAXSTR];
-    io_msg("the missle missed the %s", monster_name(target, buf));
+    io_msg("the missle missed the %s", target->get_name().c_str());
   }
   else
     fight_against_monster(&bolt.get_pos(), &bolt, true);
@@ -356,8 +354,7 @@ wand_zap(void)
           else
             tp->t_flags |= ISHASTE;
           monster_start_running(&c);
-          char buf[MAXSTR];
-          io_msg("%s became faster", monster_name(tp, buf));
+          io_msg("%s became faster", tp->get_name().c_str());
         }
         else
           io_msg("You did not hit anything");
@@ -376,8 +373,7 @@ wand_zap(void)
             tp->t_flags |= ISSLOW;
           tp->t_turn = true;
           monster_start_running(&c);
-          char buf[MAXSTR];
-          io_msg("%s became slower", monster_name(tp, buf));
+          io_msg("%s became slower", tp->get_name().c_str());
         }
         else
           io_msg("You did not hit anything");

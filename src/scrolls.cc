@@ -166,8 +166,7 @@ hold_monsters(void)
 
   if (monsters_affected == 1)
   {
-    char buf[MAXSTR];
-    io_msg("%s freezes", monster_name(held_monster, buf));
+    io_msg("%s freezes", held_monster->get_name().c_str());
   }
   else if (monsters_affected > 1)
     io_msg("the monsters around you freeze");
@@ -234,12 +233,11 @@ create_monster(void)
     }
   else
   {
-    char buf[MAXSTR];
     Monster *monster = new Monster();
     monster_new(monster, monster_random(false), &mp, Game::level->get_room(mp));
     monster_list.push_back(monster);
     Game::level->set_monster(mp, monster);
-    io_msg("A %s appears out of thin air", monster_name(monster, buf));
+    io_msg("A %s appears out of thin air", monster->get_name().c_str());
   }
 
   return i;

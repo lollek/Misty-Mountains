@@ -145,8 +145,7 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
       monster_start_running(pos);
     else
     {
-      char buf[MAXSTR];
-      io_msg("the %s whizzes past %s", missile_name.c_str(), monster_name(mon, buf));
+      io_msg("the %s whizzes past %s", missile_name.c_str(), mon->get_name().c_str());
     }
   }
 }
