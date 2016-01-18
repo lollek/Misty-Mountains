@@ -44,7 +44,7 @@ Level::number_passage(int x, int y)
     rp.r_exit[rp.r_nexits++].x = x;
   }
 
-  else if (!(flags & F_PASS)) {
+  else if (!this->get_flag_passage(x, y)) {
     return;
   }
 
@@ -132,14 +132,14 @@ Level::connect_passages(int r1, int r2) {
           + 1;
         start_pos.y = room_from->r_pos.y + room_from->r_max.y - 1;
       } while ((room_from->r_flags & ISMAZE)
-             && !(this->get_flags(start_pos) & F_PASS));
+             && !this->get_flag_passage(start_pos));
     }
 
     if (!(room_to->r_flags & ISGONE)) {
       do {
         end_pos.x = room_to->r_pos.x + os_rand_range(room_to->r_max.x - 2) + 1;
       } while ((room_to->r_flags & ISMAZE)
-             && !(this->get_flags(end_pos) & F_PASS));
+             && !this->get_flag_passage(end_pos));
     }
 
     distance = abs(start_pos.y - end_pos.y) - 1;
@@ -164,14 +164,14 @@ Level::connect_passages(int r1, int r2) {
         start_pos.y = room_from->r_pos.y + os_rand_range(room_from->r_max.y - 2)
           + 1;
       } while ((room_from->r_flags & ISMAZE)
-               && !(this->get_flags(start_pos) & F_PASS));
+               && !this->get_flag_passage(start_pos));
     }
 
     if (!(room_to->r_flags & ISGONE)) {
       do {
         end_pos.y = room_to->r_pos.y + os_rand_range(room_to->r_max.y - 2) + 1;
       } while ((room_to->r_flags & ISMAZE)
-             && !(this->get_flags(end_pos) & F_PASS));
+             && !this->get_flag_passage(end_pos));
     }
 
     distance = abs(start_pos.x - end_pos.x) - 1;

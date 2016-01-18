@@ -119,7 +119,7 @@ bool Player::can_see(Coordinate const& coord) const {
   }
 
   if (dist(coord.y, coord.x, player_pos->y, player_pos->x) < LAMPDIST) {
-    if (Game::level->get_flags(coord) & F_PASS) {
+    if (Game::level->get_flag_passage(coord)) {
       if (coord.y != player_pos->y && coord.x != player_pos->x &&
           !step_ok(Game::level->get_ch(player_pos->x, coord.y))
           && !step_ok(Game::level->get_ch(coord.x, player_pos->y))) {

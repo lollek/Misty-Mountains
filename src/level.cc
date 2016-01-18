@@ -254,7 +254,7 @@ Level::get_flag_seen(Coordinate const& coord) {
 
 bool
 Level::get_flag_passage(int x, int y) {
-  return this->get_place(x, y).p_flags & F_PASS;
+  return this->get_place(x, y).is_passage;
 }
 
 bool
@@ -289,7 +289,7 @@ Level::set_flag_seen(Coordinate const& coord) {
 
 void
 Level::set_flag_passage(int x, int y) {
-  this->get_place(x, y).p_flags |= F_PASS;
+  this->get_place(x, y).is_passage = true;
 }
 
 void

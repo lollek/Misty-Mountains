@@ -61,7 +61,6 @@ look(bool wakeup)
 {
   Coordinate const* player_pos = player_get_pos();
   char const player_ch = Game::level->get_ch(*player_pos);
-  char const player_flags = Game::level->get_flags(*player_pos);
 
   if (move_pos_prev == *player_pos)
   {
@@ -97,14 +96,14 @@ look(bool wakeup)
       if (xy_ch == SHADOW)  /* nothing need be done with a ' ' */
         continue;
 
-      char const xy_flags = Game::level->get_flags(x, y);
       if (player_ch != DOOR
           && xy_ch != DOOR
-          && (player_flags & F_PASS) != (xy_flags & F_PASS))
+          && Game::level->get_flag_passage(*player_pos) !=
+             Game::level->get_flag_passage(x, y))
         continue;
 
-      if (((xy_flags & F_PASS) || xy_ch == DOOR)
-          && ((player_flags & F_PASS) || player_ch == DOOR))
+      if ((Game::level->get_flag_passage(x, y) || xy_ch == DOOR)
+          && (Game::level->get_flag_passage(*player_pos) || player_ch == DOOR))
       {
         if (player_pos->x != x && player_pos->y != y
             && !step_ok(Game::level->get_ch(player_pos->x, y))
