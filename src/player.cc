@@ -105,6 +105,13 @@ bool Player::has_seen_stairs() const {
   return false;
 }
 
+void Player::waste_time(int rounds) const {
+  for (int i = 0; i < rounds; ++i) {
+    daemon_run_before();
+    daemon_run_after();
+  }
+}
+
 
 
 Player* player;

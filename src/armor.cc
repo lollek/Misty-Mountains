@@ -54,7 +54,7 @@ armor_command_wear() {
     }
   }
 
-  waste_time(1);
+  player->waste_time(1);
   pack_remove(obj, false, true);
   pack_equip_item(obj);
 

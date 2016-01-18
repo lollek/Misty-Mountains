@@ -571,7 +571,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
 
   /* Waste time if armor - since they take a while */
   if (pos == EQUIPMENT_ARMOR)
-    waste_time(1);
+    player->waste_time(1);
 
   if (!pack_add(obj, true))
   {

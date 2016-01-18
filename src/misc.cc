@@ -339,16 +339,6 @@ strucpy(char* dst, char const* src, size_t len)
 }
 
 void
-waste_time(int rounds)
-{
-  while (rounds--)
-  {
-    daemon_run_before();
-    daemon_run_after();
-  }
-}
-
-void
 set_oldch(Monster* tp, Coordinate* cp)
 {
   char old_char = tp->t_oldch;

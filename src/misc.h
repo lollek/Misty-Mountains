@@ -25,7 +25,6 @@ char rnd_thing(void);         /* Pick a random thing appropriate for this level 
 /* Copy string using unctrl for things */
 void strucpy(char* s1, char const* s2, size_t len);
 
-void waste_time(int rounds);
 void set_oldch(Monster* tp, Coordinate* cp); /* Set oldch for a monster */
 
 bool diag_ok(Coordinate const* sp, Coordinate const* ep); /* Check if move is legal if diagonal */

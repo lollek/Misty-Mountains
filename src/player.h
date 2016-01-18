@@ -19,6 +19,7 @@ public:
 
   /* Misc */
   bool has_seen_stairs() const;
+  void waste_time(int rounds) const;
 
 
   /* TODO: Make private */
