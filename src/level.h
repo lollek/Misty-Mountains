@@ -81,6 +81,13 @@ public:
 private:
 
   // Parts of constructor
+  static int constexpr max_items = 9;
+  static int constexpr max_monsters = 10;
+  static int constexpr max_traps = 10;
+  static int constexpr treasure_room_chance = 5;
+  static int constexpr treasure_room_max_items = 10;
+  static int constexpr treasure_room_min_items = 2;
+
   void create_rooms();
   void create_passages();
   void create_loot();
@@ -88,6 +95,7 @@ private:
   void create_stairs();
 
   // Part of create_rooms()
+  void create_treasure_room();
   void draw_room(room const& room);
   void draw_maze(room const& room);
   void draw_maze_recursive(int y, int x, int starty, int startx, int maxy, int maxx);
