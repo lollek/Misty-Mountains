@@ -23,22 +23,9 @@ using namespace std;
 #include "options.h"
 #include "rogue.h"
 #include "os.h"
+#include "attack_modifier.h"
 
 #include "fight.h"
-
-struct attack_modifier {
-  attack_modifier() : to_hit(0), to_dmg(0), damage({}) {}
-  attack_modifier(attack_modifier const&) = default;
-
-  ~attack_modifier() = default;
-
-  attack_modifier& operator=(attack_modifier const&) = default;
-  attack_modifier& operator=(attack_modifier&&) = default;
-
-  int            to_hit;
-  int            to_dmg;
-  vector<damage> damage;
-};
 
 // Add item bonuses to damage and to-hit
 static void
@@ -94,8 +81,10 @@ add_strength_attack_modifiers(int strength, attack_modifier& mod) {
   }
 }
 
+// Calculate the damage an attacker does.
+// Weapon can be null when no weapon was used
 static attack_modifier
-calculate_attacker(Monster* attacker, Item* weapon, bool thrown)
+calculate_attacker(Monster const& attacker, Item* weapon, bool thrown)
 {
   attack_modifier mod;
 
@@ -112,15 +101,15 @@ calculate_attacker(Monster* attacker, Item* weapon, bool thrown)
 
   // But otherwise we use the attacker's stats (can happen to both monsters and player)
   } else {
-    mod.damage = attacker->t_stats.s_dmg;
+    mod.damage = attacker.t_stats.s_dmg;
     if (mod.damage.empty()) {
       error("No damage was copied from attacker. Bad template?");
     }
   }
 
-  add_strength_attack_modifiers(attacker->t_stats.s_str, mod);
+  add_strength_attack_modifiers(attacker.t_stats.s_str, mod);
 
-  if (attacker == player) {
+  if (&attacker == player) {
 
     add_ring_attack_modifiers(mod);
     if (thrown) {
@@ -140,7 +129,7 @@ calculate_attacker(Monster* attacker, Item* weapon, bool thrown)
 
   // Venus Flytraps have a different kind of dmg system. It adds damage for
   // every successful hit
-  } else if (attacker->t_type == 'F') {
+  } else if (attacker.t_type == 'F') {
     mod.damage[0].sides = monster_flytrap_hit;
   }
 
@@ -157,7 +146,7 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown) {
     error("Defender was null");
   }
 
-  attack_modifier mod = calculate_attacker(attacker, weapon, thrown);
+  attack_modifier mod = calculate_attacker(*attacker, weapon, thrown);
 
   /* If defender is stuck in some way,the attacker gets a bonus to hit */
   if ((defender == player && player_turns_without_action)
