@@ -204,18 +204,6 @@ erase_lamp(Coordinate const* pos, struct room const* room)
     }
 }
 
-Item*
-find_obj(int y, int x)
-{
-  for (Item* obj : level_items)
-    if (obj->get_y() == y && obj->get_x() == x)
-      return obj;
-
-  /* It should have returned by now */
-  io_msg("DEBUG: Non-object %d,%d", y, x);
-  return nullptr;
-}
-
 string
 vowelstr(string const& str)
 {

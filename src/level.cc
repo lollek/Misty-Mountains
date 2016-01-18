@@ -197,6 +197,23 @@ Level::get_monster(Coordinate const& coord) {
   return this->get_monster(coord.x, coord.y);
 }
 
+Item*
+Level::get_item(int x, int y) {
+  auto results = find_if(level_items.begin(), level_items.end(),
+      [&] (Item* i) {
+    return i->get_x() == x && i->get_y() == y;
+  });
+
+  return results == level_items.end()
+    ? nullptr
+    : *results;
+}
+
+Item*
+Level::get_item(Coordinate const& coord) {
+  return this->get_item(coord.x, coord.y);
+}
+
 void
 Level::set_monster(int x, int y, Monster* monster) {
   this->level_places[(x << 5) + y].p_monst = monster;

@@ -30,6 +30,8 @@ public:
 
   Monster* get_monster(int x, int y);
   Monster* get_monster(Coordinate const& coord);
+  Item* get_item(int x, int y);
+  Item* get_item(Coordinate const& coord);
   char get_flags(int x, int y);
   char get_flags(Coordinate const& coord);
   bool get_flag_seen(int x, int y);

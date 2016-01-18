@@ -18,6 +18,7 @@
 
 using namespace std;
 
+#include "error_handling.h"
 #include "coordinate.h"
 #include "game.h"
 #include "scrolls.h"
@@ -216,9 +217,10 @@ pack_add(Item* obj, bool silent)
   /* Either obj is an item or we try to take something from the floor */
   if (obj == nullptr)
   {
-    obj = find_obj(player_pos->y, player_pos->x);
-    if (obj == nullptr)
-      return false;
+    obj = Game::level->get_item(*player_pos);
+    if (obj == nullptr) {
+      error("Item not found on floor");
+    }
     from_floor = true;
   }
 

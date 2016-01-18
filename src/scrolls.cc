@@ -7,6 +7,7 @@
 
 using namespace std;
 
+#include "error_handling.h"
 #include "game.h"
 #include "colors.h"
 #include "coordinate.h"
@@ -193,11 +194,32 @@ create_monster(void)
     {
       char ch = Game::level->get_type(x, y);
 
-      if ((y == player_pos->y && x == player_pos->x)
-          || !step_ok(ch)
-          || (ch == SCROLL && find_obj(y, x)->o_which == S_SCARE)
-          || os_rand_range(++i) != 0)
+      /* No duplicates */
+      if ((y == player_pos->y && x == player_pos->x)) {
         continue;
+      }
+
+      /* Cannot stand there */
+      if (!step_ok(ch)) {
+        continue;
+      }
+
+      /* Monsters cannot stand of scroll of stand monster */
+      if (ch == SCROLL) {
+        Item *item = Game::level->get_item(y, x);
+        if (item == nullptr) {
+          error("Should be an item here");
+        }
+
+        if (item->o_which == S_SCARE) {
+          continue;
+        }
+      }
+
+      /* RNGsus doesn't want a monster here */
+      if (os_rand_range(++i) != 0) {
+        continue;
+      }
 
       mp.y = y;
       mp.x = x;

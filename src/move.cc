@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <assert.h>
 
+#include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
 #include "scrolls.h"
@@ -255,8 +256,13 @@ hit_bound:
                   && Game::level->get_ch(move_pos_prev) == DOOR)
                 room_leave(&nh);
               player_set_pos(&nh);
-              if (ch != STAIRS)
-                pack_pick_up(find_obj(nh.y, nh.x), false);
+              if (ch != STAIRS) {
+                Item *item = Game::level->get_item(nh);
+                if (item == nullptr) {
+                  error("No item at position");
+                }
+                pack_pick_up(item, false);
+              }
 	    }
             break;
     }
