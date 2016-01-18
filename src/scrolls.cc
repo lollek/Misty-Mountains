@@ -158,7 +158,7 @@ hold_monsters(void)
           Monster *monster = Game::level->get_monster(x, y);
           if (monster != nullptr)
           {
-            monster_become_held(monster);
+            monster->set_held();
             monsters_affected++;
             held_monster = monster;
           }

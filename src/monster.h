@@ -32,6 +32,8 @@ public:
 
   // Setters
   void set_oldch(Coordinate &coord);
+  void set_invisible();
+  void set_held();
 
   // Getters
   virtual int get_armor() const;
@@ -141,8 +143,6 @@ static inline void monster_set_true_seeing(Monster* mon)
 { mon->t_flags |= CANSEE; }
 static inline void monster_become_stuck(Monster* mon)
 { mon->t_flags |= ISSTUCK; }
-void monster_set_invisible(Monster* mon);
-void monster_become_held(Monster* monster);
 
 /* Status unsetters */
 static inline void monster_remove_blind(Monster* mon)

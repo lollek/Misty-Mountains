@@ -116,7 +116,7 @@ trap_sleep_monster(Monster* victim)
   {
     io_msg("%s collapsed to the ground", victim->get_name().c_str());
   }
-  monster_become_held(victim);
+  victim->set_held();
   return T_SLEEP;
 }
 

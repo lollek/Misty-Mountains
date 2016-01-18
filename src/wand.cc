@@ -287,7 +287,7 @@ wand_zap(void)
         Coordinate c;
         Monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != nullptr)
-          monster_set_invisible(tp);
+          tp->set_invisible();
         else
           io_msg("You did not hit anything");
       } break;

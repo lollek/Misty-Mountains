@@ -89,24 +89,25 @@ void Monster::set_oldch(Coordinate &coord) {
 }
 
 string Monster::get_attack_string(bool successful_hit) const {
-  vector<string> hit_string {
-      "hits"
-    , "scored an excellent hit on"
-    , "has injured"
-    , "swings and hits"
-  };
-
-  vector<string> miss_string {
-      "misses"
-    , "swings and misses"
-    , "barely misses"
-    , "doesn't hit"
-  };
 
   size_t i = static_cast<size_t>(os_rand_range(4));
+
   if (successful_hit) {
+    vector<string> hit_string {
+        "hits"
+      , "scored an excellent hit on"
+      , "has injured"
+      , "swings and hits"
+    };
     return hit_string.at(i);
+
   } else {
+    vector<string> miss_string {
+        "misses"
+      , "swings and misses"
+      , "barely misses"
+      , "doesn't hit"
+    };
     return miss_string.at(i);
   }
 }
@@ -136,31 +137,20 @@ string Monster::get_name() const {
   }
 }
 
+void Monster::set_invisible() {
 
-
-void
-monster_set_invisible(Monster* mon)
-{
-  assert(mon != nullptr);
-
-  mon->t_flags |= ISINVIS;
-  if (player->can_see(mon->t_pos))
+  t_flags |= ISINVIS;
+  if (player->can_see(t_pos))
   {
-    io_msg("%s disappeared", mon->get_name().c_str());
-    mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_oldch));
+    io_msg("%s disappeared", get_name().c_str());
+    mvaddcch(t_pos.y, t_pos.x, static_cast<chtype>(t_oldch));
   }
 }
 
-void
-monster_become_held(Monster* mon)
-{
-  assert(mon != nullptr);
-
-  mon->t_flags &= ~ISRUN;
-  mon->t_flags |= ISHELD;
+void Monster::set_held() {
+  t_flags &= ~ISRUN;
+  t_flags |= ISHELD;
 }
-
-
 
 char
 monster_random(bool wander)
