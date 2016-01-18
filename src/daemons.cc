@@ -1,18 +1,6 @@
-/*
- * Contains functions for dealing with things that happen in the
- * future.
- *
- * @(#)daemon.c	4.7 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
 #include <assert.h>
 
+#include "game.h"
 #include "io.h"
 #include "pack.h"
 #include "command.h"
@@ -241,7 +229,9 @@ daemon_change_visuals(__attribute__((unused)) int)
 
   /* change the stairs */
   if (player->has_seen_stairs())
-    mvaddcch(level_stairs.y, level_stairs.x, static_cast<chtype>(rnd_thing()));
+    mvaddcch(Game::level->get_stairs_y(),
+             Game::level->get_stairs_x(),
+             static_cast<chtype>(rnd_thing()));
 
   /* change the monsters */
   monster_show_all_as_trippy();

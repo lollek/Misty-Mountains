@@ -49,6 +49,9 @@ public:
   char get_type(Coordinate const& coord);
   bool get_random_room_coord(room* room, Coordinate* coord, int tries, bool monster);
   room* get_room(Coordinate const& coord);
+  Coordinate const& get_stairs_pos() const;
+  int get_stairs_x() const;
+  int get_stairs_y() const;
 
   // Setters
   void set_monster(int x, int y, Monster* monster);
@@ -68,7 +71,6 @@ public:
 
   // Misc
   void wizard_show_passages();
-
 
 private:
 
@@ -90,10 +92,11 @@ private:
   void connect_passages(int r1, int r2);
   void number_passage(int x, int y);
 
-  place level_places[MAXLINES*MAXCOLS];  // level map
+  // Variables
+  place      level_places[MAXLINES*MAXCOLS];  // level map
+  Coordinate stairs_coord;                    // Where the stairs are
 };
 
-extern Coordinate         level_stairs;  // Location of staircase
 extern std::list<Item*>   level_items;   // List of items on level
 
 #define PASSAGES_MAX 12

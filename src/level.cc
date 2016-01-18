@@ -26,7 +26,6 @@ using namespace std;
 #define MAXTRIES	10 /* max number of tries to put down a monster */
 #define MAXTRAPS	10
 
-Coordinate     level_stairs;
 list<Item*>    level_items;
 
 /** treas_room:
@@ -152,21 +151,21 @@ Level::create_traps() {
        * can't actually do it.
        */
       do {
-        this->get_random_room_coord(nullptr, &level_stairs, 0, false);
-      } while (this->get_ch(level_stairs) != FLOOR);
+        this->get_random_room_coord(nullptr, &this->stairs_coord, 0, false);
+      } while (this->get_ch(this->stairs_coord) != FLOOR);
 
-      char trapflag = this->get_flags(level_stairs);
+      char trapflag = this->get_flags(this->stairs_coord);
       trapflag &= ~F_REAL;
       trapflag |= os_rand_range(NTRAPS);
-      this->set_flags(level_stairs, trapflag);
+      this->set_flags(this->stairs_coord, trapflag);
     }
   }
 }
 
 void
 Level::create_stairs() {
-  this->get_random_room_coord(nullptr, &level_stairs, 0, false);
-  this->set_ch(level_stairs, STAIRS);
+  this->get_random_room_coord(nullptr, &this->stairs_coord, 0, false);
+  this->set_ch(this->stairs_coord, STAIRS);
 }
 
 
@@ -379,6 +378,18 @@ Level::get_room(Coordinate const& coord) {
   // Not sure if this should be an error, or just if monster is in corridor?
   //error("Coordinate was not in any room");
   return nullptr;
+}
+
+Coordinate const& Level::get_stairs_pos() const {
+  return this->stairs_coord;
+}
+
+int Level::get_stairs_x() const {
+  return this->stairs_coord.x;
+}
+
+int Level::get_stairs_y() const {
+  return this->stairs_coord.y;
 }
 
 

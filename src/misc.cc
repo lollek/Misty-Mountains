@@ -38,7 +38,9 @@ trip_ch(int y, int x, int ch)
       case TRAP:
         break;
       default:
-        if (y != level_stairs.y || x != level_stairs.x || !player->has_seen_stairs())
+        if (y != Game::level->get_stairs_y() ||
+            x != Game::level->get_stairs_x() ||
+            !player->has_seen_stairs())
           return rnd_thing();
     }
   return ch;

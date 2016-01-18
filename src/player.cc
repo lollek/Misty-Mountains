@@ -86,15 +86,16 @@ void Player::earn_exp(int amount) {
 bool Player::has_seen_stairs() const {
 
   // It is on the map
-  if (mvincch(level_stairs.y, level_stairs.x) == STAIRS)
+  if (mvincch(Game::level->get_stairs_y(), Game::level->get_stairs_x()) ==
+      STAIRS)
     return true;
 
   // It's under the player
-  if (*player_get_pos() == level_stairs)
+  if (*player_get_pos() == Game::level->get_stairs_pos())
     return true;
 
   // if a monster is on the stairs, this gets hairy
-  Monster* monster = Game::level->get_monster(level_stairs);
+  Monster* monster = Game::level->get_monster(Game::level->get_stairs_pos());
   if (monster != nullptr) {
 
     // if it's visible and awake, it must have moved there
