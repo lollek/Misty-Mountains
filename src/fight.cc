@@ -26,17 +26,15 @@ using namespace std;
 
 #include "fight.h"
 
-struct attack_modifier
-{
-  int to_hit;
-  int to_dmg;
-  struct damage damage[MAXATTACKS];
+struct attack_modifier {
+  int    to_hit;
+  int    to_dmg;
+  damage damage[MAXATTACKS];
 };
 
-/** add_player_attack_modifiers
- * Add item bonuses to damage and to-hit */
+// Add item bonuses to damage and to-hit
 static void
-add_ring_attack_modifiers(struct attack_modifier* mod)
+add_ring_attack_modifiers(struct attack_modifier& mod)
 {
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
@@ -47,55 +45,55 @@ add_ring_attack_modifiers(struct attack_modifier* mod)
     Item const* ring = ring_thing;
 
     if (ring->o_which == R_ADDDAM)
-      mod->to_dmg += ring->o_arm;
+      mod.to_dmg += ring->o_arm;
     else if (ring->o_which == R_ADDHIT)
-      mod->to_dmg += ring->o_arm;
+      mod.to_dmg += ring->o_arm;
   }
 }
 
 static void
-add_strength_attack_modifiers(int strength, struct attack_modifier* mod)
+add_strength_attack_modifiers(int strength, struct attack_modifier& mod)
 {
   switch (strength)
   {
-    case  0: mod->to_hit -= 7; mod->to_dmg -= 7; return;
-    case  1: mod->to_hit -= 6; mod->to_dmg -= 6; return;
-    case  2: mod->to_hit -= 5; mod->to_dmg -= 5; return;
-    case  3: mod->to_hit -= 4; mod->to_dmg -= 4; return;
-    case  4: mod->to_hit -= 3; mod->to_dmg -= 3; return;
-    case  5: mod->to_hit -= 2; mod->to_dmg -= 2; return;
-    case  6: mod->to_hit -= 1; mod->to_dmg -= 1; return;
+    case  0: mod.to_hit -= 7; mod.to_dmg -= 7; return;
+    case  1: mod.to_hit -= 6; mod.to_dmg -= 6; return;
+    case  2: mod.to_hit -= 5; mod.to_dmg -= 5; return;
+    case  3: mod.to_hit -= 4; mod.to_dmg -= 4; return;
+    case  4: mod.to_hit -= 3; mod.to_dmg -= 3; return;
+    case  5: mod.to_hit -= 2; mod.to_dmg -= 2; return;
+    case  6: mod.to_hit -= 1; mod.to_dmg -= 1; return;
 
     default: return;
 
-    case 16:                   mod->to_dmg += 1; return;
-    case 17: mod->to_hit += 1; mod->to_dmg += 1; return;
-    case 18: mod->to_hit += 1; mod->to_dmg += 2; return;
-    case 19: mod->to_hit += 1; mod->to_dmg += 3; return;
-    case 20: mod->to_hit += 1; mod->to_dmg += 3; return;
-    case 21: mod->to_hit += 2; mod->to_dmg += 4; return;
-    case 22: mod->to_hit += 2; mod->to_dmg += 5; return;
-    case 23: mod->to_hit += 2; mod->to_dmg += 5; return;
-    case 24: mod->to_hit += 2; mod->to_dmg += 5; return;
-    case 25: mod->to_hit += 2; mod->to_dmg += 5; return;
-    case 26: mod->to_hit += 2; mod->to_dmg += 5; return;
-    case 27: mod->to_hit += 2; mod->to_dmg += 5; return;
-    case 28: mod->to_hit += 2; mod->to_dmg += 5; return;
-    case 29: mod->to_hit += 2; mod->to_dmg += 5; return;
-    case 30: mod->to_hit += 2; mod->to_dmg += 5; return;
-    case 31: mod->to_hit += 3; mod->to_dmg += 6; return;
+    case 16:                  mod.to_dmg += 1; return;
+    case 17: mod.to_hit += 1; mod.to_dmg += 1; return;
+    case 18: mod.to_hit += 1; mod.to_dmg += 2; return;
+    case 19: mod.to_hit += 1; mod.to_dmg += 3; return;
+    case 20: mod.to_hit += 1; mod.to_dmg += 3; return;
+    case 21: mod.to_hit += 2; mod.to_dmg += 4; return;
+    case 22: mod.to_hit += 2; mod.to_dmg += 5; return;
+    case 23: mod.to_hit += 2; mod.to_dmg += 5; return;
+    case 24: mod.to_hit += 2; mod.to_dmg += 5; return;
+    case 25: mod.to_hit += 2; mod.to_dmg += 5; return;
+    case 26: mod.to_hit += 2; mod.to_dmg += 5; return;
+    case 27: mod.to_hit += 2; mod.to_dmg += 5; return;
+    case 28: mod.to_hit += 2; mod.to_dmg += 5; return;
+    case 29: mod.to_hit += 2; mod.to_dmg += 5; return;
+    case 30: mod.to_hit += 2; mod.to_dmg += 5; return;
+    case 31: mod.to_hit += 3; mod.to_dmg += 6; return;
   }
 }
 
 static void
 calculate_attacker(Monster* attacker, Item* weapon, bool thrown,
-                  struct attack_modifier* mod)
+                  attack_modifier& mod)
 {
   if (weapon != nullptr)
   {
-    mod->damage[0] = weapon->o_damage;
-    mod->to_hit += weapon->o_hplus;
-    mod->to_dmg += weapon->o_dplus;
+    mod.damage[0] = weapon->o_damage;
+    mod.to_hit += weapon->o_hplus;
+    mod.to_dmg += weapon->o_dplus;
   }
 
   add_strength_attack_modifiers(attacker->t_stats.s_str, mod);
@@ -110,18 +108,18 @@ calculate_attacker(Monster* attacker, Item* weapon, bool thrown,
       if ((weapon->o_flags & ISMISL) && held_weapon != nullptr
           && held_weapon->o_which == weapon->o_launch)
       {
-        mod->damage[0] = weapon->o_hurldmg;
-        mod->to_hit += held_weapon->o_hplus;
-        mod->to_dmg += held_weapon->o_dplus;
+        mod.damage[0] = weapon->o_hurldmg;
+        mod.to_hit += held_weapon->o_hplus;
+        mod.to_dmg += held_weapon->o_dplus;
       }
       else if (weapon->o_launch == -1)
-        mod->damage[0] = weapon->o_hurldmg;
+        mod.damage[0] = weapon->o_hurldmg;
     }
   }
 
   /* Venus Flytraps have a different kind of dmg system */
   else if (attacker->t_type == 'F')
-    mod->damage[0].sides = monster_flytrap_hit;
+    mod.damage[0].sides = monster_flytrap_hit;
 }
 
 // Roll attackers attack vs defenders defense and then take damage if it hits
@@ -143,7 +141,7 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown)
 
   memcpy(mod.damage, attacker->t_stats.s_dmg, sizeof(attacker->t_stats.s_dmg));
 
-  calculate_attacker(attacker, weapon, thrown, &mod);
+  calculate_attacker(attacker, weapon, thrown, mod);
 
   /* If defender is stuck in some way,the attacker gets a bonus to hit */
   if ((defender == player && player_turns_without_action)
