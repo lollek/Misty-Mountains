@@ -252,14 +252,13 @@ over:
     if (!(ch_ret == th->t_pos))
     {
       char ch = Game::level->get_type(ch_ret);
-      char fl = Game::level->get_flags(ch_ret);
 
       /* Remove monster from old position */
       mvaddcch(th->t_pos.y, th->t_pos.x, static_cast<chtype>(th->t_oldch));
       Game::level->set_monster(th->t_pos, nullptr);
 
       /* Check if we stepped in a trap */
-      if (ch == TRAP || (!(fl & F_REAL) && ch == FLOOR))
+      if (ch == TRAP || (!Game::level->is_real(ch_ret) && ch == FLOOR))
       {
         Coordinate orig_pos = th->t_pos;
 

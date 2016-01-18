@@ -119,7 +119,7 @@ bool Player::can_see(Coordinate const& coord) const {
   }
 
   if (dist(coord.y, coord.x, player_pos->y, player_pos->x) < LAMPDIST) {
-    if (Game::level->get_flag_passage(coord)) {
+    if (Game::level->is_passage(coord)) {
       if (coord.y != player_pos->y && coord.x != player_pos->x &&
           !step_ok(Game::level->get_ch(player_pos->x, coord.y))
           && !step_ok(Game::level->get_ch(coord.x, player_pos->y))) {
@@ -547,8 +547,7 @@ player_search()
     for (int x = player_pos->x - 1; x <= player_pos->x + 1; x++)
     {
       /* Real wall/floor/shadow */
-      int flags = Game::level->get_flags(x, y);
-      if (flags & F_REAL)
+      if (Game::level->is_real(x, y))
         continue;
 
       char chatyx = Game::level->get_ch(x, y);
@@ -560,8 +559,7 @@ player_search()
             Game::level->set_ch(x, y, DOOR);
             io_msg("a secret door");
             found = true;
-            flags |= F_REAL;
-            Game::level->set_flags(x, y, static_cast<char>(flags));
+            Game::level->set_real(x, y);
           }
           break;
 
@@ -573,14 +571,12 @@ player_search()
             if (player_is_hallucinating())
               io_msg(trap_names[os_rand_range(NTRAPS)].c_str());
             else {
-              io_msg(trap_names[flags & F_TMASK].c_str());
-              flags |= F_SEEN;
-              Game::level->set_flags(x, y, static_cast<char>(flags));
+              io_msg(trap_names[Game::level->get_trap_type(x, y)].c_str());
+              Game::level->set_discovered(x, y);
             }
 
             found = true;
-            flags |= F_SEEN;
-            Game::level->set_flags(x, y, static_cast<char>(flags));
+            Game::level->set_discovered(x, y);
           }
           break;
 
@@ -589,8 +585,7 @@ player_search()
           {
             Game::level->set_ch(x, y, PASSAGE);
             found = true;
-            flags |= F_REAL;
-            Game::level->set_flags(x, y, static_cast<char>(flags));
+            Game::level->set_real(x, y);
           }
           break;
       }

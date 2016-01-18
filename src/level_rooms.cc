@@ -75,7 +75,7 @@ Level::draw_maze_recursive(int y, int x, int starty, int startx, int maxy, int m
       int newx = x + del[i].x;
 
       if (newy < 0 || newy > maxy || newx < 0 || newx > maxx
-          || this->get_flag_passage(newx + startx, newy + starty)) {
+          || this->is_passage(newx + startx, newy + starty)) {
         continue;
       }
 

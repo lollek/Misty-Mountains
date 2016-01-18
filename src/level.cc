@@ -151,10 +151,9 @@ Level::create_traps() {
         this->get_random_room_coord(nullptr, &this->stairs_coord, 0, false);
       } while (this->get_ch(this->stairs_coord) != FLOOR);
 
-      char trapflag = this->get_flags(this->stairs_coord);
-      trapflag &= ~F_REAL;
-      trapflag |= os_rand_range(NTRAPS);
-      this->set_flags(this->stairs_coord, trapflag);
+      size_t trap_type = static_cast<size_t>(os_rand_range(NTRAPS));
+      Game::level->set_not_real(this->stairs_coord);
+      Game::level->set_trap_type(this->stairs_coord, trap_type);
     }
   }
 }
@@ -227,94 +226,74 @@ Level::set_monster(Coordinate const& coord, Monster* monster) {
   this->set_monster(coord.x, coord.y, monster);
 }
 
-char
-Level::get_flags(int x, int y) {
-  return this->get_place(x, y).p_flags;
-}
-
-char
-Level::get_flags(Coordinate const& coord) {
-  return this->get_flags(coord.x, coord.y);
-}
-
-void
-Level::set_flags(int x, int y, char flags) {
-  this->get_place(x, y).p_flags = flags;
-}
-
 bool
-Level::get_flag_seen(int x, int y) {
-  return this->get_place(x, y).p_flags & F_SEEN;
-}
-
-bool
-Level::get_flag_seen(Coordinate const& coord) {
-  return this->get_flag_seen(coord.x, coord.y);
-}
-
-bool
-Level::get_flag_passage(int x, int y) {
+Level::is_passage(int x, int y) {
   return this->get_place(x, y).is_passage;
 }
 
 bool
-Level::get_flag_passage(Coordinate const& coord) {
-  return this->get_flag_passage(coord.x, coord.y);
+Level::is_passage(Coordinate const& coord) {
+  return this->is_passage(coord.x, coord.y);
 }
 
 bool
-Level::get_flag_real(int x, int y) {
-  return this->get_place(x, y).p_flags & F_REAL;
+Level::is_discovered(int x, int y) {
+  return this->get_place(x, y).is_discovered;
 }
 
 bool
-Level::get_flag_real(Coordinate const& coord) {
-  return this->get_flag_real(coord.x, coord.y);
+Level::is_discovered(Coordinate const& coord) {
+  return this->is_discovered(coord.x, coord.y);
+}
+
+bool
+Level::is_real(int x, int y) {
+  return this->get_place(x, y).is_real;
+}
+
+bool
+Level::is_real(Coordinate const& coord) {
+  return this->is_real(coord.x, coord.y);
 }
 
 void
-Level::set_flags(Coordinate const& coord, char flags) {
-  this->set_flags(coord.x, coord.y, flags);
-}
-
-void
-Level::set_flag_seen(int x, int y) {
-  this->get_place(x, y).p_flags |= F_SEEN;
-}
-
-void
-Level::set_flag_seen(Coordinate const& coord) {
-  this->set_flag_seen(coord.x, coord.y);
-}
-
-void
-Level::set_flag_passage(int x, int y) {
+Level::set_passage(int x, int y) {
   this->get_place(x, y).is_passage = true;
 }
 
 void
-Level::set_flag_passage(Coordinate const& coord) {
-  this->set_flag_passage(coord.x, coord.y);
+Level::set_passage(Coordinate const& coord) {
+  this->set_passage(coord.x, coord.y);
 }
 
 void
-Level::set_flag_real(int x, int y) {
-  this->get_place(x, y).p_flags |= F_REAL;
+Level::set_discovered(int x, int y) {
+  this->get_place(x, y).is_discovered = true;
 }
 
 void
-Level::set_flag_real(Coordinate const& coord) {
-  this->set_flag_real(coord.x, coord.y);
+Level::set_discovered(Coordinate const& coord) {
+  this->set_discovered(coord.x, coord.y);
 }
 
 void
-Level::set_flag_notreal(int x, int y) {
-  this->get_place(x, y).p_flags &= ~F_REAL;
+Level::set_real(int x, int y) {
+  this->get_place(x, y).is_real = true;
 }
 
 void
-Level::set_flag_notreal(Coordinate const& coord) {
-  this->set_flag_notreal(coord.x, coord.y);
+Level::set_real(Coordinate const& coord) {
+  this->set_real(coord.x, coord.y);
+}
+
+void
+Level::set_not_real(int x, int y) {
+  this->get_place(x, y).is_real = false;
+}
+
+void
+Level::set_not_real(Coordinate const& coord) {
+  this->set_not_real(coord.x, coord.y);
 }
 
 char
@@ -337,6 +316,26 @@ Level::set_ch(Coordinate const& coord, char ch) {
   this->set_ch(coord.x, coord.y, ch);
 }
 
+void
+Level::set_trap_type(int x, int y, size_t type) {
+  this->get_place(x, y).trap_type = type;
+}
+
+void
+Level::set_trap_type(Coordinate const& coord, size_t type) {
+  this->set_trap_type(coord.x, coord.y, type);
+}
+
+void
+Level::set_passage_number(int x, int y, size_t num) {
+  this->get_place(x, y).passage_number = num;
+}
+
+void
+Level::set_passage_number(Coordinate const& coord, size_t num) {
+  this->set_passage_number(coord.x, coord.y, num);
+}
+
 char
 Level::get_type(int x, int y)
 {
@@ -352,20 +351,30 @@ Level::get_type(Coordinate const& coord)
   return this->get_type(coord.x, coord.y);
 }
 
-char
+size_t
 Level::get_trap_type(int x, int y) {
-  return this->get_place(x, y).p_flags & F_TMASK;
+  return this->get_place(x, y).trap_type;
 }
 
-char
+size_t
 Level::get_trap_type(Coordinate const& coord) {
   return this->get_trap_type(coord.x, coord.y);
+}
+
+size_t
+Level::get_passage_number(int x, int y) {
+  return this->get_place(x, y).passage_number;
+}
+
+size_t
+Level::get_passage_number(Coordinate const& coord) {
+  return this->get_passage_number(coord.x, coord.y);
 }
 
 room*
 Level::get_room(Coordinate const& coord) {
 
-  if (this->get_flag_passage(coord)) {
+  if (this->is_passage(coord)) {
     return this->get_passage(coord);
   }
 
@@ -384,8 +393,7 @@ Level::get_room(Coordinate const& coord) {
 }
 
 room* Level::get_passage(Coordinate const& coord) {
-  size_t pos = static_cast<size_t>(this->get_flags(coord) & F_PNUM);
-  return &this->passages.at(pos);
+  return &this->passages.at(this->get_passage_number(coord));
 }
 
 Coordinate const& Level::get_stairs_pos() const {

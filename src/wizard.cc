@@ -143,10 +143,8 @@ wizard_create_item(void)
         else
         {
           Coordinate *player_pos = player_get_pos();
-          char flags = Game::level->get_flags(*player_pos);
-          flags &= ~F_REAL;
-          flags |= which;
-          Game::level->set_flags(*player_pos, flags);
+          Game::level->set_not_real(*player_pos);
+          Game::level->set_trap_type(*player_pos, static_cast<size_t>(which));
         }
         return;
       }
@@ -232,12 +230,11 @@ wizard_show_map(void)
   for (int y = 1; y < NUMLINES - 1; y++)
     for (int x = 0; x < NUMCOLS; x++)
     {
-      int real = Game::level->get_flags(x, y);
-      if (!(real & F_REAL))
+      if (!Game::level->is_real(x, y))
         wstandout(hw);
       wmove(hw, y, x);
       waddcch(hw, static_cast<chtype>(Game::level->get_ch(x, y)));
-      if (!real)
+      if (!Game::level->is_real(x, y))
         wstandend(hw);
     }
   show_win("---More (level map)---");

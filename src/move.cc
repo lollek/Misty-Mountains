@@ -30,7 +30,7 @@ static bool
 move_turn_ok(int y, int x)
 {
   return (Game::level->get_ch(x, y) == DOOR
-      || (Game::level->get_flag_real(x, y) && Game::level->get_flag_passage(x, y)));
+      || (Game::level->is_real(x, y) && Game::level->is_passage(x, y)));
 }
 
 /** move_turnref:
@@ -40,13 +40,13 @@ move_turnref(void)
 {
   Coordinate *player_pos = player_get_pos();
 
-  if (!Game::level->get_flag_seen(*player_pos)) {
+  if (!Game::level->is_discovered(*player_pos)) {
     if (jump) {
       leaveok(stdscr, true);
       refresh();
       leaveok(stdscr, false);
     }
-    Game::level->set_flag_seen(*player_pos);
+    Game::level->set_discovered(*player_pos);
   }
 }
 
@@ -109,7 +109,7 @@ move_do_loop_door(bool after, Coordinate& coord, bool is_passage) {
   Coordinate *player_pos = player_get_pos();
   running = false;
 
-  if (Game::level->get_flag_passage(*player_pos)) {
+  if (Game::level->is_passage(*player_pos)) {
     room_enter(&coord);
   }
 
@@ -234,15 +234,15 @@ move_do_loop(char ch, int dx, int dy) {
       after = running = false;
     }
 
-    bool is_passage = Game::level->get_flag_passage(nh);
-    bool is_real    = Game::level->get_flag_real(nh);
+    bool is_passage = Game::level->is_passage(nh);
+    bool is_real    = Game::level->is_real(nh);
     ch = Game::level->get_type(nh);
 
-    if (!Game::level->get_flag_real(nh) && ch == FLOOR) {
+    if (!Game::level->is_real(nh) && ch == FLOOR) {
       if (!player_is_levitating()) {
         ch = TRAP;
         Game::level->set_ch(nh, ch);
-        Game::level->set_flag_real(nh);
+        Game::level->set_real(nh);
       }
 
     } else if (player_is_held() && ch != 'F') {

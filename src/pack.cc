@@ -578,9 +578,6 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     Coordinate const* player_pos = player_get_pos();
     Game::level->items.push_back(obj);
     Game::level->set_ch(*player_pos, static_cast<char>(obj->o_type));
-    int flags = Game::level->get_flags(*player_pos);
-    flags |= F_DROPPED;
-    Game::level->set_flags(*player_pos, static_cast<char>(flags));
     obj->set_pos(*player_pos);
     io_msg("dropped %s", inv_name(obj, true).c_str());
   }

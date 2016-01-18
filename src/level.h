@@ -8,24 +8,18 @@
 #include "item.h"
 #include "io.h"
 
-// Flags for level map (place.p_flags)
-//#define F_PASS		0x80		// is a passageway
-#define F_SEEN		0x40		// have seen this spot before
-#define F_DROPPED	0x20		// object was dropped here
-#define F_LOCKED	0x20		// door is locked
-#define F_REAL		0x10		// what you see is what you get
-#define F_PNUM		0x0f		// passage number mask
-#define F_TMASK		0x07		// trap number mask
-
-// Describes a place on the level map
 struct place {
   place()
-    : p_ch(SHADOW), p_flags(F_REAL), is_passage(false), p_monst(nullptr)
+    : p_ch(SHADOW), is_passage(false), is_discovered(false), is_real(true),
+      passage_number(0), trap_type(0), p_monst(nullptr)
   {}
 
   char     p_ch;
-  char     p_flags;
   bool     is_passage;
+  bool     is_discovered;
+  bool     is_real;
+  size_t   passage_number;
+  size_t   trap_type;
   Monster* p_monst;
 };
 
@@ -39,18 +33,18 @@ public:
   Monster* get_monster(Coordinate const& coord);
   Item* get_item(int x, int y);
   Item* get_item(Coordinate const& coord);
-  char get_flags(int x, int y);
-  char get_flags(Coordinate const& coord);
-  bool get_flag_seen(int x, int y);
-  bool get_flag_seen(Coordinate const& coord);
-  bool get_flag_passage(int x, int y);
-  bool get_flag_passage(Coordinate const& coord);
-  bool get_flag_real(int x, int y);
-  bool get_flag_real(Coordinate const& coord);
+  bool is_passage(int x, int y);
+  bool is_passage(Coordinate const& coord);
+  bool is_discovered(int x, int y);
+  bool is_discovered(Coordinate const& coord);
+  bool is_real(int x, int y);
+  bool is_real(Coordinate const& coord);
   char get_ch(int x, int y);
   char get_ch(Coordinate const& coord);
-  char get_trap_type(int x, int y);
-  char get_trap_type(Coordinate const& coord);
+  size_t get_trap_type(int x, int y);
+  size_t get_trap_type(Coordinate const& coord);
+  size_t get_passage_number(int x, int y);
+  size_t get_passage_number(Coordinate const& coord);
   char get_type(int x, int y);
   char get_type(Coordinate const& coord);
   bool get_random_room_coord(room* room, Coordinate* coord, int tries, bool monster);
@@ -63,18 +57,20 @@ public:
   // Setters
   void set_monster(int x, int y, Monster* monster);
   void set_monster(Coordinate const& coord, Monster* monster);
-  void set_flags(int x, int y, char flags);
-  void set_flags(Coordinate const& coord, char flags);
-  void set_flag_seen(int x, int y);
-  void set_flag_seen(Coordinate const& coord);
-  void set_flag_passage(int x, int y);
-  void set_flag_passage(Coordinate const& coord);
-  void set_flag_real(int x, int y);
-  void set_flag_real(Coordinate const& coord);
-  void set_flag_notreal(int x, int y);
-  void set_flag_notreal(Coordinate const& coord);
+  void set_passage(int x, int y);
+  void set_passage(Coordinate const& coord);
+  void set_discovered(int x, int y);
+  void set_discovered(Coordinate const& coord);
+  void set_real(int x, int y);
+  void set_real(Coordinate const& coord);
+  void set_not_real(int x, int y);
+  void set_not_real(Coordinate const& coord);
   void set_ch(int x, int y, char ch);
   void set_ch(Coordinate const& coord, char ch);
+  void set_trap_type(int x, int y, size_t type);
+  void set_trap_type(Coordinate const& coord, size_t type);
+  void set_passage_number(int x, int y, size_t number);
+  void set_passage_number(Coordinate const& coord, size_t number);
 
   // Misc
   void wizard_show_passages();

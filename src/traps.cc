@@ -279,7 +279,7 @@ trap_spring(Monster* victim, Coordinate* trap_coord)
   assert(trap_coord != nullptr);
 
   bool is_player = victim == nullptr;
-  char tr = Game::level->get_trap_type(*trap_coord);
+  size_t tr = Game::level->get_trap_type(*trap_coord);
 
   if (is_player) {
     /* If we're levitating, we won't trigger the trap */
@@ -291,7 +291,7 @@ trap_spring(Monster* victim, Coordinate* trap_coord)
 
   if (victim == nullptr || monster_seen_by_player(victim)) {
     Game::level->set_ch(*trap_coord, TRAP);
-    Game::level->set_flag_seen(*trap_coord);
+    Game::level->set_discovered(*trap_coord);
   }
 
   switch (tr)

@@ -98,12 +98,12 @@ look(bool wakeup)
 
       if (player_ch != DOOR
           && xy_ch != DOOR
-          && Game::level->get_flag_passage(*player_pos) !=
-             Game::level->get_flag_passage(x, y))
+          && Game::level->is_passage(*player_pos) !=
+             Game::level->is_passage(x, y))
         continue;
 
-      if ((Game::level->get_flag_passage(x, y) || xy_ch == DOOR)
-          && (Game::level->get_flag_passage(*player_pos) || player_ch == DOOR))
+      if ((Game::level->is_passage(x, y) || xy_ch == DOOR)
+          && (Game::level->is_passage(*player_pos) || player_ch == DOOR))
       {
         if (player_pos->x != x && player_pos->y != y
             && !step_ok(Game::level->get_ch(player_pos->x, y))

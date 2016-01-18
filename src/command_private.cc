@@ -259,7 +259,6 @@ command_identify_trap(void)
 
   Coordinate delta (player_x() + dir->x, player_y() + dir->y);
 
-  int flags = Game::level->get_flags(delta);
 
   if (Game::level->get_ch(delta) != TRAP)
     io_msg("no trap there");
@@ -267,9 +266,8 @@ command_identify_trap(void)
     io_msg(trap_names[os_rand_range(NTRAPS)].c_str());
   else
   {
-    io_msg(trap_names[flags & F_TMASK].c_str());
-    flags |= F_SEEN;
-    Game::level->set_flags(delta, static_cast<char>(flags));
+    io_msg(trap_names[Game::level->get_trap_type(delta)].c_str());
+    Game::level->set_discovered(delta);
   }
   return false;
 }
@@ -649,9 +647,6 @@ bool command_drop(void)
   Game::level->items.push_back(obj);
 
   Game::level->set_ch(*player_pos, static_cast<char>(obj->o_type));
-  int flags = Game::level->get_flags(*player_pos);
-  flags |= F_DROPPED;
-  Game::level->set_flags(*player_pos, static_cast<char>(flags));
 
   obj->set_pos(*player_pos);
 

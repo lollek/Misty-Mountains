@@ -256,46 +256,46 @@ magic_mapping(void)
         case DOOR: case STAIRS: break;
 
         case HWALL: case VWALL:
-          if (!Game::level->get_flag_real(x, y)) {
+          if (!Game::level->is_real(x, y)) {
             ch = DOOR;
             Game::level->set_ch(x, y, DOOR);
-            Game::level->set_flag_real(x, y);
+            Game::level->set_real(x, y);
           }
           break;
 
         case SHADOW:
-          if (Game::level->get_flag_real(x, y)) {
+          if (Game::level->is_real(x, y)) {
             goto def;
           }
           ch = PASSAGE;
           Game::level->set_ch(x, y, ch);
-          Game::level->set_flag_real(x, y);
+          Game::level->set_real(x, y);
           /* FALLTHROUGH */
 
         case PASSAGE:
 pass:
-          if (!Game::level->get_flag_real(x, y)) {
+          if (!Game::level->is_real(x, y)) {
             Game::level->set_ch(x, y, PASSAGE);
           }
           ch = PASSAGE;
-          Game::level->set_flag_seen(x, y);
-          Game::level->set_flag_real(x, y);
+          Game::level->set_discovered(x, y);
+          Game::level->set_real(x, y);
           break;
 
         case FLOOR:
-          if (Game::level->get_flag_real(x, y)) {
+          if (Game::level->is_real(x, y)) {
             ch = SHADOW;
           } else {
             ch = TRAP;
             Game::level->set_ch(x, y, ch);
-            Game::level->set_flag_seen(x, y);
-            Game::level->set_flag_real(x, y);
+            Game::level->set_discovered(x, y);
+            Game::level->set_real(x, y);
           }
           break;
 
         default:
 def:
-          if (Game::level->get_flag_passage(x, y)) {
+          if (Game::level->is_passage(x, y)) {
             goto pass;
           }
           ch = SHADOW;
