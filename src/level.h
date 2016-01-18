@@ -28,6 +28,7 @@ public:
   Level();
   ~Level();
 
+  // Getters
   Monster* get_monster(int x, int y);
   Monster* get_monster(Coordinate const& coord);
   Item* get_item(int x, int y);
@@ -46,10 +47,10 @@ public:
   char get_trap_type(Coordinate const& coord);
   char get_type(int x, int y);
   char get_type(Coordinate const& coord);
-
   bool get_random_room_coord(room* room, Coordinate* coord, int tries, bool monster);
   room* get_room(Coordinate const& coord);
 
+  // Setters
   void set_monster(int x, int y, Monster* monster);
   void set_monster(Coordinate const& coord, Monster* monster);
   void set_flags(int x, int y, char flags);
@@ -65,34 +66,35 @@ public:
   void set_ch(int x, int y, char ch);
   void set_ch(Coordinate const& coord, char ch);
 
+  // Misc
   void wizard_show_passages();
 
 
 private:
 
-  /* Parts of constructor */
+  // Parts of constructor
   void create_rooms();
   void create_passages();
   void create_loot();
   void create_traps();
   void create_stairs();
 
-  /* Part of create_rooms() */
+  // Part of create_rooms()
   void draw_room(room const& room);
   void draw_maze(room const& room);
   void draw_maze_recursive(int y, int x, int starty, int startx, int maxy, int maxx);
 
-  /* Part of create_passages() */
+  // Part of create_passages()
   void place_door(room* room, Coordinate* coord);
   void place_passage(Coordinate* coord);
   void connect_passages(int r1, int r2);
   void number_passage(int x, int y);
 
-  place level_places[MAXLINES*MAXCOLS];  /* level map */
+  place level_places[MAXLINES*MAXCOLS];  // level map
 };
 
-extern Coordinate         level_stairs;                    /* Location of staircase */
-extern std::list<Item*>   level_items;                     /* List of items on level */
+extern Coordinate         level_stairs;  // Location of staircase
+extern std::list<Item*>   level_items;   // List of items on level
 
 #define PASSAGES_MAX 12
 extern room passages[PASSAGES_MAX];
