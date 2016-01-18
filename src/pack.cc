@@ -344,7 +344,7 @@ pack_find_magic_item(void)
   int nobj = 0;
 
   for (Item* obj : player_pack) {
-    if (is_magic(obj) && os_rand_range(++nobj) == 0) {
+    if (obj->is_magic() && os_rand_range(++nobj) == 0) {
       return obj;
     }
   }

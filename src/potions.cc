@@ -131,7 +131,7 @@ potion_quaff_something(void)
       {
         wclear(hw);
         for (Item* item : level_items) {
-          if (is_magic(item))
+          if (item->is_magic())
           {
             show = true;
             mvwaddcch(hw, item->get_y(), item->get_x(), MAGIC);

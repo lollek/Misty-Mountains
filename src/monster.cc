@@ -704,7 +704,7 @@ monster_show_if_magic_inventory(void)
   bool atleast_one = false;
   for (Monster* mon : monster_list) {
     for (Item* item : mon->t_pack) {
-      if (is_magic(item))
+      if (item->is_magic())
       {
         atleast_one = true;
         mvwaddcch(hw, mon->t_pos.y, mon->t_pos.x, MAGIC);

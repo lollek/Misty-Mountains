@@ -2,6 +2,9 @@
 
 using namespace std;
 
+#include "io.h"
+#include "armor.h"
+
 #include "item.h"
 
 void Item::set_pos(Coordinate const& new_value) {
@@ -37,3 +40,23 @@ int Item::get_y() const {
 string const& Item::get_nickname() const {
   return this->nickname;
 }
+
+bool Item::is_magic() const {
+  switch (this->o_type) {
+    case ARMOR:   return static_cast<bool>(this->o_flags & ISPROT) ||
+                   this->o_arm != armor_ac(static_cast<armor_t>(this->o_which));
+
+    case WEAPON:  return this->o_hplus != 0 || this->o_dplus != 0;
+    case AMMO:    return this->o_hplus != 0 || this->o_dplus != 0;
+
+    case POTION:  return true;
+    case SCROLL:  return true;
+    case STICK:   return true;
+    case RING:    return true;
+    case AMULET:  return true;
+
+    default:      return false;
+  }
+}
+
+
