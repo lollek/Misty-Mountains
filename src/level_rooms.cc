@@ -351,7 +351,7 @@ room_leave(Coordinate* cp)
     floor = SHADOW;
   }
 
-  player_set_room(&passages[Game::level->get_flags(*cp) & F_PNUM]);
+  player_set_room(Game::level->get_passage(*cp));
   for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
     for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
       move(y, x);

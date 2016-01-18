@@ -770,8 +770,7 @@ monster_add_nearby(Monster** nearby_monsters, struct room const* room)
     if (mon->t_room == player_get_room()
         || mon->t_room == room
         ||(inpass && Game::level->get_ch(mon->t_pos) == DOOR &&
-          &passages[Game::level->get_flags(mon->t_pos) & F_PNUM]
-          == player_get_room())) {
+          Game::level->get_passage(mon->t_pos) == player_get_room())) {
       *nearby_monsters++ = mon;
     }
   }

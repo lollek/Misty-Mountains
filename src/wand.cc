@@ -154,7 +154,7 @@ wand_spell_drain_health(void)
 
   /* First cnt how many things we need to spread the hit points among */
   struct room *corp = Game::level->get_ch(*player_pos) == DOOR
-    ? &passages[Game::level->get_flags(*player_pos) & F_PNUM]
+    ? Game::level->get_passage(*player_pos)
     : nullptr;
   Monster** dp = drainee;
 

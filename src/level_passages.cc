@@ -13,23 +13,6 @@ using namespace std;
 
 #include "level.h"
 
-/* One for each passage */
-struct room passages[] = {
-/*    r_pos   r_max   r_gold r_goldval r_flags        r_nexits r_exit[12] */
-    { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} },
-    { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} },
-    { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} },
-    { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} },
-    { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} },
-    { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} },
-    { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} },
-    { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} },
-    { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} },
-    { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} },
-    { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} },
-    { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} }
-};
-
 static int pnum;
 static bool newpnum;
 
@@ -56,9 +39,9 @@ Level::number_passage(int x, int y)
    * or a numerable type of place */
   char ch = this->get_ch(x, y);
   if (ch == DOOR || (!(flags & F_REAL) && (ch == VWALL || ch == HWALL))) {
-    struct room* rp = &passages[pnum];
-    rp->r_exit[rp->r_nexits].y = y;
-    rp->r_exit[rp->r_nexits++].x = x;
+    struct room& rp = this->passages.at(static_cast<size_t>(pnum));
+    rp.r_exit[rp.r_nexits].y = y;
+    rp.r_exit[rp.r_nexits++].x = x;
   }
 
   else if (!(flags & F_PASS)) {
@@ -267,6 +250,11 @@ Level::create_passages()
     { { 0, 0, 0, 0, 0, 1, 0, 1, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
   };
 
+  for (room& passage : this->passages) {
+  //            r_pos   r_max   r_gold r_goldval r_flags        r_nexits r_exit[12]
+    passage = { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} };
+  }
+
   /* reinitialize room graph description */
   for (struct rdes* ptr = rdes; ptr <= &rdes[ROOMS_MAX-1]; ptr++) {
     for (int i = 0; i < ROOMS_MAX; i++) {
@@ -336,8 +324,8 @@ Level::create_passages()
   }
 
   /* Assign a number to each passageway */
-  for (int i = 0; i < PASSAGES_MAX; ++i) {
-    passages[i].r_nexits = 0;
+  for (room& passage : this->passages) {
+    passage.r_nexits = 0;
   }
 
   pnum = 0;

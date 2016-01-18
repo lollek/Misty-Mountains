@@ -169,7 +169,8 @@ Level::create_stairs() {
 Level::Level() {
 
   clear();
-  this->level_places.resize(MAXLINES * MAXCOLS);
+  this->places.resize(MAXLINES * MAXCOLS);
+  this->passages.resize(12);
 
   this->create_rooms();
   this->create_passages();
@@ -186,7 +187,7 @@ Level::Level() {
 
 place& Level::get_place(int x, int y) {
   size_t pos = static_cast<size_t>((x << 5) + y);
-  return this->level_places.at(pos);
+  return this->places.at(pos);
 }
 
 Monster*
@@ -364,9 +365,8 @@ Level::get_trap_type(Coordinate const& coord) {
 room*
 Level::get_room(Coordinate const& coord) {
 
-  char fp = this->get_flags(coord);
-  if (fp & F_PASS) {
-    return &passages[fp & F_PNUM];
+  if (this->get_flag_passage(coord)) {
+    return this->get_passage(coord);
   }
 
   for (struct room* rp = rooms; rp < &rooms[ROOMS_MAX]; rp++) {
@@ -381,6 +381,11 @@ Level::get_room(Coordinate const& coord) {
   // Not sure if this should be an error, or just if monster is in corridor?
   //error("Coordinate was not in any room");
   return nullptr;
+}
+
+room* Level::get_passage(Coordinate const& coord) {
+  size_t pos = static_cast<size_t>(this->get_flags(coord) & F_PNUM);
+  return &this->passages.at(pos);
 }
 
 Coordinate const& Level::get_stairs_pos() const {

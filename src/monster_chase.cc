@@ -185,7 +185,7 @@ over:
 	}
 	if (door)
 	{
-	    rer = &passages[Game::level->get_flags(th->t_pos) & F_PNUM];
+	    rer = Game::level->get_passage(th->t_pos);
 	    door = false;
 	    goto over;
 	}

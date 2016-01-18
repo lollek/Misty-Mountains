@@ -3,6 +3,13 @@
 #include "coordinate.h"
 
 struct room {
+  room() = default;
+  room(room const&) = default;
+  ~room() = default;
+
+  room& operator=(room const&) = default;
+  room& operator=(room&&) = default;
+
   Coordinate r_pos;      /* Upper left corner */
   Coordinate r_max;      /* Size of room */
   Coordinate r_gold;     /* Where the gold is */
