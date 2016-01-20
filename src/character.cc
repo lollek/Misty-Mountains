@@ -327,3 +327,72 @@ void Character::set_players_target() {
 void Character::set_not_players_target() {
   flags &= ~ISTARGET;
 }
+
+void Character::gain_experience(int experience_) {
+  experience += experience_;
+}
+
+void Character::set_not_mean() {
+  flags &= ~ISMEAN;
+}
+
+void Character::set_greedy() {
+  flags |= ISGREED;
+}
+
+void Character::set_not_greedy() {
+  flags &= ~ISGREED;
+}
+
+void Character::set_slowed() {
+  flags |= ISSLOW;
+}
+
+void Character::set_not_slowed() {
+  flags &= ~ISSLOW;
+}
+
+void Character::set_hasted() {
+  flags |= ISHASTE;
+}
+
+void Character::set_not_hasted() {
+  flags &= ~ISHASTE;
+}
+
+void Character::set_flying() {
+  flags |= ISFLY;
+}
+
+void Character::set_not_flying() {
+  flags &= ~ISFLY;
+}
+
+void Character::set_running() {
+  flags |= ISRUN;
+}
+
+void Character::set_not_running() {
+  flags &= ~ISRUN;
+}
+
+void Character::set_chasing() {
+  flags |= ISRUN;
+}
+
+void Character::set_not_chasing() {
+  flags &= ~ISRUN;
+}
+
+void Character::set_not_stuck() {
+  flags &= ~ISSTUCK;
+}
+
+void Character::set_invisible() {
+  flags |= ISINVIS;
+}
+
+void Character::set_position(Coordinate const& position_) {
+  position = position_;
+}
+

@@ -69,7 +69,6 @@ public:
   virtual bool is_hurt() const;
 
   // Flag getters
-  virtual int  get_flags() const;
   virtual bool is_blind() const;
   virtual bool is_cancelled() const;
   virtual bool is_confused() const;
