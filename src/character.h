@@ -127,8 +127,8 @@ public:
   virtual void set_not_hasted();
   virtual void set_flying();
   virtual void set_not_flying();
-  virtual void set_running();     // ISRUN //monster_start_chasing
-  virtual void set_not_running(); // ISRUN
+  virtual void set_running();
+  virtual void set_not_running();
 
 
 
@@ -142,17 +142,17 @@ protected:
 
 
 private:
-  int                  strength;   // Strength
-  int                  default_strength; // Default strength (if strength is weakened)
-  int                  experience;   // Experience
-  int                  level;   // level of mastery
-  int                  armor;   // Armor class
-  int                  health;   // Hit points
-  std::vector<damage>  attacks;   // Attacks
-  int                  max_health; // Max hit points
-  Coordinate           position;   // Current position
-  room*                room;  // Current room for thing
-  int                  flags; // State word
-  char                 type;  // What it is
+  int                  strength;
+  int                  default_strength;
+  int                  experience;
+  int                  level;
+  int                  armor;
+  int                  health;
+  std::vector<damage>  attacks;
+  int                  max_health;
+  Coordinate           position;
+  room*                room;
+  int                  flags;
+  char                 type;
 };
 
