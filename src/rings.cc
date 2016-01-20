@@ -117,11 +117,6 @@ ring_put_on(void)
   /* Calculate the effect it has on the poor guy. */
   switch (obj->o_which)
   {
-    case R_ADDSTR: player_modify_strength(obj->o_arm); break;
-    case R_SEEINVIS: {
-      player_add_true_sight(true);
-      monster_show_all_hidden();
-    } break;
     case R_AGGR: monster_aggravate_all(); break;
   }
 
@@ -151,12 +146,10 @@ ring_take_off(void)
   switch (obj->o_which)
   {
     case R_ADDSTR:
-      player_modify_strength(-obj->o_arm);
       break;
 
     case R_SEEINVIS:
-      player_remove_true_sight(0);
-      daemon_extinguish_fuse(player_remove_true_sight);
+      daemon_extinguish_fuse(daemon_function::remove_true_sight);
       break;
   }
   return true;

@@ -147,8 +147,8 @@ main(int argc, char** argv)
   io_msg("Seed: #%u", os_rand_seed);
 #endif
 
-  move_pos_prev = *player_get_pos();
-  room_prev = Game::level->get_room(*player_get_pos());
+  move_pos_prev = player->get_position();
+  room_prev = Game::level->get_room(player->get_position());
 
 #ifdef NDEBUG
   try {

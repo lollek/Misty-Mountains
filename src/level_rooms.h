@@ -30,10 +30,10 @@ extern room* room_prev;         /* Roomin(&oldpos) */
 extern room rooms[ROOMS_MAX];   /* One for each room -- A level */
 
 /* Code that is executed whenver you appear in a room */
-void room_enter(Coordinate* cp);
+void room_enter(Coordinate const& cp);
 
 /* Code for when we exit a room */
-void room_leave(Coordinate* cp);
+void room_leave(Coordinate const& cp);
 
 /* Pick a room that is really there */
 int room_random();

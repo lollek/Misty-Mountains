@@ -115,8 +115,8 @@ wand_create(int wand)
 static Monster*
 wand_find_target(int* y, int* x, int dy, int dx)
 {
-  *y = player_y();
-  *x = player_x();
+  *y = player->get_position().y;
+  *x = player->get_position().x;
 
   /* "walk" in the zap direction until we find a target */
   while (step_ok(Game::level->get_type(*x, *y)))
@@ -131,16 +131,16 @@ wand_find_target(int* y, int* x, int dy, int dx)
 static void
 wand_spell_light(void)
 {
-  if (player_get_room()->r_flags & ISGONE)
+  if (player->get_room()->r_flags & ISGONE)
   {
     io_msg("the corridor glows and then fades");
     return;
   }
 
-  player_get_room()->r_flags &= ~ISDARK;
-  room_enter(player_get_pos());
+  player->get_room()->r_flags &= ~ISDARK;
+  room_enter(player->get_position());
   io_msg("the rooms is lit by a shimmering %s light",
-          player_is_hallucinating() ? color_random().c_str() : "blue");
+          player->is_hallucinating() ? color_random().c_str() : "blue");
 }
 
 /* take away 1/2 of hero's hit points, then take it away
@@ -150,7 +150,7 @@ static void
 wand_spell_drain_health(void)
 {
   Monster* drainee[40];
-  Coordinate* player_pos = player_get_pos();
+  Coordinate const* player_pos = &player->get_position();
 
   /* First cnt how many things we need to spread the hit points among */
   struct room *corp = Game::level->get_ch(*player_pos) == DOOR
@@ -166,20 +166,20 @@ wand_spell_drain_health(void)
   }
 
   *dp = nullptr;
-  player_lose_health(player_get_health() / 2);
+  player->take_damage(player->get_health() / 2);
   io_msg("You feel an intense pain");
-  cnt = player_get_health() / cnt;
+  cnt = player->get_health() / cnt;
 
   /* Now zot all of the monsters */
   for (dp = drainee; *dp; dp++)
   {
     Monster* mp = *dp;
-    mp->t_stats.s_hpt -= cnt;
-    if (mp->t_stats.s_hpt <= 0)
+    mp->take_damage(cnt);
+    if (mp->get_health() <= 0)
       monster_on_death(mp, monster_seen_by_player(mp));
     else
     {
-      monster_start_running(&mp->t_pos);
+      monster_start_running(&mp->get_position());
       io_msg("%s screams in pain", mp->get_name().c_str());
     }
   }
@@ -198,16 +198,16 @@ wand_spell_cancel(Monster* target)
 {
   assert(target != nullptr);
 
-  if (target->t_type == 'F')
-    player_remove_held();
+  if (target->get_type() == 'F')
+    player->set_not_held();
 
-  monster_set_cancelled(target);
-  monster_remove_invisible(target);
-  monster_remove_confusing(target);
+  target->set_cancelled();
+  target->set_not_invisible();
+  target->remove_confusing_attack();
 
-  target->t_disguise = target->t_type;
+  target->t_disguise = static_cast<char>(target->get_type());
   if (monster_seen_by_player(target))
-    mvaddcch(target->t_pos.y, target->t_pos.x, static_cast<chtype>(target->t_disguise));
+    mvaddcch(target->get_position().y, target->get_position().x, static_cast<chtype>(target->t_disguise));
 }
 
 static void
@@ -273,7 +273,7 @@ wand_zap(void)
       break;
 
     case WS_DRAIN:
-      if (player_get_health() > 1)
+      if (player->get_health() > 1)
         wand_spell_drain_health();
       else
       {
@@ -314,7 +314,7 @@ wand_zap(void)
 
     case WS_TELAWAY:
       wands_info.at(WS_TELAWAY).oi_know = true;
-      player_teleport(nullptr);
+      player->teleport(nullptr);
       break;
 
     case WS_TELTO:
@@ -329,10 +329,10 @@ wand_zap(void)
           new_pos.y = y - delta.y;
           new_pos.x = x - delta.x;
 
-          tp->t_dest = *player_get_pos();
-          tp->t_flags |= ISRUN;
+          tp->t_dest = player->get_position();
+          tp->set_chasing();
 
-          player_teleport(&new_pos);
+          player->teleport(&new_pos);
         }
         else
           io_msg("You did not hit anything");
@@ -349,10 +349,10 @@ wand_zap(void)
         Monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != nullptr)
         {
-          if (monster_is_slow(tp))
-            tp->t_flags &= ~ISSLOW;
+          if (tp->is_slowed())
+            tp->set_not_slowed();
           else
-            tp->t_flags |= ISHASTE;
+            tp->set_hasted();
           monster_start_running(&c);
           io_msg("%s became faster", tp->get_name().c_str());
         }
@@ -367,10 +367,10 @@ wand_zap(void)
         Monster* tp = wand_find_target(&c.y, &c.x, delta.y, delta.x);
         if (tp != nullptr)
         {
-          if (monster_is_hasted(tp))
-            tp->t_flags &= ~ISHASTE;
+          if (tp->is_hasted())
+            tp->set_not_hasted();
           else
-            tp->t_flags |= ISSLOW;
+            tp->set_slowed();
           tp->t_turn = true;
           monster_start_running(&c);
           io_msg("%s became slower", tp->get_name().c_str());
@@ -380,20 +380,23 @@ wand_zap(void)
       }
       break;
 
-    case WS_ELECT:
+    case WS_ELECT: {
       wands_info.at(WS_ELECT).oi_know = true;
-      magic_bolt(player_get_pos(), &delta, "bolt");
-      break;
+      Coordinate coord = player->get_position();
+      magic_bolt(&coord, &delta, "bolt");
+    } break;
 
-    case WS_FIRE:
+    case WS_FIRE: {
       wands_info.at(WS_FIRE).oi_know = true;
-      magic_bolt(player_get_pos(), &delta, "flame");
-      break;
+      Coordinate coord = player->get_position();
+      magic_bolt(&coord, &delta, "flame");
+    } break;
 
-    case WS_COLD:
+    case WS_COLD: {
       wands_info.at(WS_COLD).oi_know = true;
-      magic_bolt(player_get_pos(), &delta, "ice");
-      break;
+      Coordinate coord = player->get_position();
+      magic_bolt(&coord, &delta, "ice");
+    } break;
 
     case WS_NOP:
       io_msg("You are usure if anything happened");

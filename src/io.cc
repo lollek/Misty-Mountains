@@ -271,7 +271,7 @@ io_readchar(bool is_question)
 {
   flushmsg();
   if (!is_question)
-    move(player_y(), player_x());
+    move(player->get_position().y, player->get_position().x);
 
   char ch = static_cast<char>(getch());
   switch (ch)
@@ -293,16 +293,16 @@ io_refresh_statusline(void)
 
   getyx(stdscr, oy, ox);
 
-  if (player_is_hurt())
-    for (int temp = player_get_max_health(); temp > 0; temp /= 10, hpwidth++)
+  if (player->is_hurt())
+    for (int temp = player->get_max_health(); temp > 0; temp /= 10, hpwidth++)
       ;
 
   move(STATLINE, 0);
   printw("Level: %d  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  Arm: %-2d  "
          "Exp: %d/%d  %s",
-         Game::current_level, pack_gold, hpwidth, player_get_health(), hpwidth,
-         player_get_max_health(), player_get_strength(), player_max_stats.s_str,
-         player->get_armor(), player_get_level(), player->get_exp(),
+         Game::current_level, pack_gold, hpwidth, player->get_health(), hpwidth,
+         player->get_max_health(), player->get_strength(), player->get_default_strength(),
+         player->get_armor(), player->get_level(), player->get_experience(),
          food_hunger_state());
 
   clrtoeol();
@@ -332,7 +332,7 @@ show_win(const char *message)
   wmove(hw, 0, 0);
   waddstr(hw, message);
   touchwin(hw);
-  wmove(hw, player_y(), player_x());
+  wmove(hw, player->get_position().y, player->get_position().x);
   wrefresh(hw);
   untouchwin(stdscr);
 
@@ -463,15 +463,14 @@ io_tile(enum tile tile)
 void
 io_missile_motion(Item* item, int ydelta, int xdelta)
 {
-  Coordinate* player_pos = player_get_pos();
   int ch;
 
   /* Come fly with us ... */
-  item->set_pos(*player_pos);
+  item->set_pos(player->get_position());
   for (;;)
   {
     /* Erase the old one */
-    if (item->get_pos() ==  *player_pos &&
+    if (item->get_pos() ==  player->get_position() &&
         player->can_see(item->get_pos()))
     {
       ch = Game::level->get_ch(item->get_pos());

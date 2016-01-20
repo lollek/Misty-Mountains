@@ -51,7 +51,7 @@ add_ring_attack_modifiers(attack_modifier& mod) {
 // Calculate the damage an attacker does.
 // Weapon can be null when no weapon was used
 static attack_modifier
-calculate_attacker(Monster const& attacker, Item* weapon, bool thrown)
+calculate_attacker(Character const& attacker, Item* weapon, bool thrown)
 {
   attack_modifier mod;
 
@@ -68,13 +68,13 @@ calculate_attacker(Monster const& attacker, Item* weapon, bool thrown)
 
   // But otherwise we use the attacker's stats (can happen to both monsters and player)
   } else {
-    mod.damage = attacker.t_stats.s_dmg;
+    mod.damage = attacker.get_attacks();
     if (mod.damage.empty()) {
       error("No damage was copied from attacker. Bad template?");
     }
   }
 
-  mod.add_strength_modifiers(attacker.t_stats.s_str);
+  mod.add_strength_modifiers(attacker.get_strength());
 
   if (&attacker == player) {
 
@@ -96,7 +96,7 @@ calculate_attacker(Monster const& attacker, Item* weapon, bool thrown)
 
   // Venus Flytraps have a different kind of dmg system. It adds damage for
   // every successful hit
-  } else if (attacker.t_type == 'F') {
+  } else if (attacker.get_type() == 'F') {
     mod.damage[0].sides = monster_flytrap_hit;
   }
 
@@ -105,7 +105,7 @@ calculate_attacker(Monster const& attacker, Item* weapon, bool thrown)
 
 // Roll attackers attack vs defenders defense and then take damage if it hits
 static bool
-roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown) {
+roll_attacks(Character* attacker, Character* defender, Item* weapon, bool thrown) {
 
   if (attacker == nullptr) {
     error("Attacker was null");
@@ -117,8 +117,8 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown) {
 
   /* If defender is stuck in some way,the attacker gets a bonus to hit */
   if ((defender == player && player_turns_without_action)
-      || monster_is_held(defender)
-      || monster_is_stuck(defender)) {
+      || defender->is_held()
+      || defender->is_stuck()) {
     mod.to_hit += 4;
   }
 
@@ -136,11 +136,11 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown) {
     }
 
     int defense = defender->get_armor();
-    if (fight_swing_hits(attacker->t_stats.s_lvl, defense, mod.to_hit)) {
+    if (fight_swing_hits(attacker->get_level(), defense, mod.to_hit)) {
 
       int damage = roll(dmg.dices, dmg.sides) + mod.to_dmg;
       if (damage > 0) {
-        defender->t_stats.s_hpt -= damage;
+        defender->take_damage(damage);
       }
       did_hit = true;
     }
@@ -151,7 +151,7 @@ roll_attacks(Monster* attacker, Monster* defender, Item* weapon, bool thrown) {
 
 // Print a message to indicate a hit or miss
 static void
-print_attack(bool hit, Monster* attacker, Monster* defender) {
+print_attack(bool hit, Character* attacker, Character* defender) {
 
   stringstream ss;
   ss << attacker->get_name() << " "
@@ -175,10 +175,10 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown) 
 
   /* Since we are fighting, things are not quiet so no healing takes place */
   command_stop(false);
-  daemon_reset_doctor(0);
+  daemon_reset_doctor();
 
   /* Let him know it was really a xeroc (if it was one) */
-  if (tp->t_type == 'X' && tp->t_disguise != 'X' && !player_is_blind()) {
+  if (tp->get_type() == 'X' && tp->t_disguise != 'X' && !player->is_blind()) {
 
     tp->t_disguise = 'X';
     io_msg("wait!  That's a xeroc!");
@@ -189,7 +189,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown) 
 
   if (roll_attacks(player, tp, weapon, thrown)) {
 
-    if (tp->t_stats.s_hpt <= 0) {
+    if (tp->get_health() <= 0) {
       monster_on_death(tp, true);
       return true;
     }
@@ -209,14 +209,14 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown) 
       }
     }
 
-    if (player_has_confusing_attack()) {
+    if (player->has_confusing_attack()) {
 
-      monster_set_confused(tp);
-      player_remove_confusing_attack();
-      if (!player_is_blind()) {
+      tp->set_confused();
+      player->remove_confusing_attack();
+      if (!player->is_blind()) {
 
         io_msg("your hands stop glowing %s",
-               player_is_hallucinating() ? color_random().c_str() : "red");
+               player->is_hallucinating() ? color_random().c_str() : "red");
         io_msg("%s appears confused", tp->get_name().c_str());
       }
     }
@@ -241,27 +241,27 @@ fight_against_player(Monster* mp) {
    * going on at the time */
   player_alerted = true;
   command_stop(false);
-  daemon_reset_doctor(0);
+  daemon_reset_doctor();
 
   /* If we're fighting something to death and get backstabbed, return command */
-  if (to_death && !monster_is_players_target(mp)) {
+  if (to_death && !mp->is_players_target()) {
     to_death = false;
   }
 
   /* If it's a xeroc, tag it as known */
-  if (mp->t_type == 'X' && mp->t_disguise != 'X' && !player_is_blind()
-      && !player_is_hallucinating()) {
+  if (mp->get_type() == 'X' && mp->t_disguise != 'X' && !player->is_blind()
+      && !player->is_hallucinating()) {
     mp->t_disguise = 'X';
   }
 
   if (roll_attacks(mp, player, nullptr, false)) {
 
-    if (mp->t_type != 'I' && !to_death) {
+    if (mp->get_type() != 'I' && !to_death) {
       print_attack(true, mp, player);
     }
 
-    if (player_get_health() <= 0) {
-      death(mp->t_type);
+    if (player->get_health() <= 0) {
+      death(mp->get_type());
     }
 
     monster_do_special_ability(&mp);
@@ -269,13 +269,13 @@ fight_against_player(Monster* mp) {
 
   }
 
-  else if (mp->t_type != 'I') {
+  else if (mp->get_type() != 'I') {
 
-    if (mp->t_type == 'F') {
+    if (mp->get_type() == 'F') {
 
-      player_lose_health(monster_flytrap_hit);
-      if (player_get_health() <= 0) {
-        death(mp->t_type);
+      player->take_damage(monster_flytrap_hit);
+      if (player->get_health() <= 0) {
+        death(mp->get_type());
       }
     }
 

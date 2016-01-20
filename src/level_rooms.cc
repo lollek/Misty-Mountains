@@ -253,9 +253,8 @@ Level::create_rooms() {
     if (os_rand_range(100) < (rooms[i].r_goldval > 0 ? 80 : 25)) {
       Coordinate mp;
       get_random_room_coord(&rooms[i], &mp, 0, true);
-      Monster* monster = new Monster();
+      Monster* monster = new Monster(Monster::random_monster_type(), mp, &rooms[i]);
       monsters.push_back(monster);
-      monster_new(monster, monster_random(false), &mp, &rooms[i]);
       monster_give_pack(monster);
       set_monster(mp, monster);
     }
@@ -298,13 +297,13 @@ Level::get_random_room_coord(room* room, Coordinate* coord, int tries, bool mons
 }
 
 void
-room_enter(Coordinate* cp) {
+room_enter(Coordinate const& cp) {
 
-  struct room* rp = Game::level->get_room(*cp);
-  player_set_room(rp);
+  struct room* rp = Game::level->get_room(cp);
+  player->set_room(rp);
   room_open_door(rp);
 
-  if (!(rp->r_flags & ISDARK) && !player_is_blind()) {
+  if (!(rp->r_flags & ISDARK) && !player->is_blind()) {
 
     for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
 
@@ -321,7 +320,7 @@ room_enter(Coordinate* cp) {
         tp->t_oldch = ch;
         if (monster_seen_by_player(tp)) {
           mvaddcch(y, x, static_cast<chtype>(tp->t_disguise));
-        } else if (player_can_sense_monsters()) {
+        } else if (player->can_sense_monsters()) {
           mvaddcch(y, x, static_cast<chtype>(tp->t_disguise)| A_STANDOUT);
         } else {
           mvaddcch(y, x, static_cast<chtype>(ch));
@@ -334,9 +333,9 @@ room_enter(Coordinate* cp) {
 /** room_leave:
  * Code for when we exit a room */
 void
-room_leave(Coordinate* cp)
+room_leave(Coordinate const& cp)
 {
-  struct room* rp = player_get_room();
+  struct room* rp = player->get_room();
 
   if (rp->r_flags & ISMAZE) {
     return;
@@ -345,13 +344,13 @@ room_leave(Coordinate* cp)
   char floor;
   if (rp->r_flags & ISGONE) {
     floor = PASSAGE;
-  } else if (!(rp->r_flags & ISDARK) || player_is_blind()) {
+  } else if (!(rp->r_flags & ISDARK) || player->is_blind()) {
     floor = FLOOR;
   } else {
     floor = SHADOW;
   }
 
-  player_set_room(Game::level->get_passage(*cp));
+  player->set_room(Game::level->get_passage(cp));
   for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
     for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
       move(y, x);
@@ -366,7 +365,7 @@ room_leave(Coordinate* cp)
         continue;
       }
 
-      if (player_can_sense_monsters()) {
+      if (player->can_sense_monsters()) {
         mvaddcch(y, x, static_cast<chtype>(ch) | A_STANDOUT);
       } else {
         mvaddcch(y, x, static_cast<chtype>(Game::level->get_ch(x, y) == DOOR ? DOOR : floor));

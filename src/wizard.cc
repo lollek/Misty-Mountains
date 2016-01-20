@@ -142,9 +142,8 @@ wizard_create_item(void)
           io_msg("Bad trap id");
         else
         {
-          Coordinate *player_pos = player_get_pos();
-          Game::level->set_not_real(*player_pos);
-          Game::level->set_trap_type(*player_pos, static_cast<size_t>(which));
+          Game::level->set_not_real(player->get_position());
+          Game::level->set_trap_type(player->get_position(), static_cast<size_t>(which));
         }
         return;
       }
@@ -243,8 +242,7 @@ wizard_show_map(void)
 void
 wizard_levels_and_gear(void)
 {
-  for (int i = 0; i < 9; i++)
-    player_raise_level();
+  player->raise_level(9);
 
   /* Give him a sword (+1,+1) */
   if (pack_equipped_item(EQUIPMENT_RHAND) == nullptr)

@@ -53,12 +53,12 @@ static bool command_attack_bow(Coordinate const* delta)
 static bool command_attack_melee(bool fight_to_death, Coordinate const& delta)
 {
   Monster* mp = Game::level->get_monster(delta);
-  if (mp != nullptr && diag_ok(player_get_pos(), &delta))
+  if (mp != nullptr && diag_ok(&player->get_position(), &delta))
   {
     if (fight_to_death)
     {
       to_death = true;
-      mp->t_flags |= ISTARGET;
+      mp->set_players_target();
     }
     runch = dir_ch;
     return command_do(dir_ch);
@@ -78,15 +78,13 @@ static bool command_attack_melee(bool fight_to_death, Coordinate const& delta)
 bool
 command_use_stairs(char up_or_down)
 {
-  Coordinate* player_pos = player_get_pos();
-
   if (up_or_down != '>' && up_or_down != '<') {
     error("Unknown stairs: " + to_string(up_or_down));
   }
 
-  if (player_is_levitating())
+  if (player->is_levitating())
     io_msg("You can't. You're floating off the ground!");
-  else if (Game::level->get_ch(*player_pos) != STAIRS)
+  else if (Game::level->get_ch(player->get_position()) != STAIRS)
     io_msg("You're not standing on any stairs");
 
   else if (up_or_down == '>') /* DOWN */ {
@@ -129,7 +127,9 @@ command_attack(bool fight_to_death)
   if (dir == nullptr)
     return false;
 
-  Coordinate delta ( player_x() + dir->x, player_y() + dir->y );
+  Coordinate delta = player->get_position();
+  delta.x += dir->x;
+  delta.y += dir->y;
 
   Item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
@@ -257,12 +257,13 @@ command_identify_trap(void)
   if (dir == nullptr)
     return false;
 
-  Coordinate delta (player_x() + dir->x, player_y() + dir->y);
-
+  Coordinate delta = player->get_position();
+  delta.x += dir->x;
+  delta.y += dir->y;
 
   if (Game::level->get_ch(delta) != TRAP)
     io_msg("no trap there");
-  else if (player_has_confusing_attack())
+  else if (player->has_confusing_attack())
     io_msg(trap_names[os_rand_range(NTRAPS)].c_str());
   else
   {
@@ -281,14 +282,12 @@ command_quit(void)
 
 bool
 command_pick_up(void) {
-  if (player_is_levitating()) {
+  if (player->is_levitating()) {
     io_msg("You can't. You're floating off the ground!");
   }
 
-  Coordinate const* player_pos = player_get_pos();
-
   for (Item* obj : Game::level->items) {
-    if (obj->get_pos() == *player_pos) {
+    if (obj->get_pos() == player->get_position()) {
       pack_pick_up(obj, true);
       return true;
     }
@@ -556,7 +555,7 @@ bool command_rest(void)
     return false;
   }
 
-  if (!player_is_hurt())
+  if (!player->is_hurt())
   {
     io_msg("you don't feel the least bit tired");
     return false;
@@ -564,7 +563,7 @@ bool command_rest(void)
 
   io_msg("you rest for a while");
   player_alerted = false;
-  while (!player_alerted && player_is_hurt())
+  while (!player_alerted && player->is_hurt())
   {
     daemon_run_before();
     daemon_run_after();
@@ -592,9 +591,9 @@ command_eat(void)
 
   else if (os_rand_range(100) > 70)
   {
-    player->earn_exp(1);
+    player->gain_experience(1);
     io_msg("this food tastes awful");
-    player_check_for_level_up();
+    player->check_for_level_up();
   }
 
   else
@@ -613,15 +612,14 @@ command_run(char ch, bool cautiously)
     firstmove = true;
   }
 
-  running = true;
+  player->start_running();
   runch = static_cast<char>(tolower(ch));
   return move_do(runch);
 }
 
 bool command_drop(void)
 {
-  Coordinate* player_pos = player_get_pos();
-  char ch = Game::level->get_ch(*player_pos);
+  char ch = Game::level->get_ch(player->get_position());
 
   if (ch != FLOOR && ch != PASSAGE)
   {
@@ -646,9 +644,9 @@ bool command_drop(void)
   /* Link it into the level object list */
   Game::level->items.push_back(obj);
 
-  Game::level->set_ch(*player_pos, static_cast<char>(obj->o_type));
+  Game::level->set_ch(player->get_position(), static_cast<char>(obj->o_type));
 
-  obj->set_pos(*player_pos);
+  obj->set_pos(player->get_position());
 
   io_msg("dropped %s", inv_name(obj, true).c_str());
   return true;

@@ -3,32 +3,76 @@
 #include "rogue.h"
 #include "monster.h"
 
-class Player : public Monster {
+// Structure describing a fighting being
+struct stats {
+  int                  s_str;   // Strength
+  int                  s_exp;   // Experience
+  int                  s_lvl;   // level of mastery
+  int                  s_arm;   // Armor class
+  int                  s_hpt;   // Hit points
+  std::vector<damage>  s_dmg;   // Attacks
+  int                  s_maxhp; // Max hit points
+};
+
+class Player : public Character {
 public:
   explicit Player();
 
   Player(Player const&) = delete;
   Player& operator=(Player const&) = delete;
 
-  /* Getters */
-  int get_exp() const;
+  // Getters
   int get_armor() const override;
+  bool has_true_sight() const override;
+  bool can_sense_monsters() const;
+  int get_speed() const;
+  bool is_running() const;
+  bool is_stealthy() const;
+  int get_strength_with_bonuses() const;
 
-  /* Modifiers */
-  void earn_exp(int amount);
+  // Modifier
+  void increase_speed();
+  void decrease_speed();
+  void restore_strength() override;
+  void modify_strength(int amount) override;
+  void raise_level(int amount) override;
 
-  /* Misc */
+  // Setters
+  void start_running();
+  void stop_running();
+  void set_sense_monsters();
+  void remove_sense_monsters();
+  void set_true_sight() override;
+  void remove_true_sight() override;
+  void set_confused() override;
+  void set_not_confused() override;
+  void set_hallucinating() override;
+  void set_not_hallucinating() override;
+  void set_blind() override;
+  void set_not_blind() override;
+  void set_levitating() override;
+  void set_not_levitating() override;
+  void set_confusing_attack() override;
+
+  // Misc
+  bool saving_throw(int which) const;
+  bool has_ring_with_ability(int ability) const;
+  void check_for_level_up();
   void waste_time(int rounds) const;
+  void fall_asleep();
+  void become_stuck();
+  void become_poisoned();
+  void teleport(Coordinate const* target); // random spot if target is nullptr
   bool has_seen_stairs() const;
   bool can_see(Coordinate const& coord) const;
+  void search();
   std::string get_attack_string(bool successful_hit) const override;
   std::string get_name() const override;
 
-
-  /* TODO: Make private */
-  int speed = 0;
-
 private:
+  bool senses_monsters = false;
+  bool running = false;
+  int speed = 0;
 };
 
 extern Player* player;
@@ -41,83 +85,5 @@ extern stats        player_max_stats;            /* Current max stats */
 
 int player_save_throw(int which);
 
-/* Status Effects */
-bool player_has_true_sight();
-void player_add_true_sight(bool permanent);
-void player_remove_true_sight(int unused);
-
-bool player_is_confused();
-void player_set_confused(bool permanent);
-void player_remove_confused(int unused);
-
-bool player_is_held();
-void player_set_held();
-void player_remove_held();
-
-bool player_can_sense_monsters();
-void player_add_sense_monsters(bool permanent);
-void player_remove_sense_monsters(int unused);
-
-bool player_is_hallucinating();
-void player_set_hallucinating(bool permanent);
-void player_remove_hallucinating(int unused);
-
-int player_get_speed();
-void player_increase_speed(bool permanent);
-void player_decrease_speed(int unused);
-
-bool player_is_running();
-void player_start_running();
-void player_stop_running();
-
-bool player_is_blind();
-void player_set_blind(bool permanent);
-void player_remove_blind(int unused);
-
-bool player_is_levitating();
-void player_start_levitating(bool permanent);
-void player_stop_levitating(int unused);
-
-bool player_has_confusing_attack();
-void player_set_confusing_attack();
-void player_remove_confusing_attack();
-
-void player_fall_asleep();
-void player_become_stuck();
-void player_become_poisoned();
-void player_teleport(Coordinate* target);
-bool player_search();
-
-bool player_is_stealthy();
 bool player_has_ring_with_ability(int ability);
-
-/* Position */
-int player_y();
-int player_x();
-Coordinate* player_get_pos();
-void player_set_pos(Coordinate* new_pos);
-
-/* Current Room */
-struct room* player_get_room();
-void player_set_room(struct room* new_room);
-
-/* Strength */
-int player_get_strength();
-bool player_strength_is_weakened();
-void player_restore_strength();
-void player_modify_strength(int amount);
-
-/* Health */
-int player_get_health();
-int player_get_max_health();
-void player_restore_health(int amount, bool can_raise_total);
-bool player_is_hurt();
-void player_modify_max_health(int amount);
-void player_lose_health(int amount);
-
-/* Level */
-int player_get_level();
-void player_raise_level();
-void player_check_for_level_up();
-void player_lower_level();
 

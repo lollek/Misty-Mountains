@@ -1,7 +1,6 @@
 #include <string>
 
-using namespace std;
-
+#include "error_handling.h"
 #include "game.h"
 #include "Coordinate.h"
 #include "pack.h"
@@ -22,8 +21,33 @@ using namespace std;
 
 #include "player.h"
 
-Player::Player() {
-  t_stats = player_max_stats;
+using namespace std;
+
+Player* player;
+
+static const int player_min_strength = 3;
+static const int player_max_strength = 31;
+
+int          player_turns_without_action = 0;
+int          player_turns_without_moving = 0;
+bool         player_alerted              = false;
+struct stats player_max_stats = { 16, 0, 1, 10, 12, {{1,4}}, 12 };
+
+/* Duration of effects */
+#define HUHDURATION     spread(20)  /* Confusion */
+#define MFINDDURATION   spread(20)  /* Monster find */
+#define HASTEDURATION   os_rand_range(4)+4    /* Haste */
+#define SEEDURATION     spread(850) /* See invisible / blind / hallucinating */
+#define LEVITDUR        spread(30)  /* Levitation */
+#define SLEEPTIME       spread(7)   /* Sleep */
+#define STUCKTIME       spread(3)   /* Stuck */
+
+
+
+Player::Player() :
+  Character(player_max_stats.s_str, player_max_stats.s_exp, player_max_stats.s_lvl,
+            player_max_stats.s_arm, player_max_stats.s_hpt, player_max_stats.s_dmg,
+            Coordinate(), nullptr, 0, '@')  {
 
   /* Give him some food */
   pack_add(new_food(-1), true);
@@ -55,18 +79,17 @@ Player::Player() {
   pack_add(arrow, true);
 }
 
-int Player::get_exp() const {
-  return t_stats.s_exp;
-}
-
 int Player::get_armor() const {
+  // If we are naked, use base armor, otherwise use armor's
   Item const* const arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  Item const* const weapon = pack_equipped_item(EQUIPMENT_RHAND);
+  int ac = arm ? arm->o_arm : Character::get_armor();
 
-  int ac = arm ? arm->o_arm : t_stats.s_arm;
+  // If weapon help protection, add it
+  Item const* const weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon)
     ac -= weapon->o_arm;
 
+  // If rings help, add their stats as well
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
     Item const* ring = pack_equipped_item(pack_ring_slots[i]);
@@ -77,12 +100,6 @@ int Player::get_armor() const {
   return 20 - ac;
 }
 
-
-
-void Player::earn_exp(int amount) {
-  t_stats.s_exp += amount;
-}
-
 bool Player::has_seen_stairs() const {
 
   // It is on the map
@@ -91,7 +108,7 @@ bool Player::has_seen_stairs() const {
     return true;
 
   // It's under the player
-  if (*player_get_pos() == Game::level->get_stairs_pos())
+  if (get_position() == Game::level->get_stairs_pos())
     return true;
 
   // if a monster is on the stairs, this gets hairy
@@ -99,10 +116,10 @@ bool Player::has_seen_stairs() const {
   if (monster != nullptr) {
 
     // if it's visible and awake, it must have moved there
-    if (monster_seen_by_player(monster) && monster_is_chasing(monster))
+    if (monster_seen_by_player(monster) && monster->is_chasing())
       return true;
 
-    if (player_can_sense_monsters()      // if she can detect monster
+    if (can_sense_monsters()             // if she can detect monster
         && monster->t_oldch == STAIRS)   // and there once were stairs
       return true;                       // it must have moved there
   }
@@ -112,17 +129,17 @@ bool Player::has_seen_stairs() const {
 
 bool Player::can_see(Coordinate const& coord) const {
 
-  Coordinate const* player_pos = player_get_pos();
+  Coordinate const& player_pos = get_position();
 
-  if (player_is_blind()) {
+  if (is_blind()) {
     return false;
   }
 
-  if (dist(coord.y, coord.x, player_pos->y, player_pos->x) < LAMPDIST) {
+  if (dist(coord.y, coord.x, player_pos.y, player_pos.x) < LAMPDIST) {
     if (Game::level->is_passage(coord)) {
-      if (coord.y != player_pos->y && coord.x != player_pos->x &&
-          !step_ok(Game::level->get_ch(player_pos->x, coord.y))
-          && !step_ok(Game::level->get_ch(coord.x, player_pos->y))) {
+      if (coord.y != player_pos.y && coord.x != player_pos.x &&
+          !step_ok(Game::level->get_ch(player_pos.x, coord.y))
+          && !step_ok(Game::level->get_ch(coord.x, player_pos.y))) {
         return false;
       }
     }
@@ -132,7 +149,7 @@ bool Player::can_see(Coordinate const& coord) const {
   /* We can only see if the hero in the same room as
    * the coordinate and the room is lit or if it is close.  */
   struct room const* rer = Game::level->get_room(coord);
-  if (rer != player_get_room())
+  if (rer != get_room())
     return false;
 
   return !(rer->r_flags & ISDARK);
@@ -173,55 +190,7 @@ void Player::waste_time(int rounds) const {
 }
 
 
-
-Player* player;
-
-static const int player_min_strength = 3;
-static const int player_max_strength = 31;
-
-int          player_turns_without_action = 0;
-int          player_turns_without_moving = 0;
-bool         player_alerted              = false;
-struct stats player_max_stats = { 16, 0, 1, 10, 12, {{1,4}}, 12 };
-
-/* Duration of effects */
-#define HUHDURATION     spread(20)  /* Confusion */
-#define MFINDDURATION   spread(20)  /* Monster find */
-#define HASTEDURATION   os_rand_range(4)+4    /* Haste */
-#define SEEDURATION     spread(850) /* See invisible / blind / hallucinating */
-#define LEVITDUR        spread(30)  /* Levitation */
-#define SLEEPTIME       spread(7)   /* Sleep */
-#define STUCKTIME       spread(3)   /* Stuck */
-
-
-static int e_levels[] = {
-  10L,
-  20L,
-  40L,
-  80L,
-  160L,
-  320L,
-  640L,
-  1300L,
-  2600L,
-  5200L,
-  13000L,
-  26000L,
-  50000L,
-  100000L,
-  200000L,
-  400000L,
-  800000L,
-  2000000L,
-  4000000L,
-  8000000L,
-  0L
-};
-
-
-static int
-player_get_strength_bonuses()
-{
+int Player::get_strength_with_bonuses() const {
   int bonuses = 0;
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
@@ -229,20 +198,10 @@ player_get_strength_bonuses()
     if (ring != nullptr && ring->o_which == R_ADDSTR)
       bonuses += ring->o_arm;
   }
-  return bonuses;
+  return get_strength() + bonuses;
 }
 
-static void
-player_update_max_strength()
-{
-  int bonuses = player_get_strength_bonuses();
-  if (player->t_stats.s_str - bonuses > player_max_stats.s_str)
-    player_max_stats.s_str = player->t_stats.s_str - bonuses;
-}
-
-int
-player_save_throw(int which)
-{
+bool Player::saving_throw(int which) const {
   if (which == VS_MAGIC)
     for (int i = 0; i < PACK_RING_SLOTS; ++i)
     {
@@ -251,283 +210,246 @@ player_save_throw(int which)
         which -= ring->o_arm;
     }
 
-  int need = 14 + which - player->t_stats.s_lvl / 2;
+  int need = 14 + which - get_level() / 2;
   return (roll(1, 20) >= need);
 }
 
-bool player_has_true_sight() { return player->t_flags & CANSEE; }
+bool Player::has_true_sight() const {
+  return Character::has_true_sight() ||
+    player_has_ring_with_ability(R_SEEINVIS);
+}
 
-void
-player_add_true_sight(bool permanent)
-{
-  if (player_has_true_sight())
-    daemon_lengthen_fuse(player_remove_true_sight, SEEDURATION);
-  else
-  {
-    player->t_flags |= CANSEE;
+void Player::set_true_sight() {
+  if (Character::has_true_sight()) {
+    daemon_lengthen_fuse(daemon_function::remove_true_sight, SEEDURATION);
+
+  } else {
+    Character::set_true_sight();
     look(false);
-    if (!permanent)
-      daemon_start_fuse(player_remove_true_sight, 0, SEEDURATION, AFTER);
+    daemon_start_fuse(daemon_function::remove_true_sight, SEEDURATION, AFTER);
   }
 }
-void
-player_remove_true_sight(__attribute__((unused)) int)
-{
+
+void Player::remove_true_sight() {
   monster_hide_all_invisible();
-  player->t_flags &= ~CANSEE;
+  Character::remove_true_sight();
 }
 
-bool player_is_confused() { return player->t_flags & ISHUH; }
+void Player::set_confused() {
+  if (is_confused()) {
+    daemon_lengthen_fuse(daemon_function::set_not_confused, HUHDURATION);
 
-void
-player_set_confused(bool permanent)
-{
-  if (player_is_confused())
-    daemon_lengthen_fuse(player_remove_confused, HUHDURATION);
-  else
-  {
-    player->t_flags |= ISHUH;
+  } else {
+    Character::set_confused();
     look(false);
-    if (!permanent)
-      daemon_start_fuse(player_remove_confused, 0, HUHDURATION, AFTER);
+    daemon_start_fuse(daemon_function::set_not_confused, HUHDURATION, AFTER);
   }
   io_msg("wait, what's going on here. Huh? What? Who?");
 }
 
-void
-player_remove_confused(__attribute__((unused)) int)
-{
-  player->t_flags &= ~ISHUH;
+void Player::set_not_confused() {
+  Character::set_not_confused();
   io_msg("you feel less confused now");
 }
 
-bool player_is_held()     { return player->t_flags & ISHELD; }
-void player_set_held()    { player->t_flags |= ISHELD; }
-void player_remove_held() { player->t_flags &= ~ISHELD; }
-
-bool player_can_sense_monsters()    { return player->t_flags & SEEMONST; }
-
-void
-player_add_sense_monsters(bool permanent)
-{
-  if (!permanent)
-      daemon_start_fuse(player_remove_sense_monsters, 0, MFINDDURATION, AFTER);
-
-  player->t_flags |= SEEMONST;
-
-  bool spotted_something = monster_sense_all_hidden();
-  if (!spotted_something)
-    io_msg("you have a strange feeling for a moment, then it passes");
+bool Player::can_sense_monsters() const {
+  return senses_monsters;
 }
 
-void
-player_remove_sense_monsters(__attribute__((unused)) int)
-{
-  player->t_flags &= ~SEEMONST;
+void Player::set_sense_monsters() {
+  daemon_start_fuse(daemon_function::remove_sense_monsters, MFINDDURATION, AFTER);
+
+  senses_monsters = true;
+
+  bool spotted_something = monster_sense_all_hidden();
+  if (!spotted_something) {
+    io_msg("you have a strange feeling for a moment, then it passes");
+  }
+}
+
+void Player::remove_sense_monsters() {
+  senses_monsters = false;
   monster_unsense_all_hidden();
 }
 
-bool player_is_hallucinating()     { return player->t_flags & ISHALU; }
+void Player::set_hallucinating() {
 
-void
-player_set_hallucinating(bool permanent)
-{
-  if (player_is_hallucinating())
-    daemon_lengthen_fuse(player_remove_hallucinating, SEEDURATION);
-  else
-  {
-    if (player_can_sense_monsters())
-      player_add_sense_monsters(true);
-    daemon_start(daemon_change_visuals, 0, BEFORE);
-    player->t_flags |= ISHALU;
+  if (is_hallucinating()) {
+    daemon_lengthen_fuse(daemon_function::set_not_hallucinating, SEEDURATION);
+
+  } else {
+    daemon_start(change_visuals, BEFORE);
+    Character::set_hallucinating();
     look(false);
-    if (!permanent)
-      daemon_start_fuse(player_remove_hallucinating, 0, SEEDURATION, AFTER);
+    daemon_start_fuse(daemon_function::set_not_hallucinating, SEEDURATION, AFTER);
     io_msg("Oh, wow!  Everything seems so cosmic!");
   }
 }
 
-void player_remove_hallucinating(__attribute__((unused)) int)
-{
-  if (!player_is_hallucinating()) {
+void Player::set_not_hallucinating() {
+  if (!is_hallucinating()) {
     return;
   }
 
-  daemon_kill(daemon_change_visuals);
-  player->t_flags &= ~ISHALU;
+  daemon_kill(change_visuals);
+  Character::set_not_hallucinating();
 
-  if (player_is_blind()) {
+  if (is_blind()) {
     return;
   }
 
-  /* undo the things */
+  // Untrippify items on the level
   for (Item* tp : Game::level->items) {
-    if (player->can_see(tp->get_pos())) {
+    if (can_see(tp->get_pos())) {
       mvaddcch(tp->get_y(), tp->get_x(), static_cast<chtype>(tp->o_type));
     }
   }
 
-  /* undo the monsters */
+  // Untrippify all monsters on the level
   monster_print_all();
   io_msg("You feel your senses returning to normal");
 }
 
-int player_get_speed()    { return player->speed; }
+int Player::get_speed() const {
+  return speed;
+}
 
-void
-player_increase_speed(bool permanent)
-{
-  player->speed++;
-  if (!permanent)
-    daemon_start_fuse(player_decrease_speed, 1, HASTEDURATION, AFTER);
+void Player::increase_speed() {
+  speed++;
+  daemon_start_fuse(daemon_function::decrease_speed, HASTEDURATION, AFTER);
   io_msg("you feel yourself moving much faster");
 }
 
-void
-player_decrease_speed(__attribute__((unused)) int)
-{
-  player->speed--;
+void Player::decrease_speed() {
+  speed--;
   io_msg("you feel yourself slowing down");
 }
 
-bool player_is_running()    { return player->t_flags & ISRUN; }
-void player_start_running() { player->t_flags |= ISRUN; }
-void player_stop_running()  { player->t_flags &= ~ISRUN; }
+bool Player::is_running() const {
+  return running;
+}
 
-bool player_is_blind() { return player->t_flags & ISBLIND; }
+void Player::start_running() {
+  running = true;
+}
 
-void
-player_set_blind(bool permanent)
-{
-  if (player_is_blind())
-    daemon_lengthen_fuse(player_remove_blind, SEEDURATION);
-  else
-  {
-    player->t_flags |= ISBLIND;
+void Player::stop_running() {
+  running = false;
+}
+
+void Player::set_blind() {
+
+  if (is_blind()) {
+    daemon_lengthen_fuse(daemon_function::set_not_blind, SEEDURATION);
+
+  } else {
+    Character::set_blind();
     look(false);
-    if (!permanent)
-      daemon_start_fuse(player_remove_blind, 0, SEEDURATION, AFTER);
+    daemon_start_fuse(daemon_function::set_not_blind, SEEDURATION, AFTER);
     io_msg("a cloak of darkness falls around you");
   }
 }
 
-void
-player_remove_blind(__attribute__((unused)) int)
-{
-  if (!player_is_blind())
+void Player::set_not_blind() {
+
+  if (!is_blind())
     return;
 
-  daemon_extinguish_fuse(player_remove_blind);
-  player->t_flags &= ~ISBLIND;
-  if (!(player_get_room()->r_flags & ISGONE))
-    room_enter(player_get_pos());
+  daemon_extinguish_fuse(daemon_function::set_not_blind);
+  Character::set_not_blind();
+  if (!(get_room()->r_flags & ISGONE))
+    room_enter(get_position());
   io_msg("the veil of darkness lifts");
 }
 
-bool player_is_levitating() { return player->t_flags & ISLEVIT; }
+void Player::set_levitating() {
+  if (is_levitating()) {
+    daemon_lengthen_fuse(daemon_function::set_not_levitating, LEVITDUR);
 
-void
-player_start_levitating(bool permanent)
-{
-  if (player_is_levitating())
-    daemon_lengthen_fuse(player_stop_levitating, LEVITDUR);
-  else
-  {
-    player->t_flags |= ISLEVIT;
+  } else {
+    Character::set_levitating();
     look(false);
-    if (!permanent)
-      daemon_start_fuse(player_stop_levitating, 0, LEVITDUR, AFTER);
+    daemon_start_fuse(daemon_function::set_not_levitating, LEVITDUR, AFTER);
     io_msg("you start to float in the air");
   }
 }
-void player_stop_levitating(__attribute__((unused)) int)
-{
-  if (!player_is_levitating())
+
+void Player::set_not_levitating() {
+  if (!is_levitating()) {
     return;
-  player->t_flags &= ~ISLEVIT;
+  }
+
+  Character::set_not_levitating();
   io_msg("you float gently to the ground");
 }
 
-bool player_has_confusing_attack()    { return player->t_flags & CANHUH; }
-
-void
-player_set_confusing_attack()
+void Player::set_confusing_attack()
 {
-  player->t_flags |= CANHUH;
+  Character::set_confusing_attack();
   io_msg("your hands begin to glow %s",
-         player_is_hallucinating() ? color_random().c_str() : "red");
+         is_hallucinating() ? color_random().c_str() : "red");
 }
 
-void player_remove_confusing_attack() { player->t_flags &= ~CANHUH; }
-
-void
-player_fall_asleep()
-{
+void Player::fall_asleep() {
   player_turns_without_action += SLEEPTIME;
-  player_stop_running();
+  stop_running();
   io_msg("you fall asleep");
 }
 
-void player_become_stuck()
-{
+void Player::become_stuck() {
   player_turns_without_moving += STUCKTIME;
-  player_stop_running();
+  stop_running();
 }
 
-void player_become_poisoned()
-{
-  if (player_has_ring_with_ability(R_SUSTSTR))
+void Player::become_poisoned() {
+  if (player_has_ring_with_ability(R_SUSTSTR)) {
     io_msg("you feel momentarily nauseous");
-  else
-  {
-    player_modify_strength(-(os_rand_range(3) + 1));
+
+  } else {
+    modify_strength(-(os_rand_range(3) + 1));
     io_msg("you feel very sick now");
-    player_remove_hallucinating(0);
+    set_not_hallucinating();
   }
 }
 
-bool
-player_is_stealthy()
-{
+bool Player::is_stealthy() const {
   return player_has_ring_with_ability(R_STEALTH)
-    || player_is_levitating();
+    || is_levitating();
 }
 
-void player_teleport(Coordinate *target)
+void Player::teleport(Coordinate const* target)
 {
   Coordinate new_pos;
-  Coordinate const* player_pos = player_get_pos();
+  Coordinate const& player_pos = get_position();
 
-  /* Set target location */
-  if (target == nullptr)
-    do
+  // Set target location (nullptr means we generate a random position)
+  if (target == nullptr) {
+    do {
       Game::level->get_random_room_coord(nullptr, &new_pos, 0, true);
-    while (new_pos == *player_pos);
-  else
-  {
+    } while (new_pos == player_pos);
+
+  } else {
     new_pos.y = target->y;
     new_pos.x = target->x;
   }
 
-  /* Move target */
-  mvaddcch(player->t_pos.y, player->t_pos.x, static_cast<chtype>(floor_at()));
-  if (Game::level->get_room(new_pos) != player_get_room())
-  {
-    room_leave(player_get_pos());
-    player_set_pos(&new_pos);
-    room_enter(player_get_pos());
-  }
-  else
-  {
-    player_set_pos(&new_pos);
+  // Move target
+  mvaddcch(get_position().y, get_position().x, static_cast<chtype>(floor_at()));
+  if (Game::level->get_room(new_pos) != get_room()) {
+    room_leave(get_position());
+    set_position(new_pos);
+    room_enter(get_position());
+
+  } else {
+    set_position(new_pos);
     look(true);
   }
 
   /* Print @ new location */
   mvaddcch(new_pos.y, new_pos.x, PLAYER);
-  if (player_is_held())
+  if (is_held())
   {
-    player_remove_held();
+    set_not_held();
     monster_flytrap_hit = 0;
   }
   player_turns_without_moving = 0;
@@ -536,26 +458,24 @@ void player_teleport(Coordinate *target)
   io_msg("suddenly you're somewhere else");
 }
 
-bool
-player_search()
-{
-  int probinc = (player_is_hallucinating() ? 3:0) + (player_is_blind() ? 2:0);
+void Player::search() {
+  int increased_difficulty = (is_hallucinating() ? 3 : 0) + (is_blind() ? 2 : 0);
+
   bool found = false;
-  Coordinate *player_pos = player_get_pos();
+  Coordinate const& player_pos = get_position();
+  for (int y = player_pos.y - 1; y <= player_pos.y + 1; y++) {
+    for (int x = player_pos.x - 1; x <= player_pos.x + 1; x++) {
 
-  for (int y = player_pos->y - 1; y <= player_pos->y + 1; y++)
-    for (int x = player_pos->x - 1; x <= player_pos->x + 1; x++)
-    {
-      /* Real wall/floor/shadow */
-      if (Game::level->is_real(x, y))
+      // If it's real, dont bother
+      if (Game::level->is_real(x, y)) {
         continue;
+      }
 
-      char chatyx = Game::level->get_ch(x, y);
-      switch (chatyx)
-      {
+      // If fake, give player a chance to discover it
+      switch (Game::level->get_ch(x, y)) {
+
         case VWALL: case HWALL:
-          if (!os_rand_range(5 + probinc))
-          {
+          if (!os_rand_range(5 + increased_difficulty)) {
             Game::level->set_ch(x, y, DOOR);
             io_msg("a secret door");
             found = true;
@@ -564,13 +484,12 @@ player_search()
           break;
 
         case FLOOR:
-          if (!os_rand_range(2 + probinc))
-          {
+          if (!os_rand_range(2 + increased_difficulty)) {
             Game::level->set_ch(x, y, TRAP);
 
-            if (player_is_hallucinating())
+            if (is_hallucinating()) {
               io_msg(trap_names[os_rand_range(NTRAPS)].c_str());
-            else {
+            } else {
               io_msg(trap_names[Game::level->get_trap_type(x, y)].c_str());
               Game::level->set_discovered(x, y);
             }
@@ -581,8 +500,7 @@ player_search()
           break;
 
         case SHADOW:
-          if (!os_rand_range(3 + probinc))
-          {
+          if (!os_rand_range(3 + increased_difficulty)) {
             Game::level->set_ch(x, y, PASSAGE);
             found = true;
             Game::level->set_real(x, y);
@@ -590,159 +508,100 @@ player_search()
           break;
       }
     }
+  }
 
-  if (found)
-  {
+  if (found) {
     look(false);
     running = false;
   }
-
-  return true;
 }
 
-Coordinate* player_get_pos() { return &player->t_pos; }
-int player_y()          { return player->t_pos.y; }
-int player_x()          { return player->t_pos.x; }
+void Player::restore_strength() {
+  if (get_strength() < get_default_strength()) {
+    Character::restore_strength();
+    io_msg("you feel your strength returning");
 
-void
-player_set_pos(Coordinate* new_pos)
-{
-  player->t_pos.x = new_pos->x;
-  player->t_pos.y = new_pos->y;
+  } else {
+    io_msg("you feel warm all over");
+  }
 }
 
-struct room* player_get_room()          { return player->t_room; }
-void player_set_room(struct room* new_room) { player->t_room = new_room; }
-int player_get_strength()               { return player->t_stats.s_str; }
+void Player::modify_strength(int amount) {
 
-bool
-player_strength_is_weakened()
-{
-  return player->t_stats.s_str < player_max_stats.s_str;
-}
+  int current_strength = get_strength();
 
-void
-player_restore_strength()
-{
-  player->t_stats.s_str = player_max_stats.s_str + player_get_strength_bonuses();
-}
-
-void
-player_modify_strength(int amount)
-{
-  player->t_stats.s_str += amount;
-  if (player->t_stats.s_str < player_min_strength)
-    player->t_stats.s_str = player_min_strength;
-  else if (player->t_stats.s_str > player_max_strength)
-    player->t_stats.s_str = player_max_strength;
-
-  player_update_max_strength();
-}
-
-int player_get_health()     { return player->t_stats.s_hpt; }
-int player_get_max_health() { return player->t_stats.s_maxhp; }
-
-void
-player_restore_health(int amount, bool can_raise_total)
-{
-  player->t_stats.s_hpt += amount;
-
-  if (can_raise_total)
-  {
-    int extra_max_hp = 0;
-    if (player_get_health() > player_get_max_health() + player_get_level() + 1)
-      ++extra_max_hp;
-    if (player_get_health() > player_get_max_health())
-      ++extra_max_hp;
-    if (amount > 0)
-      player_modify_max_health(extra_max_hp);
+  if (current_strength + amount < player_min_strength) {
+    amount = current_strength - player_min_strength;
+  } else if (current_strength + amount > player_max_strength) {
+    amount = player_max_strength - current_strength;
   }
 
-  if (player_get_health() > player_get_max_health())
-    player->t_stats.s_hpt = player_get_max_health();
+  Character::modify_strength(amount);
+  current_strength = get_strength();
+
+  if (amount < 0 || current_strength < player_min_strength ||
+      current_strength > player_max_strength) {
+    error("Strength calculation error. Min: " + to_string(player_min_strength) +
+          ". Max: " + to_string(player_max_strength) +
+          ". Current: " + to_string(current_strength));
+  }
 }
 
-bool
-player_is_hurt()
+
+void Player::raise_level(int amount)
 {
-  return player_get_health() != player_get_max_health();
+  if (amount <= 0) {
+    error("Cannot raise 0 or less levels");
+  }
+
+  Character::raise_level(amount);
+  io_msg("welcome to level %d", get_level());
 }
 
-void
-player_modify_max_health(int amount)
-{
-  player->t_stats.s_maxhp += amount;
-  if (player->t_stats.s_hpt > player->t_stats.s_maxhp)
-    player->t_stats.s_hpt = player->t_stats.s_maxhp;
-}
+void Player::check_for_level_up() {
+  vector<int> levels = {
+    10L,
+    20L,
+    40L,
+    80L,
+    160L,
+    320L,
+    640L,
+    1300L,
+    2600L,
+    5200L,
+    13000L,
+    26000L,
+    50000L,
+    100000L,
+    200000L,
+    400000L,
+    800000L,
+    2000000L,
+    4000000L,
+    8000000L,
+    0L
+  };
 
-void
-player_lose_health(int amount)
-{
-  player->t_stats.s_hpt -= amount;
-}
+  int new_level;
+  int old_level = get_level();
 
-int
-player_get_level()
-{
-  return player->t_stats.s_lvl;
-}
-
-void
-player_raise_level()
-{
-  int next_level = e_levels[player->t_stats.s_lvl -1] + 1L;
-  if (next_level < player->t_stats.s_exp)
-    return;
-
-  player->t_stats.s_exp = next_level;
-  player_check_for_level_up();
-  io_msg("you suddenly feel much more skillful");
-}
-
-void
-player_check_for_level_up()
-{
-  int i;
-  int old_level = player->t_stats.s_lvl;
-
-  for (i = 0; e_levels[i] != 0; ++i)
-    if (e_levels[i] > player->t_stats.s_exp)
+  for (new_level = 0; levels.at(static_cast<size_t>(new_level)) != 0; ++new_level) {
+    if (levels.at(static_cast<size_t>(new_level)) > get_experience()) {
       break;
+    }
+  }
 
-  ++i;
-  player->t_stats.s_lvl = i;
-
-  if (i > old_level)
-  {
-    int add_to_hp = roll(i - old_level, 10);
-    player_modify_max_health(add_to_hp);
-    player_restore_health(add_to_hp, false);
-    io_msg("welcome to level %d", player->t_stats.s_lvl);
+  ++new_level;
+  if (new_level > old_level) {
+    raise_level(new_level - old_level);
   }
 }
 
-void
-player_lower_level()
-{
-  --player->t_stats.s_lvl;
-  if (player->t_stats.s_lvl == 0)
-  {
-    player->t_stats.s_exp = 0;
-    player->t_stats.s_lvl = 1;
-  }
-  else
-    player->t_stats.s_exp = e_levels[player->t_stats.s_lvl-1] +1L;
-}
 
+bool Player::has_ring_with_ability(int ability) const {
+  for (int i = 0; i < PACK_RING_SLOTS; ++i) {
 
-
-bool
-player_has_ring_with_ability(int ability)
-{
-  int i;
-  for (i = 0; i < PACK_RING_SLOTS; ++i)
-  {
     Item* ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != nullptr && ring->o_which == ability)
       return true;

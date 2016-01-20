@@ -18,10 +18,10 @@ using namespace std;
 void
 monster_find_new_target(Monster* monster)
 {
-  int prob = monsters.at(static_cast<size_t>(monster->t_type - 'A')).m_carry;
-  if (prob <= 0 || monster->t_room == player_get_room()
+  int prob = monsters.at(static_cast<size_t>(monster->get_type() - 'A')).m_carry;
+  if (prob <= 0 || monster->get_room() == player->get_room()
       || monster_seen_by_player(monster)) {
-    monster_set_target(monster, *player_get_pos());
+    monster_set_target(monster, player->get_position());
     return;
   }
 
@@ -29,7 +29,7 @@ monster_find_new_target(Monster* monster)
     if (obj->o_type == SCROLL && obj->o_which == S_SCARE)
       continue;
 
-    if (Game::level->get_room(obj->get_pos()) == monster->t_room &&
+    if (Game::level->get_room(obj->get_pos()) == monster->get_room() &&
         os_rand_range(100) < prob)
     {
       auto result = find_if(Game::level->monsters.cbegin(), Game::level->monsters.cend(),
@@ -44,13 +44,7 @@ monster_find_new_target(Monster* monster)
     }
   }
 
-  monster_set_target(monster, *player_get_pos());
-}
-
-void
-monster_start_chasing(Monster* mon)
-{
-  mon->t_flags |= ISRUN;
+  monster_set_target(monster, player->get_position());
 }
 
 void

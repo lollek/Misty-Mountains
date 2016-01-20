@@ -65,24 +65,24 @@ vector<monster_template> const monsters {
 
 
 int Monster::get_armor() const {
-  return t_stats.s_arm;
+  return get_base_armor();
 }
 
 void Monster::set_oldch(Coordinate &coord) {
   char old_char = t_oldch;
 
-  if (t_pos == coord) {
+  if (get_position() == coord) {
     return;
   }
 
   t_oldch = static_cast<char>(mvincch(coord.y, coord.x));
-  if (!player_is_blind()) {
+  if (!player->is_blind()) {
 
     if ((old_char == FLOOR || t_oldch == FLOOR) &&
-        (t_room->r_flags & ISDARK)) {
+        (get_room()->r_flags & ISDARK)) {
       t_oldch = SHADOW;
 
-    } else if (dist_cp(&coord, player_get_pos()) <= LAMPDIST) {
+    } else if (dist_cp(&coord, &player->get_position()) <= LAMPDIST) {
       t_oldch = Game::level->get_ch(coord);
     }
   }
@@ -114,12 +114,12 @@ string Monster::get_attack_string(bool successful_hit) const {
 
 string Monster::get_name() const {
 
-  if (!monster_seen_by_player(this) && !player_can_sense_monsters()) {
+  if (!monster_seen_by_player(this) && !player->can_sense_monsters()) {
     return "something";
 
-  } else if (player_is_hallucinating()) {
+  } else if (player->is_hallucinating()) {
 
-    int ch = mvincch(t_pos.y, t_pos.x);
+    int ch = mvincch(get_position().y, get_position().x);
     if (!isupper(ch)) {
       ch = static_cast<int>(os_rand_range(monsters.size()));
     } else {
@@ -132,122 +132,81 @@ string Monster::get_name() const {
 
   } else {
     stringstream ss;
-    ss << "the " << monster_name_by_type(t_type);
+    ss << "the " << monster_name_by_type(static_cast<char>(get_type()));
     return ss.str();
   }
 }
 
 void Monster::set_invisible() {
 
-  t_flags |= ISINVIS;
-  if (player->can_see(t_pos))
+  Character::set_invisible();
+  if (player->can_see(get_position()))
   {
     io_msg("%s disappeared", get_name().c_str());
-    mvaddcch(t_pos.y, t_pos.x, static_cast<chtype>(t_oldch));
+    mvaddcch(get_position().y, get_position().x, static_cast<chtype>(t_oldch));
   }
 }
 
-void Monster::set_held() {
-  t_flags &= ~ISRUN;
-  t_flags |= ISHELD;
-}
+char Monster::random_monster_type() {
 
-char
-monster_random(bool wander)
-{
   /* List of monsters in rough order of vorpalness */
-  char const* lvl_mons =  "KEBSHIROZLCQANYFTWPXUMVGJD";
-  char const* wand_mons = "KEBSH0ROZ0CQA0Y0TWP0UMVGJ0";
-  char const* mons = (wander ? wand_mons : lvl_mons);
+  string const mons =  "KEBSHIROZLCQANYFTWPXUMVGJD";
+  int const default_spread = 5;
 
-  int d;
-  do
-  {
-    d = Game::current_level + (os_rand_range(10) - 6);
-    if (d < 0)
-      d = os_rand_range(5);
-    if (d > 25)
-      d = os_rand_range(5) + 21;
+  // Formula for generating monster type
+  int index = Game::current_level + (os_rand_range(10) - 6);
+
+  // If we are in deep, only pick a default spread of the hardest monsters
+  int mons_size = static_cast<int>(mons.size());
+  if (index >= mons_size) {
+    index = mons_size - default_spread + os_rand_range(default_spread);
   }
-  while (mons[d] == 0);
 
-  return mons[d];
+  // If we are in shallow, only pick a default spread of easy monsters
+  if (index < 0) {
+    index = os_rand_range(default_spread);
+  }
+
+  return mons.at(static_cast<size_t>(index));
 }
 
-/** monster_xp_worth
- * Experience to add for this monster's level/hit points */
-static int
-monster_xp_worth(Monster* tp)
-{
-  assert(tp != nullptr);
+// Experience to add for this monster's level/hit points
+static int extra_experience(int level, int max_health) {
 
-  int mod = tp->t_stats.s_lvl == 1
-    ? tp->t_stats.s_maxhp / 8
-    : tp->t_stats.s_maxhp / 6;
+  int mod = level == 1
+    ? max_health / 8
+    : max_health / 6;
 
-  if (tp->t_stats.s_lvl > 9)
+  if (level > 9)
     mod *= 20;
-  else if (tp->t_stats.s_lvl > 6)
+  else if (level > 6)
     mod *= 4;
 
   return mod;
 }
 
-void
-monster_new(Monster* monster, char type, Coordinate* pos, room* room)
-{
-  assert(monster != nullptr);
-  assert(pos != nullptr);
+Monster::Monster(char type, Coordinate const& pos, room* room) :
+  Monster(type, pos, room, monsters.at(static_cast<size_t>(type - 'A')))
+{}
 
-  monster->t_type       = type;
-  monster->t_disguise   = type;
-  monster->t_pos        = *pos;
-  monster->t_oldch      = static_cast<char>(mvincch(pos->y, pos->x));
-  monster->t_room       = room;
+Monster::Monster(char type, Coordinate const& pos, room* room,
+                 monster_template const& m_template) :
+  Character(10, m_template.m_basexp, m_template.m_level, m_template.m_armor,
+            roll(m_template.m_level, 8), m_template.m_dmg, pos, room,
+            m_template.m_flags, type),
+  t_dest(), t_pack(), t_disguise(type),
+  t_oldch(static_cast<char>(mvincch(pos.y, pos.x))), t_turn(true) {
 
-  size_t monster_id = static_cast<size_t>(monster->t_type - 'A');
-  monster_template const& m_template = monsters.at(monster_id);
-  struct stats* new_stats = &monster->t_stats;
+  // All monsters are equal, but some monsters are more equal than others, so
+  // they also give more experience
+  gain_experience(extra_experience(get_level(), get_max_health()));
 
-  new_stats->s_lvl   = m_template.m_level;
-  new_stats->s_hpt   = roll(new_stats->s_lvl, 8);
-  new_stats->s_maxhp = new_stats->s_hpt;
-  new_stats->s_arm   = m_template.m_armor;
-  new_stats->s_str   = 10;
-  new_stats->s_exp   = m_template.m_basexp + monster_xp_worth(monster);
-  new_stats->s_dmg   = m_template.m_dmg;
-
-  monster->t_turn          = true;
-  monster->t_flags         = m_template.m_flags;
-
-  if (player_has_ring_with_ability(R_AGGR))
-    monster_start_running(pos);
+  if (player->has_ring_with_ability(R_AGGR)) {
+    monster_start_running(&pos);
+  }
 
   if (type == 'X')
-    monster->t_disguise = rnd_thing();
-}
-
-void
-monster_new_random_wanderer(void)
-{
-  Coordinate monster_pos;
-
-  do
-    Game::level->get_random_room_coord(nullptr, &monster_pos, 0, true);
-  while (Game::level->get_room(monster_pos) == player_get_room());
-
-  Monster* monster = new Monster();
-  monster_new(monster, monster_random(true), &monster_pos, Game::level->get_room(monster_pos));
-  Game::level->monsters.push_back(monster);
-  Game::level->set_monster(monster_pos, monster);
-  if (player_can_sense_monsters())
-  {
-    if (player_is_hallucinating())
-      addcch(static_cast<chtype>(os_rand_range(26) + 'A') | A_STANDOUT);
-    else
-      addcch(static_cast<chtype>(monster->t_type) | A_STANDOUT);
-  }
-  monster_start_running(&monster->t_pos);
+    t_disguise = rnd_thing();
 }
 
 Monster*
@@ -255,48 +214,46 @@ monster_notice_player(int y, int x)
 {
   Monster *monster = Game::level->get_monster(x, y);
 
-  Coordinate* player_pos = player_get_pos();
-
   /* Monster can begin chasing after the player if: */
-  if (!monster_is_chasing(monster)
-      && monster_is_mean(monster)
-      && !monster_is_held(monster)
-      && !player_is_stealthy()
+  if (!monster->is_chasing()
+      && monster->is_mean()
+      && !monster->is_held()
+      && !player->is_stealthy()
       && !os_rand_range(3))
   {
-    monster_set_target(monster, *player_pos);
-    if (!monster_is_stuck(monster))
-      monster_start_chasing(monster);
+    monster_set_target(monster, player->get_position());
+    if (!monster->is_stuck())
+      monster->set_chasing();
   }
 
   /* Medusa can confuse player */
-  if (monster->t_type == 'M'
-      && !player_is_blind()
-      && !player_is_hallucinating()
-      && !monster_is_found(monster)
-      && !monster_is_cancelled(monster)
-      && monster_is_chasing(monster))
+  if (monster->get_type() == 'M'
+      && !player->is_blind()
+      && !player->is_hallucinating()
+      && !monster->is_found()
+      && !monster->is_cancelled()
+      && monster->is_chasing())
   {
-    struct room const* rp = player_get_room();
+    struct room const* rp = player->get_room();
     if ((rp != nullptr && !(rp->r_flags & ISDARK))
-        || dist(y, x, player_pos->y, player_pos->x) < LAMPDIST)
+        || dist(y, x, player->get_position().y, player->get_position().x) < LAMPDIST)
     {
-      monster_set_found(monster);
-      if (!player_save_throw(VS_MAGIC))
+      monster->set_found();
+      if (!player->saving_throw(VS_MAGIC))
       {
         io_msg("%s's gaze has confused you", monster->get_name().c_str());
-        player_set_confused(false);
+        player->set_confused();
       }
     }
   }
 
   /* Let greedy ones guard gold */
-  if (monster_is_greedy(monster) && !monster_is_chasing(monster))
+  if (monster->is_greedy() && !monster->is_chasing())
   {
-    monster_set_target(monster, player_get_room()->r_goldval
-        ? player_get_room()->r_gold
-        : *player_pos);
-    monster_start_chasing(monster);
+    monster_set_target(monster, player->get_room()->r_goldval
+        ? player->get_room()->r_gold
+        : player->get_position());
+    monster->set_chasing();
   }
 
   return monster;
@@ -309,7 +266,7 @@ monster_give_pack(Monster* mon) {
     error("Monster was null");
   }
 
-  size_t monster_id = static_cast<size_t>(mon->t_type - 'A');
+  size_t monster_id = static_cast<size_t>(mon->get_type() - 'A');
   int carry_chance = monsters.at(monster_id).m_carry;
 
   if (Game::current_level >= Game::max_level_visited &&
@@ -323,7 +280,7 @@ monster_save_throw(int which, Monster const* mon)
 {
   assert(mon != nullptr);
 
-  int need = 14 + which - mon->t_stats.s_lvl / 2;
+  int need = 14 + which - mon->get_level() / 2;
   return (roll(1, 20) >= need);
 }
 
@@ -337,10 +294,10 @@ monster_start_running(Coordinate const* runner)
   Monster *tp = Game::level->get_monster(*runner);
 
   monster_find_new_target(tp);
-  if (!monster_is_stuck(tp))
+  if (!tp->is_stuck())
   {
-    monster_remove_held(tp);
-    monster_start_chasing(tp);
+    tp->set_not_held();
+    tp->set_chasing();
   }
 }
 
@@ -349,24 +306,24 @@ monster_on_death(Monster* monster, bool pr)
 {
   assert(monster != nullptr);
 
-  player->earn_exp(monster->t_stats.s_exp);
+  player->gain_experience(monster->get_experience());
 
-  switch (monster->t_type)
+  switch (monster->get_type())
   {
     /* If the monster was a venus flytrap, un-hold him */
     case 'F':
-      player_remove_held();
+      player->set_not_held();
       monster_flytrap_hit = 0;
       break;
 
     /* Leprechauns drop gold */
     case 'L':
-      if (fallpos(&monster->t_pos, &monster->t_room->r_gold))
+      if (fallpos(&monster->get_position(), &monster->get_room()->r_gold))
       {
         Item* gold = new Item();
         gold->o_type = GOLD;
         gold->o_goldval = GOLDCALC;
-        if (player_save_throw(VS_MAGIC))
+        if (player->saving_throw(VS_MAGIC))
           gold->o_goldval += GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
         monster->t_pack.push_back(gold);
       }
@@ -375,22 +332,22 @@ monster_on_death(Monster* monster, bool pr)
   /* Get rid of the monster. */
   if (pr)
     io_msg("you have slain %s", monster->get_name().c_str());
-  monster_remove_from_screen(&monster->t_pos, monster, true);
+  monster_remove_from_screen(&monster->get_position(), monster, true);
 
   /* Do adjustments if he went up a level */
-  player_check_for_level_up();
+  player->check_for_level_up();
   if (fight_flush)
     flushinp();
 }
 
 void
-monster_remove_from_screen(Coordinate* mp, Monster* tp, bool waskill)
+monster_remove_from_screen(Coordinate const* mp, Monster* tp, bool waskill)
 {
   assert(mp != nullptr);
   assert(tp != nullptr);
 
   for (Item* obj : tp->t_pack) {
-    obj->set_pos(tp->t_pos);
+    obj->set_pos(tp->get_position());
     if (waskill)
       weapon_missile_fall(obj, false);
     else
@@ -403,7 +360,7 @@ monster_remove_from_screen(Coordinate* mp, Monster* tp, bool waskill)
 
   Game::level->monsters.remove(tp);
 
-  if (monster_is_players_target(tp))
+  if (tp->is_players_target())
   {
     to_death = false;
     if (fight_flush)
@@ -431,25 +388,25 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   if (destination == nullptr)
     do
       Game::level->get_random_room_coord(nullptr, &new_pos, 0, true);
-    while (new_pos == monster->t_pos);
+    while (new_pos == monster->get_position());
   else
     new_pos = *destination;
 
   /* Remove monster */
   if (monster_seen_by_player(monster))
-    mvaddcch(monster->t_pos.y, monster->t_pos.x, static_cast<chtype>(monster->t_oldch));
+    mvaddcch(monster->get_position().y, monster->get_position().x, static_cast<chtype>(monster->t_oldch));
   monster->set_oldch(new_pos);
-  Game::level->set_monster(monster->t_pos, nullptr);
+  Game::level->set_monster(monster->get_position(), nullptr);
 
   /* Add monster */
-  monster->t_room = Game::level->get_room(new_pos);
-  monster->t_pos = new_pos;
-  monster_remove_held(monster);
+  monster->set_room(Game::level->get_room(new_pos));
+  monster->set_position(new_pos);
+  monster->set_not_held();
 
   if (monster_seen_by_player(monster))
     mvaddcch(new_pos.y, new_pos.x, static_cast<chtype>(monster->t_disguise));
-  else if (player_can_sense_monsters())
-    mvaddcch(new_pos.y, new_pos.x, static_cast<chtype>(monster->t_type)| A_STANDOUT);
+  else if (player->can_sense_monsters())
+    mvaddcch(new_pos.y, new_pos.x, static_cast<chtype>(monster->get_type())| A_STANDOUT);
 }
 
 void
@@ -458,10 +415,10 @@ monster_do_special_ability(Monster** monster)
   assert(monster != nullptr);
   assert(*monster != nullptr);
 
-  if (monster_is_cancelled(*monster))
+  if ((*monster)->is_cancelled())
     return;
 
-  switch ((*monster)->t_type)
+  switch ((*monster)->get_type())
   {
     /* If an aquator hits, you can lose armor class */
     case 'A':
@@ -470,16 +427,16 @@ monster_do_special_ability(Monster** monster)
 
     /* Venus Flytrap stops the poor guy from moving */
     case 'F':
-      player_set_held();
+      player->set_held();
       ++monster_flytrap_hit;
-      player_lose_health(1);
-      if (player_get_health() <= 0)
+      player->take_damage(1);
+      if (player->get_health() <= 0)
         death('F');
       return;
 
     /* The ice monster freezes you */
     case 'I':
-      player_stop_running();
+      player->stop_running();
       if (!player_turns_without_action)
       {
         io_msg("you are frozen by the %s", (*monster)->get_name().c_str());
@@ -492,11 +449,11 @@ monster_do_special_ability(Monster** monster)
 
     /* Leperachaun steals some gold and disappears */
     case 'L':
-      monster_remove_from_screen(&(*monster)->t_pos, *monster, false);
+      monster_remove_from_screen(&(*monster)->get_position(), *monster, false);
       *monster = nullptr;
 
       pack_gold -= GOLDCALC;
-      if (!player_save_throw(VS_MAGIC))
+      if (!player->saving_throw(VS_MAGIC))
         pack_gold -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
       if (pack_gold < 0)
         pack_gold = 0;
@@ -509,7 +466,7 @@ monster_do_special_ability(Monster** monster)
       Item* steal = pack_find_magic_item();
       if (steal != nullptr)
       {
-        monster_remove_from_screen(&(*monster)->t_pos, *monster, false);
+        monster_remove_from_screen(&(*monster)->get_position(), *monster, false);
         *monster = nullptr;
         pack_remove(steal, false, false);
         io_msg("your pack feels lighter");
@@ -520,10 +477,10 @@ monster_do_special_ability(Monster** monster)
 
     /* Rattlesnakes have poisonous bites */
     case 'R':
-      if (!player_save_throw(VS_POISON)
-          && !player_has_ring_with_ability(R_SUSTSTR))
+      if (!player->saving_throw(VS_POISON)
+          && !player->has_ring_with_ability(R_SUSTSTR))
       {
-        player_modify_strength(-1);
+        player->modify_strength(-1);
         io_msg("you feel weaker");
       }
       return;
@@ -533,9 +490,9 @@ monster_do_special_ability(Monster** monster)
       if (os_rand_range(100) < 30)
       {
         int fewer = roll(1, 3);
-        player_lose_health(fewer);
-        player_modify_max_health(-fewer);
-        if (player_get_health() <= 0)
+        player->take_damage(fewer);
+        player->modify_max_health(-fewer);
+        if (player->get_health() <= 0)
           death('V');
         io_msg("you feel weaker");
       }
@@ -545,14 +502,14 @@ monster_do_special_ability(Monster** monster)
     case 'W':
       if (os_rand_range(100) < 15)
       {
-        if (player->get_exp() == 0)
-          death('W');  /* Death by no exp */
-        player_lower_level();
+        if (player->get_level() == 1)
+          death('W');  /* Death by no level */
+        player->lower_level(1);
 
         int fewer = roll(1, 10);
-        player_lose_health(fewer);
-        player_modify_max_health(-fewer);
-        if (player_get_health() <= 0)
+        player->take_damage(fewer);
+        player->modify_max_health(-fewer);
+        if (player->get_health() <= 0)
           death('W');
         io_msg("you feel weaker");
       }
@@ -573,26 +530,25 @@ monster_seen_by_player(Monster const* monster)
 {
   assert(monster != nullptr);
 
-  Coordinate const* player_pos = player_get_pos();
-  int monster_y = monster->t_pos.y;
-  int monster_x = monster->t_pos.x;
+  int monster_y = monster->get_position().y;
+  int monster_x = monster->get_position().x;
 
-  if (player_is_blind() ||
-      (monster_is_invisible(monster) && !player_has_true_sight()))
+  if (player->is_blind() ||
+      (monster->is_invisible() && !player->has_true_sight()))
     return false;
 
-  if (dist(monster_y, monster_x, player_pos->y, player_pos->x) < LAMPDIST)
+  if (dist(monster_y, monster_x, player->get_position().y, player->get_position().x) < LAMPDIST)
   {
-    if (monster_y != player_pos->y && monster_x != player_pos->x
-        && !step_ok(Game::level->get_ch(player_pos->x, monster_y))
-        && !step_ok(Game::level->get_ch(monster_x, player_pos->y)))
+    if (monster_y != player->get_position().y && monster_x != player->get_position().x
+        && !step_ok(Game::level->get_ch(player->get_position().x, monster_y))
+        && !step_ok(Game::level->get_ch(monster_x, player->get_position().y)))
       return false;
     return true;
   }
 
-  if (monster->t_room != player_get_room())
+  if (monster->get_room() != player->get_room())
     return false;
-  return !(monster->t_room->r_flags & ISDARK);
+  return !(monster->get_room()->r_flags & ISDARK);
 }
 
 bool
@@ -609,17 +565,17 @@ monster_is_anyone_seen_by_player(void)
 void
 monster_show_all_as_trippy(void)
 {
-  bool seemonst = player_can_sense_monsters();
+  bool seemonst = player->can_sense_monsters();
   for (Monster const* tp : Game::level->monsters) {
 
     if (monster_seen_by_player(tp)) {
-      chtype symbol = (tp->t_type == 'X' && tp->t_disguise != 'X')
+      chtype symbol = (tp->get_type() == 'X' && tp->t_disguise != 'X')
         ? static_cast<chtype>(rnd_thing())
         : static_cast<chtype>(os_rand_range(26) + 'A');
-      mvaddcch(tp->t_pos.y, tp->t_pos.x, symbol);
+      mvaddcch(tp->get_position().y, tp->get_position().x, symbol);
     }
     else if (seemonst) {
-      mvaddcch(tp->t_pos.y, tp->t_pos.x,
+      mvaddcch(tp->get_position().y, tp->get_position().x,
           static_cast<chtype>(os_rand_range(26) + 'A') | A_STANDOUT);
     }
   }
@@ -630,20 +586,20 @@ monster_move_all(void)
 {
   for (Monster* mon : Game::level->monsters) {
 
-    if (!monster_is_held(mon) && monster_is_chasing(mon))
+    if (!mon->is_held() && mon->is_chasing())
     {
-      bool wastarget = monster_is_players_target(mon);
-      Coordinate orig_pos = mon->t_pos;
+      bool wastarget = mon->is_players_target();
+      Coordinate orig_pos = mon->get_position();
       if (!monster_chase(mon))
         continue;
 
-      if (monster_is_flying(mon)
-          && dist_cp(player_get_pos(), &mon->t_pos) >= 3)
+      if (mon->is_flying()
+          && dist_cp(&player->get_position(), &mon->get_position()) >= 3)
         monster_chase(mon);
 
-      if (wastarget && !(orig_pos == mon->t_pos))
+      if (wastarget && !(orig_pos == mon->get_position()))
       {
-        mon->t_flags &= ~ISTARGET;
+        mon->set_not_players_target();
         to_death = false;
       }
     }
@@ -654,7 +610,7 @@ void
 monster_aggravate_all(void)
 {
   for (Monster* mon : Game::level->monsters) {
-    monster_start_running(&mon->t_pos);
+    monster_start_running(&mon->get_position());
   }
 }
 
@@ -662,9 +618,9 @@ void
 monster_show_all_hidden(void)
 {
   for (Monster* mon : Game::level->monsters) {
-    if (monster_is_invisible(mon) && monster_seen_by_player(mon)
-        && !player_is_hallucinating())
-      mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_disguise));
+    if (mon->is_invisible() && monster_seen_by_player(mon)
+        && !player->is_hallucinating())
+      mvaddcch(mon->get_position().y, mon->get_position().x, static_cast<chtype>(mon->t_disguise));
   }
 }
 
@@ -673,7 +629,7 @@ monster_aggro_all_which_desire_item(Item* item)
 {
   for (Monster* mon : Game::level->monsters) {
     if (mon->t_dest == item->get_pos()) {
-      mon->t_dest = *player_get_pos();
+      mon->t_dest = player->get_position();
     }
   }
 }
@@ -682,8 +638,8 @@ void
 monster_hide_all_invisible(void)
 {
   for (Monster* mon : Game::level->monsters) {
-    if (monster_is_invisible(mon) && monster_seen_by_player(mon)) {
-      mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_oldch));
+    if (mon->is_invisible() && monster_seen_by_player(mon)) {
+      mvaddcch(mon->get_position().y, mon->get_position().x, static_cast<chtype>(mon->t_oldch));
     }
   }
 }
@@ -694,10 +650,10 @@ monster_sense_all_hidden(void)
   bool spotted_something = false;
   for (Monster* mon : Game::level->monsters) {
     if (!monster_seen_by_player(mon)) {
-      mvaddcch(mon->t_pos.y, mon->t_pos.x,
-          (player_is_hallucinating()
+      mvaddcch(mon->get_position().y, mon->get_position().x,
+          (player->is_hallucinating()
            ? static_cast<chtype>(os_rand_range(26) + 'A')
-           : static_cast<chtype>(mon->t_type))
+           : static_cast<chtype>(mon->get_type()))
             | A_STANDOUT);
       spotted_something = true;
     }
@@ -710,7 +666,7 @@ monster_unsense_all_hidden(void)
 {
   for (Monster* mon : Game::level->monsters) {
     if (!monster_seen_by_player(mon)) {
-      mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_oldch));
+      mvaddcch(mon->get_position().y, mon->get_position().x, static_cast<chtype>(mon->t_oldch));
     }
   }
 }
@@ -720,14 +676,15 @@ monster_print_all(void)
 {
   for (Monster* mon : Game::level->monsters) {
 
-    if (player->can_see(mon->t_pos)) {
-      chtype symbol = (!monster_is_invisible(mon) || player_has_true_sight())
+    if (player->can_see(mon->get_position())) {
+      chtype symbol = (!mon->is_invisible() || player->has_true_sight())
         ? static_cast<chtype>(mon->t_disguise)
-        : static_cast<chtype>(Game::level->get_ch(mon->t_pos));
-      mvaddcch(mon->t_pos.y, mon->t_pos.x, symbol);
+        : static_cast<chtype>(Game::level->get_ch(mon->get_position()));
+      mvaddcch(mon->get_position().y, mon->get_position().x, symbol);
 
-    } else if (player_can_sense_monsters()) {
-      mvaddcch(mon->t_pos.y, mon->t_pos.x, static_cast<chtype>(mon->t_type)| A_STANDOUT);
+    } else if (player->can_sense_monsters()) {
+      mvaddcch(mon->get_position().y, mon->get_position().x,
+               static_cast<chtype>(mon->get_type())| A_STANDOUT);
     }
   }
 }
@@ -741,7 +698,7 @@ monster_show_if_magic_inventory(void)
       if (item->is_magic())
       {
         atleast_one = true;
-        mvwaddcch(hw, mon->t_pos.y, mon->t_pos.x, MAGIC);
+        mvwaddcch(hw, mon->get_position().y, mon->get_position().x, MAGIC);
       }
     }
   }
@@ -752,14 +709,14 @@ int
 monster_add_nearby(Monster** nearby_monsters, struct room const* room)
 {
   assert(nearby_monsters != nullptr);
-  bool inpass = player_get_room()->r_flags & ISGONE;
+  bool inpass = player->get_room()->r_flags & ISGONE;
   Monster** nearby_monsters_start = nearby_monsters;
 
   for (Monster* mon : Game::level->monsters) {
-    if (mon->t_room == player_get_room()
-        || mon->t_room == room
-        ||(inpass && Game::level->get_ch(mon->t_pos) == DOOR &&
-          Game::level->get_passage(mon->t_pos) == player_get_room())) {
+    if (mon->get_room() == player->get_room()
+        || mon->get_room() == room
+        ||(inpass && Game::level->get_ch(mon->get_position()) == DOOR &&
+          Game::level->get_passage(mon->get_position()) == player->get_room())) {
       *nearby_monsters++ = mon;
     }
   }
@@ -772,13 +729,12 @@ monster_polymorph(Monster* target)
 {
   assert(target != nullptr);
 
-  Coordinate pos(target->t_pos.x, target->t_pos.y);
+  // Venus Flytrap loses its grip
+  if (target->get_type() == 'F')
+    player->set_not_held();
 
-  if (target->t_type == 'F')
-    player_remove_held();
 
-  list<Item*> target_pack = target->t_pack;
-
+  Coordinate pos = target->get_position();
   bool was_seen = monster_seen_by_player(target);
   if (was_seen)
   {
@@ -786,12 +742,17 @@ monster_polymorph(Monster* target)
     io_msg_add("%s", target->get_name().c_str());
   }
 
+  // Save some things from old monster
   char oldch = target->t_oldch;
+  list<Item*> target_pack = target->t_pack;
 
+  // Generate the new monster
   char monster = static_cast<char>(os_rand_range(26) + 'A');
-  bool same_monster = monster == target->t_type;
+  bool same_monster = monster == target->get_type();
 
-  monster_new(target, monster, &pos, Game::level->get_room(pos));
+  // TODO: Test this. Important that pack and damage gets copied
+  *target = Monster(monster, pos, Game::level->get_room(pos));
+
   if (monster_seen_by_player(target))
   {
     mvaddcch(pos.y, pos.x, static_cast<chtype>(monster));
@@ -805,6 +766,7 @@ monster_polymorph(Monster* target)
   else if (was_seen)
     io_msg(" disappeared");
 
+  // Put back some saved things from old monster
   target->t_oldch = oldch;
   target->t_pack = target_pack;
 }

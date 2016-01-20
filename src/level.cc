@@ -51,9 +51,8 @@ void Level::create_treasure_room() {
   for (int i = 0; i < num_monsters; ++i) {
     Coordinate monster_pos;
     if (get_random_room_coord(room, &monster_pos, max_monsters, true)) {
-      Monster* monster = new Monster();
-      monster_new(monster, monster_random(false), &monster_pos, room);
-      monster->t_flags |= ISMEAN;  // no sloughers in THIS room
+      Monster* monster = new Monster(Monster::random_monster_type(), monster_pos, room);
+      monster->set_mean();  // no sloughers in THIS room
       monsters.push_back(monster);
       monster_give_pack(monster);
       set_monster(monster_pos, monster);
@@ -151,7 +150,7 @@ Level::Level() {
 
   // Set room pointers for all monsters
   for (Monster* mon : monsters) {
-    mon->t_room = get_room(mon->t_pos);
+    mon->set_room(get_room(mon->get_position()));
   }
 }
 

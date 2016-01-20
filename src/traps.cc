@@ -48,14 +48,14 @@ trap_door_monster(Monster* victim)
   {
     io_msg("%s fell through the floor", victim->get_name().c_str());
   }
-  monster_remove_from_screen(&victim->t_pos, victim, false);
+  monster_remove_from_screen(&victim->get_position(), victim, false);
   return T_DOOR;
 }
 
 static enum trap_t
 trap_bear_player(void)
 {
-  player_become_stuck();
+  player->become_stuck();
   io_msg("you are caught in a bear trap");
   return T_BEAR;
 }
@@ -67,7 +67,7 @@ trap_bear_monster(Monster* victim)
   {
     io_msg("%s was caught in a bear trap", victim->get_name().c_str());
   }
-  monster_become_stuck(victim);
+  victim->set_stuck();
   return T_BEAR;
 }
 
@@ -104,7 +104,7 @@ trap_myst_monster(Monster* victim)
 static enum trap_t
 trap_sleep_player(void)
 {
-  player_fall_asleep();
+  player->fall_asleep();
   io_msg_add("a strange white mist envelops you and ");
   return T_SLEEP;
 }
@@ -123,10 +123,10 @@ trap_sleep_monster(Monster* victim)
 static enum trap_t
 trap_arrow_player(void)
 {
-  if (fight_swing_hits(player_get_level() - 1, player->get_armor(), 1))
+  if (fight_swing_hits(player->get_level() - 1, player->get_armor(), 1))
   {
-    player_lose_health(roll(1, 6));
-    if (player_get_health() <= 0)
+    player->take_damage(roll(1, 6));
+    if (player->get_health() <= 0)
     {
       io_msg("an arrow killed you");
       death(DEATH_ARROW);
@@ -138,7 +138,7 @@ trap_arrow_player(void)
   {
     Item* arrow = weapon_create(ARROW, false);
     arrow->o_count = 1;
-    arrow->set_pos(*player_get_pos());
+    arrow->set_pos(player->get_position());
     weapon_missile_fall(arrow, false);
     io_msg("an arrow shoots past you");
   }
@@ -148,11 +148,11 @@ trap_arrow_player(void)
 static enum trap_t
 trap_arrow_monster(Monster* victim)
 {
-  if (fight_swing_hits(victim->t_stats.s_lvl -1,
+  if (fight_swing_hits(victim->get_level() -1,
         victim->get_armor(), 1))
   {
-    victim->t_stats.s_hpt -= roll(1,6);
-    if (victim->t_stats.s_hpt <= 0)
+    victim->take_damage(roll(1,6));
+    if (victim->get_health() <= 0)
     {
       monster_on_death(victim, false);
       if (monster_seen_by_player(victim))
@@ -165,7 +165,7 @@ trap_arrow_monster(Monster* victim)
   {
     Item* arrow = weapon_create(ARROW, false);
     arrow->o_count = 1;
-    arrow->set_pos(victim->t_pos);
+    arrow->set_pos(victim->get_position());
     weapon_missile_fall(arrow, false);
     if (monster_seen_by_player(victim))
       io_msg("An arrow barely missed %s", victim->get_name().c_str());
@@ -176,7 +176,7 @@ trap_arrow_monster(Monster* victim)
 static enum trap_t
 trap_telep_player(Coordinate* trap_coord)
 {
-  player_teleport(nullptr);
+  player->teleport(nullptr);
   mvaddcch(trap_coord->y, trap_coord->x, TRAP); /* Mark trap before we leave */
   return T_TELEP;
 }
@@ -210,18 +210,18 @@ trap_telep_monster(Monster* victim)
 static enum trap_t
 trap_dart_player(void)
 {
-  if (!fight_swing_hits(player_get_level() + 1, player->get_armor(), 1))
+  if (!fight_swing_hits(player->get_level() + 1, player->get_armor(), 1))
     io_msg("a small dart whizzes by your ear and vanishes");
   else
   {
-    player_lose_health(roll(1, 4));
-    if (player_get_health() <= 0)
+    player->take_damage(roll(1, 4));
+    if (player->get_health() <= 0)
     {
       io_msg("a poisoned dart killed you");
       death(DEATH_DART);
     }
-    if (!player_has_ring_with_ability(R_SUSTSTR) && !player_save_throw(VS_POISON))
-      player_modify_strength(-1);
+    if (!player->has_ring_with_ability(R_SUSTSTR) && !player->saving_throw(VS_POISON))
+      player->modify_strength(-1);
     io_msg("a small dart just hit you in the shoulder");
   }
   return T_DART;
@@ -231,11 +231,11 @@ static enum trap_t
 trap_dart_monster(Monster* victim)
 {
   /* TODO: In the future this should probably weaken the monster */
-  if (fight_swing_hits(victim->t_stats.s_lvl + 1,
+  if (fight_swing_hits(victim->get_level() + 1,
         victim->get_armor(), 1))
   {
-    victim->t_stats.s_hpt -= roll(1,4);
-    if (victim->t_stats.s_hpt <= 0)
+    victim->take_damage(roll(1,4));
+    if (victim->get_health() <= 0)
     {
       monster_on_death(victim, false);
       if (monster_seen_by_player(victim))
@@ -283,7 +283,7 @@ trap_spring(Monster* victim, Coordinate* trap_coord)
 
   if (is_player) {
     /* If we're levitating, we won't trigger the trap */
-    if (player_is_levitating()) {
+    if (player->is_levitating()) {
       return T_RUST; /* this needs to be neither T_DOOR nor T_TELEP */
     }
     command_stop(true);

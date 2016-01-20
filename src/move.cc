@@ -38,26 +38,24 @@ move_turn_ok(int y, int x)
 static void
 move_turnref(void)
 {
-  Coordinate *player_pos = player_get_pos();
-
-  if (!Game::level->is_discovered(*player_pos)) {
+  if (!Game::level->is_discovered(player->get_position())) {
     if (jump) {
       leaveok(stdscr, true);
       refresh();
       leaveok(stdscr, false);
     }
-    Game::level->set_discovered(*player_pos);
+    Game::level->set_discovered(player->get_position());
   }
 }
 
 static bool
 move_do_loop_wall(bool& after, int& dx, int& dy) {
-  if (passgo && running && (player_get_room()->r_flags & ISGONE) &&
-      !player_is_blind()) {
+  if (passgo && player->is_running() && (player->get_room()->r_flags & ISGONE) &&
+      !player->is_blind()) {
 
 
     if (runch == 'h' || runch == 'l') {
-      Coordinate *player_pos = player_get_pos();
+      Coordinate const* player_pos = &player->get_position();
       bool b1 = (player_pos->y != 1 && move_turn_ok(player_pos->y - 1, player_pos->x));
       bool b2 = (player_pos->y != NUMLINES - 2 && move_turn_ok(player_pos->y + 1, player_pos->x));
       if (!(b1 ^ b2)) {
@@ -78,7 +76,7 @@ move_do_loop_wall(bool& after, int& dx, int& dy) {
       return true;
 
     } else if (runch == 'j' || runch == 'k') {
-      Coordinate *player_pos = player_get_pos();
+      Coordinate const* player_pos = &player->get_position();
       bool b1 = (player_pos->x != 0 && move_turn_ok(player_pos->y, player_pos->x - 1));
       bool b2 = (player_pos->x != NUMCOLS - 1 && move_turn_ok(player_pos->y, player_pos->x + 1));
       if (!(b1 ^ b2)) {
@@ -99,33 +97,32 @@ move_do_loop_wall(bool& after, int& dx, int& dy) {
       return true;
     }
   }
-  running = false;
+  player->stop_running();
   after = false;
   return false;
 }
 
 static bool
 move_do_loop_door(bool after, Coordinate& coord, bool is_passage) {
-  Coordinate *player_pos = player_get_pos();
-  running = false;
+  player->stop_running();
 
-  if (Game::level->is_passage(*player_pos)) {
-    room_enter(&coord);
+  if (Game::level->is_passage(player->get_position())) {
+    room_enter(coord);
   }
 
-  mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
+  mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_at()));
 
   if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
-    room_leave(&coord);
+    room_leave(coord);
   }
 
-  player_set_pos(&coord);
+  player->set_position(coord);
   return after;
 }
 
 static bool
 move_do_loop_trap(bool after, Coordinate& coord, bool is_passage) {
-  Coordinate *player_pos = player_get_pos();
+  Coordinate const* player_pos = &player->get_position();
   char ch = trap_spring(nullptr, &coord);
 
   if (ch == T_DOOR || ch == T_TELEP) {
@@ -134,10 +131,10 @@ move_do_loop_trap(bool after, Coordinate& coord, bool is_passage) {
 
   mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
   if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
-    room_leave(&coord);
+    room_leave(coord);
   }
 
-  player_set_pos(&coord);
+  player->set_position(coord);
   return after;
 }
 
@@ -148,50 +145,47 @@ move_do_loop_passage(bool after, Coordinate& coord, bool is_passage) {
   // if you're leaving a maze room, so it is necessary to
   // always recalculate which room player is in.
 
-  Coordinate *player_pos = player_get_pos();
-  player_set_room(Game::level->get_room(*player_pos));
-  mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
+  player->set_room(Game::level->get_room(player->get_position()));
+  mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_at()));
 
   if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
-    room_leave(&coord);
+    room_leave(coord);
   }
 
-  player_set_pos(&coord);
+  player->set_position(coord);
 
   return after;
 }
 
 static bool
 move_do_loop_floor(bool after, Coordinate& coord, bool is_passage, bool is_real) {
-  Coordinate *player_pos = player_get_pos();
   if (!is_real) {
     trap_spring(nullptr, &coord);
   }
 
-  mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
+  mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_at()));
   if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
-    room_leave(&coord);
+    room_leave(coord);
   }
 
-  player_set_pos(&coord);
+  player->set_position(coord);
   return after;
 }
 
 static bool
 move_do_loop_default(char ch, bool after, Coordinate& coord, bool is_passage) {
-  running = false;
+  player->stop_running();
   if (isupper(ch) || Game::level->get_monster(coord)) {
     fight_against_monster(&coord, pack_equipped_item(EQUIPMENT_RHAND), false);
 
   } else {
-    Coordinate *player_pos = player_get_pos();
-    mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
+    mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_at()));
 
     if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
-      room_leave(&coord);
+      room_leave(coord);
     }
 
-    player_set_pos(&coord);
+    player->set_position(coord);
     if (ch != STAIRS) {
 
       Item *item = Game::level->get_item(coord);
@@ -215,8 +209,8 @@ move_do_loop(char ch, int dx, int dy) {
   while (loop) {
 
     Coordinate nh;
-    nh.y = player_get_pos()->y + dy;
-    nh.x = player_get_pos()->x + dx;
+    nh.y = player->get_position().y + dy;
+    nh.x = player->get_position().x + dx;
 
     /* Check if he tried to move off the screen or make an illegal
      * diagonal move, and stop him if he did. */
@@ -225,13 +219,14 @@ move_do_loop(char ch, int dx, int dy) {
       continue;
     }
 
-    if (!diag_ok(player_get_pos(), &nh)) {
-      running = false;
+    if (!diag_ok(&player->get_position(), &nh)) {
+      player->stop_running();
       return false;
     }
 
-    if (running && *player_get_pos() == nh) {
-      after = running = false;
+    if (player->is_running() && player->get_position() == nh) {
+      after = false;
+      player->stop_running();
     }
 
     bool is_passage = Game::level->is_passage(nh);
@@ -239,13 +234,13 @@ move_do_loop(char ch, int dx, int dy) {
     ch = Game::level->get_type(nh);
 
     if (!Game::level->is_real(nh) && ch == FLOOR) {
-      if (!player_is_levitating()) {
+      if (!player->is_levitating()) {
         ch = TRAP;
         Game::level->set_ch(nh, ch);
         Game::level->set_real(nh);
       }
 
-    } else if (player_is_held() && ch != 'F') {
+    } else if (player->is_held() && ch != 'F') {
       io_msg("you are being held");
       return after;
     }
@@ -290,12 +285,11 @@ move_do(char ch) {
   }
 
   // If we are confused, we don't decide ourselves where to stumble
-  if (player_is_confused() && os_rand_range(5) != 0) {
+  if (player->is_confused() && os_rand_range(5) != 0) {
 
-    Coordinate nh;
-    move_random(player, &nh);
-    if (nh == *player_get_pos()) {
-      running = false;
+    Coordinate nh = player->possible_random_move();
+    if (nh == player->get_position()) {
+      player->stop_running();
       to_death = false;
       return false;
     }
@@ -303,46 +297,6 @@ move_do(char ch) {
 
   } else {
     return move_do_loop(ch, dx, dy);
-  }
-}
-
-/** move_random:
- * Move in a random direction if the monster/person is confused */
-void
-move_random(Monster* who, Coordinate* ret)
-{
-  assert(who != nullptr);
-
-  /* Now check to see if that's a legal move.
-   * If not, don't move.(I.e., bump into the wall or whatever) */
-  int x = ret->x = who->t_pos.x + os_rand_range(3) - 1;
-  int y = ret->y = who->t_pos.y + os_rand_range(3) - 1;
-  if (y == who->t_pos.y && x == who->t_pos.x)
-    return;
-
-  if (!diag_ok(&who->t_pos, ret))
-  {
-    ret->x = who->t_pos.x;
-    ret->y = who->t_pos.y;
-    return;
-  }
-
-  char ch = Game::level->get_type(x, y);
-  if (!step_ok(ch))
-  {
-    ret->x = who->t_pos.x;
-    ret->y = who->t_pos.y;
-    return;
-  }
-
-  if (ch == SCROLL)
-  {
-    Item* item = Game::level->get_item(x, y);
-    if (item != nullptr && item->o_which == S_SCARE) {
-      ret->x = who->t_pos.x;
-      ret->y = who->t_pos.y;
-      return;
-    }
   }
 }
 

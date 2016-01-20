@@ -1,34 +1,39 @@
 #pragma once
 
-struct delayed_action {
-    int d_type;
-    void (*d_func)(int);
-    int d_arg;
-    int d_time;
-};
+#include "Player.h"
 
-void* __daemons_ptr();
+enum daemon_function {
+  runners_move,
+  doctor,
+  change_visuals,
+  ring_abilities,
+  remove_true_sight,
+  set_not_confused,
+  remove_sense_monsters,
+  set_not_hallucinating,
+  decrease_speed,
+  set_not_blind,
+  set_not_levitating
+};
 
 /* API */
 void daemon_run_before();
 void daemon_run_after();
 
 /* Daemons */
-void daemon_start(void (*func)(int), int arg, int type);
-void daemon_kill(void (*func)(int));
+void daemon_start(daemon_function func, int type);
+void daemon_kill(daemon_function func);
 
 /* Fuses */
-void daemon_start_fuse(void (*func)(int), int arg, int time, int type);
-void daemon_extinguish_fuse(void (*func)(int));
-void daemon_lengthen_fuse(void (*func)(int), int xtime);
+void daemon_start_fuse(daemon_function func, int time, int type);
+void daemon_extinguish_fuse(daemon_function func);
+void daemon_lengthen_fuse(daemon_function func, int xtime);
 
 /* Daemon actions */
-void daemon_doctor(int unused);
-void daemon_start_wanderer(int unused);
-void daemon_rollwand(int unused);
-void daemon_change_visuals(int unused);
-void daemon_runners_move(int unused);
-void daemon_ring_abilities(int unused);
+void daemon_doctor();
+void daemon_change_visuals();
+void daemon_runners_move();
+void daemon_ring_abilities();
 
 /* Daemon action affectors */
-void daemon_reset_doctor(int unused);
+void daemon_reset_doctor();

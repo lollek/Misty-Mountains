@@ -31,7 +31,7 @@ using namespace std;
 static int
 trip_ch(int y, int x, int ch)
 {
-  if (player_is_hallucinating())
+  if (player->is_hallucinating())
     switch (ch)
     {
       case FLOOR: case SHADOW: case PASSAGE: case HWALL: case VWALL: case DOOR:
@@ -59,37 +59,36 @@ roll(int number, int sides)
 void
 look(bool wakeup)
 {
-  Coordinate const* player_pos = player_get_pos();
-  char const player_ch = Game::level->get_ch(*player_pos);
+  char const player_ch = Game::level->get_ch(player->get_position());
 
-  if (move_pos_prev == *player_pos)
+  if (move_pos_prev == player->get_position())
   {
     erase_lamp(&move_pos_prev, room_prev);
-    move_pos_prev = *player_pos;
-    room_prev = player_get_room();
+    move_pos_prev = player->get_position();
+    room_prev = player->get_room();
   }
 
   int sumhero = 0;
   int diffhero = 0;
-  if (door_stop && !firstmove && running)
+  if (door_stop && !firstmove && player->is_running())
   {
-    sumhero = player_pos->y + player_pos->x;
-    diffhero = player_pos->y - player_pos->x;
+    sumhero = player->get_position().y + player->get_position().x;
+    diffhero = player->get_position().y - player->get_position().x;
   }
 
   int passcount = 0;
-  for (int y = player_pos->y - 1; y <= player_pos->y + 1; y++)
+  for (int y = player->get_position().y - 1; y <= player->get_position().y + 1; y++)
   {
     if (y <= 0 || y >= NUMLINES -1)
       continue;
 
-    for (int x = player_pos->x -1; x <= player_pos->x + 1; x++)
+    for (int x = player->get_position().x -1; x <= player->get_position().x + 1; x++)
     {
       if (x < 0 || x >= NUMCOLS)
         continue;
 
-      if (!player_is_blind()
-          && y == player_pos->y && x == player_pos->x)
+      if (!player->is_blind()
+          && y == player->get_position().y && x == player->get_position().x)
         continue;
 
       char xy_ch = Game::level->get_ch(x, y);
@@ -98,16 +97,16 @@ look(bool wakeup)
 
       if (player_ch != DOOR
           && xy_ch != DOOR
-          && Game::level->is_passage(*player_pos) !=
+          && Game::level->is_passage(player->get_position()) !=
              Game::level->is_passage(x, y))
         continue;
 
       if ((Game::level->is_passage(x, y) || xy_ch == DOOR)
-          && (Game::level->is_passage(*player_pos) || player_ch == DOOR))
+          && (Game::level->is_passage(player->get_position()) || player_ch == DOOR))
       {
-        if (player_pos->x != x && player_pos->y != y
-            && !step_ok(Game::level->get_ch(player_pos->x, y))
-            && !step_ok(Game::level->get_ch(x, player_pos->y)))
+        if (player->get_position().x != x && player->get_position().y != y
+            && !step_ok(Game::level->get_ch(player->get_position().x, y))
+            && !step_ok(Game::level->get_ch(x, player->get_position().y)))
           continue;
       }
 
@@ -116,10 +115,10 @@ look(bool wakeup)
         xy_ch = static_cast<char>(trip_ch(y, x, xy_ch));
       else
       {
-        if (player_can_sense_monsters() && monster_is_invisible(monster))
+        if (player->can_sense_monsters() && monster->is_invisible())
         {
           if (door_stop && !firstmove)
-            running = false;
+            player->stop_running();
           continue;
         }
         else
@@ -128,14 +127,15 @@ look(bool wakeup)
             monster_notice_player(y, x);
           if (monster_seen_by_player(monster))
           {
-            xy_ch = player_is_hallucinating()
+            xy_ch = player->is_hallucinating()
               ? static_cast<char>(os_rand_range(26) + 'A')
               : monster->t_disguise;
           }
         }
       }
 
-      if (player_is_blind() && (y != player_pos->y || x != player_pos->x))
+      if (player->is_blind() &&
+          (y != player->get_position().y || x != player->get_position().x))
         continue;
 
       move(y, x);
@@ -143,12 +143,12 @@ look(bool wakeup)
       if (monster != nullptr || xy_ch != incch())
         addcch(static_cast<chtype>(xy_ch));
 
-      if (door_stop && !firstmove && running)
+      if (door_stop && !firstmove && player->is_running())
       {
-        if (   (runch == 'h' && x == player_pos->x + 1)
-            || (runch == 'j' && y == player_pos->y - 1)
-            || (runch == 'k' && y == player_pos->y + 1)
-            || (runch == 'l' && x == player_pos->x - 1)
+        if (   (runch == 'h' && x == player->get_position().x + 1)
+            || (runch == 'j' && y == player->get_position().y - 1)
+            || (runch == 'k' && y == player->get_position().y + 1)
+            || (runch == 'l' && x == player->get_position().x - 1)
             || (runch == 'y' && y + x - sumhero >= 1)
             || (runch == 'u' && y - x - diffhero >= 1)
             || (runch == 'n' && y + x - sumhero <= -1)
@@ -158,12 +158,12 @@ look(bool wakeup)
         switch (xy_ch)
         {
           case DOOR:
-            if (x == player_pos->x || y == player_pos->y)
-              running = false;
+            if (x == player->get_position().x || y == player->get_position().y)
+              player->stop_running();
             break;
 
           case PASSAGE:
-            if (x == player_pos->x || y == player_pos->y)
+            if (x == player->get_position().x || y == player->get_position().y)
               passcount++;
             break;
 
@@ -171,7 +171,7 @@ look(bool wakeup)
             break;
 
           default:
-            running = false;
+            player->stop_running();
             break;
         }
       }
@@ -179,24 +179,23 @@ look(bool wakeup)
   }
 
   if (door_stop && !firstmove && passcount > 1)
-    running = false;
+    player->stop_running();
 
-  if (!running || !jump)
-    mvaddcch(player_pos->y, player_pos->x, PLAYER);
+  if (!player->is_running() || !jump)
+    mvaddcch(player->get_position().y, player->get_position().x, PLAYER);
 }
 
 void
 erase_lamp(Coordinate const* pos, struct room const* room)
 {
   if (!((room->r_flags & (ISGONE|ISDARK)) == ISDARK
-       && !player_is_blind()))
+       && !player->is_blind()))
     return;
 
-  Coordinate const* player_pos = player_get_pos();
   for (int x = pos->x -1; x <= pos->x +1; x++)
     for (int y = pos->y -1; y <= pos->y +1; y++)
     {
-      if (y == player_pos->y && x == player_pos->x)
+      if (y == player->get_position().y && x == player->get_position().x)
         continue;
 
       move(y, x);
@@ -259,7 +258,7 @@ get_dir(void)
   if (isupper(dir_ch))
     dir_ch = static_cast<char>(tolower(dir_ch));
 
-  if (player_is_confused() && os_rand_range(5) == 0)
+  if (player->is_confused() && os_rand_range(5) == 0)
     do
     {
       delta.y = os_rand_range(3) - 1;
@@ -359,15 +358,14 @@ dist(int y1, int x1, int y2, int x2)
 char
 floor_ch(void)
 {
-  return (player_get_room()->r_flags & ISGONE)
+  return (player->get_room()->r_flags & ISGONE)
     ? PASSAGE : FLOOR;
 }
 
 char
 floor_at(void)
 {
-  Coordinate *player_pos = player_get_pos();
-  char ch = Game::level->get_ch(*player_pos);
+  char ch = Game::level->get_ch(player->get_position());
   return ch == FLOOR ? floor_ch() : ch;
 }
 
@@ -378,13 +376,12 @@ fallpos(Coordinate const* pos, Coordinate* newpos)
   for (int y = pos->y - 1; y <= pos->y + 1; y++)
     for (int x = pos->x - 1; x <= pos->x + 1; x++)
     {
-      Coordinate *player_pos = player_get_pos();
       /*
        * check to make certain the spot is empty, if it is,
        * put the object there, set it in the level list
        * and re-draw the room if he can see it
        */
-      if (y == player_pos->y && x == player_pos->x)
+      if (y == player->get_position().y && x == player->get_position().x)
         continue;
 
       int ch = Game::level->get_ch(x, y);

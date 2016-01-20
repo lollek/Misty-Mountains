@@ -48,20 +48,18 @@ Game::new_level(int dungeon_level) {
     player = new Player();
   }
 
-  Coordinate* player_pos = player_get_pos();
-  Game::level->get_random_room_coord(nullptr, player_pos, 0, true);
-  room_enter(player_pos);
-  mvaddcch(player_pos->y, player_pos->x, PLAYER);
+  Coordinate new_player_pos = player->get_position();
+  Game::level->get_random_room_coord(nullptr, &new_player_pos, 0, true);
+  player->set_position(new_player_pos);
+  room_enter(new_player_pos);
+  mvaddcch(new_player_pos.y, new_player_pos.x, PLAYER);
 
   // Unhold player just in case
-  player_remove_held();
+  player->set_not_held();
 
-  if (player_can_sense_monsters()) {
-    player_add_sense_monsters(true);
-  }
-
-  if (player_is_hallucinating()) {
-    daemon_change_visuals(0);
+  // Reapply hallucination, just in case
+  if (player->is_hallucinating()) {
+    daemon_change_visuals();
   }
 }
 
@@ -129,8 +127,8 @@ Game::Game() {
   Game::new_level(Game::current_level); // Set up level (and player)
 
   /* Start up daemons and fuses */
-  daemon_start(daemon_runners_move, 0, AFTER);
-  daemon_start(daemon_doctor, 0, AFTER);
-  daemon_start(daemon_ring_abilities, 0, AFTER);
+  daemon_start(runners_move, AFTER);
+  daemon_start(doctor, AFTER);
+  daemon_start(ring_abilities, AFTER);
 }
 

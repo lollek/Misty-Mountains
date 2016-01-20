@@ -138,7 +138,7 @@ enchant_players_armor(void)
   arm->o_arm--;
   arm->o_flags &= ~ISCURSED;
   io_msg("your armor glows %s for a moment",
-          player_is_hallucinating() ? color_random().c_str() : "silver");
+          player->is_hallucinating() ? color_random().c_str() : "silver");
   return true;
 }
 
@@ -146,13 +146,13 @@ enchant_players_armor(void)
 static bool
 hold_monsters(void)
 {
-  Coordinate *player_pos = player_get_pos();
+  Coordinate const& player_pos = player->get_position();
   int monsters_affected = 0;
   Monster* held_monster = nullptr;
 
-  for (int x = player_pos->x - 2; x <= player_pos->x + 2; x++)
+  for (int x = player_pos.x - 2; x <= player_pos.x + 2; x++)
     if (x >= 0 && x < NUMCOLS)
-      for (int y = player_pos->y - 2; y <= player_pos->y + 2; y++)
+      for (int y = player_pos.y - 2; y <= player_pos.y + 2; y++)
         if (y >= 0 && y <= NUMLINES - 1)
         {
           Monster *monster = Game::level->get_monster(x, y);
@@ -184,17 +184,17 @@ hold_monsters(void)
 static bool
 create_monster(void)
 {
-  Coordinate const* player_pos = player_get_pos();
+  Coordinate const& player_pos = player->get_position();
   Coordinate mp;
   int i = 0;
 
-  for (int y = player_pos->y - 1; y <= player_pos->y + 1; y++)
-    for (int x = player_pos->x - 1; x <= player_pos->x + 1; x++)
+  for (int y = player_pos.y - 1; y <= player_pos.y + 1; y++)
+    for (int x = player_pos.x - 1; x <= player_pos.x + 1; x++)
     {
       char ch = Game::level->get_type(x, y);
 
       /* No duplicates */
-      if ((y == player_pos->y && x == player_pos->x)) {
+      if ((y == player_pos.y && x == player_pos.x)) {
         continue;
       }
 
@@ -233,8 +233,7 @@ create_monster(void)
     }
   else
   {
-    Monster *monster = new Monster();
-    monster_new(monster, monster_random(false), &mp, Game::level->get_room(mp));
+    Monster *monster = new Monster(Monster::random_monster_type(), mp, Game::level->get_room(mp));
     Game::level->monsters.push_back(monster);
     Game::level->set_monster(mp, monster);
     io_msg("A %s appears out of thin air", monster->get_name().c_str());
@@ -307,7 +306,7 @@ def:
         Monster* obj = Game::level->get_monster(x, y);
         if (obj != nullptr)
           obj->t_oldch = ch;
-        if (obj == nullptr || !player_can_sense_monsters())
+        if (obj == nullptr || !player->can_sense_monsters())
           mvaddcch(y, x, static_cast<chtype>(ch));
       }
     }
@@ -356,7 +355,7 @@ player_enchant_weapon(void)
     weapon->o_dplus++;
   io_msg("your %s glows %s for a moment",
          weapon_info[static_cast<size_t>(weapon->o_which)].oi_name.c_str(),
-         player_is_hallucinating() ? color_random().c_str() : "blue");
+         player->is_hallucinating() ? color_random().c_str() : "blue");
 
   return true;
 }
@@ -368,7 +367,7 @@ remove_curse(void)
     if (pack_equipped_item(static_cast<equipment_pos>(i)) != nullptr)
       pack_uncurse_item(pack_equipped_item(static_cast<equipment_pos>(i)));
 
-  io_msg(player_is_hallucinating()
+  io_msg(player->is_hallucinating()
       ? "you feel in touch with the Universal Onenes"
       : "you feel as if somebody is watching over you");
 }
@@ -389,7 +388,7 @@ protect_armor(void)
 
   arm->o_flags |= ISPROT;
   io_msg("your armor is covered by a shimmering %s shield",
-          player_is_hallucinating() ? color_random().c_str() : "gold");
+          player->is_hallucinating() ? color_random().c_str() : "gold");
   return true;
 }
 
@@ -414,7 +413,7 @@ scroll_read(void)
   switch (obj->o_which)
   {
     case S_CONFUSE:
-      player_set_confusing_attack();
+      player->set_confusing_attack();
       break;
     case S_ARMOR:
       if (enchant_players_armor())
@@ -426,7 +425,7 @@ scroll_read(void)
       break;
     case S_SLEEP:
       scroll_learn(S_SLEEP);
-      player_fall_asleep();
+      player->fall_asleep();
       break;
     case S_CREATE:
       if (create_monster())
@@ -449,7 +448,7 @@ scroll_read(void)
       break;
     case S_TELEP:
       scroll_learn(S_TELEP);
-      player_teleport(nullptr);
+      player->teleport(nullptr);
       break;
     case S_ENCH:
       player_enchant_weapon();

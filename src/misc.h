@@ -31,7 +31,7 @@ bool diag_ok(Coordinate const* sp, Coordinate const* ep); /* Check if move is le
  * this calculates d^2, not d, but that's good enough for
  * our purposes, since it's only used comparitively. */
 int dist(int y1, int x1, int y2, int x2);
-inline int dist_cp(Coordinate* c1, Coordinate* c2) {
+inline int dist_cp(Coordinate const* c1, Coordinate const* c2) {
   return dist(c1->y, c1->y, c2->y, c2->y);
 }
 

@@ -34,9 +34,8 @@ unknown_command(char ch)
 bool
 command_stop(bool stop_fighting)
 {
-  player_stop_running();
   door_stop = false;
-  running = false;
+  player->stop_running();
   player_alerted = true;
 
   if (stop_fighting)
@@ -51,32 +50,32 @@ command()
   daemon_run_before();
 
   int num_moves = 1;
-  num_moves += player_get_speed();
+  num_moves += player->get_speed();
 
   while (num_moves-- > 0)
   {
     look(true);
-    if (!running)
+    if (!player->is_running())
       door_stop = false;
     io_refresh_statusline();
-    if (!(running && jump))
+    if (!(player->is_running() && jump))
       refresh();
 
 
     if (player_turns_without_action && --player_turns_without_action == 0)
     {
-      player_start_running();
+      player->start_running();
       io_msg("you can move again");
     }
 
-    Coordinate* player_pos = player_get_pos();
-    move(player_pos->y, player_pos->x);
+    Coordinate const& player_pos = player->get_position();
+    move(player_pos.y, player_pos.x);
 
     if (!player_turns_without_action)
     {
       char ch;
 
-      if (running || to_death)
+      if (player->is_running() || to_death)
         ch = runch;
       else
       {
@@ -90,11 +89,11 @@ command()
         num_moves++;
 
       /* turn off flags if no longer needed */
-      if (!running)
+      if (!player->is_running())
         door_stop = false;
     }
 
-    if (!running)
+    if (!player->is_running())
       door_stop = false;
   }
 
@@ -132,7 +131,7 @@ command_do(char ch)
     case 'o': return option();
     case 'q': return potion_quaff_something();
     case 'r': return scroll_read();
-    case 's': return player_search();
+    case 's': player->search(); return true;
     case 't': return command_throw();
     case 'w': return command_wield();
     case 'x': return weapon_wield_last_used();
@@ -173,7 +172,7 @@ command_wizard_do(char ch)
   switch (ch)
   {
     case '_': raise(SIGINT); break;
-    case '|': io_msg("@ %d,%d", player_get_pos()->y, player_get_pos()->x); break;
+    case '|': io_msg("@ %d,%d", player->get_position().y, player->get_position().x); break;
     case 'C': wizard_create_item(); break;
     case '$': io_msg("inpack = %d", pack_count_items()); break;
     case CTRL('A'): Game::new_level(Game::current_level -1); break;
@@ -182,11 +181,11 @@ command_wizard_do(char ch)
     case CTRL('E'): io_msg("food left: %d", food_nutrition_left()); break;
     case CTRL('F'): wizard_show_map(); break;
     case CTRL('I'): wizard_levels_and_gear(); break;
-    case CTRL('T'): player_teleport(nullptr); break;
+    case CTRL('T'): player->teleport(nullptr); break;
     case CTRL('W'): pack_identify_item(); break;
-    case CTRL('X'): player_can_sense_monsters()
-                    ? player_remove_sense_monsters(0)
-                    : player_add_sense_monsters(true); break;
+    case CTRL('X'): player->can_sense_monsters()
+                    ? player->remove_sense_monsters()
+                    : player->set_sense_monsters(); break;
     case '*' : wizard_list_items(); break;
 
     case CTRL('~'):

@@ -96,32 +96,32 @@ potion_quaff_something(void)
   switch (obj->o_which)
   {
     case P_CONFUSE:
-      if (!player_is_hallucinating())
+      if (!player->is_hallucinating())
         potion_learn(P_CONFUSE);
-      player_set_confused(false);
+      player->set_confused();
       break;
 
     case P_POISON:
       potion_learn(P_POISON);
-      player_become_poisoned();
+      player->become_poisoned();
       break;
 
     case P_HEALING:
       potion_learn(P_HEALING);
-      player_restore_health(roll(player_get_level(), 4), true);
-      player_remove_blind(0);
+      player->restore_health(roll(player->get_level(), 4), true);
+      player->set_not_blind();
       io_msg("you begin to feel better");
       break;
 
     case P_STRENGTH:
       potion_learn(P_STRENGTH);
-      player_modify_strength(1);
+      player->modify_strength(1);
       io_msg("you feel stronger, now.  What bulging muscles!");
       break;
 
     case P_MFIND:
       potion_learn(P_MFIND);
-      player_add_sense_monsters(false);
+      player->set_sense_monsters();
       break;
 
     case P_TFIND:
@@ -157,49 +157,43 @@ potion_quaff_something(void)
 
     case P_LSD:
       potion_learn(P_LSD);
-      player_set_hallucinating(false);
+      player->set_hallucinating();
       break;
 
     case P_SEEINVIS:
-      player_add_true_sight(false);
+      player->set_true_sight();
       break;
 
     case P_RAISE:
       potion_learn(P_RAISE);
-      player_raise_level();
+      player->raise_level(1);
       break;
 
     case P_XHEAL:
       potion_learn(P_XHEAL);
-      player_restore_health(roll(player_get_level(), 8), true);
-      player_remove_blind(0);
-      player_remove_hallucinating(0);
+      player->restore_health(roll(player->get_level(), 8), true);
+      player->set_not_blind();
+      player->set_not_hallucinating();
       io_msg("you begin to feel much better");
       break;
 
     case P_HASTE:
       potion_learn(P_HASTE);
-      player_increase_speed(false);
+      player->increase_speed();
       break;
 
     case P_RESTORE:
-      if (player_strength_is_weakened())
-      {
-        player_restore_strength();
-        io_msg("you feel your strength returning");
-      }
-      else
-        io_msg("you feel warm all over");
+      player->restore_strength();
       break;
 
     case P_BLIND:
       potion_learn(P_BLIND);
-      player_set_blind(false);
+      player->set_blind();
       break;
 
     case P_LEVIT:
       potion_learn(P_LEVIT);
-      player_start_levitating(false);
+      player->set_levitating();
       break;
 
     default:

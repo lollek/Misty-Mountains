@@ -181,12 +181,11 @@ pack_move_msg(Item* obj)
 static void
 pack_add_money(int value)
 {
-  Coordinate const* player_pos = player_get_pos();
   pack_gold += value;
 
-  mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
-  Game::level->set_ch(*player_pos,
-      (player_get_room()->r_flags & ISGONE)
+  mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_ch()));
+  Game::level->set_ch(player->get_position(),
+      (player->get_room()->r_flags & ISGONE)
         ? PASSAGE
         : FLOOR);
 
@@ -197,12 +196,10 @@ pack_add_money(int value)
 static void
 pack_remove_from_floor(Item* obj)
 {
-  Coordinate const* player_pos = player_get_pos();
-
   Game::level->items.remove(obj);
-  mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
-  Game::level->set_ch(*player_pos,
-      (player_get_room()->r_flags & ISGONE)
+  mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_ch()));
+  Game::level->set_ch(player->get_position(),
+      (player->get_room()->r_flags & ISGONE)
         ? PASSAGE
         : FLOOR);
 }
@@ -210,14 +207,13 @@ pack_remove_from_floor(Item* obj)
 bool
 pack_add(Item* obj, bool silent)
 {
-  Coordinate* player_pos = player_get_pos();
   bool from_floor = false;
   bool is_picked_up = false;
 
   /* Either obj is an item or we try to take something from the floor */
   if (obj == nullptr)
   {
-    obj = Game::level->get_item(*player_pos);
+    obj = Game::level->get_item(player->get_position());
     if (obj == nullptr) {
       error("Item not found on floor");
     }
@@ -228,8 +224,8 @@ pack_add(Item* obj, bool silent)
   if (obj->o_type == SCROLL && obj->o_which == S_SCARE && obj->o_flags & ISFOUND)
   {
     Game::level->items.remove(obj);
-    mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_ch()));
-    Game::level->set_ch(*player_pos, floor_ch());
+    mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_ch()));
+    Game::level->set_ch(player->get_position(), floor_ch());
     delete obj;
     io_msg("the scroll turns to dust as you pick it up");
     return false;
@@ -305,7 +301,7 @@ Item* pack_remove(Item* obj, bool newobj, bool all) {
 void
 pack_pick_up(Item* obj, bool force)
 {
-  if (player_is_levitating())
+  if (player->is_levitating())
     return;
 
   // If this was the object of something's desire, that monster will
@@ -321,7 +317,7 @@ pack_pick_up(Item* obj, bool force)
         Game::level->items.remove(obj);
         delete obj;
         obj = nullptr;
-        player_get_room()->r_goldval = 0;
+        player->get_room()->r_goldval = 0;
       }
       return;
 
@@ -576,10 +572,9 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
 
   if (!pack_add(obj, true))
   {
-    Coordinate const* player_pos = player_get_pos();
     Game::level->items.push_back(obj);
-    Game::level->set_ch(*player_pos, static_cast<char>(obj->o_type));
-    obj->set_pos(*player_pos);
+    Game::level->set_ch(player->get_position(), static_cast<char>(obj->o_type));
+    obj->set_pos(player->get_position());
     io_msg("dropped %s", inv_name(obj, true).c_str());
   }
   else if (!quiet_on_success)

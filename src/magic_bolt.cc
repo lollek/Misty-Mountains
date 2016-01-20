@@ -89,10 +89,10 @@ magic_bolt_hit_player(Coordinate* start, string const& missile_name)
 
   if (!player_save_throw(VS_MAGIC))
   {
-    player_lose_health(roll(6, 6));
-    if (player_get_health() <= 0)
+    player->take_damage(roll(6, 6));
+    if (player->get_health() <= 0)
     {
-      if (start == player_get_pos())
+      if (start == &player->get_position())
         switch (missile_name[0])
         {
           case 'f': death(DEATH_FLAME);
@@ -100,7 +100,7 @@ magic_bolt_hit_player(Coordinate* start, string const& missile_name)
           default:  death(DEATH_UNKNOWN);
         }
       else
-        death(Game::level->get_monster(*start)->t_type);
+        death(Game::level->get_monster(*start)->get_type());
     }
     io_msg("you are hit by the %s", missile_name.c_str());
   }
@@ -134,14 +134,14 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
     bolt.o_hurldmg    = {6,6};
     weapon_info[FLAME].oi_name = const_cast<char*>(missile_name.c_str());
 
-    if (mon->t_type == 'D' && missile_name == "flame")
+    if (mon->get_type() == 'D' && missile_name == "flame")
       io_msg("the flame bounces off the dragon");
     else
       fight_against_monster(pos, &bolt, true);
   }
   else if (Game::level->get_type(*pos) != 'M' || mon->t_disguise == 'M')
   {
-    if (start == player_get_pos())
+    if (start == &player->get_position())
       monster_start_running(pos);
     else
     {
@@ -195,7 +195,7 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
   if (starting_pos == DOOR || starting_pos == PASSAGE)
   {
     char first_bounce = Game::level->get_ch(start->x + dir->x, start->y + dir->y);
-    bool is_player = *start ==* player_get_pos();
+    bool is_player = *start == player->get_position();
     if (first_bounce == HWALL || first_bounce == VWALL)
     {
       if (is_player)
@@ -219,7 +219,7 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
       io_msg("the %s bounces", name.c_str());
 
     /* Handle potential hits */
-    if (pos == *player_get_pos())
+    if (pos == player->get_position())
       magic_bolt_hit_player(start, name);
 
     Monster* tp = Game::level->get_monster(pos);

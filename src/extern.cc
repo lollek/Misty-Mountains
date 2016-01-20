@@ -15,7 +15,6 @@
 
 bool door_stop = false;			/* Stop running when we pass a door */
 bool firstmove = false;			/* First move after setting door_stop */
-bool running = false;			/* True if player is running */
 bool to_death = false;			/* Fighting is to the death! */
 
 char dir_ch;				/* Direction from last get_dir() call */

@@ -4,80 +4,56 @@
 #include <list>
 #include <vector>
 
+#include "character.h"
 #include "level_rooms.h"
 #include "Coordinate.h"
 #include "item.h"
 #include "rogue.h"
 
-/* Structure describing a fighting being */
-struct stats {
-  int                  s_str;   /* Strength */
-  int                  s_exp;   /* Experience */
-  int                  s_lvl;   /* level of mastery */
-  int                  s_arm;   /* Armor class */
-  int                  s_hpt;   /* Hit points */
-  std::vector<damage>  s_dmg;   /* Attacks */
-  int                  s_maxhp; /* Max hit points */
+struct monster_template {
+    std::string const    m_name;    // What to call the monster
+    int                  m_carry;   // Probability of carrying something
+    int                  m_flags;   // things about the monster
+    int                  m_basexp;  // Base xp
+    int                  m_level;   // Level
+    int                  m_armor;   // Armor
+    std::vector<damage>  m_dmg;     // Monster attacks
 };
 
-class Monster {
+class Monster : public Character {
 public:
-  Monster() = default;
-  Monster(Monster const&) = delete;
+  Monster(char type, Coordinate const& pos, room* room);
+  Monster(Monster const&) = delete; // Deleted since they would share inventory
 
   virtual ~Monster() = default;
 
-  Monster& operator=(Monster const&) = delete;
-  Monster& operator=(Monster&&) = delete;
+  Monster& operator=(Monster const&) = delete; // Deleted since they would share inventory
+  Monster& operator=(Monster&&) = default;
 
   // Setters
   void set_oldch(Coordinate &coord);
-  void set_invisible();
-  void set_held();
+  void set_invisible() override;
 
   // Getters
-  virtual int get_armor() const;
-  virtual std::string get_attack_string(bool successful_hit) const;
-  virtual std::string get_name() const;
+  int get_armor() const override;
+  std::string get_attack_string(bool successful_hit) const override;
+  std::string get_name() const override;
+
+  // Statics
+  static char random_monster_type();
 
   // Variables (TODO: Make these private)
-  stats              t_stats;   // Physical description
-  Coordinate         t_pos;     // Position
   Coordinate         t_dest;    // Where it is running to
-  room*              t_room;    // Current room for thing
   std::list<Item*>   t_pack;    // What the thing is carrying
 
-  int                t_flags;   // State word
-  char               t_type;    // What it is
   char               t_disguise;// What mimic looks like
   char               t_oldch;   // Character that was where it was
   bool               t_turn;    // If slowed, is it a turn to move
 
 private:
+  Monster(char type, Coordinate const& pos, room* room,
+          monster_template const& m_template);
 };
-
-
-/* flags for creatures */
-#define CANHUH	0000001		/* creature can confuse */
-#define CANSEE	0000002		/* creature can see invisible creatures */
-#define ISBLIND	0000004		/* creature is blind */
-#define ISCANC	0000010		/* creature has special qualities cancelled */
-#define ISLEVIT	0000010		/* hero is levitating */
-#define ISFOUND	0000020		/* creature has been seen (used for objects) */
-#define ISGREED	0000040		/* creature runs to protect gold */
-#define ISHASTE	0000100		/* creature has been hastened */
-#define ISTARGET 000200		/* creature is the target of an 'f' command */
-#define ISHELD	0000400		/* creature has been held */
-#define ISHUH	0001000		/* creature is confused */
-#define ISINVIS	0002000		/* creature is invisible */
-#define ISMEAN	0004000		/* creature can wake when player enters room */
-#define ISHALU	0004000		/* hero is on acid trip */
-#define ISREGEN	0010000		/* creature can regenerate */
-#define ISRUN	0020000		/* creature is running at the player */
-#define SEEMONST 040000		/* hero can detect unseen monsters */
-#define ISFLY	0040000		/* creature can fly */
-#define ISSLOW	0100000		/* creature has been slowed */
-#define ISSTUCK	0200000		/* creature cannot move its feet */
 
 
 
@@ -86,94 +62,6 @@ private:
 /* Variables, TODO: Remove these */
 extern int    monster_flytrap_hit;
 
-/* Status getters */
-static inline bool monster_is_blind(Monster const* mon)
-{ return mon->t_flags & ISBLIND; }
-static inline bool monster_is_cancelled(Monster const* mon)
-{ return mon->t_flags & ISCANC; }
-static inline bool monster_is_confused(Monster const* mon)
-{ return mon->t_flags & ISHUH; }
-static inline bool monster_is_confusing(Monster const* mon)
-{ return mon->t_flags & CANHUH; }
-static inline bool monster_is_found(Monster const* mon)
-{ return mon->t_flags & ISFOUND; }
-static inline bool monster_is_hallucinating(Monster const* mon)
-{ return mon->t_flags & ISHALU; }
-static inline bool monster_is_invisible(Monster const* mon)
-{ return mon->t_flags & ISINVIS; }
-static inline bool monster_is_levitating(Monster const* mon)
-{ return mon->t_flags & ISLEVIT; }
-static inline bool monster_is_true_seeing(Monster const* mon)
-{ return mon->t_flags & CANSEE; }
-static inline bool monster_is_held(Monster const* mon)
-{ return mon->t_flags & ISHELD; }
-static inline bool monster_is_stuck(Monster const* mon)
-{ return mon->t_flags & ISSTUCK; }
-static inline bool monster_is_chasing(Monster const* mon)
-{ return mon->t_flags & ISRUN; }
-static inline bool monster_is_mean(Monster const* mon)
-{ return mon->t_flags & ISMEAN; }
-static inline bool monster_is_greedy(Monster const* mon)
-{ return mon->t_flags & ISGREED; }
-static inline bool monster_is_players_target(Monster const* mon)
-{ return mon->t_flags & ISTARGET;}
-static inline bool monster_is_slow(Monster const* mon)
-{ return mon->t_flags & ISSLOW; }
-static inline bool monster_is_hasted(Monster const* mon)
-{ return mon->t_flags & ISHASTE; }
-static inline bool monster_is_flying(Monster const* mon)
-{ return mon->t_flags & ISFLY; }
-
-/* Status setters */
-static inline void monster_set_blind(Monster* mon)
-{ mon->t_flags |= ISBLIND; }
-static inline void monster_set_cancelled(Monster* mon)
-{ mon->t_flags |= ISCANC; }
-static inline void monster_set_confused(Monster* mon)
-{ mon->t_flags |= ISHUH; }
-static inline void monster_set_confusing(Monster* mon)
-{ mon->t_flags |= CANHUH; }
-static inline void monster_set_found(Monster* mon)
-{ mon->t_flags |= ISFOUND; }
-static inline void monster_set_hallucinating(Monster* mon)
-{ mon->t_flags |= ISHALU; }
-static inline void monster_set_levitating(Monster* mon)
-{ mon->t_flags |= ISLEVIT; }
-static inline void monster_set_true_seeing(Monster* mon)
-{ mon->t_flags |= CANSEE; }
-static inline void monster_become_stuck(Monster* mon)
-{ mon->t_flags |= ISSTUCK; }
-
-/* Status unsetters */
-static inline void monster_remove_blind(Monster* mon)
-{ mon->t_flags &= ~ISBLIND; }
-static inline void monster_remove_cancelled(Monster* mon)
-{ mon->t_flags &= ~ISCANC; }
-static inline void monster_remove_confused(Monster* mon)
-{ mon->t_flags &= ~ISHUH; }
-static inline void monster_remove_confusing(Monster* mon)
-{ mon->t_flags &= ~CANHUH; }
-static inline void monster_remove_found(Monster* mon)
-{ mon->t_flags &= ~ISFOUND; }
-static inline void monster_remove_hallucinating(Monster* mon)
-{ mon->t_flags &= ~ISHALU; }
-static inline void monster_remove_invisible(Monster* mon)
-{ mon->t_flags &= ~ISINVIS; }
-static inline void monster_remove_levitating(Monster* mon)
-{ mon->t_flags &= ~ISLEVIT; }
-static inline void monster_remove_true_seeing(Monster* mon)
-{ mon->t_flags &= ~CANSEE; }
-static inline void monster_remove_held(Monster* mon)
-{ mon->t_flags &= ~ISHELD; }
-
-/* Pick a monster to show up.  The lower the level, the meaner the monster. */
-char monster_random(bool wander);
-
-/* Pick a new monster and add it to the monster list */
-void monster_new(Monster* tp, char type, Coordinate* cp, room* room);
-
-/* Create a new wandering monster and aim it at the player */
-void monster_new_random_wanderer(void);
 
 /* What to do when the hero steps next to a monster */
 Monster *monster_notice_player(int y, int x);
@@ -191,7 +79,7 @@ void monster_start_running(Coordinate const* runner);
 void monster_on_death(Monster* tp, bool pr);
 
 /* Remove a monster from the screen */
-void monster_remove_from_screen(Coordinate* mp, Monster* tp, bool waskill);
+void monster_remove_from_screen(Coordinate const* mp, Monster* tp, bool waskill);
 
 bool monster_is_dead(Monster const* monster);
 

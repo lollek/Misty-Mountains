@@ -22,7 +22,6 @@
 
 extern bool door_stop;
 extern bool firstmove;
-extern bool running;
 extern bool to_death;
 
 extern char dir_ch;
