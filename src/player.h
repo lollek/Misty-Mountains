@@ -82,8 +82,3 @@ extern int          player_turns_without_action; /* Turns asleep */
 extern int          player_turns_without_moving; /* Turns held in place */
 extern bool         player_alerted;              /* Alert the player? */
 extern stats        player_max_stats;            /* Current max stats */
-
-int player_save_throw(int which);
-
-bool player_has_ring_with_ability(int ability);
-

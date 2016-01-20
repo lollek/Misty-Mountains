@@ -172,7 +172,7 @@ void Character::take_damage(int damage) {
   health -= damage;
 }
 
-void Character::seroom(struct room* new_room) {
+void Character::set_room(struct room* new_room) {
   room = new_room;
 }
 
@@ -278,4 +278,52 @@ void Character::lower_level(int amount) {
 
 int Character::get_level() const {
   return level;
+}
+
+int Character::get_armor() const {
+  return armor;
+}
+
+int Character::get_type() const {
+  return type;
+}
+
+room* Character::get_room() const {
+  return room;
+}
+
+int Character::get_experience() const {
+  return experience;
+}
+
+int Character::get_strength() const {
+  return strength;
+}
+
+int Character::get_health() const {
+  return health;
+}
+
+int Character::get_max_health() const {
+  return max_health;
+}
+
+Coordinate const& Character::get_position() const {
+  return position;
+}
+
+std::vector<damage> const& Character::get_attacks() const {
+  return attacks;
+}
+
+void Character::set_mean() {
+  flags |= ISMEAN;
+}
+
+void Character::set_players_target() {
+  flags |= ISTARGET;
+}
+
+void Character::set_not_players_target() {
+  flags &= ~ISTARGET;
 }

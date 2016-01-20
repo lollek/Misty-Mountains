@@ -86,7 +86,7 @@ armor_rust() {
     return;
   }
 
-  if ((arm->o_flags & ISPROT) || player_has_ring_with_ability(R_SUSTARM)) {
+  if ((arm->o_flags & ISPROT) || player->has_ring_with_ability(R_SUSTARM)) {
     if (!to_death) {
       io_msg("the rust vanishes instantly");
     }

@@ -216,7 +216,7 @@ bool Player::saving_throw(int which) const {
 
 bool Player::has_true_sight() const {
   return Character::has_true_sight() ||
-    player_has_ring_with_ability(R_SEEINVIS);
+    player->has_ring_with_ability(R_SEEINVIS);
 }
 
 void Player::set_true_sight() {
@@ -402,7 +402,7 @@ void Player::become_stuck() {
 }
 
 void Player::become_poisoned() {
-  if (player_has_ring_with_ability(R_SUSTSTR)) {
+  if (player->has_ring_with_ability(R_SUSTSTR)) {
     io_msg("you feel momentarily nauseous");
 
   } else {
@@ -413,7 +413,7 @@ void Player::become_poisoned() {
 }
 
 bool Player::is_stealthy() const {
-  return player_has_ring_with_ability(R_STEALTH)
+  return player->has_ring_with_ability(R_STEALTH)
     || is_levitating();
 }
 

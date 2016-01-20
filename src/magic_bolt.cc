@@ -87,7 +87,7 @@ magic_bolt_hit_player(Coordinate* start, string const& missile_name)
     error("start coord was null");
   }
 
-  if (!player_save_throw(VS_MAGIC))
+  if (!player->saving_throw(VS_MAGIC))
   {
     player->take_damage(roll(6, 6));
     if (player->get_health() <= 0)

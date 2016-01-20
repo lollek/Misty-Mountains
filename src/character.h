@@ -34,7 +34,6 @@ class Character {
 public:
   virtual ~Character() = default;
 
-  virtual int get_armor() const = 0;
   virtual std::string get_attack_string(bool successful_hit) const = 0;
   virtual std::string get_name() const = 0;
 
@@ -43,17 +42,17 @@ public:
   int                        get_default_strength() const;
   int                        get_experience() const;
   int                        get_level() const;
-  int                        get_base_armor() const;
+  virtual int                get_armor() const;
   int                        get_health() const;
   int                        get_max_health() const;
-  Coordinate const&          gepositionition() const;
-  room*                      geroom() const;
+  Coordinate const&          get_position() const;
+  room*                      get_room() const;
   std::vector<damage> const& get_attacks() const;
-  int                        getype() const;
+  int                        get_type() const;
 
   // Setters
-  virtual void seroom(room* new_room);
-  virtual void sepositionition(Coordinate const& position);
+  virtual void set_room(room* new_room);
+  virtual void set_position(Coordinate const& position);
 
   // Modifiers
   virtual void take_damage(int damage);
@@ -70,7 +69,7 @@ public:
   virtual bool is_hurt() const;
 
   // Flag getters
-  virtual int  geflags() const;
+  virtual int  get_flags() const;
   virtual bool is_blind() const;
   virtual bool is_cancelled() const;
   virtual bool is_confused() const;

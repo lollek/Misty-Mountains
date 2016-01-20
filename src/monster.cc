@@ -65,7 +65,7 @@ vector<monster_template> const monsters {
 
 
 int Monster::get_armor() const {
-  return get_base_armor();
+  return Character::get_armor();
 }
 
 void Monster::set_oldch(Coordinate &coord) {
@@ -185,11 +185,11 @@ static int extra_experience(int level, int max_health) {
   return mod;
 }
 
-Monster::Monster(char type, Coordinate const& pos, room* room) :
+Monster::Monster(char type, Coordinate const& pos, struct room* room) :
   Monster(type, pos, room, monsters.at(static_cast<size_t>(type - 'A')))
 {}
 
-Monster::Monster(char type, Coordinate const& pos, room* room,
+Monster::Monster(char type, Coordinate const& pos, struct room* room,
                  monster_template const& m_template) :
   Character(10, m_template.m_basexp, m_template.m_level, m_template.m_armor,
             roll(m_template.m_level, 8), m_template.m_dmg, pos, room,
