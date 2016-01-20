@@ -46,14 +46,14 @@ public:
   int                        get_base_armor() const;
   int                        get_health() const;
   int                        get_max_health() const;
-  Coordinate const&          get_position() const;
-  room*                      get_room() const;
+  Coordinate const&          gepositionition() const;
+  room*                      geroom() const;
   std::vector<damage> const& get_attacks() const;
-  int                        get_type() const;
+  int                        getype() const;
 
   // Setters
-  virtual void set_room(room* new_room);
-  virtual void set_position(Coordinate const& position);
+  virtual void seroom(room* new_room);
+  virtual void sepositionition(Coordinate const& position);
 
   // Modifiers
   virtual void take_damage(int damage);
@@ -70,7 +70,7 @@ public:
   virtual bool is_hurt() const;
 
   // Flag getters
-  virtual int  get_flags() const;
+  virtual int  geflags() const;
   virtual bool is_blind() const;
   virtual bool is_cancelled() const;
   virtual bool is_confused() const;
@@ -142,17 +142,17 @@ protected:
 
 
 private:
-  int                  s_str;   // Strength
-  int                  s_defstr; // Default strength (if strength is weakened)
-  int                  s_exp;   // Experience
-  int                  s_lvl;   // level of mastery
-  int                  s_arm;   // Armor class
-  int                  s_hpt;   // Hit points
-  std::vector<damage>  s_dmg;   // Attacks
-  int                  s_maxhp; // Max hit points
-  Coordinate           t_pos;   // Current position
-  room*                t_room;  // Current room for thing
-  int                  t_flags; // State word
-  char                 t_type;  // What it is
+  int                  strength;   // Strength
+  int                  default_strength; // Default strength (if strength is weakened)
+  int                  experience;   // Experience
+  int                  level;   // level of mastery
+  int                  armor;   // Armor class
+  int                  health;   // Hit points
+  std::vector<damage>  attacks;   // Attacks
+  int                  max_health; // Max hit points
+  Coordinate           position;   // Current position
+  room*                room;  // Current room for thing
+  int                  flags; // State word
+  char                 type;  // What it is
 };
 

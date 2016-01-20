@@ -22,7 +22,7 @@ struct monster_template {
 
 class Monster : public Character {
 public:
-  Monster(char type, Coordinate const& pos, room* room);
+  Monster(char type, Coordinate const& pos, struct room* room);
   Monster(Monster const&) = delete; // Deleted since they would share inventory
 
   virtual ~Monster() = default;
@@ -51,7 +51,7 @@ public:
   bool               t_turn;    // If slowed, is it a turn to move
 
 private:
-  Monster(char type, Coordinate const& pos, room* room,
+  Monster(char type, Coordinate const& pos, struct room* room,
           monster_template const& m_template);
 };
 
