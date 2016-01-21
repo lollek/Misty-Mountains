@@ -57,8 +57,8 @@ pr_spec(char type)
 
     if (type == ARMOR)
     {
-      name = armor_name(static_cast<Armor::Type>(i));
-      prob = static_cast<size_t>(armor_probability(static_cast<Armor::Type>(i)));
+      name = Armor::name(static_cast<Armor::Type>(i));
+      prob = static_cast<size_t>(Armor::probability(static_cast<Armor::Type>(i)));
     }
     else
     {

@@ -24,7 +24,7 @@ public:
   Item() = default;
   Item(Item const&) = default;
 
-  ~Item() = default;
+  virtual ~Item();
 
   Item& operator=(Item const&) = default;
   Item& operator=(Item&&) = default;

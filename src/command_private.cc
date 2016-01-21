@@ -652,3 +652,30 @@ bool command_drop(void)
   return true;
 }
 
+bool command_wear() {
+  Item* obj = pack_get_item("wear", ARMOR);
+
+  if (obj == nullptr) {
+    return false;
+  }
+
+  if (obj->o_type != ARMOR) {
+    io_msg("you can't wear that");
+    return command_wear();
+  }
+
+  if (pack_equipped_item(EQUIPMENT_ARMOR) != nullptr) {
+    if (!pack_unequip(EQUIPMENT_ARMOR, false)) {
+      return true;
+    }
+  }
+
+  player->waste_time(1);
+  pack_remove(obj, false, true);
+  pack_equip_item(obj);
+
+  io_msg("now wearing %s", inv_name(obj, true).c_str());
+  return true;
+}
+
+

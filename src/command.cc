@@ -148,7 +148,7 @@ command_do(char ch)
     case 'Q': return command_quit();
     case 'R': return ring_take_off();
     case 'T': return command_take_off(EQUIPMENT_ARMOR);
-    case 'W': return armor_command_wear();
+    case 'W': return command_wear();
     case 'Z': return command_rest();
 
     /* Ctrl case */

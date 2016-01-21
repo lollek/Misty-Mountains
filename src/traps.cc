@@ -259,7 +259,7 @@ static enum trap_t
 trap_rust_player(void)
 {
   io_msg("a gush of water hits you on the head");
-  armor_rust();
+  player->rust_armor();
   return T_RUST;
 }
 

@@ -597,3 +597,21 @@ bool Player::has_ring_with_ability(int ability) const {
   return false;
 }
 
+void Player::rust_armor() {
+  Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  if (arm == nullptr || arm->o_type != ARMOR || arm->o_which == Armor::Type::LEATHER ||
+      arm->o_arm >= 9) {
+    return;
+  }
+
+  if ((arm->o_flags & ISPROT) || has_ring_with_ability(R_SUSTARM)) {
+    if (!to_death) {
+      io_msg("the rust vanishes instantly");
+    }
+  }
+  else {
+    arm->o_arm++;
+    io_msg("your armor weakens");
+  }
+}
+

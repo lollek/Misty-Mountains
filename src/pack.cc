@@ -92,9 +92,9 @@ pack_print_evaluate_item(Item* item)
       break;
 
     case ARMOR:
-      worth = armor_value(static_cast<Armor::Type>(item->o_which));
+      worth = Armor::value(static_cast<Armor::Type>(item->o_which));
       worth += (9 - item->o_arm) * 100;
-      worth += (10 * (armor_ac(static_cast<Armor::Type>(item->o_which)) - item->o_arm));
+      worth += (10 * (Armor::ac(static_cast<Armor::Type>(item->o_which)) - item->o_arm));
       item->o_flags |= ISKNOW;
       break;
 

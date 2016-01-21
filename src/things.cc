@@ -180,7 +180,6 @@ discovered_by_type(char type, vector<obj_info>& info, size_t max_items)
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
   Item printable_object;
-  memset(&printable_object, 0, sizeof(printable_object));
   printable_object.o_type = type;
   printable_object.o_flags = 0;
   printable_object.o_count = 1;

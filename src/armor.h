@@ -24,25 +24,24 @@ public:
   Armor(Type type, bool random_stats);
   // Armor of random type
   Armor(bool random_stats);
+  ~Armor();
 
+  // Setters
+  void set_identified();
+  void set_not_identified();
+
+  // Getters
+  bool is_identified() const;
+  std::string get_description() const;
+
+  // Static
+  static int probability(Type type);
+  static std::string name(Type type);
+  static int value(Type type);
+  static int ac(Type type);
+
+private:
+  bool              identified;
 };
-
-struct armor_info_t
-{
-  std::string const name;
-  int ac;    /* Armor bonus */
-  int prob;  /* probability of drop */
-  int value; /* Value in gold */
-  int known; /* Is it known by player? */
-};
-
-std::string const& armor_name(Armor::Type armor);
-int armor_ac(Armor::Type armor);
-int armor_value(Armor::Type armor);
-int armor_probability(Armor::Type i);
-Armor::Type armor_type_random();
-
-void armor_rust();             /* Rust players armor */
-bool armor_command_wear();     /* Let player select something to wear */
 
 std::string armor_description(Item const* item);

@@ -18,14 +18,35 @@ using namespace std;
 
 #include "armor.h"
 
+Armor::~Armor() {}
+
+static Armor::Type random_armor_type() {
+  int value = os_rand_range(100);
+
+  int end = static_cast<int>(Armor::Type::NARMORS);
+  for (int i = 0; i < end; ++i) {
+    Armor::Type type = static_cast<Armor::Type>(i);
+    int probability = Armor::probability(type);
+
+    if (value < probability) {
+      return type;
+
+    } else {
+      value -= probability;
+    }
+  }
+
+  error("Error! Sum of probabilities is not 100%");
+}
+
 Armor::Armor(bool random_stats) :
-  Armor(armor_type_random(), random_stats)
+  Armor(random_armor_type(), random_stats)
 {}
 
 Armor::Armor(Armor::Type type, bool random_stats) {
   o_type = ARMOR;
   o_which = type;
-  o_arm = armor_ac(type);
+  o_arm = Armor::ac(type);
 
   if (random_stats) {
     int rand = os_rand_range(100);
@@ -39,96 +60,84 @@ Armor::Armor(Armor::Type type, bool random_stats) {
   }
 }
 
-static vector<armor_info_t const> armors {
- /* name                   ac  prob value known */
- { "leather armor",         8, 20,   20,  false },
- { "ring mail",             7, 15,   25,  false },
- { "studded leather armor", 7, 15,   20,  false },
- { "scale mail",            6, 13,   30,  false },
- { "chain mail",            5, 12,   75,  false },
- { "splint mail",           4, 10,   80,  false },
- { "banded mail",           4, 10,   90,  false },
- { "plate mail",            3,  5,  150,  false },
-};
-
-string const& armor_name(Armor::Type i)  { return armors.at(i).name; }
-int armor_ac(Armor::Type i)              { return armors.at(i).ac; }
-int armor_value(Armor::Type i)           { return armors.at(i).value; }
-int armor_probability(Armor::Type i)     { return armors.at(i).prob; }
-
-bool
-armor_command_wear() {
-  Item* obj = pack_get_item("wear", ARMOR);
-
-  if (obj == nullptr) {
-    return false;
-  }
-
-  if (obj->o_type != ARMOR) {
-    io_msg("you can't wear that");
-    return armor_command_wear();
-  }
-
-  if (pack_equipped_item(EQUIPMENT_ARMOR) != nullptr) {
-    if (!pack_unequip(EQUIPMENT_ARMOR, false)) {
-      return true;
-    }
-  }
-
-  player->waste_time(1);
-  pack_remove(obj, false, true);
-  pack_equip_item(obj);
-
-  io_msg("now wearing %s", inv_name(obj, true).c_str());
-  return true;
+void Armor::set_identified() {
+  identified = true;
 }
 
-Armor::Type
-armor_type_random() {
-  int value = os_rand_range(100);
-  for (Armor::Type i = static_cast<Armor::Type>(0);
-       i < Armor::Type::NARMORS;
-       i = static_cast<Armor::Type>(static_cast<int>(i) + 1)) {
-    if (value < armors[i].prob) {
-      return i;
-    } else {
-      value -= armors[i].prob;
-    }
-  }
-
-  error("Error! Sum of probabilities is not 100%");
+void Armor::set_not_identified() {
+  identified = false;
 }
 
-void
-armor_rust() {
-  Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  if (arm == nullptr || arm->o_type != ARMOR || arm->o_which == Armor::Type::LEATHER ||
-      arm->o_arm >= 9) {
-    return;
-  }
+bool Armor::is_identified() const {
+  return identified;
+}
 
-  if ((arm->o_flags & ISPROT) || player->has_ring_with_ability(R_SUSTARM)) {
-    if (!to_death) {
-      io_msg("the rust vanishes instantly");
-    }
-  }
-  else {
-    arm->o_arm++;
-    io_msg("your armor weakens");
+int Armor::probability(Armor::Type type) {
+  switch (type) {
+    case LEATHER:         return 20;
+    case RING_MAIL:       return 15;
+    case STUDDED_LEATHER: return 15;
+    case SCALE_MAIL:      return 13;
+    case CHAIN_MAIL:      return 12;
+    case SPLINT_MAIL:     return 10;
+    case BANDED_MAIL:     return 10;
+    case PLATE_MAIL:      return  5;
+    case NARMORS:         error("Unknown type NARMORS");
   }
 }
 
-string
-armor_description(Item const* item) {
+string Armor::name(Armor::Type type) {
+  switch (type) {
+    case LEATHER:         return "leather armor";
+    case RING_MAIL:       return "ring mail";
+    case STUDDED_LEATHER: return "studded leather armor";
+    case SCALE_MAIL:      return "scale mail";
+    case CHAIN_MAIL:      return "chain mail";
+    case SPLINT_MAIL:     return "splint mail";
+    case BANDED_MAIL:     return "banded mail";
+    case PLATE_MAIL:      return "plate mail";
+    case NARMORS:         error("Unknown type NARMORS");
+  }
+}
+
+int Armor::value(Armor::Type type) {
+  switch (type) {
+    case LEATHER:         return 20;
+    case RING_MAIL:       return 25;
+    case STUDDED_LEATHER: return 20;
+    case SCALE_MAIL:      return 30;
+    case CHAIN_MAIL:      return 75;
+    case SPLINT_MAIL:     return 80;
+    case BANDED_MAIL:     return 90;
+    case PLATE_MAIL:      return 150;
+    case NARMORS:         error("Unknown type NARMORS");
+  }
+}
+
+int Armor::ac(Armor::Type type) {
+  switch (type) {
+    case LEATHER:         return 8;
+    case RING_MAIL:       return 7;
+    case STUDDED_LEATHER: return 7;
+    case SCALE_MAIL:      return 6;
+    case CHAIN_MAIL:      return 5;
+    case SPLINT_MAIL:     return 4;
+    case BANDED_MAIL:     return 4;
+    case PLATE_MAIL:      return 3;
+    case NARMORS:         error("Unknown type NARMORS");
+  }
+}
+
+string Armor::get_description() const {
   stringstream buffer;
 
-  string const& obj_name = armor_name(static_cast<Armor::Type>(item_subtype(item)));
-  int bonus_ac = armor_ac(static_cast<Armor::Type>(item_subtype(item))) -item_armor(item);
-  int base_ac = 10 - item_armor(item) - bonus_ac;
+  string const& obj_name = Armor::name(static_cast<Armor::Type>(item_subtype(this)));
+  int bonus_ac = Armor::ac(static_cast<Armor::Type>(item_subtype(this))) -item_armor(this);
+  int base_ac = 10 - item_armor(this) - bonus_ac;
 
   buffer << "A" << vowelstr(obj_name) << " " <<obj_name << " [" << base_ac;
 
-  if (item_is_known(item)) {
+  if (item_is_known(this)) {
     buffer << ",";
     if (bonus_ac > 0) {
       buffer << "+";
@@ -137,10 +146,20 @@ armor_description(Item const* item) {
   }
   buffer << "]";
 
-  if (!item->get_nickname().empty()) {
-    buffer << " called " << item->get_nickname();
+  if (!get_nickname().empty()) {
+    buffer << " called " << get_nickname();
   }
 
   return buffer.str();
+}
+
+
+string
+armor_description(Item const* item) {
+  Armor const* armor = dynamic_cast<Armor const*>(item);
+  if (armor == nullptr) {
+    error("Cannot describe non-armor as armor");
+  }
+  return armor->get_description();
 }
 

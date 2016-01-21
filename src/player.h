@@ -63,6 +63,7 @@ public:
   bool has_seen_stairs() const;
   bool can_see(Coordinate const& coord) const;
   void search();
+  void rust_armor();
   std::string get_attack_string(bool successful_hit) const override;
   std::string get_name() const override;
 

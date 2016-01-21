@@ -123,7 +123,6 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
   if (!monster_save_throw(VS_MAGIC, mon))
   {
     Item bolt;
-    memset(&bolt, 0, sizeof(bolt));
     bolt.o_type       = WEAPON;
     bolt.o_which      = FLAME;
     bolt.o_hplus      = 100;

@@ -435,7 +435,7 @@ monster_do_special_ability(Monster** monster)
   {
     /* If an aquator hits, you can lose armor class */
     case 'A':
-      armor_rust();
+      player->rust_armor();
       return;
 
     /* Venus Flytrap stops the poor guy from moving */

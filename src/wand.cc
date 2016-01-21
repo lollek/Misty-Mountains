@@ -214,7 +214,6 @@ static void
 wand_spell_magic_missile(int dy, int dx)
 {
   Item bolt;
-  memset(&bolt, 0, sizeof(bolt));
   bolt.o_type    = '*';
   bolt.o_hplus   = 100;
   bolt.o_dplus   = 1;
