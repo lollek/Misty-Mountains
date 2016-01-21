@@ -35,7 +35,19 @@ static list<Fuse> fuses;
 static int quiet_rounds = 0;
 
 static void execute_daemon_function(daemon_function func) {
-  (void)func;
+  switch(func) {
+    case runners_move:          daemon_runners_move(); break;
+    case doctor:                daemon_doctor(); break;
+    case change_visuals:        daemon_change_visuals(); break;
+    case ring_abilities:        daemon_ring_abilities(); break;
+    case remove_true_sight:     player->remove_true_sight(); break;
+    case set_not_confused:      player->set_not_confused(); break;
+    case remove_sense_monsters: player->remove_sense_monsters(); break;
+    case set_not_hallucinating: player->set_not_hallucinating(); break;
+    case decrease_speed:        player->decrease_speed(); break;
+    case set_not_blind:         player->set_not_blind(); break;
+    case set_not_levitating:    player->set_not_levitating(); break;
+  }
 }
 
 // Run all the daemons that are active with the current flag
