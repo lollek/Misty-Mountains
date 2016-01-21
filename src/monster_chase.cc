@@ -22,34 +22,22 @@ using namespace std;
 #include "monster.h"
 #include "monster_private.h"
 
-static bool chase_as_confused(Monster& monster, Coordinate const& coord,
-                              Coordinate& retval) {
-  // get a valid random move
-  retval = monster.possible_random_move();
-  int curdist = dist_cp(&retval, &coord);
-
-  // Small chance that it will become un-confused
-  if (os_rand_range(20) == 0) {
-    monster.set_not_confused();
-  }
-
-  return curdist != 0 && !(retval == player->get_position());
-}
-
-
 // Find the spot for the chaser(er) to move closer to the chasee(ee).
-// Returns true if we want to keep on chasing later
-// TODO: Clean up this monster
-static bool chase(Monster& monster, Coordinate const& coord, Coordinate& retval) {
-
+static Coordinate chase(Monster& monster, Coordinate const& coord) {
 
   // If the thing is confused, let it move randomly.
   // Invisible Stalkers are slightly confused all of the time
   // Bats are quite confused all the time
   if ((monster.is_confused() && os_rand_range(5) != 0)
       || (monster.get_type() == 'P' && os_rand_range(5) == 0)
-      || (monster.get_type() == 'B' && os_rand_range(2) == 0))
-    return chase_as_confused(monster, coord, retval);
+      || (monster.get_type() == 'B' && os_rand_range(2) == 0)) {
+
+    // Small chance that it will become un-confused
+    if (os_rand_range(20) == 0) {
+      monster.set_not_confused();
+    }
+    return monster.possible_random_move();
+  }
 
   // Otherwise, find the empty spot next to the chaser that is
   // closest to the chasee. This will eventually hold where we
@@ -57,9 +45,9 @@ static bool chase(Monster& monster, Coordinate const& coord, Coordinate& retval)
   // we stay where we are
   Coordinate const& er = monster.get_position();
   int curdist = dist_cp(&er, &coord);
-  retval = er;
-
+  Coordinate retval = er;
   int plcnt = 1;
+
   Coordinate xy;
   for (xy.x = max(er.x - 1, 0); xy.x <= min(er.x + 1, NUMCOLS -1); xy.x++) {
     for (xy.y = max(er.y - 1, 0); xy.y <= min(er.y + 1, NUMLINES - 2); xy.y++) {
@@ -100,7 +88,7 @@ static bool chase(Monster& monster, Coordinate const& coord, Coordinate& retval)
       }
     }
   }
-  return curdist != 0 && !(retval == player->get_position());
+  return retval;
 }
 
 
@@ -160,8 +148,9 @@ over:
    // so we run to it.  If we hit it we either want to fight it
    // or stop running
   bool stoprun = false; // true means we are there
-  Coordinate chase_coord;
-  if (!chase(monster, m_this, chase_coord)) {
+  Coordinate chase_coord = chase(monster, m_this);
+  if (dist_cp(&chase_coord, &m_this) == 0 ||
+      chase_coord == player->get_position()) {
 
     // If we have run into the player, fight it
     if (m_this == player->get_position()) {
