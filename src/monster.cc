@@ -215,6 +215,10 @@ Monster::Monster(char type, Coordinate const& pos, struct room* room,
     t_disguise = rnd_thing();
 }
 
+void Monster::set_target(Coordinate const* new_target) {
+  t_dest = new_target;
+}
+
 Monster*
 monster_notice_player(int y, int x)
 {
@@ -227,7 +231,7 @@ monster_notice_player(int y, int x)
       && !player->is_stealthy()
       && !os_rand_range(3))
   {
-    monster_set_target(monster, player->get_position());
+    monster->set_target(&player->get_position());
     if (!monster->is_stuck())
       monster->set_chasing();
   }
@@ -256,9 +260,9 @@ monster_notice_player(int y, int x)
   /* Let greedy ones guard gold */
   if (monster->is_greedy() && !monster->is_chasing())
   {
-    monster_set_target(monster, player->get_room()->r_goldval
-        ? player->get_room()->r_gold
-        : player->get_position());
+    monster->set_target(player->get_room()->r_goldval
+        ? &player->get_room()->r_gold
+        : &player->get_position());
     monster->set_chasing();
   }
 
@@ -634,8 +638,8 @@ void
 monster_aggro_all_which_desire_item(Item* item)
 {
   for (Monster* mon : Game::level->monsters) {
-    if (mon->t_dest == item->get_pos()) {
-      mon->t_dest = player->get_position();
+    if (mon->t_dest == &item->get_pos()) {
+      mon->t_dest = &player->get_position();
     }
   }
 }

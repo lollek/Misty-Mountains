@@ -21,7 +21,7 @@ monster_find_new_target(Monster* monster)
   int prob = monsters.at(static_cast<size_t>(monster->get_type() - 'A')).m_carry;
   if (prob <= 0 || monster->get_room() == player->get_room()
       || monster_seen_by_player(monster)) {
-    monster_set_target(monster, player->get_position());
+    monster->set_target(&player->get_position());
     return;
   }
 
@@ -34,21 +34,15 @@ monster_find_new_target(Monster* monster)
     {
       auto result = find_if(Game::level->monsters.cbegin(), Game::level->monsters.cend(),
           [&] (Monster const* m) {
-          return m->t_dest == obj->get_pos();
+          return m->t_dest == &obj->get_pos();
       });
 
       if (result == Game::level->monsters.cend()) {
-        monster_set_target(monster, obj->get_pos());
+        monster->set_target(&obj->get_pos());
         return;
       }
     }
   }
 
-  monster_set_target(monster, player->get_position());
-}
-
-void
-monster_set_target(Monster* mon, Coordinate const& target)
-{
-  mon->t_dest = target;
+  monster->set_target(&player->get_position());
 }

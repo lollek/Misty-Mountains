@@ -153,12 +153,16 @@ chase_do(Monster *th)
     rer = th->get_room();
 
     if (th->is_greedy() && rer->r_goldval == 0)
-	th->t_dest = player->get_position();	/* If gold has been taken, run after hero */
+	th->t_dest = &player->get_position();	/* If gold has been taken, run after hero */
 
-    if (th->t_dest == player->get_position())	/* Find room of chasee */
+    if (th->t_dest == nullptr) {
+      error("Cannot chase after null");
+    }
+
+    if (th->t_dest == &player->get_position())	/* Find room of chasee */
 	ree = player->get_room();
     else
-	ree = Game::level->get_room(th->t_dest);
+	ree = Game::level->get_room(*th->t_dest);
 
     /* We don't count doors as inside rooms for this routine */
     door = (Game::level->get_ch(th->get_position()) == DOOR);
@@ -171,7 +175,7 @@ over:
     {
 	for (cp = rer->r_exit; cp < &rer->r_exit[rer->r_nexits]; cp++)
 	{
-	    curdist = dist_cp(&th->t_dest, cp);
+	    curdist = dist_cp(th->t_dest, cp);
 	    if (curdist < mindist)
 	    {
 		m_this = *cp;
@@ -187,7 +191,7 @@ over:
     }
     else
     {
-	m_this = th->t_dest;
+	m_this = *th->t_dest;
 	
 	/* For dragons check and see if (a) the hero is on a straight
 	 * line from it, and (b) that it is within shooting distance,
@@ -220,10 +224,10 @@ over:
     {
 	if (m_this == player->get_position())
 	    return( fight_against_player(th) );
-	else if (m_this == th->t_dest)
+	else if (m_this == *th->t_dest)
 	{
             for (Item *obj : Game::level->items)
-		if (th->t_dest == obj->get_pos())
+		if (th->t_dest == &obj->get_pos())
 		{
                     Game::level->items.remove(obj);
                     th->t_pack.push_back(obj);
@@ -282,7 +286,7 @@ over:
       addcch(static_cast<chtype>(th->get_type())| A_STANDOUT);
 
     /* And stop running if need be */
-    if (stoprun && (th->get_position() == th->t_dest))
+    if (stoprun && (&th->get_position() == th->t_dest))
       th->set_not_running();
 
     return(0);

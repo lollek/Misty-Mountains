@@ -329,7 +329,7 @@ wand_zap(void)
           new_pos.y = y - delta.y;
           new_pos.x = x - delta.x;
 
-          tp->t_dest = player->get_position();
+          tp->set_target(&player->get_position());
           tp->set_chasing();
 
           player->teleport(&new_pos);

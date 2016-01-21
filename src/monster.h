@@ -33,6 +33,7 @@ public:
   // Setters
   void set_oldch(Coordinate &coord);
   void set_invisible() override;
+  void set_target(Coordinate const* target);
 
   // Getters
   int get_armor() const override;
@@ -43,7 +44,7 @@ public:
   static char random_monster_type();
 
   // Variables (TODO: Make these private)
-  Coordinate         t_dest;    // Where it is running to
+  Coordinate const*  t_dest;    // Where it is running to
   std::list<Item*>   t_pack;    // What the thing is carrying
 
   char               t_disguise;// What mimic looks like
