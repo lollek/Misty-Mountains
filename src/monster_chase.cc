@@ -42,90 +42,72 @@ chase_as_confused(Monster *tp, Coordinate *ee)
 }
 
 
-/** Chase
- * Find the spot for the chaser(er) to move closer to the chasee(ee). 
- * Returns true if we want to keep on chasing later 
- * TODO: Clean up this monster */
-static bool
-chase(Monster *tp, Coordinate *ee)
-{
-  int x;
-  int y;
-  int curdist;
-  int thisdist;
-  Coordinate const& er = tp->get_position();
-  char ch;
-  int plcnt = 1;
-  static Coordinate tryp;
-  int ey;
-  int ex;
+// Find the spot for the chaser(er) to move closer to the chasee(ee).
+// Returns true if we want to keep on chasing later
+// TODO: Clean up this monster
+static bool chase(Monster *tp, Coordinate *ee) {
 
-  /* If the thing is confused, let it move randomly. Invisible
-   * Stalkers are slightly confused all of the time, and bats are
-   * quite confused all the time */
+  // If the thing is confused, let it move randomly.
+  // Invisible Stalkers are slightly confused all of the time
+  // Bats are quite confused all the time
   if ((tp->is_confused() && os_rand_range(5) != 0)
       || (tp->get_type() == 'P' && os_rand_range(5) == 0)
       || (tp->get_type() == 'B' && os_rand_range(2) == 0))
     return chase_as_confused(tp, ee);
 
-
-
-  /* Otherwise, find the empty spot next to the chaser that is
-   * closest to the chasee. This will eventually hold where we
-   * move to get closer. If we can't find an empty spot,
-   * we stay where we are */
-  curdist = dist_cp(&er, ee);
+  // Otherwise, find the empty spot next to the chaser that is
+  // closest to the chasee. This will eventually hold where we
+  // move to get closer. If we can't find an empty spot,
+  // we stay where we are
+  Coordinate const& er = tp->get_position();
+  int curdist = dist_cp(&er, ee);
   ch_ret = er;
 
-  ey = er.y + 1;
-  if (ey >= NUMLINES - 1)
-    ey = NUMLINES - 2;
+  int ey = min(er.y + 1, NUMLINES - 2);
+  int ex = min(er.x + 1, NUMCOLS - 1);
 
-  ex = er.x + 1;
-  if (ex >= NUMCOLS)
-    ex = NUMCOLS - 1;
+  int plcnt = 1;
 
-  for (x = er.x - 1; x <= ex; x++)
-  {
-    if (x < 0)
+  for (int x = er.x - 1; x <= ex; x++) {
+    if (x < 0) {
       continue;
+    }
 
-    tryp.x = x;
-    for (y = er.y - 1; y <= ey; y++)
-    {
-      tryp.y = y;
+    for (int y = er.y - 1; y <= ey; y++) {
+      Coordinate tryp(x, y);
 
-      if (!diag_ok(&er, &tryp))
+      if (!diag_ok(&er, &tryp)) {
         continue;
+      }
 
-      ch = Game::level->get_type(x, y);
-      if (step_ok(ch))
-      {
-        /* If it is a scroll, it might be a scare monster scroll
-         * so we need to look it up to see what type it is */
-        if (ch == SCROLL)
-        {
+      char ch = Game::level->get_type(x, y);
+      if (step_ok(ch)) {
+
+        // If it is a scroll, it might be a scare monster scroll
+        // so we need to look it up to see what type it is
+        if (ch == SCROLL) {
           Item* obj = Game::level->get_item(x, y);
           if (obj != nullptr && obj->o_which == S_SCARE) {
             continue;
           }
         }
-        /* It can also be a Xeroc, which we shouldn't step on */
-        Monster* obj = Game::level->get_monster(x, y);
-        if (obj != nullptr && obj->get_type() == 'X')
-          continue;
 
-        /* If we didn't find any scrolls at this place or it
-         * wasn't a scare scroll, then this place counts */
-        thisdist = dist(y, x, ee->y, ee->x);
-        if (thisdist < curdist)
-        {
+        // It can also be a Xeroc, which we shouldn't step on
+        Monster* obj = Game::level->get_monster(x, y);
+        if (obj != nullptr && obj->get_type() == 'X') {
+          continue;
+        }
+
+        // If we didn't find any scrolls at this place or it
+        // wasn't a scare scroll, then this place counts
+        int thisdist = dist(y, x, ee->y, ee->x);
+        if (thisdist < curdist) {
           plcnt = 1;
           ch_ret = tryp;
           curdist = thisdist;
         }
-        else if (thisdist == curdist && os_rand_range(++plcnt) == 0)
-        {
+
+        else if (thisdist == curdist && os_rand_range(++plcnt) == 0) {
           ch_ret = tryp;
           curdist = thisdist;
         }
@@ -141,8 +123,7 @@ static int
 chase_do(Monster *th)
 {
     Coordinate *cp;
-    room *rer; /* room of chaser, */
-    room *ree; /* room of chasee */
+    room *ree; /* room of chasee, */
     int mindist = 32767;
     int curdist;
     bool stoprun = false; /* true means we are there */
@@ -150,7 +131,8 @@ chase_do(Monster *th)
     static Coordinate m_this; /* Temporary destination for chaser */
     Coordinate delta;
 
-    rer = th->get_room();
+    // Room of chaser
+    room* rer = th->get_room();
 
     if (th->is_greedy() && rer->r_goldval == 0)
 	th->t_dest = &player->get_position();	/* If gold has been taken, run after hero */
