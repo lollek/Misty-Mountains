@@ -23,11 +23,11 @@ using namespace std;
 #include "monster_private.h"
 
 // Find the spot for the chaser(er) to move closer to the chasee(ee).
-static Coordinate chase(Monster& monster, Coordinate const& coord) {
+static Coordinate chase(Monster& monster, Coordinate const& target) {
 
   // If the thing is confused, let it move randomly.
-  // Invisible Stalkers are slightly confused all of the time
-  // Bats are quite confused all the time
+  // * Invisible Stalkers are slightly confused all of the time
+  // * Bats are quite confused all the time
   if ((monster.is_confused() && os_rand_range(5) != 0)
       || (monster.get_type() == 'P' && os_rand_range(5) == 0)
       || (monster.get_type() == 'B' && os_rand_range(2) == 0)) {
@@ -43,17 +43,17 @@ static Coordinate chase(Monster& monster, Coordinate const& coord) {
   // closest to the chasee. This will eventually hold where we
   // move to get closer. If we can't find an empty spot,
   // we stay where we are
-  Coordinate const& er = monster.get_position();
-  int curdist = dist_cp(&er, &coord);
-  Coordinate retval = er;
+  Coordinate const& mon_pos = monster.get_position();
+  int curdist = dist_cp(&mon_pos, &target);
+  Coordinate retval = mon_pos;
   int plcnt = 1;
 
   Coordinate xy;
-  for (xy.x = max(er.x - 1, 0); xy.x <= min(er.x + 1, NUMCOLS -1); xy.x++) {
-    for (xy.y = max(er.y - 1, 0); xy.y <= min(er.y + 1, NUMLINES - 2); xy.y++) {
+  for (xy.x = max(mon_pos.x - 1, 0); xy.x <= min(mon_pos.x + 1, NUMCOLS -1); xy.x++) {
+    for (xy.y = max(mon_pos.y - 1, 0); xy.y <= min(mon_pos.y + 1, NUMLINES - 2); xy.y++) {
 
       // If we cannot move there, skip it;
-      if (!diag_ok(&er, &xy)) {
+      if (!diag_ok(&mon_pos, &xy)) {
         continue;
       }
 
@@ -74,13 +74,15 @@ static Coordinate chase(Monster& monster, Coordinate const& coord) {
           continue;
         }
 
-        int thisdist = dist_cp(&xy, &coord);
+        // If we are closer, we pick this as a good position
+        int thisdist = dist_cp(&xy, &target);
         if (thisdist < curdist) {
           plcnt = 1;
           retval = xy;
           curdist = thisdist;
         }
 
+        // If it's as close as a previous coordinate, we might pick it
         else if (thisdist == curdist && os_rand_range(++plcnt) == 0) {
           retval = xy;
           curdist = thisdist;
@@ -96,12 +98,6 @@ static Coordinate chase(Monster& monster, Coordinate const& coord) {
 static int
 chase_do(Monster& monster)
 {
-  if (monster.t_dest == nullptr) {
-    error("Cannot chase after null");
-  }
-
-  Coordinate m_this; /* Temporary destination for chaser */
-
   // Room of chaser
   room* rer = monster.get_room();
 
@@ -115,49 +111,53 @@ chase_do(Monster& monster)
     ? player->get_room()
     : Game::level->get_room(*monster.t_dest);
 
-  // We don't count doors as inside rooms for this routine
-  bool door = Game::level->get_ch(monster.get_position()) == DOOR;
 
   // If the object of our desire is in a different room,
   // and we are not in a corridor, run to the door nearest to
   // our goal
-over:
-  if (rer != ree) {
-    for (int i = 0, mindist = 32767; i < rer->r_nexits; ++i) {
-      int curdist = dist_cp(monster.t_dest, &rer->r_exit[i]);
-      if (curdist < mindist) {
-        m_this = rer->r_exit[i];
-        mindist = curdist;
+  //
+  // We don't count doors as inside rooms for this routine
+  bool door = Game::level->get_ch(monster.get_position()) == DOOR;
+  Coordinate target;
+  for (;;) {
+    if (rer != ree) {
+      for (int i = 0, mindist = 32767; i < rer->r_nexits; ++i) {
+        int curdist = dist_cp(monster.t_dest, &rer->r_exit[i]);
+        if (curdist < mindist) {
+          target = rer->r_exit[i];
+          mindist = curdist;
+        }
+      }
+
+      if (door) {
+        rer = Game::level->get_passage(monster.get_position());
+        door = false;
+        continue;
+      }
+
+    } else {
+      target = *monster.t_dest;
+      if (monster_try_breathe_fire_on_player(monster)) {
+        return 0;
       }
     }
-
-    if (door) {
-      rer = Game::level->get_passage(monster.get_position());
-      door = false;
-      goto over;
-    }
-
-  } else {
-    m_this = *monster.t_dest;
-    if (monster_try_breathe_fire_on_player(monster)) {
-      return 0;
-    }
+    break;
   }
 
    // This now contains what we want to run to this time
    // so we run to it.  If we hit it we either want to fight it
    // or stop running
   bool stoprun = false; // true means we are there
-  Coordinate chase_coord = chase(monster, m_this);
-  if (dist_cp(&chase_coord, &m_this) == 0 ||
+  Coordinate chase_coord = chase(monster, target);
+  if (dist_cp(&chase_coord, &target) == 0 ||
       chase_coord == player->get_position()) {
 
     // If we have run into the player, fight it
-    if (m_this == player->get_position()) {
+    if (chase_coord == player->get_position()) {
       return fight_against_player(&monster);
 
     // If we have run into something else we like, pick it up
-    } else if (m_this == *monster.t_dest) {
+    } else if (target == *monster.t_dest) {
       for (Item *obj : Game::level->items) {
         if (monster.t_dest == &obj->get_pos()) {
           Game::level->items.remove(obj);
@@ -233,7 +233,10 @@ monster_chase(Monster *tp)
 {
   if (tp == nullptr) {
     error("monster_chase for null monster");
+  } else if (tp->t_dest == nullptr) {
+    error("Cannot chase after null");
   }
+
 
   if (!tp->is_slowed() || tp->t_turn)
     if (chase_do(*tp) == -1)
