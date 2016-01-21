@@ -32,6 +32,12 @@ using namespace std;
 
 int            monster_flytrap_hit = 0; // Number of time flytrap has hit
 
+#define ISGREED 0000040
+#define ISINVIS 0002000
+#define ISMEAN  0004000
+#define ISFLY   0040000
+#define ISREGEN 0010000
+
 vector<monster_template> const monsters {
   /* Name        CARRY  FLAG                   exp lvl  amr  dmg              */
   { "aquator",       0, ISMEAN,                 20,  5,  18, {{0,1}}},
@@ -436,7 +442,7 @@ monster_do_special_ability(Monster** monster)
 
     /* The ice monster freezes you */
     case 'I':
-      player->stop_running();
+      player->set_not_running();
       if (!player_turns_without_action)
       {
         io_msg("you are frozen by the %s", (*monster)->get_name().c_str());

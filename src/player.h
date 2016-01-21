@@ -26,7 +26,6 @@ public:
   bool has_true_sight() const override;
   bool can_sense_monsters() const;
   int get_speed() const;
-  bool is_running() const;
   bool is_stealthy() const;
   int get_strength_with_bonuses() const;
 
@@ -38,8 +37,6 @@ public:
   void raise_level(int amount) override;
 
   // Setters
-  void start_running();
-  void stop_running();
   void set_sense_monsters();
   void remove_sense_monsters();
   void set_true_sight() override;
@@ -71,7 +68,6 @@ public:
 
 private:
   bool senses_monsters = false;
-  bool running = false;
   int speed = 0;
 };
 

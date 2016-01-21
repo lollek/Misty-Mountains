@@ -612,7 +612,7 @@ command_run(char ch, bool cautiously)
     firstmove = true;
   }
 
-  player->start_running();
+  player->set_running();
   runch = static_cast<char>(tolower(ch));
   return move_do(runch);
 }

@@ -325,18 +325,6 @@ void Player::decrease_speed() {
   io_msg("you feel yourself slowing down");
 }
 
-bool Player::is_running() const {
-  return running;
-}
-
-void Player::start_running() {
-  running = true;
-}
-
-void Player::stop_running() {
-  running = false;
-}
-
 void Player::set_blind() {
 
   if (is_blind()) {
@@ -392,13 +380,13 @@ void Player::set_confusing_attack()
 
 void Player::fall_asleep() {
   player_turns_without_action += SLEEPTIME;
-  stop_running();
+  set_not_running();
   io_msg("you fall asleep");
 }
 
 void Player::become_stuck() {
   player_turns_without_moving += STUCKTIME;
-  stop_running();
+  set_not_running();
 }
 
 void Player::become_poisoned() {
@@ -512,7 +500,7 @@ void Player::search() {
 
   if (found) {
     look(false);
-    running = false;
+    player->set_not_running();
   }
 }
 

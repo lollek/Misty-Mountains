@@ -35,7 +35,7 @@ bool
 command_stop(bool stop_fighting)
 {
   door_stop = false;
-  player->stop_running();
+  player->set_not_running();
   player_alerted = true;
 
   if (stop_fighting)
@@ -64,7 +64,7 @@ command()
 
     if (player_turns_without_action && --player_turns_without_action == 0)
     {
-      player->start_running();
+      player->set_running();
       io_msg("you can move again");
     }
 

@@ -118,7 +118,7 @@ look(bool wakeup)
         if (player->can_sense_monsters() && monster->is_invisible())
         {
           if (door_stop && !firstmove)
-            player->stop_running();
+            player->set_not_running();
           continue;
         }
         else
@@ -159,7 +159,7 @@ look(bool wakeup)
         {
           case DOOR:
             if (x == player->get_position().x || y == player->get_position().y)
-              player->stop_running();
+              player->set_not_running();
             break;
 
           case PASSAGE:
@@ -171,7 +171,7 @@ look(bool wakeup)
             break;
 
           default:
-            player->stop_running();
+            player->set_not_running();
             break;
         }
       }
@@ -179,7 +179,7 @@ look(bool wakeup)
   }
 
   if (door_stop && !firstmove && passcount > 1)
-    player->stop_running();
+    player->set_not_running();
 
   if (!player->is_running() || !jump)
     mvaddcch(player->get_position().y, player->get_position().x, PLAYER);

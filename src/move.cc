@@ -97,14 +97,14 @@ move_do_loop_wall(bool& after, int& dx, int& dy) {
       return true;
     }
   }
-  player->stop_running();
+  player->set_not_running();
   after = false;
   return false;
 }
 
 static bool
 move_do_loop_door(bool after, Coordinate& coord, bool is_passage) {
-  player->stop_running();
+  player->set_not_running();
 
   if (Game::level->is_passage(player->get_position())) {
     room_enter(coord);
@@ -174,7 +174,7 @@ move_do_loop_floor(bool after, Coordinate& coord, bool is_passage, bool is_real)
 
 static bool
 move_do_loop_default(char ch, bool after, Coordinate& coord, bool is_passage) {
-  player->stop_running();
+  player->set_not_running();
   if (isupper(ch) || Game::level->get_monster(coord)) {
     fight_against_monster(&coord, pack_equipped_item(EQUIPMENT_RHAND), false);
 
@@ -220,13 +220,13 @@ move_do_loop(char ch, int dx, int dy) {
     }
 
     if (!diag_ok(&player->get_position(), &nh)) {
-      player->stop_running();
+      player->set_not_running();
       return false;
     }
 
     if (player->is_running() && player->get_position() == nh) {
       after = false;
-      player->stop_running();
+      player->set_not_running();
     }
 
     bool is_passage = Game::level->is_passage(nh);
@@ -289,7 +289,7 @@ move_do(char ch) {
 
     Coordinate nh = player->possible_random_move();
     if (nh == player->get_position()) {
-      player->stop_running();
+      player->set_not_running();
       to_death = false;
       return false;
     }

@@ -9,163 +9,77 @@ using namespace std;
 
 Character::Character(int strength_, int experience_, int level_, int armor_,
     int health_, std::vector<damage> const& attacks_,
-    Coordinate const& position_, struct room* room_, int flags_, char type_) :
+    Coordinate const& position_, struct room* room_, int flags, char type_) :
   strength(strength_), experience(experience_), level(level_), armor(armor_),
   health(health_), attacks(attacks_), max_health(health), position(position_),
-  room(room_), flags(flags_), type(type_)
-{}
-
-bool Character::is_blind() const {
-  return flags & ISBLIND;
+  room(room_), type(type_),
+  confusing_attack(0), true_sight(0), blind(0), cancelled(0), levitating(0),
+  found(0), greedy(0), hasted(0), players_target(0), held(0), confused(0),
+  invisible(0), mean(0), hallucinating(0), regenerating(0), running(0),
+  flying(0), slowed(0), stuck(0)
+{
+  if (flags & 0000001) { confusing_attack = true; }
+  if (flags & 0000002) { true_sight = true; }
+  if (flags & 0000004) { blind = true; }
+  if (flags & 0000010) { blind = true; levitating = true; }
+  if (flags & 0000020) { found = true; }
+  if (flags & 0000040) { greedy = true; }
+  if (flags & 0000100) { hasted = true; }
+  if (flags & 0000200) { players_target = true; }
+  if (flags & 0000400) { held = true; }
+  if (flags & 0001000) { confused = true; }
+  if (flags & 0002000) { invisible = true; }
+  if (flags & 0004000) { hallucinating = true; mean = true; }
+  if (flags & 0010000) { regenerating = true; }
+  if (flags & 0020000) { running = true; }
+  if (flags & 0040000) { flying = true; }
+  if (flags & 0100000) { slowed = true; }
+  if (flags & 0200000) { stuck = true; }
 }
 
-bool Character::is_cancelled() const {
-  return flags & ISCANC;
-}
+bool Character::is_blind() const { return blind; }
+bool Character::is_cancelled() const { return cancelled; }
+bool Character::is_confused() const { return confused; }
+bool Character::has_confusing_attack() const { return confusing_attack; }
+bool Character::is_found() const { return found; }
+bool Character::is_hallucinating() const { return hallucinating; }
+bool Character::is_invisible() const { return invisible; }
+bool Character::is_levitating() const { return levitating; }
+bool Character::has_true_sight() const { return true_sight; }
+bool Character::is_held() const { return held; }
+bool Character::is_stuck() const { return stuck; }
+bool Character::is_chasing() const { return running; }
+bool Character::is_running() const { return running; }
+bool Character::is_mean() const { return mean; }
+bool Character::is_greedy() const { return greedy; }
+bool Character::is_players_target() const { return players_target; }
+bool Character::is_slowed() const { return slowed; }
+bool Character::is_hasted() const { return hasted; }
+bool Character::is_flying() const { return flying; }
 
-bool Character::is_confused() const {
-  return flags & ISHUH;
-}
-
-bool Character::has_confusing_attack() const {
-  return flags & CANHUH;
-}
-
-bool Character::is_found() const {
-  return flags & ISFOUND;
-}
-
-bool Character::is_hallucinating() const {
-  return flags & ISHALU;
-}
-
-bool Character::is_invisible() const {
-  return flags & ISINVIS;
-}
-
-bool Character::is_levitating() const {
-  return flags & ISLEVIT;
-}
-
-bool Character::has_true_sight() const {
-  return flags & CANSEE;
-}
-
-bool Character::is_held() const {
-  return flags & ISHELD;
-}
-
-bool Character::is_stuck() const {
-  return flags & ISSTUCK;
-}
-
-bool Character::is_chasing() const {
-  return flags & ISRUN;
-}
-
-bool Character::is_mean() const {
-  return flags & ISMEAN;
-}
-
-bool Character::is_greedy() const {
-  return flags & ISGREED;
-}
-
-bool Character::is_players_target() const {
-  return flags & ISTARGET;
-}
-
-bool Character::is_slowed() const {
-  return flags & ISSLOW;
-}
-
-bool Character::is_hasted() const {
-  return flags & ISHASTE;
-}
-
-bool Character::is_flying() const {
-  return flags & ISFLY;
-}
-
-void Character::set_blind() {
-  flags |= ISBLIND;
-}
-
-void Character::set_cancelled() {
-  flags |= ISCANC;
-}
-
-void Character::set_confused() {
-  flags |= ISHUH;
-}
-
-void Character::set_confusing_attack() {
-  flags |= CANHUH;
-}
-
-void Character::set_found() {
-  flags |= ISFOUND;
-}
-
-void Character::set_hallucinating() {
-  flags |= ISHALU;
-}
-
-void Character::set_levitating() {
-  flags |= ISLEVIT;
-}
-
-void Character::set_true_sight() {
-  flags |= CANSEE;
-}
-
-void Character::set_stuck() {
-  flags |= ISSTUCK;
-}
-
-void Character::set_not_blind() {
-  flags &= ~ISBLIND;
-}
-
-void Character::set_not_cancelled() {
-  flags &= ~ISCANC;
-}
-
-void Character::set_not_confused() {
-  flags &= ~ISHUH;
-}
-
-void Character::remove_confusing_attack() {
-  flags &= ~CANHUH;
-}
-
-void Character::set_not_found() {
-  flags &= ~ISFOUND;
-}
-
-void Character::set_not_hallucinating() {
-  flags &= ~ISHALU;
-}
-
-void Character::set_not_invisible() {
-  flags &= ~ISINVIS;
-}
-
-void Character::set_not_levitating() {
-  flags &= ~ISLEVIT;
-}
-
-void Character::remove_true_sight() {
-  flags &= ~CANSEE;
-}
+void Character::set_blind() { blind = true; }
+void Character::set_cancelled() { cancelled = true; }
+void Character::set_confused() { confused = true; }
+void Character::set_confusing_attack() { confusing_attack = true; }
+void Character::set_found() { found = true; }
+void Character::set_hallucinating() { hallucinating = true; }
+void Character::set_levitating() { levitating = true; }
+void Character::set_true_sight() { true_sight = true; }
+void Character::set_stuck() { stuck = true; }
+void Character::set_not_blind() { blind = false; }
+void Character::set_not_cancelled() { cancelled = false; }
+void Character::set_not_confused() { confused = false; }
+void Character::remove_confusing_attack() { confusing_attack = false; }
+void Character::set_not_found() { found = false; }
+void Character::set_not_hallucinating() { hallucinating = false; }
+void Character::set_not_invisible() { invisible = false; }
+void Character::set_not_levitating() { levitating = false; }
+void Character::remove_true_sight() { true_sight = false; }
+void Character::set_not_held() { held = false; }
 
 void Character::set_held() {
-  flags &= ~ISRUN;
-  flags |= ISHELD;
-}
-
-void Character::set_not_held() {
-  flags &= ~ISHELD;
+  held = true;
+  running = false;
 }
 
 void Character::take_damage(int damage) {
@@ -316,82 +230,28 @@ std::vector<damage> const& Character::get_attacks() const {
   return attacks;
 }
 
-void Character::set_mean() {
-  flags |= ISMEAN;
-}
-
-void Character::set_players_target() {
-  flags |= ISTARGET;
-}
-
-void Character::set_not_players_target() {
-  flags &= ~ISTARGET;
-}
-
+void Character::set_mean() { mean = true; }
+void Character::set_players_target() { players_target = true; }
+void Character::set_not_players_target() { players_target = false; }
 void Character::gain_experience(int experience_) {
   experience += experience_;
 }
 
-void Character::set_not_mean() {
-  flags &= ~ISMEAN;
-}
-
-void Character::set_greedy() {
-  flags |= ISGREED;
-}
-
-void Character::set_not_greedy() {
-  flags &= ~ISGREED;
-}
-
-void Character::set_slowed() {
-  flags |= ISSLOW;
-}
-
-void Character::set_not_slowed() {
-  flags &= ~ISSLOW;
-}
-
-void Character::set_hasted() {
-  flags |= ISHASTE;
-}
-
-void Character::set_not_hasted() {
-  flags &= ~ISHASTE;
-}
-
-void Character::set_flying() {
-  flags |= ISFLY;
-}
-
-void Character::set_not_flying() {
-  flags &= ~ISFLY;
-}
-
-void Character::set_running() {
-  flags |= ISRUN;
-}
-
-void Character::set_not_running() {
-  flags &= ~ISRUN;
-}
-
-void Character::set_chasing() {
-  flags |= ISRUN;
-}
-
-void Character::set_not_chasing() {
-  flags &= ~ISRUN;
-}
-
-void Character::set_not_stuck() {
-  flags &= ~ISSTUCK;
-}
-
-void Character::set_invisible() {
-  flags |= ISINVIS;
-}
-
+void Character::set_not_mean() { mean = false; }
+void Character::set_greedy() { greedy = true; }
+void Character::set_not_greedy() { greedy = false; }
+void Character::set_slowed() { slowed = true; }
+void Character::set_not_slowed() { slowed = false; }
+void Character::set_hasted() { hasted = true; }
+void Character::set_not_hasted() { hasted = false; }
+void Character::set_flying() { flying = true; }
+void Character::set_not_flying() { flying = false; }
+void Character::set_running() { running = true; }
+void Character::set_not_running() { running = false; }
+void Character::set_chasing() { running = true; }
+void Character::set_not_chasing() { running = false; }
+void Character::set_not_stuck() { stuck = false; }
+void Character::set_invisible() { invisible = true; }
 void Character::set_position(Coordinate const& position_) {
   position = position_;
 }

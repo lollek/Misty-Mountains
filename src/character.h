@@ -6,30 +6,6 @@
 #include "coordinate.h"
 #include "level_rooms.h"
 
-// flags for characters
-#define CANHUH	0000001		/* creature can confuse */
-#define CANSEE	0000002		/* creature can see invisible creatures */
-#define ISBLIND	0000004		/* creature is blind */
-#define ISCANC	0000010		/* creature has special qualities cancelled */
-#define ISLEVIT	0000010		/* hero is levitating */
-#define ISFOUND	0000020		/* creature has been seen (used for objects) */
-#define ISGREED	0000040		/* creature runs to protect gold */
-#define ISHASTE	0000100		/* creature has been hastened */
-#define ISTARGET 000200		/* creature is the target of an 'f' command */
-#define ISHELD	0000400		/* creature has been held */
-#define ISHUH	0001000		/* creature is confused */
-#define ISINVIS	0002000		/* creature is invisible */
-#define ISMEAN	0004000		/* creature can wake when player enters room */
-#define ISHALU	0004000		/* hero is on acid trip */
-#define ISREGEN	0010000		/* creature can regenerate */
-#define ISRUN	0020000		/* creature is running at the player */
-#define ISFLY	0040000		/* creature can fly */
-#define ISSLOW	0100000		/* creature has been slowed */
-#define ISSTUCK	0200000		/* creature cannot move its feet */
-
-
-
-
 class Character {
 public:
   virtual ~Character() = default;
@@ -81,6 +57,7 @@ public:
   virtual bool is_held() const;
   virtual bool is_stuck() const;
   virtual bool is_chasing() const;
+  virtual bool is_running() const;
   virtual bool is_mean() const;
   virtual bool is_greedy() const;
   virtual bool is_players_target() const;
@@ -150,7 +127,27 @@ private:
   int                  max_health;
   Coordinate           position;
   room*                room;
-  int                  flags;
   char                 type;
+
+  // Flags
+  bool confusing_attack;
+  bool true_sight;
+  bool blind;
+  bool cancelled;
+  bool levitating;
+  bool found;
+  bool greedy;
+  bool hasted;
+  bool players_target;
+  bool held;
+  bool confused;
+  bool invisible;
+  bool mean;
+  bool hallucinating;
+  bool regenerating;
+  bool running;
+  bool flying;
+  bool slowed;
+  bool stuck;
 };
 
