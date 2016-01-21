@@ -22,21 +22,19 @@ using namespace std;
 #include "monster.h"
 #include "monster_private.h"
 
-#define DRAGONSHOT  5  /* one chance in DRAGONSHOT that a dragon will flame */
 static Coordinate ch_ret;   /* Where chasing takes you */
 
-static bool
-chase_as_confused(Monster *tp, Coordinate *ee)
-{
+static bool chase_as_confused(Monster& monster, Coordinate const& coord) {
   int curdist;
 
-  /* get a valid random move */
-  ch_ret = tp->possible_random_move();
-  curdist = dist_cp(&ch_ret, ee);
+  // get a valid random move
+  ch_ret = monster.possible_random_move();
+  curdist = dist_cp(&ch_ret, &coord);
 
-  /* Small chance that it will become un-confused */
-  if (os_rand_range(20) == 0)
-    tp->set_not_confused();
+  // Small chance that it will become un-confused
+  if (os_rand_range(20) == 0) {
+    monster.set_not_confused();
+  }
 
   return curdist != 0 && !(ch_ret == player->get_position());
 }
@@ -45,22 +43,22 @@ chase_as_confused(Monster *tp, Coordinate *ee)
 // Find the spot for the chaser(er) to move closer to the chasee(ee).
 // Returns true if we want to keep on chasing later
 // TODO: Clean up this monster
-static bool chase(Monster *tp, Coordinate *ee) {
+static bool chase(Monster& monster, Coordinate const& coord) {
 
   // If the thing is confused, let it move randomly.
   // Invisible Stalkers are slightly confused all of the time
   // Bats are quite confused all the time
-  if ((tp->is_confused() && os_rand_range(5) != 0)
-      || (tp->get_type() == 'P' && os_rand_range(5) == 0)
-      || (tp->get_type() == 'B' && os_rand_range(2) == 0))
-    return chase_as_confused(tp, ee);
+  if ((monster.is_confused() && os_rand_range(5) != 0)
+      || (monster.get_type() == 'P' && os_rand_range(5) == 0)
+      || (monster.get_type() == 'B' && os_rand_range(2) == 0))
+    return chase_as_confused(monster, coord);
 
   // Otherwise, find the empty spot next to the chaser that is
   // closest to the chasee. This will eventually hold where we
   // move to get closer. If we can't find an empty spot,
   // we stay where we are
-  Coordinate const& er = tp->get_position();
-  int curdist = dist_cp(&er, ee);
+  Coordinate const& er = monster.get_position();
+  int curdist = dist_cp(&er, &coord);
   ch_ret = er;
 
   int ey = min(er.y + 1, NUMLINES - 2);
@@ -100,7 +98,7 @@ static bool chase(Monster *tp, Coordinate *ee) {
 
         // If we didn't find any scrolls at this place or it
         // wasn't a scare scroll, then this place counts
-        int thisdist = dist(y, x, ee->y, ee->x);
+        int thisdist = dist(y, x, coord.y, coord.x);
         if (thisdist < curdist) {
           plcnt = 1;
           ch_ret = tryp;
@@ -118,171 +116,150 @@ static bool chase(Monster *tp, Coordinate *ee) {
 }
 
 
-/* TODO: Clean up this monster */
+// TODO: Clean up this monster
 static int
-chase_do(Monster *th)
+chase_do(Monster& monster)
 {
-    Coordinate *cp;
-    room *ree; /* room of chasee, */
-    int mindist = 32767;
-    int curdist;
-    bool stoprun = false; /* true means we are there */
-    bool door;
-    static Coordinate m_this; /* Temporary destination for chaser */
-    Coordinate delta;
+  if (monster.t_dest == nullptr) {
+    error("Cannot chase after null");
+  }
 
-    // Room of chaser
-    room* rer = th->get_room();
+  Coordinate m_this; /* Temporary destination for chaser */
 
-    if (th->is_greedy() && rer->r_goldval == 0)
-	th->t_dest = &player->get_position();	/* If gold has been taken, run after hero */
+  // Room of chaser
+  room* rer = monster.get_room();
 
-    if (th->t_dest == nullptr) {
-      error("Cannot chase after null");
-    }
+  // If gold has been taken, run after hero
+  if (monster.is_greedy() && rer->r_goldval == 0) {
+    monster.t_dest = &player->get_position();
+  }
 
-    if (th->t_dest == &player->get_position())	/* Find room of chasee */
-	ree = player->get_room();
-    else
-	ree = Game::level->get_room(*th->t_dest);
+  // Find room of chasee
+  room* ree = monster.t_dest == &player->get_position()
+    ? player->get_room()
+    : Game::level->get_room(*monster.t_dest);
 
-    /* We don't count doors as inside rooms for this routine */
-    door = (Game::level->get_ch(th->get_position()) == DOOR);
+  // We don't count doors as inside rooms for this routine
+  bool door = Game::level->get_ch(monster.get_position()) == DOOR;
 
-    /* If the object of our desire is in a different room,
-     * and we are not in a corridor, run to the door nearest to
-     * our goal */
+  // If the object of our desire is in a different room,
+  // and we are not in a corridor, run to the door nearest to
+  // our goal
 over:
-    if (rer != ree)
-    {
-	for (cp = rer->r_exit; cp < &rer->r_exit[rer->r_nexits]; cp++)
-	{
-	    curdist = dist_cp(th->t_dest, cp);
-	    if (curdist < mindist)
-	    {
-		m_this = *cp;
-		mindist = curdist;
-	    }
-	}
-	if (door)
-	{
-	    rer = Game::level->get_passage(th->get_position());
-	    door = false;
-	    goto over;
-	}
-    }
-    else
-    {
-	m_this = *th->t_dest;
-	
-	/* For dragons check and see if (a) the hero is on a straight
-	 * line from it, and (b) that it is within shooting distance,
-	 * but outside of striking range */
-	if (th->get_type() == 'D' && (th->get_position().y == player->get_position().y
-              || th->get_position().x == player->get_position().x
-              || abs(th->get_position().y - player->get_position().y)
-                  == abs(th->get_position().x - player->get_position().x))
-	    && dist_cp(&th->get_position(), &player->get_position()) <= BOLT_LENGTH * BOLT_LENGTH
-	    && !th->is_cancelled() && os_rand_range(DRAGONSHOT) == 0)
-	{
-	    delta.y = sign(player->get_position().y - th->get_position().y);
-	    delta.x = sign(player->get_position().x - th->get_position().x);
-            Coordinate position = th->get_position();
-	    magic_bolt(&position, &delta, "flame");
-	    command_stop(true);
-	    daemon_reset_doctor();
-	    if (to_death && !th->is_players_target())
-              to_death = false;
-	    return(0);
-	}
+  if (rer != ree) {
+    for (int i = 0, mindist = 32767; i < rer->r_nexits; ++i) {
+      int curdist = dist_cp(monster.t_dest, &rer->r_exit[i]);
+      if (curdist < mindist) {
+        m_this = rer->r_exit[i];
+        mindist = curdist;
+      }
     }
 
-    /*
-     * This now contains what we want to run to this time
-     * so we run to it.  If we hit it we either want to fight it
-     * or stop running
-     */
-    if (!chase(th, &m_this))
-    {
-	if (m_this == player->get_position())
-	    return( fight_against_player(th) );
-	else if (m_this == *th->t_dest)
-	{
-            for (Item *obj : Game::level->items)
-		if (th->t_dest == &obj->get_pos())
-		{
-                    Game::level->items.remove(obj);
-                    th->t_pack.push_back(obj);
-                    Game::level->set_ch(obj->get_pos(),
-			(th->get_room()->r_flags & ISGONE) ? PASSAGE : FLOOR);
-		    monster_find_new_target(th);
-		    break;
-		}
-	    if (th->get_type() != 'F')
-		stoprun = true;
-	}
-    }
-    else
-    {
-	if (th->get_type() == 'F')
-	    return(0);
+    if (door) {
+      rer = Game::level->get_passage(monster.get_position());
+      door = false;
+      goto over;
     }
 
-    if (th->is_stuck())
-      return 1;
+  } else {
+    m_this = *monster.t_dest;
+    if (monster_try_breathe_fire_on_player(monster)) {
+      return 0;
+    }
+  }
 
-    if (!(ch_ret == th->get_position()))
-    {
-      char ch = Game::level->get_type(ch_ret);
+   // This now contains what we want to run to this time
+   // so we run to it.  If we hit it we either want to fight it
+   // or stop running
+  bool stoprun = false; /* true means we are there */
+  if (!chase(monster, m_this)) {
+    if (m_this == player->get_position()) {
+      return fight_against_player(&monster);
 
-      /* Remove monster from old position */
-      mvaddcch(th->get_position().y, th->get_position().x,
-               static_cast<chtype>(th->t_oldch));
-      Game::level->set_monster(th->get_position(), nullptr);
-
-      /* Check if we stepped in a trap */
-      if (ch == TRAP || (!Game::level->is_real(ch_ret) && ch == FLOOR))
-      {
-        Coordinate orig_pos = th->get_position();
-
-        trap_spring(th, &ch_ret);
-        if (monster_is_dead(th))
-          return -1;
-
-        /* If we've been mysteriously misplaced, let's not touch anything */
-        if (!(orig_pos == th->get_position()))
-          return 0;
+    } else if (m_this == *monster.t_dest) {
+      for (Item *obj : Game::level->items) {
+        if (monster.t_dest == &obj->get_pos()) {
+          Game::level->items.remove(obj);
+          monster.t_pack.push_back(obj);
+          Game::level->set_ch(obj->get_pos(),
+              (monster.get_room()->r_flags & ISGONE) ? PASSAGE : FLOOR);
+          monster_find_new_target(&monster);
+          break;
+        }
       }
 
-      /* Put monster in new position */
-      th->set_oldch(ch_ret);
-      th->set_room(Game::level->get_room(ch_ret));
-      th->set_position(ch_ret);
-      Game::level->set_monster(ch_ret, th);
+      if (monster.get_type() != 'F') {
+        stoprun = true;
+      }
     }
-    move(ch_ret.y, ch_ret.x);
 
-    if (monster_seen_by_player(th))
-      addcch(static_cast<chtype>(th->t_disguise));
-    else if (player->can_sense_monsters())
-      addcch(static_cast<chtype>(th->get_type())| A_STANDOUT);
+  } else {
+    if (monster.get_type() == 'F') {
+      return 0;
+    }
+  }
 
-    /* And stop running if need be */
-    if (stoprun && (&th->get_position() == th->t_dest))
-      th->set_not_running();
+  if (monster.is_stuck()) {
+    return 1;
+  }
 
-    return(0);
+  if (ch_ret != monster.get_position()) {
+    char ch = Game::level->get_type(ch_ret);
+
+    // Remove monster from old position
+    mvaddcch(monster.get_position().y, monster.get_position().x,
+        static_cast<chtype>(monster.t_oldch));
+    Game::level->set_monster(monster.get_position(), nullptr);
+
+    // Check if we stepped in a trap
+    if (ch == TRAP || (!Game::level->is_real(ch_ret) && ch == FLOOR)) {
+      Coordinate orig_pos = monster.get_position();
+
+      trap_spring(&monster, &ch_ret);
+      if (monster_is_dead(&monster)) {
+        return -1;
+      }
+
+      // If we've been mysteriously misplaced, let's not touch anything
+      if (orig_pos != monster.get_position()) {
+        return 0;
+      }
+    }
+
+    // Put monster in new position
+    monster.set_oldch(ch_ret);
+    monster.set_room(Game::level->get_room(ch_ret));
+    monster.set_position(ch_ret);
+    Game::level->set_monster(ch_ret, &monster);
+  }
+
+  if (monster_seen_by_player(&monster)) {
+    mvaddcch(ch_ret.y, ch_ret.x, static_cast<chtype>(monster.t_disguise));
+  } else if (player->can_sense_monsters()) {
+    mvaddcch(ch_ret.y, ch_ret.x, static_cast<chtype>(monster.get_type())| A_STANDOUT);
+  }
+
+  // And stop running if need be
+  if (stoprun && (&monster.get_position() == monster.t_dest)) {
+    monster.set_not_running();
+  }
+
+  return 0;
 }
 
 bool
 monster_chase(Monster *tp)
 {
+  if (tp == nullptr) {
+    error("monster_chase for null monster");
+  }
+
   if (!tp->is_slowed() || tp->t_turn)
-    if (chase_do(tp) == -1)
+    if (chase_do(*tp) == -1)
       return false;
 
   if (tp->is_hasted())
-    if (chase_do(tp) == -1)
+    if (chase_do(*tp) == -1)
       return false;
 
   tp->t_turn ^= true;

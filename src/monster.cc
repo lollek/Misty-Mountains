@@ -9,6 +9,9 @@
 
 using namespace std;
 
+#include "magic.h"
+#include "command.h"
+#include "daemons.h"
 #include "error_handling.h"
 #include "game.h"
 #include "io.h"
@@ -779,4 +782,35 @@ monster_polymorph(Monster* target)
   // Put back some saved things from old monster
   target->t_oldch = oldch;
   target->t_pack = target_pack;
+}
+
+bool monster_try_breathe_fire_on_player(Monster const& monster) {
+
+  // For dragons, check and see if
+  // (a) the hero is on a straight line from it, and
+  // (b) that it is within shooting distance, but outside of striking range
+
+  Coordinate mon_coord = monster.get_position();
+  Coordinate player_coord = player->get_position();
+  int const dragonshot_chance = 5;
+  if (monster.get_type() == 'D' &&
+      (mon_coord.y == player_coord.y ||
+       mon_coord.x == player_coord.x ||
+       abs(mon_coord.y - player_coord.y) == abs(mon_coord.x - player_coord.x)) &&
+      dist_cp(&mon_coord, &player_coord) <= BOLT_LENGTH * BOLT_LENGTH &&
+      !monster.is_cancelled() && os_rand_range(dragonshot_chance) == 0) {
+
+    Coordinate delta(sign(player_coord.x - mon_coord.x),
+        sign(player_coord.y - mon_coord.y));
+    Coordinate position = monster.get_position();
+    magic_bolt(&position, &delta, "flame");
+    command_stop(true);
+    daemon_reset_doctor();
+    if (to_death && !monster.is_players_target()) {
+      to_death = false;
+    }
+    return true;
+  }
+
+  return false;
 }

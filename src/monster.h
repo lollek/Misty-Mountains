@@ -121,5 +121,8 @@ int monster_add_nearby(Monster** nearby_monsters, struct room const* room);
 /* Transform the monster into something else */
 void monster_polymorph(Monster* monster);
 
+// Attempt to breathe fire on player. True if it tried, false when it didnt
+bool monster_try_breathe_fire_on_player(Monster const& monster);
+
 /** monster_chase.c **/
 bool monster_chase(Monster* tp); /* Make a monster chase */
