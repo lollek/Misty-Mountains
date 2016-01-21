@@ -82,9 +82,6 @@ void io_msg_clear(void);                   /* Remove displayed text */
 
 void io_missile_motion(Item* item, int ydelta, int xdelta);
 
-/* Kill program with an error message */
-void io_fatal(char const* msg, ...) __attribute__((noreturn));
-
 /* Print the status line at the bottom of the screen */
 void io_refresh_statusline(void);
 

@@ -21,9 +21,9 @@ public:
   };
 
   // Armor of given type
-  Armor(Type type, bool random_stats);
+  explicit Armor(Type type, bool random_stats);
   // Armor of random type
-  Armor(bool random_stats);
+  explicit Armor(bool random_stats);
   ~Armor();
 
   // Setters

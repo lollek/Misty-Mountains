@@ -351,8 +351,6 @@ io_wreadstr(WINDOW* win, char* dest)
   size_t i = strlen(dest);
   int oy, ox;
 
-  assert(i >= 0);
-
   flushmsg();
   getyx(win, oy, ox);
 
@@ -416,19 +414,6 @@ io_wreadstr(WINDOW* win, char* dest)
 
   wrefresh(win);
   return c == KEY_ESCAPE ? 1 : 0;
-}
-
-__attribute__((__format__(__printf__, 1, 2)))
-void
-io_fatal(char const* msg, ...)
-{
-  va_list args;
-
-  va_start(args, msg);
-  vfprintf(stderr, msg, args);
-  va_end(args);
-
-  abort();
 }
 
 chtype

@@ -204,10 +204,10 @@ score_open(void)
 void
 score_show_and_exit(int amount, int flags, char monst)
 {
-  char buf[2*MAXSTR];
 
   if (flags >= 0 || wizard)
   {
+    char buf[2*MAXSTR];
     mvaddstr(LINES - 1, 0 , "[Press return to continue]");
     refresh();
     wgetnstr(stdscr, buf, 80);

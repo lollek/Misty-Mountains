@@ -113,6 +113,7 @@ protected:
             room* room, int flags, char type);
 
   Character(Character const&) = default;
+  Character(Character&&) = default;
   Character& operator=(Character const&) = default;
 
 

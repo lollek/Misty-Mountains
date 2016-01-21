@@ -208,7 +208,6 @@ bool
 pack_add(Item* obj, bool silent)
 {
   bool from_floor = false;
-  bool is_picked_up = false;
 
   /* Either obj is an item or we try to take something from the floor */
   if (obj == nullptr)
@@ -232,6 +231,7 @@ pack_add(Item* obj, bool silent)
   }
 
   /* See if we can stack it with something else in the pack */
+  bool is_picked_up = false;
   if (obj->o_type == POTION || obj->o_type == SCROLL || obj->o_type == FOOD
       || obj->o_type == AMMO)
     for (Item* ptr : player_pack) {

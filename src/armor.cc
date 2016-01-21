@@ -43,7 +43,8 @@ Armor::Armor(bool random_stats) :
   Armor(random_armor_type(), random_stats)
 {}
 
-Armor::Armor(Armor::Type type, bool random_stats) {
+Armor::Armor(Armor::Type type, bool random_stats) :
+  identified(false) {
   o_type = ARMOR;
   o_which = type;
   o_arm = Armor::ac(type);

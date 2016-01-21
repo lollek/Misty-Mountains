@@ -202,6 +202,7 @@ discovered_by_type(char type, vector<obj_info>& info, size_t max_items)
       case SCROLL: type_as_str = "scroll"; break;
       case RING:   type_as_str = "ring"; break;
       case STICK:  type_as_str = "stick"; break;
+      default: error("unknown type")
     }
     mvwprintw(printscr, 1, 1, "No known %s", type_as_str.c_str());
   }
