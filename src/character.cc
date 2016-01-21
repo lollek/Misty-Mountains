@@ -10,9 +10,9 @@ using namespace std;
 Character::Character(int strength_, int experience_, int level_, int armor_,
     int health_, std::vector<damage> const& attacks_,
     Coordinate const& position_, struct room* room_, int flags, char type_) :
-  strength(strength_), experience(experience_), level(level_), armor(armor_),
-  health(health_), attacks(attacks_), max_health(health), position(position_),
-  room(room_), type(type_),
+  strength(strength_), default_strength(strength),experience(experience_),
+  level(level_), armor(armor_), health(health_), attacks(attacks_),
+  max_health(health), position(position_), room(room_), type(type_),
   confusing_attack(0), true_sight(0), blind(0), cancelled(0), levitating(0),
   found(0), greedy(0), hasted(0), players_target(0), held(0), confused(0),
   invisible(0), mean(0), hallucinating(0), regenerating(0), running(0),
