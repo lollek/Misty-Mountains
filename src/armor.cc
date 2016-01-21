@@ -18,6 +18,27 @@ using namespace std;
 
 #include "armor.h"
 
+Armor::Armor(bool random_stats) :
+  Armor(armor_type_random(), random_stats)
+{}
+
+Armor::Armor(Armor::Type type, bool random_stats) {
+  o_type = ARMOR;
+  o_which = type;
+  o_arm = armor_ac(type);
+
+  if (random_stats) {
+    int rand = os_rand_range(100);
+    if (rand < 20) {
+      o_flags |= ISCURSED;
+      o_arm += os_rand_range(3) + 1;
+    }
+    else if (rand < 28) {
+      o_arm -= os_rand_range(3) + 1;
+    }
+  }
+}
+
 static vector<armor_info_t const> armors {
  /* name                   ac  prob value known */
  { "leather armor",         8, 20,   20,  false },
@@ -30,10 +51,10 @@ static vector<armor_info_t const> armors {
  { "plate mail",            3,  5,  150,  false },
 };
 
-string const& armor_name(enum armor_t i)  { return armors.at(i).name; }
-int armor_ac(enum armor_t i)              { return armors.at(i).ac; }
-int armor_value(enum armor_t i)           { return armors.at(i).value; }
-int armor_probability(enum armor_t i)     { return armors.at(i).prob; }
+string const& armor_name(Armor::Type i)  { return armors.at(i).name; }
+int armor_ac(Armor::Type i)              { return armors.at(i).ac; }
+int armor_value(Armor::Type i)           { return armors.at(i).value; }
+int armor_probability(Armor::Type i)     { return armors.at(i).prob; }
 
 bool
 armor_command_wear() {
@@ -62,12 +83,12 @@ armor_command_wear() {
   return true;
 }
 
-enum armor_t
+Armor::Type
 armor_type_random() {
   int value = os_rand_range(100);
-  for (enum armor_t i = static_cast<armor_t>(0);
-       i < NARMORS;
-       i = static_cast<armor_t>(static_cast<int>(i) + 1)) {
+  for (Armor::Type i = static_cast<Armor::Type>(0);
+       i < Armor::Type::NARMORS;
+       i = static_cast<Armor::Type>(static_cast<int>(i) + 1)) {
     if (value < armors[i].prob) {
       return i;
     } else {
@@ -81,7 +102,7 @@ armor_type_random() {
 void
 armor_rust() {
   Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  if (arm == nullptr || arm->o_type != ARMOR || arm->o_which == LEATHER ||
+  if (arm == nullptr || arm->o_type != ARMOR || arm->o_which == Armor::Type::LEATHER ||
       arm->o_arm >= 9) {
     return;
   }
@@ -101,8 +122,8 @@ string
 armor_description(Item const* item) {
   stringstream buffer;
 
-  string const& obj_name = armor_name(static_cast<armor_t>(item_subtype(item)));
-  int bonus_ac = armor_ac(static_cast<armor_t>(item_subtype(item))) -item_armor(item);
+  string const& obj_name = armor_name(static_cast<Armor::Type>(item_subtype(item)));
+  int bonus_ac = armor_ac(static_cast<Armor::Type>(item_subtype(item))) -item_armor(item);
   int base_ac = 10 - item_armor(item) - bonus_ac;
 
   buffer << "A" << vowelstr(obj_name) << " " <<obj_name << " [" << base_ac;
@@ -123,27 +144,3 @@ armor_description(Item const* item) {
   return buffer.str();
 }
 
-Item*
-armor_create(int which, int random_stats) {
-  if (which == -1) {
-    which = armor_type_random();
-  }
-
-  Item* armor = new Item();
-  armor->o_type = ARMOR;
-  armor->o_which = which;
-  armor->o_arm = armor_ac(static_cast<armor_t>(armor->o_which));
-
-  if (random_stats) {
-    int rand = os_rand_range(100);
-    if (rand < 20) {
-      armor->o_flags |= ISCURSED;
-      armor->o_arm += os_rand_range(3) + 1;
-    }
-    else if (rand < 28) {
-      armor->o_arm -= os_rand_range(3) + 1;
-    }
-  }
-
-  return armor;
-}

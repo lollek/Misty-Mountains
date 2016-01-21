@@ -44,7 +44,7 @@ string const& Item::get_nickname() const {
 bool Item::is_magic() const {
   switch (o_type) {
     case ARMOR:   return static_cast<bool>(o_flags & ISPROT) ||
-                   o_arm != armor_ac(static_cast<armor_t>(o_which));
+                   o_arm != armor_ac(static_cast<Armor::Type>(o_which));
 
     case WEAPON:  return o_hplus != 0 || o_dplus != 0;
     case AMMO:    return o_hplus != 0 || o_dplus != 0;

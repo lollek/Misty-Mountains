@@ -53,7 +53,7 @@ Player::Player() :
   pack_add(new_food(-1), true);
 
   /* And his suit of armor */
-  Item* armor = armor_create(RING_MAIL, false);
+  Item* armor = new Armor(Armor::Type::RING_MAIL, false);
   armor->o_flags |= ISKNOW;
   armor->o_arm -= 1;
   pack_equip_item(armor);

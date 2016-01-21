@@ -43,7 +43,7 @@ pr_spec(char type)
     case SCROLL: ptr = &scroll_info;       max = NSCROLLS;  break;
     case RING:   ptr = &ring_info;         max = NRINGS;    break;
     case STICK:  ptr = &wands_info;        max = MAXSTICKS; break;
-    case ARMOR:  ptr = nullptr;            max = NARMORS;   break;
+    case ARMOR:  ptr = nullptr;            max = Armor::Type::NARMORS;   break;
     case WEAPON: ptr = &weapon_info;       max = MAXWEAPONS;break;
     default:     ptr = nullptr;            max = 0;         break;
   }
@@ -57,8 +57,8 @@ pr_spec(char type)
 
     if (type == ARMOR)
     {
-      name = armor_name(static_cast<armor_t>(i));
-      prob = static_cast<size_t>(armor_probability(static_cast<armor_t>(i)));
+      name = armor_name(static_cast<Armor::Type>(i));
+      prob = static_cast<size_t>(armor_probability(static_cast<Armor::Type>(i)));
     }
     else
     {
@@ -171,7 +171,7 @@ wizard_create_item(void)
 
     case ARMOR:
       {
-        obj = armor_create(-1, false);
+        obj = new Armor(false);
 
         io_msg("blessing? (+,-,n)");
         char bless = io_readchar(true);
@@ -256,7 +256,7 @@ wizard_levels_and_gear(void)
   /* And his suit of armor */
   if (pack_equipped_item(EQUIPMENT_ARMOR) == nullptr)
   {
-    Item* obj = armor_create(PLATE_MAIL, false);
+    Item* obj = new Armor(Armor::Type::PLATE_MAIL, false);
     obj->o_arm = -5;
     obj->o_flags |= ISKNOW;
     obj->o_count = 1;
