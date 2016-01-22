@@ -134,12 +134,10 @@ void Character::restore_strength() {
 
 void Character::modify_strength(int amount) {
   // Negative is temporary and Positive is permanent (if not below default).
-  if (amount <= 0) {
-    strength -= amount;
-  }
+  strength += amount;
 
-  if (strength == default_strength) {
-    strength = default_strength = strength + amount;
+  if (strength > default_strength) {
+    default_strength = strength;
   }
 }
 
