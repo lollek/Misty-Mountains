@@ -520,7 +520,7 @@ void Player::modify_strength(int amount) {
   int current_strength = get_strength();
 
   if (current_strength + amount < player_min_strength) {
-    amount = current_strength - player_min_strength;
+    amount = player_min_strength - current_strength;
   } else if (current_strength + amount > player_max_strength) {
     amount = player_max_strength - current_strength;
   }
