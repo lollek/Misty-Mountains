@@ -516,6 +516,7 @@ void Player::restore_strength() {
 
 void Player::modify_strength(int amount) {
 
+  int orig_amount = amount;
   int current_strength = get_strength();
 
   if (current_strength + amount < player_min_strength) {
@@ -527,11 +528,13 @@ void Player::modify_strength(int amount) {
   Character::modify_strength(amount);
   current_strength = get_strength();
 
-  if (amount < 0 || current_strength < player_min_strength ||
+  if ((amount <= 0 != orig_amount <= 0) || current_strength < player_min_strength ||
       current_strength > player_max_strength) {
     error("Strength calculation error. Min: " + to_string(player_min_strength) +
           ". Max: " + to_string(player_max_strength) +
-          ". Current: " + to_string(current_strength));
+          ". Current: " + to_string(current_strength) +
+          ". Amount: " + to_string(amount) +
+          ". Orig amount: " + to_string(orig_amount));
   }
 }
 
