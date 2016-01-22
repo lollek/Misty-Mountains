@@ -154,7 +154,7 @@ wizard_create_item(void)
       }
     case STICK: obj = wand_create(which); break;
     case SCROLL: obj = scroll_create(which); break;
-    case POTION: obj = new Potion(); break;
+    case POTION: obj = new Potion(static_cast<Potion::Type>(which)); break;
     case FOOD: obj = new_food(which); break;
     case WEAPON:
       {
