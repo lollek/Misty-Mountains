@@ -43,11 +43,7 @@ inv_name(Item const* item, bool drop)
 
   switch (item->o_type)
   {
-    case POTION: {
-      char buf[MAXSTR];
-      potion_description(item, buf);
-      buffer << buf;
-    } break;
+    case POTION: buffer << potion_description(item); break;
     case RING: {
       char buf[MAXSTR];
       ring_description(item, buf);
@@ -132,7 +128,7 @@ new_thing(void)
   Item* cur = nullptr;
   switch (r)
   {
-    case 0: cur = potion_create(-1); break;
+    case 0: cur = new Potion(); break;
     case 1: cur = scroll_create(-1); break;
     case 2: cur = new_food(-1); break;
     case 3: cur = weapon_create(-1, true); break;
@@ -216,7 +212,7 @@ void
 discovered(void)
 {
   io_msg("for what type of objects do you want a list? (%c%c%c%c) ",
-      POTION, SCROLL, RING, STICK);
+      SCROLL, RING, STICK);
   while (true)
   {
     char ch = io_readchar(true);
@@ -224,7 +220,6 @@ discovered(void)
     refresh();
     switch (ch)
     {
-      case POTION: discovered_by_type(ch, potion_info, NPOTIONS); break;
       case SCROLL: discovered_by_type(ch, scroll_info, NSCROLLS); break;
       case RING: discovered_by_type(ch, ring_info, NRINGS); break;
       case STICK: discovered_by_type(ch, wands_info, MAXSTICKS); break;

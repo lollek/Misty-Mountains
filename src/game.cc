@@ -121,7 +121,7 @@ Game::Game() {
 
   /* Init stuff */
   scroll_init();                        // Set up names of scrolls
-  potions_init();                       // Set up colors of potions
+  Potion::init_potions();               // Set up colors of potions
   ring_init();                          // Set up stone settings of rings
   wand_init();                          // Set up materials of wands
   Game::new_level(Game::current_level); // Set up level (and player)

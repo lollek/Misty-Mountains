@@ -158,8 +158,8 @@ command_name_item(void)
       break;
 
     case POTION:
-      already_known = potion_info.at(static_cast<size_t>(obj->o_which)).oi_know;
-      guess = &potion_info.at(static_cast<size_t>(obj->o_which)).oi_guess;
+      already_known = Potion::is_known(static_cast<Potion::Type>(obj->o_which));
+      guess = &Potion::guess(static_cast<Potion::Type>(obj->o_which));
       break;
 
     case SCROLL:

@@ -1,8 +1,8 @@
 #include <vector>
 #include <string>
+#include <sstream>
 
-using namespace std;
-
+#include "error_handling.h"
 #include "io.h"
 #include "pack.h"
 #include "level.h"
@@ -17,238 +17,337 @@ using namespace std;
 
 #include "potions.h"
 
-/* Colors of the potions */
-static vector<string const*> p_colors;
+using namespace std;
 
-vector<obj_info> potion_info = {
-  /* io_name,      oi_prob, oi_worth, oi_guess, oi_know */
-  { "confusion",         7,        5,       "", false },
-  { "hallucination",     8,        5,       "", false },
-  { "poison",            8,        5,       "", false },
-  { "gain strength",    13,      150,       "", false },
-  { "see invisible",     3,      100,       "", false },
-  { "healing",          13,      130,       "", false },
-  { "monster detection", 6,      130,       "", false },
-  { "magic detection",   6,      105,       "", false },
-  { "raise level",       2,      250,       "", false },
-  { "extra healing",     5,      200,       "", false },
-  { "haste self",        5,      190,       "", false },
-  { "restore strength", 13,      130,       "", false },
-  { "blindness",         5,        5,       "", false },
-  { "levitation",        6,       75,       "", false },
-};
+std::vector<std::string>        Potion::guesses;
+std::vector<bool>               Potion::knowledge;
+std::vector<std::string const*> Potion::colors;
 
-void
-potions_init(void)
-{
-  /* Pick a unique color for each potion */
-  for (int i = 0; i < NPOTIONS; i++)
-    for (;;)
-    {
-      size_t color = os_rand_range(color_max());
+static Potion::Type random_potion_type() {
+  int value = os_rand_range(100);
 
-      if (find(p_colors.cbegin(), p_colors.cend(), &color_get(color)) !=
-          p_colors.cend()) {
-        continue;
-      }
+  int end = static_cast<int>(Potion::Type::NPOTIONS);
+  for (int i = 0; i < end; ++i) {
+    Potion::Type type = static_cast<Potion::Type>(i);
+    int probability = Potion::probability(type);
 
-      p_colors.push_back(&color_get(color));
-      break;
+    if (value < probability) {
+      return type;
+
+    } else {
+      value -= probability;
     }
-}
-
-/** is_quaffable
- * Can we dring thing? */
-static bool
-is_quaffable(Item const* item)
-{
-  if (item == nullptr)
-    return false;
-  else if (item_type(item) != POTION)
-  {
-    io_msg("that's undrinkable");
-    return false;
   }
-  else
-    return true;
+
+  error("Error! Sum of probabilities is not 100%");
 }
 
-/** potion_learn
- * Hero learn what a potion does */
-static void
-potion_learn(enum potion_t potion)
-{
-  potion_info[potion].oi_know = true;
+string Potion::name(Potion::Type subtype) {
+  switch(subtype) {
+    case CONFUSION: return "confusion";
+    case LSD:       return "hallucination";
+    case POISON:    return "poison";
+    case STRENGTH:  return "gain strength";
+    case SEEINVIS:  return "see invisible";
+    case HEALING:   return "healing";
+    case MFIND:     return "monster detection";
+    case TFIND:     return "magic detection";
+    case RAISE:     return "raise level";
+    case XHEAL:     return "extra healing";
+    case HASTE:     return "haste self";
+    case RESTORE:   return "restore strength";
+    case BLIND:     return "blindness";
+    case LEVIT:     return "levitation";
+    case NPOTIONS:  error("Unknown subtype NPOTIONS");
+  }
+}
+
+int Potion::probability(Potion::Type subtype) {
+  switch(subtype) {
+    case CONFUSION: return 7;
+    case LSD:       return 8;
+    case POISON:    return 8;
+    case STRENGTH:  return 13;
+    case SEEINVIS:  return 3;
+    case HEALING:   return 13;
+    case MFIND:     return 6;
+    case TFIND:     return 6;
+    case RAISE:     return 2;
+    case XHEAL:     return 5;
+    case HASTE:     return 5;
+    case RESTORE:   return 13;
+    case BLIND:     return 5;
+    case LEVIT:     return 6;
+    case NPOTIONS:  error("Unknown subtype NPOTIONS");
+  }
+}
+
+int Potion::worth(Potion::Type subtype) {
+  switch(subtype) {
+    case CONFUSION: return 5;
+    case LSD:       return 5;
+    case POISON:    return 5;
+    case STRENGTH:  return 150;
+    case SEEINVIS:  return 100;
+    case HEALING:   return 130;
+    case MFIND:     return 130;
+    case TFIND:     return 105;
+    case RAISE:     return 250;
+    case XHEAL:     return 200;
+    case HASTE:     return 190;
+    case RESTORE:   return 130;
+    case BLIND:     return 5;
+    case LEVIT:     return 75;
+    case NPOTIONS:  error("Unknown subtype NPOTIONS");
+  }
+}
+
+string& Potion::guess(Potion::Type subtype) {
+  return guesses.at(static_cast<size_t>(subtype));
+}
+
+bool Potion::is_known(Potion::Type subtype) {
+  return knowledge.at(static_cast<size_t>(subtype));
+}
+
+void Potion::set_known(Potion::Type subtype) {
+  knowledge.at(static_cast<size_t>(subtype)) = true;
+}
+
+Potion::~Potion() {}
+
+Potion::Potion() : Potion(random_potion_type()) {}
+
+Potion::Potion(Potion::Type subtype_) : Item() {
+  o_type       = POTION;
+  o_which      = subtype_;
+  o_count      = 1;
+  o_damage     = {1, 2};
+  o_hurldmg    = {1, 2};
+
+  subtype = subtype_;
+  guesses.resize(static_cast<size_t>(Potion::NPOTIONS));
+  knowledge.resize(static_cast<size_t>(Potion::NPOTIONS));
+}
+
+Potion::Type Potion::get_type() const {
+  return subtype;
+}
+
+string Potion::get_description() const {
+  stringstream os;
+
+  if (Potion::is_known(subtype)) {
+    if (item_count(this) == 1) {
+      os << "A potion of " << Potion::name(subtype);
+    } else {
+      os << to_string(item_count(this)) << " potions of " << Potion::name(subtype);
+    }
+
+  } else {
+    string const& color = *colors.at(static_cast<size_t>(subtype));
+    if (item_count(this) == 1) {
+      os << "A" << vowelstr(color) << " " << color << " potion";
+    } else {
+      os << to_string(item_count(this)) << " " << color << " potions";
+    }
+
+    string const& nickname = Potion::guess(subtype);
+    if (!nickname.empty()) {
+      os << " called " << nickname;
+    }
+  }
+
+  return os.str();
+}
+
+void Potion::quaffed_by(Character& victim) {
+  switch(static_cast<Potion::Type>(subtype)) {
+    case CONFUSION: {
+      if (&victim == player && !player->is_hallucinating()) {
+        Potion::set_known(subtype);
+      }
+      victim.set_confused();
+    } break;
+
+    case LSD: {
+      if (&victim == player) {
+        Potion::set_known(subtype);
+      }
+      victim.set_hallucinating();
+   } break;
+
+    case POISON: {
+      if (&victim == player) {
+        Potion::set_known(subtype);
+        player->become_poisoned();
+      }
+      // Currently, monsters cannot become poisoned. Perks of being a monster.
+    } break;
+
+    case STRENGTH: {
+      if (&victim == player) {
+        Potion::set_known(subtype);
+        io_msg("you feel stronger, now.  What bulging muscles!");
+      }
+      victim.modify_strength(1);
+    } break;
+
+    case SEEINVIS:  {
+      victim.set_true_sight();
+    } break;
+
+    case HEALING: {
+      if (&victim == player) {
+        Potion::set_known(subtype);
+        io_msg("you begin to feel better");
+      }
+      victim.restore_health(roll(victim.get_level(), 4), true);
+      victim.set_not_blind();
+    } break;
+
+    case MFIND: {
+      if (&victim == player) {
+        Potion::set_known(subtype);
+        player->set_sense_monsters();
+      }
+    } break;
+
+    case TFIND: {
+      if (&victim == player) {
+        bool show = false;
+        if (!Game::level->items.empty()) {
+          wclear(hw);
+          for (Item* item : Game::level->items) {
+            if (item->is_magic()) {
+              Potion::set_known(subtype);
+              show = true;
+              mvwaddcch(hw, item->get_y(), item->get_x(), MAGIC);
+            }
+          }
+
+          if (monster_show_if_magic_inventory()) {
+            show = true;
+          }
+        }
+
+        if (show) {
+          Potion::set_known(subtype);
+          show_win("You sense the presence of magic on this level.--More--");
+        } else {
+          io_msg("you have a strange feeling for a moment, then it passes");
+        }
+      }
+    } break;
+
+    case RAISE: {
+      if (&victim == player) {
+        Potion::set_known(subtype);
+      }
+      victim.raise_level(1);
+    } break;
+
+    case XHEAL: {
+      if (&victim == player) {
+        Potion::set_known(subtype);
+        io_msg("you begin to feel much better");
+      }
+      victim.restore_health(roll(victim.get_level(), 8), true);
+      victim.set_not_blind();
+      victim.set_not_hallucinating();
+    } break;
+
+    case HASTE: {
+      if (&victim == player) {
+        Potion::set_known(subtype);
+        player->increase_speed();
+      }
+    } break;
+
+    case RESTORE: {
+      victim.restore_strength();
+    } break;
+
+    case BLIND: {
+      if (&victim == player) {
+        Potion::set_known(subtype);
+      }
+      victim.set_blind();
+    } break;
+
+    case LEVIT: {
+      if (&victim == player) {
+        Potion::set_known(subtype);
+      }
+      victim.set_levitating();
+    } break;
+
+    case NPOTIONS:  error("Unknown subtype NPOTIONS");
+  }
 }
 
 bool
 potion_quaff_something(void)
 {
-  Item* obj = pack_get_item("quaff", POTION);
-
-  /* Make certain that it is somethings that we want to drink */
-  if (!is_quaffable(obj))
+  Potion* obj = dynamic_cast<Potion*>(pack_get_item("quaff", POTION));
+  if (obj == nullptr) {
     return false;
 
-  /* Calculate the effect it has on the poor guy. */
+  // Make certain that it is somethings that we want to drink
+  } else if (obj == nullptr || item_type(obj) != POTION) {
+    io_msg("that's undrinkable");
+    return false;
+  }
+
+  // Calculate the effect it has on the poor guy.
   bool discardit = obj->o_count == 1;
   pack_remove(obj, false, false);
-  switch (obj->o_which)
-  {
-    case P_CONFUSE:
-      if (!player->is_hallucinating())
-        potion_learn(P_CONFUSE);
-      player->set_confused();
-      break;
 
-    case P_POISON:
-      potion_learn(P_POISON);
-      player->become_poisoned();
-      break;
+  obj->quaffed_by(*player);
 
-    case P_HEALING:
-      potion_learn(P_HEALING);
-      player->restore_health(roll(player->get_level(), 4), true);
-      player->set_not_blind();
-      io_msg("you begin to feel better");
-      break;
-
-    case P_STRENGTH:
-      potion_learn(P_STRENGTH);
-      player->modify_strength(1);
-      io_msg("you feel stronger, now.  What bulging muscles!");
-      break;
-
-    case P_MFIND:
-      potion_learn(P_MFIND);
-      player->set_sense_monsters();
-      break;
-
-    case P_TFIND:
-    {
-      /* Potion of magic detection.  Show the potions and scrolls */
-      bool show = false;
-      if (!Game::level->items.empty())
-      {
-        wclear(hw);
-        for (Item* item : Game::level->items) {
-          if (item->is_magic())
-          {
-            show = true;
-            mvwaddcch(hw, item->get_y(), item->get_x(), MAGIC);
-            potion_learn(P_TFIND);
-          }
-        }
-
-        if (monster_show_if_magic_inventory())
-          show = true;
-     }
-
-      if (show)
-      {
-        potion_learn(P_TFIND);
-        show_win("You sense the presence of magic on this level.--More--");
-
-      }
-      else
-        io_msg("you have a strange feeling for a moment, then it passes");
-    }
-    break;
-
-    case P_LSD:
-      potion_learn(P_LSD);
-      player->set_hallucinating();
-      break;
-
-    case P_SEEINVIS:
-      player->set_true_sight();
-      break;
-
-    case P_RAISE:
-      potion_learn(P_RAISE);
-      player->raise_level(1);
-      break;
-
-    case P_XHEAL:
-      potion_learn(P_XHEAL);
-      player->restore_health(roll(player->get_level(), 8), true);
-      player->set_not_blind();
-      player->set_not_hallucinating();
-      io_msg("you begin to feel much better");
-      break;
-
-    case P_HASTE:
-      potion_learn(P_HASTE);
-      player->increase_speed();
-      break;
-
-    case P_RESTORE:
-      player->restore_strength();
-      break;
-
-    case P_BLIND:
-      potion_learn(P_BLIND);
-      player->set_blind();
-      break;
-
-    case P_LEVIT:
-      potion_learn(P_LEVIT);
-      player->set_levitating();
-      break;
-
-    default:
-      io_msg("what an odd tasting potion!");
-      return true;
-  }
   io_refresh_statusline();
 
-  /* Throw the item away */
-  call_it("potion", &potion_info.at(static_cast<size_t>(obj->o_which)));
+  string& nickname = Potion::guess(obj->get_type());
+  if (Potion::is_known(obj->get_type())) {
+    nickname.clear();
 
-  if (discardit)
+  } else if (nickname.empty()) {
+    char tmpbuf[MAXSTR] = { '\0' };
+    io_msg("what do you want to call the potion? ");
+    if (io_readstr(tmpbuf) == 0) {
+      nickname = tmpbuf;
+    }
+  }
+
+  /* Throw the item away */
+  if (discardit) {
     delete obj;
+  }
   return true;
 }
 
-void
-potion_description(Item const* item, char buf[])
-{
-  struct obj_info* op = &potion_info.at(static_cast<size_t>(item_subtype(item)));
-  if (op->oi_know)
-  {
-    if (item_count(item) == 1)
-      buf += sprintf(buf, "A potion of %s", op->oi_name.c_str());
-    else
-      buf += sprintf(buf, "%d potions of %s", item_count(item), op->oi_name.c_str());
+string potion_description(Item const* item) {
+  Potion const* potion = dynamic_cast<Potion const*>(item);
+  if (potion == nullptr) {
+    error("Cannot describe non-potion as potion");
   }
-  else
-  {
-    string color = *p_colors.at(static_cast<size_t>(item_subtype(item)));
-
-    if (item_count(item) == 1)
-      buf += sprintf(buf, "A%s %s potion", vowelstr(color).c_str(), color.c_str());
-    else
-      buf += sprintf(buf, "%d %s potions", item_count(item), color.c_str());
-
-    if (!op->oi_guess.empty())
-      sprintf(buf, " called %s", op->oi_guess.c_str());
-  }
+  return potion->get_description();
 }
 
-Item*
-potion_create(int which)
-{
-  Item* pot = new Item();
+void Potion::init_potions() {
+  /* Pick a unique color for each potion */
+  for (int i = 0; i < Potion::NPOTIONS; i++)
+    for (;;) {
+      size_t color = os_rand_range(color_max());
 
-  if (which == -1)
-    which = static_cast<int>(pick_one(potion_info, NPOTIONS));
+      if (find(colors.cbegin(), colors.cend(), &color_get(color)) !=
+          colors.cend()) {
+        continue;
+      }
 
-  pot->o_type       = POTION;
-  pot->o_which      = which;
-  pot->o_count      = 1;
-  pot->o_damage     = {1, 2};
-  pot->o_hurldmg    = {1, 2};
-
-  return pot;
+      colors.push_back(&color_get(color));
+      break;
+    }
 }
+
 

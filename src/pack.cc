@@ -109,14 +109,15 @@ pack_print_evaluate_item(Item* item)
       }
       break;
 
-    case POTION:
-      worth = static_cast<int>(potion_info.at(static_cast<size_t>(item->o_which)).oi_worth);
+    case POTION: {
+      Potion::Type subtype = static_cast<Potion::Type>(item->o_which);
+      worth = Potion::worth(subtype);
       worth *= item->o_count;
-      op = &potion_info.at(static_cast<size_t>(item->o_which));
-      if (!op->oi_know)
+      if (!Potion::is_known(subtype)) {
         worth /= 2;
-      op->oi_know = true;
-      break;
+      }
+      Potion::set_known(subtype);
+    } break;
 
     case RING:
       op = &ring_info.at(static_cast<size_t>(item->o_which));
@@ -618,7 +619,7 @@ pack_identify_item(void)
   switch (obj->o_type)
   {
     case SCROLL: pack_identify_item_set_know(obj, scroll_info);  break;
-    case POTION: pack_identify_item_set_know(obj, potion_info);  break;
+    case POTION: Potion::set_known(static_cast<Potion::Type>(obj->o_which)); break;
     case STICK:  pack_identify_item_set_know(obj, wands_info);   break;
     case RING:   pack_identify_item_set_know(obj, ring_info); break;
     case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;

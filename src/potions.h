@@ -1,36 +1,60 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
-#include "things.h" /* struct obj_info */
+#include "Character.h"
 
-/* Potion types */
-enum potion_t
-{
-  P_CONFUSE  = 0,
-  P_LSD      = 1,
-  P_POISON   = 2,
-  P_STRENGTH = 3,
-  P_SEEINVIS = 4,
-  P_HEALING  = 5,
-  P_MFIND    = 6,
-  P_TFIND    = 7,
-  P_RAISE    = 8,
-  P_XHEAL    = 9,
-  P_HASTE    = 10,
-  P_RESTORE  = 11,
-  P_BLIND    = 12,
-  P_LEVIT    = 13,
-  NPOTIONS
+
+class Potion : public Item {
+public:
+  enum Type {
+    CONFUSION  = 0,
+    LSD        = 1,
+    POISON     = 2,
+    STRENGTH   = 3,
+    SEEINVIS   = 4,
+    HEALING    = 5,
+    MFIND      = 6,
+    TFIND      = 7,
+    RAISE      = 8,
+    XHEAL      = 9,
+    HASTE      = 10,
+    RESTORE    = 11,
+    BLIND      = 12,
+    LEVIT      = 13,
+    NPOTIONS
+  };
+
+  ~Potion();
+  explicit Potion();     // Random potion
+  explicit Potion(Type); // Potion of given type
+
+  // Getters
+  Type get_type() const;
+  std::string get_description() const;
+
+  // Misc
+  void quaffed_by(Character&); // Someone drank the potion
+
+  // Static
+  static std::string  name(Type subtype);
+  static int          probability(Type subtype);
+  static int          worth(Type subtype);
+  static std::string& guess(Type subtype);
+  static bool         is_known(Type subtype);
+  static void         set_known(Type subtype);
+
+  static void         init_potions();
+
+private:
+  Type subtype;
+
+  static std::vector<std::string>        guesses;
+  static std::vector<bool>               knowledge;
+  static std::vector<std::string const*> colors;
 };
 
-/* Variables, TODO: Make these private */
-extern std::vector<obj_info> potion_info; /* A list of potions and info */
-
-void potions_init(void);
-
-/* Functions */
 bool potion_quaff_something(void);  /* Quaff a potion from the pack */
-void potion_description(Item const* obj, char buf[]);
 
-Item* potion_create(int which);
+std::string potion_description(Item const* obj);
