@@ -28,6 +28,7 @@ public:
 
   Item& operator=(Item const&) = default;
   Item& operator=(Item&&) = default;
+  virtual Item* clone() const;
 
   /* Setters */
   void set_pos(Coordinate const&);

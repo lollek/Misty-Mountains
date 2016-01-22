@@ -42,6 +42,10 @@ static Potion::Type random_potion_type() {
   error("Error! Sum of probabilities is not 100%");
 }
 
+Potion* Potion::clone() const {
+  return new Potion(*this);
+}
+
 string Potion::name(Potion::Type subtype) {
   switch(subtype) {
     case CONFUSION: return "confusion";

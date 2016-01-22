@@ -20,11 +20,14 @@ public:
     NARMORS
   };
 
-  // Armor of given type
-  explicit Armor(Type type, bool random_stats);
-  // Armor of random type
-  explicit Armor(bool random_stats);
   ~Armor();
+  explicit Armor(Type type, bool random_stats); // Armor of given type
+  explicit Armor(bool random_stats);            // Armor of random type
+  explicit Armor(Armor const&) = default;
+
+  Armor* clone() const override;
+  Armor& operator=(Armor const&) = default;
+  Armor& operator=(Armor&&) = default;
 
   // Setters
   void set_identified();

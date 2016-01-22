@@ -61,4 +61,7 @@ bool Item::is_magic() const {
   }
 }
 
+Item* Item::clone() const {
+  return new Item(*this);
+}
 

@@ -286,7 +286,7 @@ Item* pack_remove(Item* obj, bool newobj, bool all) {
   if (obj->o_count > 1 && !all) {
     obj->o_count--;
     if (newobj) {
-      return_value = new Item(*obj);
+      return_value = obj->clone();
       return_value->o_count = 1;
     }
 

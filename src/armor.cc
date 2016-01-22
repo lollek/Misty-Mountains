@@ -20,6 +20,10 @@ using namespace std;
 
 Armor::~Armor() {}
 
+Armor* Armor::clone() const {
+  return new Armor(*this);
+}
+
 static Armor::Type random_armor_type() {
   int value = os_rand_range(100);
 

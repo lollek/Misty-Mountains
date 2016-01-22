@@ -29,6 +29,11 @@ public:
   ~Potion();
   explicit Potion();     // Random potion
   explicit Potion(Type); // Potion of given type
+  explicit Potion(Potion const&) = default;
+
+  Potion* clone() const override;
+  Potion& operator=(Potion const&) = default;
+  Potion& operator=(Potion&&) = default;
 
   // Getters
   Type get_type() const;
