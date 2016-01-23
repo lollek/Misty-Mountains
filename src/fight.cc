@@ -40,9 +40,9 @@ add_ring_attack_modifiers(attack_modifier& mod) {
 
     Item const* ring = ring_thing;
 
-    if (ring->o_which == R_ADDDAM) {
+    if (ring->o_which == Ring::Type::ADDDAM) {
       mod.to_dmg += ring->o_arm;
-    } else if (ring->o_which == R_ADDHIT) {
+    } else if (ring->o_which == Ring::Type::ADDHIT) {
       mod.to_dmg += ring->o_arm;
     }
   }

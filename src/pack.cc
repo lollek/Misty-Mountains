@@ -75,7 +75,6 @@ static size_t
 pack_print_evaluate_item(Item* item)
 {
   int worth = 0;
-  struct obj_info *op;
   if (item == nullptr)
     return 0;
 
@@ -119,22 +118,22 @@ pack_print_evaluate_item(Item* item)
       Potion::set_known(subtype);
     } break;
 
-    case RING:
-      op = &ring_info.at(static_cast<size_t>(item->o_which));
-      worth = static_cast<int>(op->oi_worth);
-      if (item->o_which == R_ADDSTR || item->o_which == R_ADDDAM ||
-          item->o_which == R_PROTECT || item->o_which == R_ADDHIT)
-      {
-        if (item->o_arm > 0)
+    case RING: {
+      Ring::Type subtype = static_cast<Ring::Type>(item->o_which);
+      worth = Ring::worth(subtype);
+      if (subtype == Ring::Type::ADDSTR || subtype == Ring::Type::ADDDAM ||
+          subtype == Ring::Type::PROTECT || subtype == Ring::Type::ADDHIT) {
+        if (item->o_arm > 0) {
           worth += item->o_arm * 100;
-        else
+        } else {
           worth = 10;
+        }
       }
-      if (!(item->o_flags & ISKNOW))
+      if (Ring::is_known(subtype)) {
         worth /= 2;
-      item->o_flags |= ISKNOW;
-      op->oi_know = true;
-      break;
+      }
+      Ring::set_known(subtype);
+    } break;
 
     case STICK:
       Wand::worth(static_cast<Wand::Type>(item->o_which));
@@ -620,7 +619,7 @@ pack_identify_item(void)
     case SCROLL: pack_identify_item_set_know(obj, scroll_info);  break;
     case POTION: Potion::set_known(static_cast<Potion::Type>(obj->o_which)); break;
     case STICK:  Wand::set_known(static_cast<Wand::Type>(obj->o_which)); break;
-    case RING:   pack_identify_item_set_know(obj, ring_info); break;
+    case RING:   Ring::set_known(static_cast<Ring::Type>(obj->o_which)); break;
     case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
     default: break;
   }

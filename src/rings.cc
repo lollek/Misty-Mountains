@@ -1,11 +1,8 @@
-#include <ctype.h>
-#include <string.h>
-
 #include <vector>
 #include <string>
+#include <sstream>
 
-using namespace std;
-
+#include "error_handling.h"
 #include "daemons.h"
 #include "io.h"
 #include "item.h"
@@ -21,75 +18,186 @@ using namespace std;
 
 #include "rings.h"
 
-static vector<string> r_stones;
+using namespace std;
 
-static struct stone {
-    string st_name;
-    size_t st_value;
-} stones[] = {
-  { "agate",		 25},
-  { "alexandrite",	 40},
-  { "amethyst",	 50},
-  { "carnelian",	 40},
-  { "diamond",	300},
-  { "emerald",	300},
-  { "germanium",	225},
-  { "granite",	  5},
-  { "garnet",		 50},
-  { "jade",		150},
-  { "kryptonite",	300},
-  { "lapis lazuli",	 50},
-  { "moonstone",	 50},
-  { "obsidian",	 15},
-  { "onyx",		 60},
-  { "opal",		200},
-  { "pearl",		220},
-  { "peridot",	 63},
-  { "ruby",		350},
-  { "sapphire",	285},
-  { "stibotantalite",	200},
-  { "tiger eye",	 50},
-  { "topaz",		 60},
-  { "turquoise",	 70},
-  { "taaffeite",	300},
-  { "zircon",	 	 80},
-};
-static int NSTONES = (sizeof(stones) / sizeof(*stones));
+vector<string> Ring::materials;
+vector<string> Ring::guesses;
+vector<bool>   Ring::known;
 
-vector<obj_info> ring_info = {
-  { "protection",		 9, 400,   "", false },
-  { "add strength",		 9, 400,   "", false },
-  { "sustain strength",		 5, 280,   "", false },
-  { "searching",		10, 420,   "", false },
-  { "see invisible",		10, 310,   "", false },
-  { "adornment",		 1,  10,   "", false },
-  { "aggravate monster",	10,  10,   "", false },
-  { "dexterity",		 8, 440,   "", false },
-  { "increase damage",		 8, 400,   "", false },
-  { "regeneration",		 4, 460,   "", false },
-  { "slow digestion",		 9, 240,   "", false },
-  { "teleportation",		 5,  30,   "", false },
-  { "stealth",			 7, 470,   "", false },
-  { "maintain armor",		 5, 380,   "", false },
-};
+static Ring::Type random_ring_type() {
+  int value = os_rand_range(100);
 
-void
-ring_init(void)
-{
-  for (size_t i = 0; i < NRINGS; i++)
-    for (;;)
-    {
-      int stone = os_rand_range(NSTONES);
+  int end = static_cast<int>(Ring::Type::NRINGS);
+  for (int i = 0; i < end; ++i) {
+    Ring::Type type = static_cast<Ring::Type>(i);
+    int probability = Ring::probability(type);
 
-      if (find(begin(r_stones), end(r_stones), stones[stone].st_name) != end(r_stones))
-        continue;
+    if (value < probability) {
+      return type;
 
-      r_stones.push_back(stones[stone].st_name);
-      ring_info.at(i).oi_worth += stones[stone].st_value;
-      break;
+    } else {
+      value -= probability;
     }
+  }
+
+  error("Error! Sum of probabilities is not 100%");
 }
 
+
+
+Ring::~Ring() {}
+
+Ring::Ring(bool random_stats) : Ring(random_ring_type(), random_stats) {}
+
+Ring::Ring(Ring::Type type, bool random_stats) : Item(), subtype(type) {
+  o_type = RING;
+  o_which = type;
+
+  switch (o_which) {
+    case ADDSTR: case PROTECT: case ADDHIT: case ADDDAM: {
+      if (random_stats) {
+        o_arm = os_rand_range(3);
+        if (o_arm == 0) {
+          o_arm = -1;
+          o_flags |= ISCURSED;
+        }
+
+      } else {
+        o_arm = 1;
+      }
+    } break;
+
+    case AGGR: case TELEPORT: {
+      o_flags |= ISCURSED;
+    } break;
+  }
+}
+
+Ring* Ring::clone() const {
+  return new Ring(*this);
+}
+
+string Ring::name(Ring::Type type) {
+  switch (type) {
+    case PROTECT:  return "protection";
+    case ADDSTR:   return "add strength";
+    case SUSTSTR:  return "sustain strength";
+    case SEARCH:   return "searching";
+    case SEEINVIS: return "see invisible";
+    case NOP:      return "adornment";
+    case AGGR:     return "aggravate monster";
+    case ADDHIT:   return "dexterity";
+    case ADDDAM:   return "increase damage";
+    case REGEN:    return "regeneration";
+    case DIGEST:   return "slow digestion";
+    case TELEPORT: return "teleportation";
+    case STEALTH:  return "stealth";
+    case SUSTARM:  return "maintain armor";
+    case NRINGS:   error("Unknown ring NRINGS");
+  }
+}
+
+int Ring::probability(Ring::Type type) {
+  switch (type) {
+    case PROTECT:  return  9;
+    case ADDSTR:   return  9;
+    case SUSTSTR:  return  5;
+    case SEARCH:   return 10;
+    case SEEINVIS: return 10;
+    case NOP:      return  1;
+    case AGGR:     return 10;
+    case ADDHIT:   return  8;
+    case ADDDAM:   return  8;
+    case REGEN:    return  4;
+    case DIGEST:   return  9;
+    case TELEPORT: return  5;
+    case STEALTH:  return  7;
+    case SUSTARM:  return  5;
+    case NRINGS:   error("Unknown ring NRINGS");
+  }
+}
+
+int Ring::worth(Ring::Type type) {
+  switch (type) {
+    case PROTECT:  return 400;
+    case ADDSTR:   return 400;
+    case SUSTSTR:  return 280;
+    case SEARCH:   return 420;
+    case SEEINVIS: return 310;
+    case NOP:      return  10;
+    case AGGR:     return  10;
+    case ADDHIT:   return 440;
+    case ADDDAM:   return 400;
+    case REGEN:    return 460;
+    case DIGEST:   return 240;
+    case TELEPORT: return  30;
+    case STEALTH:  return 470;
+    case SUSTARM:  return 380;
+    case NRINGS:   error("Unknown ring NRINGS");
+  }
+}
+
+string& Ring::guess(Ring::Type type) {
+  return guesses.at(static_cast<size_t>(type));
+}
+
+bool Ring::is_known(Ring::Type type) {
+  return known.at(static_cast<size_t>(type));
+}
+
+void Ring::set_known(Ring::Type type) {
+  known.at(static_cast<size_t>(type)) = true;
+}
+
+void Ring::init_rings() {
+  vector<string> stones {
+    "agate",     "alexandrite", "amethyst",       "carnelian", "diamond",    "emerald",
+    "germanium", "granite",     "garnet",         "jade",      "kryptonite", "lapis lazuli",
+    "moonstone", "obsidian",    "onyx",           "opal",      "pearl",      "peridot",
+    "ruby",      "sapphire",    "stibotantalite", "tiger eye", "topaz",      "turquoise",
+    "taaffeite", "zircon"
+  };
+
+  while (materials.size() < static_cast<size_t>(Ring::Type::NRINGS)) {
+    size_t stone = static_cast<size_t>(os_rand_range(stones.size()));
+
+    if (find(materials.begin(), materials.end(), stones.at(stone)) != end(materials))
+      continue;
+
+    materials.push_back(stones.at(stone));
+    break;
+  }
+}
+
+std::string Ring::get_description() const {
+  stringstream os;
+
+  os << materials.at(subtype) << " ring";
+
+  if (Ring::is_known(subtype)) {
+    os << " of " << Ring::name(subtype);
+
+    switch (subtype) {
+      case Ring::PROTECT: case Ring::ADDSTR: case Ring::ADDDAM: case Ring::ADDHIT:
+        if (item_armor(this) > 0) {
+          os << " [+" << item_armor(this) << "]";
+        } else {
+          os << " [" << item_armor(this) << "]";
+        }
+
+    case SUSTSTR: case SEARCH: case SEEINVIS: case NOP: case AGGR:
+    case REGEN: case DIGEST: case TELEPORT: case STEALTH: case SUSTARM:
+        break;
+
+    case NRINGS:   error("Unknown ring NRINGS");
+    }
+
+  } else if (!Ring::guess(subtype).empty()) {
+    os << " called " << Ring::guess(subtype);
+  }
+
+  return os.str();
+}
 
 bool
 ring_put_on(void)
@@ -117,13 +225,12 @@ ring_put_on(void)
   /* Calculate the effect it has on the poor guy. */
   switch (obj->o_which)
   {
-    case R_AGGR: monster_aggravate_all(); break;
+    case Ring::AGGR: monster_aggravate_all(); break;
   }
 
-  char buf[MAXSTR];
-  ring_description(obj, buf);
-  buf[0] = static_cast<char>(tolower(buf[0]));
-  io_msg("now wearing %s", buf);
+  string msg = ring_description(obj);
+  msg.at(0) = static_cast<char>(tolower(msg.at(0)));
+  io_msg("now wearing %s", msg.c_str());
   return true;
 }
 
@@ -145,10 +252,10 @@ ring_take_off(void)
 
   switch (obj->o_which)
   {
-    case R_ADDSTR:
+    case Ring::ADDSTR:
       break;
 
-    case R_SEEINVIS:
+    case Ring::SEEINVIS:
       daemon_extinguish_fuse(daemon_function::remove_true_sight);
       break;
   }
@@ -177,67 +284,10 @@ ring_drain_amount(void)
   return total_eat;
 }
 
-bool
-ring_is_known(enum ring_t ring)
-{
-  return ring_info[ring].oi_know;
-}
-
-void
-ring_description(Item const* item, char* buf)
-{
-  obj_info* op = &ring_info.at(static_cast<size_t>(item_subtype(item)));
-  buf += sprintf(buf, "%s ring", r_stones.at(static_cast<size_t>(item_subtype(item))).c_str());
-
-  if (op->oi_know)
-  {
-    buf += sprintf(buf, " of %s", op->oi_name.c_str());
-    switch (item_subtype(item))
-    {
-      case R_PROTECT: case R_ADDSTR: case R_ADDDAM: case R_ADDHIT:
-        if (item_armor(item) > 0)
-          buf += sprintf(buf, " [+%d]", item_armor(item));
-        else
-          buf += sprintf(buf, " [%d]", item_armor(item));
-        break;
-      default: break;
-    }
+string ring_description(Item const* item) {
+  Ring const* ring = dynamic_cast<Ring const*>(item);
+  if (ring == nullptr) {
+    error("Cannot describe non-ring as ring");
   }
-  else if (!op->oi_guess.empty())
-    sprintf(buf, " called %s", op->oi_guess.c_str());
+  return ring->get_description();
 }
-
-Item*
-ring_create(int which, bool random_stats)
-{
-  if (which == -1)
-    which = static_cast<int>(pick_one(ring_info, NRINGS));
-
-  Item* ring = new Item();
-  ring->o_type = RING;
-  ring->o_which = which;
-
-  switch (ring->o_which)
-  {
-    case R_ADDSTR: case R_PROTECT: case R_ADDHIT: case R_ADDDAM:
-      if (random_stats)
-      {
-        ring->o_arm = os_rand_range(3);
-        if (ring->o_arm == 0)
-        {
-          ring->o_arm = -1;
-          ring->o_flags |= ISCURSED;
-        }
-      }
-      else
-        ring->o_arm = 1;
-      break;
-
-    case R_AGGR: case R_TELEPORT:
-      ring->o_flags |= ISCURSED;
-      break;
-  }
-
-  return ring;
-}
-

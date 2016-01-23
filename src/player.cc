@@ -93,7 +93,7 @@ int Player::get_armor() const {
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
     Item const* ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != nullptr && ring->o_which == R_PROTECT)
+    if (ring != nullptr && ring->o_which == Ring::Type::PROTECT)
       ac -= ring->o_arm;
   }
 
@@ -195,7 +195,7 @@ int Player::get_strength_with_bonuses() const {
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
     Item const* ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != nullptr && ring->o_which == R_ADDSTR)
+    if (ring != nullptr && ring->o_which == Ring::Type::ADDSTR)
       bonuses += ring->o_arm;
   }
   return get_strength() + bonuses;
@@ -206,7 +206,7 @@ bool Player::saving_throw(int which) const {
     for (int i = 0; i < PACK_RING_SLOTS; ++i)
     {
       Item* ring = pack_equipped_item(pack_ring_slots[i]);
-      if (ring != nullptr && ring->o_which == R_PROTECT)
+      if (ring != nullptr && ring->o_which == Ring::Type::PROTECT)
         which -= ring->o_arm;
     }
 
@@ -216,7 +216,7 @@ bool Player::saving_throw(int which) const {
 
 bool Player::has_true_sight() const {
   return Character::has_true_sight() ||
-    player->has_ring_with_ability(R_SEEINVIS);
+    player->has_ring_with_ability(Ring::Type::SEEINVIS);
 }
 
 void Player::set_true_sight() {
@@ -390,7 +390,7 @@ void Player::become_stuck() {
 }
 
 void Player::become_poisoned() {
-  if (player->has_ring_with_ability(R_SUSTSTR)) {
+  if (player->has_ring_with_ability(Ring::Type::SUSTSTR)) {
     io_msg("you feel momentarily nauseous");
 
   } else {
@@ -401,7 +401,7 @@ void Player::become_poisoned() {
 }
 
 bool Player::is_stealthy() const {
-  return player->has_ring_with_ability(R_STEALTH)
+  return player->has_ring_with_ability(Ring::Type::STEALTH)
     || is_levitating();
 }
 
@@ -607,7 +607,7 @@ void Player::rust_armor() {
     return;
   }
 
-  if ((arm->o_flags & ISPROT) || has_ring_with_ability(R_SUSTARM)) {
+  if ((arm->o_flags & ISPROT) || has_ring_with_ability(Ring::Type::SUSTARM)) {
     if (!to_death) {
       io_msg("the rust vanishes instantly");
     }

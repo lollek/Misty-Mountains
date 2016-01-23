@@ -44,12 +44,8 @@ inv_name(Item const* item, bool drop)
   switch (item->o_type)
   {
     case POTION: buffer << potion_description(item); break;
-    case RING: {
-      char buf[MAXSTR];
-      ring_description(item, buf);
-      buffer << buf;
-    } break;
-    case STICK: buffer << wand_description(item); break;
+    case RING:   buffer << ring_description(item); break;
+    case STICK:  buffer << wand_description(item); break;
     case SCROLL: {
       char buf[MAXSTR];
       scroll_description(item, buf);
@@ -129,7 +125,7 @@ new_thing(void)
     case 2: cur = new_food(-1); break;
     case 3: cur = weapon_create(-1, true); break;
     case 4: cur = new Armor(true); break;
-    case 5: cur = ring_create(-1, true); break;
+    case 5: cur = new Ring(true); break;
     case 6: cur = new Wand(); break;
     default:
       io_msg("Picked a bad kind of object (this should not happen)");
@@ -160,69 +156,5 @@ pick_one(vector<obj_info>& start, size_t nitems)
 
   /* The functions should have returned by now */
   error("Probability was not in range");
-}
-
-/* list what the player has discovered of this type */
-static void
-discovered_by_type(char type, vector<obj_info>& info, size_t max_items)
-{
-  WINDOW *printscr = dupwin(stdscr);
-
-  Coordinate orig_pos;
-  getyx(stdscr, orig_pos.y, orig_pos.x);
-
-  Item printable_object;
-  printable_object.o_type = type;
-  printable_object.o_flags = 0;
-  printable_object.o_count = 1;
-
-  int items_found = 0;
-  for (size_t i = 0; i < max_items; ++i)
-    if (info.at(i).oi_know || !info.at(i).oi_guess.empty())
-    {
-      printable_object.o_which = static_cast<int>(i);
-      mvwprintw(printscr, ++items_found, 1,
-                "%s", inv_name(&printable_object, false).c_str());
-    }
-
-  if (items_found == 0)
-  {
-    string type_as_str = nullptr;
-    switch (type)
-    {
-      case POTION: type_as_str = "potion"; break;
-      case SCROLL: type_as_str = "scroll"; break;
-      case RING:   type_as_str = "ring"; break;
-      case STICK:  type_as_str = "stick"; break;
-      default: error("unknown type")
-    }
-    mvwprintw(printscr, 1, 1, "No known %s", type_as_str.c_str());
-  }
-
-  move(orig_pos.y, orig_pos.x);
-  wrefresh(printscr);
-  delwin(printscr);
-}
-
-void
-discovered(void)
-{
-  io_msg("for what type of objects do you want a list? (%c%c%c%c) ",
-      SCROLL, RING);
-  while (true)
-  {
-    char ch = io_readchar(true);
-    touchwin(stdscr);
-    refresh();
-    switch (ch)
-    {
-      case SCROLL: discovered_by_type(ch, scroll_info, NSCROLLS); break;
-      case RING: discovered_by_type(ch, ring_info, NRINGS); break;
-      default: io_msg_clear(); return;
-    }
-  }
-
-  touchwin(stdscr);
-  io_msg_clear();
 }
 

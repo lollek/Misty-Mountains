@@ -34,6 +34,3 @@ Item* new_food(int which);
 
 /* Pick an item out of a list of nitems possible objects */
 size_t pick_one(std::vector<obj_info>& start, size_t nitems);
-
-/* list what the player has discovered in this game of a certain type */
-void discovered(void);

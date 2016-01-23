@@ -220,7 +220,8 @@ trap_dart_player(void)
       io_msg("a poisoned dart killed you");
       death(DEATH_DART);
     }
-    if (!player->has_ring_with_ability(R_SUSTSTR) && !player->saving_throw(VS_POISON))
+    if (!player->has_ring_with_ability(Ring::Type::SUSTSTR) &&
+        !player->saving_throw(VS_POISON))
       player->modify_strength(-1);
     io_msg("a small dart just hit you in the shoulder");
   }

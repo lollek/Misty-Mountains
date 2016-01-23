@@ -210,7 +210,7 @@ Monster::Monster(char type, Coordinate const& pos, struct room* room,
   // they also give more experience
   gain_experience(extra_experience(get_level(), get_max_health()));
 
-  if (player->has_ring_with_ability(R_AGGR)) {
+  if (player->has_ring_with_ability(Ring::Type::AGGR)) {
     monster_start_running(&pos);
   }
 
@@ -491,7 +491,7 @@ monster_do_special_ability(Monster** monster)
     /* Rattlesnakes have poisonous bites */
     case 'R':
       if (!player->saving_throw(VS_POISON)
-          && !player->has_ring_with_ability(R_SUSTSTR))
+          && !player->has_ring_with_ability(Ring::Type::SUSTSTR))
       {
         player->modify_strength(-1);
         io_msg("you feel weaker");

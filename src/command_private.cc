@@ -153,8 +153,8 @@ command_name_item(void)
     case FOOD: io_msg("Don't play with your food!"); return false;
 
     case RING:
-      already_known = ring_is_known(static_cast<ring_t>(obj->o_which));
-      guess = &ring_info[static_cast<size_t>(obj->o_which)].oi_guess;
+      already_known = Ring::is_known(static_cast<Ring::Type>(obj->o_which));
+      guess = &Ring::guess(static_cast<Ring::Type>(obj->o_which));
       break;
 
     case POTION:

@@ -163,7 +163,7 @@ void daemon_doctor() {
 
   for (int i = 0; i < PACK_RING_SLOTS; ++i) {
     Item *ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != nullptr && ring->o_which == R_REGEN)
+    if (ring != nullptr && ring->o_which == Ring::Type::REGEN)
       player->restore_health(1, false);
   }
 
@@ -206,9 +206,9 @@ void daemon_ring_abilities() {
     if (obj == nullptr) {
       continue;
 
-    } else if (obj->o_which == R_SEARCH) {
+    } else if (obj->o_which == Ring::Type::SEARCH) {
       player->search();
-    } else if (obj->o_which == R_TELEPORT && os_rand_range(50) == 0) {
+    } else if (obj->o_which == Ring::Type::TELEPORT && os_rand_range(50) == 0) {
       player->teleport(nullptr);
     }
   }

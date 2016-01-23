@@ -41,8 +41,8 @@ pr_spec(char type)
   {
     case POTION: ptr = nullptr;            max = Potion::Type::NPOTIONS;  break;
     case SCROLL: ptr = &scroll_info;       max = NSCROLLS;  break;
-    case RING:   ptr = &ring_info;         max = NRINGS;    break;
-    case STICK:  ptr = nullptr    ;        max = Wand::Type::NWANDS; break;
+    case RING:   ptr = nullptr;            max = Ring::Type::NRINGS;    break;
+    case STICK:  ptr = nullptr;            max = Wand::Type::NWANDS; break;
     case ARMOR:  ptr = nullptr;            max = Armor::Type::NARMORS;   break;
     case WEAPON: ptr = &weapon_info;       max = MAXWEAPONS;break;
     default:     ptr = nullptr;            max = 0;         break;
@@ -55,26 +55,33 @@ pr_spec(char type)
     size_t prob;
     wmove(printscr, static_cast<int>(i) + 1, 1);
 
-    if (type == ARMOR)
-    {
-      name = Armor::name(static_cast<Armor::Type>(i));
-      prob = static_cast<size_t>(Armor::probability(static_cast<Armor::Type>(i)));
+    switch (type) {
+      case ARMOR: {
+        name = Armor::name(static_cast<Armor::Type>(i));
+        prob = static_cast<size_t>(Armor::probability(static_cast<Armor::Type>(i)));
+      } break;
+
+      case POTION: {
+        name = Potion::name(static_cast<Potion::Type>(i));
+        prob = static_cast<size_t>(Potion::probability(static_cast<Potion::Type>(i)));
+      } break;
+
+      case STICK: {
+        name = Wand::name(static_cast<Wand::Type>(i));
+        prob = static_cast<size_t>(Wand::probability(static_cast<Wand::Type>(i)));
+      } break;
+
+      case RING: {
+        name = Ring::name(static_cast<Ring::Type>(i));
+        prob = static_cast<size_t>(Ring::probability(static_cast<Ring::Type>(i)));
+      } break;
+
+      default: {
+        name = ptr->at(i).oi_name;
+        prob = ptr->at(i).oi_prob;
+      } break;
     }
-    else if (type == POTION)
-    {
-      name = Potion::name(static_cast<Potion::Type>(i));
-      prob = static_cast<size_t>(Potion::probability(static_cast<Potion::Type>(i)));
-    }
-    else if (type == STICK)
-    {
-      name = Wand::name(static_cast<Wand::Type>(i));
-      prob = static_cast<size_t>(Wand::probability(static_cast<Wand::Type>(i)));
-    }
-    else
-    {
-      name = ptr->at(i).oi_name;
-      prob = ptr->at(i).oi_prob;
-    }
+
     wprintw(printscr, "%c: %s (%d%%)", ch, name.c_str(), prob);
     ch = ch == '9' ? 'a' : (ch + 1);
   }
@@ -201,10 +208,11 @@ wizard_create_item(void)
 
     case RING:
       {
-        obj = ring_create(which, false);
+        obj = new Ring(static_cast<Ring::Type>(which), false);
         switch (obj->o_which)
         {
-          case R_PROTECT: case R_ADDSTR: case R_ADDHIT: case R_ADDDAM:
+          case Ring::Type::PROTECT: case Ring::Type::ADDSTR:
+          case Ring::Type::ADDHIT:  case Ring::Type::ADDDAM:
             io_msg("blessing? (+,-,n)");
             char bless = io_readchar(true);
             io_msg_clear();
