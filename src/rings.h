@@ -55,7 +55,4 @@ private:
   static std::vector<bool>        known;
 };
 
-bool ring_put_on();
-bool ring_take_off();
-
 std::string ring_description(Item const* item);

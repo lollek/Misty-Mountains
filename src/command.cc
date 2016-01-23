@@ -143,9 +143,9 @@ command_do(char ch)
       return command_run(ch, false);
     case 'A': return command_attack(true);
     case 'I': return pack_print_equipment();
-    case 'P': return ring_put_on();
+    case 'P': return command_ring_put_on();
     case 'Q': return command_quit();
-    case 'R': return ring_take_off();
+    case 'R': return command_ring_take_off();
     case 'T': return command_take_off(EQUIPMENT_ARMOR);
     case 'W': return command_wear();
     case 'Z': return command_rest();

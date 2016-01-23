@@ -27,3 +27,5 @@ bool command_throw(void);                 /* Throw or shoot something*/
 bool command_use_stairs(char up_or_down); /* Go to next/previous level */
 bool command_wield(void);                 /* Asks player for weapon to wield */
 bool command_wear();                      /* Let player select something to wear */
+bool command_ring_put_on();               /* Put on a ring */
+bool command_ring_take_off();             /* Take off a ring */

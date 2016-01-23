@@ -199,69 +199,6 @@ std::string Ring::get_description() const {
   return os.str();
 }
 
-bool
-ring_put_on(void)
-{
-  Item* obj = pack_get_item("put on", RING);
-
-  /* Make certain that it is somethings that we want to wear */
-  if (obj == nullptr)
-    return false;
-
-  if (obj->o_type != RING)
-  {
-    io_msg("not a ring");
-    return ring_put_on();
-  }
-
-  /* Try to put it on */
-  if (!pack_equip_item(obj))
-  {
-    io_msg("you already have a ring on each hand");
-    return false;
-  }
-  pack_remove(obj, false, true);
-
-  /* Calculate the effect it has on the poor guy. */
-  switch (obj->o_which)
-  {
-    case Ring::AGGR: monster_aggravate_all(); break;
-  }
-
-  string msg = ring_description(obj);
-  msg.at(0) = static_cast<char>(tolower(msg.at(0)));
-  io_msg("now wearing %s", msg.c_str());
-  return true;
-}
-
-bool
-ring_take_off(void)
-{
-  enum equipment_pos ring;
-
-  /* Try right, then left */
-  if (pack_equipped_item(EQUIPMENT_RRING) != nullptr)
-    ring = EQUIPMENT_RRING;
-  else
-    ring = EQUIPMENT_LRING;
-
-  Item* obj = pack_equipped_item(ring);
-
-  if (!pack_unequip(ring, false))
-    return false;
-
-  switch (obj->o_which)
-  {
-    case Ring::ADDSTR:
-      break;
-
-    case Ring::SEEINVIS:
-      daemon_extinguish_fuse(daemon_function::remove_true_sight);
-      break;
-  }
-  return true;
-}
-
 string ring_description(Item const* item) {
   Ring const* ring = dynamic_cast<Ring const*>(item);
   if (ring == nullptr) {
