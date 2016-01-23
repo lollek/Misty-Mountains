@@ -58,6 +58,4 @@ private:
 bool ring_put_on();
 bool ring_take_off();
 
-int ring_drain_amount(); /* How much food the player's rings drain */
-
 std::string ring_description(Item const* item);

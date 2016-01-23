@@ -49,6 +49,28 @@ food_eat(void)
   hunger_state = 0;
 }
 
+static int
+ring_drain_amount(void)
+{
+  int total_eat = 0;
+  int uses[] = {
+    1, /* R_PROTECT */  1, /* R_ADDSTR   */  1, /* R_SUSTSTR  */
+    1, /* R_SEARCH  */  1, /* R_SEEINVIS */  0, /* R_NOP      */
+    0, /* R_AGGR    */  1, /* R_ADDHIT   */  1, /* R_ADDDAM   */
+    2, /* R_REGEN   */ -1, /* R_DIGEST   */  0, /* R_TELEPORT */
+    1, /* R_STEALTH */  1, /* R_SUSTARM  */
+  };
+
+  for (int i = 0; i < PACK_RING_SLOTS; ++i)
+  {
+    Item *ring = pack_equipped_item(pack_ring_slots[i]);
+    if (ring != nullptr)
+      total_eat += uses[ring->o_which];
+  }
+
+  return total_eat;
+}
+
 void
 food_digest(void)
 {
