@@ -115,9 +115,6 @@ void monster_print_all(void);
  * Returns true if there was atleast one, else false */
 bool monster_show_if_magic_inventory(void);
 
-/* Add nearby monsters to the given list. Returns the number of results */
-int monster_add_nearby(Monster** nearby_monsters, struct room const* room);
-
 /* Transform the monster into something else */
 void monster_polymorph(Monster* monster);
 

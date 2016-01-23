@@ -718,25 +718,6 @@ monster_show_if_magic_inventory(void)
   return atleast_one;
 }
 
-int
-monster_add_nearby(Monster** nearby_monsters, struct room const* room)
-{
-  assert(nearby_monsters != nullptr);
-  bool inpass = player->get_room()->r_flags & ISGONE;
-  Monster** nearby_monsters_start = nearby_monsters;
-
-  for (Monster* mon : Game::level->monsters) {
-    if (mon->get_room() == player->get_room()
-        || mon->get_room() == room
-        ||(inpass && Game::level->get_ch(mon->get_position()) == DOOR &&
-          Game::level->get_passage(mon->get_position()) == player->get_room())) {
-      *nearby_monsters++ = mon;
-    }
-  }
-
-  return static_cast<int>(nearby_monsters_start - nearby_monsters);
-}
-
 void
 monster_polymorph(Monster* target)
 {
