@@ -167,7 +167,8 @@ command_name_item(void)
       break;
 
     case STICK:
-      already_known = wand_is_known(static_cast<wand_t>(obj->o_which));
+      already_known = Wand::is_known(static_cast<Wand::Type>(obj->o_which));
+      guess = &Wand::guess(static_cast<Wand::Type>(obj->o_which));
       break;
 
     default:
@@ -186,13 +187,11 @@ command_name_item(void)
   char tmpbuf[MAXSTR] = { '\0' };
   if (io_readstr(tmpbuf) == 0)
   {
-    if (obj->o_type == STICK) {
-      wand_set_name(static_cast<wand_t>(obj->o_which), tmpbuf);
-    } else if (obj->o_type == SCROLL) {
+    if (obj->o_type == SCROLL) {
       scroll_set_name(static_cast<scroll_t>(obj->o_which), tmpbuf);
     } else if (strlen(tmpbuf) > 0) {
       if (guess != nullptr) {
-        *guess += tmpbuf;
+        *guess = tmpbuf;
       } else {
         obj->set_nickname(tmpbuf);
       }

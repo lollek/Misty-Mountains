@@ -137,12 +137,11 @@ pack_print_evaluate_item(Item* item)
       break;
 
     case STICK:
-      wand_get_worth(static_cast<wand_t>(item->o_which));
+      Wand::worth(static_cast<Wand::Type>(item->o_which));
       worth += 20 * item->o_charges;
       if (!(item->o_flags & ISKNOW))
         worth /= 2;
-      item->o_flags |= ISKNOW;
-      wand_set_known(static_cast<wand_t>(item->o_which));
+      Wand::set_known(static_cast<Wand::Type>(item->o_which));
       break;
 
     case AMULET:
@@ -620,7 +619,7 @@ pack_identify_item(void)
   {
     case SCROLL: pack_identify_item_set_know(obj, scroll_info);  break;
     case POTION: Potion::set_known(static_cast<Potion::Type>(obj->o_which)); break;
-    case STICK:  pack_identify_item_set_know(obj, wands_info);   break;
+    case STICK:  Wand::set_known(static_cast<Wand::Type>(obj->o_which)); break;
     case RING:   pack_identify_item_set_know(obj, ring_info); break;
     case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
     default: break;

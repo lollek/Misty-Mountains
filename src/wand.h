@@ -3,51 +3,68 @@
 #include <vector>
 #include <string>
 
-#include "rogue.h"
+#include "item.h"
 
-enum wand_t
-{
-  WS_LIGHT     = 0,
-  WS_INVIS     = 1,
-  WS_ELECT     = 2,
-  WS_FIRE      = 3,
-  WS_COLD      = 4,
-  WS_POLYMORPH = 5,
-  WS_MISSILE   = 6,
-  WS_HASTE_M   = 7,
-  WS_SLOW_M    = 8,
-  WS_DRAIN     = 9,
-  WS_NOP       = 10,
-  WS_TELAWAY   = 11,
-  WS_TELTO     = 12,
-  WS_CANCEL    = 13,
-  MAXSTICKS
+class Wand : public Item {
+public:
+  enum Type {
+    LIGHT     = 0,
+    INVIS     = 1,
+    ELECT     = 2,
+    FIRE      = 3,
+    COLD      = 4,
+    POLYMORPH = 5,
+    MISSILE   = 6,
+    HASTE_M   = 7,
+    SLOW_M    = 8,
+    DRAIN     = 9,
+    NOP       = 10,
+    TELAWAY   = 11,
+    TELTO     = 12,
+    CANCEL    = 13,
+    NWANDS
+  };
+
+  ~Wand();
+  Wand();     // Random wand
+  Wand(Type); // Wand of given type
+  Wand(Wand const&) = default;
+
+  Wand* clone() const override;
+  Wand& operator=(Wand const&) = default;
+  Wand& operator=(Wand&&) = default;
+
+  // Setters
+  void set_identified();
+
+  // Getters
+  std::string get_material() const;
+  std::string get_description() const;
+  bool        is_identified() const;
+
+
+  // Static
+  static void init_wands();
+
+  static std::string        name(Type subtype);
+  static int                probability(Type subtype);
+  static int                worth(Type subtype);
+  static std::string&       guess(Type subtype);
+  static bool               is_known(Type subtype);
+  static void               set_known(Type subtype);
+  static std::string const& material(Type subtype);
+
+private:
+  bool identified;
+  Type subtype;
+
+  static std::vector<std::string> materials;
+  static std::vector<std::string> guesses;
+  static std::vector<bool>        known;
 };
 
-extern std::vector<obj_info> wands_info;
 
-/* Sets up wands for use
- * wand_init or wand_load_state should run before wands are used */
-void wand_init();
-
-/* Returns the wand's material as a string */
-std::string const& wand_material(enum wand_t wand);
-
-/* Returns a description of the obj (e.g. for inventory screen) */
-char* wand_description(Item const* item, char* buf);
-
-/* Does the player know what the wand does? */
-void wand_set_known(enum wand_t wand);
-bool wand_is_known(enum wand_t wand);
-
-/* How mmuch gold is the wand worth? */
-size_t wand_get_worth(enum wand_t wand);
-
-/* Set name of wand */
-void wand_set_name(enum wand_t wand, std::string const& new_name);
-
-/* Set up a new wand */
-Item* wand_create(int which);
+std::string wand_description(Item const* item);
 
 /* Perform a zap with a wand */
 bool wand_zap();

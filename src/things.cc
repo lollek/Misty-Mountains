@@ -49,11 +49,7 @@ inv_name(Item const* item, bool drop)
       ring_description(item, buf);
       buffer << buf;
     } break;
-    case STICK: {
-      char buf[MAXSTR];
-      wand_description(item, buf);
-      buffer << buf;
-    } break;
+    case STICK: buffer << wand_description(item); break;
     case SCROLL: {
       char buf[MAXSTR];
       scroll_description(item, buf);
@@ -134,7 +130,7 @@ new_thing(void)
     case 3: cur = weapon_create(-1, true); break;
     case 4: cur = new Armor(true); break;
     case 5: cur = ring_create(-1, true); break;
-    case 6: cur = wand_create(-1); break;
+    case 6: cur = new Wand(); break;
     default:
       io_msg("Picked a bad kind of object (this should not happen)");
       io_wait_for_key(KEY_SPACE);
@@ -212,7 +208,7 @@ void
 discovered(void)
 {
   io_msg("for what type of objects do you want a list? (%c%c%c%c) ",
-      SCROLL, RING, STICK);
+      SCROLL, RING);
   while (true)
   {
     char ch = io_readchar(true);
@@ -222,7 +218,6 @@ discovered(void)
     {
       case SCROLL: discovered_by_type(ch, scroll_info, NSCROLLS); break;
       case RING: discovered_by_type(ch, ring_info, NRINGS); break;
-      case STICK: discovered_by_type(ch, wands_info, MAXSTICKS); break;
       default: io_msg_clear(); return;
     }
   }

@@ -42,7 +42,7 @@ pr_spec(char type)
     case POTION: ptr = nullptr;            max = Potion::Type::NPOTIONS;  break;
     case SCROLL: ptr = &scroll_info;       max = NSCROLLS;  break;
     case RING:   ptr = &ring_info;         max = NRINGS;    break;
-    case STICK:  ptr = &wands_info;        max = MAXSTICKS; break;
+    case STICK:  ptr = nullptr    ;        max = Wand::Type::NWANDS; break;
     case ARMOR:  ptr = nullptr;            max = Armor::Type::NARMORS;   break;
     case WEAPON: ptr = &weapon_info;       max = MAXWEAPONS;break;
     default:     ptr = nullptr;            max = 0;         break;
@@ -64,6 +64,11 @@ pr_spec(char type)
     {
       name = Potion::name(static_cast<Potion::Type>(i));
       prob = static_cast<size_t>(Potion::probability(static_cast<Potion::Type>(i)));
+    }
+    else if (type == STICK)
+    {
+      name = Wand::name(static_cast<Wand::Type>(i));
+      prob = static_cast<size_t>(Wand::probability(static_cast<Wand::Type>(i)));
     }
     else
     {
@@ -152,7 +157,7 @@ wizard_create_item(void)
         }
         return;
       }
-    case STICK: obj = wand_create(which); break;
+    case STICK: obj = new Wand(static_cast<Wand::Type>(which)); break;
     case SCROLL: obj = scroll_create(which); break;
     case POTION: {
       obj = new Potion(static_cast<Potion::Type>(which));
