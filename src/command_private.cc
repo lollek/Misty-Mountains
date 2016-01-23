@@ -313,7 +313,6 @@ command_help(void)
     {'?',	"	prints help",				true},
     {'A',	"	attack till either of you dies",	true},
     {'B',	"	run down & left",			false},
-    {'D',	"	recall what's been discovered",		true},
     {'H',	"	run left",				false},
     {'I',	"	equipment",				true},
     {'J',	"	run down",				false},
