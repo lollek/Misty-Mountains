@@ -293,10 +293,10 @@ move_do(char ch) {
       to_death = false;
       return false;
     }
-    return move_do_loop(ch, 0, 0);
+    dx = 0;
+    dy = 0;
 
-  } else {
-    return move_do_loop(ch, dx, dy);
   }
+  return move_do_loop(ch, dx, dy);
 }
 
