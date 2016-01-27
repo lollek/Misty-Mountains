@@ -49,6 +49,7 @@ public:
   char get_type(Coordinate const& coord);
   bool get_random_room_coord(room* room, Coordinate* coord, int tries, bool monster);
   room* get_room(Coordinate const& coord);
+  room* get_random_room();
   room* get_passage(Coordinate const& coord);
   Coordinate const& get_stairs_pos() const;
   int get_stairs_x() const;
@@ -111,6 +112,7 @@ private:
   place& get_place(int x, int y);
 
   // Variables
+  std::vector<room>  rooms;         // all rooms on level
   std::vector<place> places;        // level map
   std::vector<room>  passages;      // Passages between rooms
   Coordinate         stairs_coord;  // Where the stairs are

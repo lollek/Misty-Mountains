@@ -27,8 +27,8 @@ int constexpr Level::treasure_room_min_items;
 
 void Level::create_treasure_room() {
 
-  struct room* room = &rooms[room_random()];
-  int spots = max((room->r_max.y - 2) * (room->r_max.x - 2) - treasure_room_min_items,
+  room& room = *get_random_room();
+  int spots = max((room.r_max.y - 2) * (room.r_max.x - 2) - treasure_room_min_items,
               treasure_room_max_items - treasure_room_min_items);
 
   int num_items = os_rand_range(spots) + treasure_room_min_items;
@@ -36,7 +36,7 @@ void Level::create_treasure_room() {
     Coordinate item_pos;
     Item* item = new_thing();
 
-    get_random_room_coord(room, &item_pos, 2 * max_monsters, false);
+    get_random_room_coord(&room, &item_pos, 2 * max_monsters, false);
     item->set_pos(item_pos);
     items.push_back(item);
     set_ch(item_pos, static_cast<char>(item->o_type));
@@ -45,13 +45,13 @@ void Level::create_treasure_room() {
   // fill up room with monsters from the next level down
   int num_monsters = max({os_rand_range(spots) + treasure_room_min_items,
                          num_items + 2,
-                         (room->r_max.y - 2) * (room->r_max.x - 2)});
+                         (room.r_max.y - 2) * (room.r_max.x - 2)});
 
   Game::current_level++;
   for (int i = 0; i < num_monsters; ++i) {
     Coordinate monster_pos;
-    if (get_random_room_coord(room, &monster_pos, max_monsters, true)) {
-      Monster* monster = new Monster(Monster::random_monster_type(), monster_pos, room);
+    if (get_random_room_coord(&room, &monster_pos, max_monsters, true)) {
+      Monster* monster = new Monster(Monster::random_monster_type(), monster_pos, &room);
       monster->set_mean();  // no sloughers in THIS room
       monsters.push_back(monster);
       monster_give_pack(monster);
@@ -138,6 +138,8 @@ void Level::create_stairs() {
 Level::Level() {
 
   clear();
+  rooms.resize(9);
+  room_prev = nullptr;
   places.resize(MAXLINES * MAXCOLS);
   passages.resize(12);
 
@@ -311,12 +313,12 @@ room* Level::get_room(Coordinate const& coord) {
     return get_passage(coord);
   }
 
-  for (struct room* rp = rooms; rp < &rooms[ROOMS_MAX]; rp++) {
-    if (coord.x <= rp->r_pos.x + rp->r_max.x
-        && rp->r_pos.x <= coord.x
-        && coord.y <= rp->r_pos.y + rp->r_max.y
-        && rp->r_pos.y <= coord.y) {
-      return rp;
+  for (room& room : rooms) {
+    if (coord.x <= room.r_pos.x + room.r_max.x
+        && room.r_pos.x <= coord.x
+        && coord.y <= room.r_pos.y + room.r_max.y
+        && room.r_pos.y <= coord.y) {
+      return &room;
     }
   }
 

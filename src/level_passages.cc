@@ -103,7 +103,7 @@ Level::connect_passages(int r1, int r2) {
     }
   }
 
-  room* room_from = &rooms[rm];
+  room* room_from = &rooms.at(static_cast<size_t>(rm));
   room* room_to = nullptr;           /* room pointer of dest */
   Coordinate start_pos;                  /* start of move */
   Coordinate end_pos;                    /* end of move */
@@ -115,7 +115,7 @@ Level::connect_passages(int r1, int r2) {
     /* Set up the movement variables, in two cases:
      * first drawing one down.  */
   if (direc == 'd') {
-    room_to = &rooms[rm + 3];
+    room_to = &rooms.at(static_cast<size_t>(rm + 3));
     del.x = 0;
     del.y = 1;
     start_pos.x = room_from->r_pos.x;
@@ -149,7 +149,7 @@ Level::connect_passages(int r1, int r2) {
   /* setup for moving right */
   } else if (direc == 'r') {
 
-    room_to = &rooms[rm + 1];
+    room_to = &rooms.at(static_cast<size_t>(rm + 1));
     del.x = 1;
     del.y = 0;
     start_pos.x = room_from->r_pos.x;
@@ -229,14 +229,18 @@ Level::connect_passages(int r1, int r2) {
 }
 
 
+// TODO: Clean up this function. Pretty hacky
 void
 Level::create_passages()
 {
-  struct rdes {
-    bool conn[ROOMS_MAX];  /* possible to connect to room i? */
-    bool isconn[ROOMS_MAX];/* connection been made to room i? */
+  struct Destination {
+    bool operator==(Destination* d) { return this == d; }
+    vector<bool> conn;  /* possible to connect to room i? */
+    vector<bool> isconn;/* connection been made to room i? */
     bool ingraph;         /* this room in graph already? */
-  } rdes[ROOMS_MAX] = {
+  };
+
+  vector<Destination> destinations {
     { { 0, 1, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
     { { 1, 0, 1, 0, 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
     { { 0, 1, 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
@@ -253,27 +257,37 @@ Level::create_passages()
     passage = { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} };
   }
 
-  /* reinitialize room graph description */
-  for (struct rdes* ptr = rdes; ptr <= &rdes[ROOMS_MAX-1]; ptr++) {
-    for (int i = 0; i < ROOMS_MAX; i++) {
-      ptr->isconn[i] = false;
-    }
-    ptr->ingraph = false;
+  if (destinations.size() != 9) {
+    error("Expected 9 rooms in destinations");
   }
 
-  /* starting with one room, connect it to a random adjacent room and
-   * then pick a new room to start with.  */
-  int roomcount = 1;
-  struct rdes* r1 = &rdes[os_rand_range(ROOMS_MAX)];
+  // reinitialize room graph description
+  for (Destination& ptr : destinations) {
+    if (ptr.isconn.size() != 9) {
+      error("Expected 3 isconns in ptr");
+    }
+
+    for (size_t i = 0; i < ptr.isconn.size(); i++) {
+      ptr.isconn.at(i) = false;
+    }
+    ptr.ingraph = false;
+  }
+
+  // starting with one room, connect it to a random adjacent room and
+  // then pick a new room to start with.
+  size_t roomcount = 1;
+  Destination* r1 = &destinations.at(os_rand_range(destinations.size()));
   r1->ingraph = true;
 
-  struct rdes* r2 = nullptr;
+  Destination* r2 = nullptr;
   do {
       /* find a room to connect with */
       int j = 0;
-      for (int i = 0; i < ROOMS_MAX; i++) {
-        if (r1->conn[i] && !rdes[i].ingraph && !os_rand_range(++j)) {
-          r2 = &rdes[i];
+      for (size_t i = 0; i < destinations.size(); i++) {
+        if (r1->conn.at(i) &&
+            !destinations.at(i).ingraph &&
+            !os_rand_range(++j)) {
+          r2 = &destinations.at(i);
         }
       }
 
@@ -281,43 +295,53 @@ Level::create_passages()
        * to look from */
       if (j == 0) {
         do {
-          r1 = &rdes[os_rand_range(ROOMS_MAX)];
+          r1 = &destinations.at(os_rand_range(destinations.size()));
         } while (!r1->ingraph);
 
       /* otherwise, connect new room to the graph, and draw a tunnel
        * to it */
       } else {
         r2->ingraph = true;
-        int i = static_cast<int>(r1 - rdes);
-        j = static_cast<int>(r2 - rdes);
-        connect_passages(i, j);
-        r1->isconn[j] = true;
-        r2->isconn[i] = true;
+        size_t r1i = static_cast<size_t>(find(destinations.begin(), destinations.end(), r1)
+            - destinations.begin());
+        size_t r2i = static_cast<size_t>(find(destinations.begin(), destinations.end(), r2)
+            - destinations.begin());
+        if (r1i >= destinations.size() || r2i >= destinations.size()) {
+          error("i or j was not found in destinations");
+        }
+        connect_passages(static_cast<int>(r1i), static_cast<int>(r2i));
+        r1->isconn.at(r1i) = true;
+        r2->isconn.at(r2i) = true;
         roomcount++;
       }
-    } while (roomcount < ROOMS_MAX);
+    } while (roomcount < rooms.size());
 
     /* attempt to add passages to the graph a random number of times so
      * that there isn't always just one unique passage through it.  */
-  for (roomcount = os_rand_range(5); roomcount > 0; roomcount--) {
+  for (roomcount = static_cast<size_t>(os_rand_range(5)); roomcount > 0; roomcount--) {
 
-    r1 = &rdes[os_rand_range(ROOMS_MAX)];	/* a random room to look from */
+    r1 = &destinations.at(os_rand_range(destinations.size()));	/* a random room to look from */
 
     /* find an adjacent room not already connected */
     int j = 0;
-    for (int i = 0; i < ROOMS_MAX; i++) {
-      if (r1->conn[i] && !r1->isconn[i] && os_rand_range(++j) == 0) {
-        r2 = &rdes[i];
+    for (size_t i = 0; i < destinations.size(); i++) {
+      if (r1->conn.at(i) && !r1->isconn.at(i) && os_rand_range(++j) == 0) {
+        r2 = &destinations.at(i);
       }
     }
 
     /* if there is one, connect it and look for the next added passage */
     if (j != 0) {
-      int i = static_cast<int>(r1 - rdes);
-      j = static_cast<int>(r2 - rdes);
-      connect_passages(i, j);
-      r1->isconn[j] = true;
-      r2->isconn[i] = true;
+      size_t r1i = static_cast<size_t>(find(destinations.begin(), destinations.end(), r1)
+          - destinations.begin());
+      size_t r2i = static_cast<size_t>(find(destinations.begin(), destinations.end(), r2)
+          - destinations.begin());
+      if (r1i >= destinations.size() || r2i >= destinations.size()) {
+        error("i or j was not found in destinations");
+      }
+      connect_passages(static_cast<int>(r1i), static_cast<int>(r2i));
+      r1->isconn.at(r1i) = true;
+      r2->isconn.at(r2i) = true;
     }
   }
 
@@ -328,10 +352,10 @@ Level::create_passages()
 
   pnum = 0;
   newpnum = false;
-  for (int i = 0; i < ROOMS_MAX; ++i) {
-    for (int j = 0; j < rooms[i].r_nexits; ++j) {
+  for (room& room : rooms) {
+    for (int j = 0; j < room.r_nexits; ++j) {
       newpnum = true;
-      number_passage(rooms[i].r_exit[j].x, rooms[i].r_exit[j].y);
+      number_passage(room.r_exit[j].x, room.r_exit[j].y);
     }
   }
 }

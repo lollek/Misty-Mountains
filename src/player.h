@@ -28,6 +28,7 @@ public:
   int get_speed() const;
   bool is_stealthy() const;
   int get_strength_with_bonuses() const;
+  struct room* get_previous_room() const;
 
   // Modifier
   void increase_speed();
@@ -50,6 +51,7 @@ public:
   void set_levitating() override;
   void set_not_levitating() override;
   void set_confusing_attack() override;
+  void set_previous_room(struct room* room);
 
   // Misc
   bool saving_throw(int which) const;
@@ -68,6 +70,7 @@ public:
   std::string get_name() const override;
 
 private:
+  struct room* previous_room = nullptr;
   bool senses_monsters = false;
   int speed = 0;
 };

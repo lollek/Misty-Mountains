@@ -63,9 +63,9 @@ look(bool wakeup)
 
   if (move_pos_prev == player->get_position())
   {
-    erase_lamp(&move_pos_prev, room_prev);
+    erase_lamp(&move_pos_prev, player->get_previous_room());
     move_pos_prev = player->get_position();
-    room_prev = player->get_room();
+    player->set_previous_room(player->get_room());
   }
 
   int sumhero = 0;

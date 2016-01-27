@@ -148,7 +148,7 @@ main(int argc, char** argv)
 #endif
 
   move_pos_prev = player->get_position();
-  room_prev = Game::level->get_room(player->get_position());
+  player->set_previous_room(Game::level->get_room(player->get_position()));
 
 #ifdef NDEBUG
   try {

@@ -618,3 +618,11 @@ void Player::rust_armor() {
   }
 }
 
+void Player::set_previous_room(struct room* room) {
+  previous_room = room;
+}
+
+room* Player::get_previous_room() const {
+  return previous_room;
+}
+

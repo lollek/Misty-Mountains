@@ -2,6 +2,7 @@
 
 using namespace std;
 
+#include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
 #include "io.h"
@@ -14,9 +15,6 @@ using namespace std;
 #include "rogue.h"
 
 #include "level_rooms.h"
-
-room* room_prev;
-room rooms[ROOMS_MAX];
 
 /* position matrix for maze positions */
 struct spot {
@@ -170,90 +168,97 @@ room_place_gone_room(Coordinate const* max_size, Coordinate const* top, room* ro
     room->r_pos.y = top->y + os_rand_range(max_size->y - 2) + 1;
     room->r_max.x = -NUMCOLS;
     room->r_max.y = -NUMLINES;
-  } while (!(room->r_pos.y > 0 && rooms->r_pos.y < NUMLINES-1));
+  } while (!(room->r_pos.y > 0 && room->r_pos.y < NUMLINES-1));
 }
 
 void
 Level::create_rooms() {
 
-  /* maximum room size */
-  Coordinate const bsze(NUMCOLS / 3, NUMLINES / 3);
-
   /* Clear things for a new level */
-  for (int i = 0; i < ROOMS_MAX; ++i) {
-    rooms[i].r_goldval = 0;
-    rooms[i].r_nexits = 0;
-    rooms[i].r_flags = 0;
+  for (room& room : rooms) {
+    room.r_goldval = 0;
+    room.r_nexits = 0;
+    room.r_flags = 0;
   }
 
   /* Put the gone rooms, if any, on the level */
   int left_out = os_rand_range(4);
   for (int i = 0; i < left_out; i++) {
-    rooms[room_random()].r_flags |= ISGONE;
+    get_random_room()->r_flags |= ISGONE;
   }
 
   /* dig and populate all the rooms on the level */
-  for (int i = 0; i < ROOMS_MAX; i++) {
+  if (rooms.size() != 9) {
+    error("This functions expects there to be exacly 9 rooms"
+          " but currently there are " + to_string(rooms.size()));
+  }
+
+  /* maximum room size */
+  Coordinate const bsze(NUMCOLS / 3, NUMLINES / 3);
+
+  for (int i = 0; i < static_cast<int>(rooms.size()); i++) {
+    room& room = rooms.at(static_cast<size_t>(i));
+
     /* Find upper left corner of box that this room goes in */
     Coordinate const top((i % 3) * bsze.x + 1, (i / 3) * bsze.y);
 
-    if (rooms[i].r_flags & ISGONE) {
-      room_place_gone_room(&bsze, &top, &rooms[i]);
+    if (room.r_flags & ISGONE) {
+      room_place_gone_room(&bsze, &top, &room);
       continue;
     }
 
     /* set room type */
     if (os_rand_range(10) < Game::current_level - 1) {
-      rooms[i].r_flags |= ISDARK;  /* dark room */
+      room.r_flags |= ISDARK;  /* dark room */
       if (os_rand_range(15) == 0) {
-        rooms[i].r_flags = ISMAZE; /* maze room */
+        room.r_flags = ISMAZE; /* maze room */
       }
     }
 
     /* Find a place and size for a random room */
-    if (rooms[i].r_flags & ISMAZE) {
-      rooms[i].r_max.x = bsze.x - 1;
-      rooms[i].r_max.y = bsze.y - 1;
-      rooms[i].r_pos.x = top.x == 1 ? 0 : top.x ;
-      rooms[i].r_pos.y = top.y;
-      if (rooms[i].r_pos.y == 0) {
-        rooms[i].r_pos.y++;
-        rooms[i].r_max.y--;
+    if (room.r_flags & ISMAZE) {
+      room.r_max.x = bsze.x - 1;
+      room.r_max.y = bsze.y - 1;
+      room.r_pos.x = top.x == 1 ? 0 : top.x ;
+      room.r_pos.y = top.y;
+      if (room.r_pos.y == 0) {
+        room.r_pos.y++;
+        room.r_max.y--;
       }
 
     } else {
       do {
-        rooms[i].r_max.x = os_rand_range(bsze.x - 4) + 4;
-        rooms[i].r_max.y = os_rand_range(bsze.y - 4) + 4;
-        rooms[i].r_pos.x = top.x + os_rand_range(bsze.x - rooms[i].r_max.x);
-        rooms[i].r_pos.y = top.y + os_rand_range(bsze.y - rooms[i].r_max.y);
-      } while (rooms[i].r_pos.y == 0);
+        room.r_max.x = os_rand_range(bsze.x - 4) + 4;
+        room.r_max.y = os_rand_range(bsze.y - 4) + 4;
+        room.r_pos.x = top.x + os_rand_range(bsze.x - room.r_max.x);
+        room.r_pos.y = top.y + os_rand_range(bsze.y - room.r_max.y);
+      } while (room.r_pos.y == 0);
     }
 
-    if (rooms[i].r_flags & ISMAZE) {
-      draw_maze(rooms[i]);
+    if (room.r_flags & ISMAZE) {
+      draw_maze(room);
     } else {
-      draw_room(rooms[i]);
+      draw_room(room);
     }
 
     /* Put the gold in */
     if (os_rand_range(2) == 0 &&
         (!pack_contains_amulet() || Game::current_level >= Game::max_level_visited)) {
       Item *gold = new Item();
-      gold->o_goldval = rooms[i].r_goldval = GOLDCALC;
-      get_random_room_coord(&rooms[i], &rooms[i].r_gold, 0, false);
-      gold->set_pos(rooms[i].r_gold);
-      set_ch(rooms[i].r_gold, GOLD);
+      gold->o_goldval = room.r_goldval = GOLDCALC;
+      get_random_room_coord(&room, &room.r_gold, 0, false);
+      gold->set_pos(room.r_gold);
+      set_ch(room.r_gold, GOLD);
       gold->o_flags = ISMANY;
       gold->o_type = GOLD;
       items.push_back(gold);
     }
 
     /* Put the monster in */
-    if (os_rand_range(100) < (rooms[i].r_goldval > 0 ? 80 : 25)) {
+    if (os_rand_range(100) < (room.r_goldval > 0 ? 80 : 25)) {
       Coordinate mp;
-      get_random_room_coord(&rooms[i], &mp, 0, true);
-      Monster* monster = new Monster(Monster::random_monster_type(), mp, &rooms[i]);
+      get_random_room_coord(&room, &mp, 0, true);
+      Monster* monster = new Monster(Monster::random_monster_type(), mp, &room);
       monsters.push_back(monster);
       monster_give_pack(monster);
       set_monster(mp, monster);
@@ -277,7 +282,7 @@ Level::get_random_room_coord(room* room, Coordinate* coord, int tries, bool mons
     }
 
     if (pickroom) {
-      room = &rooms[room_random()];
+      room = get_random_room();
       compchar = ((room->r_flags & ISMAZE) ? PASSAGE : FLOOR);
     }
 
@@ -376,13 +381,13 @@ room_leave(Coordinate const& cp)
   room_open_door(rp);
 }
 
-int
-room_random(void) {
-  int rm;
+room* Level::get_random_room() {
+  for (;;) {
+    room* room = &rooms.at(static_cast<size_t>(os_rand_range(rooms.size())));
+    if (room->r_flags & ISGONE) {
+      continue;
+    }
 
-  do {
-    rm = os_rand_range(ROOMS_MAX);
-  } while (rooms[rm].r_flags & ISGONE);
-
-  return rm;
+    return room;
+  }
 }
