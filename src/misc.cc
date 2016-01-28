@@ -26,26 +26,6 @@ using namespace std;
 
 #include "misc.h"
 
-/* Return the character appropriate for this space, taking into
- * account whether or not the player is tripping */
-static int
-trip_ch(int y, int x, int ch)
-{
-  if (player->is_hallucinating())
-    switch (ch)
-    {
-      case FLOOR: case SHADOW: case PASSAGE: case HWALL: case VWALL: case DOOR:
-      case TRAP:
-        break;
-      default:
-        if (y != Game::level->get_stairs_y() ||
-            x != Game::level->get_stairs_x() ||
-            !player->has_seen_stairs())
-          return rnd_thing();
-    }
-  return ch;
-}
-
 int
 roll(int number, int sides)
 {
@@ -59,7 +39,6 @@ roll(int number, int sides)
 void
 look(bool wakeup)
 {
-  char const player_ch = Game::level->get_ch(player->get_position());
 
   if (move_pos_prev == player->get_position()) {
     erase_lamp(&move_pos_prev, player->get_previous_room());
@@ -98,6 +77,7 @@ look(bool wakeup)
       // Ignore anything behind a door
       bool xy_is_passage = Game::level->is_passage(x, y);
       bool player_in_passage = Game::level->is_passage(player->get_position());
+      char player_ch = Game::level->get_ch(player->get_position());
       if (player_ch != DOOR && xy_ch != DOOR &&
           player_in_passage != xy_is_passage) {
         continue;
@@ -114,26 +94,23 @@ look(bool wakeup)
         continue;
       }
 
+      // Was there a monster there? Stop running if we know it is there.
+      // Maybe wake it up
       Monster* monster = Game::level->get_monster(x, y);
-      if (monster == nullptr) {
-        xy_ch = static_cast<char>(trip_ch(y, x, xy_ch));
+      if (monster != nullptr) {
+        if (wakeup) {
+          monster_notice_player(y, x);
+        }
+
+        if (player->can_sense_monsters() || !monster->is_invisible()) {
+          player->set_not_running();
+        }
+
+      // Was there an item there? Then stop running
       } else {
-        if (player->can_sense_monsters() && monster->is_invisible()) {
-          if (door_stop && !firstmove) {
-            player->set_not_running();
-          }
-          continue;
-
-        } else {
-          if (wakeup) {
-            monster_notice_player(y, x);
-          }
-
-          if (monster_seen_by_player(monster)) {
-            xy_ch = player->is_hallucinating()
-              ? static_cast<char>(os_rand_range(26) + 'A')
-              : monster->t_disguise;
-          }
+        Item* item = Game::level->get_item(x, y);
+        if (item != nullptr) {
+          player->set_not_running();
         }
       }
 
@@ -142,7 +119,7 @@ look(bool wakeup)
         continue;
       }
 
-      Game::io->print_color(x, y, xy_ch);
+      Game::io->print_tile(x, y);
 
       if (door_stop && !firstmove && player->is_running()) {
         if (   (runch == 'h' && x == player->get_position().x + 1)

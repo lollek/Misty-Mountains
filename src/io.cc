@@ -32,13 +32,18 @@ void IO::print_tile(int x, int y) {
   // Highest prio: Monsters
   Monster* mon = Game::level->get_monster(x, y);
   if (mon != nullptr) {
+    int symbol_to_print = mon->get_disguise();
+    if (player->is_hallucinating()) {
+      symbol_to_print = os_rand_range(26) + 'A';
+    }
+
     if (monster_seen_by_player(mon)) {
-      print_color(x, y, mon->get_disguise());
+      print_color(x, y, symbol_to_print);
       return;
 
     } else if (player->can_sense_monsters()) {
       standout();
-      print_color(x, y, mon->get_disguise());
+      print_color(x, y, symbol_to_print);
       standend();
       return;
     }
@@ -47,7 +52,12 @@ void IO::print_tile(int x, int y) {
   // Next prio: Items
   Item* item = Game::level->get_item(x, y);
   if (item != nullptr) {
-    print_color(x, y, item->get_type());
+    int symbol_to_print = item->get_type();
+    if (player->is_hallucinating()) {
+      symbol_to_print = rnd_thing();
+    }
+
+    print_color(x, y, symbol_to_print);
     return;
   }
 
