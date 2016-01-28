@@ -235,7 +235,7 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
   os_usleep(200000);
 
   for (int j = i -1; j >= 0; --j)
-    mvaddcch(spotpos[j].y, spotpos[j].x, static_cast<chtype>(spotpos[j].ch));
+    Game::io->print_color(spotpos[j].x, spotpos[j].y, spotpos[j].ch);
 }
 
 

@@ -177,7 +177,7 @@ static enum trap_t
 trap_telep_player(Coordinate* trap_coord)
 {
   player->teleport(nullptr);
-  mvaddcch(trap_coord->y, trap_coord->x, TRAP); /* Mark trap before we leave */
+  Game::io->print_color(trap_coord->x, trap_coord->y, TRAP); /* Mark trap before we leave */
   return T_TELEP;
 }
 

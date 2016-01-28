@@ -318,17 +318,19 @@ room_enter(Coordinate const& cp) {
         char ch = Game::level->get_ch(x, y);
 
         if (tp == nullptr) {
-          mvaddcch(y, x, static_cast<chtype>(ch));
+          Game::io->print_color(x, y, ch);
           continue;
         }
 
         tp->t_oldch = ch;
         if (monster_seen_by_player(tp)) {
-          mvaddcch(y, x, static_cast<chtype>(tp->t_disguise));
+          Game::io->print_color(x, y, tp->t_disguise);
         } else if (player->can_sense_monsters()) {
-          mvaddcch(y, x, static_cast<chtype>(tp->t_disguise)| A_STANDOUT);
+          standout();
+          Game::io->print_color(x, y, tp->t_disguise);
+          standend();
         } else {
-          mvaddcch(y, x, static_cast<chtype>(ch));
+          Game::io->print_color(x, y, ch);
         }
       }
     }
@@ -358,11 +360,10 @@ room_leave(Coordinate const& cp)
   player->set_room(Game::level->get_passage(cp));
   for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
     for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
-      move(y, x);
-      char ch = static_cast<char>(incch());
+      char ch = static_cast<char>(mvincch(y, x));
 
       if (ch == FLOOR && floor == SHADOW) {
-        mvaddcch(y, x, SHADOW);
+        Game::io->print_color(x, y, SHADOW);
       }
 
       /* Don't touch non-monsters */
@@ -371,9 +372,11 @@ room_leave(Coordinate const& cp)
       }
 
       if (player->can_sense_monsters()) {
-        mvaddcch(y, x, static_cast<chtype>(ch) | A_STANDOUT);
+        standout();
+        Game::io->print_color(x, y, ch);
+        standend();
       } else {
-        mvaddcch(y, x, static_cast<chtype>(Game::level->get_ch(x, y) == DOOR ? DOOR : floor));
+        Game::io->print_color(x, y, Game::level->get_ch(x, y) == DOOR ? DOOR : floor);
       }
     }
   }

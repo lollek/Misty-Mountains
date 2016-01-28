@@ -54,12 +54,12 @@ command()
 
   while (num_moves-- > 0)
   {
+    clearok(curscr, true);
+    wrefresh(curscr);
     look(true);
     if (!player->is_running())
       door_stop = false;
     io_refresh_statusline();
-    if (!(player->is_running() && jump))
-      refresh();
 
 
     if (player_turns_without_action && --player_turns_without_action == 0)
@@ -68,8 +68,9 @@ command()
       io_msg("you can move again");
     }
 
-    Coordinate const& player_pos = player->get_position();
-    move(player_pos.y, player_pos.x);
+
+    if (!(player->is_running() && jump))
+      refresh();
 
     if (!player_turns_without_action)
     {

@@ -5,7 +5,9 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <assert.h>
+#include <curses.h>
 
+#include "error_handling.h"
 #include "game.h"
 #include "armor.h"
 #include "command.h"
@@ -19,6 +21,8 @@
 #include "rogue.h"
 
 #include "io.h"
+
+using namespace std;
 
 WINDOW* hw = nullptr;
 
@@ -459,7 +463,7 @@ io_missile_motion(Item* item, int ydelta, int xdelta)
         player->can_see(item->get_pos()))
     {
       ch = Game::level->get_ch(item->get_pos());
-      mvaddcch(item->get_y(), item->get_x(), static_cast<chtype>(ch));
+      Game::io->print_color(item->get_x(), item->get_y(), ch);
     }
 
     /* Get the new position */
@@ -471,7 +475,7 @@ io_missile_motion(Item* item, int ydelta, int xdelta)
       if (player->can_see(item->get_pos()))
       {
         os_usleep(10000);
-        mvaddcch(item->get_y(), item->get_x(), static_cast<chtype>(item->o_type));
+        Game::io->print_color(item->get_x(), item->get_y(), item->o_type);
         refresh();
       }
       continue;

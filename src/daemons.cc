@@ -178,17 +178,17 @@ void daemon_change_visuals() {
   }
 
   // change the items
-  for (Item* tp : Game::level->items) {
-    if (player->can_see(tp->get_pos())) {
-      mvaddcch(tp->get_y(), tp->get_x(), static_cast<chtype>(rnd_thing()));
+  for (Item* item : Game::level->items) {
+    Coordinate const& item_pos = item->get_pos();
+    if (player->can_see(item_pos)) {
+      Game::io->print_color(item_pos.x, item_pos.y, rnd_thing());
     }
   }
 
   // change the stairs
+  Coordinate const& stairs_pos = Game::level->get_stairs_pos();
   if (player->has_seen_stairs()) {
-    mvaddcch(Game::level->get_stairs_y(),
-             Game::level->get_stairs_x(),
-             static_cast<chtype>(rnd_thing()));
+    Game::io->print_color(stairs_pos.x, stairs_pos.y, rnd_thing());
   }
 
   // change the monsters

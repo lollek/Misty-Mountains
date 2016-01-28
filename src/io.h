@@ -1,5 +1,15 @@
 #pragma once
 
+class IO {
+public:
+  template <typename T>
+  void print(int x, int y, T ch);
+
+  template <typename T>
+  void print_color(int x, int y, T ch);
+private:
+};
+
 #include <curses.h>
 
 #include "things.h"
@@ -116,14 +126,11 @@ void io_wait_for_key(int ch);
 chtype colorize(const chtype ch);
 
 /* old ncurses functions, with custom color support, to be removed */
-#define incch()              (inch() & A_CHARTEXT)
 #define wincch(_w)           (winch(_w) & A_CHARTEXT)
 #define mvincch(_y, _x)      (mvinch(_y, _x) & A_CHARTEXT)
 #define mvwincch(_w, _y, _x) (mvwinch(_w, _y, _x) & A_CHARTEXT)
 
-#define addcch(_c)                addch(colorize(_c))
 #define waddcch(_w, _c)           waddch(_w, colorize(_c))
-#define mvaddcch(_y, _x, _c)      mvaddch(_y, _x, colorize(_c))
 #define mvwaddcch(_w, _y, _x, _c) mvwaddch(_w, _y, _x, colorize(_c))
 
 

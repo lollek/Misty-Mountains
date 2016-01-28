@@ -68,7 +68,7 @@ weapon_missile_fall(Item* obj, bool pr) {
       if (monster != nullptr) {
         monster->t_oldch = static_cast<char>(obj->o_type);
       } else {
-        mvaddcch(fpos.y, fpos.x, static_cast<chtype>(obj->o_type));
+        Game::io->print_color(fpos.x, fpos.y, obj->o_type);
       }
     }
 

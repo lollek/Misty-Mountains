@@ -116,8 +116,8 @@ wand_spell_cancel(Monster& target)
 
   target.t_disguise = static_cast<char>(target.get_type());
   if (monster_seen_by_player(&target)) {
-    mvaddcch(target.get_position().y, target.get_position().x,
-             static_cast<chtype>(target.t_disguise));
+    Game::io->print_color(target.get_position().x, target.get_position().y,
+        target.t_disguise);
   }
 }
 

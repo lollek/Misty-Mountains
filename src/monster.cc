@@ -152,7 +152,7 @@ void Monster::set_invisible() {
   if (player->can_see(get_position()))
   {
     io_msg("%s disappeared", get_name().c_str());
-    mvaddcch(get_position().y, get_position().x, static_cast<chtype>(t_oldch));
+    Game::io->print_color(get_position().x, get_position().y, t_oldch);
   }
 }
 
@@ -369,7 +369,7 @@ monster_remove_from_screen(Coordinate const* mp, Monster* tp, bool waskill)
   tp->t_pack.clear();
 
   Game::level->set_monster(*mp, nullptr);
-  mvaddcch(mp->y, mp->x, static_cast<chtype>(tp->t_oldch));
+  Game::io->print_color(mp->x, mp->y, tp->t_oldch);
 
   Game::level->monsters.remove(tp);
 
@@ -406,8 +406,10 @@ monster_teleport(Monster* monster, Coordinate const* destination)
     new_pos = *destination;
 
   /* Remove monster */
-  if (monster_seen_by_player(monster))
-    mvaddcch(monster->get_position().y, monster->get_position().x, static_cast<chtype>(monster->t_oldch));
+  if (monster_seen_by_player(monster)) {
+    Coordinate const& monster_pos = monster->get_position();
+    Game::io->print_color(monster_pos.x, monster_pos.y, monster->t_oldch);
+  }
   monster->set_oldch(new_pos);
   Game::level->set_monster(monster->get_position(), nullptr);
 
@@ -417,9 +419,12 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   monster->set_not_held();
 
   if (monster_seen_by_player(monster))
-    mvaddcch(new_pos.y, new_pos.x, static_cast<chtype>(monster->t_disguise));
-  else if (player->can_sense_monsters())
-    mvaddcch(new_pos.y, new_pos.x, static_cast<chtype>(monster->get_type())| A_STANDOUT);
+    Game::io->print_color(new_pos.x, new_pos.y, monster->t_disguise);
+  else if (player->can_sense_monsters()) {
+    standout();
+    Game::io->print_color(new_pos.x, new_pos.y, monster->get_type());
+    standend();
+  }
 }
 
 void
@@ -585,11 +590,13 @@ monster_show_all_as_trippy(void)
       chtype symbol = (tp->get_type() == 'X' && tp->t_disguise != 'X')
         ? static_cast<chtype>(rnd_thing())
         : static_cast<chtype>(os_rand_range(26) + 'A');
-      mvaddcch(tp->get_position().y, tp->get_position().x, symbol);
+      Game::io->print_color(tp->get_position().x, tp->get_position().y, symbol);
     }
     else if (seemonst) {
-      mvaddcch(tp->get_position().y, tp->get_position().x,
-          static_cast<chtype>(os_rand_range(26) + 'A') | A_STANDOUT);
+      standout();
+      Game::io->print_color(tp->get_position().x, tp->get_position().y,
+          os_rand_range(26) + 'A');
+      standend();
     }
   }
 }
@@ -633,7 +640,8 @@ monster_show_all_hidden(void)
   for (Monster* mon : Game::level->monsters) {
     if (mon->is_invisible() && monster_seen_by_player(mon)
         && !player->is_hallucinating())
-      mvaddcch(mon->get_position().y, mon->get_position().x, static_cast<chtype>(mon->t_disguise));
+      Game::io->print_color(mon->get_position().x, mon->get_position().y,
+          mon->t_disguise);
   }
 }
 
@@ -652,7 +660,7 @@ monster_hide_all_invisible(void)
 {
   for (Monster* mon : Game::level->monsters) {
     if (mon->is_invisible() && monster_seen_by_player(mon)) {
-      mvaddcch(mon->get_position().y, mon->get_position().x, static_cast<chtype>(mon->t_oldch));
+      Game::io->print_color(mon->get_position().x, mon->get_position().y, mon->t_oldch);
     }
   }
 }
@@ -663,11 +671,12 @@ monster_sense_all_hidden(void)
   bool spotted_something = false;
   for (Monster* mon : Game::level->monsters) {
     if (!monster_seen_by_player(mon)) {
-      mvaddcch(mon->get_position().y, mon->get_position().x,
-          (player->is_hallucinating()
-           ? static_cast<chtype>(os_rand_range(26) + 'A')
-           : static_cast<chtype>(mon->get_type()))
-            | A_STANDOUT);
+      standout();
+      Game::io->print_color(mon->get_position().x, mon->get_position().y,
+          player->is_hallucinating()
+           ? os_rand_range(26) + 'A'
+           : mon->get_type());
+      standend();
       spotted_something = true;
     }
   }
@@ -679,7 +688,7 @@ monster_unsense_all_hidden(void)
 {
   for (Monster* mon : Game::level->monsters) {
     if (!monster_seen_by_player(mon)) {
-      mvaddcch(mon->get_position().y, mon->get_position().x, static_cast<chtype>(mon->t_oldch));
+      Game::io->print_color(mon->get_position().x, mon->get_position().y, mon->t_oldch);
     }
   }
 }
@@ -690,14 +699,16 @@ monster_print_all(void)
   for (Monster* mon : Game::level->monsters) {
 
     if (player->can_see(mon->get_position())) {
-      chtype symbol = (!mon->is_invisible() || player->has_true_sight())
-        ? static_cast<chtype>(mon->t_disguise)
-        : static_cast<chtype>(Game::level->get_ch(mon->get_position()));
-      mvaddcch(mon->get_position().y, mon->get_position().x, symbol);
+      int symbol = (!mon->is_invisible() || player->has_true_sight())
+        ? mon->t_disguise
+        : Game::level->get_ch(mon->get_position());
+      Game::io->print_color(mon->get_position().x, mon->get_position().y, symbol);
 
     } else if (player->can_sense_monsters()) {
-      mvaddcch(mon->get_position().y, mon->get_position().x,
-               static_cast<chtype>(mon->get_type())| A_STANDOUT);
+      standout();
+      Game::io->print_color(mon->get_position().x, mon->get_position().y,
+               mon->get_type());
+      standend();
     }
   }
 }
@@ -732,7 +743,7 @@ monster_polymorph(Monster* target)
   bool was_seen = monster_seen_by_player(target);
   if (was_seen)
   {
-    mvaddcch(pos.y, pos.x, static_cast<chtype>(Game::level->get_ch(pos)));
+    Game::io->print_color(pos.x, pos.y, Game::level->get_ch(pos));
     io_msg_add("%s", target->get_name().c_str());
   }
 
@@ -749,7 +760,7 @@ monster_polymorph(Monster* target)
 
   if (monster_seen_by_player(target))
   {
-    mvaddcch(pos.y, pos.x, static_cast<chtype>(monster));
+    Game::io->print_color(pos.x, pos.y, monster);
     if (same_monster)
       io_msg(" now looks a bit different");
     else

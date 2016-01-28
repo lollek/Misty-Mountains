@@ -307,7 +307,7 @@ def:
         if (obj != nullptr)
           obj->t_oldch = ch;
         if (obj == nullptr || !player->can_sense_monsters())
-          mvaddcch(y, x, static_cast<chtype>(ch));
+          Game::io->print_color(x, y, ch);
       }
     }
 }

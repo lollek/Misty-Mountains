@@ -188,8 +188,8 @@ chase_do(Monster& monster)
     char ch = Game::level->get_type(chase_coord);
 
     // Remove monster from old position
-    mvaddcch(monster.get_position().y, monster.get_position().x,
-        static_cast<chtype>(monster.t_oldch));
+    Game::io->print_color(monster.get_position().x, monster.get_position().y,
+        monster.t_oldch);
     Game::level->set_monster(monster.get_position(), nullptr);
 
     // Check if we stepped in a trap
@@ -215,9 +215,11 @@ chase_do(Monster& monster)
   }
 
   if (monster_seen_by_player(&monster)) {
-    mvaddcch(chase_coord.y, chase_coord.x, static_cast<chtype>(monster.t_disguise));
+    Game::io->print_color(chase_coord.x, chase_coord.y, monster.t_disguise);
   } else if (player->can_sense_monsters()) {
-    mvaddcch(chase_coord.y, chase_coord.x, static_cast<chtype>(monster.get_type())| A_STANDOUT);
+    standout();
+    Game::io->print_color(chase_coord.x, chase_coord.y, monster.get_type());
+    standend();
   }
 
   // And stop running if need be

@@ -23,6 +23,7 @@ using namespace std;
 
 #include "Game.h"
 
+IO*    Game::io = nullptr;
 Level* Game::level = nullptr;
 int    Game::current_level = 1;
 int    Game::levels_without_food = 0;
@@ -52,7 +53,7 @@ Game::new_level(int dungeon_level) {
   Game::level->get_random_room_coord(nullptr, &new_player_pos, 0, true);
   player->set_position(new_player_pos);
   room_enter(new_player_pos);
-  mvaddcch(new_player_pos.y, new_player_pos.x, PLAYER);
+  Game::io->print_color(new_player_pos.x, new_player_pos.y, PLAYER);
 
   // Unhold player just in case
   player->set_not_held();
@@ -102,6 +103,8 @@ int Game::init_graphics()
   noecho();  /* Echo off */
   hw = newwin(LINES, COLS, 0, 0);
 
+  Game::io = new IO();
+
   return 0;
 }
 
@@ -116,8 +119,6 @@ Game::Game() {
   /* Init Graphics */
   if (init_graphics() != 0)
     exit(1);
-  idlok(stdscr, true);
-  idlok(hw, true);
 
   /* Init stuff */
   scroll_init();                        // Set up names of scrolls
@@ -132,3 +133,7 @@ Game::Game() {
   daemon_start(ring_abilities, AFTER);
 }
 
+Game::~Game() {
+  delete Game::io;
+  Game::io = nullptr;
+}

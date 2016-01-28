@@ -301,7 +301,7 @@ void Player::set_not_hallucinating() {
   // Untrippify items on the level
   for (Item* tp : Game::level->items) {
     if (can_see(tp->get_pos())) {
-      mvaddcch(tp->get_y(), tp->get_x(), static_cast<chtype>(tp->o_type));
+      Game::io->print_color(tp->get_x(), tp->get_y(), tp->o_type);
     }
   }
 
@@ -422,7 +422,7 @@ void Player::teleport(Coordinate const* target)
   }
 
   // Move target
-  mvaddcch(get_position().y, get_position().x, static_cast<chtype>(floor_at()));
+  Game::io->print_color(get_position().x, get_position().y, floor_at());
   if (Game::level->get_room(new_pos) != get_room()) {
     room_leave(get_position());
     set_position(new_pos);
@@ -434,7 +434,7 @@ void Player::teleport(Coordinate const* target)
   }
 
   /* Print @ new location */
-  mvaddcch(new_pos.y, new_pos.x, PLAYER);
+  Game::io->print_color(new_pos.x, new_pos.y, get_type());
   if (is_held())
   {
     set_not_held();

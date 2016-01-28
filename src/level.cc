@@ -139,7 +139,9 @@ Level::Level() {
 
   clear();
   rooms.resize(9);
-  room_prev = nullptr;
+  if (player != nullptr) {
+    player->set_previous_room(nullptr);
+  }
   places.resize(MAXLINES * MAXCOLS);
   passages.resize(12);
 

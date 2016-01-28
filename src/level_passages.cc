@@ -389,15 +389,14 @@ Level::wizard_show_passages() {
           ch = PASSAGE;
         }
         set_discovered(x, y);
-        move(y, x);
         Monster *mon = get_monster(x, y);
         if (mon != nullptr) {
           mon->t_oldch = ch;
         } else if (is_real(x, y)) {
-          addcch(static_cast<chtype>(ch));
+          Game::io->print_color(x, y, ch);
         } else {
           standout();
-          addcch(is_passage(x, y) ? PASSAGE : DOOR);
+          Game::io->print_color(x, y, is_passage(x, y) ? PASSAGE : DOOR);
           standend();
         }
       }

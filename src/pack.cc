@@ -182,7 +182,7 @@ pack_add_money(int value)
 {
   pack_gold += value;
 
-  mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_ch()));
+  Game::io->print_color(player->get_position().x, player->get_position().y, floor_ch());
   Game::level->set_ch(player->get_position(),
       (player->get_room()->r_flags & ISGONE)
         ? PASSAGE
@@ -196,7 +196,7 @@ static void
 pack_remove_from_floor(Item* obj)
 {
   Game::level->items.remove(obj);
-  mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_ch()));
+  Game::io->print_color(player->get_position().x, player->get_position().y, floor_ch());
   Game::level->set_ch(player->get_position(),
       (player->get_room()->r_flags & ISGONE)
         ? PASSAGE
@@ -222,7 +222,7 @@ pack_add(Item* obj, bool silent)
   if (obj->o_type == SCROLL && obj->o_which == S_SCARE && obj->o_flags & ISFOUND)
   {
     Game::level->items.remove(obj);
-    mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_ch()));
+    Game::io->print_color(player->get_position().x, player->get_position().y, floor_ch());
     Game::level->set_ch(player->get_position(), floor_ch());
     delete obj;
     io_msg("the scroll turns to dust as you pick it up");

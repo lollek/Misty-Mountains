@@ -110,7 +110,7 @@ move_do_loop_door(bool after, Coordinate& coord, bool is_passage) {
     room_enter(coord);
   }
 
-  mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_at()));
+  Game::io->print_color(player->get_position().x, player->get_position().y, floor_at());
 
   if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
     room_leave(coord);
@@ -129,7 +129,7 @@ move_do_loop_trap(bool after, Coordinate& coord, bool is_passage) {
     return after;
   }
 
-  mvaddcch(player_pos->y, player_pos->x, static_cast<chtype>(floor_at()));
+  Game::io->print_color(player_pos->x, player_pos->y, floor_at());
   if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
     room_leave(coord);
   }
@@ -146,7 +146,7 @@ move_do_loop_passage(bool after, Coordinate& coord, bool is_passage) {
   // always recalculate which room player is in.
 
   player->set_room(Game::level->get_room(player->get_position()));
-  mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_at()));
+  Game::io->print_color(player->get_position().x, player->get_position().y, floor_at());
 
   if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
     room_leave(coord);
@@ -163,7 +163,8 @@ move_do_loop_floor(bool after, Coordinate& coord, bool is_passage, bool is_real)
     trap_spring(nullptr, &coord);
   }
 
-  mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_at()));
+  Coordinate const& pos = player->get_position();
+  Game::io->print_color(pos.x, pos.y, floor_at());
   if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
     room_leave(coord);
   }
@@ -179,7 +180,7 @@ move_do_loop_default(char ch, bool after, Coordinate& coord, bool is_passage) {
     fight_against_monster(&coord, pack_equipped_item(EQUIPMENT_RHAND), false);
 
   } else {
-    mvaddcch(player->get_position().y, player->get_position().x, static_cast<chtype>(floor_at()));
+    Game::io->print_color(player->get_position().x, player->get_position().y, floor_at());
 
     if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
       room_leave(coord);
