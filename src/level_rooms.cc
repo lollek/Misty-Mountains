@@ -335,7 +335,7 @@ room_leave(Coordinate const& cp)
     for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
 
       // Reprint monsters (which usually hides them)
-      Monster* mon = Game::level->get_monster(y, x);
+      Monster* mon = Game::level->get_monster(x, y);
       if (mon != nullptr) {
         Game::io->print_tile(x, y);
       }

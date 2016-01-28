@@ -120,6 +120,7 @@ look(bool wakeup)
       }
 
       Game::io->print_tile(x, y);
+      Game::level->set_discovered(x, y);
 
       if (door_stop && !firstmove && player->is_running()) {
         if (   (runch == 'h' && x == player->get_position().x + 1)

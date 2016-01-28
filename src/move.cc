@@ -103,7 +103,7 @@ move_do_loop_wall(bool& after, int& dx, int& dy) {
 }
 
 static bool
-move_do_loop_door(bool after, Coordinate& coord, bool is_passage) {
+move_do_loop_door(bool after, Coordinate& coord) {
   player->set_not_running();
 
   if (Game::level->is_passage(player->get_position())) {
@@ -112,16 +112,12 @@ move_do_loop_door(bool after, Coordinate& coord, bool is_passage) {
 
   Game::io->print_color(player->get_position().x, player->get_position().y, floor_at());
 
-  if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
-    room_leave(coord);
-  }
-
   player->set_position(coord);
   return after;
 }
 
 static bool
-move_do_loop_trap(bool after, Coordinate& coord, bool is_passage) {
+move_do_loop_trap(bool after, Coordinate& coord) {
   Coordinate const* player_pos = &player->get_position();
   char ch = trap_spring(nullptr, &coord);
 
@@ -130,7 +126,7 @@ move_do_loop_trap(bool after, Coordinate& coord, bool is_passage) {
   }
 
   Game::io->print_color(player_pos->x, player_pos->y, floor_at());
-  if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
+  if (Game::level->is_passage(coord) && Game::level->get_ch(move_pos_prev) == DOOR) {
     room_leave(coord);
   }
 
@@ -139,7 +135,7 @@ move_do_loop_trap(bool after, Coordinate& coord, bool is_passage) {
 }
 
 static bool
-move_do_loop_passage(bool after, Coordinate& coord, bool is_passage) {
+move_do_loop_passage(bool after, Coordinate& coord) {
   // when you're in a corridor, you don't know if you're in
   // a maze room or not, and there ain't no way to find out
   // if you're leaving a maze room, so it is necessary to
@@ -148,23 +144,21 @@ move_do_loop_passage(bool after, Coordinate& coord, bool is_passage) {
   player->set_room(Game::level->get_room(player->get_position()));
   Game::io->print_color(player->get_position().x, player->get_position().y, floor_at());
 
-  if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
+  char previous_place = Game::level->get_ch(player->get_position());
+  player->set_position(coord);
+
+  if (previous_place == DOOR) {
     room_leave(coord);
   }
-
-  player->set_position(coord);
 
   return after;
 }
 
 static bool
-move_do_loop_floor(bool after, Coordinate& coord, bool is_passage) {
+move_do_loop_floor(bool after, Coordinate& coord) {
 
   Coordinate const& pos = player->get_position();
   Game::io->print_color(pos.x, pos.y, floor_at());
-  if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
-    room_leave(coord);
-  }
 
   player->set_position(coord);
 
@@ -179,7 +173,7 @@ move_do_loop_floor(bool after, Coordinate& coord, bool is_passage) {
 }
 
 static bool
-move_do_loop_default(bool after, Coordinate& coord, bool is_passage) {
+move_do_loop_default(bool after, Coordinate& coord) {
   player->set_not_running();
 
   // Fight the monster, if there
@@ -195,7 +189,7 @@ move_do_loop_default(bool after, Coordinate& coord, bool is_passage) {
   Game::io->print_tile(player->get_position());
 
   // Reprint (basically hide) old room, if we leave one
-  if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
+  if (Game::level->is_passage(coord) && Game::level->get_ch(move_pos_prev) == DOOR) {
     room_leave(coord);
   }
 
@@ -253,11 +247,11 @@ move_do_loop(int dx, int dy) {
       case SHADOW:   loop = move_do_loop_wall(after, dx, dy); break;
       case VWALL:    loop = move_do_loop_wall(after, dx, dy); break;
       case HWALL:    loop = move_do_loop_wall(after, dx, dy); break;
-      case DOOR:     return move_do_loop_door(after, nh, Game::level->is_passage(nh));
-      case TRAP:     return move_do_loop_trap(after, nh, Game::level->is_passage(nh));
-      case PASSAGE:  return move_do_loop_passage(after, nh, Game::level->is_passage(nh));
-      case FLOOR:    return move_do_loop_floor(after, nh, Game::level->is_passage(nh));
-      default:       return move_do_loop_default(after, nh, Game::level->is_passage(nh));
+      case DOOR:     return move_do_loop_door(after, nh);
+      case TRAP:     return move_do_loop_trap(after, nh);
+      case PASSAGE:  return move_do_loop_passage(after, nh);
+      case FLOOR:    return move_do_loop_floor(after, nh);
+      default:       return move_do_loop_default(after, nh);
     }
   }
   return after;

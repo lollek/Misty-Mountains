@@ -544,7 +544,9 @@ monster_seen_by_player(Monster const* monster)
     return false;
 
   // Dark place ?
-  if (dist_cp(&monster_pos, &player->get_position()) < LAMPDIST)
+  int dist = dist_cp(&monster_pos, &player->get_position());
+  if (dist < LAMPDIST)
+  //if (dist_cp(&monster_pos, &player->get_position()) < LAMPDIST)
   {
     if (monster_y != player->get_position().y && monster_x != player->get_position().x
         && !step_ok(Game::level->get_ch(player->get_position().x, monster_y))

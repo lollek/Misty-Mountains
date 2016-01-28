@@ -187,7 +187,8 @@ chase_do(Monster& monster)
 
     // Remove monster from old position
     Game::level->set_monster(monster.get_position(), nullptr);
-    if (monster_seen_by_player(&monster)) {
+    if (monster_seen_by_player(&monster) ||
+        Game::level->is_discovered(monster.get_position())) {
       Game::io->print_tile(monster.get_position());
     }
 
@@ -213,12 +214,8 @@ chase_do(Monster& monster)
     Game::level->set_monster(chase_coord, &monster);
   }
 
-  if (monster_seen_by_player(&monster)) {
-    Game::io->print_color(chase_coord.x, chase_coord.y, monster.t_disguise);
-  } else if (player->can_sense_monsters()) {
-    standout();
-    Game::io->print_color(chase_coord.x, chase_coord.y, monster.get_type());
-    standend();
+  if (monster_seen_by_player(&monster) || player->can_sense_monsters()) {
+    Game::io->print_tile(chase_coord);
   }
 
   // And stop running if need be
