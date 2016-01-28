@@ -119,7 +119,6 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
     error("pos was null");
   }
 
-  mon->t_oldch = Game::level->get_ch(*pos);
   if (!monster_save_throw(VS_MAGIC, mon))
   {
     Item bolt;

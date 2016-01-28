@@ -208,7 +208,6 @@ chase_do(Monster& monster)
     }
 
     // Put monster in new position
-    monster.set_oldch(chase_coord);
     monster.set_room(Game::level->get_room(chase_coord));
     monster.set_position(chase_coord);
     Game::level->set_monster(chase_coord, &monster);

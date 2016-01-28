@@ -101,29 +101,7 @@ int Player::get_armor() const {
 }
 
 bool Player::has_seen_stairs() const {
-
-  // It is on the map
-  if (Game::level->is_discovered(Game::level->get_stairs_pos()))
-    return true;
-
-  // It's under the player
-  if (get_position() == Game::level->get_stairs_pos())
-    return true;
-
-  // if a monster is on the stairs, this gets hairy
-  Monster* monster = Game::level->get_monster(Game::level->get_stairs_pos());
-  if (monster != nullptr) {
-
-    // if it's visible and awake, it must have moved there
-    if (monster_seen_by_player(monster) && monster->is_chasing())
-      return true;
-
-    if (can_sense_monsters()             // if she can detect monster
-        && monster->t_oldch == STAIRS)   // and there once were stairs
-      return true;                       // it must have moved there
-  }
-
-  return false;
+  return Game::level->is_discovered(Game::level->get_stairs_pos());
 }
 
 bool Player::can_see(Coordinate const& coord) const {

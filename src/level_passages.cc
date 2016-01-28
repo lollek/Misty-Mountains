@@ -389,10 +389,7 @@ Level::wizard_show_passages() {
           ch = PASSAGE;
         }
         set_discovered(x, y);
-        Monster *mon = get_monster(x, y);
-        if (mon != nullptr) {
-          mon->t_oldch = ch;
-        } else if (is_real(x, y)) {
+        if (is_real(x, y)) {
           Game::io->print_color(x, y, ch);
         } else {
           standout();

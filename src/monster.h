@@ -25,13 +25,12 @@ public:
   Monster(char type, Coordinate const& pos, struct room* room);
   Monster(Monster const&) = delete; // Deleted since they would share inventory
 
-  virtual ~Monster() = default;
+  ~Monster();
 
   Monster& operator=(Monster const&) = delete; // Deleted since they would share inventory
   Monster& operator=(Monster&&) = default;
 
   // Setters
-  void set_oldch(Coordinate &coord);
   void set_invisible() override;
   void set_target(Coordinate const* target);
 
@@ -49,7 +48,6 @@ public:
   std::list<Item*>   t_pack;    // What the thing is carrying
 
   char               t_disguise;// What mimic looks like
-  char               t_oldch;   // Character that was where it was
   bool               t_turn;    // If slowed, is it a turn to move
 
 private:

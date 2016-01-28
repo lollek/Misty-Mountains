@@ -77,26 +77,6 @@ int Monster::get_armor() const {
   return Character::get_armor();
 }
 
-void Monster::set_oldch(Coordinate &coord) {
-  char old_char = t_oldch;
-
-  if (get_position() == coord) {
-    return;
-  }
-
-  t_oldch = Game::level->get_ch(coord);
-  if (!player->is_blind()) {
-
-    if ((old_char == FLOOR || t_oldch == FLOOR) &&
-        (get_room()->r_flags & ISDARK)) {
-      t_oldch = SHADOW;
-
-    } else if (dist_cp(&coord, &player->get_position()) <= LAMPDIST) {
-      t_oldch = Game::level->get_ch(coord);
-    }
-  }
-}
-
 string Monster::get_attack_string(bool successful_hit) const {
 
   size_t i = static_cast<size_t>(os_rand_range(4));
@@ -152,7 +132,7 @@ void Monster::set_invisible() {
   if (player->can_see(get_position()))
   {
     io_msg("%s disappeared", get_name().c_str());
-    Game::io->print_color(get_position().x, get_position().y, t_oldch);
+    Game::io->print_tile(get_position());
   }
 }
 
@@ -194,6 +174,8 @@ static int extra_experience(int level, int max_health) {
   return mod;
 }
 
+Monster::~Monster() {}
+
 Monster::Monster(char type, Coordinate const& pos, struct room* room) :
   Monster(type, pos, room, monsters.at(static_cast<size_t>(type - 'A')))
 {}
@@ -203,8 +185,7 @@ Monster::Monster(char type, Coordinate const& pos, struct room* room,
   Character(10, m_template.m_basexp, m_template.m_level, m_template.m_armor,
             roll(m_template.m_level, 8), m_template.m_dmg, pos, room,
             m_template.m_flags, type),
-  t_dest(), t_pack(), t_disguise(type),
-  t_oldch('~'), t_turn(true) {
+  t_dest(), t_pack(), t_disguise(type), t_turn(true) {
 
   // All monsters are equal, but some monsters are more equal than others, so
   // they also give more experience
@@ -373,7 +354,7 @@ monster_remove_from_screen(Coordinate const* mp, Monster* tp, bool waskill)
   tp->t_pack.clear();
 
   Game::level->set_monster(*mp, nullptr);
-  Game::io->print_color(mp->x, mp->y, tp->t_oldch);
+  Game::io->print_tile(mp->x, mp->y);
 
   Game::level->monsters.remove(tp);
 
@@ -400,6 +381,8 @@ monster_is_dead(Monster const* monster)
 void
 monster_teleport(Monster* monster, Coordinate const* destination)
 {
+  Coordinate old_position = monster->get_position();
+
   /* Select destination */
   Coordinate new_pos;
   if (destination == nullptr)
@@ -409,12 +392,6 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   else
     new_pos = *destination;
 
-  /* Remove monster */
-  if (monster_seen_by_player(monster)) {
-    Coordinate const& monster_pos = monster->get_position();
-    Game::io->print_color(monster_pos.x, monster_pos.y, monster->t_oldch);
-  }
-  monster->set_oldch(new_pos);
   Game::level->set_monster(monster->get_position(), nullptr);
 
   /* Add monster */
@@ -428,6 +405,11 @@ monster_teleport(Monster* monster, Coordinate const* destination)
     standout();
     Game::io->print_color(new_pos.x, new_pos.y, monster->get_type());
     standend();
+  }
+
+  /* Remove monster */
+  if (monster_seen_by_player(monster)) {
+    Game::io->print_tile(old_position);
   }
 }
 
@@ -667,7 +649,7 @@ monster_hide_all_invisible(void)
 {
   for (Monster* mon : Game::level->monsters) {
     if (mon->is_invisible() && monster_seen_by_player(mon)) {
-      Game::io->print_color(mon->get_position().x, mon->get_position().y, mon->t_oldch);
+      Game::io->print_tile(mon->get_position());
     }
   }
 }
@@ -695,7 +677,7 @@ monster_unsense_all_hidden(void)
 {
   for (Monster* mon : Game::level->monsters) {
     if (!monster_seen_by_player(mon)) {
-      Game::io->print_color(mon->get_position().x, mon->get_position().y, mon->t_oldch);
+      Game::io->print_tile(mon->get_position());
     }
   }
 }
@@ -755,7 +737,6 @@ monster_polymorph(Monster* target)
   }
 
   // Save some things from old monster
-  char oldch = target->t_oldch;
   list<Item*> target_pack = target->t_pack;
 
   // Generate the new monster
@@ -779,7 +760,6 @@ monster_polymorph(Monster* target)
     io_msg(" disappeared");
 
   // Put back some saved things from old monster
-  target->t_oldch = oldch;
   target->t_pack = target_pack;
 }
 

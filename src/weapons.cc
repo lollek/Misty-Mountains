@@ -64,9 +64,7 @@ weapon_missile_fall(Item* obj, bool pr) {
 
     if (player->can_see(fpos)) {
       Monster *monster = Game::level->get_monster(fpos);
-      if (monster != nullptr) {
-        monster->t_oldch = static_cast<char>(obj->o_type);
-      } else {
+      if (monster == nullptr) {
         Game::io->print_color(fpos.x, fpos.y, obj->o_type);
       }
     }

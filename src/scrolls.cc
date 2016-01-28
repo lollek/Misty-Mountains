@@ -304,8 +304,6 @@ def:
       if (ch != SHADOW)
       {
         Monster* obj = Game::level->get_monster(x, y);
-        if (obj != nullptr)
-          obj->t_oldch = ch;
         if (obj == nullptr || !player->can_sense_monsters())
           Game::io->print_color(x, y, ch);
       }
