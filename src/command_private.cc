@@ -642,8 +642,6 @@ bool command_drop(void)
   /* Link it into the level object list */
   Game::level->items.push_back(obj);
 
-  Game::level->set_ch(player->get_position(), static_cast<char>(obj->o_type));
-
   obj->set_pos(player->get_position());
 
   io_msg("dropped %s", inv_name(obj, true).c_str());

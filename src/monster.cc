@@ -561,15 +561,8 @@ monster_seen_by_player(Monster const* monster)
       (monster->is_invisible() && !player->has_true_sight()))
     return false;
 
-  // Same lit room?
-  room* monster_room = Game::level->get_room(monster_pos);
-  if (monster_room == player->get_room() &&
-      !(monster_room->r_flags & ISDARK)) {
-    return true;
-  }
-
   // Dark place ?
-  if (dist(monster_y, monster_x, player->get_position().y, player->get_position().x) < LAMPDIST)
+  if (dist_cp(&monster_pos, &player->get_position()) < LAMPDIST)
   {
     if (monster_y != player->get_position().y && monster_x != player->get_position().x
         && !step_ok(Game::level->get_ch(player->get_position().x, monster_y))

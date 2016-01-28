@@ -183,10 +183,6 @@ pack_add_money(int value)
   pack_gold += value;
 
   Game::io->print_color(player->get_position().x, player->get_position().y, floor_ch());
-  Game::level->set_ch(player->get_position(),
-      (player->get_room()->r_flags & ISGONE)
-        ? PASSAGE
-        : FLOOR);
 
   if (value > 0)
     io_msg("you found %d gold pieces", value);
@@ -197,10 +193,6 @@ pack_remove_from_floor(Item* obj)
 {
   Game::level->items.remove(obj);
   Game::io->print_color(player->get_position().x, player->get_position().y, floor_ch());
-  Game::level->set_ch(player->get_position(),
-      (player->get_room()->r_flags & ISGONE)
-        ? PASSAGE
-        : FLOOR);
 }
 
 bool
@@ -223,7 +215,6 @@ pack_add(Item* obj, bool silent)
   {
     Game::level->items.remove(obj);
     Game::io->print_color(player->get_position().x, player->get_position().y, floor_ch());
-    Game::level->set_ch(player->get_position(), floor_ch());
     delete obj;
     io_msg("the scroll turns to dust as you pick it up");
     return false;
@@ -572,7 +563,6 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   if (!pack_add(obj, true))
   {
     Game::level->items.push_back(obj);
-    Game::level->set_ch(player->get_position(), static_cast<char>(obj->o_type));
     obj->set_pos(player->get_position());
     io_msg("dropped %s", inv_name(obj, true).c_str());
   }

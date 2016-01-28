@@ -283,10 +283,6 @@ trap_spring(Monster* victim, Coordinate* trap_coord)
   size_t tr = Game::level->get_trap_type(*trap_coord);
 
   if (is_player) {
-    /* If we're levitating, we won't trigger the trap */
-    if (player->is_levitating()) {
-      return T_RUST; /* this needs to be neither T_DOOR nor T_TELEP */
-    }
     command_stop(true);
   }
 

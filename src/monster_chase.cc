@@ -162,8 +162,6 @@ chase_do(Monster& monster)
         if (monster.t_dest == &obj->get_pos()) {
           Game::level->items.remove(obj);
           monster.t_pack.push_back(obj);
-          Game::level->set_ch(obj->get_pos(),
-              (monster.get_room()->r_flags & ISGONE) ? PASSAGE : FLOOR);
           monster_find_new_target(&monster);
           break;
         }
@@ -194,7 +192,8 @@ chase_do(Monster& monster)
     }
 
     // Check if we stepped in a trap
-    if (ch == TRAP || (!Game::level->is_real(chase_coord) && ch == FLOOR)) {
+    if ((ch == TRAP || (!Game::level->is_real(chase_coord) && ch == FLOOR)) &&
+          !player->is_levitating()) {
       Coordinate orig_pos = monster.get_position();
 
       trap_spring(&monster, &chase_coord);

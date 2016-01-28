@@ -39,7 +39,6 @@ void Level::create_treasure_room() {
     get_random_room_coord(&room, &item_pos, 2 * max_monsters, false);
     item->set_pos(item_pos);
     items.push_back(item);
-    set_ch(item_pos, static_cast<char>(item->o_type));
   }
 
   // fill up room with monsters from the next level down
@@ -85,7 +84,6 @@ void Level::create_loot() {
       Coordinate pos;
       get_random_room_coord(nullptr, &pos, 0, false);
       obj->set_pos(pos);
-      set_ch(obj->get_pos(), static_cast<char>(obj->o_type));
     }
   }
 
@@ -99,7 +97,6 @@ void Level::create_loot() {
     Coordinate pos;
     get_random_room_coord(nullptr, &pos, 0, false);
     amulet->set_pos(pos);
-    set_ch(amulet->get_pos(), AMULET);
   }
 }
 
@@ -259,7 +256,15 @@ char Level::get_ch(Coordinate const& coord) {
 }
 
 void Level::set_ch(int x, int y, char ch) {
-  get_place(x, y).p_ch = ch;
+  switch (ch) {
+    case HWALL: case VWALL: case SHADOW: case PASSAGE: case STAIRS: case DOOR:
+    case FLOOR: case TRAP:
+      get_place(x, y).p_ch = ch;
+      return;
+
+    default:
+      error("Cannot set level character to " + string(1, ch));
+  }
 }
 
 void Level::set_ch(Coordinate const& coord, char ch) {

@@ -34,14 +34,14 @@ void IO::print_tile(int x, int y) {
   if (mon != nullptr) {
     if (monster_seen_by_player(mon)) {
       print_color(x, y, mon->get_disguise());
+      return;
 
     } else if (player->can_sense_monsters()) {
       standout();
       print_color(x, y, mon->get_disguise());
       standend();
+      return;
     }
-
-    return;
   }
 
   // Next prio: Items
@@ -53,6 +53,14 @@ void IO::print_tile(int x, int y) {
 
   // Next prio: Floor
   print_color(x, y, Game::level->get_ch(x, y));
+}
+
+void IO::hide_tile(Coordinate const& coord) {
+  hide_tile(coord.x, coord.y);
+}
+
+void IO::hide_tile(int x, int y) {
+  print(x, y, ' ');
 }
 
 chtype IO::colorize(chtype ch)

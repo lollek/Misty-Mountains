@@ -91,7 +91,7 @@ look(bool wakeup)
 
       // Ignore ' ' (shadow)
       char xy_ch = Game::level->get_ch(x, y);
-      if (xy_ch == SHADOW) { 
+      if (xy_ch == SHADOW) {
         continue;
       }
 

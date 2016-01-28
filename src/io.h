@@ -15,6 +15,9 @@ public:
   void print_tile(Coordinate const& coord);
   void print_tile(int x, int y);
 
+  void hide_tile(Coordinate const& coord);
+  void hide_tile(int x, int y);
+
   chtype colorize(chtype ch);
 private:
 };

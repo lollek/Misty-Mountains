@@ -249,7 +249,6 @@ Level::create_rooms() {
       gold->o_goldval = room.r_goldval = GOLDCALC;
       get_random_room_coord(&room, &room.r_gold, 0, false);
       gold->set_pos(room.r_gold);
-      set_ch(room.r_gold, GOLD);
       gold->o_flags = ISMANY;
       gold->o_type = GOLD;
       items.push_back(gold);
@@ -331,35 +330,14 @@ room_leave(Coordinate const& cp)
     return;
   }
 
-  char floor;
-  if (rp->r_flags & ISGONE) {
-    floor = PASSAGE;
-  } else if (!(rp->r_flags & ISDARK) || player->is_blind()) {
-    floor = FLOOR;
-  } else {
-    floor = SHADOW;
-  }
-
   player->set_room(Game::level->get_passage(cp));
   for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
     for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
-      char ch = Game::level->get_ch(y, x);
 
-      if (ch == FLOOR && floor == SHADOW) {
-        Game::io->print_color(x, y, SHADOW);
-      }
-
-      /* Don't touch non-monsters */
-      else if (!isupper(ch)) {
-        continue;
-      }
-
-      if (player->can_sense_monsters()) {
-        standout();
-        Game::io->print_color(x, y, ch);
-        standend();
-      } else {
-        Game::io->print_color(x, y, Game::level->get_ch(x, y) == DOOR ? DOOR : floor);
+      // Reprint monsters (which usually hides them)
+      Monster* mon = Game::level->get_monster(y, x);
+      if (mon != nullptr) {
+        Game::io->print_tile(x, y);
       }
     }
   }

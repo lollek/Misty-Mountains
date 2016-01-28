@@ -158,10 +158,7 @@ move_do_loop_passage(bool after, Coordinate& coord, bool is_passage) {
 }
 
 static bool
-move_do_loop_floor(bool after, Coordinate& coord, bool is_passage, bool is_real) {
-  if (!is_real) {
-    trap_spring(nullptr, &coord);
-  }
+move_do_loop_floor(bool after, Coordinate& coord, bool is_passage) {
 
   Coordinate const& pos = player->get_position();
   Game::io->print_color(pos.x, pos.y, floor_at());
@@ -170,38 +167,43 @@ move_do_loop_floor(bool after, Coordinate& coord, bool is_passage, bool is_real)
   }
 
   player->set_position(coord);
-  return after;
-}
 
-static bool
-move_do_loop_default(char ch, bool after, Coordinate& coord, bool is_passage) {
-  player->set_not_running();
-  if (isupper(ch) || Game::level->get_monster(coord)) {
-    fight_against_monster(&coord, pack_equipped_item(EQUIPMENT_RHAND), false);
-
-  } else {
-    Game::io->print_color(player->get_position().x, player->get_position().y, floor_at());
-
-    if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
-      room_leave(coord);
-    }
-
-    player->set_position(coord);
-    if (ch != STAIRS) {
-
-      Item *item = Game::level->get_item(coord);
-      if (item == nullptr) {
-        error("No item at position");
-      }
-      pack_pick_up(item, false);
-    }
+  // Try to pick up item, if we are standing on one
+  Item *item = Game::level->get_item(coord);
+  if (item != nullptr) {
+    pack_pick_up(item, false);
+    player->set_not_running();
   }
 
   return after;
 }
 
 static bool
-move_do_loop(char ch, int dx, int dy) {
+move_do_loop_default(bool after, Coordinate& coord, bool is_passage) {
+  player->set_not_running();
+
+  // Fight the monster, if there
+  if (Game::level->get_monster(coord) != nullptr) {
+    fight_against_monster(&coord, pack_equipped_item(EQUIPMENT_RHAND), false);
+    return after;
+  }
+
+  // Move player
+  player->set_position(coord);
+
+  // Reprint the tile we leave
+  Game::io->print_tile(player->get_position());
+
+  // Reprint (basically hide) old room, if we leave one
+  if (is_passage && Game::level->get_ch(move_pos_prev) == DOOR) {
+    room_leave(coord);
+  }
+
+  return after;
+}
+
+static bool
+move_do_loop(int dx, int dy) {
   bool loop = true;
   bool after = true;
 
@@ -230,31 +232,32 @@ move_do_loop(char ch, int dx, int dy) {
       player->set_not_running();
     }
 
-    bool is_passage = Game::level->is_passage(nh);
-    bool is_real    = Game::level->is_real(nh);
-    ch = Game::level->get_type(nh);
-
-    if (!Game::level->is_real(nh) && ch == FLOOR) {
-      if (!player->is_levitating()) {
-        ch = TRAP;
-        Game::level->set_ch(nh, ch);
-        Game::level->set_real(nh);
+    // Cannot escape from the flytrap
+    Monster* mon = Game::level->get_monster(nh);
+    if (player->is_held()) {
+      if (mon == nullptr || mon->get_type() != 'F') {
+        io_msg("you are being held");
+        return after;
       }
+    }
 
-    } else if (player->is_held() && ch != 'F') {
-      io_msg("you are being held");
-      return after;
+    // If it was a trap there, try to spring it
+    char ch = Game::level->get_type(nh);
+    if (!Game::level->is_real(nh) && ch == FLOOR && !player->is_levitating()) {
+      ch = TRAP;
+      Game::level->set_ch(nh, TRAP);
+      Game::level->set_real(nh);
     }
 
     switch (ch) {
       case SHADOW:   loop = move_do_loop_wall(after, dx, dy); break;
       case VWALL:    loop = move_do_loop_wall(after, dx, dy); break;
       case HWALL:    loop = move_do_loop_wall(after, dx, dy); break;
-      case DOOR:     return move_do_loop_door(after, nh, is_passage);
-      case TRAP:     return move_do_loop_trap(after, nh, is_passage);
-      case PASSAGE:  return move_do_loop_passage(after, nh, is_passage);
-      case FLOOR:    return move_do_loop_floor(after, nh, is_passage, is_real);
-      default:       return move_do_loop_default(ch, after, nh, is_passage);
+      case DOOR:     return move_do_loop_door(after, nh, Game::level->is_passage(nh));
+      case TRAP:     return move_do_loop_trap(after, nh, Game::level->is_passage(nh));
+      case PASSAGE:  return move_do_loop_passage(after, nh, Game::level->is_passage(nh));
+      case FLOOR:    return move_do_loop_floor(after, nh, Game::level->is_passage(nh));
+      default:       return move_do_loop_default(after, nh, Game::level->is_passage(nh));
     }
   }
   return after;
@@ -298,6 +301,6 @@ move_do(char ch) {
     dy = 0;
 
   }
-  return move_do_loop(ch, dx, dy);
+  return move_do_loop(dx, dy);
 }
 

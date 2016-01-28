@@ -60,7 +60,6 @@ weapon_missile_fall(Item* obj, bool pr) {
   Coordinate fpos;
 
   if (fallpos(&obj->get_pos(), &fpos)) {
-    Game::level->set_ch(fpos, static_cast<char>(obj->o_type));
     obj->set_pos(fpos);
 
     if (player->can_see(fpos)) {
