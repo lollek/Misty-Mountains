@@ -65,7 +65,7 @@ static bool command_attack_melee(bool fight_to_death, Coordinate const& delta)
   }
 
   char const* what;
-  switch (mvincch(delta.y, delta.x))
+  switch (Game::level->get_ch(delta))
   {
     case SHADOW: case HWALL: case VWALL: what = "wall"; break;
     default: what = "air"; break;

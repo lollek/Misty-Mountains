@@ -222,12 +222,15 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
       magic_bolt_hit_player(start, name);
 
     Monster* tp = Game::level->get_monster(pos);
-    if (tp != nullptr)
+    if (tp != nullptr) {
+      spotpos[i].ch = static_cast<char>(tp->get_type());
       magic_bolt_hit_monster(tp, start, &pos, name);
+    } else {
+      spotpos[i].ch = Game::level->get_ch(pos);
+    }
 
     spotpos[i].x = pos.x;
     spotpos[i].y = pos.y;
-    spotpos[i].ch = static_cast<char>(mvincch(pos.y, pos.x));
     io_addch(dirtile, bolt_type);
     refresh();
   }

@@ -39,6 +39,7 @@ public:
   int get_armor() const override;
   std::string get_attack_string(bool successful_hit) const override;
   std::string get_name() const override;
+  char get_disguise() const;
 
   // Statics
   static char random_monster_type();

@@ -24,6 +24,37 @@
 
 using namespace std;
 
+void IO::print_tile(Coordinate const& coord) {
+  print_tile(coord.x, coord.y);
+}
+
+void IO::print_tile(int x, int y) {
+  // Highest prio: Monsters
+  Monster* mon = Game::level->get_monster(x, y);
+  if (mon != nullptr) {
+    if (monster_seen_by_player(mon)) {
+      print_color(x, y, mon->get_disguise());
+
+    } else if (player->can_sense_monsters()) {
+      standout();
+      print_color(x, y, mon->get_disguise());
+      standend();
+    }
+
+    return;
+  }
+
+  // Next prio: Items
+  Item* item = Game::level->get_item(x, y);
+  if (item != nullptr) {
+    print_color(x, y, item->get_type());
+    return;
+  }
+
+  // Next prio: Floor
+  print_color(x, y, Game::level->get_ch(x, y));
+}
+
 WINDOW* hw = nullptr;
 
 #define MAXMSG	static_cast<int>(NUMCOLS - sizeof " --More--")

@@ -103,8 +103,7 @@ int Player::get_armor() const {
 bool Player::has_seen_stairs() const {
 
   // It is on the map
-  if (mvincch(Game::level->get_stairs_y(), Game::level->get_stairs_x()) ==
-      STAIRS)
+  if (Game::level->is_discovered(Game::level->get_stairs_pos()))
     return true;
 
   // It's under the player

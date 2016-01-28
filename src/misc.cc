@@ -200,7 +200,8 @@ erase_lamp(Coordinate const* pos, struct room const* room)
         continue;
       }
 
-      if (mvincch(y, x) == FLOOR)
+      if (Game::level->get_monster(x, y) == nullptr &&
+          Game::level->get_ch(x, y) == FLOOR)
         Game::io->print_color(x, y, SHADOW);
     }
   }

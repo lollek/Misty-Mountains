@@ -84,7 +84,7 @@ void Monster::set_oldch(Coordinate &coord) {
     return;
   }
 
-  t_oldch = static_cast<char>(mvincch(coord.y, coord.x));
+  t_oldch = Game::level->get_ch(coord);
   if (!player->is_blind()) {
 
     if ((old_char == FLOOR || t_oldch == FLOOR) &&
@@ -128,7 +128,7 @@ string Monster::get_name() const {
 
   } else if (player->is_hallucinating()) {
 
-    int ch = mvincch(get_position().y, get_position().x);
+    int ch = t_disguise;
     if (!isupper(ch)) {
       ch = static_cast<int>(os_rand_range(monsters.size()));
     } else {
@@ -204,7 +204,7 @@ Monster::Monster(char type, Coordinate const& pos, struct room* room,
             roll(m_template.m_level, 8), m_template.m_dmg, pos, room,
             m_template.m_flags, type),
   t_dest(), t_pack(), t_disguise(type),
-  t_oldch(static_cast<char>(mvincch(pos.y, pos.x))), t_turn(true) {
+  t_oldch('~'), t_turn(true) {
 
   // All monsters are equal, but some monsters are more equal than others, so
   // they also give more experience
@@ -220,6 +220,10 @@ Monster::Monster(char type, Coordinate const& pos, struct room* room,
 
 void Monster::set_target(Coordinate const* new_target) {
   t_dest = new_target;
+}
+
+char Monster::get_disguise() const {
+  return t_disguise;
 }
 
 Monster*
@@ -548,13 +552,23 @@ monster_seen_by_player(Monster const* monster)
 {
   assert(monster != nullptr);
 
-  int monster_y = monster->get_position().y;
-  int monster_x = monster->get_position().x;
+  Coordinate const& monster_pos = monster->get_position();
+  int monster_y = monster_pos.y;
+  int monster_x = monster_pos.x;
 
+  // Special cases when not seen
   if (player->is_blind() ||
       (monster->is_invisible() && !player->has_true_sight()))
     return false;
 
+  // Same lit room?
+  room* monster_room = Game::level->get_room(monster_pos);
+  if (monster_room == player->get_room() &&
+      !(monster_room->r_flags & ISDARK)) {
+    return true;
+  }
+
+  // Dark place ?
   if (dist(monster_y, monster_x, player->get_position().y, player->get_position().x) < LAMPDIST)
   {
     if (monster_y != player->get_position().y && monster_x != player->get_position().x

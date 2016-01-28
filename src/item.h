@@ -42,6 +42,7 @@ public:
   int                get_y() const;
   std::string const& get_nickname() const;
   bool               is_magic() const;
+  int                get_type() const;
 
   int           o_type;                /* What kind of object it is */
   int           o_launch;              /* What you need to launch it */

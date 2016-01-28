@@ -35,6 +35,7 @@ room_open_door(struct room* rp) {
 
   for (int y = rp->r_pos.y; y < rp->r_pos.y + rp->r_max.y; y++) {
     for (int x = rp->r_pos.x; x < rp->r_pos.x + rp->r_max.x; x++) {
+      Game::level->set_discovered(x, y);
       if (isupper(Game::level->get_type(x, y))) {
         monster_notice_player(y, x);
       }
@@ -308,31 +309,13 @@ room_enter(Coordinate const& cp) {
   player->set_room(rp);
   room_open_door(rp);
 
-  if (!(rp->r_flags & ISDARK) && !player->is_blind()) {
+  if ((rp->r_flags & ISDARK) || player->is_blind()) {
+    return;
+  }
 
-    for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
-
-      move(y, rp->r_pos.x);
-      for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
-        Monster* tp = Game::level->get_monster(x, y);
-        char ch = Game::level->get_ch(x, y);
-
-        if (tp == nullptr) {
-          Game::io->print_color(x, y, ch);
-          continue;
-        }
-
-        tp->t_oldch = ch;
-        if (monster_seen_by_player(tp)) {
-          Game::io->print_color(x, y, tp->t_disguise);
-        } else if (player->can_sense_monsters()) {
-          standout();
-          Game::io->print_color(x, y, tp->t_disguise);
-          standend();
-        } else {
-          Game::io->print_color(x, y, ch);
-        }
-      }
+  for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
+    for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
+      Game::io->print_tile(x, y);
     }
   }
 }
@@ -360,7 +343,7 @@ room_leave(Coordinate const& cp)
   player->set_room(Game::level->get_passage(cp));
   for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
     for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
-      char ch = static_cast<char>(mvincch(y, x));
+      char ch = Game::level->get_ch(y, x);
 
       if (ch == FLOOR && floor == SHADOW) {
         Game::io->print_color(x, y, SHADOW);

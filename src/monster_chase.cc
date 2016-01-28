@@ -188,9 +188,10 @@ chase_do(Monster& monster)
     char ch = Game::level->get_type(chase_coord);
 
     // Remove monster from old position
-    Game::io->print_color(monster.get_position().x, monster.get_position().y,
-        monster.t_oldch);
     Game::level->set_monster(monster.get_position(), nullptr);
+    if (monster_seen_by_player(&monster)) {
+      Game::io->print_tile(monster.get_position());
+    }
 
     // Check if we stepped in a trap
     if (ch == TRAP || (!Game::level->is_real(chase_coord) && ch == FLOOR)) {

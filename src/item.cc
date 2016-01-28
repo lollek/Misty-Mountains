@@ -65,3 +65,7 @@ Item* Item::clone() const {
   return new Item(*this);
 }
 
+
+int Item::get_type() const {
+  return o_type;
+}
