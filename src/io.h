@@ -1,5 +1,7 @@
 #pragma once
 
+#include <curses.h>
+
 #include "coordinate.h"
 
 class IO {
@@ -12,10 +14,11 @@ public:
 
   void print_tile(Coordinate const& coord);
   void print_tile(int x, int y);
+
+  chtype colorize(chtype ch);
 private:
 };
 
-#include <curses.h>
 
 #include "things.h"
 
@@ -127,12 +130,9 @@ void io_wait_for_key(int ch);
 
 
 
-/* Helper function to colorize chars before outputting them */
-chtype colorize(const chtype ch);
-
 /* old ncurses functions, with custom color support, to be removed */
-#define waddcch(_w, _c)           waddch(_w, colorize(_c))
-#define mvwaddcch(_w, _y, _x, _c) mvwaddch(_w, _y, _x, colorize(_c))
+#define waddcch(_w, _c)           waddch(_w, Game::io->colorize(_c))
+#define mvwaddcch(_w, _y, _x, _c) mvwaddch(_w, _y, _x, Game::io->colorize(_c))
 
 
 

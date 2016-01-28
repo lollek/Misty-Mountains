@@ -55,6 +55,42 @@ void IO::print_tile(int x, int y) {
   print_color(x, y, Game::level->get_ch(x, y));
 }
 
+chtype IO::colorize(chtype ch)
+{
+  if (!use_colors)
+    return ch;
+
+  // NOTE: COLOR_WHITE is black and COLOR_BLACK is white, because reasons
+
+  switch (ch)
+  {
+    // Dungeon
+    case HWALL: case VWALL: return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
+    case PASSAGE: case FLOOR: case STAIRS: return ch | COLOR_PAIR(COLOR_YELLOW);
+    case TRAP: return ch | COLOR_PAIR(COLOR_RED);
+
+    // Items
+    case GOLD: return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
+
+    // Monsters
+    case 'B': return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
+    case 'E': return ch | COLOR_PAIR(COLOR_MAGENTA);
+    case 'H': return ch | COLOR_PAIR(COLOR_GREEN);
+    case 'I': return ch | COLOR_PAIR(COLOR_CYAN);
+    case 'K': return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
+    case 'L': return ch | COLOR_PAIR(COLOR_GREEN) | A_BOLD;
+    case 'N': return ch | COLOR_PAIR(COLOR_GREEN) | A_BOLD;
+    case 'R': return ch | COLOR_PAIR(COLOR_RED);
+    case 'S': return ch | COLOR_PAIR(COLOR_GREEN);
+
+
+    default: return ch | COLOR_PAIR(COLOR_BLACK);
+  }
+}
+
+
+
+
 WINDOW* hw = nullptr;
 
 #define MAXMSG	static_cast<int>(NUMCOLS - sizeof " --More--")
@@ -171,40 +207,6 @@ get_homedir(void)
       strcpy(homedir, "/");
   }
   return homedir;
-}
-
-chtype
-colorize(const chtype ch)
-{
-  if (!use_colors)
-    return ch;
-
-  /* NOTE: COLOR_WHITE is black and COLOR_BLACK is white, because reasons */
-
-  switch (ch)
-  {
-    /* Dungeon */
-    case HWALL: case VWALL: return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
-    case PASSAGE: case FLOOR: case STAIRS: return ch | COLOR_PAIR(COLOR_YELLOW);
-    case TRAP: return ch | COLOR_PAIR(COLOR_RED);
-
-    /* Items */
-    case GOLD: return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
-
-    /* Monsters */
-    case 'B': return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
-    case 'E': return ch | COLOR_PAIR(COLOR_MAGENTA);
-    case 'H': return ch | COLOR_PAIR(COLOR_GREEN);
-    case 'I': return ch | COLOR_PAIR(COLOR_CYAN);
-    case 'K': return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
-    case 'L': return ch | COLOR_PAIR(COLOR_GREEN) | A_BOLD;
-    case 'N': return ch | COLOR_PAIR(COLOR_GREEN) | A_BOLD;
-    case 'R': return ch | COLOR_PAIR(COLOR_RED);
-    case 'S': return ch | COLOR_PAIR(COLOR_GREEN);
-
-
-    default: return ch | COLOR_PAIR(COLOR_BLACK);
-  }
 }
 
 #ifndef NDEBUG
