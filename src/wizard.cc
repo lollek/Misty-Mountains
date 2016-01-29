@@ -165,7 +165,10 @@ wizard_create_item(void)
         return;
       }
     case STICK: obj = new Wand(static_cast<Wand::Type>(which)); break;
-    case SCROLL: obj = scroll_create(which); break;
+    case SCROLL: {
+      obj = scroll_create(which);
+      obj->o_count = 10;
+    } break;
     case POTION: {
       obj = new Potion(static_cast<Potion::Type>(which));
       obj->o_count = 10;
