@@ -326,13 +326,19 @@ room_leave(Coordinate const& cp)
   }
 
   player->set_room(Game::level->get_passage(cp));
-  for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
-    for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
 
-      // Reprint monsters (which usually hides them)
-      Monster* mon = Game::level->get_monster(x, y);
-      if (mon != nullptr && Game::level->get_ch(x, y) != SHADOW) {
-        Game::io->print_tile(x, y);
+  if (rp->r_flags & ISDARK) {
+    Game::io->hide_room(rp);
+
+  } else {
+    for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
+      for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
+
+        // Reprint monsters (which usually hides them)
+        Monster* mon = Game::level->get_monster(x, y);
+        if (mon != nullptr && Game::level->get_ch(x, y) != SHADOW) {
+          Game::io->print_tile(x, y);
+        }
       }
     }
   }
