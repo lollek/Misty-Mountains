@@ -327,9 +327,11 @@ room_leave(Coordinate const& cp)
 
   player->set_room(Game::level->get_passage(cp));
 
+  // If we leave dark rooms, we want to hide everything inside of it
   if (rp->r_flags & ISDARK) {
     Game::io->hide_room(rp);
 
+  // If we leave a light room, we only hide monsters
   } else {
     for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
       for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
