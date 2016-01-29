@@ -203,9 +203,16 @@ void IO::print_room(room const* room) {
 void IO::hide_room(room const* room) {
   for (int y = room->r_pos.y; y < room->r_max.y + room->r_pos.y; y++) {
     for (int x = room->r_pos.x; x < room->r_max.x + room->r_pos.x; x++) {
-      char ch = Game::level->get_ch(x, y);
-      if (ch != HWALL && ch != VWALL && ch != DOOR) {
-        hide_tile(x, y);
+      switch (Game::level->get_ch(x, y)) {
+
+        // Things to NOT hide:
+        case HWALL: case VWALL: case DOOR: case STAIRS: case TRAP: {
+          break;
+        }
+
+        default: {
+          hide_tile(x, y);
+        } break;
       }
     }
   }
