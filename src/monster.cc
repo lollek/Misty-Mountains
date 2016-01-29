@@ -111,8 +111,6 @@ string Monster::get_name() const {
     int ch = t_disguise;
     if (!isupper(ch)) {
       ch = static_cast<int>(os_rand_range(monsters.size()));
-    } else {
-      ch -= 'A';
     }
 
     stringstream ss;
