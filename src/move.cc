@@ -309,8 +309,8 @@ move_do(char ch) {
       to_death = false;
       return false;
     }
-    dx = 0;
-    dy = 0;
+    dx = nh.x - player->get_position().x;
+    dy = nh.y - player->get_position().y;
 
   }
   return move_do_loop(dx, dy);
