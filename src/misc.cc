@@ -39,12 +39,7 @@ roll(int number, int sides)
 void
 look(bool wakeup)
 {
-
-  if (move_pos_prev == player->get_position()) {
-    erase_lamp(&move_pos_prev, player->get_previous_room());
-    move_pos_prev = player->get_position();
-    player->set_previous_room(player->get_room());
-  }
+  erase_lamp(&move_pos_prev, player->get_previous_room());
 
   int sumhero = 0;
   int diffhero = 0;
@@ -53,15 +48,15 @@ look(bool wakeup)
     diffhero = player->get_position().y - player->get_position().x;
   }
 
+  Coordinate const& player_pos = player->get_position();
+  if (player_pos.x < 1 || player_pos.x >= NUMCOLS -1 ||
+      player_pos.y < 2 || player_pos.y >= NUMLINES -2) {
+    error("player_pos is too close to the edge");
+  }
+
   int passcount = 0;
-  int from_y = max(player->get_position().y - 1, 1);
-  int to_y = min(player->get_position().y + 1, NUMLINES -2);
-
-  int from_x = max(player->get_position().x - 1, 0);
-  int to_x = min(player->get_position().x + 1, NUMCOLS -1);
-
-  for (int y = from_y; y <= to_y; y++) {
-    for (int x = from_x; x <= to_x; x++) {
+  for (int y = player_pos.y -1; y <= player_pos.y +1; y++) {
+    for (int x = player_pos.x -1; x <= player_pos.x +1; x++) {
 
       if (!player->is_blind()
           && y == player->get_position().y && x == player->get_position().x) {
@@ -168,21 +163,14 @@ look(bool wakeup)
 void
 erase_lamp(Coordinate const* pos, struct room const* room)
 {
+  if (pos == nullptr || room == nullptr) {
+    return;
+  }
   if (!((room->r_flags & (ISGONE|ISDARK)) == ISDARK
        && !player->is_blind()))
     return;
 
-  for (int x = pos->x -1; x <= pos->x +1; x++) {
-    for (int y = pos->y -1; y <= pos->y +1; y++) {
-      if (y == player->get_position().y && x == player->get_position().x) {
-        continue;
-      }
-
-      if (Game::level->get_monster(x, y) == nullptr &&
-          Game::level->get_ch(x, y) == FLOOR)
-        Game::io->print_color(x, y, SHADOW);
-    }
-  }
+  Game::io->hide_room(room);
 }
 
 string

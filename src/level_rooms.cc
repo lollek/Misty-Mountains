@@ -311,12 +311,7 @@ room_enter(Coordinate const& cp) {
   if ((rp->r_flags & ISDARK) || player->is_blind()) {
     return;
   }
-
-  for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
-    for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
-      Game::io->print_tile(x, y);
-    }
-  }
+  Game::io->print_room(rp);
 }
 
 /** room_leave:

@@ -2,6 +2,7 @@
 
 #include <curses.h>
 
+#include "level_rooms.h"
 #include "coordinate.h"
 
 class IO {
@@ -18,8 +19,17 @@ public:
   void hide_tile(Coordinate const& coord);
   void hide_tile(int x, int y);
 
+  void print_room(room const* room);
+  void hide_room(room const* room);
+
+  void refresh();
+
   chtype colorize(chtype ch);
+
 private:
+  void print_room_dark(room const* room);
+  void print_room_passage(room const* room);
+  void print_room_light(room const* room);
 };
 
 

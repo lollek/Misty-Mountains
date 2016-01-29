@@ -54,23 +54,16 @@ command()
 
   while (num_moves-- > 0)
   {
-    clearok(curscr, true);
-    wrefresh(curscr);
-    look(true);
+    Game::io->refresh();
+
     if (!player->is_running())
       door_stop = false;
-    io_refresh_statusline();
-
 
     if (player_turns_without_action && --player_turns_without_action == 0)
     {
       player->set_running();
       io_msg("you can move again");
     }
-
-
-    if (!(player->is_running() && jump))
-      refresh();
 
     if (!player_turns_without_action)
     {

@@ -29,7 +29,19 @@ void IO::print_tile(Coordinate const& coord) {
 }
 
 void IO::print_tile(int x, int y) {
-  // Highest prio: Monsters
+  // Hide it if we can't really see it
+  Coordinate coord(x, y);
+  if (!player->can_see(coord)) {
+    hide_tile(x, y);
+  }
+
+  // Next prio: Player
+  if (player->get_position() == coord) {
+    print_color(x, y, player->get_type());
+    return;
+  }
+
+  // Next prio: Monsters
   Monster* mon = Game::level->get_monster(x, y);
   if (mon != nullptr) {
     int symbol_to_print = mon->get_disguise();
@@ -70,7 +82,7 @@ void IO::hide_tile(Coordinate const& coord) {
 }
 
 void IO::hide_tile(int x, int y) {
-  print(x, y, ' ');
+  print(x, y, SHADOW);
 }
 
 chtype IO::colorize(chtype ch)
@@ -106,7 +118,53 @@ chtype IO::colorize(chtype ch)
   }
 }
 
+void IO::print_room_dark(room const* room) {
+  hide_room(room);
+  print_room_passage(room);
+}
 
+void IO::print_room_passage(room const* room) {
+  (void)room;
+  look(true);
+}
+
+void IO::print_room_light(room const* room) {
+  for (int y = room->r_pos.y; y < room->r_max.y + room->r_pos.y; y++) {
+    for (int x = room->r_pos.x; x < room->r_max.x + room->r_pos.x; x++) {
+      print_tile(x, y);
+    }
+  }
+
+  // Do a passage-print as well, so we can see into any nearby passage
+  print_room_passage(room);
+}
+
+void IO::print_room(room const* room) {
+  if (player->is_blind()) {
+    return;
+  } else if (room->r_flags & ISDARK) {
+    print_room_dark(room);
+  } else if (room->r_flags & (ISGONE|ISMAZE)) {
+    print_room_passage(room);
+  } else {
+    print_room_light(room);
+  }
+}
+
+void IO::hide_room(room const* room) {
+  for (int y = room->r_pos.y; y < room->r_max.y + room->r_pos.y; y++) {
+    for (int x = room->r_pos.x; x < room->r_max.x + room->r_pos.x; x++) {
+      hide_tile(x, y);
+    }
+  }
+}
+
+void IO::refresh() {
+  print_room(player->get_room());
+
+  io_refresh_statusline();
+  ::refresh();
+}
 
 
 WINDOW* hw = nullptr;

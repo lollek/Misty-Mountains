@@ -106,26 +106,24 @@ static bool
 move_do_loop_door(bool after, Coordinate& coord) {
   player->set_not_running();
 
-  if (Game::level->is_passage(player->get_position())) {
+  Coordinate player_old_pos = player->get_position();
+  if (Game::level->is_passage(player_old_pos)) {
     room_enter(coord);
   }
 
-  Game::io->print_color(player->get_position().x, player->get_position().y, floor_at());
-
   player->set_position(coord);
+  Game::io->print_tile(player_old_pos);
   return after;
 }
 
 static bool
 move_do_loop_trap(bool after, Coordinate& coord) {
-  Coordinate const* player_pos = &player->get_position();
   char ch = trap_spring(nullptr, &coord);
 
   if (ch == T_DOOR || ch == T_TELEP) {
     return after;
   }
 
-  Game::io->print_color(player_pos->x, player_pos->y, floor_at());
   if (Game::level->is_passage(coord) && Game::level->get_ch(move_pos_prev) == DOOR) {
     room_leave(coord);
   }
@@ -142,7 +140,6 @@ move_do_loop_passage(bool after, Coordinate& coord) {
   // always recalculate which room player is in.
 
   player->set_room(Game::level->get_room(player->get_position()));
-  Game::io->print_color(player->get_position().x, player->get_position().y, floor_at());
 
   char previous_place = Game::level->get_ch(player->get_position());
   player->set_position(coord);
@@ -156,9 +153,6 @@ move_do_loop_passage(bool after, Coordinate& coord) {
 
 static bool
 move_do_loop_floor(bool after, Coordinate& coord) {
-
-  Coordinate const& pos = player->get_position();
-  Game::io->print_color(pos.x, pos.y, floor_at());
 
   player->set_position(coord);
 
@@ -185,9 +179,6 @@ move_do_loop_default(bool after, Coordinate& coord) {
   // Move player
   player->set_position(coord);
 
-  // Reprint the tile we leave
-  Game::io->print_tile(player->get_position());
-
   // Reprint (basically hide) old room, if we leave one
   if (Game::level->is_passage(coord) && Game::level->get_ch(move_pos_prev) == DOOR) {
     room_leave(coord);
@@ -209,22 +200,49 @@ move_do_loop(int dx, int dy) {
     nh.y = player->get_position().y + dy;
     nh.x = player->get_position().x + dx;
 
-    /* Check if he tried to move off the screen or make an illegal
-     * diagonal move, and stop him if he did. */
-    if (nh.x < 0 || nh.x >= NUMCOLS || nh.y <= 0 || nh.y >= NUMLINES - 1) {
+    // If we are too close to the edge of map, treat is as wall automatically
+    if (nh.x < 1 || nh.x >= NUMCOLS -1 || nh.y < 2 || nh.y >= NUMLINES - 1) {
       loop = move_do_loop_wall(after, dx, dy);
       continue;
     }
 
+    // Refuse illegal moves
     if (!diag_ok(&player->get_position(), &nh)) {
       player->set_not_running();
       return false;
     }
 
+    // If we end up in the same position, stop so we don't deadlock
     if (player->is_running() && player->get_position() == nh) {
       after = false;
       player->set_not_running();
     }
+
+    // If we are near something of interest, stop running
+    for (int x = nh.x -1; x <= nh.x +1; ++x) {
+      for (int y = nh.y -1; y <= nh.y +1; ++y) {
+        char tile_ch = Game::level->get_ch(x, y);
+        Monster* monster = Game::level->get_monster(x, y);
+        Coordinate tile_coord(x, y);
+
+        // Monster (also makes monster notice player)
+        if (monster != nullptr) {
+          player->set_not_running();
+          monster_notice_player(y, x);
+        }
+
+        else if (
+            // Item
+            Game::level->get_item(x, y) != nullptr ||
+            // Stairs or Trap
+            tile_ch == STAIRS || tile_ch == TRAP ||
+            // Door IF we can actually move to it
+            (tile_ch == DOOR && diag_ok(&nh, &tile_coord))) {
+          player->set_not_running();
+        }
+      }
+    }
+
 
     // Cannot escape from the flytrap
     Monster* mon = Game::level->get_monster(nh);
