@@ -242,74 +242,6 @@ create_monster(void)
   return i;
 }
 
-static void
-magic_mapping(void)
-{
-  /* take all the things we want to keep hidden out of the window */
-  for (int y = 1; y < NUMLINES - 1; y++)
-    for (int x = 0; x < NUMCOLS; x++)
-    {
-      char ch = Game::level->get_ch(x, y);
-      switch (ch)
-      {
-        case DOOR: case STAIRS: break;
-
-        case HWALL: case VWALL:
-          if (!Game::level->is_real(x, y)) {
-            ch = DOOR;
-            Game::level->set_ch(x, y, DOOR);
-            Game::level->set_real(x, y);
-          }
-          break;
-
-        case SHADOW:
-          if (Game::level->is_real(x, y)) {
-            goto def;
-          }
-          ch = PASSAGE;
-          Game::level->set_ch(x, y, ch);
-          Game::level->set_real(x, y);
-          /* FALLTHROUGH */
-
-        case PASSAGE:
-pass:
-          if (!Game::level->is_real(x, y)) {
-            Game::level->set_ch(x, y, PASSAGE);
-          }
-          ch = PASSAGE;
-          Game::level->set_discovered(x, y);
-          Game::level->set_real(x, y);
-          break;
-
-        case FLOOR:
-          if (Game::level->is_real(x, y)) {
-            ch = SHADOW;
-          } else {
-            ch = TRAP;
-            Game::level->set_ch(x, y, ch);
-            Game::level->set_discovered(x, y);
-            Game::level->set_real(x, y);
-          }
-          break;
-
-        default:
-def:
-          if (Game::level->is_passage(x, y)) {
-            goto pass;
-          }
-          ch = SHADOW;
-          break;
-      }
-
-      if (ch != SHADOW)
-      {
-        Monster* obj = Game::level->get_monster(x, y);
-        if (obj == nullptr || !player->can_sense_monsters())
-          Game::io->print_color(x, y, ch);
-      }
-    }
-}
-
 static bool
 food_detection(void)
 {
@@ -438,7 +370,7 @@ scroll_read(void)
     case S_MAP:
       scroll_learn(S_MAP);
       io_msg("this scroll has a map on it");
-      magic_mapping();
+      Game::io->print_level_layout();
       break;
     case S_FDET:
       if (food_detection())

@@ -169,6 +169,79 @@ void IO::hide_room(room const* room) {
   }
 }
 
+void IO::print_level_layout() {
+  /* take all the things we want to keep hidden out of the window */
+  for (int y = 1; y < NUMLINES - 1; y++) {
+    for (int x = 0; x < NUMCOLS; x++) {
+
+      char ch = Game::level->get_ch(x, y);
+      switch (ch) {
+
+        // Doors and stairs are always what they seem
+        case DOOR: case STAIRS: break;
+
+        // Check if walls are actually hidden doors
+        case HWALL: case VWALL: {
+          if (!Game::level->is_real(x, y)) {
+            ch = DOOR;
+            Game::level->set_ch(x, y, DOOR);
+            Game::level->set_real(x, y);
+          }
+        } break;
+
+        // Floor can be traps. If it's not, we don't print it
+        case FLOOR: {
+          if (Game::level->is_real(x, y)) {
+            ch = SHADOW;
+          } else {
+            ch = TRAP;
+            Game::level->set_ch(x, y, ch);
+            Game::level->set_discovered(x, y);
+            Game::level->set_real(x, y);
+          }
+        } break;
+
+        // Shadow can be a hidden passage
+        case SHADOW: {
+          if (Game::level->is_real(x, y)) {
+            break;
+          }
+          ch = PASSAGE;
+          Game::level->set_ch(x, y, ch);
+          Game::level->set_real(x, y);
+        } /* FALLTHROUGH */
+
+        // Seems like many things can be a passage?
+        case PASSAGE: {
+pass:
+          if (!Game::level->is_real(x, y)) {
+            Game::level->set_ch(x, y, PASSAGE);
+          }
+          ch = PASSAGE;
+          Game::level->set_discovered(x, y);
+          Game::level->set_real(x, y);
+        } break;
+
+        default: {
+          if (Game::level->is_passage(x, y)) {
+            goto pass;
+          }
+          ch = SHADOW;
+        } break;
+      }
+
+      if (ch != SHADOW) {
+        Monster* obj = Game::level->get_monster(x, y);
+        if (obj == nullptr || !player->can_sense_monsters()) {
+          Game::io->print_color(x, y, ch);
+        } else {
+          Game::io->print_monster(obj, IO::Attribute::Standout);
+        }
+      }
+    }
+  }
+}
+
 void IO::refresh() {
   print_room(player->get_room());
 
