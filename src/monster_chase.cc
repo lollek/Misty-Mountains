@@ -185,10 +185,14 @@ chase_do(Monster& monster)
   if (chase_coord != monster.get_position()) {
     char ch = Game::level->get_type(chase_coord);
 
-    // Remove monster from old position
+    char prev_ch = Game::level->get_ch(monster.get_position());
+
+    // Remove monster from old position IFF we see it, or it was standing on a
+    // passage we have previously seen
     Game::level->set_monster(monster.get_position(), nullptr);
     if (monster_seen_by_player(&monster) ||
-        Game::level->is_discovered(monster.get_position())) {
+        ((prev_ch == PASSAGE || prev_ch == DOOR) &&
+         Game::level->is_discovered(monster.get_position()))) {
       Game::io->print_tile(monster.get_position());
     }
 
@@ -212,10 +216,6 @@ chase_do(Monster& monster)
     monster.set_room(Game::level->get_room(chase_coord));
     monster.set_position(chase_coord);
     Game::level->set_monster(chase_coord, &monster);
-  }
-
-  if (monster_seen_by_player(&monster) || player->can_sense_monsters()) {
-    Game::io->print_tile(chase_coord);
   }
 
   // And stop running if need be
