@@ -177,13 +177,6 @@ pack_move_msg(Item* obj)
   io_msg("moved onto %s", inv_name(obj, true).c_str());
 }
 
-static void
-pack_remove_from_floor(Item* obj)
-{
-  Game::level->items.remove(obj);
-  Game::io->print_color(player->get_position().x, player->get_position().y, floor_ch());
-}
-
 bool
 pack_add(Item* obj, bool silent)
 {
@@ -218,7 +211,7 @@ pack_add(Item* obj, bool silent)
           && ptr->o_hplus == obj->o_hplus && ptr->o_dplus == obj->o_dplus)
       {
         if (from_floor)
-          pack_remove_from_floor(obj);
+          Game::level->items.remove(obj);
         ptr->o_count += obj->o_count;
         ptr->set_pos(obj->get_pos());
         delete obj;
@@ -241,7 +234,7 @@ pack_add(Item* obj, bool silent)
   if (!is_picked_up)
   {
     if (from_floor)
-      pack_remove_from_floor(obj);
+      Game::level->items.remove(obj);
     player_pack.push_back(obj);
     obj->o_packch = pack_char();
     is_picked_up = true;
