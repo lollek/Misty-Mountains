@@ -254,10 +254,6 @@ move_do_loop(int dx, int dy) {
       case VWALL:    loop = move_do_loop_wall(after, dx, dy); break;
       case HWALL:    loop = move_do_loop_wall(after, dx, dy); break;
 
-      case DOOR:     return move_do_loop_default(after, nh);
-      case TRAP:     return move_do_loop_default(after, nh);
-      case PASSAGE:  return move_do_loop_default(after, nh);
-      case FLOOR:    return move_do_loop_default(after, nh);
       default:       return move_do_loop_default(after, nh);
     }
   }
