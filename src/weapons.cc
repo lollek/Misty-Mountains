@@ -61,14 +61,6 @@ weapon_missile_fall(Item* obj, bool pr) {
 
   if (fallpos(&obj->get_pos(), &fpos)) {
     obj->set_pos(fpos);
-
-    if (player->can_see(fpos)) {
-      Monster *monster = Game::level->get_monster(fpos);
-      if (monster == nullptr) {
-        Game::io->print_color(fpos.x, fpos.y, obj->o_type);
-      }
-    }
-
     Game::level->items.push_back(obj);
     return;
   }
