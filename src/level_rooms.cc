@@ -331,7 +331,7 @@ room_leave(Coordinate const& cp)
 
       // Reprint monsters (which usually hides them)
       Monster* mon = Game::level->get_monster(x, y);
-      if (mon != nullptr) {
+      if (mon != nullptr && Game::level->get_ch(x, y) != SHADOW) {
         Game::io->print_tile(x, y);
       }
     }
