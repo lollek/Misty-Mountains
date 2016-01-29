@@ -154,9 +154,10 @@ trap_arrow_monster(Monster* victim)
     victim->take_damage(roll(1,6));
     if (victim->get_health() <= 0)
     {
-      monster_on_death(victim, false);
       if (monster_seen_by_player(victim))
         io_msg("An arrow killed %s", victim->get_name().c_str());
+      monster_on_death(victim, false);
+      victim = nullptr;
     }
     else if (monster_seen_by_player(victim))
       io_msg("An arrow shot %s", victim->get_name().c_str());
@@ -238,11 +239,12 @@ trap_dart_monster(Monster* victim)
     victim->take_damage(roll(1,4));
     if (victim->get_health() <= 0)
     {
-      monster_on_death(victim, false);
       if (monster_seen_by_player(victim))
       {
         io_msg("A poisoned dart killed %s", victim->get_name().c_str());
       }
+      monster_on_death(victim, false);
+      victim = nullptr;
     }
     else if (monster_seen_by_player(victim))
     {
