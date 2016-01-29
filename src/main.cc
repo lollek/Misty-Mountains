@@ -147,7 +147,6 @@ main(int argc, char** argv)
   io_msg("Seed: #%u", os_rand_seed);
 #endif
 
-  move_pos_prev = player->get_position();
   player->set_previous_room(Game::level->get_room(player->get_position()));
 
 #ifdef NDEBUG

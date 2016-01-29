@@ -22,8 +22,6 @@
 #include "os.h"
 #include "rogue.h"
 
-Coordinate move_pos_prev;
-
 static void stop_on_interesting_stuff(Coordinate const& nh) {
   if (!door_stop) {
     return;
@@ -155,55 +153,6 @@ move_do_loop_wall(bool& after, int& dx, int& dy) {
 }
 
 static bool
-move_do_loop_door(bool after, Coordinate& coord) {
-  player->set_not_running();
-
-  Coordinate player_old_pos = player->get_position();
-  if (Game::level->is_passage(player_old_pos)) {
-    room_enter(coord);
-  }
-
-  player->set_position(coord);
-  Game::io->print_tile(player_old_pos);
-  return after;
-}
-
-static bool
-move_do_loop_trap(bool after, Coordinate& coord) {
-  char ch = trap_spring(nullptr, &coord);
-
-  if (ch == T_DOOR || ch == T_TELEP) {
-    return after;
-  }
-
-  if (Game::level->is_passage(coord) && Game::level->get_ch(move_pos_prev) == DOOR) {
-    room_leave(coord);
-  }
-
-  player->set_position(coord);
-  return after;
-}
-
-static bool
-move_do_loop_passage(bool after, Coordinate& coord) {
-  // when you're in a corridor, you don't know if you're in
-  // a maze room or not, and there ain't no way to find out
-  // if you're leaving a maze room, so it is necessary to
-  // always recalculate which room player is in.
-
-  player->set_room(Game::level->get_room(player->get_position()));
-
-  char previous_place = Game::level->get_ch(player->get_position());
-  player->set_position(coord);
-
-  if (previous_place == DOOR) {
-    room_leave(coord);
-  }
-
-  return after;
-}
-
-static bool
 move_do_loop_default(bool after, Coordinate& coord) {
 
   // If there was a monster there, fight it!
@@ -212,7 +161,18 @@ move_do_loop_default(bool after, Coordinate& coord) {
     return after;
   }
 
+  // If there was a trap, get trapped!
+  if (Game::level->get_ch(coord) == TRAP) {
+    char ch = trap_spring(nullptr, &coord);
+    if (ch == T_DOOR || ch == T_TELEP) {
+      return after;
+    }
+  }
+
   // Else, Move player
+  Coordinate old_position = player->get_position();
+  player->set_room(Game::level->get_room(old_position));
+  char previous_place = Game::level->get_ch(old_position);
   player->set_position(coord);
 
   // Try to pick up any items here
@@ -223,8 +183,13 @@ move_do_loop_default(bool after, Coordinate& coord) {
   }
 
   // Reprint (basically hide) old room, if we leave one
-  if (Game::level->is_passage(coord) && Game::level->get_ch(move_pos_prev) == DOOR) {
+  if (Game::level->is_passage(coord) && previous_place == DOOR) {
     room_leave(coord);
+  }
+
+  if (Game::level->is_passage(old_position) && Game::level->get_ch(coord) == DOOR) {
+    room_enter(coord);
+    Game::io->print_tile(old_position);
   }
 
   return after;
@@ -275,7 +240,8 @@ move_do_loop(int dx, int dy) {
       }
     }
 
-    // If it was a trap there, try to spring it
+    // If it was a trap there, try to spring it!
+    // this will trigger for real in the move_do_loop_default function
     char ch = Game::level->get_type(nh);
     if (!Game::level->is_real(nh) && ch == FLOOR && !player->is_levitating()) {
       ch = TRAP;
@@ -287,10 +253,10 @@ move_do_loop(int dx, int dy) {
       case SHADOW:   loop = move_do_loop_wall(after, dx, dy); break;
       case VWALL:    loop = move_do_loop_wall(after, dx, dy); break;
       case HWALL:    loop = move_do_loop_wall(after, dx, dy); break;
-      case DOOR:     return move_do_loop_door(after, nh);
-      case TRAP:     return move_do_loop_trap(after, nh);
-      case PASSAGE:  return move_do_loop_passage(after, nh);
 
+      case DOOR:     return move_do_loop_default(after, nh);
+      case TRAP:     return move_do_loop_default(after, nh);
+      case PASSAGE:  return move_do_loop_default(after, nh);
       case FLOOR:    return move_do_loop_default(after, nh);
       default:       return move_do_loop_default(after, nh);
     }
