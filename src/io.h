@@ -4,14 +4,21 @@
 
 #include "level_rooms.h"
 #include "coordinate.h"
+#include "item.h"
+#include "monster.h"
 
 class IO {
 public:
-  template <typename T>
-  void print(int x, int y, T ch);
+  enum Attribute {
+    Standout,
+    None
+  };
 
   template <typename T>
-  void print_color(int x, int y, T ch);
+  void print(int x, int y, T ch, Attribute attr=None);
+
+  template <typename T>
+  void print_color(int x, int y, T ch, Attribute attr=None);
 
   void print_tile(Coordinate const& coord);
   void print_tile(int x, int y);
@@ -21,6 +28,9 @@ public:
 
   void print_room(room const* room);
   void hide_room(room const* room);
+
+  void print_monster(Monster* monster, Attribute attr=None);
+  void print_item(Item* item);
 
   void refresh();
 
