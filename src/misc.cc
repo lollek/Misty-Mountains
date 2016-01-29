@@ -39,8 +39,6 @@ roll(int number, int sides)
 void
 look(bool wakeup)
 {
-  erase_lamp(&move_pos_prev, player->get_previous_room());
-
   int sumhero = 0;
   int diffhero = 0;
   if (door_stop && !firstmove && player->is_running()) {
@@ -158,19 +156,6 @@ look(bool wakeup)
   if (!player->is_running() || !jump) {
     Game::io->print_color(player->get_position().x, player->get_position().y, PLAYER);
   }
-}
-
-void
-erase_lamp(Coordinate const* pos, struct room const* room)
-{
-  if (pos == nullptr || room == nullptr) {
-    return;
-  }
-  if (!((room->r_flags & (ISGONE|ISDARK)) == ISDARK
-       && !player->is_blind()))
-    return;
-
-  Game::io->hide_room(room);
 }
 
 string

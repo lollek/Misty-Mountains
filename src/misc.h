@@ -7,9 +7,6 @@
 int roll(int number, int sides); /* Roll a number of dice */
 void look(bool wakeup);          /* A quick glance all around the player */
 
-/* Erase the area shown by a lamp in a dark room. */
-void erase_lamp(Coordinate const* pos, struct room const* room);
-
 std::string vowelstr(std::string const& str); /* Return "n" if vowel else "" */
 
 /* Set up the direction co_ordinate for use in varios "prefix" commands */
