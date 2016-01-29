@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include "coordinate.h"
+
 #include "things.h"
 
 
@@ -29,7 +31,7 @@ int pack_size(void);
 /* Pick up an object and add it to the pack.  If the argument is
  * non-null use it as the linked_list pointer instead of gettting
  * it off the ground. */
-bool pack_add(Item* obj, bool silent);
+bool pack_add(Item* obj, bool silent, bool from_floor=false);
 
 void pack_move_msg(Item* obj); /* Message that we are standing on smt */
 
@@ -37,7 +39,7 @@ void pack_move_msg(Item* obj); /* Message that we are standing on smt */
 Item* pack_remove(Item* obj, bool newobj, bool all);
 
 /* Add something to characters pack */
-void pack_pick_up(Item* obj, bool force);
+void pack_pick_up(Coordinate const&, bool force);
 
 /* Find and return a magic item in the players inventory */
 Item* pack_find_magic_item(void);

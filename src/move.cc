@@ -204,32 +204,23 @@ move_do_loop_passage(bool after, Coordinate& coord) {
 }
 
 static bool
-move_do_loop_floor(bool after, Coordinate& coord) {
-
-  player->set_position(coord);
-
-  // Try to pick up item, if we are standing on one
-  Item *item = Game::level->get_item(coord);
-  if (item != nullptr) {
-    pack_pick_up(item, false);
-    player->set_not_running();
-  }
-
-  return after;
-}
-
-static bool
 move_do_loop_default(bool after, Coordinate& coord) {
-  player->set_not_running();
 
-  // Fight the monster, if there
+  // If there was a monster there, fight it!
   if (Game::level->get_monster(coord) != nullptr) {
     fight_against_monster(&coord, pack_equipped_item(EQUIPMENT_RHAND), false);
     return after;
   }
 
-  // Move player
+  // Else, Move player
   player->set_position(coord);
+
+  // Try to pick up any items here
+  Item *item = Game::level->get_item(coord);
+  if (item != nullptr) {
+    pack_pick_up(item->get_pos(), false);
+    player->set_not_running();
+  }
 
   // Reprint (basically hide) old room, if we leave one
   if (Game::level->is_passage(coord) && Game::level->get_ch(move_pos_prev) == DOOR) {
@@ -299,7 +290,8 @@ move_do_loop(int dx, int dy) {
       case DOOR:     return move_do_loop_door(after, nh);
       case TRAP:     return move_do_loop_trap(after, nh);
       case PASSAGE:  return move_do_loop_passage(after, nh);
-      case FLOOR:    return move_do_loop_floor(after, nh);
+
+      case FLOOR:    return move_do_loop_default(after, nh);
       default:       return move_do_loop_default(after, nh);
     }
   }

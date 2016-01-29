@@ -178,10 +178,8 @@ pack_move_msg(Item* obj)
 }
 
 bool
-pack_add(Item* obj, bool silent)
+pack_add(Item* obj, bool silent, bool from_floor)
 {
-  bool from_floor = false;
-
   /* Either obj is an item or we try to take something from the floor */
   if (obj == nullptr)
   {
@@ -269,43 +267,67 @@ Item* pack_remove(Item* obj, bool newobj, bool all) {
 }
 
 
-void
-pack_pick_up(Item* obj, bool force)
-{
-  if (player->is_levitating())
+void pack_pick_up(Coordinate const& coord, bool force) {
+  if (player->is_levitating()) {
     return;
-
-  // If this was the object of something's desire, that monster will
-  // get mad and run at the hero.
-  monster_aggro_all_which_desire_item(obj);
-
-  switch (obj->o_type)
-  {
-    case GOLD:
-      if (obj != nullptr)
-      {
-        pack_gold += obj->o_goldval;
-        if (obj->o_goldval > 0) {
-          io_msg("you found %d gold pieces", obj->o_goldval);
-        }
-        Game::level->items.remove(obj);
-        delete obj;
-        obj = nullptr;
-        player->get_room()->r_goldval = 0;
-      }
-      return;
-
-    case POTION: case WEAPON: case AMMO: case FOOD: case ARMOR:
-    case SCROLL: case AMULET: case RING: case STICK:
-      if (force || option_autopickup(obj->o_type))
-        pack_add(nullptr, false);
-      else
-        pack_move_msg(obj);
-      return;
   }
 
-  io_debug("Unknown type: %c(%d)", obj->o_type, obj->o_type);
-  assert(0);
+  // Collect all items which are at this location
+  list<Item*> items_here;
+  for (Item* item : Game::level->items) {
+    if (item->get_pos() == coord) {
+      items_here.push_back(item);
+
+      // If the item was of someone's desire, they will get mad and attack
+      monster_aggro_all_which_desire_item(item);
+    }
+  }
+
+  // No iterator in this loop, so we can delete while looping
+  auto it = items_here.begin();
+  while (it != items_here.end()) {
+    Item* obj = *it;
+    switch (obj->o_type) {
+
+      case GOLD: {
+        player->get_room()->r_goldval = 0;
+        int value = obj->o_goldval;
+
+        pack_gold += value;
+        if (value > 0) {
+          io_msg("you found %d gold pieces", value);
+        }
+        Game::level->items.remove(obj);
+
+        delete obj;
+        it = items_here.erase(it);
+      } break;
+
+      case POTION: case WEAPON: case AMMO: case FOOD: case ARMOR:
+      case SCROLL: case AMULET: case RING: case STICK: {
+        if (force || option_autopickup(obj->o_type)) {
+          pack_add(obj, false, true);
+          it = items_here.erase(it);
+        } else {
+          ++it;
+        }
+      } break;
+
+      default: {
+        error("Unknown type to pick up");
+      }
+    }
+  }
+
+  if (!items_here.empty()) {
+    io_msg_add("items here: ");
+    for (Item* item : items_here) {
+      io_msg_add("%s", inv_name(item, false).c_str());
+      if (item != items_here.back()) {
+        io_msg_add(", ");
+      }
+    }
+  }
 }
 
 

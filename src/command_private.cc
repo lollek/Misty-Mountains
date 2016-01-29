@@ -285,15 +285,14 @@ command_pick_up(void) {
     io_msg("You can't. You're floating off the ground!");
   }
 
-  for (Item* obj : Game::level->items) {
-    if (obj->get_pos() == player->get_position()) {
-      pack_pick_up(obj, true);
-      return true;
-    }
+  Coordinate const& coord = player->get_position();
+  if (Game::level->get_item(coord) == nullptr) {
+    io_msg("nothing to pick up");
+    return false;
   }
 
-  io_msg("nothing to pick up");
-  return false;
+  pack_pick_up(coord, true);
+  return true;
 }
 
 bool
