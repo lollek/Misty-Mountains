@@ -604,13 +604,15 @@ command_eat(void)
 bool
 command_run(char ch, bool cautiously)
 {
-  if (cautiously)
-  {
-    door_stop = true;
-    firstmove = true;
+  if (player->is_blind()) {
+    io_msg("You stumble forward");
+  } else {
+    if (cautiously) {
+      door_stop = true;
+    }
+    player->set_running();
   }
 
-  player->set_running();
   runch = static_cast<char>(tolower(ch));
   return move_do(runch);
 }

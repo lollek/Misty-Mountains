@@ -127,12 +127,54 @@ chtype IO::colorize(chtype ch)
 
 void IO::print_room_dark(room const* room) {
   hide_room(room);
-  print_room_passage(room);
+  print_player_vision();
 }
 
-void IO::print_room_passage(room const* room) {
-  (void)room;
-  look(true);
+void IO::print_player_vision() {
+
+  Coordinate const& player_pos = player->get_position();
+  if (player_pos.x < 1 || player_pos.x >= NUMCOLS -1 ||
+      player_pos.y < 1 || player_pos.y >= NUMLINES -1) {
+    error("player_pos is too close to the edge");
+  }
+
+  for (int y = player_pos.y -1; y <= player_pos.y +1; y++) {
+    for (int x = player_pos.x -1; x <= player_pos.x +1; x++) {
+
+      // Ignore ' ' (shadow)
+      char xy_ch = Game::level->get_ch(x, y);
+      if (xy_ch == SHADOW) {
+        continue;
+      }
+
+      // Make sure we don't look though walls
+      bool xy_is_passage = Game::level->is_passage(x, y);
+      bool player_in_passage = Game::level->is_passage(player->get_position());
+      char player_ch = Game::level->get_ch(player->get_position());
+      if (player_ch != DOOR && xy_ch != DOOR &&
+          player_in_passage != xy_is_passage) {
+        continue;
+      }
+
+      // Make sure we cannot see diagonals in passages, since that can be a bit
+      // like cheating
+      if ((xy_is_passage || xy_ch == DOOR) &&
+          (player_in_passage || player_ch == DOOR) &&
+          player->get_position().x != x && player->get_position().y != y
+          && !step_ok(Game::level->get_ch(player->get_position().x, y))
+          && !step_ok(Game::level->get_ch(x, player->get_position().y))) {
+        continue;
+      }
+
+      if (player->is_blind() &&
+          (y != player->get_position().y || x != player->get_position().x)) {
+        continue;
+      }
+
+      Game::io->print_tile(x, y);
+      Game::level->set_discovered(x, y);
+    }
+  }
 }
 
 void IO::print_room_light(room const* room) {
@@ -142,8 +184,8 @@ void IO::print_room_light(room const* room) {
     }
   }
 
-  // Do a passage-print as well, so we can see into any nearby passage
-  print_room_passage(room);
+  // Do a player-vision-print as well, so we can see into any nearby passage
+  print_player_vision();
 }
 
 void IO::print_room(room const* room) {
@@ -152,7 +194,7 @@ void IO::print_room(room const* room) {
   } else if (room->r_flags & ISDARK) {
     print_room_dark(room);
   } else if (room->r_flags & (ISGONE|ISMAZE)) {
-    print_room_passage(room);
+    print_player_vision();
   } else {
     print_room_light(room);
   }
@@ -271,7 +313,6 @@ flushmsg(void)
   /* TODO: Remove mpos by replacing mpos = 0 with a io_msg_clear() */
   if (mpos)
   {
-    look(false);
     mvaddstr(0, mpos, " --More--");
     refresh();
 

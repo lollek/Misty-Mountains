@@ -24,6 +24,58 @@
 
 Coordinate move_pos_prev;
 
+static void stop_on_interesting_stuff(Coordinate const& nh) {
+  if (!door_stop) {
+    return;
+  }
+
+  int num_nearby_passage_tiles = 0;
+  for (int x = nh.x -1; x <= nh.x +1; ++x) {
+    for (int y = nh.y -1; y <= nh.y +1; ++y) {
+      char tile_ch = Game::level->get_ch(x, y);
+
+      // We want to count nearby passage tiles so we know if we reach a
+      // 'crossroad'. Since walking diagonally is limited in passages, we
+      // ignore those
+      if (tile_ch == PASSAGE && (nh.x == x || nh.y == y)) {
+        num_nearby_passage_tiles++;
+        if (num_nearby_passage_tiles > 3) {
+          player->set_not_running();
+          return;
+        }
+      }
+
+      Monster* monster = Game::level->get_monster(x, y);
+      // Monster are interesting, and they will notice you as well
+      if (monster != nullptr) {
+        monster_notice_player(y, x);
+
+        // Only actually notice it if we can see it
+        if (player->can_sense_monsters() || !monster->is_invisible()) {
+          player->set_not_running();
+        }
+        return;
+      }
+
+      // Items are interesting
+      Item *item = Game::level->get_item(x, y);
+      if (item != nullptr) {
+        player->set_not_running();
+        return;
+      }
+
+      // Always stop near traps and stairs, and doors IFF we can actually move
+      // to it (not diagonal)
+      Coordinate tile_coord(x, y);
+      if (tile_ch == STAIRS || tile_ch == TRAP ||
+          (tile_ch == DOOR && diag_ok(&nh, &tile_coord))) {
+        player->set_not_running();
+        return;
+      }
+    }
+  }
+}
+
 /** move_turn_ok:
  * Decide whether it is legal to turn onto the given space */
 static bool
@@ -218,31 +270,10 @@ move_do_loop(int dx, int dy) {
       player->set_not_running();
     }
 
-    // If we are near something of interest, stop running
-    for (int x = nh.x -1; x <= nh.x +1; ++x) {
-      for (int y = nh.y -1; y <= nh.y +1; ++y) {
-        char tile_ch = Game::level->get_ch(x, y);
-        Monster* monster = Game::level->get_monster(x, y);
-        Coordinate tile_coord(x, y);
-
-        // Monster (also makes monster notice player)
-        if (monster != nullptr) {
-          player->set_not_running();
-          monster_notice_player(y, x);
-        }
-
-        else if (
-            // Item
-            Game::level->get_item(x, y) != nullptr ||
-            // Stairs or Trap
-            tile_ch == STAIRS || tile_ch == TRAP ||
-            // Door IF we can actually move to it
-            (tile_ch == DOOR && diag_ok(&nh, &tile_coord))) {
-          player->set_not_running();
-        }
-      }
+    // Run a check if player wants to stop running
+    if (player->is_running()) {
+      stop_on_interesting_stuff(nh);
     }
-
 
     // Cannot escape from the flytrap
     Monster* mon = Game::level->get_monster(nh);
@@ -293,7 +324,6 @@ move_do(char ch) {
   }
 
   // If we cannot really move, return
-  firstmove = false;
   if (player_turns_without_moving) {
     player_turns_without_moving--;
     io_msg("you are still stuck in the bear trap");

@@ -207,7 +207,6 @@ void Player::set_true_sight() {
 
   } else {
     Character::set_true_sight();
-    look(false);
     daemon_start_fuse(daemon_function::remove_true_sight, SEEDURATION, AFTER);
   }
 }
@@ -223,7 +222,6 @@ void Player::set_confused() {
 
   } else {
     Character::set_confused();
-    look(false);
     daemon_start_fuse(daemon_function::set_not_confused, HUHDURATION, AFTER);
   }
   io_msg("wait, what's going on here. Huh? What? Who?");
@@ -262,7 +260,6 @@ void Player::set_hallucinating() {
   } else {
     daemon_start(change_visuals, BEFORE);
     Character::set_hallucinating();
-    look(false);
     daemon_start_fuse(daemon_function::set_not_hallucinating, SEEDURATION, AFTER);
     io_msg("Oh, wow!  Everything seems so cosmic!");
   }
@@ -314,7 +311,6 @@ void Player::set_blind() {
 
   } else {
     Character::set_blind();
-    look(false);
     daemon_start_fuse(daemon_function::set_not_blind, SEEDURATION, AFTER);
     io_msg("a cloak of darkness falls around you");
   }
@@ -338,7 +334,6 @@ void Player::set_levitating() {
 
   } else {
     Character::set_levitating();
-    look(false);
     daemon_start_fuse(daemon_function::set_not_levitating, LEVITDUR, AFTER);
     io_msg("you start to float in the air");
   }
@@ -412,7 +407,6 @@ void Player::teleport(Coordinate const* target)
 
   } else {
     set_position(new_pos);
-    look(true);
   }
 
   /* Print @ new location */
@@ -481,7 +475,6 @@ void Player::search() {
   }
 
   if (found) {
-    look(false);
     player->set_not_running();
   }
 }

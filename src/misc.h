@@ -5,7 +5,6 @@
 #include "monster.h"
 
 int roll(int number, int sides); /* Roll a number of dice */
-void look(bool wakeup);          /* A quick glance all around the player */
 
 std::string vowelstr(std::string const& str); /* Return "n" if vowel else "" */
 

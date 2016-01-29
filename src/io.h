@@ -40,8 +40,9 @@ public:
 
 private:
   void print_room_dark(room const* room);
-  void print_room_passage(room const* room);
   void print_room_light(room const* room);
+
+  void print_player_vision();
 };
 
 
