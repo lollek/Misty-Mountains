@@ -201,7 +201,7 @@ move_do_loop(int dx, int dy) {
     nh.x = player->get_position().x + dx;
 
     // If we are too close to the edge of map, treat is as wall automatically
-    if (nh.x < 1 || nh.x >= NUMCOLS -1 || nh.y < 2 || nh.y >= NUMLINES - 1) {
+    if (nh.x < 1 || nh.x >= NUMCOLS -1 || nh.y < 1 || nh.y >= NUMLINES - 1) {
       loop = move_do_loop_wall(after, dx, dy);
       continue;
     }

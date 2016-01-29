@@ -50,7 +50,7 @@ look(bool wakeup)
 
   Coordinate const& player_pos = player->get_position();
   if (player_pos.x < 1 || player_pos.x >= NUMCOLS -1 ||
-      player_pos.y < 2 || player_pos.y >= NUMLINES -2) {
+      player_pos.y < 1 || player_pos.y >= NUMLINES -1) {
     error("player_pos is too close to the edge");
   }
 

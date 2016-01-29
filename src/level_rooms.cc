@@ -169,7 +169,8 @@ room_place_gone_room(Coordinate const* max_size, Coordinate const* top, room* ro
     room->r_pos.y = top->y + os_rand_range(max_size->y - 2) + 1;
     room->r_max.x = -NUMCOLS;
     room->r_max.y = -NUMLINES;
-  } while (!(room->r_pos.y > 0 && room->r_pos.y < NUMLINES-1));
+  } while (!(room->r_pos.y > 0 && room->r_pos.y < NUMLINES-1 &&
+             room->r_pos.x > 0 && room->r_pos.x < NUMCOLS -1));
 }
 
 void
@@ -225,6 +226,9 @@ Level::create_rooms() {
       if (room.r_pos.y == 0) {
         room.r_pos.y++;
         room.r_max.y--;
+      } else if (room.r_pos.x == 0) {
+        room.r_pos.x++;
+        room.r_max.x--;
       }
 
     } else {
@@ -233,7 +237,7 @@ Level::create_rooms() {
         room.r_max.y = os_rand_range(bsze.y - 4) + 4;
         room.r_pos.x = top.x + os_rand_range(bsze.x - room.r_max.x);
         room.r_pos.y = top.y + os_rand_range(bsze.y - room.r_max.y);
-      } while (room.r_pos.y == 0);
+      } while (room.r_pos.y == 0 || room.r_pos.x == 0);
     }
 
     if (room.r_flags & ISMAZE) {
