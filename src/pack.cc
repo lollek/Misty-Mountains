@@ -178,17 +178,6 @@ pack_move_msg(Item* obj)
 }
 
 static void
-pack_add_money(int value)
-{
-  pack_gold += value;
-
-  Game::io->print_color(player->get_position().x, player->get_position().y, floor_ch());
-
-  if (value > 0)
-    io_msg("you found %d gold pieces", value);
-}
-
-static void
 pack_remove_from_floor(Item* obj)
 {
   Game::level->items.remove(obj);
@@ -303,7 +292,10 @@ pack_pick_up(Item* obj, bool force)
     case GOLD:
       if (obj != nullptr)
       {
-        pack_add_money(obj->o_goldval);
+        pack_gold += obj->o_goldval;
+        if (obj->o_goldval > 0) {
+          io_msg("you found %d gold pieces", obj->o_goldval);
+        }
         Game::level->items.remove(obj);
         delete obj;
         obj = nullptr;
