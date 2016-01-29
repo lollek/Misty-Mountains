@@ -196,7 +196,6 @@ pack_add(Item* obj, bool silent)
   if (obj->o_type == SCROLL && obj->o_which == S_SCARE && obj->o_flags & ISFOUND)
   {
     Game::level->items.remove(obj);
-    Game::io->print_color(player->get_position().x, player->get_position().y, floor_ch());
     delete obj;
     io_msg("the scroll turns to dust as you pick it up");
     return false;
