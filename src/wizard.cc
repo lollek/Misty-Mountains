@@ -257,31 +257,28 @@ void wizard_create_item(void) {
   pack_add(obj, false);
 }
 
-void
-wizard_show_map(void)
-{
+void wizard_show_map(void) {
   wclear(hw);
-  for (int y = 1; y < NUMLINES - 1; y++)
-    for (int x = 0; x < NUMCOLS; x++)
-    {
-      if (!Game::level->is_real(x, y))
-        wstandout(hw);
-      wmove(hw, y, x);
-      waddcch(hw, static_cast<chtype>(Game::level->get_ch(x, y)));
-      if (!Game::level->is_real(x, y))
-        wstandend(hw);
+
+  for (int y = 1; y < NUMLINES - 1; y++)  {
+    for (int x = 0; x < NUMCOLS; x++) {
+      chtype ch = static_cast<chtype>(Game::level->get_ch(x, y));
+
+      if (!Game::level->is_real(x, y)) {
+        ch |= A_STANDOUT;
+      }
+
+      mvwaddcch(hw, y, x, ch);
     }
+  }
   show_win("---More (level map)---");
 }
 
-void
-wizard_levels_and_gear(void)
-{
+void wizard_levels_and_gear(void) {
   player->raise_level(9);
 
   /* Give him a sword (+1,+1) */
-  if (pack_equipped_item(EQUIPMENT_RHAND) == nullptr)
-  {
+  if (pack_equipped_item(EQUIPMENT_RHAND) == nullptr) {
     Item* obj = weapon_create(TWOSWORD, false);
     obj->o_hplus = 1;
     obj->o_dplus = 1;
@@ -289,8 +286,7 @@ wizard_levels_and_gear(void)
   }
 
   /* And his suit of armor */
-  if (pack_equipped_item(EQUIPMENT_ARMOR) == nullptr)
-  {
+  if (pack_equipped_item(EQUIPMENT_ARMOR) == nullptr) {
     Item* obj = new Armor(Armor::Type::PLATE_MAIL, false);
     obj->o_arm = -5;
     obj->o_flags |= ISKNOW;
