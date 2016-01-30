@@ -59,14 +59,13 @@ command()
     if (!player->is_running())
       door_stop = false;
 
-    if (player_turns_without_action && --player_turns_without_action == 0)
-    {
-      player->set_running();
-      io_msg("you can move again");
+    if (player_turns_without_action > 0 &&
+        --player_turns_without_action == 0) {
+        io_msg("you can move again");
     }
 
-    if (!player_turns_without_action)
-    {
+    if (!player_turns_without_action) {
+
       char ch;
 
       if (player->is_running() || to_death)
@@ -86,6 +85,7 @@ command()
       if (!player->is_running())
         door_stop = false;
     }
+
 
     if (!player->is_running())
       door_stop = false;
