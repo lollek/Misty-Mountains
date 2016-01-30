@@ -301,6 +301,10 @@ Level::create_passages()
       /* otherwise, connect new room to the graph, and draw a tunnel
        * to it */
       } else {
+        if (r2 == nullptr) {
+          error("r2 was null");
+        }
+
         r2->ingraph = true;
         size_t r1i = static_cast<size_t>(find(destinations.begin(), destinations.end(), r1)
             - destinations.begin());
