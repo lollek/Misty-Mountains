@@ -131,113 +131,124 @@ wizard_list_items(void)
   return 0;
 }
 
-void
-wizard_create_item(void)
-{
+void wizard_create_item(void) {
+
+  // Get itemtype
   io_msg("type of item: ");
   int type = io_readchar(true);
   io_msg_clear();
 
-  if (!(type == WEAPON || type == ARMOR || type == RING || type == STICK
-      || type == GOLD || type == POTION || type == SCROLL || type == TRAP))
-  {
-    io_msg("Bad pick");
-    return;
+  switch (type) {
+
+    // Supported types:
+    case WEAPON: case ARMOR: case RING: case STICK: case GOLD:
+    case POTION: case SCROLL: case TRAP: {
+      break;
+    }
+
+    default: {
+      io_msg("Bad pick");
+      return;
+    }
   }
 
+  // Get item subtype
   io_msg("which %c do you want? (0-f)", type);
   char ch = io_readchar(true);
   int which = isdigit(ch) ? ch - '0' : ch - 'a' + 10;
   io_msg_clear();
 
+  // Allocate item
   Item* obj = nullptr;
-  switch (type)
-  {
-    case TRAP:
-      {
-        if (which < 0 || which >= NTRAPS)
-          io_msg("Bad trap id");
-        else
-        {
-          Game::level->set_not_real(player->get_position());
-          Game::level->set_trap_type(player->get_position(), static_cast<size_t>(which));
-        }
-        return;
+  switch (type) {
+    case TRAP: {
+      if (which < 0 || which >= NTRAPS) {
+        io_msg("Bad trap id");
+
+      } else {
+        Game::level->set_not_real(player->get_position());
+        Game::level->set_trap_type(player->get_position(), static_cast<size_t>(which));
       }
-    case STICK: obj = new Wand(static_cast<Wand::Type>(which)); break;
+    } return;
+
+    case STICK: {
+      obj = new Wand(static_cast<Wand::Type>(which));
+    } break;
+
     case SCROLL: {
       obj = scroll_create(which);
       obj->o_count = 10;
     } break;
+
     case POTION: {
       obj = new Potion(static_cast<Potion::Type>(which));
       obj->o_count = 10;
     } break;
-    case FOOD: obj = new_food(which); break;
-    case WEAPON:
-      {
-        obj = weapon_create(which, false);
 
-        io_msg("blessing? (+,-,n)");
-        char bless = io_readchar(true);
-        io_msg_clear();
+    case FOOD: {
+      obj = new_food(which);
+    } break;
 
-        if (bless == '-')
-        {
-          obj->o_flags |= ISCURSED;
-          obj->o_hplus -= os_rand_range(3) + 1;
-        }
-        else if (bless == '+')
-          obj->o_hplus += os_rand_range(3) + 1;
+    case WEAPON: {
+      obj = weapon_create(which, false);
+
+      io_msg("blessing? (+,-,n)");
+      char bless = io_readchar(true);
+      io_msg_clear();
+
+      if (bless == '-') {
+        obj->o_flags |= ISCURSED;
+        obj->o_hplus -= os_rand_range(3) + 1;
+
+      } else if (bless == '+')
+        obj->o_hplus += os_rand_range(3) + 1;
+    } break;
+
+    case ARMOR: {
+      obj = new Armor(false);
+
+      io_msg("blessing? (+,-,n)");
+      char bless = io_readchar(true);
+      io_msg_clear();
+      if (bless == '-') {
+        obj->o_flags |= ISCURSED;
+        obj->o_arm += os_rand_range(3) + 1;
+
+      } else if (bless == '+')
+        obj->o_arm -= os_rand_range(3) + 1;
+    } break;
+
+    case RING: {
+      obj = new Ring(static_cast<Ring::Type>(which), false);
+
+      switch (obj->o_which) {
+        case Ring::Type::PROTECT: case Ring::Type::ADDSTR:
+        case Ring::Type::ADDHIT:  case Ring::Type::ADDDAM: {
+          io_msg("blessing? (+,-,n)");
+          char bless = io_readchar(true);
+          io_msg_clear();
+          if (bless == '-')
+            obj->o_flags |= ISCURSED;
+          obj->o_arm = (bless == '-' ? -1 : os_rand_range(2) + 1);
+        } break;
       }
-      break;
+    } break;
 
-    case ARMOR:
-      {
-        obj = new Armor(false);
+    case GOLD: {
+      obj = new Item();
+      obj->o_flags = ISMANY;
+      obj->o_type = GOLD;
 
-        io_msg("blessing? (+,-,n)");
-        char bless = io_readchar(true);
-        io_msg_clear();
-        if (bless == '-')
-        {
-          obj->o_flags |= ISCURSED;
-          obj->o_arm += os_rand_range(3) + 1;
-        }
-        else if (bless == '+')
-          obj->o_arm -= os_rand_range(3) + 1;
+      char buf[MAXSTR] = { '\0' };
+      io_msg("how much?");
+      if (io_readstr(buf) == 0) {
+        obj->o_goldval = static_cast<short>(atoi(buf));
       }
-      break;
+    } break;
 
-    case RING:
-      {
-        obj = new Ring(static_cast<Ring::Type>(which), false);
-        switch (obj->o_which)
-        {
-          case Ring::Type::PROTECT: case Ring::Type::ADDSTR:
-          case Ring::Type::ADDHIT:  case Ring::Type::ADDDAM:
-            io_msg("blessing? (+,-,n)");
-            char bless = io_readchar(true);
-            io_msg_clear();
-            if (bless == '-')
-              obj->o_flags |= ISCURSED;
-            obj->o_arm = (bless == '-' ? -1 : os_rand_range(2) + 1);
-            break;
-        }
-      }
-      break;
-
-    case GOLD:
-      {
-        char buf[MAXSTR] = { '\0' };
-        io_msg("how much?");
-        if (io_readstr(buf) == 0)
-          obj->o_goldval = static_cast<short>(atoi(buf));
-      }
-      break;
-
-    default:
+    default: {
       error("Unimplemented item: " + to_string(which));
+    }
   }
 
   if (obj == nullptr) {
