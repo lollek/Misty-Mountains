@@ -40,11 +40,11 @@ pr_spec(char type)
   switch (type)
   {
     case POTION: ptr = nullptr;            max = Potion::Type::NPOTIONS;  break;
-    case SCROLL: ptr = &scroll_info;       max = NSCROLLS;  break;
+    case SCROLL: ptr = nullptr;            max = Scroll::Type::NSCROLLS;  break;
     case RING:   ptr = nullptr;            max = Ring::Type::NRINGS;    break;
     case STICK:  ptr = nullptr;            max = Wand::Type::NWANDS; break;
     case ARMOR:  ptr = nullptr;            max = Armor::Type::NARMORS;   break;
-    case WEAPON: ptr = &weapon_info;       max = MAXWEAPONS;break;
+    case WEAPON: ptr = &weapon_info;       max = MAXWEAPONS; break;
     default:     ptr = nullptr;            max = 0;         break;
   }
 
@@ -56,6 +56,11 @@ pr_spec(char type)
     wmove(printscr, static_cast<int>(i) + 1, 1);
 
     switch (type) {
+      case SCROLL: {
+        name = Scroll::name(static_cast<Scroll::Type>(i));
+        prob = static_cast<size_t>(Scroll::probability(static_cast<Scroll::Type>(i)));
+      } break;
+
       case ARMOR: {
         name = Armor::name(static_cast<Armor::Type>(i));
         prob = static_cast<size_t>(Armor::probability(static_cast<Armor::Type>(i)));
@@ -176,7 +181,7 @@ void wizard_create_item(void) {
     } break;
 
     case SCROLL: {
-      obj = scroll_create(which);
+      obj = new Scroll(static_cast<Scroll::Type>(which));
       obj->o_count = 10;
     } break;
 

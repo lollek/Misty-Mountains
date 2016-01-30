@@ -163,7 +163,8 @@ command_name_item(void)
       break;
 
     case SCROLL:
-      already_known = scroll_is_known(static_cast<scroll_t>(obj->o_which));
+      already_known = Scroll::is_known(static_cast<Scroll::Type>(obj->o_which));
+      guess = &Scroll::guess(static_cast<Scroll::Type>(obj->o_which));
       break;
 
     case STICK:
@@ -187,9 +188,7 @@ command_name_item(void)
   char tmpbuf[MAXSTR] = { '\0' };
   if (io_readstr(tmpbuf) == 0)
   {
-    if (obj->o_type == SCROLL) {
-      scroll_set_name(static_cast<scroll_t>(obj->o_which), tmpbuf);
-    } else if (strlen(tmpbuf) > 0) {
+    if (strlen(tmpbuf) > 0) {
       if (guess != nullptr) {
         *guess = tmpbuf;
       } else {
@@ -738,5 +737,48 @@ command_ring_take_off(void)
   return true;
 }
 
+bool
+command_read_scroll() {
 
+  Item* obj = pack_get_item("read", SCROLL);
+  if (obj == nullptr) {
+    return false;
+  }
+
+  Scroll* scroll = dynamic_cast<Scroll*>(obj);
+  if (obj->o_type != SCROLL || scroll == nullptr) {
+    io_msg("there is nothing on it to read");
+    return false;
+  }
+
+  /* Get rid of the thing */
+  bool discardit = scroll->o_count == 1;
+  pack_remove(scroll, false, false);
+
+  Scroll::Type subtype = scroll->get_type();
+  bool was_known = Scroll::is_known(subtype);
+
+  scroll->read();
+
+  if (!was_known) {
+    string& nickname = Scroll::guess(scroll->get_type());
+    if (Scroll::is_known(subtype)) {
+      nickname.clear();
+
+    } else if (nickname.empty()) {
+      char tmpbuf[MAXSTR] = { '\0' };
+      io_msg("what do you want to call the scroll? ");
+      if (io_readstr(tmpbuf) == 0) {
+        nickname = tmpbuf;
+      }
+    }
+  }
+
+  if (discardit) {
+    delete obj;
+  }
+
+  return true;
+
+}
 

@@ -121,7 +121,7 @@ Game::Game() {
     exit(1);
 
   /* Init stuff */
-  scroll_init();                        // Set up names of scrolls
+  Scroll::init_scrolls();               // Set up names of scrolls
   Potion::init_potions();               // Set up colors of potions
   Ring::init_rings();                   // Set up stone settings of rings
   Wand::init_wands();                   // Set up materials of wands

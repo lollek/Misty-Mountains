@@ -99,12 +99,12 @@ pack_print_evaluate_item(Item* item)
 
     case SCROLL:
       {
-        scroll_t scroll = static_cast<scroll_t>(item->o_which);
-        worth = static_cast<int>(scroll_value(scroll));
+        Scroll::Type scroll = static_cast<Scroll::Type>(item->o_which);
+        worth = Scroll::worth(scroll);
         worth *= item->o_count;
-        if (!scroll_is_known(scroll))
+        if (!Scroll::is_known(scroll))
           worth /= 2;
-        scroll_learn(scroll);
+        Scroll::set_known(scroll);
       }
       break;
 
@@ -191,7 +191,7 @@ pack_add(Item* obj, bool silent, bool from_floor)
   }
 
   /* Check for and deal with scare monster scrolls */
-  if (obj->o_type == SCROLL && obj->o_which == S_SCARE && obj->o_flags & ISFOUND)
+  if (obj->o_type == SCROLL && obj->o_which == Scroll::SCARE && obj->o_flags & ISFOUND)
   {
     Game::level->items.remove(obj);
     delete obj;
@@ -589,14 +589,6 @@ pack_find_arrow(void)
   return results == player_pack.end() ? nullptr : *results;
 }
 
-static void pack_identify_item_set_know(Item* item, vector<obj_info>& info) {
-  size_t subtype = static_cast<size_t>(item_subtype(item));
-  info.at(subtype).oi_know = true;
-  item->o_flags |= ISKNOW;
-
-  info[subtype].oi_guess.clear();
-}
-
 void
 pack_identify_item(void)
 {
@@ -612,7 +604,7 @@ pack_identify_item(void)
 
   switch (obj->o_type)
   {
-    case SCROLL: pack_identify_item_set_know(obj, scroll_info);  break;
+    case SCROLL: Scroll::set_known(static_cast<Scroll::Type>(obj->o_which)); break;
     case POTION: Potion::set_known(static_cast<Potion::Type>(obj->o_which)); break;
     case STICK:  Wand::set_known(static_cast<Wand::Type>(obj->o_which)); break;
     case RING:   Ring::set_known(static_cast<Ring::Type>(obj->o_which)); break;

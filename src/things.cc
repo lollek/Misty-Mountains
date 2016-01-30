@@ -46,11 +46,7 @@ inv_name(Item const* item, bool drop)
     case POTION: buffer << potion_description(item); break;
     case RING:   buffer << ring_description(item); break;
     case STICK:  buffer << wand_description(item); break;
-    case SCROLL: {
-      char buf[MAXSTR];
-      scroll_description(item, buf);
-      buffer << buf;
-    } break;
+    case SCROLL: buffer << scroll_description(item); break;
     case WEAPON: buffer << weapon_description(item); break;
     case AMMO: buffer << weapon_description(item); break;
     case ARMOR: buffer << armor_description(item); break;
@@ -121,7 +117,7 @@ new_thing(void)
   switch (r)
   {
     case 0: cur = new Potion(); break;
-    case 1: cur = scroll_create(-1); break;
+    case 1: cur = new Scroll(); break;
     case 2: cur = new_food(-1); break;
     case 3: cur = weapon_create(-1, true); break;
     case 4: cur = new Armor(true); break;

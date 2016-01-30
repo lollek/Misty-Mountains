@@ -1,11 +1,6 @@
-#include <stdlib.h>
-#include <assert.h>
-#include <string.h>
-
-#include <string>
 #include <vector>
-
-using namespace std;
+#include <string>
+#include <sstream>
 
 #include "error_handling.h"
 #include "game.h"
@@ -29,29 +24,154 @@ using namespace std;
 
 #include "scrolls.h"
 
-static vector<string> s_names(NSCROLLS);
+using namespace std;
 
-vector<obj_info> scroll_info = {
-    { "monster confusion",		 7, 140, "", false },
-    { "magic mapping",			 4, 150, "", false },
-    { "hold monster",			 2, 180, "", false },
-    { "sleep",				 3,   5, "", false },
-    { "enchant armor",			 7, 160, "", false },
-    { "identify",			43, 115, "", false },
-    { "scare monster",			 3, 200, "", false },
-    { "food detection",			 2,  60, "", false },
-    { "teleportation",			 5, 165, "", false },
-    { "enchant weapon",			 8, 150, "", false },
-    { "create monster",			 4,  75, "", false },
-    { "remove curse",			 7, 105, "", false },
-    { "aggravate monsters",		 3,  20, "", false },
-    { "protect armor",			 2, 250, "", false },
-};
+vector<string>  Scroll::guesses;
+vector<bool>    Scroll::knowledge;
+vector<string>  Scroll::fake_name;
 
-void
-scroll_init(void)
-{
-  char const* sylls[] = {
+static Scroll::Type random_scroll_type() {
+  int value = os_rand_range(100);
+
+  int end = static_cast<int>(Scroll::Type::NSCROLLS);
+  for (int i = 0; i < end; ++i) {
+    Scroll::Type type = static_cast<Scroll::Type>(i);
+    int probability = Scroll::probability(type);
+
+    if (value < probability) {
+      return type;
+
+    } else {
+      value -= probability;
+    }
+  }
+
+  error("Error! Sum of probabilities is not 100%");
+}
+
+Scroll::~Scroll() {}
+
+Scroll* Scroll::clone() const {
+  return new Scroll(*this);
+}
+
+Scroll::Scroll() : Scroll(random_scroll_type()) {}
+
+Scroll::Scroll(Scroll::Type subtype_) : Item(), subtype(subtype_) {
+  o_type = SCROLL;
+  o_count = 1;
+  o_which = subtype;
+}
+
+string Scroll::name(Scroll::Type subtype) {
+  switch (subtype) {
+    case CONFUSE:   return "monster confusion";
+    case MAP:       return "magic mapping";
+    case HOLD:      return "hold monster";
+    case SLEEP:     return "sleep";
+    case ENCHARMOR: return "enchant armor";
+    case ID:        return "identify";
+    case SCARE:     return "scare monster";
+    case FDET:      return "food detection";
+    case TELEP:     return "teleportation";
+    case ENCH:      return "enchant weapon";
+    case CREATE:    return "create monster";
+    case REMOVE:    return "remove curse";
+    case AGGR:      return "aggravate monsters";
+    case PROTECT:   return "protect armor";
+    case NSCROLLS:  error("Unknown subtype NSCROLLS");
+  }
+}
+
+int Scroll::probability(Scroll::Type subtype) {
+  switch (subtype) {
+    case CONFUSE:   return  7;
+    case MAP:       return  4;
+    case HOLD:      return  2;
+    case SLEEP:     return  3;
+    case ENCHARMOR: return  7;
+    case ID:        return 43;
+    case SCARE:     return  3;
+    case FDET:      return  2;
+    case TELEP:     return  5;
+    case ENCH:      return  8;
+    case CREATE:    return  4;
+    case REMOVE:    return  7;
+    case AGGR:      return  3;
+    case PROTECT:   return  2;
+    case NSCROLLS:  error("Unknown subtype NSCROLLS");
+  }
+}
+
+int Scroll::worth(Scroll::Type subtype) {
+  switch (subtype) {
+    case CONFUSE:   return 140;
+    case MAP:       return 150;
+    case HOLD:      return 180;
+    case SLEEP:     return   5;
+    case ENCHARMOR: return 160;
+    case ID:        return 115;
+    case SCARE:     return 200;
+    case FDET:      return  60;
+    case TELEP:     return 165;
+    case ENCH:      return 150;
+    case CREATE:    return  75;
+    case REMOVE:    return 105;
+    case AGGR:      return  20;
+    case PROTECT:   return 250;
+    case NSCROLLS:  error("Unknown subtype NSCROLLS");
+  }
+}
+
+Scroll::Type Scroll::get_type() const {
+  return subtype;
+}
+
+string& Scroll::guess(Scroll::Type subtype) {
+  return guesses.at(static_cast<size_t>(subtype));
+}
+
+bool Scroll::is_known(Scroll::Type subtype) {
+  return knowledge.at(static_cast<size_t>(subtype));
+}
+
+void Scroll::set_known(Scroll::Type subtype) {
+  knowledge.at(static_cast<size_t>(subtype)) = true;
+}
+
+string Scroll::get_description() const {
+  stringstream os;
+
+  if (item_count(this) == 1) {
+    os << "A scroll";
+  } else {
+    os << to_string(item_count(this)) << " scrolls";
+  }
+
+  if (Scroll::is_known(subtype)) {
+    os << " of " << Scroll::name(subtype);
+  } else if (!Scroll::guess(subtype).empty()) {
+    os << " called " << Scroll::guess(subtype);
+  } else {
+    os << " titled " << Scroll::fake_name.at(subtype);
+  }
+
+  return os.str();
+}
+
+string scroll_description(Item const* item) {
+  Scroll const* scroll = dynamic_cast<Scroll const*>(item);
+  if (scroll == nullptr) {
+    error("Cannot describe non-scroll as scroll");
+  }
+  return scroll->get_description();
+}
+
+void Scroll::init_scrolls() {
+  knowledge = vector<bool>(Scroll::NSCROLLS, false);
+  guesses = vector<string>(Scroll::NSCROLLS, "");
+
+  vector<string> sylls {
     "a", "ab", "ag", "aks", "ala", "an", "app", "arg", "arze", "ash",
     "bek", "bie", "bit", "bjor", "blu", "bot", "bu", "byt", "comp",
     "con", "cos", "cre", "dalf", "dan", "den", "do", "e", "eep", "el",
@@ -71,63 +191,46 @@ scroll_init(void)
   };
 
   int const MAXNAME = 40;
-  for (size_t i = 0; i < NSCROLLS; i++)
-  {
-    char tmpbuf[MAXSTR*2];
-    char* cp = tmpbuf;
-    int nwords;
 
-    for (nwords = os_rand_range(3)+2; nwords > 0; nwords--)
-    {
-      int nsyl = os_rand_range(3) + 1;
+  for (int i = 0; i < Scroll::NSCROLLS; i++) {
+    string name;
+    int num_words = os_rand_range(3) + 2;
 
-      while (nsyl--)
-      {
-        char const* sp = sylls[os_rand_range((sizeof(sylls)) / (sizeof(*sylls)))];
-        if (&cp[strlen(sp)] > &tmpbuf[MAXNAME])
-          break;
-        while (*sp)
-          *cp++ = *sp++;
+    for (int j = 0; j < num_words; ++j) {
+      int syllables = os_rand_range(3) + 1;
+
+      for (int k = 0; k < syllables; ++k) {
+        string const& syllable = sylls.at(os_rand_range(sylls.size()));
+        if (name.size() + syllable.size() <= MAXNAME) {
+          name += syllable;
+        }
       }
-
-      *cp++ = ' ';
+      name += " ";
     }
 
-    *--cp = '\0';
-    s_names.at(i) = tmpbuf;
+    while (name.back() == ' ') {
+      name.pop_back();
+    }
+
+    Scroll::fake_name.push_back(name);
+  }
+
+
+  // Run some checks
+  if (fake_name.size() != static_cast<size_t>(Scroll::NSCROLLS)) {
+    error("Scroll init: wrong number of fake names");
+  } else if (knowledge.size() != static_cast<size_t>(Scroll::NSCROLLS)) {
+    error("Scroll init: wrong number of knowledge");
+  } else if (guesses.size() != static_cast<size_t>(Scroll::NSCROLLS)) {
+    error("Scroll init: wrong number of guesses");
   }
 }
 
-void scroll_learn(enum scroll_t scroll)
-{
-  scroll_info.at(scroll).oi_know = true;
-}
-
-bool
-scroll_is_known(enum scroll_t scroll)
-{
-  return scroll_info.at(scroll).oi_know;
-}
-
-size_t
-scroll_value(enum scroll_t scroll)
-{
-  return scroll_info.at(scroll).oi_worth;
-}
-
-void scroll_set_name(enum scroll_t scroll, string const& new_name)
-{
-  scroll_info.at(scroll).oi_guess = new_name;
-}
-
-static bool
-enchant_players_armor(void)
-{
+static bool enchant_players_armor() {
   Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  if (arm == nullptr)
-  {
-    switch (os_rand_range(3))
-    {
+
+  if (arm == nullptr) {
+    switch (os_rand_range(3)) {
       case 0: io_msg("you are unsure if anything happened"); break;
       case 1: io_msg("you feel naked"); break;
       case 2: io_msg("you feel like something just touched you"); break;
@@ -143,54 +246,49 @@ enchant_players_armor(void)
 }
 
 /* Stop all monsters within two spaces from chasing after the hero. */
-static bool
-hold_monsters(void)
-{
+static bool hold_monsters() {
   Coordinate const& player_pos = player->get_position();
   int monsters_affected = 0;
   Monster* held_monster = nullptr;
 
-  for (int x = player_pos.x - 2; x <= player_pos.x + 2; x++)
-    if (x >= 0 && x < NUMCOLS)
-      for (int y = player_pos.y - 2; y <= player_pos.y + 2; y++)
-        if (y >= 0 && y <= NUMLINES - 1)
-        {
+  for (int x = player_pos.x - 2; x <= player_pos.x + 2; x++) {
+    if (x >= 0 && x < NUMCOLS) {
+      for (int y = player_pos.y - 2; y <= player_pos.y + 2; y++) {
+        if (y >= 0 && y <= NUMLINES - 1) {
           Monster *monster = Game::level->get_monster(x, y);
-          if (monster != nullptr)
-          {
+          if (monster != nullptr) {
             monster->set_held();
             monsters_affected++;
             held_monster = monster;
           }
         }
-
-  if (monsters_affected == 1)
-  {
-    io_msg("%s freezes", held_monster->get_name().c_str());
+      }
+    }
   }
-  else if (monsters_affected > 1)
+
+  if (monsters_affected == 1) {
+    io_msg("%s freezes", held_monster->get_name().c_str());
+
+  } else if (monsters_affected > 1) {
     io_msg("the monsters around you freeze");
-  else /* monsters_affected == 0 */
-    switch (os_rand_range(3))
-    {
+
+  } else {/* monsters_affected == 0 */
+    switch (os_rand_range(3)) {
       case 0: io_msg("you are unsure if anything happened"); break;
       case 1: io_msg("you feel a strange sense of loss"); break;
       case 2: io_msg("you feel a powerful aura"); break;
     }
-
+  }
   return monsters_affected;
 }
 
-static bool
-create_monster(void)
-{
+static bool create_monster() {
   Coordinate const& player_pos = player->get_position();
   Coordinate mp;
   int i = 0;
 
-  for (int y = player_pos.y - 1; y <= player_pos.y + 1; y++)
-    for (int x = player_pos.x - 1; x <= player_pos.x + 1; x++)
-    {
+  for (int y = player_pos.y - 1; y <= player_pos.y + 1; y++) {
+    for (int x = player_pos.x - 1; x <= player_pos.x + 1; x++) {
       char ch = Game::level->get_type(x, y);
 
       /* No duplicates */
@@ -210,7 +308,7 @@ create_monster(void)
           error("Should be an item here");
         }
 
-        if (item->o_which == S_SCARE) {
+        if (item->o_which == Scroll::Type::SCARE) {
           continue;
         }
       }
@@ -223,16 +321,16 @@ create_monster(void)
       mp.y = y;
       mp.x = x;
     }
+  }
 
-  if (i == 0)
-    switch (os_rand_range(3))
-    {
+  if (i == 0) {
+    switch (os_rand_range(3)) {
       case 0: io_msg("you are unsure if anything happened"); break;
       case 1: io_msg("you hear a faint cry of anguish in the distance"); break;
       case 2: io_msg("you think you felt someone's presence"); break;
     }
-  else
-  {
+
+  } else {
     Monster *monster = new Monster(Monster::random_monster_type(), mp, Game::level->get_room(mp));
     Game::level->monsters.push_back(monster);
     Game::level->set_monster(mp, monster);
@@ -242,36 +340,31 @@ create_monster(void)
   return i;
 }
 
-static bool
-food_detection(void)
-{
+static bool food_detection() {
   bool food_seen = false;
   wclear(hw);
 
   for (Item const* obj : Game::level->items) {
-    if (obj->o_type == FOOD)
-    {
+    if (obj->o_type == FOOD) {
       food_seen = true;
       mvwaddcch(hw, obj->get_y(), obj->get_x(), FOOD);
     }
   }
 
-  if (food_seen)
+  if (food_seen) {
     show_win("Your nose tingles and you smell food.--More--");
-  else
+  } else {
     io_msg("your nose tingles");
+  }
 
   return food_seen;
 }
 
-static bool
-player_enchant_weapon(void)
-{
+static bool player_enchant_weapon() {
+
   Item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
-  if (weapon == nullptr)
-  {
-    switch (os_rand_range(2))
-    {
+  if (weapon == nullptr) {
+    switch (os_rand_range(2)) {
       case 0: io_msg("you feel a strange sense of loss"); break;
       case 1: io_msg("you are unsure if anything happened"); break;
     }
@@ -279,10 +372,12 @@ player_enchant_weapon(void)
   }
 
   weapon->o_flags &= ~ISCURSED;
-  if (os_rand_range(2) == 0)
+  if (os_rand_range(2) == 0) {
     weapon->o_hplus++;
-  else
+  } else {
     weapon->o_dplus++;
+  }
+
   io_msg("your %s glows %s for a moment",
          weapon_info[static_cast<size_t>(weapon->o_which)].oi_name.c_str(),
          player->is_hallucinating() ? color_random().c_str() : "blue");
@@ -290,26 +385,23 @@ player_enchant_weapon(void)
   return true;
 }
 
-static void
-remove_curse(void)
-{
-  for (int i = 0; i < NEQUIPMENT; ++i)
-    if (pack_equipped_item(static_cast<equipment_pos>(i)) != nullptr)
+static void remove_curse() {
+  for (int i = 0; i < NEQUIPMENT; ++i) {
+    if (pack_equipped_item(static_cast<equipment_pos>(i)) != nullptr) {
       pack_uncurse_item(pack_equipped_item(static_cast<equipment_pos>(i)));
+    }
+  }
 
   io_msg(player->is_hallucinating()
       ? "you feel in touch with the Universal Onenes"
       : "you feel as if somebody is watching over you");
 }
 
-static bool
-protect_armor(void)
-{
+static bool protect_armor() {
+
   Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  if (arm == nullptr)
-  {
-    switch (os_rand_range(2))
-    {
+  if (arm == nullptr) {
+    switch (os_rand_range(2)) {
       case 0: io_msg("you feel a strange sense of loss"); break;
       case 1: io_msg("you are unsure if anything happened"); break;
     }
@@ -322,127 +414,83 @@ protect_armor(void)
   return true;
 }
 
-bool
-scroll_read(void)
-{
-  Item* obj = pack_get_item("read", SCROLL);
-  if (obj == nullptr)
-    return false;
+void Scroll::read() const {
+  switch (subtype) {
 
-  if (obj->o_type != SCROLL)
-  {
-    io_msg("there is nothing on it to read");
-    return false;
-  }
+    case Scroll::CONFUSE: player->set_confusing_attack(); break;
 
-  /* Get rid of the thing */
-  bool discardit = obj->o_count == 1;
-  pack_remove(obj, false, false);
-  Item* orig_obj = obj;
+    case Scroll::ENCHARMOR: {
+      if (enchant_players_armor()) {
+        set_known(Scroll::ENCHARMOR);
+      }
+    } break;
 
-  switch (obj->o_which)
-  {
-    case S_CONFUSE:
-      player->set_confusing_attack();
-      break;
-    case S_ARMOR:
-      if (enchant_players_armor())
-        scroll_learn(S_ARMOR);
-      break;
-    case S_HOLD:
-      if (hold_monsters())
-        scroll_learn(S_HOLD);
-      break;
-    case S_SLEEP:
-      scroll_learn(S_SLEEP);
+    case Scroll::HOLD: {
+      if (hold_monsters()) {
+        set_known(Scroll::HOLD);
+      }
+    } break;
+
+    case Scroll::SLEEP: {
+      set_known(Scroll::SLEEP);
       player->fall_asleep();
-      break;
-    case S_CREATE:
-      if (create_monster())
-        scroll_learn(S_CREATE);
-      break;
-    case S_ID:
-      if (!scroll_is_known(S_ID))
-        io_msg("this scroll is an %s scroll", scroll_info.at(static_cast<size_t>(obj->o_which)).oi_name.c_str());
-      scroll_learn(S_ID);
+    } break;
+
+    case Scroll::CREATE: {
+      if (create_monster()) {
+        set_known(Scroll::CREATE);
+      }
+    } break;
+
+    case Scroll::ID: {
+      if (!is_known(Scroll::ID)) {
+        io_msg("this scroll is an %s scroll", Scroll::name(Scroll::ID).c_str());
+      }
+      set_known(Scroll::ID);
       pack_identify_item();
-      break;
-    case S_MAP:
-      scroll_learn(S_MAP);
+    } break;
+
+    case Scroll::MAP: {
+      set_known(Scroll::MAP);
       io_msg("this scroll has a map on it");
       Game::io->print_level_layout();
-      break;
-    case S_FDET:
-      if (food_detection())
-        scroll_learn(S_FDET);
-      break;
-    case S_TELEP:
-      scroll_learn(S_TELEP);
+    } break;
+
+    case Scroll::FDET: {
+      if (food_detection()) {
+        set_known(Scroll::FDET);
+      }
+    } break;
+
+    case Scroll::TELEP: {
+      set_known(Scroll::TELEP);
       player->teleport(nullptr);
-      break;
-    case S_ENCH:
+    } break;
+
+    case Scroll::ENCH: {
       player_enchant_weapon();
-      break;
-    case S_SCARE:
+    } break;
+
+    case Scroll::SCARE: {
       /* Reading it is a mistake and produces laughter at her poor boo boo. */
       io_msg("you hear maniacal laughter in the distance");
-      break;
-    case S_REMOVE:
+    } break;
+
+    case Scroll::REMOVE: {
       remove_curse();
-      break;
-    case S_AGGR:
+    } break;
+
+    case Scroll::AGGR: {
       /* This scroll aggravates all the monsters on the current
        * level and sets them running towards the hero */
       monster_aggravate_all();
       io_msg("you hear a high pitched humming noise");
-      break;
-    case S_PROTECT:
+    } break;
+
+    case Scroll::PROTECT: {
       protect_armor();
-      break;
-    default:
-      io_msg("what a puzzling scroll!");
-      return true;
+    } break;
+
+    case Scroll::NSCROLLS: error("Unknown scroll subtype NSCROLLS");
   }
-  obj = orig_obj;
-
-  call_it("scroll", &scroll_info[static_cast<size_t>(obj->o_which)]);
-
-  if (discardit)
-    delete obj;
-
-  return true;
 }
-
-void
-scroll_description(Item const* item, char* buf)
-{
-  struct obj_info* op = &scroll_info[static_cast<size_t>(item_subtype(item))];
-  char* ptr = buf;
-
-  if (item_count(item) == 1)
-    ptr += sprintf(ptr, "A scroll");
-  else
-    ptr += sprintf(ptr, "%d scrolls", item_count(item));
-
-  if (op->oi_know)
-    ptr += sprintf(ptr, " of %s", op->oi_name.c_str());
-  else if (!op->oi_guess.empty())
-    ptr += sprintf(ptr, " called %s", op->oi_guess.c_str());
-  else
-    ptr += sprintf(ptr, " titled '%s'", s_names.at(static_cast<size_t>(item_subtype(item))).c_str());
-}
-
-Item*
-scroll_create(int which)
-{
-  Item* scroll = new Item();
-
-  if (which == -1)
-    which = static_cast<int>(pick_one(scroll_info, NSCROLLS));
-
-  scroll->o_type  = SCROLL;
-  scroll->o_count = 1;
-  scroll->o_which = which;
-  return scroll;
-}
-

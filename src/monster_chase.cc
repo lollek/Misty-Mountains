@@ -63,7 +63,7 @@ static Coordinate chase(Monster& monster, Coordinate const& target) {
         // Cannot walk on a scare monster scroll
         if (ch == SCROLL) {
           Item* obj = Game::level->get_item(xy.x, xy.y);
-          if (obj != nullptr && obj->o_which == S_SCARE) {
+          if (obj != nullptr && obj->o_which == Scroll::Type::SCARE) {
             continue;
           }
         }

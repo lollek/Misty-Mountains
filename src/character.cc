@@ -118,7 +118,7 @@ Coordinate Character::possible_random_move() {
 
   if (ch == SCROLL) {
     Item* item = Game::level->get_item(x, y);
-    if (item != nullptr && item->o_which == S_SCARE) {
+    if (item != nullptr && item->o_which == Scroll::Type::SCARE) {
       ret.x = position.x;
       ret.y = position.y;
       return ret;

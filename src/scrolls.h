@@ -2,40 +2,61 @@
 
 #include <vector>
 
-#include "things.h"
+#include "item.h"
 
-/* Scroll types */
-enum scroll_t
-{
-  S_CONFUSE   = 0,
-  S_MAP       = 1,
-  S_HOLD      = 2,
-  S_SLEEP     = 3,
-  S_ARMOR     = 4,
-  S_ID        = 5,
-  S_SCARE     = 6,
-  S_FDET      = 7,
-  S_TELEP     = 8,
-  S_ENCH      = 9,
-  S_CREATE    = 10,
-  S_REMOVE    = 11,
-  S_AGGR      = 12,
-  S_PROTECT   = 13,
-  NSCROLLS
+class Scroll : public Item {
+public:
+  enum Type
+  {
+    CONFUSE   = 0,
+    MAP       = 1,
+    HOLD      = 2,
+    SLEEP     = 3,
+    ENCHARMOR = 4,
+    ID        = 5,
+    SCARE     = 6,
+    FDET      = 7,
+    TELEP     = 8,
+    ENCH      = 9,
+    CREATE    = 10,
+    REMOVE    = 11,
+    AGGR      = 12,
+    PROTECT   = 13,
+    NSCROLLS
+  };
+
+  ~Scroll();
+  explicit Scroll();
+  explicit Scroll(Type);
+  explicit Scroll(Scroll const&) = default;
+
+  Scroll* clone() const override;
+  Scroll& operator=(Scroll const&) = default;
+  Scroll& operator=(Scroll&&) = default;
+
+  // Getters
+  Type get_type() const;
+  std::string get_description() const;
+
+  // Misc
+  void read() const;
+
+  // Static
+  static std::string  name(Type subtype);
+  static int          probability(Type subtype);
+  static int          worth(Type subtype);
+  static std::string& guess(Type subtype);
+  static bool         is_known(Type subtype);
+  static void         set_known(Type subtype);
+
+  static void         init_scrolls();
+
+private:
+  Type subtype;
+
+  static std::vector<std::string>  guesses;
+  static std::vector<bool>         knowledge;
+  static std::vector<std::string>  fake_name;
 };
 
-/* Variables */
-extern std::vector<obj_info> scroll_info; /* Scroll info */
-
-void scroll_init(void);
-
-/* Functions */
-bool scroll_read(void);     /* Read a scroll from the pack and do the needful */
-void scroll_learn(enum scroll_t scroll);    /* Learn scroll info */
-bool scroll_is_known(enum scroll_t scroll); /* Knows what scroll does? */
-size_t scroll_value(enum scroll_t scroll);
-void scroll_set_name(enum scroll_t wand, std::string const& new_name);
-
-void scroll_description(Item const* item, char* buf);
-
-Item* scroll_create(int which);
+std::string scroll_description(Item const* item);

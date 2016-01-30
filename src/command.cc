@@ -124,7 +124,7 @@ command_do(char ch)
     case 'i': return command_show_inventory();
     case 'o': return option();
     case 'q': return potion_quaff_something();
-    case 'r': return scroll_read();
+    case 'r': return command_read_scroll();
     case 's': player->search(); return true;
     case 't': return command_throw();
     case 'w': return command_wield();
