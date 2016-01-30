@@ -81,11 +81,14 @@ wand_spell_drain_health(void) {
   io_msg("You feel an intense pain");
 
   // Now zot all of the monsters
-  for (Monster* monster : drainee) {
+  // Must use manual loop here, since monsters can be deleted
+  auto it = drainee.begin();
+  while (it != drainee.end()) {
+    Monster* monster = *it++;
     monster->take_damage(damage);
 
     if (monster->get_health() < 0) {
-      monster_on_death(monster, monster_seen_by_player(monster));
+      monster_on_death(&monster, monster_seen_by_player(monster));
 
     } else {
       monster_start_running(&monster->get_position());

@@ -76,10 +76,11 @@ int monster_save_throw(int which, Monster const* mon);
 void monster_start_running(Coordinate const* runner);
 
 /* Called to put a monster to death */
-void monster_on_death(Monster* tp, bool pr);
+void monster_on_death(Monster** monster, bool print_death_message);
 
-/* Remove a monster from the screen */
-void monster_remove_from_screen(Coordinate const* mp, Monster* tp, bool waskill);
+// Remove a monster from the screen
+// NOTE: monster will be nullptr after this
+void monster_remove_from_screen(Monster** monster, bool was_killed);
 
 bool monster_is_dead(Monster const* monster);
 

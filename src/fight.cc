@@ -190,7 +190,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown) 
   if (roll_attacks(player, tp, weapon, thrown)) {
 
     if (tp->get_health() <= 0) {
-      monster_on_death(tp, true);
+      monster_on_death(&tp, true);
       return true;
     }
 

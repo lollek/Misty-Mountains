@@ -298,72 +298,87 @@ monster_start_running(Coordinate const* runner)
 }
 
 void
-monster_on_death(Monster* monster, bool pr)
+monster_on_death(Monster** monster_ptr, bool print_message)
 {
-  assert(monster != nullptr);
+  if (monster_ptr == nullptr) {
+    error("monster was null");
+  } else if (*monster_ptr == nullptr) {
+    error("*monster was null");
+  }
+
+  Monster* monster = *monster_ptr;
 
   player->gain_experience(monster->get_experience());
 
-  switch (monster->get_type())
-  {
+  switch (monster->get_type()) {
     /* If the monster was a venus flytrap, un-hold him */
-    case 'F':
+    case 'F': {
       player->set_not_held();
       monster_flytrap_hit = 0;
-      break;
+    } break;
 
     /* Leprechauns drop gold */
-    case 'L':
-      if (fallpos(&monster->get_position(), &monster->get_room()->r_gold))
-      {
+    case 'L': {
+      if (fallpos(&monster->get_position(), &monster->get_room()->r_gold)) {
         Item* gold = new Item();
         gold->o_type = GOLD;
         gold->o_goldval = GOLDCALC;
-        if (player->saving_throw(VS_MAGIC))
+        if (player->saving_throw(VS_MAGIC)) {
           gold->o_goldval += GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
+        }
         monster->t_pack.push_back(gold);
       }
+    } break;
   }
 
   /* Get rid of the monster. */
-  if (pr)
+  if (print_message) {
     io_msg("you have slain %s", monster->get_name().c_str());
-  monster_remove_from_screen(&monster->get_position(), monster, true);
+  }
+  monster_remove_from_screen(monster_ptr, true);
 
   /* Do adjustments if he went up a level */
   player->check_for_level_up();
-  if (fight_flush)
+  if (fight_flush) {
     flushinp();
+  }
 }
 
 void
-monster_remove_from_screen(Coordinate const* mp, Monster* tp, bool waskill)
+monster_remove_from_screen(Monster** monster_ptr, bool was_killed)
 {
-  assert(mp != nullptr);
-  assert(tp != nullptr);
-
-  for (Item* obj : tp->t_pack) {
-    obj->set_pos(tp->get_position());
-    if (waskill)
-      weapon_missile_fall(obj, false);
-    else
-      delete obj;
+  if (monster_ptr == nullptr) {
+    error("monster was null");
+  } else if (*monster_ptr == nullptr) {
+    error("*monster was null");
   }
-  tp->t_pack.clear();
 
-  Game::level->set_monster(*mp, nullptr);
-  Game::io->print_tile(mp->x, mp->y);
+  Monster* monster = *monster_ptr;
 
-  Game::level->monsters.remove(tp);
+  // If it was killed, drop stash. Otherwise just delete it
+  for (Item* obj : monster->t_pack) {
+    obj->set_pos(monster->get_position());
+    if (was_killed) {
+      weapon_missile_fall(obj, false);
+    } else {
+      delete obj;
+    }
+  }
+  monster->t_pack.clear();
 
-  if (tp->is_players_target())
-  {
+  Coordinate position = monster->get_position();
+  Game::level->set_monster(position, nullptr);
+  Game::level->monsters.remove(monster);
+
+  Game::io->print_tile(position.x, position.y);
+  if (monster->is_players_target()) {
     to_death = false;
     if (fight_flush)
       flushinp();
   }
 
-  delete tp;
+  delete monster;
+  *monster_ptr = nullptr;
 }
 
 bool
@@ -451,7 +466,7 @@ monster_do_special_ability(Monster** monster)
 
     /* Leperachaun steals some gold and disappears */
     case 'L':
-      monster_remove_from_screen(&(*monster)->get_position(), *monster, false);
+      monster_remove_from_screen(monster, false);
       *monster = nullptr;
 
       pack_gold -= GOLDCALC;
@@ -468,7 +483,7 @@ monster_do_special_ability(Monster** monster)
       Item* steal = pack_find_magic_item();
       if (steal != nullptr)
       {
-        monster_remove_from_screen(&(*monster)->get_position(), *monster, false);
+        monster_remove_from_screen(monster, false);
         *monster = nullptr;
         pack_remove(steal, false, false);
         io_msg("your pack feels lighter");
@@ -593,18 +608,24 @@ monster_show_all_as_trippy(void)
 void
 monster_move_all(void)
 {
-  for (Monster* mon : Game::level->monsters) {
+  // This function needs a manual loop, since monsters can die
+  auto it = Game::level->monsters.begin();
+  while (it != Game::level->monsters.end()) {
+    Monster* mon = *it++;
 
-    if (!mon->is_held() && mon->is_chasing())
-    {
+    if (!mon->is_held() && mon->is_chasing()) {
       bool wastarget = mon->is_players_target();
       Coordinate orig_pos = mon->get_position();
-      if (!monster_chase(mon))
+      if (!monster_chase(mon)) {
         continue;
+      }
 
       if (mon->is_flying()
-          && dist_cp(&player->get_position(), &mon->get_position()) >= 3)
-        monster_chase(mon);
+          && dist_cp(&player->get_position(), &mon->get_position()) >= 3) {
+        if (!monster_chase(mon)) {
+          continue;
+        }
+      }
 
       if (wastarget && !(orig_pos == mon->get_position()))
       {
