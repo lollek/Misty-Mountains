@@ -25,6 +25,11 @@ debug: $(PROGRAM) ctags
 $(PROGRAM): $(OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(OBJS)
 
+analyze:
+	clang --analyze -Xanalyzer $(CXXFLAGS) $(DFLAGS) src/*.cc
+	$(RM) *.plist
+.PHONY: analyze
+
 clean:
 	$(RM) $(OBJS) $(PROGRAM)
 .PHONY: clean
