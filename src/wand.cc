@@ -123,6 +123,9 @@ void Wand::set_known(Wand::Type subtype) {
 }
 
 void Wand::init_wands() {
+  known = vector<bool>(Wand::NWANDS, false);
+  guesses = vector<string>(Wand::NWANDS, "");
+
   static vector<string> possible_material = {
     /* Wood */
     "avocado wood", "balsa", "bamboo", "banyan", "birch", "cedar", "cherry",
@@ -144,6 +147,15 @@ void Wand::init_wands() {
         materials.cend()) {
       materials.push_back(new_material);
     }
+  }
+
+  // Run some checks
+  if (materials.size() != static_cast<size_t>(Wand::NWANDS)) {
+    error("Wand init: wrong number of materials");
+  } else if (known.size() != static_cast<size_t>(Wand::NWANDS)) {
+    error("Wand init: wrong number of knowledge");
+  } else if (guesses.size() != static_cast<size_t>(Wand::NWANDS)) {
+    error("Wand init: wrong number of guesses");
   }
 }
 

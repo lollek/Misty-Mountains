@@ -150,6 +150,9 @@ void Ring::set_known(Ring::Type type) {
 }
 
 void Ring::init_rings() {
+  known = vector<bool>(Ring::NRINGS, false);
+  guesses = vector<string>(Ring::NRINGS, "");
+
   vector<string> stones {
     "agate",     "alexandrite", "amethyst",       "carnelian", "diamond",    "emerald",
     "germanium", "granite",     "garnet",         "jade",      "kryptonite", "lapis lazuli",
@@ -165,7 +168,15 @@ void Ring::init_rings() {
       continue;
 
     materials.push_back(stones.at(stone));
-    break;
+  }
+
+  // Run some checks
+  if (materials.size() != static_cast<size_t>(Ring::NRINGS)) {
+    error("Ring init: wrong number of materials");
+  } else if (known.size() != static_cast<size_t>(Ring::NRINGS)) {
+    error("Ring init: wrong number of knowledge");
+  } else if (guesses.size() != static_cast<size_t>(Ring::NRINGS)) {
+    error("Ring init: wrong number of guesses");
   }
 }
 

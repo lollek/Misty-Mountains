@@ -339,6 +339,9 @@ string potion_description(Item const* item) {
 }
 
 void Potion::init_potions() {
+  knowledge = vector<bool>(Potion::NPOTIONS, false);
+  guesses = vector<string>(Potion::NPOTIONS, "");
+
   /* Pick a unique color for each potion */
   for (int i = 0; i < Potion::NPOTIONS; i++)
     for (;;) {
@@ -352,6 +355,16 @@ void Potion::init_potions() {
       colors.push_back(&color_get(color));
       break;
     }
+
+  // Run some checks
+  if (colors.size() != static_cast<size_t>(Potion::NPOTIONS)) {
+    error("Potion init: wrong number of colors");
+  } else if (knowledge.size() != static_cast<size_t>(Potion::NPOTIONS)) {
+    error("Potion init: wrong number of knowledge");
+  } else if (guesses.size() != static_cast<size_t>(Potion::NPOTIONS)) {
+    error("Potion init: wrong number of guesses");
+  }
+
 }
 
 
