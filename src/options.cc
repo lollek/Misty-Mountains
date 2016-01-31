@@ -1,29 +1,15 @@
-/*
- * This file has all the code for the option command.  I would rather
- * this command were not necessary, but it is the only way to keep the
- * wolves off of my back.
- *
- * @(#)options.c	4.24 (Berkeley) 05/10/83
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
+#include <string>
+#include <vector>
 
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <assert.h>
-
-#include "Coordinate.h"
-
+#include "error_handling.h"
+#include "coordinate.h"
 #include "io.h"
 #include "misc.h"
 #include "player.h"
 
 #include "options.h"
+
+using namespace std;
 
 bool fight_flush  = false;
 bool jump         = true;
@@ -39,10 +25,8 @@ static bool pickup_rings   = true;
 static bool pickup_sticks  = true;
 static bool pickup_ammo    = true;
 
-bool option_autopickup(int type)
-{
-  switch (type)
-  {
+bool option_autopickup(int type) {
+  switch (type) {
     case AMMO:   return pickup_ammo;
     case POTION: return pickup_potions;
     case SCROLL: return pickup_scrolls;
@@ -52,37 +36,31 @@ bool option_autopickup(int type)
     case RING:   return pickup_rings;
     case STICK:  return pickup_sticks;
     case AMULET: return true;
+    default:     error("option_autopickup: unknown type: " + to_string(type));
   }
-  io_debug_fatal("option_autopickup: unknown type: %d", type);
-  return false;
 }
 
-static bool
-get_bool(bool* b, WINDOW* win)
-{
-  wrefresh(win);
+static bool get_bool(bool* b, WINDOW* win) {
   *b = !*b;
   waddstr(win, *b ? "True " : "False");
+  wrefresh(win);
   return 0;
 }
 
-static inline bool
-get_str(char* buf, WINDOW* win)
-{
+static inline bool get_str(char* buf, WINDOW* win) {
   return io_wreadstr(win, buf);
 }
 
-/** option:
- * Print and then set options from the terminal */
-bool
-option(void)
-{
+bool option() {
+
   struct option {
-    char index;           /* What to press to change option */
-    char const* o_prompt; /* prompt for interactive entry */
-    void* o_opt;          /* pointer to thing to set function to print value */
+    char index;            // What to press to change option
+    string const o_prompt; // prompt for interactive entry
+    void* o_opt;           // pointer to thing to set function to print value
     enum put_t { BOOL, STR } put_type;
-  } optlist[] = {
+  };
+
+  vector<option> optlist {
     {'1',    "Flush typeahead during battle?....", &fight_flush,    option::BOOL},
     {'2',    "Show position only at end of run?.", &jump,           option::BOOL},
     {'3',    "Follow turnings in passageways?...", &passgo,         option::BOOL},
@@ -96,44 +74,57 @@ option(void)
     {AMMO,   "Pick up ammo?.....................", &pickup_ammo,    option::BOOL},
     {'4',    "Name..............................", whoami,          option::STR},
   };
-  int const NOPTS = (sizeof optlist / sizeof (*optlist));
-  char const* query = "Which value do you want to change? (ESC to exit) ";
-  Coordinate const msg_pos (static_cast<int>(strlen(query)), 0);
-  io_msg(query);
 
-  WINDOW *optscr = nullptr;
-  optscr = dupwin(stdscr);
+  string const query = "Which value do you want to change? (ESC to exit) ";
+  Coordinate const msg_pos (static_cast<int>(query.size()), 0);
+  io_msg("%s", query.c_str());
 
-  /* Display current values of options */
+  WINDOW* optscr = dupwin(stdscr);
+
+  // Display current values of options
   wmove(optscr, 1, 0);
-  for (int i = 0; i < NOPTS; ++i)
-  {
-    wprintw(optscr, "%c) %s", optlist[i].index, optlist[i].o_prompt);
-    if (optlist[i].put_type == option::BOOL)
-      waddstr(optscr, optlist[i].o_opt ? "True" : "False");
-    else if (optlist[i].put_type == option::STR)
-      waddstr(optscr, static_cast<char *>(optlist[i].o_opt));
+  for (size_t i = 0; i < optlist.size(); ++i) {
+
+    wprintw(optscr, "%c) %s", optlist.at(i).index, optlist.at(i).o_prompt.c_str());
+    switch (optlist.at(i).put_type) {
+      case option::BOOL: {
+        waddstr(optscr, *static_cast<bool*>(optlist.at(i).o_opt) ? "True" : "False");
+      } break;
+
+      case option::STR: {
+        waddstr(optscr, static_cast<char*>(optlist.at(i).o_opt));
+      } break;
+    }
     waddch(optscr, '\n');
   }
 
-  /* Loop and change values */
+  // Loop and change values until user presses escape
   char c = static_cast<char>(~KEY_ESCAPE);
-  while (c != KEY_ESCAPE)
-  {
+  while (c != KEY_ESCAPE) {
+
     wmove(optscr, msg_pos.y, msg_pos.x);
     wrefresh(optscr);
     c = io_readchar(true);
-    for (int i = 0; i < NOPTS; ++i)
-      if (c == optlist[i].index)
-      {
-        wmove(optscr, i + 1, static_cast<int>(strlen(optlist[i].o_prompt) + 3));
-        switch (optlist[i].put_type)
-        {
-          case option::BOOL: get_bool(static_cast<bool*>(optlist[i].o_opt), optscr); break;
-          case option::STR:  get_str(static_cast<char*>(optlist[i].o_opt), optscr); break;
-        }
-        break;
+
+    auto change_option = find_if(optlist.begin(), optlist.end(),
+        [c] (option const& o) {
+      return o.index == c;
+    });
+
+    if (change_option != optlist.end()) {
+      int i = static_cast<int>(change_option - optlist.begin());
+      option const& opt = *change_option;
+      wmove(optscr, i + 1, 3 + static_cast<int>(opt.o_prompt.size()));
+      switch (opt.put_type) {
+        case option::BOOL: {
+          get_bool(static_cast<bool*>(opt.o_opt), optscr);
+        } break;
+
+        case option::STR: {
+          get_str(static_cast<char*>(opt.o_opt), optscr);
+        } break;
       }
+    }
   }
 
   /* Switch back to original screen */
