@@ -12,12 +12,13 @@ public:
   explicit Gold(int amount);
   explicit Gold(Gold const&) = default;
 
+  Gold* clone() const override;
   Gold& operator=(Gold const&) = default;
   Gold& operator=(Gold&&) = default;
 
   // getters
   int get_amount() const;
-  std::string get_description() const;
+  std::string get_description() const override;
 
   // static
   static int random_gold_amount();

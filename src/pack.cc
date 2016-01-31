@@ -157,8 +157,7 @@ pack_print_evaluate_item(Item* item)
   if (worth < 0)
     worth = 0;
 
-  printw("%5d  %s\n", worth,
-      inv_name(item, false).c_str());
+  printw("%5d  %s\n", worth, item->get_description().c_str());
 
   return static_cast<unsigned>(worth);
 }
@@ -176,7 +175,7 @@ pack_char(void)
 void
 pack_move_msg(Item* obj)
 {
-  io_msg("moved onto %s", inv_name(obj, true).c_str());
+  io_msg("moved onto %s", obj->get_description().c_str());
 }
 
 bool
@@ -244,7 +243,7 @@ pack_add(Item* obj, bool silent, bool from_floor)
 
   /* Notify the user */
   if (!silent) {
-    io_msg("you now have %s (%c)", inv_name(obj, true).c_str(), obj->o_packch, true);
+    io_msg("you now have %s (%c)", obj->get_description().c_str(), obj->o_packch, true);
   }
   return true;
 }
@@ -329,7 +328,7 @@ void pack_pick_up(Coordinate const& coord, bool force) {
   if (!items_here.empty()) {
     io_msg_add("items here: ");
     for (Item* item : items_here) {
-      io_msg_add("%s", inv_name(item, false).c_str());
+      io_msg_add("%s", item->get_description().c_str());
       if (item != items_here.back()) {
         io_msg_add(", ");
       }
@@ -439,7 +438,7 @@ pack_print_equipment(void)
     {
       mvwprintw(equipscr, sym - 'a' + 1, 1, "%c) %s: %s",
                 sym, equipment[i].description.c_str(),
-                inv_name(equipment[i].ptr, false).c_str());
+                equipment[i].ptr->get_description().c_str());
       sym++;
     }
   }
@@ -469,7 +468,7 @@ pack_print_inventory(int type)
         (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))) {
       /* Print out the item and move to next row */
       wmove(invscr, ++num_items, 1);
-      wprintw(invscr, "%c) %s", list->o_packch, inv_name(list, false).c_str());
+      wprintw(invscr, "%c) %s", list->o_packch, list->get_description().c_str());
     }
   }
 
@@ -577,10 +576,10 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   {
     Game::level->items.push_back(obj);
     obj->set_pos(player->get_position());
-    io_msg("dropped %s", inv_name(obj, true).c_str());
+    io_msg("dropped %s", obj->get_description().c_str());
   }
   else if (!quiet_on_success)
-    io_msg("no longer %s %s", doing, inv_name(obj, true).c_str());
+    io_msg("no longer %s %s", doing, obj->get_description().c_str());
   return true;
 }
 
@@ -619,7 +618,7 @@ pack_identify_item(void)
     default: break;
   }
 
-  io_msg("%s", inv_name(obj, false).c_str());
+  io_msg("%s", obj->get_description().c_str());
 }
 
 

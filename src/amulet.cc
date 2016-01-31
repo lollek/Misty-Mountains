@@ -19,6 +19,10 @@ string Amulet::get_description() const {
   return "The Amulet of Yendor";
 }
 
+Amulet* Amulet::clone() const {
+  return new Amulet(*this);
+}
+
 
 std::string amulet_description(Item const* item) {
   Amulet const* amulet = dynamic_cast<Amulet const*>(item);

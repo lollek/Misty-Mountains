@@ -1,5 +1,6 @@
 #include <vector>
 
+#include "weapons.h"
 #include "error_handling.h"
 #include "magic.h"
 #include "monster.h"
@@ -127,7 +128,7 @@ wand_spell_cancel(Monster& target)
 static void
 wand_spell_magic_missile(int dy, int dx)
 {
-  Item bolt{};
+  Weapon bolt(Weapon::DAGGER);
   bolt.o_type    = '*';
   bolt.o_hplus   = 100;
   bolt.o_dplus   = 1;

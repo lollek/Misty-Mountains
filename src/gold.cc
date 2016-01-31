@@ -29,6 +29,10 @@ string Gold::get_description() const {
   return to_string(amount) + " gold pieces";
 }
 
+Gold* Gold::clone() const {
+  return new Gold(*this);
+}
+
 string gold_description(Item const* item) {
   Gold const* gold = dynamic_cast<Gold const*>(item);
   if (gold == nullptr) {

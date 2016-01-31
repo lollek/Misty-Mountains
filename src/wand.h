@@ -39,7 +39,7 @@ public:
 
   // Getters
   std::string get_material() const;
-  std::string get_description() const;
+  std::string get_description() const override;
   bool        is_identified() const;
 
 

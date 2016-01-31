@@ -18,12 +18,13 @@ public:
   explicit Food(Type subtype);
   explicit Food(Food const&) = default;
 
+  Food* clone() const override;
   Food& operator=(Food const&) = default;
   Food& operator=(Food&&) = default;
 
   // Getters
   Type get_type() const;
-  std::string get_description() const;
+  std::string get_description() const override;
 
 private:
   Type subtype;

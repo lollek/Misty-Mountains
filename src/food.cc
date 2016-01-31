@@ -21,6 +21,10 @@ static Food::Type random_food_type() {
 
 Food::~Food() {}
 
+Food* Food::clone() const {
+  return new Food(*this);
+}
+
 Food::Food() : Food(random_food_type()) {}
 
 Food::Food(Food::Type subtype_) : Item(), subtype(subtype_) {

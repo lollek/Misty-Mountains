@@ -26,7 +26,7 @@ public:
   };
 
   // Getters
-  std::string get_description() const;
+  std::string get_description() const override;
 
   ~Ring();
   explicit Ring(Type type, bool random_stats);

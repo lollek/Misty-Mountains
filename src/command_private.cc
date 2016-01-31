@@ -644,7 +644,7 @@ bool command_drop(void)
 
   obj->set_pos(player->get_position());
 
-  io_msg("dropped %s", inv_name(obj, true).c_str());
+  io_msg("dropped %s", obj->get_description().c_str());
   return true;
 }
 
@@ -670,7 +670,7 @@ bool command_wear() {
   pack_remove(obj, false, true);
   pack_equip_item(obj);
 
-  io_msg("now wearing %s", inv_name(obj, true).c_str());
+  io_msg("now wearing %s", obj->get_description().c_str());
   return true;
 }
 
@@ -795,7 +795,7 @@ bool command_weapon_wield(Item* weapon) {
   pack_remove(weapon, false, true);
   pack_equip_item(weapon);
 
-  io_msg("wielding %s", inv_name(weapon, true).c_str());
+  io_msg("wielding %s", weapon->get_description().c_str());
   last_wielded_weapon = currently_wielding;
   return true;
 }

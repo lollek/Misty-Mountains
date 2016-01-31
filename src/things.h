@@ -19,12 +19,6 @@ struct obj_info {
 
 extern std::vector<obj_info> things;
 
-/* Return the name of something as it would appear in an inventory. */
-std::string inv_name(Item const* item, bool drop);
-
-/* Put something down */
-bool drop(void);
-
 /* Return a new thing */
 Item* new_thing(void);
 

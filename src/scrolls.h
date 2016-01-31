@@ -36,7 +36,7 @@ public:
 
   // Getters
   Type get_type() const;
-  std::string get_description() const;
+  std::string get_description() const override;
 
   // Misc
   void read() const;

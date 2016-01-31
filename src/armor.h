@@ -35,7 +35,7 @@ public:
 
   // Getters
   bool is_identified() const;
-  std::string get_description() const;
+  std::string get_description() const override;
 
   // Static
   static int probability(Type type);

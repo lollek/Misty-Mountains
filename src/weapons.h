@@ -26,6 +26,7 @@ public:
   explicit Weapon(bool random_stats);
   explicit Weapon(Weapon const&) = default;
 
+  Weapon* clone() const override;
   Weapon& operator=(Weapon const&) = default;
   Weapon& operator=(Weapon&&) = default;
 
@@ -35,7 +36,7 @@ public:
 
   // Getters
   bool is_identified() const;
-  std::string get_description() const;
+  std::string get_description() const override;
 
   // Static
   static int probability(Type type);

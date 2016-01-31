@@ -41,6 +41,10 @@ static Weapon::Type random_weapon_type() {
   error("Error! Sum of probabilities is not 100%");
 }
 
+Weapon* Weapon::clone() const {
+  return new Weapon(*this);
+}
+
 Weapon::~Weapon() {}
 
 Weapon::Weapon(bool random_stats) : Weapon(random_weapon_type(), random_stats) {}

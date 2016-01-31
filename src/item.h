@@ -27,7 +27,7 @@ public:
 
   Item& operator=(Item const&) = default;
   Item& operator=(Item&&) = default;
-  virtual Item* clone() const;
+  virtual Item* clone() const = 0;
 
   /* Setters */
   void set_pos(Coordinate const&);
@@ -36,6 +36,7 @@ public:
   void set_nickname(std::string const&);
 
   /* Getters */
+  virtual std::string        get_description() const = 0;
   Coordinate const&  get_pos() const;
   int                get_x() const;
   int                get_y() const;

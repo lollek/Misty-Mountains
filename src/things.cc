@@ -40,34 +40,6 @@ vector<obj_info> things = {
     { "stick",	 4,	0,	"",	false },
 };
 
-string
-inv_name(Item const* item, bool drop)
-{
-  string return_value;
-
-  switch (item->o_type)
-  {
-    case POTION: return_value = potion_description(item); break;
-    case RING:   return_value = ring_description(item); break;
-    case STICK:  return_value = wand_description(item); break;
-    case SCROLL: return_value = scroll_description(item); break;
-    case WEAPON: return_value = weapon_description(item); break;
-    case AMMO:   return_value = weapon_description(item); break;
-    case ARMOR:  return_value = armor_description(item); break;
-    case FOOD:   return_value = food_description(item); break;
-    case AMULET: return_value = amulet_description(item); break;
-    case GOLD:   return_value = gold_description(item); break;
-
-    default:
-      error("Unknown type: " + string(1, item->o_type));
-  }
-
-  return_value.at(0) = static_cast<char>(drop
-      ? tolower(return_value.at(0))
-      : toupper(return_value.at(0)));
-  return return_value;
-}
-
 Item*
 new_thing(void)
 {
