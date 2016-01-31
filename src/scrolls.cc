@@ -55,6 +55,10 @@ Scroll* Scroll::clone() const {
   return new Scroll(*this);
 }
 
+bool Scroll::is_magic() const {
+  return true;
+}
+
 Scroll::Scroll() : Scroll(random_scroll_type()) {}
 
 Scroll::Scroll(Scroll::Type subtype_) : Item(), subtype(subtype_) {

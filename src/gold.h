@@ -17,8 +17,9 @@ public:
   Gold& operator=(Gold&&) = default;
 
   // getters
-  int get_amount() const;
+  int         get_amount() const;
   std::string get_description() const override;
+  bool        is_magic() const override;
 
   // static
   static int random_gold_amount();

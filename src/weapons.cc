@@ -45,6 +45,10 @@ Weapon* Weapon::clone() const {
   return new Weapon(*this);
 }
 
+bool Weapon::is_magic() const {
+  return o_hplus != 0 || o_dplus != 0;
+}
+
 Weapon::~Weapon() {}
 
 Weapon::Weapon(bool random_stats) : Weapon(random_weapon_type(), random_stats) {}

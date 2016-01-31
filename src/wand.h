@@ -38,8 +38,9 @@ public:
   void set_identified();
 
   // Getters
-  std::string get_material() const;
   std::string get_description() const override;
+  bool        is_magic() const override;
+  std::string get_material() const;
   bool        is_identified() const;
 
 

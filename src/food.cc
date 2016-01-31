@@ -25,6 +25,10 @@ Food* Food::clone() const {
   return new Food(*this);
 }
 
+bool Food::is_magic() const {
+  return false;
+}
+
 Food::Food() : Food(random_food_type()) {}
 
 Food::Food(Food::Type subtype_) : Item(), subtype(subtype_) {

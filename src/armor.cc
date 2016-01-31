@@ -20,6 +20,11 @@ using namespace std;
 
 Armor::~Armor() {}
 
+bool Armor::is_magic() const {
+  return ((o_flags & ISPROT) ||
+      o_arm != Armor::ac(subtype));
+}
+
 Armor* Armor::clone() const {
   return new Armor(*this);
 }
@@ -48,7 +53,7 @@ Armor::Armor(bool random_stats) :
 {}
 
 Armor::Armor(Armor::Type type, bool random_stats) :
-  Item(), identified(false) {
+  Item(), subtype(type), identified(false) {
   o_type = ARMOR;
   o_which = type;
   o_arm = Armor::ac(type);

@@ -34,8 +34,9 @@ public:
   void set_not_identified();
 
   // Getters
-  bool is_identified() const;
+  bool        is_identified() const;
   std::string get_description() const override;
+  bool        is_magic() const override;
 
   // Static
   static int probability(Type type);
@@ -44,7 +45,8 @@ public:
   static int ac(Type type);
 
 private:
-  bool              identified;
+  Type subtype;
+  bool identified;
 };
 
 std::string armor_description(Item const* item);

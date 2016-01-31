@@ -46,6 +46,10 @@ Potion* Potion::clone() const {
   return new Potion(*this);
 }
 
+bool Potion::is_magic() const {
+  return true;
+}
+
 string Potion::name(Potion::Type subtype) {
   switch(subtype) {
     case CONFUSION: return "confusion";

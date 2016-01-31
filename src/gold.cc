@@ -33,6 +33,10 @@ Gold* Gold::clone() const {
   return new Gold(*this);
 }
 
+bool Gold::is_magic() const {
+  return false;
+}
+
 string gold_description(Item const* item) {
   Gold const* gold = dynamic_cast<Gold const*>(item);
   if (gold == nullptr) {

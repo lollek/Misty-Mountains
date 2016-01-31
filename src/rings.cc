@@ -77,6 +77,10 @@ Ring* Ring::clone() const {
   return new Ring(*this);
 }
 
+bool Ring::is_magic() const {
+  return true;
+}
+
 string Ring::name(Ring::Type type) {
   switch (type) {
     case PROTECT:  return "protection";

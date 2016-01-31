@@ -35,8 +35,9 @@ public:
   void set_not_identified();
 
   // Getters
-  bool is_identified() const;
+  bool        is_identified() const;
   std::string get_description() const override;
+  bool        is_magic() const override;
 
   // Static
   static int probability(Type type);

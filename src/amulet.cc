@@ -23,6 +23,10 @@ Amulet* Amulet::clone() const {
   return new Amulet(*this);
 }
 
+bool Amulet::is_magic() const {
+  return true;
+}
+
 
 std::string amulet_description(Item const* item) {
   Amulet const* amulet = dynamic_cast<Amulet const*>(item);

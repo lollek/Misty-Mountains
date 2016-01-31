@@ -43,24 +43,6 @@ string const& Item::get_nickname() const {
   return nickname;
 }
 
-bool Item::is_magic() const {
-  switch (o_type) {
-    case ARMOR:   return static_cast<bool>(o_flags & ISPROT) ||
-                   o_arm != Armor::ac(static_cast<Armor::Type>(o_which));
-
-    case WEAPON:  return o_hplus != 0 || o_dplus != 0;
-    case AMMO:    return o_hplus != 0 || o_dplus != 0;
-
-    case POTION:  return true;
-    case SCROLL:  return true;
-    case STICK:   return true;
-    case RING:    return true;
-    case AMULET:  return true;
-
-    default:      return false;
-  }
-}
-
 int Item::get_type() const {
   return o_type;
 }

@@ -25,9 +25,6 @@ public:
     NRINGS
   };
 
-  // Getters
-  std::string get_description() const override;
-
   ~Ring();
   explicit Ring(Type type, bool random_stats);
   explicit Ring(bool random_stats);
@@ -36,6 +33,10 @@ public:
   Ring* clone() const override;
   Ring& operator=(Ring const&) = default;
   Ring& operator=(Ring&&) = default;
+
+  // Getters
+  std::string get_description() const override;
+  bool        is_magic() const override;
 
   // Static
   static int          probability(Type type);

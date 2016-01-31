@@ -36,8 +36,9 @@ public:
   Potion& operator=(Potion&&) = default;
 
   // Getters
-  Type get_type() const;
+  Type        get_type() const;
   std::string get_description() const override;
+  bool        is_magic() const override;
 
   // Misc
   void quaffed_by(Character&); // Someone drank the potion

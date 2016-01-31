@@ -17,6 +17,7 @@ public:
 
   // getters
   std::string get_description() const override;
+  bool        is_magic() const override;
 
 private:
 };

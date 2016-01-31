@@ -37,11 +37,11 @@ public:
 
   /* Getters */
   virtual std::string        get_description() const = 0;
+  virtual bool               is_magic() const = 0;
   Coordinate const&  get_pos() const;
   int                get_x() const;
   int                get_y() const;
   std::string const& get_nickname() const;
-  bool               is_magic() const;
   int                get_type() const;
 
   int           o_type;                /* What kind of object it is */

@@ -48,6 +48,9 @@ static Wand::Type random_wand_type() {
   error("Error! Sum of probabilities is not 100%");
 }
 
+bool Wand::is_magic() const {
+  return true;
+}
 
 
 string Wand::name(Wand::Type subtype) {

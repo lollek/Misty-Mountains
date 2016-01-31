@@ -23,8 +23,9 @@ public:
   Food& operator=(Food&&) = default;
 
   // Getters
-  Type get_type() const;
+  Type        get_type() const;
   std::string get_description() const override;
+  bool        is_magic() const override;
 
 private:
   Type subtype;
