@@ -2,6 +2,7 @@
 
 using namespace std;
 
+#include "gold.h"
 #include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
@@ -249,12 +250,10 @@ Level::create_rooms() {
     /* Put the gold in */
     if (os_rand_range(2) == 0 &&
         (!pack_contains_amulet() || Game::current_level >= Game::max_level_visited)) {
-      Item *gold = new Item();
-      gold->o_goldval = room.r_goldval = GOLDCALC;
       get_random_room_coord(&room, &room.r_gold, 0, false);
+      Gold *gold = new Gold();
       gold->set_pos(room.r_gold);
-      gold->o_flags = ISMANY;
-      gold->o_type = GOLD;
+      room.r_goldval = gold->get_amount();
       items.push_back(gold);
     }
 

@@ -4,6 +4,7 @@
 
 using namespace std;
 
+#include "gold.h"
 #include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
@@ -59,7 +60,7 @@ inv_name(Item const* item, bool drop)
       }
     } break;
     case AMULET: buffer << "The Amulet of Yendor"; break;
-    case GOLD: buffer << item->o_goldval << " Gold pieces"; break;
+    case GOLD: buffer << gold_description(item); break;
 
     default:
       io_msg("You feel a disturbance in the force");

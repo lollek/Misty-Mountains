@@ -6,7 +6,6 @@
 #include "Coordinate.h"
 
 #define o_charges	o_arm
-#define o_goldval	o_arm
 
 /* flags for objects */
 #define ISCURSED 000001		/* object is cursed */

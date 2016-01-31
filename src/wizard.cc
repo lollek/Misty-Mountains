@@ -1,7 +1,6 @@
 #include <vector>
 
-using namespace std;
-
+#include "gold.h"
 #include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
@@ -24,6 +23,8 @@ using namespace std;
 #include "rogue.h"
 
 #include "wizard.h"
+
+using namespace std;
 
 bool wizard = false;
 
@@ -240,15 +241,13 @@ void wizard_create_item(void) {
     } break;
 
     case GOLD: {
-      obj = new Item();
-      obj->o_flags = ISMANY;
-      obj->o_type = GOLD;
-
       char buf[MAXSTR] = { '\0' };
       io_msg("how much?");
+      int amount = 0;
       if (io_readstr(buf) == 0) {
-        obj->o_goldval = static_cast<short>(atoi(buf));
+        amount = static_cast<short>(atoi(buf));
       }
+      obj = new Gold(amount);
     } break;
 
     default: {

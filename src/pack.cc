@@ -16,7 +16,6 @@
 #include <string>
 #include <list>
 
-using namespace std;
 
 #include "error_handling.h"
 #include "coordinate.h"
@@ -38,8 +37,11 @@ using namespace std;
 #include "options.h"
 #include "rogue.h"
 #include "item.h"
+#include "gold.h"
 
 #include "pack.h"
+
+using namespace std;
 
 int const PACK_RENAMEABLE = -1;
 
@@ -291,12 +293,17 @@ void pack_pick_up(Coordinate const& coord, bool force) {
 
       case GOLD: {
         player->get_room()->r_goldval = 0;
-        int value = obj->o_goldval;
+        Gold* gold = dynamic_cast<Gold*>(obj);
+        if (gold == nullptr) {
+          error("casted gold to Gold* which became null");
+        }
 
-        pack_gold += value;
+        int value = gold->get_amount();
         if (value > 0) {
           io_msg("you found %d gold pieces", value);
         }
+
+        pack_gold += value;
         Game::level->items.remove(obj);
 
         delete obj;

@@ -17,8 +17,6 @@ struct obj_info {
   bool        oi_know;
 };
 
-#define GOLDCALC	(os_rand_range(50 + 10 * Game::current_level) + 2)
-
 extern std::vector<obj_info> things;
 
 /* Return the name of something as it would appear in an inventory. */

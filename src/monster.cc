@@ -9,6 +9,7 @@
 
 using namespace std;
 
+#include "gold.h"
 #include "magic.h"
 #include "command.h"
 #include "daemons.h"
@@ -320,13 +321,14 @@ monster_on_death(Monster** monster_ptr, bool print_message)
     /* Leprechauns drop gold */
     case 'L': {
       if (fallpos(&monster->get_position(), &monster->get_room()->r_gold)) {
-        Item* gold = new Item();
-        gold->o_type = GOLD;
-        gold->o_goldval = GOLDCALC;
         if (player->saving_throw(VS_MAGIC)) {
-          gold->o_goldval += GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
+          int gold_amount =
+            Gold::random_gold_amount() + Gold::random_gold_amount() +
+            Gold::random_gold_amount() + Gold::random_gold_amount();
+          monster->t_pack.push_back(new Gold(gold_amount));
+        } else {
+          monster->t_pack.push_back(new Gold());
         }
-        monster->t_pack.push_back(gold);
       }
     } break;
   }
@@ -438,99 +440,102 @@ monster_do_special_ability(Monster** monster)
   switch ((*monster)->get_type())
   {
     /* If an aquator hits, you can lose armor class */
-    case 'A':
+    case 'A': {
       player->rust_armor();
-      return;
+    } return;
 
     /* Venus Flytrap stops the poor guy from moving */
-    case 'F':
+    case 'F': {
       player->set_held();
       ++monster_flytrap_hit;
       player->take_damage(1);
-      if (player->get_health() <= 0)
+      if (player->get_health() <= 0) {
         death('F');
-      return;
+      }
+    } return;
 
     /* The ice monster freezes you */
-    case 'I':
+    case 'I': {
       player->set_not_running();
-      if (!player_turns_without_action)
-      {
+      if (!player_turns_without_action) {
         io_msg("you are frozen by the %s", (*monster)->get_name().c_str());
       }
       player_turns_without_action += os_rand_range(2) + 2;
-      if (player_turns_without_action > 50)
+      if (player_turns_without_action > 50) {
         death(DEATH_ICE);
-      return;
+      }
+    } return;
 
 
     /* Leperachaun steals some gold and disappears */
-    case 'L':
+    case 'L': {
       monster_remove_from_screen(monster, false);
       *monster = nullptr;
 
-      pack_gold -= GOLDCALC;
-      if (!player->saving_throw(VS_MAGIC))
-        pack_gold -= GOLDCALC + GOLDCALC + GOLDCALC + GOLDCALC;
-      if (pack_gold < 0)
+      pack_gold -= Gold::random_gold_amount();
+      if (!player->saving_throw(VS_MAGIC)) {
+        pack_gold -=  Gold::random_gold_amount() + Gold::random_gold_amount() +
+                      Gold::random_gold_amount() + Gold::random_gold_amount();
+      }
+
+      if (pack_gold < 0) {
         pack_gold = 0;
+      }
       io_msg("your pack_gold feels lighter");
-      return;
+    } return;
 
 
     /* Nymph's steal a magic item and disappears */
     case 'N': {
       Item* steal = pack_find_magic_item();
-      if (steal != nullptr)
-      {
+      if (steal != nullptr) {
         monster_remove_from_screen(monster, false);
         *monster = nullptr;
         pack_remove(steal, false, false);
         io_msg("your pack feels lighter");
         delete steal;
       }
-      return;
-      }
+    } return;
 
     /* Rattlesnakes have poisonous bites */
-    case 'R':
+    case 'R': {
       if (!player->saving_throw(VS_POISON)
-          && !player->has_ring_with_ability(Ring::Type::SUSTSTR))
-      {
+          && !player->has_ring_with_ability(Ring::Type::SUSTSTR)) {
         player->modify_strength(-1);
         io_msg("you feel weaker");
       }
-      return;
+    } return;
 
     /* Vampires can steal max hp */
-    case 'V':
-      if (os_rand_range(100) < 30)
-      {
+    case 'V': {
+      if (os_rand_range(100) < 30) {
         int fewer = roll(1, 3);
         player->take_damage(fewer);
         player->modify_max_health(-fewer);
-        if (player->get_health() <= 0)
+        if (player->get_health() <= 0) {
           death('V');
+        }
         io_msg("you feel weaker");
       }
-      return;
+    } return;
 
     /* Wraiths might drain exp */
-    case 'W':
-      if (os_rand_range(100) < 15)
-      {
-        if (player->get_level() == 1)
+    case 'W': {
+      if (os_rand_range(100) < 15) {
+        if (player->get_level() == 1) {
           death('W');  /* Death by no level */
+        }
         player->lower_level(1);
 
         int fewer = roll(1, 10);
         player->take_damage(fewer);
         player->modify_max_health(-fewer);
-        if (player->get_health() <= 0)
+        if (player->get_health() <= 0) {
           death('W');
+        }
         io_msg("you feel weaker");
       }
-      return;
+    } return;
 
     default: return;
   }

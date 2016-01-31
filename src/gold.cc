@@ -1,0 +1,38 @@
+#include <string>
+
+#include "error_handling.h"
+#include "os.h"
+#include "game.h"
+
+#include "gold.h"
+
+using namespace std;
+
+Gold::~Gold() {}
+
+Gold::Gold() : Gold(random_gold_amount()) {}
+
+Gold::Gold(int amount_) : Item(), amount(amount_) {
+  o_flags = ISMANY;
+  o_type = GOLD;
+}
+
+int Gold::get_amount() const {
+  return amount;
+}
+
+int Gold::random_gold_amount() {
+  return os_rand_range(50 + 10 * Game::current_level) + 2;
+}
+
+string Gold::get_description() const {
+  return to_string(amount) + " gold pieces";
+}
+
+string gold_description(Item const* item) {
+  Gold const* gold = dynamic_cast<Gold const*>(item);
+  if (gold == nullptr) {
+    error("Cannot describe non-gold as gold");
+  }
+  return gold->get_description();
+}
