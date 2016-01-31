@@ -28,4 +28,3 @@ private:
   int amount;
 };
 
-std::string gold_description(Item const* item);

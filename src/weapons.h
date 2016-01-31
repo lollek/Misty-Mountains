@@ -52,5 +52,3 @@ private:
 
 /* Drop an item someplace around here. */
 void weapon_missile_fall(Item* obj, bool pr);
-
-std::string weapon_description(Item const* item);

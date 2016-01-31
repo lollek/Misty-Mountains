@@ -22,5 +22,3 @@ public:
 private:
 };
 
-std::string amulet_description(Item const* item);
-

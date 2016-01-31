@@ -214,10 +214,3 @@ std::string Ring::get_description() const {
   return os.str();
 }
 
-string ring_description(Item const* item) {
-  Ring const* ring = dynamic_cast<Ring const*>(item);
-  if (ring == nullptr) {
-    error("Cannot describe non-ring as ring");
-  }
-  return ring->get_description();
-}

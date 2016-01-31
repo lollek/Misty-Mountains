@@ -145,7 +145,7 @@ string Armor::get_description() const {
   int bonus_ac = Armor::ac(static_cast<Armor::Type>(o_which)) - get_armor();
   int base_ac = 10 - get_armor() - bonus_ac;
 
-  buffer << "A" << vowelstr(obj_name) << " " <<obj_name << " [" << base_ac;
+  buffer << "a" << vowelstr(obj_name) << " " <<obj_name << " [" << base_ac;
 
   if (identified) {
     buffer << ",";
@@ -161,15 +161,5 @@ string Armor::get_description() const {
   }
 
   return buffer.str();
-}
-
-
-string
-armor_description(Item const* item) {
-  Armor const* armor = dynamic_cast<Armor const*>(item);
-  if (armor == nullptr) {
-    error("Cannot describe non-armor as armor");
-  }
-  return armor->get_description();
 }
 

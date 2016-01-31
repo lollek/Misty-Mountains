@@ -37,10 +37,3 @@ bool Gold::is_magic() const {
   return false;
 }
 
-string gold_description(Item const* item) {
-  Gold const* gold = dynamic_cast<Gold const*>(item);
-  if (gold == nullptr) {
-    error("Cannot describe non-gold as gold");
-  }
-  return gold->get_description();
-}

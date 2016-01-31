@@ -683,7 +683,8 @@ command_ring_put_on(void)
   if (obj == nullptr)
     return false;
 
-  if (obj->o_type != RING)
+  Ring* ring = dynamic_cast<Ring*>(obj);
+  if (obj->o_type != RING || ring == nullptr)
   {
     io_msg("not a ring");
     return command_ring_put_on();
@@ -703,7 +704,7 @@ command_ring_put_on(void)
     case Ring::AGGR: monster_aggravate_all(); break;
   }
 
-  string msg = ring_description(obj);
+  string msg = ring->get_description();
   msg.at(0) = static_cast<char>(tolower(msg.at(0)));
   io_msg("now wearing %s", msg.c_str());
   return true;

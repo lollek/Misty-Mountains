@@ -210,7 +210,7 @@ string Weapon::get_description() const {
   string const& obj_name = Weapon::name(static_cast<Weapon::Type>(o_which));
 
   if (o_count == 1) {
-    buffer << "A" << vowelstr(obj_name) << " " << obj_name;
+    buffer << "a" << vowelstr(obj_name) << " " << obj_name;
   } else {
     buffer << o_count << " " << obj_name << "s";
   }
@@ -258,15 +258,6 @@ string Weapon::get_description() const {
   }
 
   return buffer.str();
-}
-
-string weapon_description(Item const* item) {
-  Weapon const* weapon = dynamic_cast<Weapon const*>(item);
-  if (weapon == nullptr) {
-    error("Cannot describe non-weapon as weapon");
-  }
-  return weapon->get_description();
-
 }
 
 void

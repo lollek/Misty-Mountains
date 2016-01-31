@@ -211,7 +211,7 @@ string Wand::get_description() const {
 
   if (is_known || !guess.empty()) {
     if (o_count == 1) {
-      os << "A wand";
+      os << "a wand";
     } else {
       os << to_string(o_count) << " wands";
     }
@@ -230,21 +230,13 @@ string Wand::get_description() const {
 
   } else {
     if (o_count == 1) {
-      os << "A " << Wand::material(subtype) << " wand";
+      os << "a " << Wand::material(subtype) << " wand";
     } else {
       os << to_string(o_count) << " " << Wand::material(subtype) << " wands";
     }
   }
 
   return os.str();
-}
-
-string wand_description(Item const* item) {
-  Wand const* wand = dynamic_cast<Wand const*>(item);
-  if (wand == nullptr) {
-    error("Cannot describe non-wand as wand");
-  }
-  return wand->get_description();
 }
 
 int Wand::get_charges() const {

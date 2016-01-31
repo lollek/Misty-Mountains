@@ -62,5 +62,3 @@ private:
 };
 
 bool potion_quaff_something(void);  /* Quaff a potion from the pack */
-
-std::string potion_description(Item const* obj);

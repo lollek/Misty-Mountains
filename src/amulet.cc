@@ -16,7 +16,7 @@ Amulet::Amulet() : Item() {
 }
 
 string Amulet::get_description() const {
-  return "The Amulet of Yendor";
+  return "the Amulet of Yendor";
 }
 
 Amulet* Amulet::clone() const {
@@ -27,11 +27,3 @@ bool Amulet::is_magic() const {
   return true;
 }
 
-
-std::string amulet_description(Item const* item) {
-  Amulet const* amulet = dynamic_cast<Amulet const*>(item);
-  if (amulet == nullptr) {
-    error("Cannot describe non-amulet as amulet");
-  }
-  return amulet->get_description();
-}

@@ -147,7 +147,7 @@ string Scroll::get_description() const {
   stringstream os;
 
   if (o_count == 1) {
-    os << "A scroll";
+    os << "a scroll";
   } else {
     os << to_string(o_count) << " scrolls";
   }
@@ -161,14 +161,6 @@ string Scroll::get_description() const {
   }
 
   return os.str();
-}
-
-string scroll_description(Item const* item) {
-  Scroll const* scroll = dynamic_cast<Scroll const*>(item);
-  if (scroll == nullptr) {
-    error("Cannot describe non-scroll as scroll");
-  }
-  return scroll->get_description();
 }
 
 void Scroll::init_scrolls() {

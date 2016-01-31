@@ -64,14 +64,6 @@ string Food::get_description() const {
   return os.str();
 }
 
-string food_description(Item const* item) {
-  Food const* food = dynamic_cast<Food const*>(item);
-  if (food == nullptr) {
-    error("Cannot describe non-food as food");
-  }
-  return food->get_description();
-}
-
 enum hunger_state
 {
   NORMAL,

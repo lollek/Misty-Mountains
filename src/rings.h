@@ -56,4 +56,3 @@ private:
   static std::vector<bool>        known;
 };
 
-std::string ring_description(Item const* item);

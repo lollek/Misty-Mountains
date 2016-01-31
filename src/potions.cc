@@ -147,7 +147,7 @@ string Potion::get_description() const {
 
   if (Potion::is_known(subtype)) {
     if (o_count == 1) {
-      os << "A potion of " << Potion::name(subtype);
+      os << "a potion of " << Potion::name(subtype);
     } else {
       os << to_string(o_count) << " potions of " << Potion::name(subtype);
     }
@@ -332,14 +332,6 @@ potion_quaff_something(void)
     delete obj;
   }
   return true;
-}
-
-string potion_description(Item const* item) {
-  Potion const* potion = dynamic_cast<Potion const*>(item);
-  if (potion == nullptr) {
-    error("Cannot describe non-potion as potion");
-  }
-  return potion->get_description();
 }
 
 void Potion::init_potions() {

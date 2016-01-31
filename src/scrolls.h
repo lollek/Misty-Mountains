@@ -60,4 +60,3 @@ private:
   static std::vector<std::string>  fake_name;
 };
 
-std::string scroll_description(Item const* item);

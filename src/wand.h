@@ -71,8 +71,5 @@ private:
   static std::vector<bool>        known;
 };
 
-
-std::string wand_description(Item const* item);
-
 /* Perform a zap with a wand */
 bool wand_zap();

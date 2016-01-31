@@ -31,8 +31,6 @@ private:
   Type subtype;
 };
 
-std::string food_description(Item const* item);
-
 void food_eat(void);
 void food_digest(void);
 

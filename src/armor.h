@@ -49,4 +49,3 @@ private:
   bool identified;
 };
 
-std::string armor_description(Item const* item);
