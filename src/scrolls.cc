@@ -379,7 +379,7 @@ static bool player_enchant_weapon() {
   }
 
   io_msg("your %s glows %s for a moment",
-         weapon_info[static_cast<size_t>(weapon->o_which)].oi_name.c_str(),
+         Weapon::name(static_cast<Weapon::Type>(weapon->o_which)).c_str(),
          player->is_hallucinating() ? color_random().c_str() : "blue");
 
   return true;

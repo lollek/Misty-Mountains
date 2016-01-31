@@ -133,7 +133,7 @@ command_attack(bool fight_to_death)
 
   Item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
 
-  return weapon != nullptr && weapon->o_which == BOW
+  return weapon != nullptr && weapon->o_which == Weapon::BOW
     ? command_attack_bow(dir)
     : command_attack_melee(fight_to_death, delta);
 }
@@ -498,7 +498,7 @@ bool command_throw(void)
   Monster* monster_at_pos = Game::level->get_monster(obj->get_pos());
 
   /* Throwing an arrow always misses */
-  if (obj->o_which == ARROW)
+  if (obj->o_which == Weapon::ARROW)
   {
     if (monster_at_pos && !to_death)
     {
@@ -540,7 +540,7 @@ command_wield(void)
     return command_wield();
   }
 
-  return weapon_wield(obj);
+  return command_weapon_wield(obj);
 }
 
 bool command_rest(void)
@@ -781,4 +781,40 @@ command_read_scroll() {
   return true;
 
 }
+
+static Item* last_wielded_weapon = nullptr;
+
+bool command_weapon_wield(Item* weapon) {
+  Item* currently_wielding = pack_equipped_item(EQUIPMENT_RHAND);
+  if (currently_wielding != nullptr) {
+    if (!pack_unequip(EQUIPMENT_RHAND, true)) {
+      return true;
+    }
+  }
+
+  pack_remove(weapon, false, true);
+  pack_equip_item(weapon);
+
+  io_msg("wielding %s", inv_name(weapon, true).c_str());
+  last_wielded_weapon = currently_wielding;
+  return true;
+}
+
+void command_weapon_set_last_used(Item* weapon) {
+  last_wielded_weapon = weapon;
+}
+
+bool command_weapon_wield_last_used(void) {
+
+  if (last_wielded_weapon == nullptr || !pack_contains(last_wielded_weapon)) {
+    last_wielded_weapon = nullptr;
+    io_msg("you have no weapon to switch to");
+    return false;
+  }
+
+  return command_weapon_wield(last_wielded_weapon);
+}
+
+
+
 

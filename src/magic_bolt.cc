@@ -121,21 +121,16 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
 
   if (!monster_save_throw(VS_MAGIC, mon))
   {
-    Item bolt;
-    bolt.o_type       = WEAPON;
-    bolt.o_which      = FLAME;
+    Weapon bolt(Weapon::SPEAR);
     bolt.o_hplus      = 100;
     bolt.o_dplus      = 0;
-    bolt.set_pos(*pos);
-    bolt.o_flags     |= ISMISL;
-    bolt.o_launch     = -1;
     bolt.o_hurldmg    = {6,6};
-    weapon_info[FLAME].oi_name = const_cast<char*>(missile_name.c_str());
+    bolt.set_pos(*pos);
 
     if (mon->get_type() == 'D' && missile_name == "flame")
       io_msg("the flame bounces off the dragon");
     else
-      fight_against_monster(pos, &bolt, true);
+      fight_against_monster(pos, &bolt, true, &missile_name);
   }
   else if (Game::level->get_type(*pos) != 'M' || mon->t_disguise == 'M')
   {

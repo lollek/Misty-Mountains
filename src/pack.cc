@@ -87,7 +87,7 @@ pack_print_evaluate_item(Item* item)
       break;
 
     case WEAPON: case AMMO:
-      worth = static_cast<int>(weapon_info[static_cast<size_t>(item->o_which)].oi_worth);
+      worth = Weapon::worth(static_cast<Weapon::Type>(item->o_which));
       worth *= 3 * (item->o_hplus + item->o_dplus) + item->o_count;
       item->o_flags |= ISKNOW;
       break;
@@ -590,7 +590,7 @@ pack_find_arrow(void)
 {
   auto results = find_if(player_pack.begin(), player_pack.end(),
       [] (Item *i) {
-    return i->o_which == ARROW;
+    return i->o_which == Weapon::ARROW;
   });
 
   return results == player_pack.end() ? nullptr : *results;

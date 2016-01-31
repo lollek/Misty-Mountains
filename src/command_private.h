@@ -30,3 +30,7 @@ bool command_wear();                      /* Let player select something to wear
 bool command_ring_put_on();               /* Put on a ring */
 bool command_ring_take_off();             /* Take off a ring */
 bool command_read_scroll();               /* Read a scroll */
+
+bool command_weapon_wield_last_used();    /* Wield last used weapon */
+void command_weapon_set_last_used(Item* weapon); /* Set weapon to last used */
+bool command_weapon_wield(Item* weapon);  /* Wield given weapon */

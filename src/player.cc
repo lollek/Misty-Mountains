@@ -1,5 +1,6 @@
 #include <string>
 
+#include "command_private.h"
 #include "food.h"
 #include "error_handling.h"
 #include "game.h"
@@ -54,27 +55,27 @@ Player::Player() :
   pack_add(new Food(), true);
 
   /* And his suit of armor */
-  Item* armor = new Armor(Armor::Type::RING_MAIL, false);
+  Armor* armor = new Armor(Armor::RING_MAIL, false);
   armor->o_flags |= ISKNOW;
   armor->o_arm -= 1;
   pack_equip_item(armor);
 
   /* Give him his weaponry.  First a mace. */
-  Item* mace = weapon_create(MACE, false);
+  Weapon* mace = new Weapon(Weapon::MACE, false);
   mace->o_hplus  = 1;
   mace->o_dplus  = 1;
   mace->o_flags |= ISKNOW;
   pack_equip_item(mace);
 
   /* Now a +1 bow */
-  Item* bow = weapon_create(BOW, false);
+  Weapon* bow = new Weapon(Weapon::BOW, false);
   bow->o_hplus  = 1;
   bow->o_flags |= ISKNOW;
   pack_add(bow, true);
-  weapon_set_last_used(bow);
+  command_weapon_set_last_used(bow);
 
   /* Now some arrows */
-  Item* arrow = weapon_create(ARROW, false);
+  Weapon* arrow = new Weapon(Weapon::ARROW, false);
   arrow->o_count  = os_rand_range(15) + 25;
   arrow->o_flags |= ISKNOW;
   pack_add(arrow, true);

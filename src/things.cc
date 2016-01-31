@@ -85,7 +85,7 @@ new_thing(void)
     case 0: cur = new Potion(); break;
     case 1: cur = new Scroll(); break;
     case 2: cur = new Food(); break;
-    case 3: cur = weapon_create(-1, true); break;
+    case 3: cur = new Weapon(true); break;
     case 4: cur = new Armor(true); break;
     case 5: cur = new Ring(true); break;
     case 6: cur = new Wand(); break;

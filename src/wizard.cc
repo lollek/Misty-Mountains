@@ -37,56 +37,57 @@ pr_spec(char type)
   Coordinate orig_pos;
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
-  vector<obj_info>* ptr;
   size_t max;
   switch (type)
   {
-    case POTION: ptr = nullptr;            max = Potion::Type::NPOTIONS;  break;
-    case SCROLL: ptr = nullptr;            max = Scroll::Type::NSCROLLS;  break;
-    case RING:   ptr = nullptr;            max = Ring::Type::NRINGS;    break;
-    case STICK:  ptr = nullptr;            max = Wand::Type::NWANDS; break;
-    case ARMOR:  ptr = nullptr;            max = Armor::Type::NARMORS;   break;
-    case WEAPON: ptr = &weapon_info;       max = MAXWEAPONS; break;
-    default:     ptr = nullptr;            max = 0;         break;
+    case POTION: max = Potion::Type::NPOTIONS;  break;
+    case SCROLL: max = Scroll::Type::NSCROLLS;  break;
+    case RING:   max = Ring::Type::NRINGS;    break;
+    case STICK:  max = Wand::Type::NWANDS; break;
+    case ARMOR:  max = Armor::Type::NARMORS;   break;
+    case WEAPON: max = Weapon::NWEAPONS; break;
+    default: error("Unknown type in pr_spec");
   }
 
   char ch = '0';
   for (size_t i = 0; i < max; ++i)
   {
     string name;
-    size_t prob;
+    int prob;
     wmove(printscr, static_cast<int>(i) + 1, 1);
 
     switch (type) {
       case SCROLL: {
         name = Scroll::name(static_cast<Scroll::Type>(i));
-        prob = static_cast<size_t>(Scroll::probability(static_cast<Scroll::Type>(i)));
+        prob = Scroll::probability(static_cast<Scroll::Type>(i));
       } break;
 
       case ARMOR: {
         name = Armor::name(static_cast<Armor::Type>(i));
-        prob = static_cast<size_t>(Armor::probability(static_cast<Armor::Type>(i)));
+        prob = Armor::probability(static_cast<Armor::Type>(i));
       } break;
 
       case POTION: {
         name = Potion::name(static_cast<Potion::Type>(i));
-        prob = static_cast<size_t>(Potion::probability(static_cast<Potion::Type>(i)));
+        prob = Potion::probability(static_cast<Potion::Type>(i));
       } break;
 
       case STICK: {
         name = Wand::name(static_cast<Wand::Type>(i));
-        prob = static_cast<size_t>(Wand::probability(static_cast<Wand::Type>(i)));
+        prob = Wand::probability(static_cast<Wand::Type>(i));
       } break;
 
       case RING: {
         name = Ring::name(static_cast<Ring::Type>(i));
-        prob = static_cast<size_t>(Ring::probability(static_cast<Ring::Type>(i)));
+        prob = Ring::probability(static_cast<Ring::Type>(i));
       } break;
 
-      default: {
-        name = ptr->at(i).oi_name;
-        prob = ptr->at(i).oi_prob;
+      case WEAPON: {
+        name = Weapon::name(static_cast<Weapon::Type>(i));
+        prob = Weapon::probability(static_cast<Weapon::Type>(i));
       } break;
+
+      default: error("Unknown type in pr_spec");
     }
 
     wprintw(printscr, "%c: %s (%d%%)", ch, name.c_str(), prob);
@@ -197,7 +198,7 @@ void wizard_create_item(void) {
     } break;
 
     case WEAPON: {
-      obj = weapon_create(which, false);
+      obj = new Weapon(static_cast<Weapon::Type>(which), false);
 
       io_msg("blessing? (+,-,n)");
       char bless = io_readchar(true);
@@ -284,7 +285,7 @@ void wizard_levels_and_gear(void) {
 
   /* Give him a sword (+1,+1) */
   if (pack_equipped_item(EQUIPMENT_RHAND) == nullptr) {
-    Item* obj = weapon_create(TWOSWORD, false);
+    Item* obj = new Weapon(Weapon::TWOSWORD, false);
     obj->o_hplus = 1;
     obj->o_dplus = 1;
     pack_equip_item(obj);

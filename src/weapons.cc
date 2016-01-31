@@ -2,8 +2,6 @@
 #include <string>
 #include <sstream>
 
-using namespace std;
-
 #include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
@@ -22,38 +20,246 @@ using namespace std;
 
 #include "weapons.h"
 
-static Item* last_wielded_weapon = nullptr;
+using namespace std;
 
-static struct init_weaps {
-    damage const iw_dam;		/* Damage when wielded */
-    damage const iw_hrl;		/* Damage when thrown */
-    char         iw_launch;	/* Launching weapon */
-    int          iw_flags;	/* Miscellaneous flags */
-} init_dam[MAXWEAPONS] = {
-    { {2,4}, {1,3}, NO_WEAPON,  0,             },	/* Mace */
-    { {3,4}, {1,2}, NO_WEAPON,  0,             },	/* Long sword */
-    { {1,1}, {2,3}, NO_WEAPON,  0,             },	/* Bow */
-    { {0,0}, {1,1}, BOW,        ISMANY|ISMISL, },	/* Arrow */
-    { {1,6}, {1,4}, NO_WEAPON,  ISMISL,        },	/* Dagger */
-    { {4,4}, {1,2}, NO_WEAPON,  0,             },	/* 2h sword */
-    { {0,0}, {1,3}, NO_WEAPON,  ISMANY|ISMISL, },	/* Dart */
-    { {0,0}, {2,4}, NO_WEAPON,  ISMANY|ISMISL, },	/* Shuriken */
-    { {2,3}, {1,6}, NO_WEAPON,  ISMISL,        },	/* Spear */
-};
+static Weapon::Type random_weapon_type() {
+  int value = os_rand_range(100);
 
-vector<obj_info> weapon_info = {
-    { "mace",				11,   8, "", false },
-    { "long sword",			11,  15, "", false },
-    { "short bow",			12,  15, "", false },
-    { "arrow",				12,   1, "", false },
-    { "dagger",				 8,   3, "", false },
-    { "two handed sword",		10,  75, "", false },
-    { "dart",				12,   2, "", false },
-    { "shuriken",			12,   5, "", false },
-    { "spear",				12,   5, "", false },
-    /* DO NOT REMOVE: fake entry for dragon's breath */
-    { "",				0,    0, "", false },	
-};
+  int end = static_cast<int>(Weapon::Type::NWEAPONS);
+  for (int i = 0; i < end; ++i) {
+    Weapon::Type type = static_cast<Weapon::Type>(i);
+    int probability = Weapon::probability(type);
+
+    if (value < probability) {
+      return type;
+
+    } else {
+      value -= probability;
+    }
+  }
+
+  error("Error! Sum of probabilities is not 100%");
+}
+
+Weapon::~Weapon() {}
+
+Weapon::Weapon(bool random_stats) : Weapon(random_weapon_type(), random_stats) {}
+
+Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
+  : Item(), subtype(subtype_)  {
+
+  o_type = WEAPON;
+  o_which = subtype;
+  o_count = 1;
+
+  switch (subtype) {
+    case MACE: {
+      o_damage = {2,4};
+      o_hurldmg = {1,3};
+      o_launch = NO_WEAPON;
+    } break;
+
+    case SWORD: {
+      o_damage = {3,4};
+      o_hurldmg = {1,2};
+      o_launch = NO_WEAPON;
+    } break;
+
+    case BOW: {
+      o_damage = {1,1};
+      o_hurldmg = {2,3};
+      o_launch = NO_WEAPON;
+    } break;
+
+    case ARROW: {
+      o_damage = {0,0};
+      o_hurldmg = {1,1};
+      o_launch = BOW;
+      o_count = os_rand_range(8) + 8;
+      o_flags = ISMANY|ISMISL;
+      o_type = AMMO;
+    } break;
+
+    case DAGGER: {
+      o_damage = {1,6};
+      o_hurldmg = {1,4};
+      o_launch = NO_WEAPON;
+      o_count = os_rand_range(4) + 2;
+      o_flags = ISMISL;
+    } break;
+
+    case TWOSWORD: {
+      o_damage = {4,4};
+      o_hurldmg = {1,3};
+      o_launch = NO_WEAPON;
+    } break;
+
+    case DART: {
+      o_damage = {0,0};
+      o_hurldmg = {1,3};
+      o_launch = NO_WEAPON;
+      o_count = os_rand_range(8) + 8;
+      o_flags = ISMANY|ISMISL;
+      o_type = AMMO;
+    } break;
+
+    case SHIRAKEN: {
+      o_damage = {0,0};
+      o_hurldmg = {2,4};
+      o_launch = NO_WEAPON;
+      o_count = os_rand_range(8) + 8;
+      o_flags = ISMANY|ISMISL;
+      o_type = AMMO;
+    } break;
+
+    case SPEAR: {
+      o_damage = {2,3};
+      o_hurldmg = {1,6};
+      o_arm = 2;
+      o_launch = NO_WEAPON;
+      o_flags = ISMISL;
+    } break;
+
+    case NWEAPONS: error("Unknown type NWEAPONS");
+    case NO_WEAPON: error("Unknown type NO_WEAPON");
+  }
+
+  if (random_stats) {
+    int rand = os_rand_range(100);
+    if (rand < 10) {
+      o_flags |= ISCURSED;
+      o_hplus -= os_rand_range(3) + 1;
+    }
+    else if (rand < 15) {
+      o_hplus += os_rand_range(3) + 1;
+    }
+  }
+}
+
+void Weapon::set_identified() {
+  identified = true;
+}
+
+void Weapon::set_not_identified() {
+  identified = false;
+}
+
+bool Weapon::is_identified() const {
+  return identified;
+}
+
+string Weapon::name(Weapon::Type type) {
+  switch (type) {
+    case MACE:     return "mace";
+    case SWORD:    return "long sword";
+    case BOW:      return "short bow";
+    case ARROW:    return "arrow";
+    case DAGGER:   return "dagger";
+    case TWOSWORD: return "two handed sword";
+    case DART:     return "dart";
+    case SHIRAKEN: return "shuriken";
+    case SPEAR:    return "spear";
+    case NWEAPONS: error("Unknown type NWEAPONS");
+    case NO_WEAPON: error("Unknown type NO_WEAPON");
+  }
+}
+
+int Weapon::probability(Weapon::Type type) {
+  switch (type) {
+    case MACE:     return 11;
+    case SWORD:    return 11;
+    case BOW:      return 12;
+    case ARROW:    return 12;
+    case DAGGER:   return  8;
+    case TWOSWORD: return 10;
+    case DART:     return 12;
+    case SHIRAKEN: return 12;
+    case SPEAR:    return 12;
+    case NWEAPONS: error("Unknown type NWEAPONS");
+    case NO_WEAPON: error("Unknown type NO_WEAPON");
+  }
+}
+
+int Weapon::worth(Weapon::Type type) {
+  switch (type) {
+    case MACE:     return  8;
+    case SWORD:    return 15;
+    case BOW:      return 15;
+    case ARROW:    return  1;
+    case DAGGER:   return  3;
+    case TWOSWORD: return 75;
+    case DART:     return  2;
+    case SHIRAKEN: return  5;
+    case SPEAR:    return  5;
+    case NWEAPONS: error("Unknown type NWEAPONS");
+    case NO_WEAPON: error("Unknown type NO_WEAPON");
+  }
+}
+
+string Weapon::get_description() const {
+  stringstream buffer;
+
+  string const& obj_name = Weapon::name(static_cast<Weapon::Type>(item_subtype(this)));
+
+  if (item_count(this) == 1) {
+    buffer << "A" << vowelstr(obj_name) << " " << obj_name;
+  } else {
+    buffer << item_count(this) << " " << obj_name << "s";
+  }
+
+  int dices;
+  int sides;
+  if (item_type(this) == AMMO || item_subtype(this) == Weapon::BOW) {
+    dices = item_throw_damage(this)->dices;
+    sides = item_throw_damage(this)->sides;
+  } else if (item_type(this) == WEAPON) {
+    dices = item_damage(this)->dices;
+    sides = item_damage(this)->sides;
+  } else {
+    error("Bad item type");
+  }
+
+  buffer << " (" << sides << "d" << dices << ")";
+
+  if (item_is_known(this)) {
+    buffer << " (";
+    int p_hit = item_bonus_hit(this);
+    if (p_hit >= 0) {
+      buffer << "+";
+    }
+    buffer << p_hit << ",";
+
+    int p_dmg = item_bonus_damage(this);
+    if (p_dmg >= 0) {
+      buffer << "+";
+    }
+    buffer << p_dmg << ")";
+  }
+
+  if (item_armor(this) != 0) {
+    buffer << " [";
+    int p_armor = item_armor(this);
+    if (p_armor >= 0) {
+      buffer << "+";
+    }
+    buffer << p_armor << "]";
+  }
+
+  if (!get_nickname().empty()) {
+    buffer << " called " << get_nickname();
+  }
+
+  return buffer.str();
+}
+
+string weapon_description(Item const* item) {
+  Weapon const* weapon = dynamic_cast<Weapon const*>(item);
+  if (weapon == nullptr) {
+    error("Cannot describe non-weapon as weapon");
+  }
+  return weapon->get_description();
+
+}
 
 void
 weapon_missile_fall(Item* obj, bool pr) {
@@ -67,145 +273,8 @@ weapon_missile_fall(Item* obj, bool pr) {
 
   if (pr) {
     io_msg("the %s vanishes as it hits the ground",
-        weapon_info.at(static_cast<size_t>(obj->o_which)).oi_name.c_str());
+        Weapon::name(static_cast<Weapon::Type>(obj->o_which)).c_str());
   }
   delete obj;
-}
-
-Item*
-weapon_create(int which, bool random_stats) {
-  if (which == -1) {
-    which = static_cast<int>(pick_one(weapon_info, MAXWEAPONS));
-  }
-
-  Item* weap = new Item();
-  weap->o_type  = WEAPON;
-  weap->o_which = which;
-
-  struct init_weaps* iwp = &init_dam[which];
-  weap->o_launch     = iwp->iw_launch;
-  weap->o_flags      = iwp->iw_flags;
-  weap->o_damage     = iwp->iw_dam;
-  weap->o_hurldmg    = iwp->iw_hrl;
-
-  if (weap->o_flags & ISMANY) {
-    weap->o_type = AMMO;
-  }
-
-  if (which == SPEAR) {
-    weap->o_arm = 2;
-  }
-
-  if (which == DAGGER) {
-    weap->o_count = os_rand_range(4) + 2;
-  } else if (weap->o_flags & ISMANY) {
-    weap->o_count = os_rand_range(8) + 8;
-  } else {
-    weap->o_count = 1;
-  }
-
-  if (random_stats) {
-    int rand = os_rand_range(100);
-    if (rand < 10) {
-      weap->o_flags |= ISCURSED;
-      weap->o_hplus -= os_rand_range(3) + 1;
-    }
-    else if (rand < 15) {
-      weap->o_hplus += os_rand_range(3) + 1;
-    }
-  }
-
-  return weap;
-}
-
-bool
-weapon_wield(Item* weapon) {
-  Item* currently_wielding = pack_equipped_item(EQUIPMENT_RHAND);
-  if (currently_wielding != nullptr) {
-    if (!pack_unequip(EQUIPMENT_RHAND, true)) {
-      return true;
-    }
-  }
-
-  pack_remove(weapon, false, true);
-  pack_equip_item(weapon);
-
-  io_msg("wielding %s", inv_name(weapon, true).c_str());
-  last_wielded_weapon = currently_wielding;
-  return true;
-}
-
-void
-weapon_set_last_used(Item* weapon) {
-  last_wielded_weapon = weapon;
-}
-
-bool
-weapon_wield_last_used(void) {
-
-  if (last_wielded_weapon == nullptr || !pack_contains(last_wielded_weapon)) {
-    last_wielded_weapon = nullptr;
-    io_msg("you have no weapon to switch to");
-    return false;
-  }
-
-  return weapon_wield(last_wielded_weapon);
-}
-
-string
-weapon_description(Item const* item) {
-  stringstream buffer;
-
-  string const& obj_name = weapon_info[static_cast<size_t>(item_subtype(item))].oi_name;
-
-  if (item_count(item) == 1) {
-    buffer << "A" << vowelstr(obj_name) << " " << obj_name;
-  } else {
-    buffer << item_count(item) << " " << obj_name << "s";
-  }
-
-  int dices;
-  int sides;
-  if (item_type(item) == AMMO || item_subtype(item) == BOW) {
-    dices = item_throw_damage(item)->dices;
-    sides = item_throw_damage(item)->sides;
-  } else if (item_type(item) == WEAPON) {
-    dices = item_damage(item)->dices;
-    sides = item_damage(item)->sides;
-  } else {
-    error("Bad item type");
-  }
-
-  buffer << " (" << sides << "d" << dices << ")";
-
-  if (item_is_known(item)) {
-    buffer << " (";
-    int p_hit = item_bonus_hit(item);
-    if (p_hit >= 0) {
-      buffer << "+";
-    }
-    buffer << p_hit << ",";
-
-    int p_dmg = item_bonus_damage(item);
-    if (p_dmg >= 0) {
-      buffer << "+";
-    }
-    buffer << p_dmg << ")";
-  }
-
-  if (item_armor(item) != 0) {
-    buffer << " [";
-    int p_armor = item_armor(item);
-    if (p_armor >= 0) {
-      buffer << "+";
-    }
-    buffer << p_armor << "]";
-  }
-
-  if (!item->get_nickname().empty()) {
-    buffer << " called " << item->get_nickname();
-  }
-
-  return buffer.str();
 }
 

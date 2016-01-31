@@ -113,7 +113,7 @@ static enum trap_t trap_arrow_player(void) {
     }
 
   } else {
-    Item* arrow = weapon_create(ARROW, false);
+    Item* arrow = new Weapon(Weapon::ARROW, false);
     arrow->o_count = 1;
     arrow->set_pos(player->get_position());
     weapon_missile_fall(arrow, false);
@@ -142,7 +142,7 @@ static enum trap_t trap_arrow_monster(Monster** victim_ptr) {
     }
 
   } else {
-    Item* arrow = weapon_create(ARROW, false);
+    Item* arrow = new Weapon(Weapon::ARROW, false);
     arrow->o_count = 1;
     arrow->set_pos(victim->get_position());
     weapon_missile_fall(arrow, false);

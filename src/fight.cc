@@ -85,7 +85,7 @@ calculate_attacker(Character const& attacker, Item* weapon, bool thrown)
 
       // If the weapon was an arrow and player is holding the bow. Add
       // modifiers
-      if (weapon->o_launch != NO_WEAPON && held_weapon != nullptr &&
+      if (weapon->o_launch != Weapon::NO_WEAPON && held_weapon != nullptr &&
           weapon->o_launch == held_weapon->o_which) {
 
           mod.damage.at(0)  = held_weapon->o_hurldmg;
@@ -161,7 +161,8 @@ print_attack(bool hit, Character* attacker, Character* defender) {
 }
 
 int
-fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown) {
+fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
+                      string const* name_override) {
 
   if (monster_pos == nullptr) {
     error("monster_pos was null");
@@ -198,7 +199,12 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown) 
 
       if (thrown) {
         if (weapon->o_type == WEAPON) {
-          io_msg_add("the %s hits ", weapon_info[static_cast<size_t>(weapon->o_which)].oi_name.c_str());
+          if (name_override == nullptr) {
+            io_msg_add("the %s hits ",
+                Weapon::name(static_cast<Weapon::Type>(weapon->o_which)).c_str());
+          } else {
+            io_msg_add("the %s hits ", name_override->c_str());
+          }
         } else {
           io_msg_add("you hit ");
         }
@@ -227,7 +233,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown) 
   monster_start_running(monster_pos);
 
   if (thrown && !to_death) {
-    fight_missile_miss(weapon, tp->get_name().c_str());
+    fight_missile_miss(weapon, tp->get_name().c_str(), name_override);
   } else if (!to_death) {
     print_attack(false, player, tp);
   }
@@ -298,10 +304,16 @@ fight_swing_hits(int at_lvl, int op_arm, int wplus) {
 }
 
 void
-fight_missile_miss(Item const* weap, string const& mname) {
+fight_missile_miss(Item const* weap, string const& mname, string const* name_override) {
 
   if (weap->o_type == WEAPON) {
-    io_msg("the %s misses %s", weapon_info[static_cast<size_t>(weap->o_which)].oi_name.c_str(), mname.c_str());
+    if (name_override == nullptr) {
+      io_msg("the %s misses %s", name_override->c_str(), mname.c_str());
+    } else {
+      io_msg("the %s misses %s",
+          Weapon::name(static_cast<Weapon::Type>(weap->o_which)).c_str(),
+          mname.c_str());
+    }
   } else {
     io_msg("you missed %s", mname.c_str());
   }

@@ -128,7 +128,7 @@ command_do(char ch)
     case 's': player->search(); return true;
     case 't': return command_throw();
     case 'w': return command_wield();
-    case 'x': return weapon_wield_last_used();
+    case 'x': return command_weapon_wield_last_used();
     case 'z': return wand_zap();
 
     /* Upper case */
