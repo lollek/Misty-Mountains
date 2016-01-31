@@ -1,5 +1,6 @@
 #include <string>
 
+#include "food.h"
 #include "error_handling.h"
 #include "game.h"
 #include "Coordinate.h"
@@ -50,7 +51,7 @@ Player::Player() :
             Coordinate(), nullptr, 0, '@')  {
 
   /* Give him some food */
-  pack_add(new_food(-1), true);
+  pack_add(new Food(), true);
 
   /* And his suit of armor */
   Item* armor = new Armor(Armor::Type::RING_MAIL, false);

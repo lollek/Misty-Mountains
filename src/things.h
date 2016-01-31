@@ -27,7 +27,6 @@ bool drop(void);
 
 /* Return a new thing */
 Item* new_thing(void);
-Item* new_food(int which);
 
 /* Pick an item out of a list of nitems possible objects */
 size_t pick_one(std::vector<obj_info>& start, size_t nitems);

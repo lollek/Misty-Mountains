@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 
+#include "food.h"
 #include "amulet.h"
 #include "gold.h"
 #include "error_handling.h"
@@ -42,56 +43,29 @@ vector<obj_info> things = {
 string
 inv_name(Item const* item, bool drop)
 {
-  stringstream buffer;
+  string return_value;
 
   switch (item->o_type)
   {
-    case POTION: buffer << potion_description(item); break;
-    case RING:   buffer << ring_description(item); break;
-    case STICK:  buffer << wand_description(item); break;
-    case SCROLL: buffer << scroll_description(item); break;
-    case WEAPON: buffer << weapon_description(item); break;
-    case AMMO: buffer << weapon_description(item); break;
-    case ARMOR: buffer << armor_description(item); break;
-    case FOOD: {
-      string obj_type = item->o_which == 1 ? "fruit" : "food ration";
-      if (item->o_count == 1) {
-        buffer << "A " << obj_type;
-      } else {
-        buffer << item->o_count << " " << obj_type;
-      }
-    } break;
-    case AMULET: buffer << amulet_description(item); break;
-    case GOLD: buffer << gold_description(item); break;
+    case POTION: return_value = potion_description(item); break;
+    case RING:   return_value = ring_description(item); break;
+    case STICK:  return_value = wand_description(item); break;
+    case SCROLL: return_value = scroll_description(item); break;
+    case WEAPON: return_value = weapon_description(item); break;
+    case AMMO:   return_value = weapon_description(item); break;
+    case ARMOR:  return_value = armor_description(item); break;
+    case FOOD:   return_value = food_description(item); break;
+    case AMULET: return_value = amulet_description(item); break;
+    case GOLD:   return_value = gold_description(item); break;
 
     default:
-      io_msg("You feel a disturbance in the force");
-      buffer << "Something bizarre " << unctrl(static_cast<chtype>(item->o_type));
-      break;
+      error("Unknown type: " + string(1, item->o_type));
   }
 
-  string return_value = buffer.str();
   return_value.at(0) = static_cast<char>(drop
       ? tolower(return_value.at(0))
       : toupper(return_value.at(0)));
   return return_value;
-}
-
-Item*
-new_food(int which)
-{
-  /* Reset levels-without-food counter */
-  Game::levels_without_food = 0;
-
-  Item* cur = new Item();
-  cur->o_count = 1;
-  cur->o_type = FOOD;
-  switch (which)
-  {
-    case 0: case 1: cur->o_which = which; break;
-    default: cur->o_which = os_rand_range(10) ? 0 : 1; break;
-  }
-  return cur;
 }
 
 Item*
@@ -110,7 +84,7 @@ new_thing(void)
   {
     case 0: cur = new Potion(); break;
     case 1: cur = new Scroll(); break;
-    case 2: cur = new_food(-1); break;
+    case 2: cur = new Food(); break;
     case 3: cur = weapon_create(-1, true); break;
     case 4: cur = new Armor(true); break;
     case 5: cur = new Ring(true); break;

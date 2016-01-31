@@ -1,5 +1,6 @@
 #include <vector>
 
+#include "food.h"
 #include "gold.h"
 #include "error_handling.h"
 #include "game.h"
@@ -148,7 +149,7 @@ void wizard_create_item(void) {
 
     // Supported types:
     case WEAPON: case ARMOR: case RING: case STICK: case GOLD:
-    case POTION: case SCROLL: case TRAP: {
+    case POTION: case SCROLL: case TRAP: case FOOD: {
       break;
     }
 
@@ -192,7 +193,7 @@ void wizard_create_item(void) {
     } break;
 
     case FOOD: {
-      obj = new_food(which);
+      obj = new Food(static_cast<Food::Type>(which));
     } break;
 
     case WEAPON: {

@@ -1,3 +1,8 @@
+#include <string>
+#include <sstream>
+
+#include "error_handling.h"
+#include "game.h"
 #include "command.h"
 #include "io.h"
 #include "pack.h"
@@ -7,6 +12,57 @@
 #include "death.h"
 
 #include "food.h"
+
+using namespace std;
+
+static Food::Type random_food_type() {
+  return static_cast<Food::Type>(os_rand_range(10) ? 0 : 1);
+}
+
+Food::~Food() {}
+
+Food::Food() : Food(random_food_type()) {}
+
+Food::Food(Food::Type subtype_) : Item(), subtype(subtype_) {
+
+  // Reset global food counter
+  Game::levels_without_food = 0;
+
+  o_count = 1;
+  o_type = FOOD;
+  o_which = subtype;
+}
+
+Food::Type Food::get_type() const {
+  return subtype;
+}
+
+string Food::get_description() const {
+  stringstream os;
+
+  string type;
+  switch (subtype) {
+    case FRUIT: type = "fruit"; break;
+    case RATION: type = "food ration"; break;
+    case NFOODS: error("Unknown food type NFOODS");
+  }
+
+  if (o_count == 1) {
+    os << "a " << type;
+  } else {
+    os << to_string(o_count) << " " << type << "s";
+  }
+
+  return os.str();
+}
+
+string food_description(Item const* item) {
+  Food const* food = dynamic_cast<Food const*>(item);
+  if (food == nullptr) {
+    error("Cannot describe non-food as food");
+  }
+  return food->get_description();
+}
 
 enum hunger_state
 {
