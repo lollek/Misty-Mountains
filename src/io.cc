@@ -660,35 +660,6 @@ io_wreadstr(WINDOW* win, char* dest)
   return c == KEY_ESCAPE ? 1 : 0;
 }
 
-chtype
-io_attribute(enum attribute attribute)
-{
-  switch (attribute)
-  {
-    case ATTR_FIRE: return COLOR_PAIR(COLOR_RED);
-    case ATTR_ICE:  return COLOR_PAIR(COLOR_BLUE);
-    case ATTR_NONE: return 0;
-  }
-  assert(0 && "Unknown io_attribute");
-  return 0;
-}
-
-chtype
-io_tile(enum tile tile)
-{
-  switch (tile)
-  {
-    case TILE_BOLT_VERTICAL:  return  '|';
-    case TILE_BOLT_DIAGUP:    return  '/';
-    case TILE_BOLT_HORIZONTAL:return  '-';
-    case TILE_BOLT_DIAGDOWN:  return '\\';
-
-    case TILE_ERROR: return '?' | A_STANDOUT;
-  }
-  assert(0 && "Unknown io_tile");
-  return 0;
-}
-
 void
 io_missile_motion(Item* item, int ydelta, int xdelta)
 {

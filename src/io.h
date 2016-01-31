@@ -11,6 +11,8 @@ class IO {
 public:
   enum Attribute {
     Standout,
+    Red,
+    Blue,
     None
   };
 
@@ -72,13 +74,10 @@ typedef enum attribute {
   ATTR_NONE,
 } attribute;
 
-typedef enum tile {
-  TILE_BOLT_VERTICAL,
-  TILE_BOLT_DIAGUP,
-  TILE_BOLT_HORIZONTAL,
-  TILE_BOLT_DIAGDOWN,
-  TILE_ERROR,
-} tile;
+#define BOLT_VERTICAL    '|'
+#define BOLT_DIAGUP      '/'
+#define BOLT_HORIZONTAL  '-'
+#define BOLT_DIAGDOWN    '\\'
 
 /* Glyphs for things */
 typedef chtype glyph;
@@ -159,25 +158,3 @@ void io_wait_for_key(int ch);
 /* old ncurses functions, with custom color support, to be removed */
 #define waddcch(_w, _c)           waddch(_w, Game::io->colorize(_c))
 #define mvwaddcch(_w, _y, _x, _c) mvwaddch(_w, _y, _x, Game::io->colorize(_c))
-
-
-
-/* New kind of IO API for better abstraction */
-chtype io_attribute(enum attribute attribute);
-chtype io_tile(enum tile tile);
-
-static inline int
-io_addch(enum tile tile, enum attribute attr)
-{ return addch(io_tile(tile) | io_attribute(attr)); }
-
-static inline int
-io_waddch(WINDOW* win, enum tile tile, enum attribute attr)
-{ return waddch(win, io_tile(tile) | io_attribute(attr)); }
-
-static inline int
-io_mvaddch(int y, int x, enum tile tile, enum attribute attr)
-{ return mvaddch(y, x, io_tile(tile) | io_attribute(attr)); }
-
-static inline int
-io_mvwaddch(WINDOW* win, int y, int x, enum tile tile, enum attribute attr)
-{ return mvwaddch(win, y, x, io_tile(tile) | io_attribute(attr)); }

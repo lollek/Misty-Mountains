@@ -20,7 +20,7 @@ using namespace std;
 #include "magic.h"
 
 static bool
-magic_bolt_handle_bounces(Coordinate& pos, Coordinate* dir, tile* dirtile)
+magic_bolt_handle_bounces(Coordinate& pos, Coordinate* dir, char* dirtile)
 {
   int num_bounces = 0;
 recursive_loop:; /* ONLY called by end of function */
@@ -69,10 +69,10 @@ recursive_loop:; /* ONLY called by end of function */
     dir->y = -dir->y;
   }
 
-  if (*dirtile == TILE_BOLT_DIAGDOWN)
-    *dirtile = TILE_BOLT_DIAGUP;
-  else if (*dirtile == TILE_BOLT_DIAGUP)
-    *dirtile = TILE_BOLT_DIAGDOWN;
+  if (*dirtile == BOLT_DIAGDOWN)
+    *dirtile = BOLT_DIAGUP;
+  else if (*dirtile == BOLT_DIAGUP)
+    *dirtile = BOLT_DIAGDOWN;
 
   /* It's possible for a bolt to bounce directly from one wall to another
    * if you hit a corner, thus, we need to go through everything again. */
@@ -152,27 +152,22 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
     error("dir was null");
   }
 
-  tile dirtile = TILE_ERROR;
+  char dirtile = '?';
   switch (dir->y + dir->x)
   {
-    case 0: dirtile = TILE_BOLT_DIAGUP; break;
+    case 0: dirtile = BOLT_DIAGUP; break;
     case 1: case -1:
       dirtile = (dir->y == 0
-          ? TILE_BOLT_HORIZONTAL
-          : TILE_BOLT_VERTICAL);
+          ? BOLT_HORIZONTAL
+          : BOLT_VERTICAL);
       break;
-    case 2: case -2: dirtile = TILE_BOLT_DIAGDOWN; break;
-  }
-  if (dirtile == TILE_ERROR) {
-    error("dirtile was TILE_ERROR");
+    case 2: case -2: dirtile = BOLT_DIAGDOWN; break;
   }
 
-  enum attribute bolt_type = ATTR_FIRE;
-
-  if (name == "ice")
-    bolt_type = ATTR_ICE;
-  else if (name == "flame")
-    bolt_type = ATTR_FIRE;
+  IO::Attribute color = IO::Attribute::Red;
+  if (name == "ice") {
+    color = IO::Attribute::Blue;
+  }
 
   Coordinate pos = *start;
   struct charcoord {
@@ -225,10 +220,10 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
 
     spotpos[i].x = pos.x;
     spotpos[i].y = pos.y;
-    io_addch(dirtile, bolt_type);
-    refresh();
+    Game::io->print(pos.x, pos.y, dirtile, color);
   }
 
+  refresh();
   os_usleep(200000);
 
   for (int j = i -1; j >= 0; --j)

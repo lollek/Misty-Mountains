@@ -17,6 +17,8 @@ static void curses_print(int x, int y, chtype ch, IO::Attribute attr) {
   switch (attr) {
     case IO::Attribute::None: break;
     case IO::Attribute::Standout: ch |= A_STANDOUT; break;
+    case IO::Attribute::Red: ch |= COLOR_PAIR(COLOR_RED); break;
+    case IO::Attribute::Blue: ch |= COLOR_PAIR(COLOR_BLUE); break;
   }
   mvaddch(y, x, ch);
 }
