@@ -222,7 +222,7 @@ Level::create_rooms() {
     if (room.r_flags & ISMAZE) {
       room.r_max.x = bsze.x - 1;
       room.r_max.y = bsze.y - 1;
-      room.r_pos.x = top.x == 1 ? 0 : top.x ;
+      room.r_pos.x = top.x;
       room.r_pos.y = top.y;
       if (room.r_pos.y == 0) {
         room.r_pos.y++;
