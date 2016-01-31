@@ -146,10 +146,10 @@ void Scroll::set_known(Scroll::Type subtype) {
 string Scroll::get_description() const {
   stringstream os;
 
-  if (item_count(this) == 1) {
+  if (o_count == 1) {
     os << "A scroll";
   } else {
-    os << to_string(item_count(this)) << " scrolls";
+    os << to_string(o_count) << " scrolls";
   }
 
   if (Scroll::is_known(subtype)) {

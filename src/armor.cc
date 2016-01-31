@@ -141,13 +141,13 @@ int Armor::ac(Armor::Type type) {
 string Armor::get_description() const {
   stringstream buffer;
 
-  string const& obj_name = Armor::name(static_cast<Armor::Type>(item_subtype(this)));
-  int bonus_ac = Armor::ac(static_cast<Armor::Type>(item_subtype(this))) -item_armor(this);
-  int base_ac = 10 - item_armor(this) - bonus_ac;
+  string const& obj_name = Armor::name(static_cast<Armor::Type>(o_which));
+  int bonus_ac = Armor::ac(static_cast<Armor::Type>(o_which)) -o_arm;
+  int base_ac = 10 - o_arm - bonus_ac;
 
   buffer << "A" << vowelstr(obj_name) << " " <<obj_name << " [" << base_ac;
 
-  if (item_is_known(this)) {
+  if (identified) {
     buffer << ",";
     if (bonus_ac > 0) {
       buffer << "+";

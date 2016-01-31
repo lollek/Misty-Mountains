@@ -207,46 +207,46 @@ int Weapon::worth(Weapon::Type type) {
 string Weapon::get_description() const {
   stringstream buffer;
 
-  string const& obj_name = Weapon::name(static_cast<Weapon::Type>(item_subtype(this)));
+  string const& obj_name = Weapon::name(static_cast<Weapon::Type>(o_which));
 
-  if (item_count(this) == 1) {
+  if (o_count == 1) {
     buffer << "A" << vowelstr(obj_name) << " " << obj_name;
   } else {
-    buffer << item_count(this) << " " << obj_name << "s";
+    buffer << o_count << " " << obj_name << "s";
   }
 
   int dices;
   int sides;
-  if (item_type(this) == AMMO || item_subtype(this) == Weapon::BOW) {
-    dices = item_throw_damage(this)->dices;
-    sides = item_throw_damage(this)->sides;
-  } else if (item_type(this) == WEAPON) {
-    dices = item_damage(this)->dices;
-    sides = item_damage(this)->sides;
+  if (o_type == AMMO || o_which == Weapon::BOW) {
+    dices = o_hurldmg.dices;
+    sides = o_hurldmg.sides;
+  } else if (o_type == WEAPON) {
+    dices = o_damage.dices;
+    sides = o_damage.sides;
   } else {
     error("Bad item type");
   }
 
   buffer << " (" << sides << "d" << dices << ")";
 
-  if (item_is_known(this)) {
+  if (identified) {
     buffer << " (";
-    int p_hit = item_bonus_hit(this);
+    int p_hit = o_hplus;
     if (p_hit >= 0) {
       buffer << "+";
     }
     buffer << p_hit << ",";
 
-    int p_dmg = item_bonus_damage(this);
+    int p_dmg = o_dplus;
     if (p_dmg >= 0) {
       buffer << "+";
     }
     buffer << p_dmg << ")";
   }
 
-  if (item_armor(this) != 0) {
+  if (o_arm != 0) {
     buffer << " [";
-    int p_armor = item_armor(this);
+    int p_armor = o_arm;
     if (p_armor >= 0) {
       buffer << "+";
     }

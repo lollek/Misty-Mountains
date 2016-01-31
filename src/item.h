@@ -38,6 +38,7 @@ public:
   /* Getters */
   virtual std::string   get_description() const = 0;
   virtual bool          is_magic() const = 0;
+
   Coordinate const&     get_position() const;
   int                   get_x() const;
   int                   get_y() const;
@@ -61,25 +62,3 @@ private:
   std::string   nickname;
 };
 
-static inline int item_type(Item const* item)
-{ return item->o_type; }
-static inline int item_subtype(Item const* item)
-{ return item->o_which; }
-static inline int item_count(Item const* item)
-{ return item->o_count; }
-static inline int item_charges(Item const* item)
-{ return item->o_charges; }
-static inline int item_armor(Item const* item)
-{ return item->o_arm; }
-static inline struct damage const* item_throw_damage(Item const* item)
-{ return &item->o_hurldmg; }
-static inline struct damage const* item_damage(Item const* item)
-{ return &item->o_damage; }
-static inline int item_bonus_hit(Item const* item)
-{ return item->o_hplus; }
-static inline int item_bonus_damage(Item const* item)
-{ return item->o_dplus; }
-
-/* Flags */
-static inline bool item_is_known(Item const* item)
-{ return item->o_flags & ISKNOW; }

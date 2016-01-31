@@ -146,18 +146,18 @@ string Potion::get_description() const {
   stringstream os;
 
   if (Potion::is_known(subtype)) {
-    if (item_count(this) == 1) {
+    if (o_count == 1) {
       os << "A potion of " << Potion::name(subtype);
     } else {
-      os << to_string(item_count(this)) << " potions of " << Potion::name(subtype);
+      os << to_string(o_count) << " potions of " << Potion::name(subtype);
     }
 
   } else {
     string const& color = *colors.at(static_cast<size_t>(subtype));
-    if (item_count(this) == 1) {
+    if (o_count == 1) {
       os << "A" << vowelstr(color) << " " << color << " potion";
     } else {
-      os << to_string(item_count(this)) << " " << color << " potions";
+      os << to_string(o_count) << " " << color << " potions";
     }
 
     string const& nickname = Potion::guess(subtype);
@@ -302,7 +302,7 @@ potion_quaff_something(void)
     return false;
 
   // Make certain that it is somethings that we want to drink
-  } else if (obj == nullptr || item_type(obj) != POTION) {
+  } else if (obj == nullptr || obj->o_type != POTION) {
     io_msg("that's undrinkable");
     return false;
   }
