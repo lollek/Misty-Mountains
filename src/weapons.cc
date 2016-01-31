@@ -62,26 +62,26 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
 
   switch (subtype) {
     case MACE: {
-      o_damage = {2,4};
-      o_hurldmg = {1,3};
+      set_attack_damage({2,4});
+      set_throw_damage({1,3});
       o_launch = NO_WEAPON;
     } break;
 
     case SWORD: {
-      o_damage = {3,4};
-      o_hurldmg = {1,2};
+      set_attack_damage({3,4});
+      set_throw_damage({1,2});
       o_launch = NO_WEAPON;
     } break;
 
     case BOW: {
-      o_damage = {1,1};
-      o_hurldmg = {2,3};
+      set_attack_damage({1,1});
+      set_throw_damage({2,3});
       o_launch = NO_WEAPON;
     } break;
 
     case ARROW: {
-      o_damage = {0,0};
-      o_hurldmg = {1,1};
+      set_attack_damage({0,0});
+      set_throw_damage({1,1});
       o_launch = BOW;
       o_count = os_rand_range(8) + 8;
       o_flags = ISMANY|ISMISL;
@@ -89,22 +89,22 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
     } break;
 
     case DAGGER: {
-      o_damage = {1,6};
-      o_hurldmg = {1,4};
+      set_attack_damage({1,6});
+      set_throw_damage({1,4});
       o_launch = NO_WEAPON;
       o_count = os_rand_range(4) + 2;
       o_flags = ISMISL;
     } break;
 
     case TWOSWORD: {
-      o_damage = {4,4};
-      o_hurldmg = {1,3};
+      set_attack_damage({4,4});
+      set_throw_damage({1,3});
       o_launch = NO_WEAPON;
     } break;
 
     case DART: {
-      o_damage = {0,0};
-      o_hurldmg = {1,3};
+      set_attack_damage({0,0});
+      set_throw_damage({1,3});
       o_launch = NO_WEAPON;
       o_count = os_rand_range(8) + 8;
       o_flags = ISMANY|ISMISL;
@@ -112,8 +112,8 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
     } break;
 
     case SHIRAKEN: {
-      o_damage = {0,0};
-      o_hurldmg = {2,4};
+      set_attack_damage({0,0});
+      set_throw_damage({2,4});
       o_launch = NO_WEAPON;
       o_count = os_rand_range(8) + 8;
       o_flags = ISMANY|ISMISL;
@@ -121,8 +121,8 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
     } break;
 
     case SPEAR: {
-      o_damage = {2,3};
-      o_hurldmg = {1,6};
+      set_attack_damage({2,3});
+      set_throw_damage({1,6});
       o_arm = 2;
       o_launch = NO_WEAPON;
       o_flags = ISMISL;
@@ -218,11 +218,11 @@ string Weapon::get_description() const {
   int dices;
   int sides;
   if (o_type == AMMO || o_which == Weapon::BOW) {
-    dices = o_hurldmg.dices;
-    sides = o_hurldmg.sides;
+    dices = get_throw_damage().dices;
+    sides = get_throw_damage().sides;
   } else if (o_type == WEAPON) {
-    dices = o_damage.dices;
-    sides = o_damage.sides;
+    dices = get_attack_damage().dices;
+    sides = get_attack_damage().sides;
   } else {
     error("Bad item type");
   }

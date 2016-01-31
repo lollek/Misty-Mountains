@@ -46,3 +46,19 @@ string const& Item::get_nickname() const {
 int Item::get_type() const {
   return o_type;
 }
+
+void Item::set_attack_damage(damage const& dmg) {
+  attack_damage = dmg;
+}
+
+void Item::set_throw_damage(damage const& dmg) {
+  throw_damage = dmg;
+}
+
+damage const& Item::get_attack_damage() const {
+  return attack_damage;
+}
+
+damage const& Item::get_throw_damage() const {
+  return throw_damage;
+}

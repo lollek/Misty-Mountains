@@ -33,6 +33,8 @@ public:
   void set_x(int);
   void set_y(int);
   void set_nickname(std::string const&);
+  void set_attack_damage(damage const&);
+  void set_throw_damage(damage const&);
 
   // Getters (virtual)
   virtual std::string   get_description() const = 0;
@@ -44,6 +46,8 @@ public:
   int                   get_y() const;
   std::string const&    get_nickname() const;
   int                   get_type() const;
+  damage const&         get_attack_damage() const;
+  damage const&         get_throw_damage() const;
 
   int           o_type;                // What kind of object it is
   int           o_launch;              // What you need to launch it
@@ -54,14 +58,14 @@ public:
   int           o_arm;                 // Armor protection
   int           o_flags;               // information about objects
   char          o_packch;              // What character it is in the pack
-  damage        o_damage;              // Damage if used like sword
-  damage        o_hurldmg;             // Damage if thrown
 
 protected:
   Item() = default;
 
 private:
   Coordinate    position_on_screen;
-  std::string   nickname;
+  std::string   nickname;              // TODO: See if we can remove this
+  damage        attack_damage;         // Damage if used like sword
+  damage        throw_damage;          // Damage if thrown
 };
 

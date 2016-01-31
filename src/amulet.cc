@@ -10,8 +10,8 @@ using namespace std;
 Amulet::~Amulet() {}
 
 Amulet::Amulet() : Item() {
-  o_damage  = {1, 2};
-  o_hurldmg = {1, 2};
+  set_attack_damage({1, 2});
+  set_throw_damage({1, 2});
   o_type    = AMULET;
 }
 

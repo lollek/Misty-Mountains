@@ -130,8 +130,8 @@ Potion::Potion(Potion::Type subtype_) : Item() {
   o_type       = POTION;
   o_which      = subtype_;
   o_count      = 1;
-  o_damage     = {1, 2};
-  o_hurldmg    = {1, 2};
+  set_attack_damage({1, 2});
+  set_throw_damage({1, 2});
 
   subtype = subtype_;
   guesses.resize(static_cast<size_t>(Potion::NPOTIONS));

@@ -133,8 +133,8 @@ wand_spell_magic_missile(int dy, int dx)
   bolt.o_hplus   = 100;
   bolt.o_dplus   = 1;
   bolt.o_flags   = ISMISL;
-  bolt.o_damage  = {0, 0};
-  bolt.o_hurldmg = {1, 4};
+  bolt.set_attack_damage({0, 0});
+  bolt.set_throw_damage({1, 4});
 
   Item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon != nullptr) {

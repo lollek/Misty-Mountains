@@ -70,10 +70,10 @@ new_thing(void)
   if (cur == nullptr) {
     error("curr is null");
   }
-  if (cur->o_damage.sides < 0 || cur->o_damage.dices < 0) {
+  if (cur->get_attack_damage().sides < 0 || cur->get_attack_damage().dices < 0) {
     error("cur->damage is negative");
   }
-  if (cur->o_hurldmg.sides < 0 || cur->o_hurldmg.dices < 0) {
+  if (cur->get_throw_damage().sides < 0 || cur->get_throw_damage().dices < 0) {
     error("cur->hurldmg is negative");
   }
   return cur;

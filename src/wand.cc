@@ -181,8 +181,8 @@ Wand::Wand() : Wand(random_wand_type()) {}
 
 Wand::Wand(Wand::Type subtype_) : Item(), identified(false) {
   o_type = STICK;
-  o_damage  = {1, 1};
-  o_hurldmg = {1, 1};
+  set_attack_damage({1, 1});
+  set_throw_damage({1, 1});
   o_arm = 11;
   o_count = 1;
   o_which = subtype_;

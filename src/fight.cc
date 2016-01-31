@@ -61,9 +61,9 @@ calculate_attacker(Character const& attacker, Item* weapon, bool thrown)
     mod.to_dmg = weapon->o_dplus;
 
     if (thrown) {
-      mod.damage.push_back(weapon->o_hurldmg);
+      mod.damage.push_back(weapon->get_throw_damage());
     } else {
-      mod.damage.push_back(weapon->o_damage);
+      mod.damage.push_back(weapon->get_attack_damage());
     }
 
   // But otherwise we use the attacker's stats (can happen to both monsters and player)
@@ -88,7 +88,7 @@ calculate_attacker(Character const& attacker, Item* weapon, bool thrown)
       if (weapon->o_launch != Weapon::NO_WEAPON && held_weapon != nullptr &&
           weapon->o_launch == held_weapon->o_which) {
 
-          mod.damage.at(0)  = held_weapon->o_hurldmg;
+          mod.damage.at(0)  = held_weapon->get_throw_damage();
           mod.to_hit       += held_weapon->o_hplus;
           mod.to_dmg       += held_weapon->o_dplus;
       }
