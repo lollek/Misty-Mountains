@@ -1,7 +1,6 @@
 #include <list>
 
-using namespace std;
-
+#include "amulet.h"
 #include "error_handling.h"
 #include "game.h"
 #include "traps.h"
@@ -17,6 +16,8 @@ using namespace std;
 #include "rogue.h"
 
 #include "level.h"
+
+using namespace std;
 
 int constexpr Level::max_items;
 int constexpr Level::max_monsters;
@@ -90,7 +91,7 @@ void Level::create_loot() {
   // If he is really deep in the dungeon and he hasn't found the
   // amulet yet, put it somewhere on the ground
   if (Game::current_level >= Game::amulet_min_level && !pack_contains_amulet()) {
-    Item* amulet = new_amulet();
+    Amulet* amulet = new Amulet();
     items.push_back(amulet);
 
     // Put it somewhere

@@ -1,0 +1,29 @@
+#include <string>
+
+#include "error_handling.h"
+#include "io.h"
+
+#include "amulet.h"
+
+using namespace std;
+
+Amulet::~Amulet() {}
+
+Amulet::Amulet() : Item() {
+  o_damage  = {1, 2};
+  o_hurldmg = {1, 2};
+  o_type    = AMULET;
+}
+
+string Amulet::get_description() const {
+  return "The Amulet of Yendor";
+}
+
+
+std::string amulet_description(Item const* item) {
+  Amulet const* amulet = dynamic_cast<Amulet const*>(item);
+  if (amulet == nullptr) {
+    error("Cannot describe non-amulet as amulet");
+  }
+  return amulet->get_description();
+}

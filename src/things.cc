@@ -2,8 +2,7 @@
 #include <string>
 #include <sstream>
 
-using namespace std;
-
+#include "amulet.h"
 #include "gold.h"
 #include "error_handling.h"
 #include "game.h"
@@ -24,6 +23,9 @@ using namespace std;
 #include "rogue.h"
 
 #include "things.h"
+
+using namespace std;
+
 
 /* Only oi_prob is used */
 vector<obj_info> things = {
@@ -59,7 +61,7 @@ inv_name(Item const* item, bool drop)
         buffer << item->o_count << " " << obj_type;
       }
     } break;
-    case AMULET: buffer << "The Amulet of Yendor"; break;
+    case AMULET: buffer << amulet_description(item); break;
     case GOLD: buffer << gold_description(item); break;
 
     default:
@@ -90,17 +92,6 @@ new_food(int which)
     default: cur->o_which = os_rand_range(10) ? 0 : 1; break;
   }
   return cur;
-}
-
-Item*
-new_amulet(void)
-{
-  Item* obj       = new Item();
-  obj->o_damage  = {1, 2};
-  obj->o_hurldmg = {1, 2};
-  obj->o_type    = AMULET;
-
-  return obj;
 }
 
 Item*

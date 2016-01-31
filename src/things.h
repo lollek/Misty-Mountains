@@ -27,7 +27,6 @@ bool drop(void);
 
 /* Return a new thing */
 Item* new_thing(void);
-Item* new_amulet(void);
 Item* new_food(int which);
 
 /* Pick an item out of a list of nitems possible objects */
