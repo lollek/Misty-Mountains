@@ -34,14 +34,20 @@ public:
   Wand& operator=(Wand const&) = default;
   Wand& operator=(Wand&&) = default;
 
+
+  // Modifier
+  void modify_charges(int amount);
+
   // Setters
   void set_identified();
+  void set_charges(int amount);
 
   // Getters
   std::string get_description() const override;
   bool        is_magic() const override;
   std::string get_material() const;
   bool        is_identified() const;
+  int         get_charges() const;
 
 
   // Static
@@ -56,6 +62,7 @@ public:
   static std::string const& material(Type subtype);
 
 private:
+  int charges;
   bool identified;
   Type subtype;
 

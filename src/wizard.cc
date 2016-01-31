@@ -206,10 +206,10 @@ void wizard_create_item(void) {
 
       if (bless == '-') {
         obj->o_flags |= ISCURSED;
-        obj->o_hplus -= os_rand_range(3) + 1;
+        obj->modify_hit_plus(-os_rand_range(3) + 1);
 
       } else if (bless == '+')
-        obj->o_hplus += os_rand_range(3) + 1;
+        obj->modify_hit_plus(os_rand_range(3) + 1);
     } break;
 
     case ARMOR: {
@@ -220,10 +220,10 @@ void wizard_create_item(void) {
       io_msg_clear();
       if (bless == '-') {
         obj->o_flags |= ISCURSED;
-        obj->o_arm += os_rand_range(3) + 1;
+        obj->modify_armor(os_rand_range(3) + 1);
 
       } else if (bless == '+')
-        obj->o_arm -= os_rand_range(3) + 1;
+        obj->modify_armor(-os_rand_range(3) + 1);
     } break;
 
     case RING: {
@@ -237,7 +237,7 @@ void wizard_create_item(void) {
           io_msg_clear();
           if (bless == '-')
             obj->o_flags |= ISCURSED;
-          obj->o_arm = (bless == '-' ? -1 : os_rand_range(2) + 1);
+          obj->set_armor(bless == '-' ? -1 : os_rand_range(2) + 1);
         } break;
       }
     } break;
@@ -286,15 +286,15 @@ void wizard_levels_and_gear(void) {
   /* Give him a sword (+1,+1) */
   if (pack_equipped_item(EQUIPMENT_RHAND) == nullptr) {
     Item* obj = new Weapon(Weapon::TWOSWORD, false);
-    obj->o_hplus = 1;
-    obj->o_dplus = 1;
+    obj->set_hit_plus(1);
+    obj->set_damage_plus(1);
     pack_equip_item(obj);
   }
 
   /* And his suit of armor */
   if (pack_equipped_item(EQUIPMENT_ARMOR) == nullptr) {
     Item* obj = new Armor(Armor::Type::PLATE_MAIL, false);
-    obj->o_arm = -5;
+    obj->set_armor(-5);
     obj->o_flags |= ISKNOW;
     obj->o_count = 1;
     pack_equip_item(obj);

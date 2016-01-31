@@ -22,7 +22,7 @@ Armor::~Armor() {}
 
 bool Armor::is_magic() const {
   return ((o_flags & ISPROT) ||
-      o_arm != Armor::ac(subtype));
+      get_armor() != Armor::ac(subtype));
 }
 
 Armor* Armor::clone() const {
@@ -56,16 +56,16 @@ Armor::Armor(Armor::Type type, bool random_stats) :
   Item(), subtype(type), identified(false) {
   o_type = ARMOR;
   o_which = type;
-  o_arm = Armor::ac(type);
+  set_armor(Armor::ac(type));
 
   if (random_stats) {
     int rand = os_rand_range(100);
     if (rand < 20) {
       o_flags |= ISCURSED;
-      o_arm += os_rand_range(3) + 1;
+      modify_armor(os_rand_range(3) + 1);
     }
     else if (rand < 28) {
-      o_arm -= os_rand_range(3) + 1;
+      modify_armor(-os_rand_range(3) + 1);
     }
   }
 }
@@ -142,8 +142,8 @@ string Armor::get_description() const {
   stringstream buffer;
 
   string const& obj_name = Armor::name(static_cast<Armor::Type>(o_which));
-  int bonus_ac = Armor::ac(static_cast<Armor::Type>(o_which)) -o_arm;
-  int base_ac = 10 - o_arm - bonus_ac;
+  int bonus_ac = Armor::ac(static_cast<Armor::Type>(o_which)) - get_armor();
+  int base_ac = 10 - get_armor() - bonus_ac;
 
   buffer << "A" << vowelstr(obj_name) << " " <<obj_name << " [" << base_ac;
 

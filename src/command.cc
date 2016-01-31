@@ -183,9 +183,10 @@ command_wizard_do(char ch)
 
     case CTRL('~'):
      {
-       Item* item = pack_get_item("charge", STICK);
-       if (item != nullptr)
-         item->o_charges = 10000;
+       Wand* wand = static_cast<Wand*>(pack_get_item("charge", STICK));
+       if (wand != nullptr) {
+         wand->set_charges(10000);
+       }
      }
      break;
 

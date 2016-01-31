@@ -46,7 +46,7 @@ Weapon* Weapon::clone() const {
 }
 
 bool Weapon::is_magic() const {
-  return o_hplus != 0 || o_dplus != 0;
+  return get_hit_plus() != 0 || get_damage_plus() != 0;
 }
 
 Weapon::~Weapon() {}
@@ -123,7 +123,7 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
     case SPEAR: {
       set_attack_damage({2,3});
       set_throw_damage({1,6});
-      o_arm = 2;
+      set_armor(2);
       o_launch = NO_WEAPON;
       o_flags = ISMISL;
     } break;
@@ -136,10 +136,10 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
     int rand = os_rand_range(100);
     if (rand < 10) {
       o_flags |= ISCURSED;
-      o_hplus -= os_rand_range(3) + 1;
+      modify_hit_plus(-os_rand_range(3) + 1);
     }
     else if (rand < 15) {
-      o_hplus += os_rand_range(3) + 1;
+      modify_hit_plus(os_rand_range(3) + 1);
     }
   }
 }
@@ -231,22 +231,22 @@ string Weapon::get_description() const {
 
   if (identified) {
     buffer << " (";
-    int p_hit = o_hplus;
+    int p_hit = get_hit_plus();
     if (p_hit >= 0) {
       buffer << "+";
     }
     buffer << p_hit << ",";
 
-    int p_dmg = o_dplus;
+    int p_dmg = get_damage_plus();
     if (p_dmg >= 0) {
       buffer << "+";
     }
     buffer << p_dmg << ")";
   }
 
-  if (o_arm != 0) {
+  if (get_armor() != 0) {
     buffer << " [";
-    int p_armor = o_arm;
+    int p_armor = get_armor();
     if (p_armor >= 0) {
       buffer << "+";
     }

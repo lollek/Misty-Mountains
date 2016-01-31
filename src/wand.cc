@@ -183,15 +183,15 @@ Wand::Wand(Wand::Type subtype_) : Item(), identified(false) {
   o_type = STICK;
   set_attack_damage({1, 1});
   set_throw_damage({1, 1});
-  o_arm = 11;
+  set_armor(11);
   o_count = 1;
   o_which = subtype_;
   subtype = subtype_;
 
   if (subtype == LIGHT) {
-    o_charges = os_rand_range(10) + 10;
+    charges = os_rand_range(10) + 10;
   } else {
-    o_charges = os_rand_range(5) + 3;
+    charges = os_rand_range(5) + 3;
   }
 }
 
@@ -223,7 +223,7 @@ string Wand::get_description() const {
     }
 
     if (is_identified()) {
-      os << " [" << o_charges << " charges]";
+      os << " [" << charges << " charges]";
     }
 
     os << " (" << Wand::material(subtype) << ")";
@@ -245,4 +245,16 @@ string wand_description(Item const* item) {
     error("Cannot describe non-wand as wand");
   }
   return wand->get_description();
+}
+
+int Wand::get_charges() const {
+  return charges;
+}
+
+void Wand::set_charges(int amount) {
+  charges = amount;
+}
+
+void Wand::modify_charges(int amount) {
+  charges += amount;
 }

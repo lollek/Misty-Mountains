@@ -88,14 +88,14 @@ pack_print_evaluate_item(Item* item)
 
     case WEAPON: case AMMO:
       worth = Weapon::worth(static_cast<Weapon::Type>(item->o_which));
-      worth *= 3 * (item->o_hplus + item->o_dplus) + item->o_count;
+      worth *= 3 * (item->get_hit_plus() + item->get_damage_plus()) + item->o_count;
       item->o_flags |= ISKNOW;
       break;
 
     case ARMOR:
       worth = Armor::value(static_cast<Armor::Type>(item->o_which));
-      worth += (9 - item->o_arm) * 100;
-      worth += (10 * (Armor::ac(static_cast<Armor::Type>(item->o_which)) - item->o_arm));
+      worth += (9 - item->get_armor()) * 100;
+      worth += (10 * (Armor::ac(static_cast<Armor::Type>(item->o_which)) - item->get_armor()));
       item->o_flags |= ISKNOW;
       break;
 
@@ -125,8 +125,8 @@ pack_print_evaluate_item(Item* item)
       worth = Ring::worth(subtype);
       if (subtype == Ring::Type::ADDSTR || subtype == Ring::Type::ADDDAM ||
           subtype == Ring::Type::PROTECT || subtype == Ring::Type::ADDHIT) {
-        if (item->o_arm > 0) {
-          worth += item->o_arm * 100;
+        if (item->get_armor() > 0) {
+          worth += item->get_armor() * 100;
         } else {
           worth = 10;
         }
@@ -137,13 +137,17 @@ pack_print_evaluate_item(Item* item)
       Ring::set_known(subtype);
     } break;
 
-    case STICK:
+    case STICK: {
+      Wand* wand = dynamic_cast<Wand* const>(item);
+      if (wand == nullptr) {
+        error("Could not cast wand to wand type");
+      }
       Wand::worth(static_cast<Wand::Type>(item->o_which));
-      worth += 20 * item->o_charges;
+      worth += 20 * wand->get_charges();
       if (!(item->o_flags & ISKNOW))
         worth /= 2;
       Wand::set_known(static_cast<Wand::Type>(item->o_which));
-      break;
+    } break;
 
     case AMULET:
       worth = 1000;
@@ -205,8 +209,9 @@ pack_add(Item* obj, bool silent, bool from_floor)
   if (obj->o_type == POTION || obj->o_type == SCROLL || obj->o_type == FOOD
       || obj->o_type == AMMO)
     for (Item* ptr : player_pack) {
-      if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which
-          && ptr->o_hplus == obj->o_hplus && ptr->o_dplus == obj->o_dplus)
+      if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which &&
+          ptr->get_hit_plus() == obj->get_hit_plus() &&
+          ptr->get_damage_plus() == obj->get_damage_plus())
       {
         if (from_floor)
           Game::level->items.remove(obj);

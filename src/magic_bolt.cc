@@ -122,8 +122,8 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
   if (!monster_save_throw(VS_MAGIC, mon))
   {
     Weapon bolt(Weapon::SPEAR);
-    bolt.o_hplus      = 100;
-    bolt.o_dplus      = 0;
+    bolt.set_hit_plus(100);
+    bolt.set_damage_plus(0);
     bolt.set_throw_damage({6,6});
     bolt.set_position(*pos);
 

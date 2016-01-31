@@ -35,10 +35,18 @@ public:
   void set_nickname(std::string const&);
   void set_attack_damage(damage const&);
   void set_throw_damage(damage const&);
+  void set_hit_plus(int amount);
+  void set_damage_plus(int amount);
+  void set_armor(int amount);
 
   // Getters (virtual)
   virtual std::string   get_description() const = 0;
   virtual bool          is_magic() const = 0;
+
+  // Modifiers
+  void modify_hit_plus(int amount);
+  void modify_damage_plus(int amount);
+  void modify_armor(int amount);
 
   // Getters
   Coordinate const&     get_position() const;
@@ -48,14 +56,14 @@ public:
   int                   get_type() const;
   damage const&         get_attack_damage() const;
   damage const&         get_throw_damage() const;
+  int                   get_hit_plus() const;
+  int                   get_damage_plus() const;
+  int                   get_armor() const;
 
   int           o_type;                // What kind of object it is
   int           o_launch;              // What you need to launch it
   int           o_count;               // count for plural objects
   int           o_which;               // Which object of a type it is
-  int           o_hplus;               // Plusses to hit
-  int           o_dplus;               // Plusses to damage
-  int           o_arm;                 // Armor protection
   int           o_flags;               // information about objects
   char          o_packch;              // What character it is in the pack
 
@@ -67,5 +75,8 @@ private:
   std::string   nickname;              // TODO: See if we can remove this
   damage        attack_damage;         // Damage if used like sword
   damage        throw_damage;          // Damage if thrown
+  int           hit_plus;              // Plusses to hit
+  int           damage_plus;           // Plusses to damage
+  int           armor;                 // Armor protection
 };
 

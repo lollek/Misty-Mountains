@@ -41,9 +41,9 @@ add_ring_attack_modifiers(attack_modifier& mod) {
     Item const* ring = ring_thing;
 
     if (ring->o_which == Ring::Type::ADDDAM) {
-      mod.to_dmg += ring->o_arm;
+      mod.to_dmg += ring->get_armor();
     } else if (ring->o_which == Ring::Type::ADDHIT) {
-      mod.to_dmg += ring->o_arm;
+      mod.to_dmg += ring->get_armor();
     }
   }
 }
@@ -57,8 +57,8 @@ calculate_attacker(Character const& attacker, Item* weapon, bool thrown)
 
   // Weapons override base attack (at the moment, monsters shouldn't use weapons)
   if (weapon != nullptr) {
-    mod.to_hit = weapon->o_hplus;
-    mod.to_dmg = weapon->o_dplus;
+    mod.to_hit = weapon->get_hit_plus();
+    mod.to_dmg = weapon->get_damage_plus();
 
     if (thrown) {
       mod.damage.push_back(weapon->get_throw_damage());
@@ -89,8 +89,8 @@ calculate_attacker(Character const& attacker, Item* weapon, bool thrown)
           weapon->o_launch == held_weapon->o_which) {
 
           mod.damage.at(0)  = held_weapon->get_throw_damage();
-          mod.to_hit       += held_weapon->o_hplus;
-          mod.to_dmg       += held_weapon->o_dplus;
+          mod.to_hit       += held_weapon->get_hit_plus();
+          mod.to_dmg       += held_weapon->get_damage_plus();
       }
     }
 

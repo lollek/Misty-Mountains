@@ -56,14 +56,14 @@ Ring::Ring(Ring::Type type, bool random_stats) : Item(), subtype(type) {
   switch (o_which) {
     case ADDSTR: case PROTECT: case ADDHIT: case ADDDAM: {
       if (random_stats) {
-        o_arm = os_rand_range(3);
-        if (o_arm == 0) {
-          o_arm = -1;
+        set_armor(os_rand_range(3));
+        if (get_armor() == 0) {
+          set_armor(-1);
           o_flags |= ISCURSED;
         }
 
       } else {
-        o_arm = 1;
+        set_armor(1);
       }
     } break;
 
@@ -194,10 +194,10 @@ std::string Ring::get_description() const {
 
     switch (subtype) {
       case Ring::PROTECT: case Ring::ADDSTR: case Ring::ADDDAM: case Ring::ADDHIT:
-        if (o_arm > 0) {
-          os << " [+" << o_arm << "]";
+        if (get_armor() > 0) {
+          os << " [+" << get_armor() << "]";
         } else {
-          os << " [" << o_arm << "]";
+          os << " [" << get_armor() << "]";
         }
 
     case SUSTSTR: case SEARCH: case SEEINVIS: case NOP: case AGGR:

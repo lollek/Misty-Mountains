@@ -130,8 +130,8 @@ wand_spell_magic_missile(int dy, int dx)
 {
   Weapon bolt(Weapon::DAGGER);
   bolt.o_type    = '*';
-  bolt.o_hplus   = 100;
-  bolt.o_dplus   = 1;
+  bolt.set_hit_plus(100);
+  bolt.set_damage_plus(1);
   bolt.o_flags   = ISMISL;
   bolt.set_attack_damage({0, 0});
   bolt.set_throw_damage({1, 4});
@@ -166,14 +166,15 @@ wand_zap(void)
   }
 
   Item* obj = pack_get_item("zap with", STICK);
+  Wand* wand = dynamic_cast<Wand*>(obj);
   if (obj == nullptr)
     return false;
 
-  else if (obj->o_type != STICK) {
+  else if (obj->o_type != STICK || wand == nullptr) {
     io_msg("you can't zap with that!");
     return false;
 
-  } else if (obj->o_charges == 0) {
+  } else if (wand->get_charges() == 0) {
     io_msg("nothing happens");
     return true;
   }
@@ -322,7 +323,7 @@ wand_zap(void)
     case Wand::NWANDS: error("Unknown type NWANDS");
   }
 
-    obj->o_charges--;
+    wand->modify_charges(-1);
     return true;
 }
 

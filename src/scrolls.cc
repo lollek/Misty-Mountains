@@ -242,7 +242,7 @@ static bool enchant_players_armor() {
     return false;
   }
 
-  arm->o_arm--;
+  arm->modify_armor(-1);
   arm->o_flags &= ~ISCURSED;
   io_msg("your armor glows %s for a moment",
           player->is_hallucinating() ? color_random().c_str() : "silver");
@@ -377,9 +377,9 @@ static bool player_enchant_weapon() {
 
   weapon->o_flags &= ~ISCURSED;
   if (os_rand_range(2) == 0) {
-    weapon->o_hplus++;
+    weapon->modify_hit_plus(1);
   } else {
-    weapon->o_dplus++;
+    weapon->modify_damage_plus(1);
   }
 
   io_msg("your %s glows %s for a moment",

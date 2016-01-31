@@ -57,19 +57,19 @@ Player::Player() :
   /* And his suit of armor */
   Armor* armor = new Armor(Armor::RING_MAIL, false);
   armor->o_flags |= ISKNOW;
-  armor->o_arm -= 1;
+  armor->modify_armor(-1);
   pack_equip_item(armor);
 
   /* Give him his weaponry.  First a mace. */
   Weapon* mace = new Weapon(Weapon::MACE, false);
-  mace->o_hplus  = 1;
-  mace->o_dplus  = 1;
+  mace->set_hit_plus(1);
+  mace->set_damage_plus(1);
   mace->o_flags |= ISKNOW;
   pack_equip_item(mace);
 
   /* Now a +1 bow */
   Weapon* bow = new Weapon(Weapon::BOW, false);
-  bow->o_hplus  = 1;
+  bow->set_hit_plus(1);
   bow->o_flags |= ISKNOW;
   pack_add(bow, true);
   command_weapon_set_last_used(bow);
@@ -84,19 +84,19 @@ Player::Player() :
 int Player::get_armor() const {
   // If we are naked, use base armor, otherwise use armor's
   Item const* const arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  int ac = arm ? arm->o_arm : Character::get_armor();
+  int ac = arm ? arm->get_armor() : Character::get_armor();
 
   // If weapon help protection, add it
   Item const* const weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon)
-    ac -= weapon->o_arm;
+    ac -= weapon->get_armor();
 
   // If rings help, add their stats as well
   for (int i = 0; i < PACK_RING_SLOTS; ++i)
   {
     Item const* ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != nullptr && ring->o_which == Ring::Type::PROTECT)
-      ac -= ring->o_arm;
+      ac -= ring->get_armor();
   }
 
   return 20 - ac;
@@ -180,7 +180,7 @@ int Player::get_strength_with_bonuses() const {
   {
     Item const* ring = pack_equipped_item(pack_ring_slots[i]);
     if (ring != nullptr && ring->o_which == Ring::Type::ADDSTR)
-      bonuses += ring->o_arm;
+      bonuses += ring->get_armor();
   }
   return get_strength() + bonuses;
 }
@@ -191,7 +191,7 @@ bool Player::saving_throw(int which) const {
     {
       Item* ring = pack_equipped_item(pack_ring_slots[i]);
       if (ring != nullptr && ring->o_which == Ring::Type::PROTECT)
-        which -= ring->o_arm;
+        which -= ring->get_armor();
     }
 
   int need = 14 + which - get_level() / 2;
@@ -580,7 +580,7 @@ bool Player::has_ring_with_ability(int ability) const {
 void Player::rust_armor() {
   Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == nullptr || arm->o_type != ARMOR || arm->o_which == Armor::Type::LEATHER ||
-      arm->o_arm >= 9) {
+      arm->get_armor() >= 9) {
     return;
   }
 
@@ -590,7 +590,7 @@ void Player::rust_armor() {
     }
   }
   else {
-    arm->o_arm++;
+    arm->modify_armor(1);
     io_msg("your armor weakens");
   }
 }
