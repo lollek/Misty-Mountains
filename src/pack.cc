@@ -86,18 +86,26 @@ pack_print_evaluate_item(Item* item)
       worth = 2 * item->o_count;
       break;
 
-    case WEAPON: case AMMO:
+    case WEAPON: case AMMO: {
+      Weapon* weapon = dynamic_cast<Weapon*>(item);
+      if (weapon == nullptr) {
+        error("Could not cast weapon to Weapon class");
+      }
       worth = Weapon::worth(static_cast<Weapon::Type>(item->o_which));
       worth *= 3 * (item->get_hit_plus() + item->get_damage_plus()) + item->o_count;
-      item->o_flags |= ISKNOW;
-      break;
+      weapon->set_identified();
+    } break;
 
-    case ARMOR:
+    case ARMOR: {
+      Armor* armor = dynamic_cast<Armor*>(item);
+      if (armor == nullptr) {
+        error("Could not cast armor to Armor class");
+      }
       worth = Armor::value(static_cast<Armor::Type>(item->o_which));
       worth += (9 - item->get_armor()) * 100;
       worth += (10 * (Armor::ac(static_cast<Armor::Type>(item->o_which)) - item->get_armor()));
-      item->o_flags |= ISKNOW;
-      break;
+      armor->set_identified();
+    } break;
 
     case SCROLL:
       {
@@ -140,11 +148,11 @@ pack_print_evaluate_item(Item* item)
     case STICK: {
       Wand* wand = dynamic_cast<Wand* const>(item);
       if (wand == nullptr) {
-        error("Could not cast wand to wand type");
+        error("Could not cast wand to Wand class");
       }
       Wand::worth(static_cast<Wand::Type>(item->o_which));
       worth += 20 * wand->get_charges();
-      if (!(item->o_flags & ISKNOW))
+      if (!Wand::is_known(static_cast<Wand::Type>(item->o_which)))
         worth /= 2;
       Wand::set_known(static_cast<Wand::Type>(item->o_which));
     } break;
@@ -619,7 +627,20 @@ pack_identify_item(void)
     case POTION: Potion::set_known(static_cast<Potion::Type>(obj->o_which)); break;
     case STICK:  Wand::set_known(static_cast<Wand::Type>(obj->o_which)); break;
     case RING:   Ring::set_known(static_cast<Ring::Type>(obj->o_which)); break;
-    case WEAPON: case ARMOR: obj->o_flags |= ISKNOW; break;
+    case WEAPON: {
+      Weapon* weapon = dynamic_cast<Weapon*>(obj);
+      if (weapon == nullptr) {
+        error("Could not cast weapon to Weapon class");
+      }
+      weapon->set_identified();
+    } break;
+    case ARMOR: {
+      Armor* armor = dynamic_cast<Armor*>(obj);
+      if (armor == nullptr) {
+        error("Could not cast armor to Armor class");
+      }
+      armor->set_identified();
+    } break;
     default: break;
   }
 

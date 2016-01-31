@@ -6,7 +6,6 @@
 #include "Coordinate.h"
 
 // flags for objects
-#define ISKNOW	0000002		/* player knows details about the object */
 #define ISMISL	0000004		/* object is a missile type */
 #define ISMANY	0000010		/* object comes in groups */
 #ifndef ISFOUND

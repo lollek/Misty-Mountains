@@ -56,7 +56,7 @@ Player::Player() :
 
   /* And his suit of armor */
   Armor* armor = new Armor(Armor::RING_MAIL, false);
-  armor->o_flags |= ISKNOW;
+  armor->set_identified();
   armor->modify_armor(-1);
   pack_equip_item(armor);
 
@@ -64,20 +64,20 @@ Player::Player() :
   Weapon* mace = new Weapon(Weapon::MACE, false);
   mace->set_hit_plus(1);
   mace->set_damage_plus(1);
-  mace->o_flags |= ISKNOW;
+  mace->set_identified();
   pack_equip_item(mace);
 
   /* Now a +1 bow */
   Weapon* bow = new Weapon(Weapon::BOW, false);
   bow->set_hit_plus(1);
-  bow->o_flags |= ISKNOW;
+  bow->set_identified();
   pack_add(bow, true);
   command_weapon_set_last_used(bow);
 
   /* Now some arrows */
   Weapon* arrow = new Weapon(Weapon::ARROW, false);
   arrow->o_count  = os_rand_range(15) + 25;
-  arrow->o_flags |= ISKNOW;
+  arrow->set_identified();
   pack_add(arrow, true);
 }
 

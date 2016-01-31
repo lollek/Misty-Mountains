@@ -285,18 +285,18 @@ void wizard_levels_and_gear(void) {
 
   /* Give him a sword (+1,+1) */
   if (pack_equipped_item(EQUIPMENT_RHAND) == nullptr) {
-    Item* obj = new Weapon(Weapon::TWOSWORD, false);
-    obj->set_hit_plus(1);
-    obj->set_damage_plus(1);
-    pack_equip_item(obj);
+    Weapon* weapon = new Weapon(Weapon::TWOSWORD, false);
+    weapon->set_hit_plus(1);
+    weapon->set_damage_plus(1);
+    weapon->set_identified();
+    pack_equip_item(weapon);
   }
 
   /* And his suit of armor */
   if (pack_equipped_item(EQUIPMENT_ARMOR) == nullptr) {
-    Item* obj = new Armor(Armor::Type::PLATE_MAIL, false);
-    obj->set_armor(-5);
-    obj->o_flags |= ISKNOW;
-    obj->o_count = 1;
-    pack_equip_item(obj);
+    Armor* armor = new Armor(Armor::Type::PLATE_MAIL, false);
+    armor->set_armor(-5);
+    armor->set_identified();
+    pack_equip_item(armor);
   }
 }
