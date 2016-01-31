@@ -223,18 +223,18 @@ command_identify_character(void)
 
   struct character_list
   {
-    char ch;
+    int ch;
     char const* description;
   } const ident_list[] = {
-    {VWALL,   "wall of a room"}, {HWALL,   "wall of a room"},
-    {GOLD,    "gold"},           {STAIRS,  "a staircase"},
-    {DOOR,    "door"},           {FLOOR,   "room floor"},
-    {PLAYER,  "you"},            {PASSAGE, "passage"},
-    {TRAP,    "trap"},           {POTION,  "potion"},
-    {SCROLL,  "scroll"},         {FOOD,    "food"},
-    {WEAPON,  "weapon"},         {SHADOW,  "solid rock"},
-    {ARMOR,   "armor"},          {AMULET,  "the Amulet of Yendor"},
-    {RING,    "ring"},           {STICK,   "wand or staff"},
+    {VWALL,               "wall of a room"}, {HWALL,   "wall of a room"},
+    {GOLD,                "gold"},           {STAIRS,  "a staircase"},
+    {DOOR,                "door"},           {FLOOR,   "room floor"},
+    {player->get_type(),  "you"},            {PASSAGE, "passage"},
+    {TRAP,                "trap"},           {POTION,  "potion"},
+    {SCROLL,              "scroll"},         {FOOD,    "food"},
+    {WEAPON,              "weapon"},         {SHADOW,  "solid rock"},
+    {ARMOR,               "armor"},          {AMULET,  "the Amulet of Yendor"},
+    {RING,                "ring"},           {STICK,   "wand or staff"},
     {'\0', ""}
   };
   for (struct character_list const* ptr = ident_list; ptr->ch != '\0'; ++ptr)

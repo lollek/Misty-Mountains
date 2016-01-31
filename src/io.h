@@ -52,10 +52,10 @@ private:
 
 #define GAME_VERSION "Rogue14 " VERSION " - Based on Rogue5.4.4"
 
-#define MAXSTR 1024 /* maximum length of strings */
-#define MAXINP   50 /* max string to read from terminal or environment */
-#define MAXLINES 32 /* maximum number of screen lines used */
-#define MAXCOLS  80 /* maximum number of screen columns used */
+#define MAXSTR 1024 // maximum length of strings
+#define MAXINP   50 // max string to read from terminal or environment
+#define MAXLINES 32 // maximum number of screen lines used
+#define MAXCOLS  80 // maximum number of screen columns used
 #define NUMLINES 24
 #define NUMCOLS  80
 #define STATLINE (NUMLINES - 1)
@@ -64,31 +64,23 @@ private:
 #define CTRL(c) (c & 037)
 #define UNCTRL(c) (c + 'A' - CTRL('A'))
 
-/* Extra named keys for curses */
+// Extra named keys for curses
 #define KEY_SPACE	' '
 #define KEY_ESCAPE	27
 
-typedef enum attribute {
-  ATTR_FIRE,
-  ATTR_ICE,
-  ATTR_NONE,
-} attribute;
-
+// Magic bolts
 #define BOLT_VERTICAL    '|'
 #define BOLT_DIAGUP      '/'
 #define BOLT_HORIZONTAL  '-'
 #define BOLT_DIAGDOWN    '\\'
 
-/* Glyphs for things */
-typedef chtype glyph;
+// Glyphs for things
 #define SHADOW		' '
 #define VWALL		'|'
 #define HWALL		'-'
 #define PASSAGE		'#'
 #define DOOR		'+'
 #define FLOOR		'.'
-
-#define PLAYER		'@'
 
 #define TRAP		'^'
 #define STAIRS		'%'
