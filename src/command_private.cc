@@ -42,9 +42,9 @@ static bool command_attack_bow(Coordinate const* delta)
 
   Item* arrow = pack_remove(ptr, true, false);
   io_missile_motion(arrow, delta->y, delta->x);
-  Monster* monster_at_pos = Game::level->get_monster(arrow->get_pos());
+  Monster* monster_at_pos = Game::level->get_monster(arrow->get_position());
 
-  if (monster_at_pos == nullptr || !fight_against_monster(&arrow->get_pos(), arrow, true))
+  if (monster_at_pos == nullptr || !fight_against_monster(&arrow->get_position(), arrow, true))
     weapon_missile_fall(arrow, true);
 
   return true;
@@ -495,7 +495,7 @@ bool command_throw(void)
 
   obj = pack_remove(obj, true, false);
   io_missile_motion(obj, ydelta, xdelta);
-  Monster* monster_at_pos = Game::level->get_monster(obj->get_pos());
+  Monster* monster_at_pos = Game::level->get_monster(obj->get_position());
 
   /* Throwing an arrow always misses */
   if (obj->o_which == Weapon::ARROW)
@@ -511,7 +511,7 @@ bool command_throw(void)
   /* AHA! Here it has hit something.  If it is a wall or a door,
    * or if it misses (combat) the monster, put it on the floor */
   bool missed = monster_at_pos == nullptr ||
-    !fight_against_monster(&obj->get_pos(), obj, true);
+    !fight_against_monster(&obj->get_position(), obj, true);
 
   if (missed)
   {
@@ -642,7 +642,7 @@ bool command_drop(void)
   /* Link it into the level object list */
   Game::level->items.push_back(obj);
 
-  obj->set_pos(player->get_position());
+  obj->set_position(player->get_position());
 
   io_msg("dropped %s", obj->get_description().c_str());
   return true;

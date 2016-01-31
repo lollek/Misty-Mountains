@@ -179,7 +179,7 @@ void daemon_change_visuals() {
 
   // change the items
   for (Item* item : Game::level->items) {
-    Coordinate const& item_pos = item->get_pos();
+    Coordinate const& item_pos = item->get_position();
     if (player->can_see(item_pos)) {
       Game::io->print_color(item_pos.x, item_pos.y, rnd_thing());
     }

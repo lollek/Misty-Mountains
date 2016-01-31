@@ -41,7 +41,7 @@ void IO::print_item(Item* item) {
     symbol_to_print = rnd_thing();
   }
 
-  Coordinate const& coord = item->get_pos();
+  Coordinate const& coord = item->get_position();
   print_color(coord.x, coord.y, symbol_to_print);
 }
 
@@ -666,24 +666,24 @@ io_missile_motion(Item* item, int ydelta, int xdelta)
   int ch;
 
   /* Come fly with us ... */
-  item->set_pos(player->get_position());
+  item->set_position(player->get_position());
   for (;;)
   {
     /* Erase the old one */
-    if (item->get_pos() ==  player->get_position() &&
-        player->can_see(item->get_pos()))
+    if (item->get_position() ==  player->get_position() &&
+        player->can_see(item->get_position()))
     {
-      ch = Game::level->get_ch(item->get_pos());
+      ch = Game::level->get_ch(item->get_position());
       Game::io->print_color(item->get_x(), item->get_y(), ch);
     }
 
     /* Get the new position */
     item->set_y(item->get_y() + ydelta);
     item->set_x(item->get_x() + xdelta);
-    if (step_ok(ch = Game::level->get_type(item->get_pos())) && ch != DOOR)
+    if (step_ok(ch = Game::level->get_type(item->get_position())) && ch != DOOR)
     {
       /* It hasn't hit anything yet, so display it if it alright. */
-      if (player->can_see(item->get_pos()))
+      if (player->can_see(item->get_position()))
       {
         os_usleep(10000);
         Game::io->print_color(item->get_x(), item->get_y(), item->o_type);

@@ -9,7 +9,7 @@ using namespace std;
 
 Item::~Item() {}
 
-void Item::set_pos(Coordinate const& new_value) {
+void Item::set_position(Coordinate const& new_value) {
   position_on_screen = new_value;
 }
 
@@ -27,7 +27,7 @@ void Item::set_nickname(std::string const& new_value) {
 
 
 
-Coordinate const& Item::get_pos() const {
+Coordinate const& Item::get_position() const {
   return position_on_screen;
 }
 

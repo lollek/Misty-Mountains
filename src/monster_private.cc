@@ -29,16 +29,16 @@ monster_find_new_target(Monster* monster)
     if (obj->o_type == SCROLL && obj->o_which == Scroll::Type::SCARE)
       continue;
 
-    if (Game::level->get_room(obj->get_pos()) == monster->get_room() &&
+    if (Game::level->get_room(obj->get_position()) == monster->get_room() &&
         os_rand_range(100) < prob)
     {
       auto result = find_if(Game::level->monsters.cbegin(), Game::level->monsters.cend(),
           [&] (Monster const* m) {
-          return m->t_dest == &obj->get_pos();
+          return m->t_dest == &obj->get_position();
       });
 
       if (result == Game::level->monsters.cend()) {
-        monster->set_target(&obj->get_pos());
+        monster->set_target(&obj->get_position());
         return;
       }
     }

@@ -178,7 +178,7 @@ move_do_loop_default(bool after, Coordinate& coord) {
   // Try to pick up any items here
   Item *item = Game::level->get_item(coord);
   if (item != nullptr) {
-    pack_pick_up(item->get_pos(), false);
+    pack_pick_up(item->get_position(), false);
     player->set_not_running();
   }
 

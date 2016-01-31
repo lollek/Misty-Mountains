@@ -143,7 +143,7 @@ wand_spell_magic_missile(int dy, int dx)
 
   io_missile_motion(&bolt, dy, dx);
 
-  Monster* target = Game::level->get_monster(bolt.get_pos());
+  Monster* target = Game::level->get_monster(bolt.get_position());
   if (target == nullptr) {
     io_msg("the missle vanishes with a puff of smoke");
 
@@ -151,7 +151,7 @@ wand_spell_magic_missile(int dy, int dx)
     io_msg("the missle missed the %s", target->get_name().c_str());
 
   } else {
-    fight_against_monster(&bolt.get_pos(), &bolt, true);
+    fight_against_monster(&bolt.get_position(), &bolt, true);
   }
 }
 

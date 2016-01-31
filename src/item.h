@@ -30,19 +30,19 @@ public:
   virtual Item* clone() const = 0;
 
   /* Setters */
-  void set_pos(Coordinate const&);
+  void set_position(Coordinate const&);
   void set_x(int);
   void set_y(int);
   void set_nickname(std::string const&);
 
   /* Getters */
-  virtual std::string        get_description() const = 0;
-  virtual bool               is_magic() const = 0;
-  Coordinate const&  get_pos() const;
-  int                get_x() const;
-  int                get_y() const;
-  std::string const& get_nickname() const;
-  int                get_type() const;
+  virtual std::string   get_description() const = 0;
+  virtual bool          is_magic() const = 0;
+  Coordinate const&     get_position() const;
+  int                   get_x() const;
+  int                   get_y() const;
+  std::string const&    get_nickname() const;
+  int                   get_type() const;
 
   int           o_type;                /* What kind of object it is */
   int           o_launch;              /* What you need to launch it */

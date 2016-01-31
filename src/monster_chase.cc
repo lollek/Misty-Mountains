@@ -163,7 +163,7 @@ chase_do(Monster* monster)
     // If we have run into something else we like, pick it up
     } else if (target == *monster->t_dest) {
       for (Item *obj : Game::level->items) {
-        if (monster->t_dest == &obj->get_pos()) {
+        if (monster->t_dest == &obj->get_position()) {
           Game::level->items.remove(obj);
           monster->t_pack.push_back(obj);
           monster_find_new_target(monster);

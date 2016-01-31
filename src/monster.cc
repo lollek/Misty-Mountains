@@ -359,7 +359,7 @@ monster_remove_from_screen(Monster** monster_ptr, bool was_killed)
 
   // If it was killed, drop stash. Otherwise just delete it
   for (Item* obj : monster->t_pack) {
-    obj->set_pos(monster->get_position());
+    obj->set_position(monster->get_position());
     if (was_killed) {
       weapon_missile_fall(obj, false);
     } else {
@@ -664,7 +664,7 @@ void
 monster_aggro_all_which_desire_item(Item* item)
 {
   for (Monster* mon : Game::level->monsters) {
-    if (mon->t_dest == &item->get_pos()) {
+    if (mon->t_dest == &item->get_position()) {
       mon->t_dest = &player->get_position();
     }
   }

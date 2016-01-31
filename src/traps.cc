@@ -115,7 +115,7 @@ static enum trap_t trap_arrow_player(void) {
   } else {
     Item* arrow = new Weapon(Weapon::ARROW, false);
     arrow->o_count = 1;
-    arrow->set_pos(player->get_position());
+    arrow->set_position(player->get_position());
     weapon_missile_fall(arrow, false);
     io_msg("an arrow shoots past you");
   }
@@ -144,7 +144,7 @@ static enum trap_t trap_arrow_monster(Monster** victim_ptr) {
   } else {
     Item* arrow = new Weapon(Weapon::ARROW, false);
     arrow->o_count = 1;
-    arrow->set_pos(victim->get_position());
+    arrow->set_position(victim->get_position());
     weapon_missile_fall(arrow, false);
     if (monster_seen_by_player(victim)) {
       io_msg("An arrow barely missed %s", victim->get_name().c_str());

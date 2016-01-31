@@ -252,7 +252,7 @@ Level::create_rooms() {
         (!pack_contains_amulet() || Game::current_level >= Game::max_level_visited)) {
       get_random_room_coord(&room, &room.r_gold, 0, false);
       Gold *gold = new Gold();
-      gold->set_pos(room.r_gold);
+      gold->set_position(room.r_gold);
       room.r_goldval = gold->get_amount();
       items.push_back(gold);
     }

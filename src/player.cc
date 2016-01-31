@@ -281,8 +281,8 @@ void Player::set_not_hallucinating() {
 
   // Untrippify items on the level
   for (Item* tp : Game::level->items) {
-    if (can_see(tp->get_pos())) {
-      Game::io->print_tile(tp->get_pos());
+    if (can_see(tp->get_position())) {
+      Game::io->print_tile(tp->get_position());
     }
   }
 

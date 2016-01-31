@@ -125,7 +125,7 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
     bolt.o_hplus      = 100;
     bolt.o_dplus      = 0;
     bolt.o_hurldmg    = {6,6};
-    bolt.set_pos(*pos);
+    bolt.set_position(*pos);
 
     if (mon->get_type() == 'D' && missile_name == "flame")
       io_msg("the flame bounces off the dragon");

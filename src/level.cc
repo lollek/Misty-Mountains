@@ -38,7 +38,7 @@ void Level::create_treasure_room() {
     Item* item = new_thing();
 
     get_random_room_coord(&room, &item_pos, 2 * max_monsters, false);
-    item->set_pos(item_pos);
+    item->set_position(item_pos);
     items.push_back(item);
   }
 
@@ -84,7 +84,7 @@ void Level::create_loot() {
       // Put it somewhere
       Coordinate pos;
       get_random_room_coord(nullptr, &pos, 0, false);
-      obj->set_pos(pos);
+      obj->set_position(pos);
     }
   }
 
@@ -97,7 +97,7 @@ void Level::create_loot() {
     // Put it somewhere
     Coordinate pos;
     get_random_room_coord(nullptr, &pos, 0, false);
-    amulet->set_pos(pos);
+    amulet->set_position(pos);
   }
 }
 

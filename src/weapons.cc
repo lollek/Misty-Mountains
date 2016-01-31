@@ -273,8 +273,8 @@ void
 weapon_missile_fall(Item* obj, bool pr) {
   Coordinate fpos;
 
-  if (fallpos(&obj->get_pos(), &fpos)) {
-    obj->set_pos(fpos);
+  if (fallpos(&obj->get_position(), &fpos)) {
+    obj->set_position(fpos);
     Game::level->items.push_back(obj);
     return;
   }

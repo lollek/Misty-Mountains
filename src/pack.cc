@@ -211,7 +211,7 @@ pack_add(Item* obj, bool silent, bool from_floor)
         if (from_floor)
           Game::level->items.remove(obj);
         ptr->o_count += obj->o_count;
-        ptr->set_pos(obj->get_pos());
+        ptr->set_position(obj->get_position());
         delete obj;
         obj = ptr;
         is_picked_up = true;
@@ -276,7 +276,7 @@ void pack_pick_up(Coordinate const& coord, bool force) {
   // Collect all items which are at this location
   list<Item*> items_here;
   for (Item* item : Game::level->items) {
-    if (item->get_pos() == coord) {
+    if (item->get_position() == coord) {
       items_here.push_back(item);
 
       // If the item was of someone's desire, they will get mad and attack
@@ -575,7 +575,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   if (!pack_add(obj, true))
   {
     Game::level->items.push_back(obj);
-    obj->set_pos(player->get_position());
+    obj->set_position(player->get_position());
     io_msg("dropped %s", obj->get_description().c_str());
   }
   else if (!quiet_on_success)
