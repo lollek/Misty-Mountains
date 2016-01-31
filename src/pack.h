@@ -69,12 +69,5 @@ Item* pack_equipped_item(enum equipment_pos pos);
 bool pack_equip_item(Item* item);
 bool pack_unequip(enum equipment_pos pos, bool quiet_on_success);
 
-static inline bool pack_item_is_cursed(Item const* item)
-{ return item->o_flags & ISCURSED; }
-static inline void pack_curse_item(Item *item)
-{ item->o_flags |= ISCURSED; }
-static inline void pack_uncurse_item(Item *item)
-{ item->o_flags &= ~ISCURSED; }
-
 Item* pack_find_arrow(void); /* Return arrow in pack or nullptr */
 void pack_identify_item(void);

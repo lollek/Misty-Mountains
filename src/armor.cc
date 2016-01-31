@@ -61,7 +61,7 @@ Armor::Armor(Armor::Type type, bool random_stats) :
   if (random_stats) {
     int rand = os_rand_range(100);
     if (rand < 20) {
-      o_flags |= ISCURSED;
+      set_cursed();
       modify_armor(os_rand_range(3) + 1);
     }
     else if (rand < 28) {

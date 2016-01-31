@@ -5,10 +5,7 @@
 #include "damage.h"
 #include "Coordinate.h"
 
-#define o_charges	o_arm
-
 // flags for objects
-#define ISCURSED 000001		/* object is cursed */
 #define ISKNOW	0000002		/* player knows details about the object */
 #define ISMISL	0000004		/* object is a missile type */
 #define ISMANY	0000010		/* object comes in groups */
@@ -35,9 +32,11 @@ public:
   void set_nickname(std::string const&);
   void set_attack_damage(damage const&);
   void set_throw_damage(damage const&);
-  void set_hit_plus(int amount);
-  void set_damage_plus(int amount);
-  void set_armor(int amount);
+  void set_hit_plus(int value);
+  void set_damage_plus(int value);
+  void set_armor(int value);
+  void set_cursed();
+  void set_not_cursed();
 
   // Getters (virtual)
   virtual std::string   get_description() const = 0;
@@ -59,6 +58,7 @@ public:
   int                   get_hit_plus() const;
   int                   get_damage_plus() const;
   int                   get_armor() const;
+  bool                  is_cursed() const;
 
   int           o_type;                // What kind of object it is
   int           o_launch;              // What you need to launch it
@@ -68,7 +68,7 @@ public:
   char          o_packch;              // What character it is in the pack
 
 protected:
-  Item() = default;
+  Item();
 
 private:
   Coordinate    position_on_screen;
@@ -78,5 +78,6 @@ private:
   int           hit_plus;              // Plusses to hit
   int           damage_plus;           // Plusses to damage
   int           armor;                 // Armor protection
+  bool          cursed;
 };
 

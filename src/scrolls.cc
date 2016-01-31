@@ -243,7 +243,7 @@ static bool enchant_players_armor() {
   }
 
   arm->modify_armor(-1);
-  arm->o_flags &= ~ISCURSED;
+  arm->set_not_cursed();
   io_msg("your armor glows %s for a moment",
           player->is_hallucinating() ? color_random().c_str() : "silver");
   return true;
@@ -375,7 +375,7 @@ static bool player_enchant_weapon() {
     return false;
   }
 
-  weapon->o_flags &= ~ISCURSED;
+  weapon->set_not_cursed();
   if (os_rand_range(2) == 0) {
     weapon->modify_hit_plus(1);
   } else {
@@ -392,7 +392,7 @@ static bool player_enchant_weapon() {
 static void remove_curse() {
   for (int i = 0; i < NEQUIPMENT; ++i) {
     if (pack_equipped_item(static_cast<equipment_pos>(i)) != nullptr) {
-      pack_uncurse_item(pack_equipped_item(static_cast<equipment_pos>(i)));
+      pack_equipped_item(static_cast<equipment_pos>(i))->set_not_cursed();
     }
   }
 

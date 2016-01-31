@@ -59,7 +59,7 @@ Ring::Ring(Ring::Type type, bool random_stats) : Item(), subtype(type) {
         set_armor(os_rand_range(3));
         if (get_armor() == 0) {
           set_armor(-1);
-          o_flags |= ISCURSED;
+          set_cursed();
         }
 
       } else {
@@ -68,7 +68,7 @@ Ring::Ring(Ring::Type type, bool random_stats) : Item(), subtype(type) {
     } break;
 
     case AGGR: case TELEPORT: {
-      o_flags |= ISCURSED;
+      set_cursed();
     } break;
   }
 }

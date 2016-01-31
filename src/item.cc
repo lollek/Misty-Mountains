@@ -9,6 +9,11 @@ using namespace std;
 
 Item::~Item() {}
 
+Item::Item()
+  : position_on_screen(0, 0), nickname(""), attack_damage({1, 2}),
+    throw_damage({1, 2}), hit_plus(0), damage_plus(0), armor(0), cursed(false)
+{}
+
 void Item::set_position(Coordinate const& new_value) {
   position_on_screen = new_value;
 }
@@ -99,3 +104,14 @@ void Item::set_armor(int value) {
   armor = value;
 }
 
+void Item::set_cursed() {
+  cursed = true;
+}
+
+void Item::set_not_cursed() {
+  cursed = false;
+}
+
+bool Item::is_cursed() const {
+  return cursed;
+}

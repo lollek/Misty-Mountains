@@ -205,7 +205,7 @@ void wizard_create_item(void) {
       io_msg_clear();
 
       if (bless == '-') {
-        obj->o_flags |= ISCURSED;
+        obj->set_cursed();
         obj->modify_hit_plus(-os_rand_range(3) + 1);
 
       } else if (bless == '+')
@@ -219,7 +219,7 @@ void wizard_create_item(void) {
       char bless = io_readchar(true);
       io_msg_clear();
       if (bless == '-') {
-        obj->o_flags |= ISCURSED;
+        obj->set_cursed();
         obj->modify_armor(os_rand_range(3) + 1);
 
       } else if (bless == '+')
@@ -236,7 +236,7 @@ void wizard_create_item(void) {
           char bless = io_readchar(true);
           io_msg_clear();
           if (bless == '-')
-            obj->o_flags |= ISCURSED;
+            obj->set_cursed();
           obj->set_armor(bless == '-' ? -1 : os_rand_range(2) + 1);
         } break;
       }

@@ -135,7 +135,7 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
   if (random_stats) {
     int rand = os_rand_range(100);
     if (rand < 10) {
-      o_flags |= ISCURSED;
+      set_cursed();
       modify_hit_plus(-os_rand_range(3) + 1);
     }
     else if (rand < 15) {

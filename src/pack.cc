@@ -565,7 +565,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     return false;
   }
 
-  if (obj->o_flags & ISCURSED)
+  if (obj->is_cursed())
   {
     io_msg("you can't. It appears to be cursed");
     return false;
