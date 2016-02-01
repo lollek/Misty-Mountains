@@ -178,7 +178,7 @@ void
 Level::create_rooms() {
 
   /* Clear things for a new level */
-  for (room& room : rooms) {
+  for (struct room& room : rooms) {
     room.r_goldval = 0;
     room.r_nexits = 0;
     room.r_flags = 0;

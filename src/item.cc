@@ -10,7 +10,9 @@ using namespace std;
 Item::~Item() {}
 
 Item::Item()
-  : position_on_screen(0, 0), nickname(""), attack_damage({1, 2}),
+  : o_type(0), o_launch(0), o_count(1), o_which(0), o_flags(0), o_packch(0),
+
+    position_on_screen(0, 0), nickname(""), attack_damage({1, 2}),
     throw_damage({1, 2}), hit_plus(0), damage_plus(0), armor(0), cursed(false)
 {}
 

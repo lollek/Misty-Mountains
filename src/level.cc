@@ -321,7 +321,7 @@ room* Level::get_room(Coordinate const& coord) {
     return get_passage(coord);
   }
 
-  for (room& room : rooms) {
+  for (struct room& room : rooms) {
     if (coord.x <= room.r_pos.x + room.r_max.x
         && room.r_pos.x <= coord.x
         && coord.y <= room.r_pos.y + room.r_max.y

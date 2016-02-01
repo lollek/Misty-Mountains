@@ -54,7 +54,7 @@ Weapon::~Weapon() {}
 Weapon::Weapon(bool random_stats) : Weapon(random_weapon_type(), random_stats) {}
 
 Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
-  : Item(), subtype(subtype_)  {
+  : Item(), subtype(subtype_), identified(false)  {
 
   o_type = WEAPON;
   o_which = subtype;

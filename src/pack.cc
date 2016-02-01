@@ -248,7 +248,6 @@ pack_add(Item* obj, bool silent, bool from_floor)
       Game::level->items.remove(obj);
     player_pack.push_back(obj);
     obj->o_packch = pack_char();
-    is_picked_up = true;
   }
 
   obj->o_flags |= ISFOUND;

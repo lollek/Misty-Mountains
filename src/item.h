@@ -16,7 +16,7 @@
 
 class Item {
 public:
-  Item(Item const&) = default;
+  explicit Item(Item const&) = default;
 
   virtual ~Item();
 

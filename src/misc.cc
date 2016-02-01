@@ -116,20 +116,6 @@ spread(int nm)
   return nm - nm / 20 + os_rand_range(nm / 10);
 }
 
-void
-call_it(string const& what, struct obj_info *info)
-{
-  if (info->oi_know) {
-    info->oi_guess.clear();
-  } else if (!info->oi_guess.empty()) {
-    char tmpbuf[MAXSTR] = { '\0' };
-    io_msg("what do you want to name the %s? ", what.c_str());
-    if (io_readstr(tmpbuf) == 0) {
-      info->oi_guess = tmpbuf;
-    }
-  }
-}
-
 char
 rnd_thing(void)
 {

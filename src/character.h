@@ -112,8 +112,8 @@ protected:
             std::vector<damage> const& attacks, Coordinate const& position,
             room* room, int flags, char type);
 
-  Character(Character const&) = default;
-  Character(Character&&) = default;
+  explicit Character(Character const&) = default;
+  explicit Character(Character&&) = default;
   Character& operator=(Character const&) = default;
 
 

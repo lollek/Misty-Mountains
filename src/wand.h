@@ -27,8 +27,8 @@ public:
 
   ~Wand();
   Wand();     // Random wand
-  Wand(Type); // Wand of given type
-  Wand(Wand const&) = default;
+  explicit Wand(Type); // Wand of given type
+  explicit Wand(Wand const&) = default;
 
   Wand* clone() const override;
   Wand& operator=(Wand const&) = default;

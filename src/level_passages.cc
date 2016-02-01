@@ -356,7 +356,7 @@ Level::create_passages()
 
   pnum = 0;
   newpnum = false;
-  for (room& room : rooms) {
+  for (struct room& room : rooms) {
     for (int j = 0; j < room.r_nexits; ++j) {
       newpnum = true;
       number_passage(room.r_exit[j].x, room.r_exit[j].y);
