@@ -322,6 +322,11 @@ void IO::refresh_statusline() {
   move(original_position.y, original_position.x);
 }
 
+void IO::repeat_last_message() {
+  io_msg(last_message.c_str());
+}
+
+
 
 
 
@@ -335,7 +340,6 @@ WINDOW* hw = nullptr;
 
 #define MAXMSG	static_cast<int>(NUMCOLS - sizeof " --More--")
 static char msgbuf[2*MAXMSG+1];
-static char last_msg[MAXSTR] = { '\0' };
 static int newpos = 0;
 static int mpos = 0;
 
@@ -347,7 +351,7 @@ flushmsg(void)
     return ~KEY_ESCAPE;
 
   /* Save message in case player missed it */
-  strcpy(last_msg, msgbuf);
+  Game::io->last_message = msgbuf;
 
   /* TODO: Remove mpos by replacing mpos = 0 with a io_msg_clear() */
   if (mpos)
@@ -405,12 +409,6 @@ doadd(char const* fmt, va_list args, bool end_of_command)
   strcpy(&msgbuf[newpos], buf);
   newpos = static_cast<int>(strlen(msgbuf));
   new_sentence = end_of_command;
-}
-
-void
-io_msg_last(void)
-{
-  io_msg(last_msg);
 }
 
 char const*
@@ -508,17 +506,17 @@ __attribute__((__format__(__printf__, 1, 2)))
 void
 io_msg_unsaved(char const* fmt, ...)
 {
-  char buf[MAXSTR];
+  string buf;
 
   flushmsg();
-  strcpy(buf, last_msg);
+  buf = Game::io->last_message;
 
   va_list args;
   va_start(args, fmt);
   doadd(fmt, args, true);
   va_end(args);
   flushmsg();
-  strcpy(last_msg, buf);
+  Game::io->last_message = buf;
 }
 
 __attribute__((__format__(__printf__, 1, 2)))

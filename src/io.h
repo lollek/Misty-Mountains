@@ -1,6 +1,7 @@
 #pragma once
 
 #include <curses.h>
+#include <string.h>
 
 #include "level_rooms.h"
 #include "coordinate.h"
@@ -36,11 +37,17 @@ public:
   void print_monster(Monster* monster, Attribute attr=None);
   void print_item(Item* item);
 
-  void refresh();
-
   chtype colorize(chtype ch);
 
+  void repeat_last_message();
+
+  void refresh();
+
   // Static
+
+
+  // Temp var
+  std::string last_message;
 
 private:
   void print_room_dark(room const* room);
@@ -116,7 +123,6 @@ size_t io_encread(char* start, size_t size, FILE* inf);
 void io_msg(char const* fmt, ...);         /* Display a message */
 void io_msg_unsaved(char const* fmt, ...); /* Unsaved msg() */
 void io_msg_add(char const* fmt, ...);     /* Add text to previous message */
-void io_msg_last(void);                    /* Reshow last msg */
 void io_msg_clear(void);                   /* Remove displayed text */
 
 void io_missile_motion(Item* item, int ydelta, int xdelta);
