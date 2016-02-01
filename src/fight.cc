@@ -308,11 +308,11 @@ fight_missile_miss(Item const* weap, string const& mname, string const* name_ove
 
   if (weap->o_type == WEAPON) {
     if (name_override == nullptr) {
-      io_msg("the %s misses %s", name_override->c_str(), mname.c_str());
-    } else {
       io_msg("the %s misses %s",
           Weapon::name(static_cast<Weapon::Type>(weap->o_which)).c_str(),
           mname.c_str());
+    } else {
+      io_msg("the %s misses %s", name_override->c_str(), mname.c_str());
     }
   } else {
     io_msg("you missed %s", mname.c_str());
