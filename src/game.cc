@@ -111,7 +111,9 @@ int Game::init_graphics()
 Game::Game() {
 
   /* Parse environment opts */
-  whoami = os_whoami();
+  if (whoami.empty()) {
+    whoami = os_whoami();
+  }
 
   cout << "Hello " << whoami << ", just a moment while I dig the dungeon..." << flush;
 
