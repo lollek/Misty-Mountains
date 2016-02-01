@@ -42,3 +42,32 @@ string os_whoami() {
   struct passwd const* pw = getpwuid(getuid());
   return pw ? pw->pw_name : "nobody";
 }
+
+string os_homedir() {
+  string return_value;
+
+  // Try to get it from pwuid
+  struct passwd const* pw = getpwuid(getuid());
+  const char* ptr = getenv("HOME");
+
+  if (pw != nullptr) {
+    return_value = pw->pw_dir;
+
+  // Try $HOME
+  } else if (ptr != nullptr) {
+    return_value = ptr;
+  }
+
+  // Otherwise, we just return current directory
+  if (return_value.empty()) {
+    return_value = "/";
+  }
+
+  if (return_value.back() != '/') {
+    return_value += '/';
+  }
+
+  return return_value;
+}
+
+

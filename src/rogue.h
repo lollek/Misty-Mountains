@@ -1,8 +1,6 @@
 #pragma once
 
-#include <ncurses.h>
-
-#include "Coordinate.h"
+#include <string>
 
 /* Various constants */
 #define WANDERTIME	spread(70)
@@ -24,5 +22,5 @@ extern bool door_stop;
 extern bool to_death;
 
 extern char dir_ch;
-extern char whoami[];
+extern std::string whoami;
 extern char runch;

@@ -320,11 +320,8 @@ potion_quaff_something(void)
     nickname.clear();
 
   } else if (nickname.empty()) {
-    char tmpbuf[MAXSTR] = { '\0' };
     io_msg("what do you want to call the potion? ");
-    if (io_readstr(tmpbuf) == 0) {
-      nickname = tmpbuf;
-    }
+    nickname = Game::io->read_string();
   }
 
   /* Throw the item away */

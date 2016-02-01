@@ -185,15 +185,12 @@ command_name_item(void)
 
   io_msg("what do you want to call it? ");
 
-  char tmpbuf[MAXSTR] = { '\0' };
-  if (io_readstr(tmpbuf) == 0)
-  {
-    if (strlen(tmpbuf) > 0) {
-      if (guess != nullptr) {
-        *guess = tmpbuf;
-      } else {
-        obj->set_nickname(tmpbuf);
-      }
+  string new_name = Game::io->read_string();
+  if (!new_name.empty()) {
+    if (guess != nullptr) {
+      *guess = new_name;
+    } else {
+      obj->set_nickname(new_name);
     }
   }
 
@@ -767,11 +764,8 @@ command_read_scroll() {
       nickname.clear();
 
     } else if (nickname.empty()) {
-      char tmpbuf[MAXSTR] = { '\0' };
       io_msg("what do you want to call the scroll? ");
-      if (io_readstr(tmpbuf) == 0) {
-        nickname = tmpbuf;
-      }
+      nickname = Game::io->read_string();
     }
   }
 

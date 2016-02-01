@@ -243,12 +243,8 @@ void wizard_create_item(void) {
     } break;
 
     case GOLD: {
-      char buf[MAXSTR] = { '\0' };
       io_msg("how much?");
-      int amount = 0;
-      if (io_readstr(buf) == 0) {
-        amount = static_cast<short>(atoi(buf));
-      }
+      int amount = stoi(Game::io->read_string());
       obj = new Gold(amount);
     } break;
 

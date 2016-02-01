@@ -43,6 +43,8 @@ public:
 
   void refresh();
 
+  std::string read_string(WINDOW* win=stdscr, std::string const* initial_string=nullptr);
+
   // Static
 
 
@@ -110,7 +112,6 @@ private:
 
 /* TODO: (Re)move these */
 extern WINDOW* hw;       /* used as a scratch window */
-char const* get_homedir(void); /* returns e.g. /home/user/ */
 bool step_ok(int ch);  /* True of it's OK to step on ch */
 /* Show window and wait before returning */
 void show_win(char const* message); 
@@ -127,11 +128,6 @@ void io_msg_clear(void);                   /* Remove displayed text */
 
 void io_missile_motion(Item* item, int ydelta, int xdelta);
 
-
-/* Interruptable read string from user */
-bool io_wreadstr(WINDOW* win, char* buf);
-static inline bool io_readstr(char* dest)
-{ return io_wreadstr(stdscr, dest); }
 
 /* Interruptable read char from user (getch) */
 char io_readchar(bool is_question);

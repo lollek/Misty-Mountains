@@ -111,8 +111,7 @@ int Game::init_graphics()
 Game::Game() {
 
   /* Parse environment opts */
-  string name = os_whoami();
-  strucpy(whoami, name.c_str(), name.size());
+  whoami = os_whoami();
 
   cout << "Hello " << whoami << ", just a moment while I dig the dungeon..." << flush;
 

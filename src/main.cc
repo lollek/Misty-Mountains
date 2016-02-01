@@ -68,9 +68,9 @@ parse_args(int argc, char* const* argv)
       case 'E': ESCDELAY = optarg == nullptr ? 64 : atoi(optarg); break;
       case 'f': fight_flush = true; break;
       case 'j': jump = false; break;
-      case 'n': if (strlen(optarg))
-                  strucpy(whoami, optarg, strlen(optarg));
-                break;
+      case 'n': if (optarg != nullptr) {
+                  whoami = optarg;
+                } break;
       case 'p': passgo = true; break;
       case 's': score_show_and_exit(0, -1, 0); /* does not return */
       case 'S': if (wizard)

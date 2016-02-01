@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 
+#include "game.h"
 #include "error_handling.h"
 #include "coordinate.h"
 #include "io.h"
@@ -40,17 +41,6 @@ bool option_autopickup(int type) {
   }
 }
 
-static bool get_bool(bool* b, WINDOW* win) {
-  *b = !*b;
-  waddstr(win, *b ? "True " : "False");
-  wrefresh(win);
-  return 0;
-}
-
-static inline bool get_str(char* buf, WINDOW* win) {
-  return io_wreadstr(win, buf);
-}
-
 bool option() {
 
   struct option {
@@ -72,7 +62,7 @@ bool option() {
     {RING,   "Pick up rings?....................", &pickup_rings,   option::BOOL},
     {STICK,  "Pick up sticks?...................", &pickup_sticks,  option::BOOL},
     {AMMO,   "Pick up ammo?.....................", &pickup_ammo,    option::BOOL},
-    {'4',    "Name..............................", whoami,          option::STR},
+    {'4',    "Name..............................", &whoami,         option::STR},
   };
 
   string const query = "Which value do you want to change? (ESC to exit) ";
@@ -92,7 +82,7 @@ bool option() {
       } break;
 
       case option::STR: {
-        waddstr(optscr, static_cast<char*>(optlist.at(i).o_opt));
+        waddstr(optscr, static_cast<string*>(optlist.at(i).o_opt)->c_str());
       } break;
     }
     waddch(optscr, '\n');
@@ -117,11 +107,15 @@ bool option() {
       wmove(optscr, i + 1, 3 + static_cast<int>(opt.o_prompt.size()));
       switch (opt.put_type) {
         case option::BOOL: {
-          get_bool(static_cast<bool*>(opt.o_opt), optscr);
+          bool* b = static_cast<bool*>(opt.o_opt);
+          *b = !*b;
+          waddstr(optscr, *b ? "True " : "False");
+          wrefresh(optscr);
         } break;
 
         case option::STR: {
-          get_str(static_cast<char*>(opt.o_opt), optscr);
+          string* str = static_cast<string*>(opt.o_opt);
+          *str = Game::io->read_string(optscr, str);
         } break;
       }
     }

@@ -24,6 +24,10 @@
 
 using namespace std;
 
+// TODO: Remove these
+static int flushmsg(void);
+
+
 void IO::print_monster(Monster* monster, IO::Attribute attr) {
   int symbol_to_print = monster->get_disguise();
 
@@ -326,6 +330,82 @@ void IO::repeat_last_message() {
   io_msg(last_message.c_str());
 }
 
+string IO::read_string(WINDOW* win, string const* initial_string) {
+  string return_value;
+
+  flushmsg();
+  Coordinate original_pos;
+  getyx(win, original_pos.y, original_pos.x);
+
+  if (initial_string != nullptr) {
+    return_value = *initial_string;
+    waddstr(win, initial_string->c_str());
+  }
+
+  // loop reading in the string, and put it in a temporary buffer
+  for (;;) {
+
+    wrefresh(win);
+    int c = io_readchar(true);
+
+    // Return on ESCAPE chars or ENTER
+    if (c == '\n' || c == '\r' || c == -1 || c == KEY_ESCAPE) {
+      break;
+
+    // Remove char on BACKSPACE
+    } else if (c == erasechar()) {
+      if (!return_value.empty()) {
+        return_value.pop_back();
+        wmove(win, original_pos.y,
+            original_pos.x + static_cast<int>(return_value.size()));
+        wclrtoeol(win);
+      }
+
+    // Remove everything on killchar
+    } else if (c == killchar()) {
+      return_value.clear();
+      wmove(win, original_pos.y, original_pos.x);
+      wclrtoeol(win);
+
+    // ~ gives home directory
+    } else if (c == '~' && return_value.empty()) {
+      return_value = os_homedir();
+      if (return_value.size() > MAXINP) {
+        return_value.resize(MAXINP);
+      }
+      waddstr(win, return_value.c_str());
+
+    } else if (return_value.size() < MAXINP && (isprint(c) || c == ' ')) {
+      return_value += static_cast<char>(c);
+      waddch(win, static_cast<chtype>(c));
+    }
+
+#ifndef NDEBUG
+    // Check that we haven't allowed something stupid
+    int tmp_x, tmp_y;
+    getyx(stdscr, tmp_y, tmp_x);
+    Coordinate currpos(tmp_x, tmp_y);
+    getmaxyx(stdscr, tmp_y, tmp_x);
+    Coordinate maxpos(tmp_x, tmp_y);
+    if (currpos.y < 0 || currpos.y >= maxpos.y) {
+      error("Y is out of bounds");
+    } else if (currpos.x < 0 || currpos.x >= maxpos.x) {
+      error("X is out of bounds");
+    }
+#endif
+  }
+
+  // If empty, we use the initial string
+  if (return_value.empty() && initial_string != nullptr) {
+    return_value = *initial_string;
+    waddstr(win, return_value.c_str());
+  }
+
+  wrefresh(win);
+  return return_value;
+}
+
+
 
 
 
@@ -339,7 +419,7 @@ void IO::repeat_last_message() {
 WINDOW* hw = nullptr;
 
 #define MAXMSG	static_cast<int>(NUMCOLS - sizeof " --More--")
-static char msgbuf[2*MAXMSG+1];
+static string msgbuf;
 static int newpos = 0;
 static int mpos = 0;
 
@@ -347,8 +427,9 @@ static int
 flushmsg(void)
 {
   /* Nothing to show */
-  if (msgbuf[0] == '\0')
+  if (msgbuf.empty()) {
     return ~KEY_ESCAPE;
+  }
 
   /* Save message in case player missed it */
   Game::io->last_message = msgbuf;
@@ -366,13 +447,13 @@ flushmsg(void)
 
   /* All messages should start with uppercase, except ones that
    * start with a pack addressing character */
-  if (islower(msgbuf[0]) && msgbuf[1] != ')')
-    msgbuf[0] = static_cast<char>(toupper(msgbuf[0]));
-  mvaddstr(0, 0, msgbuf);
+  if (islower(msgbuf.at(0)) && msgbuf.at(1) != ')')
+    msgbuf.at(0) = static_cast<char>(toupper(msgbuf.at(0)));
+  mvaddstr(0, 0, msgbuf.c_str());
   clrtoeol();
   mpos = newpos;
   newpos = 0;
-  msgbuf[0] = '\0';
+  msgbuf.clear();
   refresh();
   return ~KEY_ESCAPE;
 }
@@ -400,50 +481,15 @@ doadd(char const* fmt, va_list args, bool end_of_command)
 
   if (new_sentence && newpos != 0)
   {
-    strcpy(&msgbuf[newpos], separator);
+    msgbuf += separator;
     newpos += separatorlen;
     buf[0] = static_cast<char>(toupper(buf[0]));
     new_sentence = false;
   }
 
-  strcpy(&msgbuf[newpos], buf);
-  newpos = static_cast<int>(strlen(msgbuf));
+  msgbuf += buf;
+  newpos = static_cast<int>(msgbuf.size());
   new_sentence = end_of_command;
-}
-
-char const*
-get_homedir(void)
-{
-  static char homedir[PATH_MAX +1] = { '\0' };
-
-  /* If we've already checked for homedir, we should know it by now */
-  if (*homedir == '\0')
-  {
-    size_t len;
-    struct passwd const* pw = getpwuid(getuid());
-    char const* h = pw == nullptr ? nullptr : pw->pw_dir;
-
-    if (h == nullptr || *h == '\0' || !strcmp(h, "/"))
-      h = getenv("HOME");
-    if (h == nullptr || !strcmp(h, "/"))
-      h = "";
-
-    /* PATH_MAX is not a hard limit,
-     * so we need to check all sources carefully */
-
-    if ((len = strlen(h)) < PATH_MAX && len > 0)
-    {
-      strcpy(homedir, h);
-      if (homedir[len -1] != '/')
-      {
-        homedir[len] = '/';
-        homedir[len +1] = '\0';
-      }
-    }
-    else
-      strcpy(homedir, "/");
-  }
-  return homedir;
 }
 
 #ifndef NDEBUG
@@ -591,79 +637,6 @@ show_win(const char *message)
   clearok(curscr, true);
   touchwin(stdscr);
   io_msg_clear();
-}
-
-bool
-io_wreadstr(WINDOW* win, char* dest)
-{
-  char buf[MAXSTR];
-  int c = ~KEY_ESCAPE;
-  size_t i = strlen(dest);
-  int oy, ox;
-
-  flushmsg();
-  getyx(win, oy, ox);
-
-  strucpy(buf, dest, i);
-  waddstr(win, buf);
-
-  /* loop reading in the string, and put it in a temporary buffer */
-  while (c != KEY_ESCAPE)
-  {
-    wrefresh(win);
-    c = io_readchar(true);
-
-    if (c == '\n' || c == '\r' || c == -1)
-      break;
-
-    else if (c == erasechar() && i > 0)
-    {
-      i--;
-      wmove(win, oy, ox + static_cast<int>(i));
-      wclrtoeol(win);
-    }
-
-    else if (c == killchar())
-    {
-      i = 0;
-      wmove(win, oy, ox);
-      wclrtoeol(win);
-    }
-
-    else if (c == '~' && i == 0)
-    {
-      strcpy(buf, get_homedir());
-      waddstr(win, get_homedir());
-      i += strlen(get_homedir());
-    }
-
-    else if (i < MAXINP && (isprint(c) || c == ' '))
-    {
-      buf[i++] = static_cast<char>(c);
-      waddch(win, static_cast<chtype>(c));
-    }
-
-#ifndef NDEBUG
-    int tmp_x, tmp_y;
-    getyx(stdscr, tmp_y, tmp_x);
-    Coordinate currpos(tmp_x, tmp_y);
-    getmaxyx(stdscr, tmp_y, tmp_x);
-    Coordinate maxpos(tmp_x, tmp_y);
-    assert(currpos.y >= 0 && currpos.y < maxpos.y);
-    assert(currpos.x >= 0 && currpos.x < maxpos.x);
-#endif
-  }
-
-  buf[i] = '\0';
-  if (i > 0) /* only change option if something has been typed */
-    strucpy(dest, buf, strlen(buf));
-  else
-    waddstr(win, dest);
-  if (win == stdscr)
-    mpos += i;
-
-  wrefresh(win);
-  return c == KEY_ESCAPE ? 1 : 0;
 }
 
 void
