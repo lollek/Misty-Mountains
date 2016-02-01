@@ -313,7 +313,7 @@ potion_quaff_something(void)
 
   obj->quaffed_by(*player);
 
-  io_refresh_statusline();
+  Game::io->refresh();
 
   string& nickname = Potion::guess(obj->get_type());
   if (Potion::is_known(obj->get_type())) {

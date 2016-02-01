@@ -222,10 +222,9 @@ command_signal_quit(__attribute__((unused)) int sig)
   }
   else
   {
-    io_refresh_statusline();
     io_msg_clear();
     move(oy, ox);
-    refresh();
+    Game::io->refresh();
     command_stop(true);
   }
 }

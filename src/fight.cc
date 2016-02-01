@@ -291,7 +291,7 @@ fight_against_player(Monster* mp) {
   }
 
   command_stop(false);
-  io_refresh_statusline();
+  Game::io->refresh();
   return(mp == nullptr ? -1 : 0);
 }
 

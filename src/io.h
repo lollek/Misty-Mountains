@@ -40,11 +40,15 @@ public:
 
   chtype colorize(chtype ch);
 
+  // Static
+
 private:
   void print_room_dark(room const* room);
   void print_room_light(room const* room);
 
   void print_player_vision();
+
+  void refresh_statusline();
 };
 
 
@@ -117,8 +121,6 @@ void io_msg_clear(void);                   /* Remove displayed text */
 
 void io_missile_motion(Item* item, int ydelta, int xdelta);
 
-/* Print the status line at the bottom of the screen */
-void io_refresh_statusline(void);
 
 /* Interruptable read string from user */
 bool io_wreadstr(WINDOW* win, char* buf);

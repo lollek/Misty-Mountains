@@ -7,6 +7,7 @@
 
 using namespace std;
 
+#include "game.h"
 #include "io.h"
 #include "misc.h"
 #include "monster.h"
@@ -50,8 +51,7 @@ death(int monst)
 {
   pack_gold -= pack_gold / 10;
 
-  io_refresh_statusline();
-  refresh();
+  Game::io->refresh();
   io_msg("You die!");
   io_readchar(false);
 

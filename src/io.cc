@@ -294,9 +294,41 @@ pass:
 void IO::refresh() {
   print_room(player->get_room());
 
-  io_refresh_statusline();
+  refresh_statusline();
   ::refresh();
 }
+
+void IO::refresh_statusline() {
+  Coordinate original_position;
+  getyx(stdscr, original_position.y, original_position.x);
+
+  // Calculate width of hitpoint digits
+  int hpwidth = 0;
+  if (player->is_hurt()) {
+    for (int temp = player->get_max_health(); temp > 0; temp /= 10, hpwidth++) {
+      ;
+    }
+  }
+
+  // Move to statusline and print
+  mvprintw(NUMLINES -1, 0,
+      "Level: %d  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  Arm: %-2d  Exp: %d/%d  %s",
+      Game::current_level, pack_gold, hpwidth, player->get_health(), hpwidth,
+      player->get_max_health(), player->get_strength(), player->get_default_strength(),
+      player->get_armor(), player->get_level(), player->get_experience(),
+      food_hunger_state());
+
+  clrtoeol();
+  move(original_position.y, original_position.x);
+}
+
+
+
+
+
+
+
+
 
 
 WINDOW* hw = nullptr;
@@ -527,30 +559,6 @@ io_readchar(bool is_question)
     default:
       return ch;
   }
-}
-
-void
-io_refresh_statusline(void)
-{
-  int oy, ox;
-  int hpwidth = 0;
-
-  getyx(stdscr, oy, ox);
-
-  if (player->is_hurt())
-    for (int temp = player->get_max_health(); temp > 0; temp /= 10, hpwidth++)
-      ;
-
-  move(STATLINE, 0);
-  printw("Level: %d  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  Arm: %-2d  "
-         "Exp: %d/%d  %s",
-         Game::current_level, pack_gold, hpwidth, player->get_health(), hpwidth,
-         player->get_max_health(), player->get_strength(), player->get_default_strength(),
-         player->get_armor(), player->get_level(), player->get_experience(),
-         food_hunger_state());
-
-  clrtoeol();
-  move(oy, ox);
 }
 
 void
