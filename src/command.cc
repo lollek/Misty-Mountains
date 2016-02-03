@@ -1,4 +1,5 @@
 #include <csignal>
+#include <string>
 
 #include "game.h"
 #include "armor.h"
@@ -24,10 +25,12 @@
 #include "command.h"
 #include "command_private.h"
 
+using namespace std;
+
 static bool
 unknown_command(char ch)
 {
-  io_msg_unsaved("illegal command '%s'", unctrl(static_cast<chtype>(ch)));
+  Game::io->message("illegal command '%s'" + string(1, UNCTRL(ch)));
   return false;
 }
 
@@ -61,7 +64,7 @@ command()
 
     if (player_turns_without_action > 0 &&
         --player_turns_without_action == 0) {
-        io_msg("you can move again");
+      Game::io->message("you can move again");
     }
 
     if (!player_turns_without_action) {
@@ -73,7 +76,7 @@ command()
       else
       {
         ch = io_readchar(false);
-        io_msg_clear();
+        Game::io->clear_message();
       }
 
       /* command_do returns 0 if player did something not in-game
@@ -110,7 +113,6 @@ command_do(char ch)
     case '>': return command_use_stairs(ch);
     case '<': return command_use_stairs(ch);
     case '?': return command_help();
-    case '!': io_msg("Shell has been removed, use ^Z instead"); return false;
     case '^': return command_identify_trap();
 
     /* Lower case */
@@ -165,13 +167,19 @@ command_wizard_do(char ch)
   switch (ch)
   {
     case '_': raise(SIGINT); break;
-    case '|': io_msg("@ %d,%d", player->get_position().y, player->get_position().x); break;
+    case '|': {
+      Coordinate c = player->get_position();
+      Game::io->message("@ " + to_string(c.x) + "," + to_string(c.y));
+    } break;
     case 'C': wizard_create_item(); break;
-    case '$': io_msg("inpack = %d", pack_count_items()); break;
+    case '$': Game::io->message("inpack = " + to_string(pack_count_items())); break;
+    case '*' : wizard_list_items(); break;
     case CTRL('A'): Game::new_level(Game::current_level -1); break;
     case CTRL('Q'): Game::level->wizard_show_passages(); break;
     case CTRL('D'): Game::new_level(Game::current_level +1); break;
-    case CTRL('E'): io_msg("food left: %d", food_nutrition_left()); break;
+    case CTRL('E'): {
+      Game::io->message("food left: " + to_string(food_nutrition_left()));
+    } break;
     case CTRL('F'): wizard_show_map(); break;
     case CTRL('I'): wizard_levels_and_gear(); break;
     case CTRL('T'): player->teleport(nullptr); break;
@@ -179,16 +187,12 @@ command_wizard_do(char ch)
     case CTRL('X'): player->can_sense_monsters()
                     ? player->remove_sense_monsters()
                     : player->set_sense_monsters(); break;
-    case '*' : wizard_list_items(); break;
-
-    case CTRL('~'):
-     {
+    case CTRL('~'): {
        Wand* wand = static_cast<Wand*>(pack_get_item("charge", STICK));
        if (wand != nullptr) {
          wand->set_charges(10000);
        }
-     }
-     break;
+     } break;
 
     default:
      return unknown_command(ch);
@@ -199,9 +203,8 @@ command_wizard_do(char ch)
 void
 command_signal_endit(__attribute__((unused)) int sig)
 {
-  endwin();
   puts("Okay, bye bye!\n");
-  exit(0);
+  Game::exit();
 }
 
 void
@@ -210,8 +213,8 @@ command_signal_quit(__attribute__((unused)) int sig)
   int oy, ox;
 
   getyx(curscr, oy, ox);
-  io_msg_clear();
-  io_msg("really quit? ");
+  Game::io->clear_message();
+  Game::io->message("really quit? ");
 
   if (io_readchar(true) == 'y')
   {
@@ -222,7 +225,7 @@ command_signal_quit(__attribute__((unused)) int sig)
   }
   else
   {
-    io_msg_clear();
+    Game::io->clear_message();
     move(oy, ox);
     Game::io->refresh();
     command_stop(true);
@@ -236,13 +239,7 @@ command_signal_leave(__attribute__((unused)) int sig)
 
   setbuf(stdout, buf);	/* throw away pending output */
 
-  if (!isendwin())
-  {
-    mvcur(0, COLS - 1, LINES - 1, 0);
-    endwin();
-  }
-
   putchar('\n');
-  exit(0);
+  Game::exit();
 }
 

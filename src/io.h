@@ -10,6 +10,13 @@
 
 class IO {
 public:
+  IO();
+  ~IO();
+
+  enum End {
+    End
+  };
+
   enum Attribute {
     Standout,
     Red,
@@ -40,16 +47,22 @@ public:
   chtype colorize(chtype ch);
 
   void repeat_last_message();
+  void clear_message();
+  void show_extra_screen(std::string const& message);
 
   void refresh();
 
   std::string read_string(WINDOW* win=stdscr, std::string const* initial_string=nullptr);
+  void message(std::string const& message, bool new_sentence=true);
+
 
   // Static
 
 
   // Temp var
   std::string last_message;
+  std::string message_buffer;
+  WINDOW* extra_screen;
 
 private:
   void print_room_dark(room const* room);
@@ -59,7 +72,6 @@ private:
 
   void refresh_statusline();
 };
-
 
 #include "things.h"
 
@@ -111,20 +123,11 @@ private:
 #define STICK		'/'
 
 /* TODO: (Re)move these */
-extern WINDOW* hw;       /* used as a scratch window */
 bool step_ok(int ch);  /* True of it's OK to step on ch */
-/* Show window and wait before returning */
-void show_win(char const* message); 
 
 /* Encrypted read/write to/from file */
 size_t io_encwrite(char const* start, size_t size, FILE* outf);
 size_t io_encread(char* start, size_t size, FILE* inf);
-
-/* Messages on the top line of the screen */
-void io_msg(char const* fmt, ...);         /* Display a message */
-void io_msg_unsaved(char const* fmt, ...); /* Unsaved msg() */
-void io_msg_add(char const* fmt, ...);     /* Add text to previous message */
-void io_msg_clear(void);                   /* Remove displayed text */
 
 void io_missile_motion(Item* item, int ydelta, int xdelta);
 

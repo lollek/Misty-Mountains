@@ -61,10 +61,7 @@ new_thing(void)
     case 4: cur = new Armor(true); break;
     case 5: cur = new Ring(true); break;
     case 6: cur = new Wand(); break;
-    default:
-      io_msg("Picked a bad kind of object (this should not happen)");
-      io_wait_for_key(KEY_SPACE);
-      break;
+    default: error("Picked a bad kind of object");
   }
 
   if (cur == nullptr) {

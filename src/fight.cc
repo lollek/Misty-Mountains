@@ -157,7 +157,7 @@ print_attack(bool hit, Character* attacker, Character* defender) {
   ss << attacker->get_name() << " "
      << attacker->get_attack_string(hit) << " "
      << defender->get_name();
-  io_msg("%s", ss.str().c_str());
+  Game::io->message("%s" + ss.str());
 }
 
 int
@@ -182,7 +182,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
   if (tp->get_type() == 'X' && tp->t_disguise != 'X' && !player->is_blind()) {
 
     tp->t_disguise = 'X';
-    io_msg("wait!  That's a xeroc!");
+    Game::io->message("wait!  That's a xeroc!");
     if (!thrown) {
       return false;
     }
@@ -199,16 +199,23 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
 
       if (thrown) {
         if (weapon->o_type == WEAPON) {
-          if (name_override == nullptr) {
-            io_msg_add("the %s hits ",
-                Weapon::name(static_cast<Weapon::Type>(weapon->o_which)).c_str());
-          } else {
-            io_msg_add("the %s hits ", name_override->c_str());
-          }
+          stringstream os;
+          os
+            << "the "
+            << (name_override == nullptr
+                ? Weapon::name(static_cast<Weapon::Type>(weapon->o_which))
+                : *name_override)
+            << " hits "
+            << tp->get_name();
+          Game::io->message(os.str());
+
         } else {
-          io_msg_add("you hit ");
+          stringstream os;
+          os
+            << "you hit "
+            << tp->get_name();
+          Game::io->message(os.str());
         }
-        io_msg("%s", tp->get_name().c_str());
 
       } else {
         print_attack(true, player, tp);
@@ -221,9 +228,9 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
       player->remove_confusing_attack();
       if (!player->is_blind()) {
 
-        io_msg("your hands stop glowing %s",
-               player->is_hallucinating() ? color_random().c_str() : "red");
-        io_msg("%s appears confused", tp->get_name().c_str());
+        Game::io->message("your hands stop glowing " +
+               (player->is_hallucinating() ? color_random() : "red"));
+        Game::io->message(tp->get_name() + " appears confused");
       }
     }
 
@@ -308,13 +315,13 @@ fight_missile_miss(Item const* weap, string const& mname, string const* name_ove
 
   if (weap->o_type == WEAPON) {
     if (name_override == nullptr) {
-      io_msg("the %s misses %s",
-          Weapon::name(static_cast<Weapon::Type>(weap->o_which)).c_str(),
-          mname.c_str());
+      Game::io->message("the " + Weapon::name(static_cast<Weapon::Type>(weap->o_which)) +
+                        " misses " + mname);
     } else {
-      io_msg("the %s misses %s", name_override->c_str(), mname.c_str());
+      Game::io->message("the " + *name_override +
+                        " misses " + mname);
     }
   } else {
-    io_msg("you missed %s", mname.c_str());
+    Game::io->message("you missed " + mname);
   }
 }

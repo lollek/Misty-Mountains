@@ -67,7 +67,7 @@ bool option() {
 
   string const query = "Which value do you want to change? (ESC to exit) ";
   Coordinate const msg_pos (static_cast<int>(query.size()), 0);
-  io_msg("%s", query.c_str());
+  Game::io->message(query);
 
   WINDOW* optscr = dupwin(stdscr);
 
@@ -126,7 +126,7 @@ bool option() {
   delwin(optscr);
   clearok(curscr, true);
   touchwin(stdscr);
-  io_msg_clear();
+  Game::io->clear_message();
   return false;
 }
 

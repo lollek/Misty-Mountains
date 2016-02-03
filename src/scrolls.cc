@@ -227,17 +227,18 @@ static bool enchant_players_armor() {
 
   if (arm == nullptr) {
     switch (os_rand_range(3)) {
-      case 0: io_msg("you are unsure if anything happened"); break;
-      case 1: io_msg("you feel naked"); break;
-      case 2: io_msg("you feel like something just touched you"); break;
+      case 0: Game::io->message("you are unsure if anything happened"); break;
+      case 1: Game::io->message("you feel naked"); break;
+      case 2: Game::io->message("you feel like something just touched you"); break;
     }
     return false;
   }
 
   arm->modify_armor(-1);
   arm->set_not_cursed();
-  io_msg("your armor glows %s for a moment",
-          player->is_hallucinating() ? color_random().c_str() : "silver");
+  Game::io->message("your armor glows " +
+      (player->is_hallucinating() ? color_random() : "silver") +
+      " for a moment");
   return true;
 }
 
@@ -263,16 +264,16 @@ static bool hold_monsters() {
   }
 
   if (monsters_affected == 1) {
-    io_msg("%s freezes", held_monster->get_name().c_str());
+    Game::io->message(held_monster->get_name() + " freezes");
 
   } else if (monsters_affected > 1) {
-    io_msg("the monsters around you freeze");
+    Game::io->message("the monsters around you freeze");
 
   } else {/* monsters_affected == 0 */
     switch (os_rand_range(3)) {
-      case 0: io_msg("you are unsure if anything happened"); break;
-      case 1: io_msg("you feel a strange sense of loss"); break;
-      case 2: io_msg("you feel a powerful aura"); break;
+      case 0: Game::io->message("you are unsure if anything happened"); break;
+      case 1: Game::io->message("you feel a strange sense of loss"); break;
+      case 2: Game::io->message("you feel a powerful aura"); break;
     }
   }
   return monsters_affected;
@@ -321,16 +322,17 @@ static bool create_monster() {
 
   if (i == 0) {
     switch (os_rand_range(3)) {
-      case 0: io_msg("you are unsure if anything happened"); break;
-      case 1: io_msg("you hear a faint cry of anguish in the distance"); break;
-      case 2: io_msg("you think you felt someone's presence"); break;
+      case 0: Game::io->message("you are unsure if anything happened"); break;
+      case 1: Game::io->message("you hear a faint cry of anguish in the distance"); break;
+      case 2: Game::io->message("you think you felt someone's presence"); break;
     }
 
   } else {
     Monster *monster = new Monster(Monster::random_monster_type(), mp, Game::level->get_room(mp));
     Game::level->monsters.push_back(monster);
     Game::level->set_monster(mp, monster);
-    io_msg("A %s appears out of thin air", monster->get_name().c_str());
+    Game::io->message("A " + monster->get_name() +
+                      " appears out of thin air");
   }
 
   return i;
@@ -338,19 +340,19 @@ static bool create_monster() {
 
 static bool food_detection() {
   bool food_seen = false;
-  wclear(hw);
+  wclear(Game::io->extra_screen);
 
   for (Item const* obj : Game::level->items) {
     if (obj->o_type == FOOD) {
       food_seen = true;
-      mvwaddcch(hw, obj->get_y(), obj->get_x(), FOOD);
+      mvwaddcch(Game::io->extra_screen, obj->get_y(), obj->get_x(), FOOD);
     }
   }
 
   if (food_seen) {
-    show_win("Your nose tingles and you smell food.--More--");
+    Game::io->show_extra_screen("Your nose tingles and you smell food.--More--");
   } else {
-    io_msg("your nose tingles");
+    Game::io->message("your nose tingles");
   }
 
   return food_seen;
@@ -361,8 +363,8 @@ static bool player_enchant_weapon() {
   Item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
   if (weapon == nullptr) {
     switch (os_rand_range(2)) {
-      case 0: io_msg("you feel a strange sense of loss"); break;
-      case 1: io_msg("you are unsure if anything happened"); break;
+      case 0: Game::io->message("you feel a strange sense of loss"); break;
+      case 1: Game::io->message("you are unsure if anything happened"); break;
     }
     return false;
   }
@@ -374,9 +376,13 @@ static bool player_enchant_weapon() {
     weapon->modify_damage_plus(1);
   }
 
-  io_msg("your %s glows %s for a moment",
-         Weapon::name(static_cast<Weapon::Type>(weapon->o_which)).c_str(),
-         player->is_hallucinating() ? color_random().c_str() : "blue");
+  stringstream os;
+  os << "your "
+     << Weapon::name(static_cast<Weapon::Type>(weapon->o_which))
+     << " glows "
+     << (player->is_hallucinating() ? color_random() : "blue")
+     << " for a moment";
+  Game::io->message(os.str());
 
   return true;
 }
@@ -388,7 +394,7 @@ static void remove_curse() {
     }
   }
 
-  io_msg(player->is_hallucinating()
+  Game::io->message(player->is_hallucinating()
       ? "you feel in touch with the Universal Onenes"
       : "you feel as if somebody is watching over you");
 }
@@ -398,15 +404,18 @@ static bool protect_armor() {
   Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
   if (arm == nullptr) {
     switch (os_rand_range(2)) {
-      case 0: io_msg("you feel a strange sense of loss"); break;
-      case 1: io_msg("you are unsure if anything happened"); break;
+      case 0: Game::io->message("you feel a strange sense of loss"); break;
+      case 1: Game::io->message("you are unsure if anything happened"); break;
     }
     return false;
   }
 
   arm->o_flags |= ISPROT;
-  io_msg("your armor is covered by a shimmering %s shield",
-          player->is_hallucinating() ? color_random().c_str() : "gold");
+  stringstream os;
+  os << "your armor is covered by a shimmering "
+    << (player->is_hallucinating() ? color_random() : "gold")
+    << " shield";
+  Game::io->message(os.str());
   return true;
 }
 
@@ -440,7 +449,11 @@ void Scroll::read() const {
 
     case Scroll::ID: {
       if (!is_known(Scroll::ID)) {
-        io_msg("this scroll is an %s scroll", Scroll::name(Scroll::ID).c_str());
+        stringstream os;
+        os << "this scroll is an "
+           << Scroll::name(Scroll::ID)
+           << " scroll";
+        Game::io->message(os.str());
       }
       set_known(Scroll::ID);
       pack_identify_item();
@@ -448,7 +461,7 @@ void Scroll::read() const {
 
     case Scroll::MAP: {
       set_known(Scroll::MAP);
-      io_msg("this scroll has a map on it");
+      Game::io->message("this scroll has a map on it");
       Game::io->print_level_layout();
     } break;
 
@@ -469,7 +482,7 @@ void Scroll::read() const {
 
     case Scroll::SCARE: {
       /* Reading it is a mistake and produces laughter at her poor boo boo. */
-      io_msg("you hear maniacal laughter in the distance");
+      Game::io->message("you hear maniacal laughter in the distance");
     } break;
 
     case Scroll::REMOVE: {
@@ -480,7 +493,7 @@ void Scroll::read() const {
       /* This scroll aggravates all the monsters on the current
        * level and sets them running towards the hero */
       monster_aggravate_all();
-      io_msg("you hear a high pitched humming noise");
+      Game::io->message("you hear a high pitched humming noise");
     } break;
 
     case Scroll::PROTECT: {

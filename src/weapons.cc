@@ -271,8 +271,11 @@ weapon_missile_fall(Item* obj, bool pr) {
   }
 
   if (pr) {
-    io_msg("the %s vanishes as it hits the ground",
-        Weapon::name(static_cast<Weapon::Type>(obj->o_which)).c_str());
+    stringstream os;
+    os << "the "
+       << Weapon::name(static_cast<Weapon::Type>(obj->o_which))
+       << " vanishes as it hits the ground";
+    Game::io->message(os.str());
   }
   delete obj;
 }

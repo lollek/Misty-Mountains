@@ -136,14 +136,14 @@ food_digest(void)
   if (food_left < hunger_alert && old_food_left >= hunger_alert)
   {
     hunger_state = HUNGRY;
-    io_msg("you are starting to get hungry");
+    Game::io->message("you are starting to get hungry");
     command_stop(true);
   }
 
   if (food_left < starvation_alert && old_food_left >= starvation_alert)
   {
     hunger_state = WEAK;
-    io_msg("you feel weak from lack of food");
+    Game::io->message("you feel weak from lack of food");
     command_stop(true);
   }
 
@@ -154,7 +154,7 @@ food_digest(void)
 
     player_turns_without_action += os_rand_range(8) + 4;
     hunger_state = STARVING;
-    io_msg("you faint from lack of food");
+    Game::io->message("you faint from lack of food");
     command_stop(true);
   }
 

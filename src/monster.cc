@@ -130,7 +130,7 @@ void Monster::set_invisible() {
   Character::set_invisible();
   if (player->can_see(get_position()))
   {
-    io_msg("%s disappeared", get_name().c_str());
+    Game::io->message(get_name() + " disappeared");
     Game::io->print_tile(get_position());
   }
 }
@@ -238,7 +238,7 @@ monster_notice_player(int y, int x)
       monster->set_found();
       if (!player->saving_throw(VS_MAGIC))
       {
-        io_msg("%s's gaze has confused you", monster->get_name().c_str());
+        Game::io->message(monster->get_name() + "'s gaze has confused you");
         player->set_confused();
       }
     }
@@ -335,7 +335,7 @@ monster_on_death(Monster** monster_ptr, bool print_message)
 
   /* Get rid of the monster. */
   if (print_message) {
-    io_msg("you have slain %s", monster->get_name().c_str());
+    Game::io->message("you have slain " + monster->get_name());
   }
   monster_remove_from_screen(monster_ptr, true);
 
@@ -458,7 +458,7 @@ monster_do_special_ability(Monster** monster)
     case 'I': {
       player->set_not_running();
       if (!player_turns_without_action) {
-        io_msg("you are frozen by the %s", (*monster)->get_name().c_str());
+        Game::io->message("you are frozen by the " + (*monster)->get_name());
       }
       player_turns_without_action += os_rand_range(2) + 2;
       if (player_turns_without_action > 50) {
@@ -481,7 +481,7 @@ monster_do_special_ability(Monster** monster)
       if (pack_gold < 0) {
         pack_gold = 0;
       }
-      io_msg("your pack_gold feels lighter");
+      Game::io->message("your pack_gold feels lighter");
     } return;
 
 
@@ -492,7 +492,7 @@ monster_do_special_ability(Monster** monster)
         monster_remove_from_screen(monster, false);
         *monster = nullptr;
         pack_remove(steal, false, false);
-        io_msg("your pack feels lighter");
+        Game::io->message("your pack feels lighter");
         delete steal;
       }
     } return;
@@ -502,7 +502,7 @@ monster_do_special_ability(Monster** monster)
       if (!player->saving_throw(VS_POISON)
           && !player->has_ring_with_ability(Ring::Type::SUSTSTR)) {
         player->modify_strength(-1);
-        io_msg("you feel weaker");
+        Game::io->message("you feel weaker");
       }
     } return;
 
@@ -515,7 +515,7 @@ monster_do_special_ability(Monster** monster)
         if (player->get_health() <= 0) {
           death('V');
         }
-        io_msg("you feel weaker");
+        Game::io->message("you feel weaker");
       }
     } return;
 
@@ -533,7 +533,7 @@ monster_do_special_ability(Monster** monster)
         if (player->get_health() <= 0) {
           death('W');
         }
-        io_msg("you feel weaker");
+        Game::io->message("you feel weaker");
       }
     } return;
 
@@ -737,7 +737,7 @@ monster_show_if_magic_inventory(void)
       if (item->is_magic())
       {
         atleast_one = true;
-        mvwaddcch(hw, mon->get_position().y, mon->get_position().x, MAGIC);
+        mvwaddcch(Game::io->extra_screen, mon->get_position().y, mon->get_position().x, MAGIC);
       }
     }
   }
@@ -748,6 +748,7 @@ void
 monster_polymorph(Monster* target)
 {
   assert(target != nullptr);
+  stringstream os;
 
   // Venus Flytrap loses its grip
   if (target->get_type() == 'F')
@@ -759,7 +760,7 @@ monster_polymorph(Monster* target)
   if (was_seen)
   {
     Game::io->print_color(pos.x, pos.y, Game::level->get_ch(pos));
-    io_msg_add("%s", target->get_name().c_str());
+    os << target->get_name();
   }
 
   // Save some things from old monster
@@ -776,14 +777,21 @@ monster_polymorph(Monster* target)
   {
     Game::io->print_color(pos.x, pos.y, monster);
     if (same_monster)
-      io_msg(" now looks a bit different");
+    {
+      os << " now looks a bit different";
+      Game::io->message(os.str());
+    }
     else
     {
-      io_msg(" turned into a %s", target->get_name().c_str());
+      os << " turned into a " << target->get_name();
+      Game::io->message(os.str());
     }
   }
   else if (was_seen)
-    io_msg(" disappeared");
+  {
+    os << " disappeared";
+    Game::io->message(os.str());
+  }
 
   // Put back some saved things from old monster
   target->t_pack = target_pack;

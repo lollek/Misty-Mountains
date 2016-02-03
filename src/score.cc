@@ -159,7 +159,7 @@ static void
 score_print(struct score* top_ten)
 {
   char buf[2*MAXSTR];
-
+  endwin();
   printf("Top %d %s:\n   Score Name\n", SCORE_MAX, "Scores");
   for (unsigned i = 0; i < SCORE_MAX; ++i)
   {
@@ -211,7 +211,6 @@ score_show_and_exit(int amount, int flags, char monst)
     mvaddstr(LINES - 1, 0 , "[Press return to continue]");
     refresh();
     wgetnstr(stdscr, buf, 80);
-    endwin();
     putchar('\n');
   }
 
@@ -225,7 +224,7 @@ score_show_and_exit(int amount, int flags, char monst)
   /* Print the highscore */
   score_print(top_ten);
 
-  exit(0);
+  Game::exit();
 }
 
 void

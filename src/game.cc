@@ -3,6 +3,8 @@
 
 using namespace std;
 
+#include "command.h"
+#include "error_handling.h"
 #include "os.h"
 #include "potions.h"
 #include "scrolls.h"
@@ -23,14 +25,21 @@ using namespace std;
 
 #include "Game.h"
 
+Game*  Game::game_ptr = nullptr;
 IO*    Game::io = nullptr;
 Level* Game::level = nullptr;
 int    Game::current_level = 1;
 int    Game::levels_without_food = 0;
 int    Game::max_level_visited = 1;
 
-void
-Game::new_level(int dungeon_level) {
+void Game::exit() {
+  if (game_ptr != nullptr) {
+    delete game_ptr;
+  }
+  ::exit(0);
+}
+
+void Game::new_level(int dungeon_level) {
 
   /* Set max level we've been to */
   Game::current_level = dungeon_level;
@@ -64,71 +73,66 @@ Game::new_level(int dungeon_level) {
   }
 }
 
-int Game::init_graphics()
-{
-  initscr();  /* Start up cursor package */
+int Game::run() {
 
-  /* Ncurses colors */
-  if (use_colors) {
-    if (start_color() == ERR) {
-      endwin();
-      cerr
-        << "Error: Failed to start colors. "
-        << "Try restarting without colors enabled\n";
-      return 1;
-    }
+  // Try to crash cleanly, and autosave if possible
+  // Unless we are debugging, since that messes with gdb/lldb
+#ifdef NDEBUG
+  signal(SIGHUP, save_auto);
+  signal(SIGQUIT, command_signal_endit);
+  signal(SIGILL, save_auto);
+  signal(SIGTRAP, save_auto);
+  signal(SIGIOT, save_auto);
+  signal(SIGFPE, save_auto);
+  signal(SIGBUS, save_auto);
+  signal(SIGSEGV, save_auto);
+  signal(SIGSYS, save_auto);
+  signal(SIGTERM, save_auto);
+  signal(SIGINT, command_signal_quit);
+#else
+  Game::io->message("Seed: #" + to_string(os_rand_seed));
+#endif
 
-    /* Because ncurses has defined COLOR_BLACK to 0 and COLOR_WHITE to 7,
-     * and then decided that init_pair cannot change number 0 (COLOR_BLACK)
-     * I use COLOR_WHITE for black text and COLOR_BLACK for white text */
+  player->set_previous_room(Game::level->get_room(player->get_position()));
 
-    assume_default_colors(0, -1); /* Default is white text and any background */
-    init_pair(COLOR_RED, COLOR_RED, -1);
-    init_pair(COLOR_GREEN, COLOR_GREEN, -1);
-    init_pair(COLOR_YELLOW, COLOR_YELLOW, -1);
-    init_pair(COLOR_BLUE, COLOR_BLUE, -1);
-    init_pair(COLOR_MAGENTA, COLOR_MAGENTA, -1);
-    init_pair(COLOR_CYAN, COLOR_CYAN, -1);
-    init_pair(COLOR_WHITE, COLOR_BLACK, -1);
-  }
-
-  if (LINES < NUMLINES || COLS < NUMCOLS) {
+#ifdef NDEBUG
+  try {
+    for (;;) command();
+  } catch (const std::runtime_error &ex) {
     endwin();
-    cerr << "\nSorry, the screen must be at least "
-         << NUMLINES << "x" << NUMCOLS << "\n";
+    cout << ex.what() << endl;
     return 1;
   }
+#else
+  for (;;) command();
+#endif
 
-  raw();     /* Raw mode */
-  noecho();  /* Echo off */
-  hw = newwin(LINES, COLS, 0, 0);
-
-  Game::io = new IO();
-
-  return 0;
+  // CODE NOT REACHED
 }
 
 Game::Game() {
 
-  /* Parse environment opts */
+  if (game_ptr != nullptr) {
+    error("Game is a singleton class");
+  }
+  game_ptr = this;
+
+  // Parse environment opts
   if (whoami.empty()) {
     whoami = os_whoami();
   }
 
   cout << "Hello " << whoami << ", just a moment while I dig the dungeon..." << flush;
 
-  /* Init Graphics */
-  if (init_graphics() != 0)
-    exit(1);
-
   /* Init stuff */
+  Game::io = new IO();                  // Set up graphics
   Scroll::init_scrolls();               // Set up names of scrolls
   Potion::init_potions();               // Set up colors of potions
   Ring::init_rings();                   // Set up stone settings of rings
   Wand::init_wands();                   // Set up materials of wands
   Game::new_level(Game::current_level); // Set up level (and player)
 
-  /* Start up daemons and fuses */
+  // Start up daemons and fuses
   daemon_start(runners_move, AFTER);
   daemon_start(doctor, AFTER);
   daemon_start(ring_abilities, AFTER);
@@ -136,5 +140,4 @@ Game::Game() {
 
 Game::~Game() {
   delete Game::io;
-  Game::io = nullptr;
 }

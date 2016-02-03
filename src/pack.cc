@@ -187,7 +187,7 @@ pack_char(void)
 void
 pack_move_msg(Item* obj)
 {
-  io_msg("moved onto %s", obj->get_description().c_str());
+  Game::io->message("moved onto " + obj->get_description());
 }
 
 bool
@@ -208,7 +208,7 @@ pack_add(Item* obj, bool silent, bool from_floor)
   {
     Game::level->items.remove(obj);
     delete obj;
-    io_msg("the scroll turns to dust as you pick it up");
+    Game::io->message("the scroll turns to dust as you pick it up");
     return false;
   }
 
@@ -235,7 +235,7 @@ pack_add(Item* obj, bool silent, bool from_floor)
   /* If we cannot stack it, we need to have available space in the pack */
   if (!is_picked_up && pack_count_items() == pack_size())
   {
-    io_msg("there's no room in your pack");
+    Game::io->message("there's no room in your pack");
     if (from_floor)
       pack_move_msg(obj);
     return false;
@@ -255,7 +255,8 @@ pack_add(Item* obj, bool silent, bool from_floor)
 
   /* Notify the user */
   if (!silent) {
-    io_msg("you now have %s (%c)", obj->get_description().c_str(), obj->o_packch, true);
+    Game::io->message("you now have " + obj->get_description() +
+                      " (" + string(1, obj->o_packch) + ")");
   }
   return true;
 }
@@ -311,7 +312,7 @@ void pack_pick_up(Coordinate const& coord, bool force) {
 
         int value = gold->get_amount();
         if (value > 0) {
-          io_msg("you found %d gold pieces", value);
+          Game::io->message("you found " + to_string(value) + " gold pieces");
         }
 
         pack_gold += value;
@@ -338,13 +339,15 @@ void pack_pick_up(Coordinate const& coord, bool force) {
   }
 
   if (!items_here.empty()) {
-    io_msg_add("items here: ");
+    stringstream os;
+    os << "items here: ";
     for (Item* item : items_here) {
-      io_msg_add("%s", item->get_description().c_str());
+      os << item->get_description();
       if (item != items_here.back()) {
-        io_msg_add(", ");
+        os << ", ";
       }
     }
+    Game::io->message(os.str());
   }
 }
 
@@ -367,20 +370,20 @@ pack_get_item(std::string const& purpose, int type)
 {
   if (pack_count_items_of_type(type) < 1)
   {
-    io_msg("You have no item to %s", purpose.c_str());
+    Game::io->message("You have no item to " + purpose);
     return nullptr;
   }
 
   pack_print_inventory(type);
-  io_msg("which object do you want to %s? ", purpose.c_str());
+  Game::io->message("which object do you want to " + purpose + "? ");
   char ch = io_readchar(true);
-  io_msg_clear();
+  Game::io->clear_message();
 
   pack_clear_inventory();
 
   if (ch == KEY_ESCAPE || ch == KEY_SPACE)
   {
-    io_msg_clear();
+    Game::io->clear_message();
     return nullptr;
   }
 
@@ -390,7 +393,7 @@ pack_get_item(std::string const& purpose, int type)
     }
   }
 
-  io_msg("'%s' is not a valid item",unctrl(static_cast<chtype>(ch)));
+  Game::io->message("'" + string(1, UNCTRL(ch)) + "s' is not a valid item");
   return nullptr;
 }
 
@@ -458,10 +461,10 @@ pack_print_equipment(void)
   move(orig_pos.y, orig_pos.x);
   wrefresh(equipscr);
   delwin(equipscr);
-  io_msg("--Press any key to continue--");
+  Game::io->message("--Press any key to continue--");
   io_readchar(false);
   touchwin(stdscr);
-  io_msg_clear();
+  Game::io->clear_message();
   return false;
 }
 
@@ -561,20 +564,20 @@ pack_equip_item(Item* item)
 bool
 pack_unequip(enum equipment_pos pos, bool quiet_on_success)
 {
-  char const* doing = pos == EQUIPMENT_RHAND
+  string const doing = pos == EQUIPMENT_RHAND
     ? "wielding"
     : "wearing";
 
   Item* obj = pack_equipped_item(pos);
   if (obj == nullptr)
   {
-    io_msg("not %s anything!", doing);
+    Game::io->message("not " + doing + " anything!");
     return false;
   }
 
   if (obj->is_cursed())
   {
-    io_msg("you can't. It appears to be cursed");
+    Game::io->message("you can't. It appears to be cursed");
     return false;
   }
 
@@ -588,10 +591,10 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
   {
     Game::level->items.push_back(obj);
     obj->set_position(player->get_position());
-    io_msg("dropped %s", obj->get_description().c_str());
+    Game::io->message("dropped " + obj->get_description());
   }
   else if (!quiet_on_success)
-    io_msg("no longer %s %s", doing, obj->get_description().c_str());
+    Game::io->message("no longer " + doing + " " + obj->get_description());
   return true;
 }
 
@@ -612,7 +615,7 @@ pack_identify_item(void)
 {
   if (pack_is_empty())
   {
-    io_msg("you don't have anything in your pack to identify");
+    Game::io->message("you don't have anything in your pack to identify");
     return;
   }
 
@@ -643,7 +646,7 @@ pack_identify_item(void)
     default: break;
   }
 
-  io_msg("%s", obj->get_description().c_str());
+  Game::io->message(obj->get_description());
 }
 
 

@@ -179,7 +179,7 @@ Level::connect_passages(int r1, int r2) {
   }
 
   else {
-    io_msg("DEBUG: error in connection tables");
+    Game::io->message("DEBUG: error in connection tables");
   }
 
   /* where turn starts */

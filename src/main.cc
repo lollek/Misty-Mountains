@@ -127,40 +127,7 @@ main(int argc, char** argv)
 
   /* Parse args and then init new (or old) game */
   parse_args(argc, argv);
-  Game new_game;
-
-  /* Try to crash cleanly, and autosave if possible
-   * Unless we are debugging, since that messes with gdb */
-#ifdef NDEBUG
-  signal(SIGHUP, save_auto);
-  signal(SIGQUIT, command_signal_endit);
-  signal(SIGILL, save_auto);
-  signal(SIGTRAP, save_auto);
-  signal(SIGIOT, save_auto);
-  signal(SIGFPE, save_auto);
-  signal(SIGBUS, save_auto);
-  signal(SIGSEGV, save_auto);
-  signal(SIGSYS, save_auto);
-  signal(SIGTERM, save_auto);
-  signal(SIGINT, command_signal_quit);
-#else
-  io_msg("Seed: #%u", os_rand_seed);
-#endif
-
-  player->set_previous_room(Game::level->get_room(player->get_position()));
-
-#ifdef NDEBUG
-  try {
-    for (;;) command();
-  } catch (const std::runtime_error &ex) {
-    endwin();
-    cout << ex.what() << endl;
-    return 1;
-  }
-#else
-  for (;;) command();
-#endif
-
-  /* CODE NOT REACHED */;
+  Game* new_game = new Game();
+  return new_game->run();
 }
 

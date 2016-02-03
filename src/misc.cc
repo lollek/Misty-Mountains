@@ -57,8 +57,8 @@ get_dir(void)
 {
   static Coordinate delta;
 
-  char const* prompt = "which direction? ";
-  io_msg(prompt);
+  string prompt = "which direction? ";
+  Game::io->message(prompt);
 
   bool gotit;
   do
@@ -76,12 +76,12 @@ get_dir(void)
       case 'n': case 'N': delta.y =  1; delta.x =  1; break;
 
       case KEY_ESCAPE:
-        io_msg_clear();
+        Game::io->clear_message();
         return nullptr;
 
       default:
-        io_msg_clear();
-        io_msg(prompt);
+        Game::io->clear_message();
+        Game::io->message(prompt);
         gotit = false;
         break;
     }
@@ -97,7 +97,7 @@ get_dir(void)
       delta.x = os_rand_range(3) - 1;
     } while (delta.y == 0 && delta.x == 0);
 
-  io_msg_clear();
+  Game::io->clear_message();
   return &delta;
 }
 

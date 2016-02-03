@@ -226,12 +226,12 @@ void Player::set_confused() {
     Character::set_confused();
     daemon_start_fuse(daemon_function::set_not_confused, HUHDURATION, AFTER);
   }
-  io_msg("wait, what's going on here. Huh? What? Who?");
+  Game::io->message("wait, what's going on here. Huh? What? Who?");
 }
 
 void Player::set_not_confused() {
   Character::set_not_confused();
-  io_msg("you feel less confused now");
+  Game::io->message("you feel less confused now");
 }
 
 bool Player::can_sense_monsters() const {
@@ -245,7 +245,7 @@ void Player::set_sense_monsters() {
 
   bool spotted_something = monster_sense_all_hidden();
   if (!spotted_something) {
-    io_msg("you have a strange feeling for a moment, then it passes");
+    Game::io->message("you have a strange feeling for a moment, then it passes");
   }
 }
 
@@ -263,7 +263,7 @@ void Player::set_hallucinating() {
     daemon_start(change_visuals, BEFORE);
     Character::set_hallucinating();
     daemon_start_fuse(daemon_function::set_not_hallucinating, SEEDURATION, AFTER);
-    io_msg("Oh, wow!  Everything seems so cosmic!");
+    Game::io->message("Oh, wow!  Everything seems so cosmic!");
   }
 }
 
@@ -288,7 +288,7 @@ void Player::set_not_hallucinating() {
 
   // Untrippify all monsters on the level
   monster_print_all();
-  io_msg("You feel your senses returning to normal");
+  Game::io->message("You feel your senses returning to normal");
 }
 
 int Player::get_speed() const {
@@ -298,12 +298,12 @@ int Player::get_speed() const {
 void Player::increase_speed() {
   speed++;
   daemon_start_fuse(daemon_function::decrease_speed, HASTEDURATION, AFTER);
-  io_msg("you feel yourself moving much faster");
+  Game::io->message("you feel yourself moving much faster");
 }
 
 void Player::decrease_speed() {
   speed--;
-  io_msg("you feel yourself slowing down");
+  Game::io->message("you feel yourself slowing down");
 }
 
 void Player::set_blind() {
@@ -314,7 +314,7 @@ void Player::set_blind() {
   } else {
     Character::set_blind();
     daemon_start_fuse(daemon_function::set_not_blind, SEEDURATION, AFTER);
-    io_msg("a cloak of darkness falls around you");
+    Game::io->message("a cloak of darkness falls around you");
   }
 }
 
@@ -327,7 +327,7 @@ void Player::set_not_blind() {
   Character::set_not_blind();
   if (!(get_room()->r_flags & ISGONE))
     room_enter(get_position());
-  io_msg("the veil of darkness lifts");
+  Game::io->message("the veil of darkness lifts");
 }
 
 void Player::set_levitating() {
@@ -337,7 +337,7 @@ void Player::set_levitating() {
   } else {
     Character::set_levitating();
     daemon_start_fuse(daemon_function::set_not_levitating, LEVITDUR, AFTER);
-    io_msg("you start to float in the air");
+    Game::io->message("you start to float in the air");
   }
 }
 
@@ -347,20 +347,20 @@ void Player::set_not_levitating() {
   }
 
   Character::set_not_levitating();
-  io_msg("you float gently to the ground");
+  Game::io->message("you float gently to the ground");
 }
 
 void Player::set_confusing_attack()
 {
   Character::set_confusing_attack();
-  io_msg("your hands begin to glow %s",
-         is_hallucinating() ? color_random().c_str() : "red");
+  Game::io->message("your hands begin to glow " +
+         (is_hallucinating() ? color_random() : "red"));
 }
 
 void Player::fall_asleep() {
   player_turns_without_action += SLEEPTIME;
   set_not_running();
-  io_msg("you fall asleep");
+  Game::io->message("you fall asleep");
 }
 
 void Player::become_stuck() {
@@ -370,11 +370,11 @@ void Player::become_stuck() {
 
 void Player::become_poisoned() {
   if (player->has_ring_with_ability(Ring::Type::SUSTSTR)) {
-    io_msg("you feel momentarily nauseous");
+    Game::io->message("you feel momentarily nauseous");
 
   } else {
     modify_strength(-(os_rand_range(3) + 1));
-    io_msg("you feel very sick now");
+    Game::io->message("you feel very sick now");
     set_not_hallucinating();
   }
 }
@@ -421,7 +421,7 @@ void Player::teleport(Coordinate const* target)
   player_turns_without_moving = 0;
   command_stop(true);
   flushinp();
-  io_msg("suddenly you're somewhere else");
+  Game::io->message("suddenly you're somewhere else");
 }
 
 void Player::search() {
@@ -443,7 +443,7 @@ void Player::search() {
         case VWALL: case HWALL:
           if (!os_rand_range(5 + increased_difficulty)) {
             Game::level->set_ch(x, y, DOOR);
-            io_msg("a secret door");
+            Game::io->message("a secret door");
             found = true;
             Game::level->set_real(x, y);
           }
@@ -454,9 +454,9 @@ void Player::search() {
             Game::level->set_ch(x, y, TRAP);
 
             if (is_hallucinating()) {
-              io_msg(trap_names[os_rand_range(NTRAPS)].c_str());
+              Game::io->message(trap_names[os_rand_range(NTRAPS)]);
             } else {
-              io_msg(trap_names[Game::level->get_trap_type(x, y)].c_str());
+              Game::io->message(trap_names[Game::level->get_trap_type(x, y)]);
               Game::level->set_discovered(x, y);
             }
 
@@ -484,10 +484,10 @@ void Player::search() {
 void Player::restore_strength() {
   if (get_strength() < get_default_strength()) {
     Character::restore_strength();
-    io_msg("you feel your strength returning");
+    Game::io->message("you feel your strength returning");
 
   } else {
-    io_msg("you feel warm all over");
+    Game::io->message("you feel warm all over");
   }
 }
 
@@ -523,7 +523,7 @@ void Player::raise_level(int amount)
   }
 
   Character::raise_level(amount);
-  io_msg("welcome to level %d", get_level());
+  Game::io->message("welcome to level " + to_string(get_level()));
 }
 
 void Player::check_for_level_up() {
@@ -586,12 +586,12 @@ void Player::rust_armor() {
 
   if ((arm->o_flags & ISPROT) || has_ring_with_ability(Ring::Type::SUSTARM)) {
     if (!to_death) {
-      io_msg("the rust vanishes instantly");
+      Game::io->message("the rust vanishes instantly");
     }
   }
   else {
     arm->modify_armor(1);
-    io_msg("your armor weakens");
+    Game::io->message("your armor weakens");
   }
 }
 

@@ -34,7 +34,7 @@ string const trap_names[] = {
 
 static trap_t trap_door_player(void) {
   Game::new_level(Game::current_level + 1);
-  io_msg("you fell into a trap!");
+  Game::io->message("you fell into a trap!");
   return T_DOOR;
 }
 
@@ -42,7 +42,10 @@ static trap_t trap_door_monster(Monster** victim_ptr) {
   Monster* victim = *victim_ptr;
 
   if (monster_seen_by_player(victim)) {
-    io_msg("%s fell through the floor", victim->get_name().c_str());
+    stringstream os;
+    os << victim->get_name()
+       << " fell through the floor";
+    Game::io->message(os.str());
   }
 
   monster_remove_from_screen(victim_ptr, false);
@@ -51,51 +54,60 @@ static trap_t trap_door_monster(Monster** victim_ptr) {
 
 static enum trap_t trap_bear_player(void) {
   player->become_stuck();
-  io_msg("you are caught in a bear trap");
+  Game::io->message("you are caught in a bear trap");
   return T_BEAR;
 }
 
 static enum trap_t trap_bear_monster(Monster* victim) {
   if (monster_seen_by_player(victim)) {
-    io_msg("%s was caught in a bear trap", victim->get_name().c_str());
+    stringstream os;
+    os << victim->get_name()
+       << " was caught in a bear trap";
+    Game::io->message(os.str());
   }
   victim->set_stuck();
   return T_BEAR;
 }
 
 static enum trap_t trap_myst_player(void) {
+  stringstream os;
   switch(os_rand_range(11)) {
-    case 0: io_msg("you are suddenly in a parallel dimension"); break;
-    case 1: io_msg("the light in here suddenly seems %s", color_random().c_str()); break;
-    case 2: io_msg("you feel a sting in the side of your neck"); break;
-    case 3: io_msg("multi-colored lines swirl around you, then fade"); break;
-    case 4: io_msg("a %s light flashes in your eyes", color_random().c_str()); break;
-    case 5: io_msg("a spike shoots past your ear!"); break;
-    case 6: io_msg("%s sparks dance across your armor", color_random().c_str()); break;
-    case 7: io_msg("you suddenly feel very thirsty"); break;
-    case 8: io_msg("you feel time speed up suddenly"); break;
-    case 9: io_msg("time now seems to be going slower"); break;
-    case 10: io_msg("you pack turns %s!", color_random().c_str()); break;
+    case 0: os << "you are suddenly in a parallel dimension"; break;
+    case 1: os << "the light in here suddenly seems " << color_random(); break;
+    case 2: os << "you feel a sting in the side of your neck"; break;
+    case 3: os << "multi-colored lines swirl around you, then fade"; break;
+    case 4: os << "a " << color_random() << " light flashes in your eyes"; break;
+    case 5: os << "a spike shoots past your ear!"; break;
+    case 6: os << color_random() << " sparks dance across your armor"; break;
+    case 7: os << "you suddenly feel very thirsty"; break;
+    case 8: os << "you feel time speed up suddenly"; break;
+    case 9: os << "time now seems to be going slower"; break;
+    case 10: os << "you pack turns " << color_random() << "!"; break;
   }
+  Game::io->message(os.str());
   return T_MYST;
 }
 
 static enum trap_t trap_myst_monster(Monster* victim) {
   if (monster_seen_by_player(victim)) {
-    io_msg("%s seems to have stepped on something", victim->get_name().c_str());
+    stringstream os;
+    os << victim->get_name() << " seems to have stepped on something";
+    Game::io->message(os.str());
   }
   return T_MYST;
 }
 
 static enum trap_t trap_sleep_player(void) {
   player->fall_asleep();
-  io_msg_add("a strange white mist envelops you and ");
+  Game::io->message("a strange white mist envelops you");
   return T_SLEEP;
 }
 
 static enum trap_t trap_sleep_monster(Monster* victim) {
   if (monster_seen_by_player(victim)) {
-    io_msg("%s collapsed to the ground", victim->get_name().c_str());
+    stringstream os;
+    os << victim->get_name() << " collapsed to the ground";
+    Game::io->message(os.str());
   }
   victim->set_held();
   return T_SLEEP;
@@ -105,11 +117,11 @@ static enum trap_t trap_arrow_player(void) {
   if (fight_swing_hits(player->get_level() - 1, player->get_armor(), 1)) {
     player->take_damage(roll(1, 6));
     if (player->get_health() <= 0) {
-      io_msg("an arrow killed you");
+      Game::io->message("an arrow killed you");
       death(DEATH_ARROW);
 
     } else {
-      io_msg("oh no! An arrow shot you");
+      Game::io->message("oh no! An arrow shot you");
     }
 
   } else {
@@ -117,7 +129,7 @@ static enum trap_t trap_arrow_player(void) {
     arrow->o_count = 1;
     arrow->set_position(player->get_position());
     weapon_missile_fall(arrow, false);
-    io_msg("an arrow shoots past you");
+    Game::io->message("an arrow shoots past you");
   }
   return T_ARROW;
 }
@@ -132,13 +144,13 @@ static enum trap_t trap_arrow_monster(Monster** victim_ptr) {
 
     if (victim->get_health() <= 0) {
       if (monster_seen_by_player(victim)) {
-        io_msg("An arrow killed %s", victim->get_name().c_str());
+        Game::io->message("An arrow killed " +  victim->get_name());
       }
       monster_on_death(victim_ptr, false);
       victim = nullptr;
 
     } else if (monster_seen_by_player(victim)) {
-      io_msg("An arrow shot %s", victim->get_name().c_str());
+      Game::io->message("An arrow shot " +  victim->get_name());
     }
 
   } else {
@@ -147,7 +159,7 @@ static enum trap_t trap_arrow_monster(Monster** victim_ptr) {
     arrow->set_position(victim->get_position());
     weapon_missile_fall(arrow, false);
     if (monster_seen_by_player(victim)) {
-      io_msg("An arrow barely missed %s", victim->get_name().c_str());
+      Game::io->message("An arrow barely missed " + victim->get_name());
     }
   }
   return T_ARROW;
@@ -161,35 +173,39 @@ static enum trap_t trap_telep_player(Coordinate const* trap_coord) {
 }
 
 static enum trap_t trap_telep_monster(Monster* victim) {
+  stringstream os;
+
   bool was_seen = monster_seen_by_player(victim);
   if (was_seen) {
-    io_msg_add("%s ", victim->get_name().c_str());
+    os << victim->get_name();
   }
 
   monster_teleport(victim, nullptr);
   if (was_seen) {
     if (monster_seen_by_player(victim)) {
-      io_msg("teleported a short distance");
+      os << " teleported a short distance";
     } else {
-      io_msg("disappeared");
+      os << " disappeared";
     }
   }
 
   if (!was_seen && monster_seen_by_player(victim)) {
-    io_msg("%s appeared out of thin air", victim->get_name().c_str());
+    os << victim->get_name()
+       << " appeared out of thin air";
   }
 
+  Game::io->message(os.str());
   return T_TELEP;
 }
 
 static enum trap_t trap_dart_player(void) {
   if (!fight_swing_hits(player->get_level() + 1, player->get_armor(), 1)) {
-    io_msg("a small dart whizzes by your ear and vanishes");
+    Game::io->message("a small dart whizzes by your ear and vanishes");
 
   } else {
     player->take_damage(roll(1, 4));
     if (player->get_health() <= 0) {
-      io_msg("a poisoned dart killed you");
+      Game::io->message("a poisoned dart killed you");
       death(DEATH_DART);
     }
 
@@ -198,7 +214,7 @@ static enum trap_t trap_dart_player(void) {
       player->modify_strength(-1);
     }
 
-    io_msg("a small dart just hit you in the shoulder");
+    Game::io->message("a small dart just hit you in the shoulder");
   }
   return T_DART;
 }
@@ -213,30 +229,30 @@ static enum trap_t trap_dart_monster(Monster** victim_ptr) {
 
     if (victim->get_health() <= 0) {
       if (monster_seen_by_player(victim)) {
-        io_msg("A poisoned dart killed %s", victim->get_name().c_str());
+        Game::io->message("A poisoned dart killed " + victim->get_name());
       }
       monster_on_death(victim_ptr, false);
       victim = nullptr;
 
     } else if (monster_seen_by_player(victim)) {
-      io_msg("An dart hit %s", victim->get_name().c_str());
+      Game::io->message("An dart hit " + victim->get_name());
     }
 
   } else if (monster_seen_by_player(victim)) {
-    io_msg("A dart barely missed %s", victim->get_name().c_str());
+    Game::io->message("A dart barely missed " + victim->get_name());
   }
   return T_DART;
 }
 
 static enum trap_t trap_rust_player(void) {
-  io_msg("a gush of water hits you on the head");
+  Game::io->message("a gush of water hits you on the head");
   player->rust_armor();
   return T_RUST;
 }
 
 static enum trap_t trap_rust_monster(Monster* victim) {
   if (monster_seen_by_player(victim)) {
-    io_msg("a gush of water hits %s", victim->get_name().c_str());
+    Game::io->message("a gush of water hits " + victim->get_name());
   }
   return T_RUST;
 }

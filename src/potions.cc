@@ -196,7 +196,7 @@ void Potion::quaffed_by(Character& victim) {
     case STRENGTH: {
       if (&victim == player) {
         Potion::set_known(subtype);
-        io_msg("you feel stronger, now.  What bulging muscles!");
+        Game::io->message("you feel stronger, now.  What bulging muscles!");
       }
       victim.modify_strength(1);
     } break;
@@ -208,7 +208,7 @@ void Potion::quaffed_by(Character& victim) {
     case HEALING: {
       if (&victim == player) {
         Potion::set_known(subtype);
-        io_msg("you begin to feel better");
+        Game::io->message("you begin to feel better");
       }
       victim.restore_health(roll(victim.get_level(), 4), true);
       victim.set_not_blind();
@@ -225,12 +225,12 @@ void Potion::quaffed_by(Character& victim) {
       if (&victim == player) {
         bool show = false;
         if (!Game::level->items.empty()) {
-          wclear(hw);
+          wclear(Game::io->extra_screen);
           for (Item* item : Game::level->items) {
             if (item->is_magic()) {
               Potion::set_known(subtype);
               show = true;
-              mvwaddcch(hw, item->get_y(), item->get_x(), MAGIC);
+              mvwaddcch(Game::io->extra_screen, item->get_y(), item->get_x(), MAGIC);
             }
           }
 
@@ -241,9 +241,9 @@ void Potion::quaffed_by(Character& victim) {
 
         if (show) {
           Potion::set_known(subtype);
-          show_win("You sense the presence of magic on this level.--More--");
+          Game::io->show_extra_screen("You sense the presence of magic on this level.--More--");
         } else {
-          io_msg("you have a strange feeling for a moment, then it passes");
+          Game::io->message("you have a strange feeling for a moment, then it passes");
         }
       }
     } break;
@@ -258,7 +258,7 @@ void Potion::quaffed_by(Character& victim) {
     case XHEAL: {
       if (&victim == player) {
         Potion::set_known(subtype);
-        io_msg("you begin to feel much better");
+        Game::io->message("you begin to feel much better");
       }
       victim.restore_health(roll(victim.get_level(), 8), true);
       victim.set_not_blind();
@@ -303,7 +303,7 @@ potion_quaff_something(void)
 
   // Make certain that it is somethings that we want to drink
   } else if (obj == nullptr || obj->o_type != POTION) {
-    io_msg("that's undrinkable");
+    Game::io->message("that's undrinkable");
     return false;
   }
 
@@ -320,7 +320,7 @@ potion_quaff_something(void)
     nickname.clear();
 
   } else if (nickname.empty()) {
-    io_msg("what do you want to call the potion? ");
+    Game::io->message("what do you want to call the potion? ");
     nickname = Game::io->read_string();
   }
 

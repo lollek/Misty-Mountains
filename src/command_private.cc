@@ -36,7 +36,7 @@ static bool command_attack_bow(Coordinate const* delta)
 
   if (ptr == nullptr)
   {
-    io_msg("you've run out of arrows!");
+    Game::io->message("you've run out of arrows!");
     return true;
   }
 
@@ -64,14 +64,19 @@ static bool command_attack_melee(bool fight_to_death, Coordinate const& delta)
     return command_do(dir_ch);
   }
 
-  char const* what;
+  string msg;
   switch (Game::level->get_ch(delta))
   {
-    case SHADOW: case HWALL: case VWALL: what = "wall"; break;
-    default: what = "air"; break;
+    case SHADOW: case HWALL: case VWALL: {
+      msg = "you swing at the wall";
+    } break;
+
+    default: {
+      msg = "you swing at the air";
+    } break;
   }
 
-  io_msg("you swing at the %s", what);
+  Game::io->message(msg);
   return true;
 }
 
@@ -83,9 +88,9 @@ command_use_stairs(char up_or_down)
   }
 
   if (player->is_levitating())
-    io_msg("You can't. You're floating off the ground!");
+    Game::io->message("You can't. You're floating off the ground!");
   else if (Game::level->get_ch(player->get_position()) != STAIRS)
-    io_msg("You're not standing on any stairs");
+    Game::io->message("You're not standing on any stairs");
 
   else if (up_or_down == '>') /* DOWN */ {
     Game::new_level(Game::current_level +1);
@@ -114,7 +119,7 @@ command_use_stairs(char up_or_down)
     Game::new_level(Game::current_level -1);
 
     if (has_amulet)
-      io_msg("you feel a wrenching sensation in your gut");
+      Game::io->message("you feel a wrenching sensation in your gut");
   }
 
   return false;
@@ -150,7 +155,7 @@ command_name_item(void)
   string* guess = nullptr;
   switch (obj->o_type)
   {
-    case FOOD: io_msg("Don't play with your food!"); return false;
+    case FOOD: Game::io->message("Don't play with your food!"); return false;
 
     case RING:
       already_known = Ring::is_known(static_cast<Ring::Type>(obj->o_which));
@@ -179,11 +184,11 @@ command_name_item(void)
 
   if (already_known)
   {
-    io_msg("that has already been identified");
+    Game::io->message("that has already been identified");
     return false;
   }
 
-  io_msg("what do you want to call it? ");
+  Game::io->message("what do you want to call it? ");
 
   string new_name = Game::io->read_string();
   if (!new_name.empty()) {
@@ -194,27 +199,28 @@ command_name_item(void)
     }
   }
 
-  io_msg_clear();
+  Game::io->clear_message();
   return false;
 }
 
 bool
 command_identify_character(void)
 {
-  io_msg("what do you want identified? ");
+  Game::io->message("what do you want identified? ");
   int ch = io_readchar(true);
-  io_msg_clear();
+  Game::io->clear_message();
 
   if (ch == KEY_ESCAPE)
   {
-    io_msg_clear();
+    Game::io->clear_message();
     return false;
   }
 
   if (isalpha(ch))
   {
     ch = toupper(ch);
-    io_msg("'%s': %s", unctrl(static_cast<chtype>(ch)), monster_name_by_type(static_cast<char>(ch)).c_str());
+    Game::io->message("'" + string(1, UNCTRL(ch)) + "': " +
+                      monster_name_by_type(static_cast<char>(ch)));
     return false;
   }
 
@@ -237,11 +243,11 @@ command_identify_character(void)
   for (struct character_list const* ptr = ident_list; ptr->ch != '\0'; ++ptr)
     if (ptr->ch == ch)
     {
-      io_msg("'%s': %s", unctrl(static_cast<chtype>(ch)), ptr->description);
+      Game::io->message("'" + string(1, UNCTRL(ch)) + "': " + ptr->description);
       return false;
     }
 
-  io_msg("'%s': %s", unctrl(static_cast<chtype>(ch)), "unknown character");
+  Game::io->message("'" + string(1, UNCTRL(ch)) + "': " + "unknown character");
   return false;
 }
 
@@ -257,12 +263,12 @@ command_identify_trap(void)
   delta.y += dir->y;
 
   if (Game::level->get_ch(delta) != TRAP)
-    io_msg("no trap there");
+    Game::io->message("no trap there");
   else if (player->has_confusing_attack())
-    io_msg(trap_names[os_rand_range(NTRAPS)].c_str());
+    Game::io->message(trap_names[os_rand_range(NTRAPS)]);
   else
   {
-    io_msg(trap_names[Game::level->get_trap_type(delta)].c_str());
+    Game::io->message(trap_names[Game::level->get_trap_type(delta)]);
     Game::level->set_discovered(delta);
   }
   return false;
@@ -278,12 +284,12 @@ command_quit(void)
 bool
 command_pick_up(void) {
   if (player->is_levitating()) {
-    io_msg("You can't. You're floating off the ground!");
+    Game::io->message("You can't. You're floating off the ground!");
   }
 
   Coordinate const& coord = player->get_position();
   if (Game::level->get_item(coord) == nullptr) {
-    io_msg("nothing to pick up");
+    Game::io->message("nothing to pick up");
     return false;
   }
 
@@ -362,9 +368,9 @@ command_help(void)
   };
   int const helpstrsize = sizeof(helpstr) / sizeof(*helpstr);
 
-  io_msg("character you want help for (* for all): ");
+  Game::io->message("character you want help for (* for all): ");
   char helpch = io_readchar(true);
-  io_msg_clear();
+  Game::io->clear_message();
 
   /* If its not a *, print the right help string
    * or an error if he typed a funny character. */
@@ -374,11 +380,11 @@ command_help(void)
     for (int i = 0; i < helpstrsize; ++i)
       if (helpstr[i].sym == helpch)
       {
-        io_msg("%s)%s", unctrl(static_cast<chtype>(helpstr[i].sym)), 
-               helpstr[i].description.c_str());
+        Game::io->message(string(1, UNCTRL(helpstr[i].sym)) + ")" + 
+                          helpstr[i].description);
         return false;
       }
-    io_msg("unknown character '%s'", unctrl(static_cast<chtype>(helpch)));
+    Game::io->message("unknown character '" + string(1, UNCTRL(helpch)) + "'");
     return false;
   }
 
@@ -394,29 +400,29 @@ command_help(void)
   if (numprint > LINES - 1)
     numprint = LINES - 1;
 
-  wclear(hw);
+  wclear(Game::io->extra_screen);
   int print_i = 0;
   for (int i = 0; i < helpstrsize; ++i)
   {
     if (!helpstr[i].print)
       continue;
 
-    wmove(hw, print_i % numprint, print_i >= numprint ? COLS / 2 : 0);
+    wmove(Game::io->extra_screen, print_i % numprint, print_i >= numprint ? COLS / 2 : 0);
     if (helpstr[i].sym)
-      waddstr(hw, unctrl(static_cast<chtype>(helpstr[i].sym)));
-    waddstr(hw, helpstr[i].description.c_str());
+      waddstr(Game::io->extra_screen, unctrl(static_cast<chtype>(helpstr[i].sym)));
+    waddstr(Game::io->extra_screen, helpstr[i].description.c_str());
 
     if (++print_i >= numprint * 2)
       break;
   }
 
-  wmove(hw, LINES - 1, 0);
-  waddstr(hw, "--Press space to continue--");
-  wrefresh(hw);
+  wmove(Game::io->extra_screen, LINES - 1, 0);
+  waddstr(Game::io->extra_screen, "--Press space to continue--");
+  wrefresh(Game::io->extra_screen);
   io_wait_for_key(KEY_SPACE);
   clearok(stdscr, true);
 
-  io_msg_clear();
+  Game::io->clear_message();
   touchwin(stdscr);
   wrefresh(stdscr);
   return false;
@@ -448,15 +454,15 @@ command_show_inventory(void)
 {
   if (pack_is_empty())
   {
-    io_msg("You inventory is empty");
+    Game::io->message("You inventory is empty");
     return false;
   }
 
   pack_print_inventory(0);
-  io_msg("--Press any key to continue--");
+  Game::io->message("--Press any key to continue--");
   io_readchar(false);
   pack_clear_inventory();
-  io_msg_clear();
+  Game::io->clear_message();
   return false;
 }
 
@@ -486,7 +492,7 @@ bool command_throw(void)
 
   if (obj->o_type == ARMOR)
   {
-    io_msg("you can't throw armor");
+    Game::io->message("you can't throw armor");
     return false;
   }
 
@@ -513,7 +519,7 @@ bool command_throw(void)
   if (missed)
   {
     if (obj->o_type == POTION)
-      io_msg("the potion crashes into the wall");
+      Game::io->message("the potion crashes into the wall");
     else
       weapon_missile_fall(obj, true);
   }
@@ -533,7 +539,7 @@ command_wield(void)
 
   if (obj->o_type == ARMOR)
   {
-    io_msg("you can't wield armor");
+    Game::io->message("you can't wield armor");
     return command_wield();
   }
 
@@ -544,17 +550,17 @@ bool command_rest(void)
 {
   if (monster_is_anyone_seen_by_player())
   {
-    io_msg("cannot rest with monsters nearby");
+    Game::io->message("cannot rest with monsters nearby");
     return false;
   }
 
   if (!player->is_hurt())
   {
-    io_msg("you don't feel the least bit tired");
+    Game::io->message("you don't feel the least bit tired");
     return false;
   }
 
-  io_msg("you rest for a while");
+  Game::io->message("you rest for a while");
   player_alerted = false;
   while (!player_alerted && player->is_hurt())
   {
@@ -573,24 +579,24 @@ command_eat(void)
 
   if (obj->o_type != FOOD)
   {
-    io_msg("that's inedible!");
+    Game::io->message("that's inedible!");
     return false;
   }
 
   food_eat();
 
   if (obj->o_which == 1)
-    io_msg("my, that was a yummy fruit");
+    Game::io->message("my, that was a yummy fruit");
 
   else if (os_rand_range(100) > 70)
   {
     player->gain_experience(1);
-    io_msg("this food tastes awful");
+    Game::io->message("this food tastes awful");
     player->check_for_level_up();
   }
 
   else
-    io_msg("that tasted good");
+    Game::io->message("that tasted good");
 
   pack_remove(obj, false, false);
   return true;
@@ -600,7 +606,7 @@ bool
 command_run(char ch, bool cautiously)
 {
   if (player->is_blind()) {
-    io_msg("You stumble forward");
+    Game::io->message("You stumble forward");
   } else {
     if (cautiously) {
       door_stop = true;
@@ -618,7 +624,7 @@ bool command_drop(void)
 
   if (ch != FLOOR && ch != PASSAGE)
   {
-    io_msg("there is something there already");
+    Game::io->message("there is something there already");
     return false;
   }
 
@@ -629,9 +635,9 @@ bool command_drop(void)
   bool drop_all = false;
   if (obj->o_count > 1)
   {
-    io_msg("Drop all? (y/N) ");
+    Game::io->message("Drop all? (y/N) ");
     drop_all = io_readchar(true) == 'y';
-    io_msg_clear();
+    Game::io->clear_message();
   }
 
   obj = pack_remove(obj, true, drop_all);
@@ -641,7 +647,7 @@ bool command_drop(void)
 
   obj->set_position(player->get_position());
 
-  io_msg("dropped %s", obj->get_description().c_str());
+  Game::io->message("dropped " + obj->get_description());
   return true;
 }
 
@@ -653,7 +659,7 @@ bool command_wear() {
   }
 
   if (obj->o_type != ARMOR) {
-    io_msg("you can't wear that");
+    Game::io->message("you can't wear that");
     return command_wear();
   }
 
@@ -667,7 +673,7 @@ bool command_wear() {
   pack_remove(obj, false, true);
   pack_equip_item(obj);
 
-  io_msg("now wearing %s", obj->get_description().c_str());
+  Game::io->message("now wearing " + obj->get_description());
   return true;
 }
 
@@ -683,14 +689,14 @@ command_ring_put_on(void)
   Ring* ring = dynamic_cast<Ring*>(obj);
   if (obj->o_type != RING || ring == nullptr)
   {
-    io_msg("not a ring");
+    Game::io->message("not a ring");
     return command_ring_put_on();
   }
 
   /* Try to put it on */
   if (!pack_equip_item(obj))
   {
-    io_msg("you already have a ring on each hand");
+    Game::io->message("you already have a ring on each hand");
     return false;
   }
   pack_remove(obj, false, true);
@@ -703,7 +709,7 @@ command_ring_put_on(void)
 
   string msg = ring->get_description();
   msg.at(0) = static_cast<char>(tolower(msg.at(0)));
-  io_msg("now wearing %s", msg.c_str());
+  Game::io->message("now wearing " + msg);
   return true;
 }
 
@@ -745,7 +751,7 @@ command_read_scroll() {
 
   Scroll* scroll = dynamic_cast<Scroll*>(obj);
   if (obj->o_type != SCROLL || scroll == nullptr) {
-    io_msg("there is nothing on it to read");
+    Game::io->message("there is nothing on it to read");
     return false;
   }
 
@@ -764,7 +770,7 @@ command_read_scroll() {
       nickname.clear();
 
     } else if (nickname.empty()) {
-      io_msg("what do you want to call the scroll? ");
+      Game::io->message("what do you want to call the scroll? ");
       nickname = Game::io->read_string();
     }
   }
@@ -790,7 +796,7 @@ bool command_weapon_wield(Item* weapon) {
   pack_remove(weapon, false, true);
   pack_equip_item(weapon);
 
-  io_msg("wielding %s", weapon->get_description().c_str());
+  Game::io->message("wielding " + weapon->get_description());
   last_wielded_weapon = currently_wielding;
   return true;
 }
@@ -803,7 +809,7 @@ bool command_weapon_wield_last_used(void) {
 
   if (last_wielded_weapon == nullptr || !pack_contains(last_wielded_weapon)) {
     last_wielded_weapon = nullptr;
-    io_msg("you have no weapon to switch to");
+    Game::io->message("you have no weapon to switch to");
     return false;
   }
 

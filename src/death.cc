@@ -52,7 +52,7 @@ death(int monst)
   pack_gold -= pack_gold / 10;
 
   Game::io->refresh();
-  io_msg("You die!");
+  Game::io->message("You die!");
   io_readchar(false);
 
   pack_evaluate();

@@ -235,7 +235,7 @@ move_do_loop(int dx, int dy) {
     Monster* mon = Game::level->get_monster(nh);
     if (player->is_held()) {
       if (mon == nullptr || mon->get_type() != 'F') {
-        io_msg("you are being held");
+        Game::io->message("you are being held");
         return after;
       }
     }
@@ -280,7 +280,7 @@ move_do(char ch) {
   // If we cannot really move, return
   if (player_turns_without_moving) {
     player_turns_without_moving--;
-    io_msg("you are still stuck in the bear trap");
+    Game::io->message("you are still stuck in the bear trap");
     return true;
   }
 

@@ -102,10 +102,10 @@ magic_bolt_hit_player(Coordinate* start, string const& missile_name)
       else
         death(Game::level->get_monster(*start)->get_type());
     }
-    io_msg("you are hit by the %s", missile_name.c_str());
+    Game::io->message("you are hit by the " + missile_name);
   }
   else
-    io_msg("the %s whizzes by you", missile_name.c_str());
+    Game::io->message("the " + missile_name + " whizzes by you");
 }
 
 static void
@@ -128,7 +128,7 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
     bolt.set_position(*pos);
 
     if (mon->get_type() == 'D' && missile_name == "flame")
-      io_msg("the flame bounces off the dragon");
+      Game::io->message("the flame bounces off the dragon");
     else
       fight_against_monster(pos, &bolt, true, &missile_name);
   }
@@ -138,7 +138,8 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
       monster_start_running(pos);
     else
     {
-      io_msg("the %s whizzes past %s", missile_name.c_str(), mon->get_name().c_str());
+      Game::io->message("the " + missile_name +
+                        " whizzes past " + mon->get_name());
     }
   }
 }
@@ -204,7 +205,7 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
     pos.x += dir->x;
 
     if (magic_bolt_handle_bounces(pos, dir, &dirtile))
-      io_msg("the %s bounces", name.c_str());
+      Game::io->message("the " + name + " bounces");
 
     /* Handle potential hits */
     if (pos == player->get_position())

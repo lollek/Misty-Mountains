@@ -1,3 +1,6 @@
+#include <sstream>
+#include <string>
+
 #include <ctype.h>
 #include <string.h>
 #include <unistd.h>
@@ -26,6 +29,51 @@ using namespace std;
 
 // TODO: Remove these
 static int flushmsg(void);
+
+IO::IO() : last_message(), message_buffer(), extra_screen(nullptr) {
+  initscr();  // Start up cursor package
+
+  // Ncurses colors
+  if (use_colors) {
+    if (start_color() == ERR) {
+      endwin();
+      cerr
+        << "Error: Failed to start colors. "
+        << "Try restarting without colors enabled\n";
+      Game::exit();
+    }
+
+    // Because ncurses has defined COLOR_BLACK to 0 and COLOR_WHITE to 7,
+    // and then decided that init_pair cannot change number 0 (COLOR_BLACK)
+    // I use COLOR_WHITE for black text and COLOR_BLACK for white text
+
+    assume_default_colors(0, -1); // Default is white text and any background
+    init_pair(COLOR_RED, COLOR_RED, -1);
+    init_pair(COLOR_GREEN, COLOR_GREEN, -1);
+    init_pair(COLOR_YELLOW, COLOR_YELLOW, -1);
+    init_pair(COLOR_BLUE, COLOR_BLUE, -1);
+    init_pair(COLOR_MAGENTA, COLOR_MAGENTA, -1);
+    init_pair(COLOR_CYAN, COLOR_CYAN, -1);
+    init_pair(COLOR_WHITE, COLOR_BLACK, -1);
+  }
+
+  if (LINES < NUMLINES || COLS < NUMCOLS) {
+    endwin();
+    cerr << "\nSorry, the screen must be at least "
+         << NUMLINES << "x" << NUMCOLS << "\n";
+    Game::exit();
+  }
+
+  raw();     // Raw mode
+  noecho();  // Echo off
+
+  extra_screen = newwin(LINES, COLS, 0, 0);
+}
+
+IO::~IO() {
+  delwin(extra_screen);
+  endwin();
+}
 
 
 void IO::print_monster(Monster* monster, IO::Attribute attr) {
@@ -175,7 +223,7 @@ void IO::print_player_vision() {
         continue;
       }
 
-      Game::io->print_tile(x, y);
+      print_tile(x, y);
       Game::level->set_discovered(x, y);
     }
   }
@@ -286,9 +334,9 @@ pass:
       if (ch != SHADOW) {
         Monster* obj = Game::level->get_monster(x, y);
         if (obj == nullptr || !player->can_sense_monsters()) {
-          Game::io->print_color(x, y, ch);
+          print_color(x, y, ch);
         } else {
-          Game::io->print_monster(obj, IO::Attribute::Standout);
+          print_monster(obj, IO::Attribute::Standout);
         }
       }
     }
@@ -327,7 +375,7 @@ void IO::refresh_statusline() {
 }
 
 void IO::repeat_last_message() {
-  io_msg(last_message.c_str());
+  message(last_message);
 }
 
 string IO::read_string(WINDOW* win, string const* initial_string) {
@@ -405,6 +453,52 @@ string IO::read_string(WINDOW* win, string const* initial_string) {
   return return_value;
 }
 
+void IO::clear_message()
+{
+  move(0, 0);
+  clrtoeol();
+  message_buffer.clear();
+}
+
+void IO::show_extra_screen(string const& message)
+{
+  wmove(extra_screen, 0, 0);
+  waddstr(extra_screen, message.c_str());
+  touchwin(extra_screen);
+  wmove(extra_screen, player->get_position().y, player->get_position().x);
+  wrefresh(extra_screen);
+  untouchwin(stdscr);
+
+  io_wait_for_key(KEY_SPACE);
+
+  clearok(curscr, true);
+  touchwin(stdscr);
+  clear_message();
+}
+
+void IO::message(string const& message, bool new_sentence) {
+
+  size_t max_message = static_cast<size_t>(NUMCOLS) - string(" --More--").size();
+
+   if (message_buffer.size() + message.size() > max_message) {
+    flushmsg();
+
+   } else if (new_sentence && !message_buffer.empty()) {
+     message_buffer += ". ";
+   }
+
+   if (message.size() > 1) {
+     stringstream os;
+     os
+       << message_buffer
+       << static_cast<char>(toupper(message.at(0)))
+       << message.substr(1);
+     message_buffer = os.str();
+
+   } else if (message.size() > 0) {
+     message_buffer += string(1, static_cast<char>(toupper(message.at(0))));
+   }
+}
 
 
 
@@ -416,10 +510,7 @@ string IO::read_string(WINDOW* win, string const* initial_string) {
 
 
 
-WINDOW* hw = nullptr;
 
-#define MAXMSG	static_cast<int>(NUMCOLS - sizeof " --More--")
-static string msgbuf;
 static int newpos = 0;
 static int mpos = 0;
 
@@ -427,12 +518,12 @@ static int
 flushmsg(void)
 {
   /* Nothing to show */
-  if (msgbuf.empty()) {
+  if (Game::io->message_buffer.empty()) {
     return ~KEY_ESCAPE;
   }
 
   /* Save message in case player missed it */
-  Game::io->last_message = msgbuf;
+  Game::io->last_message = Game::io->message_buffer;
 
   /* TODO: Remove mpos by replacing mpos = 0 with a io_msg_clear() */
   if (mpos)
@@ -447,49 +538,15 @@ flushmsg(void)
 
   /* All messages should start with uppercase, except ones that
    * start with a pack addressing character */
-  if (islower(msgbuf.at(0)) && msgbuf.at(1) != ')')
-    msgbuf.at(0) = static_cast<char>(toupper(msgbuf.at(0)));
-  mvaddstr(0, 0, msgbuf.c_str());
+  if (islower(Game::io->message_buffer.at(0)) && Game::io->message_buffer.at(1) != ')')
+    Game::io->message_buffer.at(0) = static_cast<char>(toupper(Game::io->message_buffer.at(0)));
+  mvaddstr(0, 0, Game::io->message_buffer.c_str());
   clrtoeol();
   mpos = newpos;
   newpos = 0;
-  msgbuf.clear();
+  Game::io->message_buffer.clear();
   refresh();
   return ~KEY_ESCAPE;
-}
-
-__attribute__((__format__(__printf__, 1, 0)))
-static void
-doadd(char const* fmt, va_list args, bool end_of_command)
-{
-  assert(fmt != nullptr  && "Use io_msg_clear() instead of io_msg(nullptr)");
-  assert(*fmt != '\0' && "Use io_msg_clear() instead of io_msg(\"\")");
-
-  static bool new_sentence = false;
-  char const* separator = ". ";
-  size_t separatorlen = strlen(separator);
-
-  char buf[MAXSTR];
-  vsprintf(buf, fmt, args);
-
-  int msgsize = newpos + static_cast<int>(strlen(buf));
-  if (new_sentence)
-    msgsize += separatorlen;
-
-  if (msgsize >= MAXMSG)
-    flushmsg();
-
-  if (new_sentence && newpos != 0)
-  {
-    msgbuf += separator;
-    newpos += separatorlen;
-    buf[0] = static_cast<char>(toupper(buf[0]));
-    new_sentence = false;
-  }
-
-  msgbuf += buf;
-  newpos = static_cast<int>(msgbuf.size());
-  new_sentence = end_of_command;
 }
 
 #ifndef NDEBUG
@@ -529,54 +586,6 @@ io_debug_fatal(char const* fmt, ...)
 #pragma clang diagnostic pop
 
 #endif
-
-void
-io_msg_clear(void)
-{
-  move(0, 0);
-  clrtoeol();
-  mpos = 0;
-}
-
-__attribute__((__format__(__printf__, 1, 2)))
-void
-io_msg(char const* fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  doadd(fmt, args, true);
-  va_end(args);
-}
-
-__attribute__((__format__(__printf__, 1, 2)))
-void
-io_msg_unsaved(char const* fmt, ...)
-{
-  string buf;
-
-  flushmsg();
-  buf = Game::io->last_message;
-
-  va_list args;
-  va_start(args, fmt);
-  doadd(fmt, args, true);
-  va_end(args);
-  flushmsg();
-  Game::io->last_message = buf;
-}
-
-__attribute__((__format__(__printf__, 1, 2)))
-void
-io_msg_add(char const* fmt, ...)
-{
-  va_list args;
-
-  va_start(args, fmt);
-  doadd(fmt, args, false);
-  va_end(args);
-}
-
-
 
 bool
 step_ok(int ch)
@@ -620,23 +629,6 @@ io_wait_for_key(int ch)
         if (io_readchar(true) == ch)
           return;
   }
-}
-
-void
-show_win(const char *message)
-{
-  wmove(hw, 0, 0);
-  waddstr(hw, message);
-  touchwin(hw);
-  wmove(hw, player->get_position().y, player->get_position().x);
-  wrefresh(hw);
-  untouchwin(stdscr);
-
-  io_wait_for_key(KEY_SPACE);
-
-  clearok(curscr, true);
-  touchwin(stdscr);
-  io_msg_clear();
 }
 
 void

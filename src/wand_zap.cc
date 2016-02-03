@@ -32,14 +32,17 @@ static Monster* wand_find_target(int* y, int* x, int dy, int dx) {
 static void wand_spell_light(void)
 {
   if (player->get_room()->r_flags & ISGONE) {
-    io_msg("the corridor glows and then fades");
+    Game::io->message("the corridor glows and then fades");
     return;
   }
 
   player->get_room()->r_flags &= ~ISDARK;
   room_enter(player->get_position());
-  io_msg("the rooms is lit by a shimmering %s light",
-          player->is_hallucinating() ? color_random().c_str() : "blue");
+  stringstream os;
+  os << "the rooms is lit by a shimmering "
+     << (player->is_hallucinating() ? color_random() : "blue")
+     << " light";
+  Game::io->message(os.str());
 }
 
 // take away 1/2 of hero's hit points, then take it away
@@ -73,13 +76,13 @@ wand_spell_drain_health(void) {
 
   // No monster found -> return
   if (drainee.empty()) {
-    io_msg("you have a tingling feeling");
+    Game::io->message("you have a tingling feeling");
     return;
   }
 
   int damage = player->get_health() / 2;
   player->take_damage(damage);
-  io_msg("You feel an intense pain");
+  Game::io->message("You feel an intense pain");
 
   // Now zot all of the monsters
   // Must use manual loop here, since monsters can be deleted
@@ -93,7 +96,7 @@ wand_spell_drain_health(void) {
 
     } else {
       monster_start_running(&monster->get_position());
-      io_msg("%s screams in pain", monster->get_name().c_str());
+      Game::io->message(monster->get_name() + " screams in pain");
     }
   }
 }
@@ -145,10 +148,10 @@ wand_spell_magic_missile(int dy, int dx)
 
   Monster* target = Game::level->get_monster(bolt.get_position());
   if (target == nullptr) {
-    io_msg("the missle vanishes with a puff of smoke");
+    Game::io->message("the missle vanishes with a puff of smoke");
 
   } else if (monster_save_throw(VS_MAGIC, target)) {
-    io_msg("the missle missed the %s", target->get_name().c_str());
+    Game::io->message("the missle missed the " + target->get_name());
 
   } else {
     fight_against_monster(&bolt.get_position(), &bolt, true);
@@ -171,11 +174,11 @@ wand_zap(void)
     return false;
 
   else if (obj->o_type != STICK || wand == nullptr) {
-    io_msg("you can't zap with that!");
+    Game::io->message("you can't zap with that!");
     return false;
 
   } else if (wand->get_charges() == 0) {
-    io_msg("nothing happens");
+    Game::io->message("nothing happens");
     return true;
   }
 
@@ -193,7 +196,7 @@ wand_zap(void)
         wand_spell_drain_health();
 
       } else {
-        io_msg("you are too weak to use it");
+        Game::io->message("you are too weak to use it");
         return true;
       }
     } break;
@@ -204,7 +207,7 @@ wand_zap(void)
         if (tp != nullptr) {
           tp->set_invisible();
         } else {
-          io_msg("You did not hit anything");
+          Game::io->message("You did not hit anything");
         }
       } break;
 
@@ -215,7 +218,7 @@ wand_zap(void)
         if (tp != nullptr)
           wand_spell_polymorph(*tp);
         else
-          io_msg("You did not hit anything");
+          Game::io->message("You did not hit anything");
       } break;
 
     case Wand::CANCEL: {
@@ -224,7 +227,7 @@ wand_zap(void)
         if (tp != nullptr) {
           wand_spell_cancel(*tp);
         } else {
-          io_msg("You did not hit anything");
+          Game::io->message("You did not hit anything");
         }
       } break;
 
@@ -251,7 +254,7 @@ wand_zap(void)
           player->teleport(&new_pos);
         }
         else
-          io_msg("You did not hit anything");
+          Game::io->message("You did not hit anything");
       } break;
 
     case Wand::MISSILE: {
@@ -269,10 +272,10 @@ wand_zap(void)
             tp->set_hasted();
           }
           monster_start_running(&c);
-          io_msg("%s became faster", tp->get_name().c_str());
+          Game::io->message(tp->get_name() + " became faster");
 
         } else {
-          io_msg("You did not hit anything");
+          Game::io->message("You did not hit anything");
         }
       } break;
 
@@ -288,10 +291,10 @@ wand_zap(void)
           }
           tp->t_turn = true;
           monster_start_running(&c);
-          io_msg("%s became slower", tp->get_name().c_str());
+          Game::io->message(tp->get_name() + " became slower");
 
         } else {
-          io_msg("You did not hit anything");
+          Game::io->message("You did not hit anything");
         }
       } break;
 
@@ -317,7 +320,7 @@ wand_zap(void)
     } break;
 
     case Wand::NOP: {
-      io_msg("You are usure if anything happened");
+      Game::io->message("You are usure if anything happened");
     } break;
 
     case Wand::NWANDS: error("Unknown type NWANDS");

@@ -122,7 +122,7 @@ print_things(void)
 int
 wizard_list_items(void)
 {
-  io_msg("for what type of object do you want a list? ");
+  Game::io->message("for what type of object do you want a list? ");
   print_things();
 
   int ch = io_readchar(true);
@@ -130,11 +130,11 @@ wizard_list_items(void)
   refresh();
 
   pr_spec(static_cast<char>(ch));
-  io_msg_clear();
-  io_msg("--Press any key to continue--");
+  Game::io->clear_message();
+  Game::io->message("--Press any key to continue--");
   io_readchar(false);
 
-  io_msg_clear();
+  Game::io->clear_message();
   touchwin(stdscr);
   return 0;
 }
@@ -142,9 +142,9 @@ wizard_list_items(void)
 void wizard_create_item(void) {
 
   // Get itemtype
-  io_msg("type of item: ");
+  Game::io->message("type of item: ");
   int type = io_readchar(true);
-  io_msg_clear();
+  Game::io->clear_message();
 
   switch (type) {
 
@@ -155,23 +155,23 @@ void wizard_create_item(void) {
     }
 
     default: {
-      io_msg("Bad pick");
+      Game::io->message("Bad pick");
       return;
     }
   }
 
   // Get item subtype
-  io_msg("which %c do you want? (0-f)", type);
+  Game::io->message("which " + string(1, type) + " do you want? (0-f)");
   char ch = io_readchar(true);
   int which = isdigit(ch) ? ch - '0' : ch - 'a' + 10;
-  io_msg_clear();
+  Game::io->clear_message();
 
   // Allocate item
   Item* obj = nullptr;
   switch (type) {
     case TRAP: {
       if (which < 0 || which >= NTRAPS) {
-        io_msg("Bad trap id");
+        Game::io->message("Bad trap id");
 
       } else {
         Game::level->set_not_real(player->get_position());
@@ -200,9 +200,9 @@ void wizard_create_item(void) {
     case WEAPON: {
       obj = new Weapon(static_cast<Weapon::Type>(which), false);
 
-      io_msg("blessing? (+,-,n)");
+      Game::io->message("blessing? (+,-,n)");
       char bless = io_readchar(true);
-      io_msg_clear();
+      Game::io->clear_message();
 
       if (bless == '-') {
         obj->set_cursed();
@@ -215,9 +215,9 @@ void wizard_create_item(void) {
     case ARMOR: {
       obj = new Armor(false);
 
-      io_msg("blessing? (+,-,n)");
+      Game::io->message("blessing? (+,-,n)");
       char bless = io_readchar(true);
-      io_msg_clear();
+      Game::io->clear_message();
       if (bless == '-') {
         obj->set_cursed();
         obj->modify_armor(os_rand_range(3) + 1);
@@ -232,9 +232,9 @@ void wizard_create_item(void) {
       switch (obj->o_which) {
         case Ring::Type::PROTECT: case Ring::Type::ADDSTR:
         case Ring::Type::ADDHIT:  case Ring::Type::ADDDAM: {
-          io_msg("blessing? (+,-,n)");
+          Game::io->message("blessing? (+,-,n)");
           char bless = io_readchar(true);
-          io_msg_clear();
+          Game::io->clear_message();
           if (bless == '-')
             obj->set_cursed();
           obj->set_armor(bless == '-' ? -1 : os_rand_range(2) + 1);
@@ -243,7 +243,7 @@ void wizard_create_item(void) {
     } break;
 
     case GOLD: {
-      io_msg("how much?");
+      Game::io->message("how much?");
       int amount = stoi(Game::io->read_string());
       obj = new Gold(amount);
     } break;
@@ -260,7 +260,7 @@ void wizard_create_item(void) {
 }
 
 void wizard_show_map(void) {
-  wclear(hw);
+  wclear(Game::io->extra_screen);
 
   for (int y = 1; y < NUMLINES - 1; y++)  {
     for (int x = 0; x < NUMCOLS; x++) {
@@ -270,10 +270,10 @@ void wizard_show_map(void) {
         ch |= A_STANDOUT;
       }
 
-      mvwaddcch(hw, y, x, ch);
+      mvwaddcch(Game::io->extra_screen, y, x, ch);
     }
   }
-  show_win("---More (level map)---");
+  Game::io->show_extra_screen("---More (level map)---");
 }
 
 void wizard_levels_and_gear(void) {

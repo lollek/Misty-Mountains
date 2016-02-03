@@ -12,7 +12,9 @@ public:
 
   Game& operator=(Game const&) = delete;
 
+  int run();
 
+  static void exit() __attribute__((noreturn));
   static void new_level(int dungeon_level);
 
   static IO*           io;
@@ -23,5 +25,5 @@ public:
   static int           max_level_visited;
 
 private:
-  int init_graphics();
+  static Game* game_ptr;
 };
