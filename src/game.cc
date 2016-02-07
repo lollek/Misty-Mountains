@@ -125,12 +125,13 @@ Game::Game() {
   cout << "Hello " << whoami << ", just a moment while I dig the dungeon..." << flush;
 
   /* Init stuff */
-  Game::io = new IO();                  // Set up graphics
-  Scroll::init_scrolls();               // Set up names of scrolls
-  Potion::init_potions();               // Set up colors of potions
-  Ring::init_rings();                   // Set up stone settings of rings
-  Wand::init_wands();                   // Set up materials of wands
-  Game::new_level(Game::current_level); // Set up level (and player)
+  Game::io = new IO();                  // Graphics
+  Scroll::init_scrolls();               // Names of scrolls
+  Color::init_colors();                 // Colors for potions and stuff
+  Potion::init_potions();               // Colors of potions
+  Ring::init_rings();                   // Stone settings of rings
+  Wand::init_wands();                   // Materials of wands
+  Game::new_level(Game::current_level); // Level (and player)
 
   // Start up daemons and fuses
   daemon_start(runners_move, AFTER);
@@ -139,6 +140,7 @@ Game::Game() {
 }
 
 Game::~Game() {
+  Color::free_colors();
   Ring::free_rings();
   delete Game::io;
 }

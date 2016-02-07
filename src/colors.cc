@@ -1,35 +1,38 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 #include "os.h"
 
 #include "colors.h"
 
-static vector<string const> rainbow = {
+using namespace std;
+
+static vector<string const>* rainbow = nullptr;
+
+void Color::init_colors() {
+  rainbow = new vector<string const> {
     "amber",     "aquamarine", "black",      "blue",       "brown",
     "clear",     "crimson",    "cyan",       "ecru",       "gold",
     "green",     "grey",       "magenta",    "orange",     "pink",
     "plaid",     "purple",     "red",        "silver",     "tan",
     "tangerine", "topaz",      "turquoise",  "vermilion",  "violet",
     "white",     "yellow",
-};
-
-size_t
-color_max()
-{
-  return rainbow.size();
+  };
 }
 
-string const&
-color_get(size_t i)
-{
-  return rainbow.at(i);
+void Color::free_colors() {
+  delete rainbow;
+  rainbow = nullptr;
 }
 
-string const&
-color_random()
-{
-  return rainbow.at(os_rand_range(rainbow.size()));
+size_t Color::color_max() {
+  return rainbow->size();
+}
+
+string const& Color::color_get(size_t i) {
+  return rainbow->at(i);
+}
+
+string const& Color::color_random() {
+  return rainbow->at(os_rand_range(rainbow->size()));
 }
