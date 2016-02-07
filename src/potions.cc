@@ -153,7 +153,7 @@ string Potion::get_description() const {
   } else {
     string const& color = *colors->at(static_cast<size_t>(subtype));
     if (o_count == 1) {
-      os << "A" << vowelstr(color) << " " << color << " potion";
+      os << "a" << vowelstr(color) << " " << color << " potion";
     } else {
       os << to_string(o_count) << " " << color << " potions";
     }
