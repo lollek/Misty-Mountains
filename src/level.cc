@@ -139,7 +139,7 @@ Level::Level() {
   if (player != nullptr) {
     player->set_previous_room(nullptr);
   }
-  places.resize(MAXLINES * MAXCOLS);
+  tiles.resize(MAXLINES * MAXCOLS);
   passages.resize(12);
 
   create_rooms();
@@ -155,13 +155,13 @@ Level::Level() {
   }
 }
 
-place& Level::get_place(int x, int y) {
+Tile& Level::get_tile(int x, int y) {
   size_t pos = static_cast<size_t>((x << 5) + y);
-  return places.at(pos);
+  return tiles.at(pos);
 }
 
 Monster* Level::get_monster(int x, int y) {
-  return get_place(x, y).p_monst;
+  return get_tile(x, y).p_monst;
 }
 
 Monster* Level::get_monster(Coordinate const& coord) {
@@ -184,7 +184,7 @@ Item* Level::get_item(Coordinate const& coord) {
 }
 
 void Level::set_monster(int x, int y, Monster* monster) {
-  get_place(x, y).p_monst = monster;
+  get_tile(x, y).p_monst = monster;
 }
 
 void Level::set_monster(Coordinate const& coord, Monster* monster) {
@@ -192,7 +192,7 @@ void Level::set_monster(Coordinate const& coord, Monster* monster) {
 }
 
 bool Level::is_passage(int x, int y) {
-  return get_place(x, y).is_passage;
+  return get_tile(x, y).is_passage;
 }
 
 bool Level::is_passage(Coordinate const& coord) {
@@ -200,7 +200,7 @@ bool Level::is_passage(Coordinate const& coord) {
 }
 
 bool Level::is_discovered(int x, int y) {
-  return get_place(x, y).is_discovered;
+  return get_tile(x, y).is_discovered;
 }
 
 bool Level::is_discovered(Coordinate const& coord) {
@@ -208,7 +208,7 @@ bool Level::is_discovered(Coordinate const& coord) {
 }
 
 bool Level::is_real(int x, int y) {
-  return get_place(x, y).is_real;
+  return get_tile(x, y).is_real;
 }
 
 bool Level::is_real(Coordinate const& coord) {
@@ -216,7 +216,7 @@ bool Level::is_real(Coordinate const& coord) {
 }
 
 void Level::set_passage(int x, int y) {
-  get_place(x, y).is_passage = true;
+  get_tile(x, y).is_passage = true;
 }
 
 void Level::set_passage(Coordinate const& coord) {
@@ -224,7 +224,7 @@ void Level::set_passage(Coordinate const& coord) {
 }
 
 void Level::set_discovered(int x, int y) {
-  get_place(x, y).is_discovered = true;
+  get_tile(x, y).is_discovered = true;
 }
 
 void Level::set_discovered(Coordinate const& coord) {
@@ -232,7 +232,7 @@ void Level::set_discovered(Coordinate const& coord) {
 }
 
 void Level::set_real(int x, int y) {
-  get_place(x, y).is_real = true;
+  get_tile(x, y).is_real = true;
 }
 
 void Level::set_real(Coordinate const& coord) {
@@ -240,7 +240,7 @@ void Level::set_real(Coordinate const& coord) {
 }
 
 void Level::set_not_real(int x, int y) {
-  get_place(x, y).is_real = false;
+  get_tile(x, y).is_real = false;
 }
 
 void Level::set_not_real(Coordinate const& coord) {
@@ -248,7 +248,7 @@ void Level::set_not_real(Coordinate const& coord) {
 }
 
 char Level::get_ch(int x, int y) {
-  return get_place(x, y).p_ch;
+  return get_tile(x, y).p_ch;
 }
 
 char Level::get_ch(Coordinate const& coord) {
@@ -259,7 +259,7 @@ void Level::set_ch(int x, int y, char ch) {
   switch (ch) {
     case HWALL: case VWALL: case SHADOW: case PASSAGE: case STAIRS: case DOOR:
     case FLOOR: case TRAP:
-      get_place(x, y).p_ch = ch;
+      get_tile(x, y).p_ch = ch;
       return;
 
     default:
@@ -272,7 +272,7 @@ void Level::set_ch(Coordinate const& coord, char ch) {
 }
 
 void Level::set_trap_type(int x, int y, size_t type) {
-  get_place(x, y).trap_type = type;
+  get_tile(x, y).trap_type = type;
 }
 
 void Level::set_trap_type(Coordinate const& coord, size_t type) {
@@ -280,7 +280,7 @@ void Level::set_trap_type(Coordinate const& coord, size_t type) {
 }
 
 void Level::set_passage_number(int x, int y, size_t num) {
-  get_place(x, y).passage_number = num;
+  get_tile(x, y).passage_number = num;
 }
 
 void Level::set_passage_number(Coordinate const& coord, size_t num) {
@@ -299,7 +299,7 @@ char Level::get_type(Coordinate const& coord) {
 }
 
 size_t Level::get_trap_type(int x, int y) {
-  return get_place(x, y).trap_type;
+  return get_tile(x, y).trap_type;
 }
 
 size_t Level::get_trap_type(Coordinate const& coord) {
@@ -307,7 +307,7 @@ size_t Level::get_trap_type(Coordinate const& coord) {
 }
 
 size_t Level::get_passage_number(int x, int y) {
-  return get_place(x, y).passage_number;
+  return get_tile(x, y).passage_number;
 }
 
 size_t Level::get_passage_number(Coordinate const& coord) {

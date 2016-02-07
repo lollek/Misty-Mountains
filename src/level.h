@@ -8,8 +8,8 @@
 #include "item.h"
 #include "io.h"
 
-struct place {
-  place()
+struct Tile {
+  Tile()
     : p_ch(SHADOW), is_passage(false), is_discovered(false), is_real(true),
       passage_number(0), trap_type(0), p_monst(nullptr)
   {}
@@ -109,11 +109,11 @@ private:
   void number_passage(int x, int y);
 
   // Misc
-  place& get_place(int x, int y);
+  Tile& get_tile(int x, int y);
 
   // Variables
   std::vector<room>  rooms;         // all rooms on level
-  std::vector<place> places;        // level map
+  std::vector<Tile>  tiles;        // level map
   std::vector<room>  passages;      // Passages between rooms
   Coordinate         stairs_coord;  // Where the stairs are
 };
