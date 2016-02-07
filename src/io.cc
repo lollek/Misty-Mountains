@@ -506,6 +506,7 @@ void IO::message(string const& message) {
 
   message_buffer = os.str();
   mvaddstr(0, 0, message_buffer.c_str());
+  last_message = message_buffer;
   clrtoeol();
 }
 
