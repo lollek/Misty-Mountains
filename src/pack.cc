@@ -36,7 +36,7 @@ int const PACK_RENAMEABLE = -1;
 int                         pack_gold = 0;
 static list<Item*>*         player_pack = nullptr;
 static vector<equipment_t>* equipment = nullptr;
-static bool                 pack_used[26]; /* Is the character used in the pack? */
+static vector<bool>*        pack_used = nullptr; // Is the character used in the pack?
 
 enum equipment_pos pack_ring_slots[PACK_RING_SLOTS] = {
   EQUIPMENT_RRING,
@@ -51,6 +51,7 @@ void init_pack() {
     { nullptr, "Right Ring" },
     { nullptr, "Left Ring" }
   };
+  pack_used = new vector<bool>(26, false);
 }
 
 void free_pack() {
@@ -59,6 +60,9 @@ void free_pack() {
 
   delete equipment;
   equipment = nullptr;
+
+  delete pack_used;
+  pack_used = nullptr;
 }
 
 int
@@ -168,16 +172,6 @@ pack_print_evaluate_item(Item* item)
   return static_cast<unsigned>(worth);
 }
 
-static char
-pack_char(void)
-{
-  bool* bp;
-  for (bp = pack_used; *bp; bp++)
-    ;
-  *bp = true;
-  return static_cast<char>(bp - pack_used) + 'a';
-}
-
 void
 pack_move_msg(Item* obj)
 {
@@ -241,7 +235,13 @@ pack_add(Item* obj, bool silent, bool from_floor)
     if (from_floor)
       Game::level->items.remove(obj);
     player_pack->push_back(obj);
-    obj->o_packch = pack_char();
+    for (size_t i = 0; i < pack_used->size(); ++i) {
+      if (!pack_used->at(i)) {
+        pack_used->at(i) = true;
+        obj->o_packch = static_cast<char>(i) + 'a';
+        break;
+      }
+    }
   }
 
   obj->o_flags |= ISFOUND;
@@ -268,7 +268,7 @@ Item* pack_remove(Item* obj, bool newobj, bool all) {
 
   /* Only one item? Just pop and return it */
   } else {
-    pack_used[obj->o_packch - 'a'] = false;
+    pack_used->at(static_cast<size_t>(obj->o_packch - 'a')) = false;
     player_pack->remove(obj);
   }
   return return_value;
