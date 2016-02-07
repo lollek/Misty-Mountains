@@ -193,12 +193,13 @@ std::string Ring::get_description() const {
     os << " of " << Ring::name(subtype);
 
     switch (subtype) {
-      case Ring::PROTECT: case Ring::ADDSTR: case Ring::ADDDAM: case Ring::ADDHIT:
+      case Ring::PROTECT: case Ring::ADDSTR: case Ring::ADDDAM: case Ring::ADDHIT: {
         if (get_armor() > 0) {
           os << " [+" << get_armor() << "]";
         } else {
           os << " [" << get_armor() << "]";
         }
+      } break;
 
     case SUSTSTR: case SEARCH: case SEEINVIS: case NOP: case AGGR:
     case REGEN: case DIGEST: case TELEPORT: case STEALTH: case SUSTARM:

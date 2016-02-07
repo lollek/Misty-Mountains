@@ -312,6 +312,7 @@ void IO::print_level_layout() {
           Game::level->set_real(x, y);
         } /* FALLTHROUGH */
 
+        [[clang::fallthrough]];
         // Seems like many things can be a passage?
         case PASSAGE: {
 pass:
