@@ -1,4 +1,7 @@
-v1.3.2+
+v1.4
+  Effects:
+    Removed hallucination
+
   Map:
     Can now be many passages between rooms, which is both more interesting and
     makes it more possible to juke
