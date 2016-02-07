@@ -17,9 +17,9 @@
 #include "player.h"
 #include "weapons.h"
 #include "wand.h"
-#include "things.h"
 #include "options.h"
 #include "rogue.h"
+#include "traps.h"
 
 #include "Game.h"
 
@@ -131,6 +131,7 @@ Game::Game(string const& whoami_) {
   Daemons::init_daemons();              // Over-time-effects
   Monster::init_monsters();             // Monster types
   init_pack();                          // Player pack
+  Trap::init_traps();                   // Trap types
   Game::new_level(Game::current_level); // Level (and player)
 
   // Start up daemons and fuses
@@ -140,6 +141,7 @@ Game::Game(string const& whoami_) {
 }
 
 Game::~Game() {
+  Trap::free_traps();
   free_pack();
   Monster::free_monsters();
   Daemons::free_daemons();

@@ -22,7 +22,6 @@
 #include "level.h"
 #include "player.h"
 #include "weapons.h"
-#include "things.h"
 #include "os.h"
 #include "armor.h"
 #include "options.h"
@@ -275,7 +274,7 @@ monster_give_pack(Monster* mon) {
 
   if (Game::current_level >= Game::max_level_visited &&
       os_rand_range(100) < carry_chance) {
-    mon->t_pack.push_back(new_thing());
+    mon->t_pack.push_back(Item::random());
   }
 }
 

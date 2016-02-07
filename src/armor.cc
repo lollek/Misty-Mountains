@@ -14,7 +14,6 @@ using namespace std;
 #include "player.h"
 #include "rings.h"
 #include "rogue.h"
-#include "things.h"
 
 #include "armor.h"
 

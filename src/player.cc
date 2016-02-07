@@ -452,9 +452,9 @@ void Player::search() {
             Game::level->set_ch(x, y, TRAP);
 
             if (is_hallucinating()) {
-              Game::io->message(trap_names[os_rand_range(NTRAPS)]);
+              Game::io->message(Trap::name(static_cast<Trap::Type>(os_rand_range(Trap::NTRAPS))));
             } else {
-              Game::io->message(trap_names[Game::level->get_trap_type(x, y)]);
+              Game::io->message(Trap::name(static_cast<Trap::Type>(Game::level->get_trap_type(x, y))));
               Game::level->set_discovered(x, y);
             }
 

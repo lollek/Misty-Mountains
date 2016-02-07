@@ -14,7 +14,6 @@
 #include "player.h"
 #include "weapons.h"
 #include "wand.h"
-#include "things.h"
 #include "monster.h"
 #include "os.h"
 #include "level_rooms.h"

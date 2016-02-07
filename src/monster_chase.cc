@@ -204,7 +204,7 @@ chase_do(Monster* monster)
           !player->is_levitating()) {
       Coordinate orig_pos = monster->get_position();
 
-      trap_spring(&monster, chase_coord);
+      Trap::spring(&monster, chase_coord);
       if (monster_is_dead(monster)) {
         return -1;
       }

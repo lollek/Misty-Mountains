@@ -262,13 +262,14 @@ command_identify_trap(void)
   delta.x += dir->x;
   delta.y += dir->y;
 
-  if (Game::level->get_ch(delta) != TRAP)
+  if (Game::level->get_ch(delta) != TRAP) {
     Game::io->message("no trap there");
-  else if (player->has_confusing_attack())
-    Game::io->message(trap_names[os_rand_range(NTRAPS)]);
-  else
+  } else if (player->has_confusing_attack()) {
+    Trap::Type rand_trap = static_cast<Trap::Type>(os_rand_range(static_cast<size_t>(Trap::NTRAPS)));
+    Game::io->message(Trap::name(rand_trap));
+  } else
   {
-    Game::io->message(trap_names[Game::level->get_trap_type(delta)]);
+    Game::io->message(Trap::name(static_cast<Trap::Type>(Game::level->get_trap_type(delta))));
     Game::level->set_discovered(delta);
   }
   return false;

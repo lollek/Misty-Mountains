@@ -15,7 +15,6 @@ MISC     = install CHANGELOG.TXT LICENSE.TXT rogue.png rogue.desktop
 
 debug: CXX       = clang++
 debug: CXXFLAGS  = -Weverything -Werror -g3 -std=c++11 -Wno-c++98-compat-pedantic -Wno-c++11-extensions -Wno-padded -Wno-c++11-compat -ferror-limit=1
-# Temporary:
 debug: $(PROGRAM) ctags
 
 .cc.o:

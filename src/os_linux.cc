@@ -15,7 +15,6 @@
 
 using namespace std;
 
-#include "things.h"
 #include "io.h"
 
 #include "os.h"

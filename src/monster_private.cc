@@ -3,7 +3,6 @@
 using namespace std;
 
 #include "Coordinate.h"
-#include "things.h"
 #include "player.h"
 #include "level.h"
 #include "scrolls.h"

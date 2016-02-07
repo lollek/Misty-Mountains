@@ -19,7 +19,6 @@
 #include "player.h"
 #include "wand.h"
 #include "traps.h"
-#include "things.h"
 #include "os.h"
 #include "rogue.h"
 
@@ -108,10 +107,10 @@ print_things(void)
   Coordinate orig_pos;
   getyx(stdscr, orig_pos.y, orig_pos.x);
 
-  for (size_t i = 0; i < things.size(); ++i)
+  for (int i = 0; i < static_cast<int>(Item::NITEMS); ++i)
   {
-    wmove(tmp, static_cast<int>(i) + 1, 1);
-    wprintw(tmp, "%c %s", index_to_char[i], things.at(i).oi_name.c_str());
+    wmove(tmp, i + 1, 1);
+    wprintw(tmp, "%c %s", index_to_char[i], Item::name(static_cast<Item::Type>(i)).c_str());
   }
 
   wmove(stdscr, orig_pos.y, orig_pos.x);
@@ -170,7 +169,7 @@ void wizard_create_item(void) {
   Item* obj = nullptr;
   switch (type) {
     case TRAP: {
-      if (which < 0 || which >= NTRAPS) {
+      if (which < 0 || which >= Trap::NTRAPS) {
         Game::io->message("Bad trap id");
 
       } else {

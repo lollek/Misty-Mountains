@@ -21,24 +21,37 @@
 
 using namespace std;
 
-string const trap_names[] = {
-  "a trapdoor",
-  "an arrow trap",
-  "a sleeping gas trap",
-  "a beartrap",
-  "a teleport trap",
-  "a poison dart trap",
-  "a rust trap",
-  "a mysterious trap"
-};
+static vector<string> const* trap_names = nullptr;
 
-static trap_t trap_door_player(void) {
-  Game::new_level(Game::current_level + 1);
-  Game::io->message("you fell into a trap!");
-  return T_DOOR;
+void Trap::init_traps() {
+  trap_names = new vector<string> const {
+    "a trapdoor",
+    "an arrow trap",
+    "a sleeping gas trap",
+    "a beartrap",
+    "a teleport trap",
+    "a poison dart trap",
+    "a rust trap",
+    "a mysterious trap"
+  };
 }
 
-static trap_t trap_door_monster(Monster** victim_ptr) {
+void Trap::free_traps() {
+  delete trap_names;
+  trap_names = nullptr;
+}
+
+string Trap::name(Type type) {
+  return trap_names->at(static_cast<size_t>(type));
+}
+
+static Trap::Type trap_door_player(void) {
+  Game::new_level(Game::current_level + 1);
+  Game::io->message("you fell into a trap!");
+  return Trap::Door;
+}
+
+static Trap::Type trap_door_monster(Monster** victim_ptr) {
   Monster* victim = *victim_ptr;
 
   if (monster_seen_by_player(victim)) {
@@ -49,16 +62,16 @@ static trap_t trap_door_monster(Monster** victim_ptr) {
   }
 
   monster_remove_from_screen(victim_ptr, false);
-  return T_DOOR;
+  return Trap::Door;
 }
 
-static enum trap_t trap_bear_player(void) {
+static Trap::Type trap_bear_player(void) {
   player->become_stuck();
   Game::io->message("you are caught in a bear trap");
-  return T_BEAR;
+  return Trap::Beartrap;
 }
 
-static enum trap_t trap_bear_monster(Monster* victim) {
+static Trap::Type trap_bear_monster(Monster* victim) {
   if (monster_seen_by_player(victim)) {
     stringstream os;
     os << victim->get_name()
@@ -66,10 +79,10 @@ static enum trap_t trap_bear_monster(Monster* victim) {
     Game::io->message(os.str());
   }
   victim->set_stuck();
-  return T_BEAR;
+  return Trap::Beartrap;
 }
 
-static enum trap_t trap_myst_player(void) {
+static Trap::Type trap_myst_player(void) {
   stringstream os;
   switch(os_rand_range(11)) {
     case 0: os << "you are suddenly in a parallel dimension"; break;
@@ -85,35 +98,35 @@ static enum trap_t trap_myst_player(void) {
     case 10: os << "you pack turns " << Color::random() << "!"; break;
   }
   Game::io->message(os.str());
-  return T_MYST;
+  return Trap::Mystery;
 }
 
-static enum trap_t trap_myst_monster(Monster* victim) {
+static Trap::Type trap_myst_monster(Monster* victim) {
   if (monster_seen_by_player(victim)) {
     stringstream os;
     os << victim->get_name() << " seems to have stepped on something";
     Game::io->message(os.str());
   }
-  return T_MYST;
+  return Trap::Mystery;
 }
 
-static enum trap_t trap_sleep_player(void) {
+static Trap::Type trap_sleep_player(void) {
   player->fall_asleep();
   Game::io->message("a strange white mist envelops you");
-  return T_SLEEP;
+  return Trap::Sleep;
 }
 
-static enum trap_t trap_sleep_monster(Monster* victim) {
+static Trap::Type trap_sleep_monster(Monster* victim) {
   if (monster_seen_by_player(victim)) {
     stringstream os;
     os << victim->get_name() << " collapsed to the ground";
     Game::io->message(os.str());
   }
   victim->set_held();
-  return T_SLEEP;
+  return Trap::Sleep;
 }
 
-static enum trap_t trap_arrow_player(void) {
+static Trap::Type trap_arrow_player(void) {
   if (fight_swing_hits(player->get_level() - 1, player->get_armor(), 1)) {
     player->take_damage(roll(1, 6));
     if (player->get_health() <= 0) {
@@ -131,10 +144,10 @@ static enum trap_t trap_arrow_player(void) {
     weapon_missile_fall(arrow, false);
     Game::io->message("an arrow shoots past you");
   }
-  return T_ARROW;
+  return Trap::Arrow;
 }
 
-static enum trap_t trap_arrow_monster(Monster** victim_ptr) {
+static Trap::Type trap_arrow_monster(Monster** victim_ptr) {
   Monster* victim = *victim_ptr;
 
   if (fight_swing_hits(victim->get_level() -1,
@@ -162,17 +175,17 @@ static enum trap_t trap_arrow_monster(Monster** victim_ptr) {
       Game::io->message("An arrow barely missed " + victim->get_name());
     }
   }
-  return T_ARROW;
+  return Trap::Arrow;
 }
 
-static enum trap_t trap_telep_player(Coordinate const* trap_coord) {
+static Trap::Type trap_telep_player(Coordinate const* trap_coord) {
   player->teleport(nullptr);
   // Mark trap before we leave
   Game::io->print_color(trap_coord->x, trap_coord->y, TRAP);
-  return T_TELEP;
+  return Trap::Teleport;
 }
 
-static enum trap_t trap_telep_monster(Monster* victim) {
+static Trap::Type trap_telep_monster(Monster* victim) {
   stringstream os;
 
   bool was_seen = monster_seen_by_player(victim);
@@ -195,10 +208,10 @@ static enum trap_t trap_telep_monster(Monster* victim) {
   }
 
   Game::io->message(os.str());
-  return T_TELEP;
+  return Trap::Teleport;
 }
 
-static enum trap_t trap_dart_player(void) {
+static Trap::Type trap_dart_player(void) {
   if (!fight_swing_hits(player->get_level() + 1, player->get_armor(), 1)) {
     Game::io->message("a small dart whizzes by your ear and vanishes");
 
@@ -216,10 +229,10 @@ static enum trap_t trap_dart_player(void) {
 
     Game::io->message("a small dart just hit you in the shoulder");
   }
-  return T_DART;
+  return Trap::Dart;
 }
 
-static enum trap_t trap_dart_monster(Monster** victim_ptr) {
+static Trap::Type trap_dart_monster(Monster** victim_ptr) {
   Monster* victim = *victim_ptr;
 
   /* TODO: In the future this should probably weaken the monster */
@@ -241,43 +254,43 @@ static enum trap_t trap_dart_monster(Monster** victim_ptr) {
   } else if (monster_seen_by_player(victim)) {
     Game::io->message("A dart barely missed " + victim->get_name());
   }
-  return T_DART;
+  return Trap::Dart;
 }
 
-static enum trap_t trap_rust_player(void) {
+static Trap::Type trap_rust_player(void) {
   Game::io->message("a gush of water hits you on the head");
   player->rust_armor();
-  return T_RUST;
+  return Trap::Rust;
 }
 
-static enum trap_t trap_rust_monster(Monster* victim) {
+static Trap::Type trap_rust_monster(Monster* victim) {
   if (monster_seen_by_player(victim)) {
     Game::io->message("a gush of water hits " + victim->get_name());
   }
-  return T_RUST;
+  return Trap::Rust;
 }
 
-trap_t trap_player(Coordinate const& trap_coord) {
+Trap::Type Trap::player(Coordinate const& trap_coord) {
   command_stop(true);
 
   Game::level->set_ch(trap_coord, TRAP);
   Game::level->set_discovered(trap_coord);
 
   switch (Game::level->get_trap_type(trap_coord)) {
-    case T_DOOR:  return trap_door_player();
-    case T_BEAR:  return trap_bear_player();
-    case T_MYST:  return trap_myst_player();
-    case T_SLEEP: return trap_sleep_player();
-    case T_ARROW: return trap_arrow_player();
-    case T_TELEP: return trap_telep_player(&trap_coord);
-    case T_DART:  return trap_dart_player();
-    case T_RUST:  return trap_rust_player();
+    case Door:      return trap_door_player();
+    case Beartrap:  return trap_bear_player();
+    case Mystery:   return trap_myst_player();
+    case Sleep:     return trap_sleep_player();
+    case Arrow:     return trap_arrow_player();
+    case Teleport:  return trap_telep_player(&trap_coord);
+    case Dart:      return trap_dart_player();
+    case Rust:      return trap_rust_player();
 
     default: error("Unknown trap type triggered");
   }
 }
 
-trap_t trap_spring(Monster** victim, Coordinate const& trap_coord) {
+Trap::Type Trap::spring(Monster** victim, Coordinate const& trap_coord) {
   if (victim == nullptr) {
     error("victim = nullptr");
   } else if (*victim == nullptr) {
@@ -290,14 +303,14 @@ trap_t trap_spring(Monster** victim, Coordinate const& trap_coord) {
   }
 
   switch (Game::level->get_trap_type(trap_coord)) {
-    case T_DOOR:  return trap_door_monster(victim);
-    case T_BEAR:  return trap_bear_monster(*victim);
-    case T_MYST:  return trap_myst_monster(*victim);
-    case T_SLEEP: return trap_sleep_monster(*victim);
-    case T_ARROW: return trap_arrow_monster(victim);
-    case T_TELEP: return trap_telep_monster(*victim);
-    case T_DART:  return trap_dart_monster(victim);
-    case T_RUST:  return trap_rust_monster(*victim);
+    case Door:     return trap_door_monster(victim);
+    case Beartrap: return trap_bear_monster(*victim);
+    case Mystery:  return trap_myst_monster(*victim);
+    case Sleep:    return trap_sleep_monster(*victim);
+    case Arrow:    return trap_arrow_monster(victim);
+    case Teleport: return trap_telep_monster(*victim);
+    case Dart:     return trap_dart_monster(victim);
+    case Rust:     return trap_rust_monster(*victim);
 
     default: error("Unknown trap type triggered");
   }

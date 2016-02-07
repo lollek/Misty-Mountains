@@ -18,7 +18,6 @@
 #include "potions.h"
 #include "rings.h"
 #include "rogue.h"
-#include "things.h"
 #include "wand.h"
 #include "weapons.h"
 

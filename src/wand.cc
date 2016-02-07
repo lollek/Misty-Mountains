@@ -18,16 +18,15 @@
 #include "pack.h"
 #include "player.h"
 #include "rogue.h"
-#include "things.h"
 #include "weapons.h"
 
 #include "wand.h"
 
 using namespace std;
 
-vector<string> Wand::materials;
-vector<string> Wand::guesses;
-vector<bool>   Wand::known;
+vector<string>* Wand::materials;
+vector<string>* Wand::guesses;
+vector<bool>*   Wand::known;
 
 static Wand::Type random_wand_type() {
   int value = os_rand_range(100);
@@ -114,22 +113,23 @@ int Wand::worth(Wand::Type subtype) {
 }
 
 string& Wand::guess(Wand::Type subtype) {
-  return guesses.at(static_cast<size_t>(subtype));
+  return guesses->at(static_cast<size_t>(subtype));
 }
 
 bool Wand::is_known(Wand::Type subtype) {
-  return known.at(static_cast<size_t>(subtype));
+  return known->at(static_cast<size_t>(subtype));
 }
 
 void Wand::set_known(Wand::Type subtype) {
-  known.at(static_cast<size_t>(subtype)) = true;
+  known->at(static_cast<size_t>(subtype)) = true;
 }
 
 void Wand::init_wands() {
-  known = vector<bool>(Wand::NWANDS, false);
-  guesses = vector<string>(Wand::NWANDS, "");
+  materials = new vector<string>;
+  known = new vector<bool>(Wand::NWANDS, false);
+  guesses = new vector<string>(Wand::NWANDS, "");
 
-  static vector<string> possible_material = {
+  vector<string> possible_material = {
     /* Wood */
     "avocado wood", "balsa", "bamboo", "banyan", "birch", "cedar", "cherry",
     "cinnibar", "cypress", "dogwood", "driftwood", "ebony", "elm", "eucalyptus",
@@ -144,26 +144,37 @@ void Wand::init_wands() {
     "zinc",
   };
 
-  while (materials.size() < static_cast<size_t>(Wand::NWANDS)) {
+  while (materials->size() < static_cast<size_t>(Wand::NWANDS)) {
     string new_material = possible_material.at(os_rand_range(possible_material.size()));
-    if (find(materials.cbegin(), materials.cend(), new_material) ==
-        materials.cend()) {
-      materials.push_back(new_material);
+    if (find(materials->cbegin(), materials->cend(), new_material) ==
+        materials->cend()) {
+      materials->push_back(new_material);
     }
   }
 
   // Run some checks
-  if (materials.size() != static_cast<size_t>(Wand::NWANDS)) {
+  if (materials->size() != static_cast<size_t>(Wand::NWANDS)) {
     error("Wand init: wrong number of materials");
-  } else if (known.size() != static_cast<size_t>(Wand::NWANDS)) {
+  } else if (known->size() != static_cast<size_t>(Wand::NWANDS)) {
     error("Wand init: wrong number of knowledge");
-  } else if (guesses.size() != static_cast<size_t>(Wand::NWANDS)) {
+  } else if (guesses->size() != static_cast<size_t>(Wand::NWANDS)) {
     error("Wand init: wrong number of guesses");
   }
 }
 
+void Wand::free_wands() {
+  delete materials;
+  materials = nullptr;
+
+  delete guesses;
+  guesses = nullptr;
+
+  delete known;
+  known = nullptr;
+}
+
 string const& Wand::material(Wand::Type subtype) {
-  return materials.at(static_cast<size_t>(subtype));
+  return materials->at(static_cast<size_t>(subtype));
 }
 
 void Wand::set_identified() {

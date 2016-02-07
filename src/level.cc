@@ -119,7 +119,7 @@ void Level::create_traps() {
         get_random_room_coord(nullptr, &stairs_coord, 0, false);
       } while (get_ch(stairs_coord) != FLOOR);
 
-      size_t trap_type = static_cast<size_t>(os_rand_range(NTRAPS));
+      size_t trap_type = static_cast<size_t>(os_rand_range(Trap::NTRAPS));
       set_not_real(stairs_coord);
       set_trap_type(stairs_coord, trap_type);
     }

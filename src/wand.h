@@ -67,9 +67,9 @@ private:
   bool identified;
   Type subtype;
 
-  static std::vector<std::string> materials;
-  static std::vector<std::string> guesses;
-  static std::vector<bool>        known;
+  static std::vector<std::string>* materials;
+  static std::vector<std::string>* guesses;
+  static std::vector<bool>*        known;
 };
 
 /* Perform a zap with a wand */

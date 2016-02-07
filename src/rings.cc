@@ -12,7 +12,6 @@
 #include "pack.h"
 #include "player.h"
 #include "rogue.h"
-#include "things.h"
 #include "weapons.h"
 #include "monster.h"
 

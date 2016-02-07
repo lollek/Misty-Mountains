@@ -163,8 +163,8 @@ move_do_loop_default(bool after, Coordinate& coord) {
 
   // If there was a trap, get trapped!
   if (Game::level->get_ch(coord) == TRAP) {
-    char ch = trap_player(coord);
-    if (ch == T_DOOR || ch == T_TELEP) {
+    char ch = Trap::player(coord);
+    if (ch == Trap::Door || ch == Trap::Teleport) {
       return after;
     }
   }

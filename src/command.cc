@@ -17,7 +17,6 @@
 #include "rogue.h"
 #include "score.h"
 #include "scrolls.h"
-#include "things.h"
 #include "wand.h"
 #include "weapons.h"
 #include "wizard.h"
