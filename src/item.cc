@@ -1,11 +1,21 @@
 #include <string>
 
-using namespace std;
-
+#include "potions.h"
+#include "scrolls.h"
+#include "food.h"
+#include "weapons.h"
+#include "armor.h"
+#include "rings.h"
+#include "wand.h"
+#include "game.h"
+#include "os.h"
+#include "error_handling.h"
 #include "io.h"
 #include "armor.h"
 
 #include "item.h"
+
+using namespace std;
 
 Item::~Item() {}
 
@@ -117,3 +127,66 @@ void Item::set_not_cursed() {
 bool Item::is_cursed() const {
   return cursed;
 }
+
+string Item::name(Item::Type type) {
+  switch (type) {
+    case Potion: return "potion";
+    case Scroll: return "scroll";
+    case Food:   return "food";
+    case Weapon: return "weapon";
+    case Armor:  return "armor";
+    case Ring:   return "ring";
+    case Wand:   return "wand";
+    case NITEMS: error("Unknown type NITEMS");
+  }
+}
+
+int Item::probability(Item::Type type) {
+  switch (type) {
+    case Potion: return 26;
+    case Scroll: return 36;
+    case Food:   return 16;
+    case Weapon: return  7;
+    case Armor:  return  7;
+    case Ring:   return  7;
+    case Wand:   return  4;
+    case NITEMS: error("Unknown type NITEMS");
+  }
+}
+
+static Item::Type random_item_type() {
+  int value = os_rand_range(100);
+  int end = static_cast<int>(Item::Type::NITEMS);
+  for (int i = 0; i < end; ++i) {
+    Item::Type type = static_cast<Item::Type>(i);
+    int probability = Item::probability(type);
+
+    if (value < probability) {
+      return type;
+
+    } else {
+      value -= probability;
+    }
+  }
+
+  error("Error! Sum of probabilities is not 100%");
+}
+
+Item* Item::random() {
+  // We are kind to the hungry player in this game
+  if (Game::levels_without_food > 3) {
+    return new class Food();
+  }
+
+  switch (random_item_type()) {
+    case Potion: return new class Potion();
+    case Scroll: return new class Scroll();
+    case Food:   return new class Food();
+    case Weapon: return new class Weapon(true);
+    case Armor:  return new class Armor(true);
+    case Ring:   return new class Ring(true);
+    case Wand:   return new class Wand();
+    case NITEMS: error("Unknown type NITEMS");
+  }
+}
+

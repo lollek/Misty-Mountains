@@ -73,8 +73,6 @@ private:
   void refresh_statusline();
 };
 
-#include "things.h"
-
 #define GAME_VERSION "Rogue14 " VERSION " - Based on Rogue5.4.4"
 
 #define MAXSTR 1024 // maximum length of strings

@@ -16,6 +16,17 @@
 
 class Item {
 public:
+  enum Type {
+    Potion,
+    Scroll,
+    Food,
+    Weapon,
+    Armor,
+    Ring,
+    Wand,
+    NITEMS
+  };
+
   explicit Item(Item const&) = default;
 
   virtual ~Item();
@@ -65,6 +76,11 @@ public:
   int           o_which;               // Which object of a type it is
   int           o_flags;               // information about objects
   char          o_packch;              // What character it is in the pack
+
+  // Static
+  static int         probability(Type type);
+  static std::string name(Type type);
+  static Item*       random();
 
 protected:
   Item();

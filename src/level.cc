@@ -11,7 +11,6 @@
 #include "misc.h"
 #include "player.h"
 #include "level_rooms.h"
-#include "things.h"
 #include "os.h"
 #include "rogue.h"
 
@@ -35,7 +34,7 @@ void Level::create_treasure_room() {
   int num_items = os_rand_range(spots) + treasure_room_min_items;
   for (int i = 0; i < num_items; ++i) {
     Coordinate item_pos;
-    Item* item = new_thing();
+    Item* item = Item::random();
 
     get_random_room_coord(&room, &item_pos, 2 * max_monsters, false);
     item->set_position(item_pos);
@@ -78,7 +77,7 @@ void Level::create_loot() {
   for (int i = 0; i < max_items; i++) {
     if (os_rand_range(100) < 36) {
       // Pick a new object and link it in the list
-      Item* obj = new_thing();
+      Item* obj = Item::random();
       items.push_back(obj);
 
       // Put it somewhere

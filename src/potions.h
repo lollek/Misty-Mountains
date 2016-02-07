@@ -3,7 +3,8 @@
 #include <vector>
 #include <string>
 
-#include "Character.h"
+#include "item.h"
+#include "character.h"
 
 
 class Potion : public Item {

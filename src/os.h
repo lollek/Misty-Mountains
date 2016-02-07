@@ -10,8 +10,6 @@
 #  include <linux/limits.h>
 #endif
 
-#include "things.h"
-
 extern unsigned os_rand_seed;
 
 int         os_rand(void);                   // Return a pseudorandom number

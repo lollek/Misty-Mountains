@@ -7,7 +7,6 @@
 
 #include "coordinate.h"
 
-#include "things.h"
 
 void init_pack();
 void free_pack();
