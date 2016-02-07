@@ -26,9 +26,9 @@
 
 using namespace std;
 
-vector<string>  Scroll::guesses;
-vector<bool>    Scroll::knowledge;
-vector<string>  Scroll::fake_name;
+vector<string>* Scroll::guesses;
+vector<bool>*   Scroll::knowledge;
+vector<string>* Scroll::fake_name;
 
 static Scroll::Type random_scroll_type() {
   int value = os_rand_range(100);
@@ -132,15 +132,15 @@ Scroll::Type Scroll::get_type() const {
 }
 
 string& Scroll::guess(Scroll::Type subtype) {
-  return guesses.at(static_cast<size_t>(subtype));
+  return guesses->at(static_cast<size_t>(subtype));
 }
 
 bool Scroll::is_known(Scroll::Type subtype) {
-  return knowledge.at(static_cast<size_t>(subtype));
+  return knowledge->at(static_cast<size_t>(subtype));
 }
 
 void Scroll::set_known(Scroll::Type subtype) {
-  knowledge.at(static_cast<size_t>(subtype)) = true;
+  knowledge->at(static_cast<size_t>(subtype)) = true;
 }
 
 string Scroll::get_description() const {
@@ -157,15 +157,16 @@ string Scroll::get_description() const {
   } else if (!Scroll::guess(subtype).empty()) {
     os << " called " << Scroll::guess(subtype);
   } else {
-    os << " titled " << Scroll::fake_name.at(subtype);
+    os << " titled " << Scroll::fake_name->at(subtype);
   }
 
   return os.str();
 }
 
 void Scroll::init_scrolls() {
-  knowledge = vector<bool>(Scroll::NSCROLLS, false);
-  guesses = vector<string>(Scroll::NSCROLLS, "");
+  fake_name = new vector<string>;
+  knowledge = new vector<bool>(Scroll::NSCROLLS, false);
+  guesses = new vector<string>(Scroll::NSCROLLS, "");
 
   vector<string> sylls {
     "a", "ab", "ag", "aks", "ala", "an", "app", "arg", "arze", "ash",
@@ -208,18 +209,29 @@ void Scroll::init_scrolls() {
       name.pop_back();
     }
 
-    Scroll::fake_name.push_back(name);
+    Scroll::fake_name->push_back(name);
   }
 
 
   // Run some checks
-  if (fake_name.size() != static_cast<size_t>(Scroll::NSCROLLS)) {
+  if (fake_name->size() != static_cast<size_t>(Scroll::NSCROLLS)) {
     error("Scroll init: wrong number of fake names");
-  } else if (knowledge.size() != static_cast<size_t>(Scroll::NSCROLLS)) {
+  } else if (knowledge->size() != static_cast<size_t>(Scroll::NSCROLLS)) {
     error("Scroll init: wrong number of knowledge");
-  } else if (guesses.size() != static_cast<size_t>(Scroll::NSCROLLS)) {
+  } else if (guesses->size() != static_cast<size_t>(Scroll::NSCROLLS)) {
     error("Scroll init: wrong number of guesses");
   }
+}
+
+void Scroll::free_scrolls() {
+  delete guesses;
+  guesses = nullptr;
+
+  delete knowledge;
+  knowledge = nullptr;
+
+  delete fake_name;
+  fake_name = nullptr;
 }
 
 static bool enchant_players_armor() {

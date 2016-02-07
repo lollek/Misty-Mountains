@@ -143,9 +143,11 @@ Game::~Game() {
   free_pack();
   Monster::free_monsters();
   Daemons::free_daemons();
+  Wand::free_wands();
+  Ring::free_rings();
   Potion::free_potions();
   Color::free_colors();
-  Ring::free_rings();
+  Scroll::free_scrolls();
 
   delete Game::io;
   Game::io = nullptr;

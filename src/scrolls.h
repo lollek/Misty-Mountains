@@ -51,12 +51,13 @@ public:
   static void         set_known(Type subtype);
 
   static void         init_scrolls();
+  static void         free_scrolls();
 
 private:
   Type subtype;
 
-  static std::vector<std::string>  guesses;
-  static std::vector<bool>         knowledge;
-  static std::vector<std::string>  fake_name;
+  static std::vector<std::string>* guesses;
+  static std::vector<bool>*        knowledge;
+  static std::vector<std::string>* fake_name;
 };
 

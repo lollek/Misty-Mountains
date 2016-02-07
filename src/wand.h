@@ -52,6 +52,7 @@ public:
 
   // Static
   static void init_wands();
+  static void free_wands();
 
   static std::string        name(Type subtype);
   static int                probability(Type subtype);

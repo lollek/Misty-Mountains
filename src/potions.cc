@@ -356,7 +356,17 @@ void Potion::init_potions() {
   } else if (guesses->size() != static_cast<size_t>(Potion::NPOTIONS)) {
     error("Potion init: wrong number of guesses");
   }
+}
 
+void Potion::free_potions() {
+  delete colors;
+  colors = nullptr;
+
+  delete knowledge;
+  knowledge = nullptr;
+
+  delete guesses;
+  guesses = nullptr;
 }
 
 
