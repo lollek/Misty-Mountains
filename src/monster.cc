@@ -377,16 +377,6 @@ monster_remove_from_screen(Monster** monster_ptr, bool was_killed)
   *monster_ptr = nullptr;
 }
 
-bool
-monster_is_dead(Monster const* monster)
-{
-  if (monster == nullptr)
-    return true;
-
-  return !(find(Game::level->monsters.cbegin(), Game::level->monsters.cend(), monster) ==
-          Game::level->monsters.cend());
-}
-
 void
 monster_teleport(Monster* monster, Coordinate const* destination)
 {

@@ -87,8 +87,6 @@ void monster_on_death(Monster** monster, bool print_death_message);
 // NOTE: monster will be nullptr after this
 void monster_remove_from_screen(Monster** monster, bool was_killed);
 
-bool monster_is_dead(Monster const* monster);
-
 void monster_teleport(Monster* monster, Coordinate const* destination);
 
 void monster_do_special_ability(Monster** monster);

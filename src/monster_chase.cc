@@ -193,8 +193,7 @@ chase_do(Monster* monster)
     // Remove monster from old position IFF we see it, or it was standing on a
     // passage we have previously seen
     Game::level->set_monster(monster->get_position(), nullptr);
-    if (monster_seen_by_player(monster) ||
-        ((prev_ch == PASSAGE || prev_ch == DOOR) &&
+    if (((prev_ch == PASSAGE || prev_ch == DOOR) &&
          Game::level->is_discovered(monster->get_position()))) {
       Game::io->print_tile(monster->get_position());
     }
@@ -205,7 +204,9 @@ chase_do(Monster* monster)
       Coordinate orig_pos = monster->get_position();
 
       Trap::spring(&monster, chase_coord);
-      if (monster_is_dead(monster)) {
+
+      // Monster is dead?
+      if (monster == nullptr) {
         return -1;
       }
 
