@@ -31,6 +31,7 @@ using namespace std;
 static void
 parse_args(int argc, char* const* argv, std::string& whoami)
 {
+  string const game_version = "Misty Mountains v1.3.2+ - Based on Rogue5.4.4";
   int option_index = 0;
   struct option const long_options[] = {
     {"no-colors", no_argument,       0, 'c'},
@@ -97,10 +98,10 @@ parse_args(int argc, char* const* argv, std::string& whoami)
                "      --help           display this help and exit\n"
                "      --version        display game version and exit\n\n"
                "%s\n"
-               , GAME_VERSION);
+               , game_version.c_str());
         exit(0);
       case '1':
-        puts(GAME_VERSION);
+        puts(game_version.c_str());
         exit(0);
       default:
         fprintf(stderr, "Try '%s --help' for more information\n",

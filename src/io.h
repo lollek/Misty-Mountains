@@ -70,8 +70,6 @@ private:
   void refresh_statusline();
 };
 
-#define GAME_VERSION "Rogue14 " VERSION " - Based on Rogue5.4.4"
-
 #define MAXSTR 1024 // maximum length of strings
 #define MAXINP   50 // max string to read from terminal or environment
 #define MAXLINES 32 // maximum number of screen lines used

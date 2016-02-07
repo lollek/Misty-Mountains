@@ -1,17 +1,16 @@
 
-PROGRAM  = rogue14
-VERSION  = 1.3.2+
+PROGRAM  = misty_mountains
 PREFIX   = /usr/local
 SCOREPATH = $(PREFIX)/share/$(PROGRAM)/highscore
 
 CXX      = c++
 CXXFLAGS = -O2 -Wall -Wextra -Werror -pedantic -std=c++11
-DFLAGS   = -DVERSION=\"$(VERSION)\" -DSCOREPATH=\"$(SCOREPATH)\"
+DFLAGS   = -DSCOREPATH=\"$(SCOREPATH)\"
 LDFLAGS  = -lcurses
 
 CXXFILES = $(wildcard src/*.cc)
 OBJS     = $(addsuffix .o, $(basename $(CXXFILES)))
-MISC     = install CHANGELOG.TXT LICENSE.TXT rogue.png rogue.desktop
+MISC     = install CHANGELOG.TXT LICENSE.TXT
 
 debug: CXX       = clang++
 debug: CXXFLAGS  = -Weverything -Werror -g3 -std=c++11 -Wno-c++98-compat-pedantic -Wno-c++11-extensions -Wno-padded -Wno-c++11-compat -ferror-limit=1
@@ -45,7 +44,7 @@ remove:
 .PHONY: remove
 
 dist: final
-	tar czf $(PROGRAM)-$(VERSION)-linux.tar.gz $(PROGRAM) $(MISC)
+	tar czf $(PROGRAM).tar.gz $(PROGRAM) $(MISC)
 .PHONY: dist
 
 lint:

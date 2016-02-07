@@ -1,4 +1,6 @@
-v1.4
+v2.0
+  Renamed game to Misty Mountains
+
   Effects:
     Removed hallucination
 
