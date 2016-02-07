@@ -1,12 +1,12 @@
 v2.0
   Renamed game to Misty Mountains
+  Numerous smaller changes and tweaks
 
   Effects:
     Removed hallucination
 
   Map:
-    Can now be many passages between rooms, which is both more interesting and
-    makes it more possible to juke
+    Can now be many passages between rooms
 
 v1.3.2
   Visual:
