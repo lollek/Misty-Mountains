@@ -10,20 +10,19 @@
 class Potion : public Item {
 public:
   enum Type {
-    CONFUSION  = 0,
-    LSD        = 1,
-    POISON     = 2,
-    STRENGTH   = 3,
-    SEEINVIS   = 4,
-    HEALING    = 5,
-    MFIND      = 6,
-    TFIND      = 7,
-    RAISE      = 8,
-    XHEAL      = 9,
-    HASTE      = 10,
-    RESTORE    = 11,
-    BLIND      = 12,
-    LEVIT      = 13,
+    CONFUSION,
+    POISON,
+    STRENGTH,
+    SEEINVIS,
+    HEALING,
+    MFIND,
+    TFIND,
+    RAISE,
+    XHEAL,
+    HASTE,
+    RESTORE,
+    BLIND,
+    LEVIT,
     NPOTIONS
   };
 

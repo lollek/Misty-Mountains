@@ -33,8 +33,6 @@ public:
   void remove_true_sight() override;
   void set_confused() override;
   void set_not_confused() override;
-  void set_hallucinating() override;
-  void set_not_hallucinating() override;
   void set_blind() override;
   void set_not_blind() override;
   void set_levitating() override;

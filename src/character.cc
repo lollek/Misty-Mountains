@@ -15,7 +15,7 @@ Character::Character(int strength_, int experience_, int level_, int armor_,
   max_health(health), position(position_), room(room_), type(type_),
   confusing_attack(0), true_sight(0), blind(0), cancelled(0), levitating(0),
   found(0), greedy(0), hasted(0), players_target(0), held(0), confused(0),
-  invisible(0), mean(0), hallucinating(0), regenerating(0), running(0),
+  invisible(0), mean(0), regenerating(0), running(0),
   flying(0), slowed(0), stuck(0)
 {
   if (flags & 0000001) { confusing_attack = true; }
@@ -29,7 +29,7 @@ Character::Character(int strength_, int experience_, int level_, int armor_,
   if (flags & 0000400) { held = true; }
   if (flags & 0001000) { confused = true; }
   if (flags & 0002000) { invisible = true; }
-  if (flags & 0004000) { hallucinating = true; mean = true; }
+  if (flags & 0004000) { mean = true; }
   if (flags & 0010000) { regenerating = true; }
   if (flags & 0020000) { running = true; }
   if (flags & 0040000) { flying = true; }
@@ -42,7 +42,6 @@ bool Character::is_cancelled() const { return cancelled; }
 bool Character::is_confused() const { return confused; }
 bool Character::has_confusing_attack() const { return confusing_attack; }
 bool Character::is_found() const { return found; }
-bool Character::is_hallucinating() const { return hallucinating; }
 bool Character::is_invisible() const { return invisible; }
 bool Character::is_levitating() const { return levitating; }
 bool Character::has_true_sight() const { return true_sight; }
@@ -62,7 +61,6 @@ void Character::set_cancelled() { cancelled = true; }
 void Character::set_confused() { confused = true; }
 void Character::set_confusing_attack() { confusing_attack = true; }
 void Character::set_found() { found = true; }
-void Character::set_hallucinating() { hallucinating = true; }
 void Character::set_levitating() { levitating = true; }
 void Character::set_true_sight() { true_sight = true; }
 void Character::set_stuck() { stuck = true; }
@@ -71,7 +69,6 @@ void Character::set_not_cancelled() { cancelled = false; }
 void Character::set_not_confused() { confused = false; }
 void Character::remove_confusing_attack() { confusing_attack = false; }
 void Character::set_not_found() { found = false; }
-void Character::set_not_hallucinating() { hallucinating = false; }
 void Character::set_not_invisible() { invisible = false; }
 void Character::set_not_levitating() { levitating = false; }
 void Character::remove_true_sight() { true_sight = false; }

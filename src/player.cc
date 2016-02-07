@@ -38,7 +38,7 @@ bool         player_alerted              = false;
 #define HUHDURATION     spread(20)  /* Confusion */
 #define MFINDDURATION   spread(20)  /* Monster find */
 #define HASTEDURATION   os_rand_range(4)+4    /* Haste */
-#define SEEDURATION     spread(850) /* See invisible / blind / hallucinating */
+#define SEEDURATION     spread(850) /* See invisible / blind */
 #define LEVITDUR        spread(30)  /* Levitation */
 #define SLEEPTIME       spread(7)   /* Sleep */
 #define STUCKTIME       spread(3)   /* Stuck */
@@ -252,43 +252,6 @@ void Player::remove_sense_monsters() {
   monster_unsense_all_hidden();
 }
 
-void Player::set_hallucinating() {
-
-  if (is_hallucinating()) {
-    Daemons::daemon_lengthen_fuse(Daemons::set_not_hallucinating, SEEDURATION);
-
-  } else {
-    Daemons::daemon_start(Daemons::change_visuals, BEFORE);
-    Character::set_hallucinating();
-    Daemons::daemon_start_fuse(Daemons::set_not_hallucinating, SEEDURATION, AFTER);
-    Game::io->message("Oh, wow!  Everything seems so cosmic!");
-  }
-}
-
-void Player::set_not_hallucinating() {
-  if (!is_hallucinating()) {
-    return;
-  }
-
-  Daemons::daemon_kill(Daemons::change_visuals);
-  Character::set_not_hallucinating();
-
-  if (is_blind()) {
-    return;
-  }
-
-  // Untrippify items on the level
-  for (Item* tp : Game::level->items) {
-    if (can_see(tp->get_position())) {
-      Game::io->print_tile(tp->get_position());
-    }
-  }
-
-  // Untrippify all monsters on the level
-  monster_print_all();
-  Game::io->message("You feel your senses returning to normal");
-}
-
 int Player::get_speed() const {
   return speed;
 }
@@ -351,8 +314,7 @@ void Player::set_not_levitating() {
 void Player::set_confusing_attack()
 {
   Character::set_confusing_attack();
-  Game::io->message("your hands begin to glow " +
-         (is_hallucinating() ? Color::random() : "red"));
+  Game::io->message("your hands begin to glow red");
 }
 
 void Player::fall_asleep() {
@@ -373,7 +335,6 @@ void Player::become_poisoned() {
   } else {
     modify_strength(-(os_rand_range(3) + 1));
     Game::io->message("you feel very sick now");
-    set_not_hallucinating();
   }
 }
 
@@ -423,7 +384,7 @@ void Player::teleport(Coordinate const* target)
 }
 
 void Player::search() {
-  int increased_difficulty = (is_hallucinating() ? 3 : 0) + (is_blind() ? 2 : 0);
+  int increased_difficulty = is_blind() ? 2 : 0;
 
   bool found = false;
   Coordinate const& player_pos = get_position();
@@ -450,13 +411,8 @@ void Player::search() {
         case FLOOR:
           if (!os_rand_range(2 + increased_difficulty)) {
             Game::level->set_ch(x, y, TRAP);
-
-            if (is_hallucinating()) {
-              Game::io->message(Trap::name(static_cast<Trap::Type>(os_rand_range(Trap::NTRAPS))));
-            } else {
-              Game::io->message(Trap::name(static_cast<Trap::Type>(Game::level->get_trap_type(x, y))));
-              Game::level->set_discovered(x, y);
-            }
+            Game::io->message(Trap::name(static_cast<Trap::Type>(Game::level->get_trap_type(x, y))));
+            Game::level->set_discovered(x, y);
 
             found = true;
             Game::level->set_discovered(x, y);

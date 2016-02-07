@@ -78,21 +78,12 @@ IO::~IO() {
 
 void IO::print_monster(Monster* monster, IO::Attribute attr) {
   int symbol_to_print = monster->get_disguise();
-
-  if (player->is_hallucinating()) {
-    symbol_to_print = os_rand_range(26) + 'A';
-  }
-
   Coordinate const& coord = monster->get_position();
   print_color(coord.x, coord.y, symbol_to_print, attr);
 }
 
 void IO::print_item(Item* item) {
   int symbol_to_print = item->get_type();
-  if (player->is_hallucinating()) {
-    symbol_to_print = rnd_thing();
-  }
-
   Coordinate const& coord = item->get_position();
   print_color(coord.x, coord.y, symbol_to_print);
 }

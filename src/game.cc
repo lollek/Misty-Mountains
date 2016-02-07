@@ -67,11 +67,6 @@ void Game::new_level(int dungeon_level) {
 
   // Unhold player just in case
   player->set_not_held();
-
-  // Reapply hallucination, just in case
-  if (player->is_hallucinating()) {
-    Daemons::daemon_change_visuals();
-  }
 }
 
 int Game::run() {

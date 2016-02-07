@@ -227,8 +227,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
       player->remove_confusing_attack();
       if (!player->is_blind()) {
 
-        Game::io->message("your hands stop glowing " +
-               (player->is_hallucinating() ? Color::random() : "red"));
+        Game::io->message("your hands stop glowing red");
         Game::io->message(tp->get_name() + " appears confused");
       }
     }
@@ -261,8 +260,7 @@ fight_against_player(Monster* mp) {
   }
 
   /* If it's a xeroc, tag it as known */
-  if (mp->get_type() == 'X' && mp->t_disguise != 'X' && !player->is_blind()
-      && !player->is_hallucinating()) {
+  if (mp->get_type() == 'X' && mp->t_disguise != 'X' && !player->is_blind()) {
     mp->t_disguise = 'X';
   }
 

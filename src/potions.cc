@@ -53,7 +53,6 @@ bool Potion::is_magic() const {
 string Potion::name(Potion::Type subtype) {
   switch(subtype) {
     case CONFUSION: return "confusion";
-    case LSD:       return "hallucination";
     case POISON:    return "poison";
     case STRENGTH:  return "gain strength";
     case SEEINVIS:  return "see invisible";
@@ -73,7 +72,6 @@ string Potion::name(Potion::Type subtype) {
 int Potion::probability(Potion::Type subtype) {
   switch(subtype) {
     case CONFUSION: return 7;
-    case LSD:       return 8;
     case POISON:    return 8;
     case STRENGTH:  return 13;
     case SEEINVIS:  return 3;
@@ -93,7 +91,6 @@ int Potion::probability(Potion::Type subtype) {
 int Potion::worth(Potion::Type subtype) {
   switch(subtype) {
     case CONFUSION: return 5;
-    case LSD:       return 5;
     case POISON:    return 5;
     case STRENGTH:  return 150;
     case SEEINVIS:  return 100;
@@ -170,18 +167,11 @@ string Potion::get_description() const {
 void Potion::quaffed_by(Character& victim) {
   switch(static_cast<Potion::Type>(subtype)) {
     case CONFUSION: {
-      if (&victim == player && !player->is_hallucinating()) {
+      if (&victim == player) {
         Potion::set_known(subtype);
       }
       victim.set_confused();
     } break;
-
-    case LSD: {
-      if (&victim == player) {
-        Potion::set_known(subtype);
-      }
-      victim.set_hallucinating();
-   } break;
 
     case POISON: {
       if (&victim == player) {
@@ -260,7 +250,6 @@ void Potion::quaffed_by(Character& victim) {
       }
       victim.restore_health(roll(victim.get_level(), 8), true);
       victim.set_not_blind();
-      victim.set_not_hallucinating();
     } break;
 
     case HASTE: {

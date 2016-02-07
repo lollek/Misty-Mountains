@@ -113,17 +113,6 @@ string Monster::get_name() const {
   if (!monster_seen_by_player(this) && !player->can_sense_monsters()) {
     return "something";
 
-  } else if (player->is_hallucinating()) {
-
-    int ch = t_disguise;
-    if (!isupper(ch)) {
-      ch = static_cast<int>(os_rand_range(monsters->size()));
-    }
-
-    stringstream ss;
-    ss << "the " << monster_name_by_type(static_cast<char>(ch));
-    return ss.str();
-
   } else {
     stringstream ss;
     ss << "the " << monster_name_by_type(static_cast<char>(get_type()));
@@ -232,7 +221,6 @@ monster_notice_player(int y, int x)
   /* Medusa can confuse player */
   if (monster->get_type() == 'M'
       && !player->is_blind()
-      && !player->is_hallucinating()
       && !monster->is_found()
       && !monster->is_cancelled()
       && monster->is_chasing())
@@ -659,10 +647,10 @@ void
 monster_show_all_hidden(void)
 {
   for (Monster* mon : Game::level->monsters) {
-    if (mon->is_invisible() && monster_seen_by_player(mon)
-        && !player->is_hallucinating())
+    if (mon->is_invisible() && monster_seen_by_player(mon)) {
       Game::io->print_color(mon->get_position().x, mon->get_position().y,
           mon->t_disguise);
+    }
   }
 }
 
@@ -694,9 +682,7 @@ monster_sense_all_hidden(void)
     if (!monster_seen_by_player(mon)) {
       standout();
       Game::io->print_color(mon->get_position().x, mon->get_position().y,
-          player->is_hallucinating()
-           ? os_rand_range(26) + 'A'
-           : mon->get_type());
+           mon->get_type());
       standend();
       spotted_something = true;
     }

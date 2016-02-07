@@ -50,7 +50,6 @@ public:
   virtual bool is_confused() const;
   virtual bool has_confusing_attack() const;
   virtual bool is_found() const;
-  virtual bool is_hallucinating() const;
   virtual bool is_invisible() const;
   virtual bool is_levitating() const;
   virtual bool has_true_sight() const;
@@ -76,8 +75,6 @@ public:
   virtual void remove_confusing_attack();
   virtual void set_found();
   virtual void set_not_found();
-  virtual void set_hallucinating();
-  virtual void set_not_hallucinating();
   virtual void set_invisible();
   virtual void set_not_invisible();
   virtual void set_levitating();
@@ -144,7 +141,6 @@ private:
   bool confused;
   bool invisible;
   bool mean;
-  bool hallucinating;
   bool regenerating;
   bool running;
   bool flying;

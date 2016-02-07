@@ -38,11 +38,7 @@ static void wand_spell_light(void)
 
   player->get_room()->r_flags &= ~ISDARK;
   room_enter(player->get_position());
-  stringstream os;
-  os << "the rooms is lit by a shimmering "
-     << (player->is_hallucinating() ? Color::random() : "blue")
-     << " light";
-  Game::io->message(os.str());
+  Game::io->message("the rooms is lit by a shimmering blue light");
 }
 
 // take away 1/2 of hero's hit points, then take it away
