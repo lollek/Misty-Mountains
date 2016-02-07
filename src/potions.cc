@@ -71,8 +71,8 @@ string Potion::name(Potion::Type subtype) {
 
 int Potion::probability(Potion::Type subtype) {
   switch(subtype) {
-    case CONFUSION: return 7;
-    case POISON:    return 8;
+    case CONFUSION: return 8;
+    case POISON:    return 10;
     case STRENGTH:  return 13;
     case SEEINVIS:  return 3;
     case HEALING:   return 13;
@@ -80,10 +80,10 @@ int Potion::probability(Potion::Type subtype) {
     case TFIND:     return 6;
     case RAISE:     return 2;
     case XHEAL:     return 5;
-    case HASTE:     return 5;
+    case HASTE:     return 7;
     case RESTORE:   return 13;
     case BLIND:     return 5;
-    case LEVIT:     return 6;
+    case LEVIT:     return 9;
     case NPOTIONS:  error("Unknown subtype NPOTIONS");
   }
 }
