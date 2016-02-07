@@ -141,7 +141,7 @@ score_insert(struct score* top_ten, int amount, int flags, char monst)
 
       /* Add new scores */
       top_ten[i].score = amount;
-      strcpy(top_ten[i].name, whoami.c_str());
+      strcpy(top_ten[i].name, Game::whoami->c_str());
       top_ten[i].flags = flags;
       top_ten[i].level = flags == 2
         ? Game::max_level_visited

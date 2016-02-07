@@ -40,7 +40,7 @@ static void wand_spell_light(void)
   room_enter(player->get_position());
   stringstream os;
   os << "the rooms is lit by a shimmering "
-     << (player->is_hallucinating() ? color_random() : "blue")
+     << (player->is_hallucinating() ? Color::random() : "blue")
      << " light";
   Game::io->message(os.str());
 }

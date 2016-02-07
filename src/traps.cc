@@ -73,16 +73,16 @@ static enum trap_t trap_myst_player(void) {
   stringstream os;
   switch(os_rand_range(11)) {
     case 0: os << "you are suddenly in a parallel dimension"; break;
-    case 1: os << "the light in here suddenly seems " << color_random(); break;
+    case 1: os << "the light in here suddenly seems " << Color::random(); break;
     case 2: os << "you feel a sting in the side of your neck"; break;
     case 3: os << "multi-colored lines swirl around you, then fade"; break;
-    case 4: os << "a " << color_random() << " light flashes in your eyes"; break;
+    case 4: os << "a " << Color::random() << " light flashes in your eyes"; break;
     case 5: os << "a spike shoots past your ear!"; break;
-    case 6: os << color_random() << " sparks dance across your armor"; break;
+    case 6: os << Color::random() << " sparks dance across your armor"; break;
     case 7: os << "you suddenly feel very thirsty"; break;
     case 8: os << "you feel time speed up suddenly"; break;
     case 9: os << "time now seems to be going slower"; break;
-    case 10: os << "you pack turns " << color_random() << "!"; break;
+    case 10: os << "you pack turns " << Color::random() << "!"; break;
   }
   Game::io->message(os.str());
   return T_MYST;

@@ -338,14 +338,14 @@ void Potion::init_potions() {
   /* Pick a unique color for each potion */
   for (int i = 0; i < Potion::NPOTIONS; i++)
     for (;;) {
-      size_t color = os_rand_range(color_max());
+      size_t color = os_rand_range(Color::max());
 
-      if (find(colors.cbegin(), colors.cend(), &color_get(color)) !=
+      if (find(colors.cbegin(), colors.cend(), &Color::get(color)) !=
           colors.cend()) {
         continue;
       }
 
-      colors.push_back(&color_get(color));
+      colors.push_back(&Color::get(color));
       break;
     }
 

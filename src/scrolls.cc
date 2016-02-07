@@ -237,7 +237,7 @@ static bool enchant_players_armor() {
   arm->modify_armor(-1);
   arm->set_not_cursed();
   Game::io->message("your armor glows " +
-      (player->is_hallucinating() ? color_random() : "silver") +
+      (player->is_hallucinating() ? Color::random() : "silver") +
       " for a moment");
   return true;
 }
@@ -380,7 +380,7 @@ static bool player_enchant_weapon() {
   os << "your "
      << Weapon::name(static_cast<Weapon::Type>(weapon->o_which))
      << " glows "
-     << (player->is_hallucinating() ? color_random() : "blue")
+     << (player->is_hallucinating() ? Color::random() : "blue")
      << " for a moment";
   Game::io->message(os.str());
 
@@ -413,7 +413,7 @@ static bool protect_armor() {
   arm->o_flags |= ISPROT;
   stringstream os;
   os << "your armor is covered by a shimmering "
-    << (player->is_hallucinating() ? color_random() : "gold")
+    << (player->is_hallucinating() ? Color::random() : "gold")
     << " shield";
   Game::io->message(os.str());
   return true;

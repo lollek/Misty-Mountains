@@ -168,8 +168,8 @@ string Player::get_name() const{
 
 void Player::waste_time(int rounds) const {
   for (int i = 0; i < rounds; ++i) {
-    daemon_run_before();
-    daemon_run_after();
+    Daemons::daemon_run_before();
+    Daemons::daemon_run_after();
   }
 }
 
@@ -205,11 +205,11 @@ bool Player::has_true_sight() const {
 
 void Player::set_true_sight() {
   if (Character::has_true_sight()) {
-    daemon_lengthen_fuse(daemon_function::remove_true_sight, SEEDURATION);
+    Daemons::daemon_lengthen_fuse(Daemons::remove_true_sight, SEEDURATION);
 
   } else {
     Character::set_true_sight();
-    daemon_start_fuse(daemon_function::remove_true_sight, SEEDURATION, AFTER);
+    Daemons::daemon_start_fuse(Daemons::remove_true_sight, SEEDURATION, AFTER);
   }
 }
 
@@ -220,11 +220,11 @@ void Player::remove_true_sight() {
 
 void Player::set_confused() {
   if (is_confused()) {
-    daemon_lengthen_fuse(daemon_function::set_not_confused, HUHDURATION);
+    Daemons::daemon_lengthen_fuse(Daemons::set_not_confused, HUHDURATION);
 
   } else {
     Character::set_confused();
-    daemon_start_fuse(daemon_function::set_not_confused, HUHDURATION, AFTER);
+    Daemons::daemon_start_fuse(Daemons::set_not_confused, HUHDURATION, AFTER);
   }
   Game::io->message("wait, what's going on here. Huh? What? Who?");
 }
@@ -239,7 +239,7 @@ bool Player::can_sense_monsters() const {
 }
 
 void Player::set_sense_monsters() {
-  daemon_start_fuse(daemon_function::remove_sense_monsters, MFINDDURATION, AFTER);
+  Daemons::daemon_start_fuse(Daemons::remove_sense_monsters, MFINDDURATION, AFTER);
 
   senses_monsters = true;
 
@@ -257,12 +257,12 @@ void Player::remove_sense_monsters() {
 void Player::set_hallucinating() {
 
   if (is_hallucinating()) {
-    daemon_lengthen_fuse(daemon_function::set_not_hallucinating, SEEDURATION);
+    Daemons::daemon_lengthen_fuse(Daemons::set_not_hallucinating, SEEDURATION);
 
   } else {
-    daemon_start(change_visuals, BEFORE);
+    Daemons::daemon_start(Daemons::change_visuals, BEFORE);
     Character::set_hallucinating();
-    daemon_start_fuse(daemon_function::set_not_hallucinating, SEEDURATION, AFTER);
+    Daemons::daemon_start_fuse(Daemons::set_not_hallucinating, SEEDURATION, AFTER);
     Game::io->message("Oh, wow!  Everything seems so cosmic!");
   }
 }
@@ -272,7 +272,7 @@ void Player::set_not_hallucinating() {
     return;
   }
 
-  daemon_kill(change_visuals);
+  Daemons::daemon_kill(Daemons::change_visuals);
   Character::set_not_hallucinating();
 
   if (is_blind()) {
@@ -297,7 +297,7 @@ int Player::get_speed() const {
 
 void Player::increase_speed() {
   speed++;
-  daemon_start_fuse(daemon_function::decrease_speed, HASTEDURATION, AFTER);
+  Daemons::daemon_start_fuse(Daemons::decrease_speed, HASTEDURATION, AFTER);
   Game::io->message("you feel yourself moving much faster");
 }
 
@@ -309,11 +309,11 @@ void Player::decrease_speed() {
 void Player::set_blind() {
 
   if (is_blind()) {
-    daemon_lengthen_fuse(daemon_function::set_not_blind, SEEDURATION);
+    Daemons::daemon_lengthen_fuse(Daemons::set_not_blind, SEEDURATION);
 
   } else {
     Character::set_blind();
-    daemon_start_fuse(daemon_function::set_not_blind, SEEDURATION, AFTER);
+    Daemons::daemon_start_fuse(Daemons::set_not_blind, SEEDURATION, AFTER);
     Game::io->message("a cloak of darkness falls around you");
   }
 }
@@ -323,7 +323,7 @@ void Player::set_not_blind() {
   if (!is_blind())
     return;
 
-  daemon_extinguish_fuse(daemon_function::set_not_blind);
+  Daemons::daemon_extinguish_fuse(Daemons::set_not_blind);
   Character::set_not_blind();
   if (!(get_room()->r_flags & ISGONE))
     room_enter(get_position());
@@ -332,11 +332,11 @@ void Player::set_not_blind() {
 
 void Player::set_levitating() {
   if (is_levitating()) {
-    daemon_lengthen_fuse(daemon_function::set_not_levitating, LEVITDUR);
+    Daemons::daemon_lengthen_fuse(Daemons::set_not_levitating, LEVITDUR);
 
   } else {
     Character::set_levitating();
-    daemon_start_fuse(daemon_function::set_not_levitating, LEVITDUR, AFTER);
+    Daemons::daemon_start_fuse(Daemons::set_not_levitating, LEVITDUR, AFTER);
     Game::io->message("you start to float in the air");
   }
 }
@@ -354,7 +354,7 @@ void Player::set_confusing_attack()
 {
   Character::set_confusing_attack();
   Game::io->message("your hands begin to glow " +
-         (is_hallucinating() ? color_random() : "red"));
+         (is_hallucinating() ? Color::random() : "red"));
 }
 
 void Player::fall_asleep() {
