@@ -13,12 +13,11 @@ using namespace std;
 #include "game.h"
 
 #include "monster.h"
-#include "monster_private.h"
 
 void
 monster_find_new_target(Monster* monster)
 {
-  int prob = monsters.at(static_cast<size_t>(monster->get_type() - 'A')).m_carry;
+  int prob = Monster::monsters->at(static_cast<size_t>(monster->get_type() - 'A')).m_carry;
   if (prob <= 0 || monster->get_room() == player->get_room()
       || monster_seen_by_player(monster)) {
     monster->set_target(&player->get_position());

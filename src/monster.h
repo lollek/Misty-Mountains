@@ -41,11 +41,14 @@ public:
   char get_disguise() const;
 
   // Statics
+  static void init_monsters();
+  static void free_monsters();
   static char random_monster_type();
 
   // Variables (TODO: Make these private)
   Coordinate const*  t_dest;    // Where it is running to
   std::list<Item*>   t_pack;    // What the thing is carrying
+  static std::vector<monster_template> const* monsters;
 
   char               t_disguise;// What mimic looks like
   bool               t_turn;    // If slowed, is it a turn to move
@@ -53,9 +56,11 @@ public:
 private:
   Monster(char type, Coordinate const& pos, struct room* room,
           monster_template const& m_template);
+
 };
 
 
+void monster_find_new_target(Monster* tp);
 
 
 

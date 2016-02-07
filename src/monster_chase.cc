@@ -20,7 +20,6 @@ using namespace std;
 #include "magic.h"
 
 #include "monster.h"
-#include "monster_private.h"
 
 // Find the spot for the chaser(er) to move closer to the chasee(ee).
 static Coordinate chase(Monster& monster, Coordinate const& target) {

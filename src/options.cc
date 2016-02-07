@@ -62,7 +62,7 @@ bool option() {
     {RING,   "Pick up rings?....................", &pickup_rings,   option::BOOL},
     {STICK,  "Pick up sticks?...................", &pickup_sticks,  option::BOOL},
     {AMMO,   "Pick up ammo?.....................", &pickup_ammo,    option::BOOL},
-    {'4',    "Name..............................", &whoami,         option::STR},
+    {'4',    "Name..............................", Game::whoami,    option::STR},
   };
 
   string const query = "Which value do you want to change? (ESC to exit) ";

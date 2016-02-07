@@ -129,6 +129,7 @@ Game::Game(string const& whoami_) {
   Ring::init_rings();                   // Stone settings of rings
   Wand::init_wands();                   // Materials of wands
   Daemons::init_daemons();              // Over-time-effects
+  Monster::init_monsters();            // Monster types
   Game::new_level(Game::current_level); // Level (and player)
 
   // Start up daemons and fuses
@@ -138,6 +139,7 @@ Game::Game(string const& whoami_) {
 }
 
 Game::~Game() {
+  Monster::free_monsters();
   Daemons::free_daemons();
   Color::free_colors();
   Ring::free_rings();

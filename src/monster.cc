@@ -7,8 +7,6 @@
 #include <vector>
 #include <sstream>
 
-using namespace std;
-
 #include "gold.h"
 #include "magic.h"
 #include "command.h"
@@ -32,7 +30,8 @@ using namespace std;
 #include "death.h"
 
 #include "monster.h"
-#include "monster_private.h"
+
+using namespace std;
 
 int            monster_flytrap_hit = 0; // Number of time flytrap has hit
 
@@ -42,36 +41,44 @@ int            monster_flytrap_hit = 0; // Number of time flytrap has hit
 #define ISFLY   0040000
 #define ISREGEN 0010000
 
-vector<monster_template> const monsters {
-  /* Name        CARRY  FLAG                   exp lvl  amr  dmg              */
-  { "aquator",       0, ISMEAN,                 20,  5,  18, {{0,1}}},
-  { "bat",           0, ISFLY,                   1,  1,  17, {{1,2}}},
-  { "centaur",      15, 0,                      17,  4,  16, {{1,2},{1,5},{1,5}}},
-  { "dragon",      100, ISMEAN,               5000, 10,  21, {{1,8},{1,8},{3,10}}},
-  { "emu",           0, ISMEAN,                  2,  1,  13, {{1,2}}},
-  { "venus flytrap", 0, ISMEAN,                 80,  8,  17, {{0,1}}},
-  { "griffin",      20, ISMEAN|ISFLY|ISREGEN, 2000, 13,  18, {{4,3},{3,5}}},
-  { "hobgoblin",     0, ISMEAN,                  3,  1,  15, {{1,8}}},
-  { "ice monster",   0, 0,                       5,  1,  11, {{0,1}}},
-  { "jabberwock",   70, 0,                    3000, 15,  14, {{2,12},{2,4}}},
-  { "kestrel",       0, ISMEAN|ISFLY,            1,  1,  13, {{1,4}}},
-  { "leprechaun",    0, 0,                      10,  3,  12, {{1,1}}},
-  { "medusa",       40, ISMEAN,                200,  8,  18, {{3,4},{3,4},{2,5}}},
-  { "nymph",       100, 0,                      37,  3,  11, {{0,1}}},
-  { "orc",          15, ISGREED,                 5,  1,  14, {{1,8}}},
-  { "phantom",       0, ISINVIS,               120,  8,  17, {{4,4}}},
-  { "quagga",        0, ISMEAN,                 15,  3,  17, {{1,5},{1,5}}},
-  { "rattlesnake",   0, ISMEAN,                  9,  2,  17, {{1,6}}},
-  { "snake",         0, ISMEAN,                  2,  1,  15, {{1,3}}},
-  { "troll",        50, ISREGEN|ISMEAN,        120,  6,  16, {{1,8},{1,8},{2,6}}},
-  { "black unicorn", 0, ISMEAN,                190,  7,  22, {{1,9},{1,9},{2,9}}},
-  { "vampire",      20, ISREGEN|ISMEAN,        350,  8,  19, {{1,10}}},
-  { "wraith",        0, 0,                      55,  5,  16, {{1,6}}},
-  { "xeroc",        30, 0,                     100,  7,  13, {{4,4}}},
-  { "yeti",         30, 0,                      50,  4,  14, {{1,6},{1,6}}},
-  { "zombie",        0, ISMEAN,                  6,  2,  12, {{1,8}}},
-};
+vector<monster_template> const* Monster::monsters = nullptr;
 
+void Monster::init_monsters() {
+  monsters = new vector<monster_template> const {
+    /* Name        CARRY  FLAG                   exp lvl  amr  dmg              */
+    { "aquator",       0, ISMEAN,                 20,  5,  18, {{0,1}}},
+      { "bat",           0, ISFLY,                   1,  1,  17, {{1,2}}},
+      { "centaur",      15, 0,                      17,  4,  16, {{1,2},{1,5},{1,5}}},
+      { "dragon",      100, ISMEAN,               5000, 10,  21, {{1,8},{1,8},{3,10}}},
+      { "emu",           0, ISMEAN,                  2,  1,  13, {{1,2}}},
+      { "venus flytrap", 0, ISMEAN,                 80,  8,  17, {{0,1}}},
+      { "griffin",      20, ISMEAN|ISFLY|ISREGEN, 2000, 13,  18, {{4,3},{3,5}}},
+      { "hobgoblin",     0, ISMEAN,                  3,  1,  15, {{1,8}}},
+      { "ice monster",   0, 0,                       5,  1,  11, {{0,1}}},
+      { "jabberwock",   70, 0,                    3000, 15,  14, {{2,12},{2,4}}},
+      { "kestrel",       0, ISMEAN|ISFLY,            1,  1,  13, {{1,4}}},
+      { "leprechaun",    0, 0,                      10,  3,  12, {{1,1}}},
+      { "medusa",       40, ISMEAN,                200,  8,  18, {{3,4},{3,4},{2,5}}},
+      { "nymph",       100, 0,                      37,  3,  11, {{0,1}}},
+      { "orc",          15, ISGREED,                 5,  1,  14, {{1,8}}},
+      { "phantom",       0, ISINVIS,               120,  8,  17, {{4,4}}},
+      { "quagga",        0, ISMEAN,                 15,  3,  17, {{1,5},{1,5}}},
+      { "rattlesnake",   0, ISMEAN,                  9,  2,  17, {{1,6}}},
+      { "snake",         0, ISMEAN,                  2,  1,  15, {{1,3}}},
+      { "troll",        50, ISREGEN|ISMEAN,        120,  6,  16, {{1,8},{1,8},{2,6}}},
+      { "black unicorn", 0, ISMEAN,                190,  7,  22, {{1,9},{1,9},{2,9}}},
+      { "vampire",      20, ISREGEN|ISMEAN,        350,  8,  19, {{1,10}}},
+      { "wraith",        0, 0,                      55,  5,  16, {{1,6}}},
+      { "xeroc",        30, 0,                     100,  7,  13, {{4,4}}},
+      { "yeti",         30, 0,                      50,  4,  14, {{1,6},{1,6}}},
+      { "zombie",        0, ISMEAN,                  6,  2,  12, {{1,8}}},
+  };
+}
+
+void Monster::free_monsters() {
+  delete monsters;
+  monsters = nullptr;
+}
 
 
 int Monster::get_armor() const {
@@ -111,7 +118,7 @@ string Monster::get_name() const {
 
     int ch = t_disguise;
     if (!isupper(ch)) {
-      ch = static_cast<int>(os_rand_range(monsters.size()));
+      ch = static_cast<int>(os_rand_range(monsters->size()));
     }
 
     stringstream ss;
@@ -176,7 +183,7 @@ static int extra_experience(int level, int max_health) {
 Monster::~Monster() {}
 
 Monster::Monster(char type, Coordinate const& pos, struct room* room) :
-  Monster(type, pos, room, monsters.at(static_cast<size_t>(type - 'A')))
+  Monster(type, pos, room, monsters->at(static_cast<size_t>(type - 'A')))
 {}
 
 Monster::Monster(char type, Coordinate const& pos, struct room* room,
@@ -264,7 +271,7 @@ monster_give_pack(Monster* mon) {
   }
 
   size_t monster_id = static_cast<size_t>(mon->get_type() - 'A');
-  int carry_chance = monsters.at(monster_id).m_carry;
+  int carry_chance = Monster::monsters->at(monster_id).m_carry;
 
   if (Game::current_level >= Game::max_level_visited &&
       os_rand_range(100) < carry_chance) {
@@ -544,7 +551,7 @@ monster_do_special_ability(Monster** monster)
 string const&
 monster_name_by_type(char monster_type)
 {
-  return monsters.at(static_cast<size_t>(monster_type - 'A')).m_name;
+  return Monster::monsters->at(static_cast<size_t>(monster_type - 'A')).m_name;
 }
 
 bool
@@ -818,7 +825,7 @@ bool monster_try_breathe_fire_on_player(Monster const& monster) {
     Coordinate position = monster.get_position();
     magic_bolt(&position, &delta, "flame");
     command_stop(true);
-    daemon_reset_doctor();
+    Daemons::daemon_reset_doctor();
     if (to_death && !monster.is_players_target()) {
       to_death = false;
     }
