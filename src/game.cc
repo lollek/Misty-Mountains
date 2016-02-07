@@ -131,6 +131,7 @@ Game::Game() {
   Potion::init_potions();               // Colors of potions
   Ring::init_rings();                   // Stone settings of rings
   Wand::init_wands();                   // Materials of wands
+  Daemons::init_daemons();               // Over-time-effects
   Game::new_level(Game::current_level); // Level (and player)
 
   // Start up daemons and fuses
@@ -140,6 +141,7 @@ Game::Game() {
 }
 
 Game::~Game() {
+  Daemons::free_daemons();
   Color::free_colors();
   Ring::free_rings();
   delete Game::io;

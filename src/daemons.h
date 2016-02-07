@@ -2,6 +2,11 @@
 
 #include "Player.h"
 
+namespace Daemons {
+
+void init_daemons();
+void free_daemons();
+
 enum daemon_function {
   runners_move,
   doctor,
@@ -37,3 +42,5 @@ void daemon_ring_abilities();
 
 /* Daemon action affectors */
 void daemon_reset_doctor();
+
+}

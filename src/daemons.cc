@@ -20,39 +20,52 @@ using namespace std;
 
 struct Fuse {
     int type;
-    daemon_function func;
+    Daemons::daemon_function func;
     int time;
 };
 
 struct Daemon {
     int type;
-    daemon_function func;
+    Daemons::daemon_function func;
 };
 
-static list<Daemon> daemons;
-static list<Fuse> fuses;
+static list<Daemon>* daemons = nullptr;
+static list<Fuse>*   fuses = nullptr;
+
+void Daemons::init_daemons() {
+  daemons = new list<Daemon>;
+  fuses   = new list<Fuse>;
+}
+
+void Daemons::free_daemons() {
+  delete daemons;
+  daemons = nullptr;
+
+  delete fuses;
+  fuses = nullptr;
+}
 
 static int quiet_rounds = 0;
 
-static void execute_daemon_function(daemon_function func) {
+static void execute_daemon_function(Daemons::daemon_function func) {
   switch(func) {
-    case runners_move:          daemon_runners_move(); break;
-    case doctor:                daemon_doctor(); break;
-    case change_visuals:        daemon_change_visuals(); break;
-    case ring_abilities:        daemon_ring_abilities(); break;
-    case remove_true_sight:     player->remove_true_sight(); break;
-    case set_not_confused:      player->set_not_confused(); break;
-    case remove_sense_monsters: player->remove_sense_monsters(); break;
-    case set_not_hallucinating: player->set_not_hallucinating(); break;
-    case decrease_speed:        player->decrease_speed(); break;
-    case set_not_blind:         player->set_not_blind(); break;
-    case set_not_levitating:    player->set_not_levitating(); break;
+    case Daemons::runners_move:          Daemons::daemon_runners_move(); break;
+    case Daemons::doctor:                Daemons::daemon_doctor(); break;
+    case Daemons::change_visuals:        Daemons::daemon_change_visuals(); break;
+    case Daemons::ring_abilities:        Daemons::daemon_ring_abilities(); break;
+    case Daemons::remove_true_sight:     player->remove_true_sight(); break;
+    case Daemons::set_not_confused:      player->set_not_confused(); break;
+    case Daemons::remove_sense_monsters: player->remove_sense_monsters(); break;
+    case Daemons::set_not_hallucinating: player->set_not_hallucinating(); break;
+    case Daemons::decrease_speed:        player->decrease_speed(); break;
+    case Daemons::set_not_blind:         player->set_not_blind(); break;
+    case Daemons::set_not_levitating:    player->set_not_levitating(); break;
   }
 }
 
 // Run all the daemons that are active with the current flag
 static void daemon_run_all(int flag) {
-  for (Daemon& daemon : daemons) {
+  for (Daemon& daemon : *daemons) {
     if (daemon.type == flag) {
       execute_daemon_function(daemon.func);
     }
@@ -63,10 +76,10 @@ static void daemon_run_all(int flag) {
 static void daemon_run_fuses(int flag) {
 
   // List is not autoincrementing, so we can erase elements during the loop
-  for (auto fuse = fuses.begin(); fuse != fuses.end();) {
+  for (auto fuse = fuses->begin(); fuse != fuses->end();) {
     if (fuse->type == flag && --fuse->time <= 0) {
       execute_daemon_function(fuse->func);
-      fuses.erase(fuse++);
+      fuses->erase(fuse++);
 
     } else {
       fuse++;
@@ -74,50 +87,50 @@ static void daemon_run_fuses(int flag) {
   }
 }
 
-void daemon_run_before() {
+void Daemons::daemon_run_before() {
   daemon_run_all(BEFORE);
   daemon_run_fuses(BEFORE);
 }
 
-void daemon_run_after() {
+void Daemons::daemon_run_after() {
   daemon_run_all(AFTER);
   daemon_run_fuses(AFTER);
 }
 
 
 // Start a daemon, takes a function.
-void daemon_start(daemon_function func, int type) {
-  daemons.push_back({type, func});
+void Daemons::daemon_start(daemon_function func, int type) {
+  daemons->push_back({type, func});
 }
 
 // Remove a daemon from the list
-void daemon_kill(daemon_function func) {
-  auto results = find_if(daemons.begin(), daemons.end(),
+void Daemons::daemon_kill(daemon_function func) {
+  auto results = find_if(daemons->begin(), daemons->end(),
       [&func] (Daemon const& daemon) {
     return daemon.func == func;
   });
 
-  if (results == daemons.end()) {
+  if (results == daemons->end()) {
     error("Unable to find daemon to kill");
   }
 
-  daemons.erase(results);
+  daemons->erase(results);
 }
 
 
 // Start a fuse to go off in a certain number of turns
-void daemon_start_fuse(daemon_function func, int time, int type) {
-  fuses.push_back({type, func, time});
+void Daemons::daemon_start_fuse(daemon_function func, int time, int type) {
+  fuses->push_back({type, func, time});
 }
 
 // Increase the time until a fuse goes off */
-void daemon_lengthen_fuse(daemon_function func, int xtime) {
-  auto results = find_if(fuses.begin(), fuses.end(),
+void Daemons::daemon_lengthen_fuse(daemon_function func, int xtime) {
+  auto results = find_if(fuses->begin(), fuses->end(),
       [&func] (Fuse const& fuse) {
     return fuse.func == func;
   });
 
-  if (results == fuses.end()) {
+  if (results == fuses->end()) {
     error("Unable to find fuse to lengthen");
   }
 
@@ -125,27 +138,27 @@ void daemon_lengthen_fuse(daemon_function func, int xtime) {
 }
 
 // Put out a fuse
-void daemon_extinguish_fuse(daemon_function func) {
-  auto results = find_if(fuses.begin(), fuses.end(),
+void Daemons::daemon_extinguish_fuse(daemon_function func) {
+  auto results = find_if(fuses->begin(), fuses->end(),
       [&func] (Fuse const& fuse) {
     return fuse.func == func;
   });
 
-  if (results == fuses.end()) {
+  if (results == fuses->end()) {
     error("Unable to find fuse to lengthen");
   }
 
-  fuses.erase(results);
+  fuses->erase(results);
 }
 
 
 // Stop the daemon doctor from healing
-void daemon_reset_doctor() {
+void Daemons::daemon_reset_doctor() {
   quiet_rounds = 0;
 }
 
 // A healing daemon that restors hit points after rest
-void daemon_doctor() {
+void Daemons::daemon_doctor() {
   int ohp = player->get_health();
   if (ohp == player->get_max_health()) {
     return;
@@ -172,7 +185,7 @@ void daemon_doctor() {
 }
 
 // change the characters for the player
-void daemon_change_visuals() {
+void Daemons::daemon_change_visuals() {
   if (player->is_running() && jump) {
     return;
   }
@@ -196,11 +209,11 @@ void daemon_change_visuals() {
 }
 
 // Make all running monsters move
-void daemon_runners_move() {
+void Daemons::daemon_runners_move() {
   monster_move_all();
 }
 
-void daemon_ring_abilities() {
+void Daemons::daemon_ring_abilities() {
   for (int i = 0; i < PACK_RING_SLOTS; ++i) {
     Item* obj = pack_equipped_item(pack_ring_slots[i]);
     if (obj == nullptr) {
