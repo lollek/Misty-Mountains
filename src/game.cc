@@ -139,5 +139,6 @@ Game::Game() {
 }
 
 Game::~Game() {
+  Ring::free_rings();
   delete Game::io;
 }

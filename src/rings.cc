@@ -20,9 +20,9 @@
 
 using namespace std;
 
-vector<string> Ring::materials;
-vector<string> Ring::guesses;
-vector<bool>   Ring::known;
+vector<string>* Ring::materials = nullptr;
+vector<string>* Ring::guesses = nullptr;
+vector<bool>*   Ring::known = nullptr;
 
 static Ring::Type random_ring_type() {
   int value = os_rand_range(100);
@@ -142,20 +142,21 @@ int Ring::worth(Ring::Type type) {
 }
 
 string& Ring::guess(Ring::Type type) {
-  return guesses.at(static_cast<size_t>(type));
+  return guesses->at(static_cast<size_t>(type));
 }
 
 bool Ring::is_known(Ring::Type type) {
-  return known.at(static_cast<size_t>(type));
+  return known->at(static_cast<size_t>(type));
 }
 
 void Ring::set_known(Ring::Type type) {
-  known.at(static_cast<size_t>(type)) = true;
+  known->at(static_cast<size_t>(type)) = true;
 }
 
 void Ring::init_rings() {
-  known = vector<bool>(Ring::NRINGS, false);
-  guesses = vector<string>(Ring::NRINGS, "");
+  materials = new vector<string>;
+  guesses = new vector<string>(Ring::NRINGS, "");
+  known = new vector<bool>(Ring::NRINGS, false);
 
   vector<string> stones {
     "agate",     "alexandrite", "amethyst",       "carnelian", "diamond",    "emerald",
@@ -165,29 +166,40 @@ void Ring::init_rings() {
     "taaffeite", "zircon"
   };
 
-  while (materials.size() < static_cast<size_t>(Ring::Type::NRINGS)) {
+  while (materials->size() < static_cast<size_t>(Ring::Type::NRINGS)) {
     size_t stone = static_cast<size_t>(os_rand_range(stones.size()));
 
-    if (find(materials.begin(), materials.end(), stones.at(stone)) != end(materials))
+    if (find(materials->begin(), materials->end(), stones.at(stone)) != materials->end())
       continue;
 
-    materials.push_back(stones.at(stone));
+    materials->push_back(stones.at(stone));
   }
 
   // Run some checks
-  if (materials.size() != static_cast<size_t>(Ring::NRINGS)) {
+  if (materials->size() != static_cast<size_t>(Ring::NRINGS)) {
     error("Ring init: wrong number of materials");
-  } else if (known.size() != static_cast<size_t>(Ring::NRINGS)) {
+  } else if (known->size() != static_cast<size_t>(Ring::NRINGS)) {
     error("Ring init: wrong number of knowledge");
-  } else if (guesses.size() != static_cast<size_t>(Ring::NRINGS)) {
+  } else if (guesses->size() != static_cast<size_t>(Ring::NRINGS)) {
     error("Ring init: wrong number of guesses");
   }
+}
+
+void Ring::free_rings() {
+  delete materials;
+  materials = nullptr;
+
+  delete known;
+  known = nullptr;
+
+  delete guesses;
+  guesses = nullptr;
 }
 
 std::string Ring::get_description() const {
   stringstream os;
 
-  os << materials.at(subtype) << " ring";
+  os << materials->at(subtype) << " ring";
 
   if (Ring::is_known(subtype)) {
     os << " of " << Ring::name(subtype);

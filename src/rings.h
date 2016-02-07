@@ -47,12 +47,13 @@ public:
   static void         set_known(Type type);
 
   static void         init_rings();
+  static void         free_rings();
 
 private:
   Type subtype;
 
-  static std::vector<std::string> materials;
-  static std::vector<std::string> guesses;
-  static std::vector<bool>        known;
+  static std::vector<std::string>* materials;
+  static std::vector<std::string>* guesses;
+  static std::vector<bool>*        known;
 };
 
