@@ -33,7 +33,6 @@ static const int player_max_strength = 31;
 int          player_turns_without_action = 0;
 int          player_turns_without_moving = 0;
 bool         player_alerted              = false;
-struct stats player_max_stats = { 16, 0, 1, 10, 12, {{1,4}}, 12 };
 
 /* Duration of effects */
 #define HUHDURATION     spread(20)  /* Confusion */
@@ -47,9 +46,8 @@ struct stats player_max_stats = { 16, 0, 1, 10, 12, {{1,4}}, 12 };
 
 
 Player::Player() :
-  Character(player_max_stats.s_str, player_max_stats.s_exp, player_max_stats.s_lvl,
-            player_max_stats.s_arm, player_max_stats.s_hpt, player_max_stats.s_dmg,
-            Coordinate(), nullptr, 0, '@')  {
+  //        str, xp, lvl, armor, hp, dmg
+  Character(16,  0,  1,   10,    12, {{1,4}}, Coordinate(), nullptr, 0, '@')  {
 
   /* Give him some food */
   pack_add(new Food(), true);

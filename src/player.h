@@ -3,17 +3,6 @@
 #include "rogue.h"
 #include "monster.h"
 
-// Structure describing a fighting being
-struct stats {
-  int                  s_str;   // Strength
-  int                  s_exp;   // Experience
-  int                  s_lvl;   // level of mastery
-  int                  s_arm;   // Armor class
-  int                  s_hpt;   // Hit points
-  std::vector<damage>  s_dmg;   // Attacks
-  int                  s_maxhp; // Max hit points
-};
-
 class Player : public Character {
 public:
   explicit Player();
@@ -71,8 +60,8 @@ public:
 
 private:
   struct room* previous_room = nullptr;
-  bool senses_monsters = false;
-  int speed = 0;
+  bool         senses_monsters = false;
+  int          speed = 0;
 };
 
 extern Player* player;
@@ -81,4 +70,3 @@ extern Player* player;
 extern int          player_turns_without_action; /* Turns asleep */
 extern int          player_turns_without_moving; /* Turns held in place */
 extern bool         player_alerted;              /* Alert the player? */
-extern stats        player_max_stats;            /* Current max stats */
