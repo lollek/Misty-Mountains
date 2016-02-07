@@ -265,7 +265,25 @@ weapon_missile_fall(Item* obj, bool pr) {
 
   if (fallpos(&obj->get_position(), &fpos)) {
     obj->set_position(fpos);
-    Game::level->items.push_back(obj);
+
+    // See if we can stack it with something on the ground
+    for (Item* ground_item : Game::level->items) {
+      if (ground_item->get_position() == obj->get_position() &&
+          ground_item->o_type == obj->o_type &&
+          ground_item->o_which == obj->o_which &&
+          ground_item->get_hit_plus() == obj->get_hit_plus() &&
+          ground_item->get_damage_plus() == obj->get_damage_plus()) {
+
+        ground_item->o_count++;
+        delete obj;
+        obj = nullptr;
+        break;
+      }
+    }
+
+    if (obj != nullptr) {
+      Game::level->items.push_back(obj);
+    }
     return;
   }
 
