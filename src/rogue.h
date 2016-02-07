@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 /* Various constants */
 #define WANDERTIME	spread(70)
 #define BEFORE		spread(1)
@@ -22,5 +20,4 @@ extern bool door_stop;
 extern bool to_death;
 
 extern char dir_ch;
-extern std::string whoami;
 extern char runch;

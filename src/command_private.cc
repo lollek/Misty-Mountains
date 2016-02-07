@@ -564,8 +564,8 @@ bool command_rest(void)
   player_alerted = false;
   while (!player_alerted && player->is_hurt())
   {
-    daemon_run_before();
-    daemon_run_after();
+    Daemons::daemon_run_before();
+    Daemons::daemon_run_after();
   }
   return true;
 }
@@ -735,7 +735,7 @@ command_ring_take_off(void)
       break;
 
     case Ring::SEEINVIS:
-      daemon_extinguish_fuse(daemon_function::remove_true_sight);
+      Daemons::daemon_extinguish_fuse(Daemons::daemon_function::remove_true_sight);
       break;
   }
   return true;

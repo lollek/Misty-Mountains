@@ -50,7 +50,7 @@ command_stop(bool stop_fighting)
 int
 command()
 {
-  daemon_run_before();
+  Daemons::daemon_run_before();
 
   int num_moves = 1;
   num_moves += player->get_speed();
@@ -95,7 +95,7 @@ command()
   }
 
   food_digest();
-  daemon_run_after();
+  Daemons::daemon_run_after();
   return 0;
 }
 

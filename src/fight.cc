@@ -176,7 +176,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
 
   /* Since we are fighting, things are not quiet so no healing takes place */
   command_stop(false);
-  daemon_reset_doctor();
+  Daemons::daemon_reset_doctor();
 
   /* Let him know it was really a xeroc (if it was one) */
   if (tp->get_type() == 'X' && tp->t_disguise != 'X' && !player->is_blind()) {
@@ -229,7 +229,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
       if (!player->is_blind()) {
 
         Game::io->message("your hands stop glowing " +
-               (player->is_hallucinating() ? color_random() : "red"));
+               (player->is_hallucinating() ? Color::random() : "red"));
         Game::io->message(tp->get_name() + " appears confused");
       }
     }
@@ -254,7 +254,7 @@ fight_against_player(Monster* mp) {
    * going on at the time */
   player_alerted = true;
   command_stop(false);
-  daemon_reset_doctor();
+  Daemons::daemon_reset_doctor();
 
   /* If we're fighting something to death and get backstabbed, return command */
   if (to_death && !mp->is_players_target()) {

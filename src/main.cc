@@ -29,7 +29,7 @@ using namespace std;
  * Parse command-line arguments
  */
 static void
-parse_args(int argc, char* const* argv)
+parse_args(int argc, char* const* argv, std::string& whoami)
 {
   int option_index = 0;
   struct option const long_options[] = {
@@ -126,8 +126,12 @@ main(int argc, char** argv)
   score_open();
 
   /* Parse args and then init new (or old) game */
-  parse_args(argc, argv);
-  Game* new_game = new Game();
+  string whoami;
+  parse_args(argc, argv, whoami);
+  if (whoami.empty()) {
+    whoami = os_whoami();
+  }
+  Game* new_game = new Game(whoami);
   return new_game->run();
 }
 

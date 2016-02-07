@@ -1,11 +1,13 @@
 #pragma once
 
+#include <string>
+
 #include "level.h"
 #include "io.h"
 
 class Game {
 public:
-  Game();
+  Game(std::string const& whoami);
   Game(Game const&) = delete;
 
   ~Game();
@@ -19,6 +21,7 @@ public:
 
   static IO*           io;
   static Level*        level;
+  static std::string*  whoami;
   static int           current_level;
   static int constexpr amulet_min_level = 26;
   static int           levels_without_food;

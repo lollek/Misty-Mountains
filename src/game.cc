@@ -1,8 +1,6 @@
 #include <string>
 #include <iostream>
 
-using namespace std;
-
 #include "command.h"
 #include "error_handling.h"
 #include "os.h"
@@ -25,12 +23,15 @@ using namespace std;
 
 #include "Game.h"
 
-Game*  Game::game_ptr = nullptr;
-IO*    Game::io = nullptr;
-Level* Game::level = nullptr;
-int    Game::current_level = 1;
-int    Game::levels_without_food = 0;
-int    Game::max_level_visited = 1;
+using namespace std;
+
+Game*   Game::game_ptr = nullptr;
+IO*     Game::io = nullptr;
+Level*  Game::level = nullptr;
+string* Game::whoami = nullptr;
+int     Game::current_level = 1;
+int     Game::levels_without_food = 0;
+int     Game::max_level_visited = 1;
 
 void Game::exit() {
   if (game_ptr != nullptr) {
@@ -69,7 +70,7 @@ void Game::new_level(int dungeon_level) {
 
   // Reapply hallucination, just in case
   if (player->is_hallucinating()) {
-    daemon_change_visuals();
+    Daemons::daemon_change_visuals();
   }
 }
 
@@ -110,39 +111,40 @@ int Game::run() {
   // CODE NOT REACHED
 }
 
-Game::Game() {
+Game::Game(string const& whoami_) {
+  whoami = new string(whoami_);
 
   if (game_ptr != nullptr) {
     error("Game is a singleton class");
   }
   game_ptr = this;
 
-  // Parse environment opts
-  if (whoami.empty()) {
-    whoami = os_whoami();
-  }
-
   cout << "Hello " << whoami << ", just a moment while I dig the dungeon..." << flush;
 
-  /* Init stuff */
+  // Init stuff
   Game::io = new IO();                  // Graphics
   Scroll::init_scrolls();               // Names of scrolls
   Color::init_colors();                 // Colors for potions and stuff
   Potion::init_potions();               // Colors of potions
   Ring::init_rings();                   // Stone settings of rings
   Wand::init_wands();                   // Materials of wands
-  Daemons::init_daemons();               // Over-time-effects
+  Daemons::init_daemons();              // Over-time-effects
   Game::new_level(Game::current_level); // Level (and player)
 
   // Start up daemons and fuses
-  daemon_start(runners_move, AFTER);
-  daemon_start(doctor, AFTER);
-  daemon_start(ring_abilities, AFTER);
+  Daemons::daemon_start(Daemons::runners_move, AFTER);
+  Daemons::daemon_start(Daemons::doctor, AFTER);
+  Daemons::daemon_start(Daemons::ring_abilities, AFTER);
 }
 
 Game::~Game() {
   Daemons::free_daemons();
   Color::free_colors();
   Ring::free_rings();
+
   delete Game::io;
+  Game::io = nullptr;
+
+  delete Game::whoami;
+  Game::whoami = nullptr;
 }
