@@ -208,6 +208,11 @@ move_do_loop(int dx, int dy) {
     nh.y = player->get_position().y + dy;
     nh.x = player->get_position().x + dx;
 
+    // Stop running if we change rooms
+    if (Game::level->get_room(nh) != player->get_room()) {
+      player->set_not_running();
+    }
+
     // If we are too close to the edge of map, treat is as wall automatically
     if (nh.x < 1 || nh.x >= NUMCOLS -1 || nh.y < 1 || nh.y >= NUMLINES - 1) {
       loop = move_do_loop_wall(after, dx, dy);
@@ -250,11 +255,10 @@ move_do_loop(int dx, int dy) {
     }
 
     switch (ch) {
-      case SHADOW:   loop = move_do_loop_wall(after, dx, dy); break;
-      case VWALL:    loop = move_do_loop_wall(after, dx, dy); break;
-      case HWALL:    loop = move_do_loop_wall(after, dx, dy); break;
-
-      default:       return move_do_loop_default(after, nh);
+      case SHADOW:
+      case VWALL:
+      case HWALL:   loop = move_do_loop_wall(after, dx, dy); break;
+      default:      return move_do_loop_default(after, nh);
     }
   }
   return after;
