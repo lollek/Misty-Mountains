@@ -10,7 +10,6 @@ void free_daemons();
 enum daemon_function {
   runners_move,
   doctor,
-  change_visuals,
   ring_abilities,
   remove_true_sight,
   set_not_confused,

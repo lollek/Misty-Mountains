@@ -51,7 +51,6 @@ static void execute_daemon_function(Daemons::daemon_function func) {
   switch(func) {
     case Daemons::runners_move:          Daemons::daemon_runners_move(); break;
     case Daemons::doctor:                Daemons::daemon_doctor(); break;
-    case Daemons::change_visuals:        Daemons::daemon_change_visuals(); break;
     case Daemons::ring_abilities:        Daemons::daemon_ring_abilities(); break;
     case Daemons::remove_true_sight:     player->remove_true_sight(); break;
     case Daemons::set_not_confused:      player->set_not_confused(); break;
@@ -181,30 +180,6 @@ void Daemons::daemon_doctor() {
 
   if (ohp != player->get_health())
     quiet_rounds = 0;
-}
-
-// change the characters for the player
-void Daemons::daemon_change_visuals() {
-  if (player->is_running() && jump) {
-    return;
-  }
-
-  // change the items
-  for (Item* item : Game::level->items) {
-    Coordinate const& item_pos = item->get_position();
-    if (player->can_see(item_pos)) {
-      Game::io->print_color(item_pos.x, item_pos.y, rnd_thing());
-    }
-  }
-
-  // change the stairs
-  Coordinate const& stairs_pos = Game::level->get_stairs_pos();
-  if (player->has_seen_stairs()) {
-    Game::io->print_color(stairs_pos.x, stairs_pos.y, rnd_thing());
-  }
-
-  // change the monsters
-  monster_show_all_as_trippy();
 }
 
 // Make all running monsters move
