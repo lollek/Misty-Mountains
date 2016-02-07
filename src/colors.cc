@@ -25,14 +25,14 @@ void Color::free_colors() {
   rainbow = nullptr;
 }
 
-size_t Color::color_max() {
+size_t Color::max() {
   return rainbow->size();
 }
 
-string const& Color::color_get(size_t i) {
+string const& Color::get(size_t i) {
   return rainbow->at(i);
 }
 
-string const& Color::color_random() {
+string const& Color::random() {
   return rainbow->at(os_rand_range(rainbow->size()));
 }
