@@ -143,6 +143,7 @@ Game::~Game() {
   free_pack();
   Monster::free_monsters();
   Daemons::free_daemons();
+  Potion::free_potions();
   Color::free_colors();
   Ring::free_rings();
 

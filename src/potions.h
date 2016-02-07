@@ -52,13 +52,14 @@ public:
   static void         set_known(Type subtype);
 
   static void         init_potions();
+  static void         free_potions();
 
 private:
   Type subtype;
 
-  static std::vector<std::string>        guesses;
-  static std::vector<bool>               knowledge;
-  static std::vector<std::string const*> colors;
+  static std::vector<std::string>*        guesses;
+  static std::vector<bool>*               knowledge;
+  static std::vector<std::string const*>* colors;
 };
 
 bool potion_quaff_something(void);  /* Quaff a potion from the pack */

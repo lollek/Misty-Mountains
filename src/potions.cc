@@ -19,9 +19,9 @@
 
 using namespace std;
 
-std::vector<std::string>        Potion::guesses;
-std::vector<bool>               Potion::knowledge;
-std::vector<std::string const*> Potion::colors;
+std::vector<std::string>*        Potion::guesses;
+std::vector<bool>*               Potion::knowledge;
+std::vector<std::string const*>* Potion::colors;
 
 static Potion::Type random_potion_type() {
   int value = os_rand_range(100);
@@ -111,15 +111,15 @@ int Potion::worth(Potion::Type subtype) {
 }
 
 string& Potion::guess(Potion::Type subtype) {
-  return guesses.at(static_cast<size_t>(subtype));
+  return guesses->at(static_cast<size_t>(subtype));
 }
 
 bool Potion::is_known(Potion::Type subtype) {
-  return knowledge.at(static_cast<size_t>(subtype));
+  return knowledge->at(static_cast<size_t>(subtype));
 }
 
 void Potion::set_known(Potion::Type subtype) {
-  knowledge.at(static_cast<size_t>(subtype)) = true;
+  knowledge->at(static_cast<size_t>(subtype)) = true;
 }
 
 Potion::~Potion() {}
@@ -134,8 +134,6 @@ Potion::Potion(Potion::Type subtype_) : Item() {
   set_throw_damage({1, 2});
 
   subtype = subtype_;
-  guesses.resize(static_cast<size_t>(Potion::NPOTIONS));
-  knowledge.resize(static_cast<size_t>(Potion::NPOTIONS));
 }
 
 Potion::Type Potion::get_type() const {
@@ -153,7 +151,7 @@ string Potion::get_description() const {
     }
 
   } else {
-    string const& color = *colors.at(static_cast<size_t>(subtype));
+    string const& color = *colors->at(static_cast<size_t>(subtype));
     if (o_count == 1) {
       os << "A" << vowelstr(color) << " " << color << " potion";
     } else {
@@ -332,29 +330,30 @@ potion_quaff_something(void)
 }
 
 void Potion::init_potions() {
-  knowledge = vector<bool>(Potion::NPOTIONS, false);
-  guesses = vector<string>(Potion::NPOTIONS, "");
+  colors = new vector<string const*>;
+  knowledge = new vector<bool>(Potion::NPOTIONS, false);
+  guesses = new vector<string>(Potion::NPOTIONS, "");
 
   /* Pick a unique color for each potion */
   for (int i = 0; i < Potion::NPOTIONS; i++)
     for (;;) {
       size_t color = os_rand_range(Color::max());
 
-      if (find(colors.cbegin(), colors.cend(), &Color::get(color)) !=
-          colors.cend()) {
+      if (find(colors->cbegin(), colors->cend(), &Color::get(color)) !=
+          colors->cend()) {
         continue;
       }
 
-      colors.push_back(&Color::get(color));
+      colors->push_back(&Color::get(color));
       break;
     }
 
   // Run some checks
-  if (colors.size() != static_cast<size_t>(Potion::NPOTIONS)) {
+  if (colors->size() != static_cast<size_t>(Potion::NPOTIONS)) {
     error("Potion init: wrong number of colors");
-  } else if (knowledge.size() != static_cast<size_t>(Potion::NPOTIONS)) {
+  } else if (knowledge->size() != static_cast<size_t>(Potion::NPOTIONS)) {
     error("Potion init: wrong number of knowledge");
-  } else if (guesses.size() != static_cast<size_t>(Potion::NPOTIONS)) {
+  } else if (guesses->size() != static_cast<size_t>(Potion::NPOTIONS)) {
     error("Potion init: wrong number of guesses");
   }
 
