@@ -1,21 +1,5 @@
-/*
- * Routines to deal with the pack
- *
- * @(#)pack.c	4.40 (Berkeley) 02/05/99
- *
- * Rogue: Exploring the Dungeons of Doom
- * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
- * All rights reserved.
- *
- * See the file LICENSE.TXT for full copyright and licensing information.
- */
-
-#include <string.h>
-#include <assert.h>
-
 #include <string>
 #include <list>
-
 
 #include "error_handling.h"
 #include "coordinate.h"
@@ -43,29 +27,40 @@
 
 using namespace std;
 
-int const PACK_RENAMEABLE = -1;
-
-int                  pack_gold = 0;
-static list<Item*> player_pack;
-
-static struct equipment_t
-{
+struct equipment_t {
   Item* ptr;
   string const description;
-} equipment[NEQUIPMENT] = {
-  { nullptr, "Body" },
-  { nullptr, "Right Hand" },
-  { nullptr, "Right Ring" },
-  { nullptr, "Left Ring" }
 };
 
-/* Is the character used in the pack? */
-static bool pack_used[26];
+int const PACK_RENAMEABLE = -1;
+
+int                         pack_gold = 0;
+static list<Item*>*         player_pack = nullptr;
+static vector<equipment_t>* equipment = nullptr;
+static bool                 pack_used[26]; /* Is the character used in the pack? */
 
 enum equipment_pos pack_ring_slots[PACK_RING_SLOTS] = {
   EQUIPMENT_RRING,
   EQUIPMENT_LRING
 };
+
+void init_pack() {
+  player_pack = new list<Item*>;
+  equipment = new vector<equipment_t> {
+    { nullptr, "Body" },
+    { nullptr, "Right Hand" },
+    { nullptr, "Right Ring" },
+    { nullptr, "Left Ring" }
+  };
+}
+
+void free_pack() {
+  delete player_pack;
+  player_pack = nullptr;
+
+  delete equipment;
+  equipment = nullptr;
+}
 
 int
 pack_size(void)
@@ -216,7 +211,7 @@ pack_add(Item* obj, bool silent, bool from_floor)
   bool is_picked_up = false;
   if (obj->o_type == POTION || obj->o_type == SCROLL || obj->o_type == FOOD
       || obj->o_type == AMMO)
-    for (Item* ptr : player_pack) {
+    for (Item* ptr : *player_pack) {
       if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which &&
           ptr->get_hit_plus() == obj->get_hit_plus() &&
           ptr->get_damage_plus() == obj->get_damage_plus())
@@ -246,7 +241,7 @@ pack_add(Item* obj, bool silent, bool from_floor)
   {
     if (from_floor)
       Game::level->items.remove(obj);
-    player_pack.push_back(obj);
+    player_pack->push_back(obj);
     obj->o_packch = pack_char();
   }
 
@@ -275,7 +270,7 @@ Item* pack_remove(Item* obj, bool newobj, bool all) {
   /* Only one item? Just pop and return it */
   } else {
     pack_used[obj->o_packch - 'a'] = false;
-    player_pack.remove(obj);
+    player_pack->remove(obj);
   }
   return return_value;
 }
@@ -357,7 +352,7 @@ pack_find_magic_item(void)
 {
   int nobj = 0;
 
-  for (Item* obj : player_pack) {
+  for (Item* obj : *player_pack) {
     if (obj->is_magic() && os_rand_range(++nobj) == 0) {
       return obj;
     }
@@ -387,7 +382,7 @@ pack_get_item(std::string const& purpose, int type)
     return nullptr;
   }
 
-  for (Item* obj : player_pack) {
+  for (Item* obj : *player_pack) {
     if (obj->o_packch == ch) {
       return obj;
     }
@@ -400,7 +395,7 @@ pack_get_item(std::string const& purpose, int type)
 bool
 pack_is_empty(void)
 {
-  return player_pack.empty();
+  return player_pack->empty();
 }
 
 int
@@ -414,7 +409,7 @@ pack_count_items_of_type(int type)
 {
   int num = 0;
 
-  for (Item const* list : player_pack) {
+  for (Item const* list : *player_pack) {
     if (!type || type == list->o_type ||
         (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))) {
       ++num;
@@ -426,16 +421,16 @@ pack_count_items_of_type(int type)
 bool
 pack_contains_amulet(void)
 {
-  return find_if(player_pack.cbegin(), player_pack.cend(),
+  return find_if(player_pack->cbegin(), player_pack->cend(),
       [] (Item const* ptr) {
     return ptr->o_type == AMULET;
-  }) != player_pack.cend();
+  }) != player_pack->cend();
 }
 
 bool
 pack_contains(Item *item)
 {
-  return find(player_pack.cbegin(), player_pack.cend(), item) != player_pack.cend();
+  return find(player_pack->cbegin(), player_pack->cend(), item) != player_pack->cend();
 }
 
 bool
@@ -449,11 +444,11 @@ pack_print_equipment(void)
   char sym = 'a';
   for (unsigned i = 0; i < NEQUIPMENT; ++i)
   {
-    if (equipment[i].ptr != nullptr)
+    if (equipment->at(i).ptr != nullptr)
     {
       mvwprintw(equipscr, sym - 'a' + 1, 1, "%c) %s: %s",
-                sym, equipment[i].description.c_str(),
-                equipment[i].ptr->get_description().c_str());
+                sym, equipment->at(i).description.c_str(),
+                equipment->at(i).ptr->get_description().c_str());
       sym++;
     }
   }
@@ -478,7 +473,7 @@ pack_print_inventory(int type)
 
   int num_items = 0;
   /* Print out all items */
-  for (Item const* list : player_pack) {
+  for (Item const* list : *player_pack) {
     if (!type || type == list->o_type ||
         (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))) {
       /* Print out the item and move to next row */
@@ -511,7 +506,7 @@ pack_evaluate(void)
     value += pack_print_evaluate_item(pack_equipped_item(static_cast<equipment_pos>(i)));
 
   addstr("\nWorth  Item  [Inventory]\n");
-  for (Item* obj : player_pack) {
+  for (Item* obj : *player_pack) {
     value += pack_print_evaluate_item(obj);
   }
 
@@ -523,8 +518,7 @@ pack_evaluate(void)
 Item*
 pack_equipped_item(enum equipment_pos pos)
 {
-  assert (pos >= 0 && pos < (sizeof equipment / sizeof (*equipment)));
-  return equipment[pos].ptr;
+  return equipment->at(pos).ptr;
 }
 
 bool
@@ -542,7 +536,7 @@ pack_equip_item(Item* item)
       break;
 
     case RING:
-      pos = equipment[EQUIPMENT_RRING].ptr == nullptr
+      pos = equipment->at(EQUIPMENT_RRING).ptr == nullptr
         ? EQUIPMENT_RRING
         : EQUIPMENT_LRING;
       break;
@@ -552,11 +546,11 @@ pack_equip_item(Item* item)
       break;
   }
 
-  if (equipment[pos].ptr)
+  if (equipment->at(pos).ptr)
     return false;
   else
   {
-    equipment[pos].ptr = item;
+    equipment->at(pos).ptr = item;
     return true;
   }
 }
@@ -581,7 +575,7 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
     return false;
   }
 
-  equipment[pos].ptr = nullptr;
+  equipment->at(pos).ptr = nullptr;
 
   /* Waste time if armor - since they take a while */
   if (pos == EQUIPMENT_ARMOR)
@@ -602,12 +596,12 @@ pack_unequip(enum equipment_pos pos, bool quiet_on_success)
 Item*
 pack_find_arrow(void)
 {
-  auto results = find_if(player_pack.begin(), player_pack.end(),
+  auto results = find_if(player_pack->begin(), player_pack->end(),
       [] (Item *i) {
     return i->o_which == Weapon::ARROW;
   });
 
-  return results == player_pack.end() ? nullptr : *results;
+  return results == player_pack->end() ? nullptr : *results;
 }
 
 void

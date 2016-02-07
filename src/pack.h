@@ -9,6 +9,9 @@
 
 #include "things.h"
 
+void init_pack();
+void free_pack();
+
 
 enum equipment_pos
 {
