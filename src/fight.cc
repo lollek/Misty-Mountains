@@ -156,7 +156,7 @@ print_attack(bool hit, Character* attacker, Character* defender) {
   ss << attacker->get_name() << " "
      << attacker->get_attack_string(hit) << " "
      << defender->get_name();
-  Game::io->message("%s" + ss.str());
+  Game::io->message(ss.str());
 }
 
 int
