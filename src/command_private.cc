@@ -584,7 +584,7 @@ command_eat(void)
     return false;
   }
 
-  food_eat();
+  player->eat();
 
   if (obj->o_which == 1)
     Game::io->message("my, that was a yummy fruit");

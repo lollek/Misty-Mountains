@@ -40,6 +40,13 @@ public:
   void set_confusing_attack() override;
   void set_previous_room(struct room* room);
 
+  // player_food.cc
+  void         eat();
+  void         digest_food();
+  std::string  get_hunger_state() const;
+  int          get_nutrition_left() const;
+  static int   get_starting_nutrition();
+
   // Misc
   bool saving_throw(int which) const;
   bool has_ring_with_ability(int ability) const;
@@ -57,9 +64,11 @@ public:
   std::string get_name() const override;
 
 private:
-  struct room* previous_room = nullptr;
-  bool         senses_monsters = false;
-  int          speed = 0;
+  struct room* previous_room;
+  bool         senses_monsters;
+  int          speed;
+
+  int          nutrition_left;
 };
 
 extern Player* player;

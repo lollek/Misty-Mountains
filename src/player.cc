@@ -47,7 +47,9 @@ bool         player_alerted              = false;
 
 Player::Player() :
   //        str, xp, lvl, armor, hp, dmg
-  Character(16,  0,  1,   10,    12, {{1,4}}, Coordinate(), nullptr, 0, '@')  {
+  Character(16,  0,  1,   10,    12, {{1,4}}, Coordinate(), nullptr, 0, '@'),
+  previous_room(nullptr), senses_monsters(false), speed(0),
+  nutrition_left(get_starting_nutrition()) {
 
   /* Give him some food */
   pack_add(new Food(), true);

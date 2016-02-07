@@ -358,7 +358,7 @@ void IO::refresh_statusline() {
       Game::current_level, pack_gold, hpwidth, player->get_health(), hpwidth,
       player->get_max_health(), player->get_strength(), player->get_default_strength(),
       player->get_armor(), player->get_level(), player->get_experience(),
-      food_hunger_state());
+      player->get_hunger_state().c_str());
 
   clrtoeol();
   move(original_position.y, original_position.x);

@@ -93,7 +93,7 @@ command()
       door_stop = false;
   }
 
-  food_digest();
+  player->digest_food();
   Daemons::daemon_run_after();
   return 0;
 }
@@ -177,7 +177,7 @@ command_wizard_do(char ch)
     case CTRL('Q'): Game::level->wizard_show_passages(); break;
     case CTRL('D'): Game::new_level(Game::current_level +1); break;
     case CTRL('E'): {
-      Game::io->message("food left: " + to_string(food_nutrition_left()));
+      Game::io->message("food left: " + to_string(player->get_nutrition_left()));
     } break;
     case CTRL('F'): wizard_show_map(); break;
     case CTRL('I'): wizard_levels_and_gear(); break;
