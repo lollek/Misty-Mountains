@@ -57,7 +57,7 @@ get_dir(void)
 {
   static Coordinate delta;
 
-  string prompt = "which direction? ";
+  string prompt = "which direction?";
   Game::io->message(prompt);
 
   bool gotit;

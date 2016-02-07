@@ -188,7 +188,7 @@ command_name_item(void)
     return false;
   }
 
-  Game::io->message("what do you want to call it? ");
+  Game::io->message("what do you want to call it?");
 
   string new_name = Game::io->read_string();
   if (!new_name.empty()) {
@@ -206,7 +206,7 @@ command_name_item(void)
 bool
 command_identify_character(void)
 {
-  Game::io->message("what do you want identified? ");
+  Game::io->message("what do you want identified?");
   int ch = io_readchar(true);
   Game::io->clear_message();
 
@@ -771,7 +771,7 @@ command_read_scroll() {
       nickname.clear();
 
     } else if (nickname.empty()) {
-      Game::io->message("what do you want to call the scroll? ");
+      Game::io->message("what do you want to call the scroll?");
       nickname = Game::io->read_string();
     }
   }

@@ -121,7 +121,7 @@ print_things(void)
 int
 wizard_list_items(void)
 {
-  Game::io->message("for what type of object do you want a list? ");
+  Game::io->message("for what type of object do you want a list?");
   print_things();
 
   int ch = io_readchar(true);
@@ -141,7 +141,7 @@ wizard_list_items(void)
 void wizard_create_item(void) {
 
   // Get itemtype
-  Game::io->message("type of item: ");
+  Game::io->message("type of item?");
   int type = io_readchar(true);
   Game::io->clear_message();
 

@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 
+#include "magic.h"
 #include "error_handling.h"
 #include "game.h"
 #include "colors.h"
@@ -251,43 +252,6 @@ static bool enchant_players_armor() {
   return true;
 }
 
-/* Stop all monsters within two spaces from chasing after the hero. */
-static bool hold_monsters() {
-  Coordinate const& player_pos = player->get_position();
-  int monsters_affected = 0;
-  Monster* held_monster = nullptr;
-
-  for (int x = player_pos.x - 2; x <= player_pos.x + 2; x++) {
-    if (x >= 0 && x < NUMCOLS) {
-      for (int y = player_pos.y - 2; y <= player_pos.y + 2; y++) {
-        if (y >= 0 && y <= NUMLINES - 1) {
-          Monster *monster = Game::level->get_monster(x, y);
-          if (monster != nullptr) {
-            monster->set_held();
-            monsters_affected++;
-            held_monster = monster;
-          }
-        }
-      }
-    }
-  }
-
-  if (monsters_affected == 1) {
-    Game::io->message(held_monster->get_name() + " freezes");
-
-  } else if (monsters_affected > 1) {
-    Game::io->message("the monsters around you freeze");
-
-  } else {/* monsters_affected == 0 */
-    switch (os_rand_range(3)) {
-      case 0: Game::io->message("you are unsure if anything happened"); break;
-      case 1: Game::io->message("you feel a strange sense of loss"); break;
-      case 2: Game::io->message("you feel a powerful aura"); break;
-    }
-  }
-  return monsters_affected;
-}
-
 static bool create_monster() {
   Coordinate const& player_pos = player->get_position();
   Coordinate mp;
@@ -425,7 +389,9 @@ static bool protect_armor() {
 void Scroll::read() const {
   switch (subtype) {
 
-    case Scroll::CONFUSE: player->set_confusing_attack(); break;
+    case Scroll::CONFUSE: {
+      player->set_confusing_attack();
+    } break;
 
     case Scroll::ENCHARMOR: {
       if (enchant_players_armor()) {
@@ -434,7 +400,7 @@ void Scroll::read() const {
     } break;
 
     case Scroll::HOLD: {
-      if (hold_monsters()) {
+      if (magic_hold_nearby_monsters()) {
         set_known(Scroll::HOLD);
       }
     } break;

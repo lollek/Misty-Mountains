@@ -213,7 +213,7 @@ command_signal_quit(__attribute__((unused)) int sig)
 
   getyx(curscr, oy, ox);
   Game::io->clear_message();
-  Game::io->message("really quit? ");
+  Game::io->message("really quit?");
 
   if (io_readchar(true) == 'y')
   {

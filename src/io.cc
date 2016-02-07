@@ -27,9 +27,6 @@
 
 using namespace std;
 
-// TODO: Remove these
-static int flushmsg(void);
-
 IO::IO() : last_message(), message_buffer(), extra_screen(nullptr) {
   initscr();  // Start up cursor package
 
@@ -339,6 +336,7 @@ void IO::refresh() {
   print_room(player->get_room());
 
   refresh_statusline();
+  move(player->get_position().y, player->get_position().x);
   ::refresh();
 }
 
@@ -373,9 +371,8 @@ void IO::repeat_last_message() {
 string IO::read_string(WINDOW* win, string const* initial_string) {
   string return_value;
 
-  flushmsg();
-  Coordinate original_pos;
-  getyx(win, original_pos.y, original_pos.x);
+  Coordinate original_pos(static_cast<int>(message_buffer.size()), 0);
+  wmove(win, original_pos.y, original_pos.x);
 
   if (initial_string != nullptr) {
     return_value = *initial_string;
@@ -386,7 +383,7 @@ string IO::read_string(WINDOW* win, string const* initial_string) {
   for (;;) {
 
     wrefresh(win);
-    int c = io_readchar(true);
+    int c = io_readchar(false);
 
     // Return on ESCAPE chars or ENTER
     if (c == '\n' || c == '\r' || c == -1 || c == KEY_ESCAPE) {
@@ -441,7 +438,7 @@ string IO::read_string(WINDOW* win, string const* initial_string) {
     waddstr(win, return_value.c_str());
   }
 
-  wrefresh(win);
+  clear_message();
   return return_value;
 }
 
@@ -468,77 +465,48 @@ void IO::show_extra_screen(string const& message)
   clear_message();
 }
 
-void IO::message(string const& message, bool new_sentence) {
+void IO::message(string const& message) {
 
-  size_t max_message = static_cast<size_t>(NUMCOLS) - string(" --More--").size();
+  string const more_string = " --More--";
+  size_t max_message = static_cast<size_t>(NUMCOLS) - more_string.size();
 
-   if (message_buffer.size() + message.size() > max_message) {
-    flushmsg();
+  // Pause when beginning on new line
+  if (message_buffer.size() + message.size() > max_message) {
+    message_buffer += more_string;
 
-   } else if (new_sentence && !message_buffer.empty()) {
-     message_buffer += ". ";
-   }
-
-   if (message.size() > 1) {
-     stringstream os;
-     os
-       << message_buffer
-       << static_cast<char>(toupper(message.at(0)))
-       << message.substr(1);
-     message_buffer = os.str();
-
-   } else if (message.size() > 0) {
-     message_buffer += string(1, static_cast<char>(toupper(message.at(0))));
-   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-static int newpos = 0;
-static int mpos = 0;
-
-static int
-flushmsg(void)
-{
-  /* Nothing to show */
-  if (Game::io->message_buffer.empty()) {
-    return ~KEY_ESCAPE;
-  }
-
-  /* Save message in case player missed it */
-  Game::io->last_message = Game::io->message_buffer;
-
-  /* TODO: Remove mpos by replacing mpos = 0 with a io_msg_clear() */
-  if (mpos)
-  {
-    mvaddstr(0, mpos, " --More--");
+    mvaddstr(0, 0, message_buffer.c_str());
+    clrtoeol();
+    move(0, static_cast<int>(message_buffer.size()));
     refresh();
-
     int ch = getch();
-    while (ch != KEY_SPACE && ch != '\n' && ch != '\r' && ch != KEY_ESCAPE)
+    while (ch != KEY_SPACE && ch != '\n' && ch != '\r' && ch != KEY_ESCAPE) {
       ch = getch();
+    }
+
+    message_buffer.clear();
   }
 
-  /* All messages should start with uppercase, except ones that
-   * start with a pack addressing character */
-  if (islower(Game::io->message_buffer.at(0)) && Game::io->message_buffer.at(1) != ')')
-    Game::io->message_buffer.at(0) = static_cast<char>(toupper(Game::io->message_buffer.at(0)));
-  mvaddstr(0, 0, Game::io->message_buffer.c_str());
+  stringstream os;
+  os << message_buffer;
+  if (!message_buffer.empty()) {
+    os << ". ";
+  }
+
+  if (message.size() > 1) {
+    os
+      << static_cast<char>(toupper(message.at(0)))
+      << message.substr(1);
+  } else if (message.size() > 0) {
+    os << string(1, static_cast<char>(toupper(message.at(0))));
+  }
+
+  if (message.back() == '?') {
+    os << " ";
+  }
+
+  message_buffer = os.str();
+  mvaddstr(0, 0, message_buffer.c_str());
   clrtoeol();
-  mpos = newpos;
-  newpos = 0;
-  Game::io->message_buffer.clear();
-  refresh();
-  return ~KEY_ESCAPE;
 }
 
 #ifndef NDEBUG
@@ -590,9 +558,9 @@ step_ok(int ch)
 char
 io_readchar(bool is_question)
 {
-  flushmsg();
-  if (!is_question)
-    move(player->get_position().y, player->get_position().x);
+  if (is_question) {
+    move(0, static_cast<int>(Game::io->message_buffer.size()));
+  }
 
   char ch = static_cast<char>(getch());
   switch (ch)

@@ -307,7 +307,7 @@ potion_quaff_something(void)
     nickname.clear();
 
   } else if (nickname.empty()) {
-    Game::io->message("what do you want to call the potion? ");
+    Game::io->message("what do you want to call the potion?");
     nickname = Game::io->read_string();
   }
 

@@ -369,7 +369,7 @@ pack_get_item(std::string const& purpose, int type)
   }
 
   pack_print_inventory(type);
-  Game::io->message("which object do you want to " + purpose + "? ");
+  Game::io->message("which object do you want to " + purpose + "?");
   char ch = io_readchar(true);
   Game::io->clear_message();
 

@@ -6,22 +6,21 @@
 
 class Scroll : public Item {
 public:
-  enum Type
-  {
-    CONFUSE   = 0,
-    MAP       = 1,
-    HOLD      = 2,
-    SLEEP     = 3,
-    ENCHARMOR = 4,
-    ID        = 5,
-    SCARE     = 6,
-    FDET      = 7,
-    TELEP     = 8,
-    ENCH      = 9,
-    CREATE    = 10,
-    REMOVE    = 11,
-    AGGR      = 12,
-    PROTECT   = 13,
+  enum Type {
+    CONFUSE,
+    MAP,
+    HOLD,
+    SLEEP,
+    ENCHARMOR,
+    ID,
+    SCARE,
+    FDET,
+    TELEP,
+    ENCH,
+    CREATE,
+    REMOVE,
+    AGGR,
+    PROTECT,
     NSCROLLS
   };
 
