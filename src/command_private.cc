@@ -286,7 +286,6 @@ command_help()
     {'^',	"	identify trap type",			true},
     {'a',	"	attack in a direction",			true},
     {'b',	"	down & left",				true},
-    {'c',	"	call object",				true},
     {'d',	"	drop object",				true},
     {'e',	"	eat food",				true},
     {'h',	"	left",					true},
@@ -776,6 +775,24 @@ bool command_open() {
     return false;
   }
 }
+
+bool command_close() {
+  const Coordinate* dir = get_dir();
+  if (dir == nullptr) {
+    return false;
+  }
+
+  Coordinate const& player_pos = player->get_position();
+  Tile::Type door = Game::level->get_tile(player_pos.x + dir->x, player_pos.y + dir->y);
+  if (door == Tile::OpenDoor) {
+    Game::level->set_tile(player_pos.x + dir->x, player_pos.y + dir->y, Tile::ClosedDoor);
+    return true;
+  } else {
+    Game::io->message("Nothing to close there");
+    return false;
+  }
+}
+
 
 
 

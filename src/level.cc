@@ -307,8 +307,13 @@ int Level::get_stairs_y() const {
 }
 
 bool Level::can_step(int x, int y) {
-  if (get_tile(x, y) == Tile::Wall) {
-    return false;
+  switch(get_tile(x, y)) {
+    case Tile::Wall: case Tile::ClosedDoor:
+      return false;
+
+    case Tile::Floor: case Tile::OpenDoor: case Tile::Stairs:
+    case Tile::Trap:
+      break;
   }
 
   return get_monster(x, y) == nullptr;
