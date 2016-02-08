@@ -122,7 +122,7 @@ command_do(char ch)
     case 'd': return command_drop();
     case 'e': return command_eat();
     case 'i': return command_show_inventory();
-    case 'o': return option();
+    case 'O': return option();
     case 'q': return potion_quaff_something();
     case 'r': return command_read_scroll();
     case 's': player->search(); return true;

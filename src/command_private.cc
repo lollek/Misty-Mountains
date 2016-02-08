@@ -295,7 +295,7 @@ command_help(void)
     {'k',	"	up",					true},
     {'l',	"	right",					true},
     {'n',	"	down & right",				true},
-    {'o',	"	examine/set options",			true},
+    {'O',	"	examine/set options",			true},
     {'q',	"	quaff potion",				true},
     {'r',	"	read scroll",				true},
     {'s',	"	search for trap/secret door",		true},
