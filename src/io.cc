@@ -85,21 +85,17 @@ void IO::print_item(Item* item) {
   print_color(coord.x, coord.y, symbol_to_print);
 }
 
-void IO::print_tile(Coordinate const& coord) {
-  print_tile(coord.x, coord.y);
-}
-
-void IO::print_tile(int x, int y) {
-  Coordinate coord(x, y);
+void IO::print_tile_seen(Coordinate const& coord) {
+  Game::level->set_discovered(coord);
 
   // Next prio: Player
   if (player->get_position() == coord) {
-    print_color(x, y, player->get_type());
+    print_color(coord.x, coord.y, player->get_type());
     return;
   }
 
   // Next prio: Monsters
-  Monster* mon = Game::level->get_monster(x, y);
+  Monster* mon = Game::level->get_monster(coord);
   if (mon != nullptr) {
     if (monster_seen_by_player(mon)) {
       print_monster(mon);
@@ -114,14 +110,41 @@ void IO::print_tile(int x, int y) {
   }
 
   // Next prio: Items
-  Item* item = Game::level->get_item(x, y);
+  Item* item = Game::level->get_item(coord);
   if (item != nullptr) {
     print_item(item);
     return;
   }
 
   // Next prio: Floor
-  print_color(x, y, Game::level->get_tile(x, y));
+  print_color(coord.x, coord.y, Game::level->get_tile(coord));
+}
+
+void IO::print_tile_discovered(Coordinate const& coord) {
+
+  // Next prio: Floor
+  ::Tile::Type tile = Game::level->get_tile(coord);
+  if (tile == ::Tile::Floor) {
+    print_color(coord.x, coord.y, IO::Shadow);
+  } else {
+    print_color(coord.x, coord.y, tile);
+  }
+
+}
+
+void IO::print_tile(Coordinate const& coord) {
+  print_tile(coord.x, coord.y);
+}
+
+void IO::print_tile(int x, int y) {
+  Coordinate coord(x, y);
+
+  if (player->can_see(coord)) {
+    print_tile_seen(coord);
+
+  } else if (Game::level->is_discovered(coord)) {
+    print_tile_discovered(coord);
+  }
 }
 
 void IO::hide_tile(Coordinate const& coord) {
@@ -169,11 +192,6 @@ chtype IO::colorize(chtype ch)
   }
 }
 
-void IO::print_room_dark(room const* room) {
-  hide_room(room);
-  print_player_vision();
-}
-
 void IO::print_player_vision() {
 
   Coordinate const& player_pos = player->get_position();
@@ -192,48 +210,6 @@ void IO::print_player_vision() {
     for (int x = player_pos.x -fov_range; x <= player_pos.x +fov_range; x++) {
       print_tile(x, y);
       Game::level->set_discovered(x, y);
-    }
-  }
-}
-
-void IO::print_room_light(room const* room) {
-  for (int y = room->r_pos.y; y < room->r_max.y + room->r_pos.y; y++) {
-    for (int x = room->r_pos.x; x < room->r_max.x + room->r_pos.x; x++) {
-      print_tile(x, y);
-    }
-  }
-
-  // Do a player-vision-print as well, so we can see into any nearby passage
-  print_player_vision();
-}
-
-void IO::print_room(room const* room) {
-  if (room == nullptr || player->is_blind()) {
-    print_player_vision();
-  } else if (room->r_flags & ISDARK) {
-    print_room_dark(room);
-  } else if (room->r_flags & (ISGONE|ISMAZE)) {
-    print_player_vision();
-  } else {
-    print_room_light(room);
-  }
-}
-
-void IO::hide_room(room const* room) {
-  for (int y = room->r_pos.y; y < room->r_max.y + room->r_pos.y; y++) {
-    for (int x = room->r_pos.x; x < room->r_max.x + room->r_pos.x; x++) {
-      switch (Game::level->get_tile(x, y)) {
-
-        // Things to NOT hide:
-        case ::Tile::Wall: case ::Tile::OpenDoor: case ::Tile::Stairs: case ::Tile::Trap:
-        case ::Tile::ClosedDoor: {
-          break;
-        }
-
-        case ::Tile::Floor: {
-          hide_tile(x, y);
-        } break;
-      }
     }
   }
 }
@@ -285,8 +261,11 @@ void IO::print_level_layout() {
 }
 
 void IO::refresh() {
-  room* player_room = player->get_room();
-  print_room(player_room);
+  for (int x = 0; x < NUMCOLS -1; ++x) {
+    for (int y = 1; y < NUMLINES -1; ++y) {
+      print_tile(x, y);
+    }
+  }
 
   refresh_statusline();
   move(player->get_position().y, player->get_position().x);

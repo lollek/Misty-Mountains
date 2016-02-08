@@ -26,25 +26,6 @@ struct spot {
 
 static spot maze[NUMLINES/3+1][NUMCOLS/3+1];
 
-/* Called to illuminate a room.
- * If it is dark, remove anything that might move.  */
-static void
-room_open_door(struct room* rp) {
-  if (rp == nullptr || rp->r_flags & ISGONE) {
-    return;
-  }
-
-  for (int y = rp->r_pos.y; y < rp->r_pos.y + rp->r_max.y; y++) {
-    for (int x = rp->r_pos.x; x < rp->r_pos.x + rp->r_max.x; x++) {
-      Game::level->set_discovered(x, y);
-      Monster* monster = Game::level->get_monster(x, y);
-      if (monster != nullptr) {
-        monster_notice_player(y, x);
-      }
-    }
-  }
-}
-
 /* Account for maze exits */
 static void
 room_accnt_maze(int y, int x, int ny, int nx) {
@@ -301,50 +282,6 @@ Level::get_random_room_coord(room* room, Coordinate* coord, int tries, bool mons
       return true;
     }
   }
-}
-
-void
-room_enter(Coordinate const& cp) {
-
-  struct room* rp = Game::level->get_room(cp);
-  player->set_room(rp);
-  room_open_door(rp);
-  Game::io->print_room(rp);
-}
-
-/** room_leave:
- * Code for when we exit a room */
-void
-room_leave(Coordinate const& cp)
-{
-  (void)cp;
-  struct room* rp = player->get_room();
-
-  if (rp->r_flags & ISMAZE) {
-    return;
-  }
-
-  player->set_room(nullptr);
-
-  // If we leave dark rooms, we want to hide everything inside of it
-  if (rp->r_flags & ISDARK) {
-    Game::io->hide_room(rp);
-
-  // If we leave a light room, we only hide monsters
-  } else {
-    for (int y = rp->r_pos.y; y < rp->r_max.y + rp->r_pos.y; y++) {
-      for (int x = rp->r_pos.x; x < rp->r_max.x + rp->r_pos.x; x++) {
-
-        // Reprint monsters (which usually hides them)
-        Monster* mon = Game::level->get_monster(x, y);
-        if (mon != nullptr) {
-          Game::io->print_tile(x, y);
-        }
-      }
-    }
-  }
-
-  room_open_door(rp);
 }
 
 room* Level::get_random_room() {

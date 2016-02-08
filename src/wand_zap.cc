@@ -31,14 +31,14 @@ static Monster* wand_find_target(int* y, int* x, int dy, int dx) {
 
 static void wand_spell_light(void)
 {
-  if (player->get_room()->r_flags & ISGONE) {
+  room* player_room = player->get_room();
+  if (player_room == nullptr || player_room->r_flags & ISGONE) {
     Game::io->message("the corridor glows and then fades");
-    return;
-  }
 
-  player->get_room()->r_flags &= ~ISDARK;
-  room_enter(player->get_position());
-  Game::io->message("the rooms is lit by a shimmering blue light");
+  } else {
+    player_room->r_flags &= ~ISDARK;
+    Game::io->message("the rooms is lit by a shimmering blue light");
+  }
 }
 
 // take away 1/2 of hero's hit points, then take it away

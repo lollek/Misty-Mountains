@@ -1,4 +1,5 @@
 #include <string>
+#include <cmath>
 
 #include "command_private.h"
 #include "food.h"
@@ -107,29 +108,48 @@ bool Player::has_seen_stairs() const {
 }
 
 bool Player::can_see(Coordinate const& coord) const {
-
   if (is_blind()) {
     return false;
   }
 
-  Coordinate const& player_pos = get_position();
-  int see_distance = Game::level->is_dark(coord) ? 2 : LAMPDIST;
+  int darkvision = 2;
+  int lightvision = 3;
 
-  if (dist(coord.y, coord.x, player_pos.y, player_pos.x) < see_distance) {
-    if (Game::level->is_passage(coord)) {
-      if (coord.y != player_pos.y && coord.x != player_pos.x &&
-          !Game::level->can_step(player_pos.x, coord.y) &&
-          !Game::level->can_step(coord.x, player_pos.y)) {
-        return false;
-      }
-    }
-    return true;
+  Coordinate const& player_pos = get_position();
+  int real_distance = Game::level->is_dark(coord) ? darkvision : lightvision;
+
+  // dist is a**2 + b**2, and we dont wanna sqrt if we dont have to
+  int see_distance = real_distance * real_distance;
+  int dist_result = dist(coord.y, coord.x, player_pos.y, player_pos.x);
+  if (dist_result >= see_distance) {
+    return false;
   }
 
-  // We can only see if the hero in the same room as
-  // the coordinate and the room is lit or if it is close.
-  return get_room() == Game::level->get_room(coord) &&
-      !Game::level->is_dark(coord);
+  // Trace the rays, and return false if something blocks
+  Coordinate walker = player->get_position();
+  double distance = sqrt(dist_result);
+  double dx = (coord.x - walker.x) / distance;
+  double dy = (coord.y - walker.y) / distance;
+
+  for (double i = 1; i < distance; ++i) {
+    Coordinate temp(static_cast<int>(round(walker.x + dx * i)),
+                    static_cast<int>(round(walker.y + dy * i)));
+
+    if (temp == coord) {
+      return true;
+    }
+
+    Tile::Type tile = Game::level->get_tile(temp);
+    switch (tile) {
+      case Tile::Wall: case Tile::ClosedDoor:
+        return false;
+
+      case Tile::Floor: case Tile::Stairs: case Tile::Trap:
+      case Tile::OpenDoor:
+        break;
+    }
+  }
+  return true;
 }
 
 string Player::get_attack_string(bool successful_hit) const {
@@ -281,8 +301,6 @@ void Player::set_not_blind() {
 
   Daemons::daemon_extinguish_fuse(Daemons::set_not_blind);
   Character::set_not_blind();
-  if (!(get_room()->r_flags & ISGONE))
-    room_enter(get_position());
   Game::io->message("the veil of darkness lifts");
 }
 
@@ -354,17 +372,15 @@ void Player::teleport(Coordinate const* target)
     new_pos.x = target->x;
   }
 
-  // Move target
-  //
-  if (Game::level->get_room(new_pos) != get_room()) {
-    room_leave(get_position());
-    set_position(new_pos);
-    room_enter(get_position());
+  set_position(new_pos);
+  player->set_room(Game::level->get_room(new_pos));
 
-  } else {
-    set_position(new_pos);
+  // Reprint around player
+  for (int x = old_pos.x -1; x <= old_pos.x +1; ++x) {
+    for (int y = old_pos.y -1; y <= old_pos.y +1; ++y) {
+      Game::io->print_tile(x, y);
+    }
   }
-  Game::io->print_tile(old_pos);
 
   /* Print @ new location */
   Game::io->print_color(new_pos.x, new_pos.y, get_type());

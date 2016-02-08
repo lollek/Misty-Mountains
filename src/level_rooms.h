@@ -23,9 +23,3 @@ struct room {
 #define ISDARK	0000001		/* room is dark */
 #define ISGONE	0000002		/* room is gone (a corridor) */
 #define ISMAZE	0000004		/* room is gone (a corridor) */
-
-/* Code that is executed whenver you appear in a room */
-void room_enter(Coordinate const& cp);
-
-/* Code for when we exit a room */
-void room_leave(Coordinate const& cp);

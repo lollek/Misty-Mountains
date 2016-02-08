@@ -184,7 +184,6 @@ move_do_loop_default(bool after, Coordinate& coord) {
   // Else, Move player
   Coordinate old_position = player->get_position();
   player->set_room(Game::level->get_room(old_position));
-  Tile::Type previous_place = Game::level->get_tile(old_position);
   player->set_position(coord);
 
   // Try to pick up any items here
@@ -194,16 +193,7 @@ move_do_loop_default(bool after, Coordinate& coord) {
     player->set_not_running();
   }
 
-  // Reprint (basically hide) old room, if we leave one
-  if (Game::level->is_passage(coord) && previous_place == Tile::OpenDoor) {
-    room_leave(coord);
-  }
-
-  if (Game::level->is_passage(old_position) &&
-      Game::level->get_tile(coord) == Tile::OpenDoor) {
-    room_enter(coord);
-    Game::io->print_tile(old_position);
-  }
+  player->set_room(Game::level->get_room(coord));
 
   return after;
 }

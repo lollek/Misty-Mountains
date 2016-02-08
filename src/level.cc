@@ -272,11 +272,11 @@ void Level::set_trap_type(Coordinate const& coord, Trap::Type type) {
   set_trap_type(coord.x, coord.y, type);
 }
 
-size_t Level::get_trap_type(int x, int y) {
+Trap::Type Level::get_trap_type(int x, int y) {
   return tile(x, y).trap_type;
 }
 
-size_t Level::get_trap_type(Coordinate const& coord) {
+Trap::Type Level::get_trap_type(Coordinate const& coord) {
   return get_trap_type(coord.x, coord.y);
 }
 

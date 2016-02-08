@@ -62,7 +62,7 @@ void Game::new_level(int dungeon_level) {
   Coordinate new_player_pos = player->get_position();
   Game::level->get_random_room_coord(nullptr, &new_player_pos, 0, true);
   player->set_position(new_player_pos);
-  room_enter(new_player_pos);
+  player->set_room(Game::level->get_room(new_player_pos));
   Game::io->print_color(new_player_pos.x, new_player_pos.y, player->get_type());
 
   // Unhold player just in case

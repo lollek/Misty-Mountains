@@ -92,10 +92,10 @@ public:
   WINDOW* extra_screen;
 
 private:
-  void print_room_dark(room const* room);
-  void print_room_light(room const* room);
-
   void print_player_vision();
+
+  void print_tile_seen(Coordinate const& coord);
+  void print_tile_discovered(Coordinate const& coord);
 
   void refresh_statusline();
 };
