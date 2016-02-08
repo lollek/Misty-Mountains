@@ -1,4 +1,5 @@
 #include <list>
+#include <functional>
 
 #include "game.h"
 
@@ -21,7 +22,6 @@ bool Player::pack_show_equip() {
     for (Item* obj : pack) {
       if (obj->o_packch == ch) {
         if (player->pack_equip(obj, false)) {
-          Game::io->clear_message();
           return true;
         }
         break;
@@ -103,17 +103,20 @@ bool Player::pack_show() {
 
     switch (current_window) {
       case INVENTORY: {
-        if (ch == 'e') {
-          if (pack_show_equip()) {
-            touchwin(stdscr);
-            return true;
-          }
+        switch (ch) {
+          case 'e':  {
+            if (pack_show_equip()) {
+              touchwin(stdscr);
+              return true;
+            }
+          } break;
 
-        } else if (ch == 'd') {
-          if (pack_show_drop()) {
-            touchwin(stdscr);
-            return true;
-          }
+          case 'd': {
+            if (pack_show_drop()) {
+              touchwin(stdscr);
+              return true;
+            }
+          } break;
         }
 
 
