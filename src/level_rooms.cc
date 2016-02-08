@@ -292,7 +292,7 @@ Level::get_random_room_coord(room* room, Coordinate* coord, int tries, bool mons
     Tile::Type ch = get_tile(*coord);
     if (monst) {
       if (get_monster(*coord) == nullptr &&
-          Game::level->can_step(*coord)) {
+          can_step(*coord)) {
         return true;
       }
     } else if (ch == compchar) {
