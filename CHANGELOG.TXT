@@ -1,12 +1,6 @@
 v2.0
-  Renamed game to Misty Mountains
-  Numerous smaller changes and tweaks
-
-  Effects:
-    Removed hallucination
-
-  Map:
-    Can now be many passages between rooms
+  Too many changes to mention. Misty Mountains is only based on Rogue14, not the
+  same game.
 
 v1.3.2
   Visual:
