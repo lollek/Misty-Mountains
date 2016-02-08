@@ -31,5 +31,8 @@ Type spring(Monster** victim, Coordinate const& trap_coord);
 // Spring a trap on the player.
 Type player(Coordinate const& trap_coord);
 
+// Random trap type
+Type random();
+
 }
 

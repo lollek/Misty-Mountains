@@ -276,6 +276,11 @@ Trap::Type Trap::player(Coordinate const& trap_coord) {
   Game::level->set_tile(trap_coord, Tile::Trap);
   Game::level->set_discovered(trap_coord);
 
+  Trap::Type trap = Game::level->get_trap_type(trap_coord);
+  if (trap == Trap::NTRAPS) {
+    Game::level->set_trap_type(trap_coord, random());
+  }
+
   switch (Game::level->get_trap_type(trap_coord)) {
     case Door:      return trap_door_player();
     case Beartrap:  return trap_bear_player();
@@ -286,7 +291,7 @@ Trap::Type Trap::player(Coordinate const& trap_coord) {
     case Dart:      return trap_dart_player();
     case Rust:      return trap_rust_player();
 
-    default: error("Unknown trap type triggered");
+    case NTRAPS: error("Unknown trap type triggered");
   }
 }
 
@@ -302,6 +307,11 @@ Trap::Type Trap::spring(Monster** victim, Coordinate const& trap_coord) {
     Game::level->set_discovered(trap_coord);
   }
 
+  Trap::Type trap = Game::level->get_trap_type(trap_coord);
+  if (trap == Trap::NTRAPS) {
+    Game::level->set_trap_type(trap_coord, random());
+  }
+
   switch (Game::level->get_trap_type(trap_coord)) {
     case Door:     return trap_door_monster(victim);
     case Beartrap: return trap_bear_monster(*victim);
@@ -312,8 +322,10 @@ Trap::Type Trap::spring(Monster** victim, Coordinate const& trap_coord) {
     case Dart:     return trap_dart_monster(victim);
     case Rust:     return trap_rust_monster(*victim);
 
-    default: error("Unknown trap type triggered");
+    case NTRAPS: error("Unknown trap type triggered");
   }
 }
 
-
+Trap::Type Trap::random() {
+  return static_cast<Trap::Type>(os_rand_range(NTRAPS));
+}

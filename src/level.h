@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 
+#include "traps.h"
 #include "monster.h"
 #include "item.h"
 #include "io.h"
@@ -29,8 +30,8 @@ public:
   bool is_dark(Coordinate const& coord);
   Tile::Type get_tile(int x, int y);
   Tile::Type get_tile(Coordinate const& coord);
-  size_t get_trap_type(int x, int y);
-  size_t get_trap_type(Coordinate const& coord);
+  Trap::Type get_trap_type(int x, int y);
+  Trap::Type get_trap_type(Coordinate const& coord);
   bool get_random_room_coord(room* room, Coordinate* coord, int tries, bool monster);
   room* get_room(Coordinate const& coord);
   room* get_random_room();
