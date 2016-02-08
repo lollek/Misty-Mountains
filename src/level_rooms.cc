@@ -30,7 +30,7 @@ static spot maze[NUMLINES/3+1][NUMCOLS/3+1];
  * If it is dark, remove anything that might move.  */
 static void
 room_open_door(struct room* rp) {
-  if (rp->r_flags & ISGONE) {
+  if (rp == nullptr || rp->r_flags & ISGONE) {
     return;
   }
 
@@ -309,10 +309,6 @@ room_enter(Coordinate const& cp) {
   struct room* rp = Game::level->get_room(cp);
   player->set_room(rp);
   room_open_door(rp);
-
-  if ((rp->r_flags & ISDARK) || player->is_blind()) {
-    return;
-  }
   Game::io->print_room(rp);
 }
 

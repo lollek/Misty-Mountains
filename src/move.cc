@@ -46,6 +46,7 @@ static void stop_on_interesting_stuff(Coordinate const& nh, int dx, int dy) {
     }
   }
 
+
   for (int x = nh.x -1; x <= nh.x +1; ++x) {
     for (int y = nh.y -1; y <= nh.y +1; ++y) {
 
@@ -86,8 +87,13 @@ static void stop_on_interesting_stuff(Coordinate const& nh, int dx, int dy) {
 static bool
 move_turn_ok(int y, int x)
 {
-  return (Game::level->get_tile(x, y) == Tile::OpenDoor ||
-          (Game::level->is_real(x, y) && Game::level->is_passage(x, y)));
+  switch (Game::level->get_tile(x, y)) {
+    case Tile::Floor: case Tile::OpenDoor: case Tile::Stairs:
+      return true;
+
+    case Tile::Wall: case Tile::Trap: case Tile::ClosedDoor:
+      return false;
+  }
 }
 
 /** move_turnref:
@@ -107,11 +113,10 @@ move_turnref(void)
 
 static bool
 move_do_loop_wall(bool& after, int& dx, int& dy) {
-  if (passgo && player->is_running() && (player->get_room()->r_flags & ISGONE) &&
-      !player->is_blind()) {
+  if (passgo && player->is_running()) {
 
 
-    if (runch == 'h' || runch == 'l') {
+    if (dx != 0 && dy == 0) {
       Coordinate const* player_pos = &player->get_position();
       bool b1 = (player_pos->y != 1 && move_turn_ok(player_pos->y - 1, player_pos->x));
       bool b2 = (player_pos->y != NUMLINES - 2 && move_turn_ok(player_pos->y + 1, player_pos->x));
@@ -132,7 +137,7 @@ move_do_loop_wall(bool& after, int& dx, int& dy) {
       move_turnref();
       return true;
 
-    } else if (runch == 'j' || runch == 'k') {
+    } else if (dx == 0 && dy != 0) {
       Coordinate const* player_pos = &player->get_position();
       bool b1 = (player_pos->x != 0 && move_turn_ok(player_pos->y, player_pos->x - 1));
       bool b2 = (player_pos->x != NUMCOLS - 1 && move_turn_ok(player_pos->y, player_pos->x + 1));

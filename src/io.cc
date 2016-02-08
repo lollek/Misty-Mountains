@@ -208,8 +208,8 @@ void IO::print_room_light(room const* room) {
 }
 
 void IO::print_room(room const* room) {
-  if (player->is_blind()) {
-    return;
+  if (room == nullptr || player->is_blind()) {
+    print_player_vision();
   } else if (room->r_flags & ISDARK) {
     print_room_dark(room);
   } else if (room->r_flags & (ISGONE|ISMAZE)) {
@@ -286,11 +286,7 @@ void IO::print_level_layout() {
 
 void IO::refresh() {
   room* player_room = player->get_room();
-  if (player_room == nullptr) {
-    print_player_vision();
-  } else {
-    print_room(player_room);
-  }
+  print_room(player_room);
 
   refresh_statusline();
   move(player->get_position().y, player->get_position().x);
