@@ -28,7 +28,7 @@ public:
     Shadow = ' ',
     Wall   = '#',
     Floor  = '.',
-    Door   = '+',
+    Door   = '\'',
     Trap   = '^',
     Stairs = '%',
 

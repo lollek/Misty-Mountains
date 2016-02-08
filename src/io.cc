@@ -143,8 +143,11 @@ chtype IO::colorize(chtype ch)
   {
     // Dungeon
     case IO::Wall: return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
-    case IO::Floor: case IO::Stairs: return ch | COLOR_PAIR(COLOR_YELLOW);
     case IO::Trap: return ch | COLOR_PAIR(COLOR_RED);
+
+    case IO::Floor:
+    case IO::Door:
+    case IO::Stairs: return ch | COLOR_PAIR(COLOR_YELLOW);
 
     // Items
     case IO::Gold: return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
