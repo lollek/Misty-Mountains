@@ -92,21 +92,29 @@ bool Player::pack_show_remove() {
 }
 
 
+bool Player::pack_show_inventory() {
+  return pack_show(0);
+}
 
-bool Player::pack_show() {
+bool Player::pack_show_equipment() {
+  return pack_show(1);
+}
+
+
+bool Player::pack_show(int mode) {
   enum cur_win_t { INVENTORY, EQUIPMENT };
-  cur_win_t current_window = INVENTORY;
+  cur_win_t current_window = static_cast<cur_win_t>(mode);
 
   for (;;) {
     switch (current_window) {
       case INVENTORY: {
         pack_print_inventory(0);
-        Game::io->message("Command? [(e)quip|(d)rop|ESC|SPACE]");
+        Game::io->message("Inventory [(e)quip|(d)rop|ESC|SPACE]");
       } break;
 
       case EQUIPMENT: {
         pack_print_equipment();
-        Game::io->message("Command? [(r)emove|ESC|SPACE]");
+        Game::io->message("Equipment [(r)emove|ESC|SPACE]");
       } break;
     }
 

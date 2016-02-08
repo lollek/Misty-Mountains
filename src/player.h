@@ -58,7 +58,8 @@ public:
   static int   get_starting_nutrition();
 
   // player_pack_management.cc
-  bool pack_show();
+  bool pack_show_inventory();
+  bool pack_show_equipment();
 
   // player_pack.cc
   static size_t equipment_size();
@@ -106,6 +107,7 @@ private:
   int          speed;
 
   // player_pack_management.cc
+  bool pack_show(int mode);
   bool pack_show_equip();
   bool pack_show_drop();
   bool pack_show_remove();
