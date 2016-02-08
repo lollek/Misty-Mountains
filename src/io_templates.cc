@@ -63,11 +63,12 @@ template <>
 void IO::print_color<::Tile::Type>(int x, int y, ::Tile::Type tile, IO::Attribute attr) {
   chtype ch;
   switch (tile) {
-    case ::Tile::Floor:  ch = IO::Floor; break;
-    case ::Tile::Wall:   ch = IO::Wall; break;
-    case ::Tile::Door:   ch = IO::Door; break;
-    case ::Tile::Trap:   ch = IO::Trap; break;
-    case ::Tile::Stairs: ch = IO::Stairs; break;
+    case ::Tile::Floor:        ch = IO::Floor; break;
+    case ::Tile::Wall:         ch = IO::Wall; break;
+    case ::Tile::ClosedDoor:   ch = IO::ClosedDoor; break;
+    case ::Tile::OpenDoor:     ch = IO::OpenDoor; break;
+    case ::Tile::Trap:         ch = IO::Trap; break;
+    case ::Tile::Stairs:       ch = IO::Stairs; break;
   }
   curses_print(x, y, colorize(ch), attr);
 }

@@ -144,7 +144,7 @@ chase_do(Monster* monster)
     // Remove monster from old position IFF we see it, or it was standing on a
     // passage we have previously seen
     Game::level->set_monster(monster->get_position(), nullptr);
-    if (((prev_ch == Tile::Floor || prev_ch == Tile::Door) &&
+    if (((prev_ch == Tile::Floor || prev_ch == Tile::OpenDoor) &&
          Game::level->is_discovered(monster->get_position()))) {
       Game::io->print_tile(monster->get_position());
     }

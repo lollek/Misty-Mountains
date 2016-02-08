@@ -267,11 +267,12 @@ void wizard_show_map(void) {
       Tile::Type tile = Game::level->get_tile(x, y);
       chtype ch;
       switch (tile) {
-        case Tile::Floor:  ch = IO::Floor; break;
-        case Tile::Wall:   ch = IO::Wall; break;
-        case Tile::Door:   ch = IO::Door; break;
-        case Tile::Trap:   ch = IO::Trap; break;
-        case Tile::Stairs: ch = IO::Stairs; break;
+        case Tile::Floor:        ch = IO::Floor; break;
+        case Tile::Wall:         ch = IO::Wall; break;
+        case Tile::OpenDoor:     ch = IO::OpenDoor; break;
+        case Tile::ClosedDoor:   ch = IO::ClosedDoor; break;
+        case Tile::Trap:         ch = IO::Trap; break;
+        case Tile::Stairs:       ch = IO::Stairs; break;
       }
 
       if (!Game::level->is_real(x, y)) {

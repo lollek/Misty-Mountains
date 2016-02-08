@@ -60,7 +60,8 @@ wand_spell_drain_health(void) {
     }
 
     // Nearby monster in same passage
-    else if (in_passage && Game::level->get_tile(monster->get_position()) == Tile::Door &&
+    else if (in_passage &&
+             Game::level->get_tile(monster->get_position()) == Tile::OpenDoor &&
              player->get_room() == nullptr) {
       drainee.push_back(monster);
     }

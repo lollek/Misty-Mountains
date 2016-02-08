@@ -27,8 +27,10 @@ Level::place_door(room* room, Coordinate* coord) {
   if (os_rand_range(10) + 1 < Game::current_level && os_rand_range(5) == 0) {
     set_tile(*coord, Tile::Wall);
     set_not_real(*coord);
+  } else if (os_rand_range(3)) {
+    set_tile(*coord, Tile::OpenDoor);
   } else {
-    set_tile(*coord, Tile::Door);
+    set_tile(*coord, Tile::ClosedDoor);
   }
 }
 
@@ -333,7 +335,7 @@ Level::wizard_show_passages() {
 
       Tile::Type ch = get_tile(x, y);
 
-      if (is_passage(x, y) || ch == Tile::Door ||
+      if (is_passage(x, y) || ch == Tile::OpenDoor || ch == Tile::ClosedDoor ||
           (!is_real(x, y) && ch == Tile::Wall)) {
         if (is_passage(x, y)) {
           ch = Tile::Floor;
@@ -343,7 +345,7 @@ Level::wizard_show_passages() {
           Game::io->print_color(x, y, ch);
         } else {
           standout();
-          Game::io->print_color(x, y, is_passage(x, y) ? Tile::Floor : Tile::Door);
+          Game::io->print_color(x, y, is_passage(x, y) ? Tile::Floor : Tile::ClosedDoor);
           standend();
         }
       }

@@ -122,7 +122,7 @@ command_do(char ch)
     case 'd': return command_drop();
     case 'e': return command_eat();
     case 'i': return command_show_inventory();
-    case 'O': return option();
+    case 'o': return command_open();
     case 'q': return potion_quaff_something();
     case 'r': return command_read_scroll();
     case 's': player->search(); return true;
@@ -137,6 +137,7 @@ command_do(char ch)
       return command_run(ch, false);
     case 'A': return command_attack(true);
     case 'I': return pack_print_equipment();
+    case 'O': return option();
     case 'P': return command_ring_put_on();
     case 'Q': return command_quit();
     case 'R': return command_ring_take_off();

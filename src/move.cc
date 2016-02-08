@@ -72,7 +72,7 @@ static void stop_on_interesting_stuff(Coordinate const& nh, int dx, int dy) {
       // to it (not diagonal)
       Tile::Type tile = Game::level->get_tile(x, y);
       Coordinate tile_coord(x, y);
-      if ((tile == Tile::Stairs || tile == Tile::Trap || tile == Tile::Door) &&
+      if ((tile == Tile::Stairs || tile == Tile::Trap || tile == Tile::OpenDoor) &&
           diag_ok(&nh, &tile_coord)) {
         player->set_not_running();
         return;
@@ -86,8 +86,8 @@ static void stop_on_interesting_stuff(Coordinate const& nh, int dx, int dy) {
 static bool
 move_turn_ok(int y, int x)
 {
-  return (Game::level->get_tile(x, y) == Tile::Door
-      || (Game::level->is_real(x, y) && Game::level->is_passage(x, y)));
+  return (Game::level->get_tile(x, y) == Tile::OpenDoor ||
+          (Game::level->is_real(x, y) && Game::level->is_passage(x, y)));
 }
 
 /** move_turnref:
@@ -190,11 +190,12 @@ move_do_loop_default(bool after, Coordinate& coord) {
   }
 
   // Reprint (basically hide) old room, if we leave one
-  if (Game::level->is_passage(coord) && previous_place == Tile::Door) {
+  if (Game::level->is_passage(coord) && previous_place == Tile::OpenDoor) {
     room_leave(coord);
   }
 
-  if (Game::level->is_passage(old_position) && Game::level->get_tile(coord) == Tile::Door) {
+  if (Game::level->is_passage(old_position) &&
+      Game::level->get_tile(coord) == Tile::OpenDoor) {
     room_enter(coord);
     Game::io->print_tile(old_position);
   }
@@ -263,12 +264,13 @@ move_do_loop(int dx, int dy) {
 
     switch (ch) {
       case Tile::Wall:
+      case Tile::ClosedDoor:
         loop = move_do_loop_wall(after, dx, dy); break;
 
       case Tile::Floor:
-      case Tile::Door:
       case Tile::Stairs:
       case Tile::Trap:
+      case Tile::OpenDoor:
         return move_do_loop_default(after, nh);
     }
   }

@@ -397,7 +397,7 @@ void Player::search() {
 
         case Tile::Wall:
           if (!os_rand_range(5 + increased_difficulty)) {
-            Game::level->set_tile(x, y, Tile::Door);
+            Game::level->set_tile(x, y, Tile::ClosedDoor);
             Game::io->message("a secret door");
             found = true;
             Game::level->set_real(x, y);
@@ -415,7 +415,8 @@ void Player::search() {
           }
           break;
 
-        case Tile::Door: case Tile::Trap: case Tile::Stairs: break;
+        case Tile::OpenDoor: case Tile::ClosedDoor: case Tile::Trap:
+        case Tile::Stairs: break;
       }
     }
   }

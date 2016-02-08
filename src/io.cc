@@ -142,11 +142,12 @@ chtype IO::colorize(chtype ch)
   switch (ch)
   {
     // Dungeon
+    case IO::ClosedDoor:
     case IO::Wall: return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
     case IO::Trap: return ch | COLOR_PAIR(COLOR_RED);
 
     case IO::Floor:
-    case IO::Door:
+    case IO::OpenDoor:
     case IO::Stairs: return ch | COLOR_PAIR(COLOR_YELLOW);
 
     // Items
@@ -224,7 +225,8 @@ void IO::hide_room(room const* room) {
       switch (Game::level->get_tile(x, y)) {
 
         // Things to NOT hide:
-        case ::Tile::Wall: case ::Tile::Door: case ::Tile::Stairs: case ::Tile::Trap: {
+        case ::Tile::Wall: case ::Tile::OpenDoor: case ::Tile::Stairs: case ::Tile::Trap:
+        case ::Tile::ClosedDoor: {
           break;
         }
 
@@ -245,13 +247,13 @@ void IO::print_level_layout() {
       switch (ch) {
 
         // Doors and stairs are always what they seem
-        case ::Tile::Door: case ::Tile::Stairs: break;
+        case ::Tile::OpenDoor: case ::Tile::ClosedDoor: case ::Tile::Stairs: break;
 
         // Check if walls are actually hidden doors
         case ::Tile::Wall: {
           if (!Game::level->is_real(x, y)) {
-            ch = ::Tile::Door;
-            Game::level->set_tile(x, y, ::Tile::Door);
+            ch = ::Tile::ClosedDoor;
+            Game::level->set_tile(x, y, ::Tile::ClosedDoor);
             Game::level->set_real(x, y);
           }
         } break;

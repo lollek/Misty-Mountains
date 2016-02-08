@@ -67,11 +67,11 @@ static bool command_attack_melee(bool fight_to_death, Coordinate const& delta)
   string msg;
   switch (Game::level->get_tile(delta))
   {
-    case Tile::Wall:   msg = "you swing at the wall"; break;
+    case Tile::Wall:       msg = "you swing at the wall"; break;
+    case Tile::ClosedDoor: msg = "you swing at the door"; break;
+    case Tile::Stairs:     msg = "you swing at the stairs"; break;
 
-    case Tile::Stairs: msg = "you swing at the stairs"; break;
-
-    case Tile::Door:
+    case Tile::OpenDoor:
     case Tile::Floor:
     case Tile::Trap:   msg = "you swing at the air"; break;
   }
@@ -144,7 +144,7 @@ command_attack(bool fight_to_death)
 }
 
 bool
-command_name_item(void)
+command_name_item()
 {
   Item* obj = pack_get_item("rename", PACK_RENAMEABLE);
 
@@ -204,7 +204,7 @@ command_name_item(void)
 }
 
 bool
-command_identify_trap(void)
+command_identify_trap()
 {
   const Coordinate* dir = get_dir();
   if (dir == nullptr)
@@ -228,14 +228,14 @@ command_identify_trap(void)
 }
 
 bool
-command_quit(void)
+command_quit()
 {
   command_signal_quit(0);
   return false;
 }
 
 bool
-command_pick_up(void) {
+command_pick_up() {
   if (player->is_levitating()) {
     Game::io->message("You can't. You're floating off the ground!");
   }
@@ -251,7 +251,7 @@ command_pick_up(void) {
 }
 
 bool
-command_help(void)
+command_help()
 {
   struct list
   {
@@ -382,7 +382,7 @@ command_help(void)
 
 /* Let them escape for a while */
 void
-command_shell(void)
+command_shell()
 {
   /* Set the terminal back to original mode */
   move(LINES-1, 0);
@@ -402,7 +402,7 @@ command_shell(void)
 }
 
 bool
-command_show_inventory(void)
+command_show_inventory()
 {
   if (pack_is_empty())
   {
@@ -428,7 +428,7 @@ command_take_off(enum equipment_pos pos)
   return pack_equipped_item(pos) != nullptr;
 }
 
-bool command_throw(void)
+bool command_throw()
 {
   const Coordinate* dir = get_dir();
   if (dir == nullptr)
@@ -482,7 +482,7 @@ bool command_throw(void)
 }
 
 bool
-command_wield(void)
+command_wield()
 {
   Item* obj = pack_get_item("wield", IO::Weapon);
 
@@ -498,7 +498,7 @@ command_wield(void)
   return command_weapon_wield(obj);
 }
 
-bool command_rest(void)
+bool command_rest()
 {
   if (monster_is_anyone_seen_by_player())
   {
@@ -523,7 +523,7 @@ bool command_rest(void)
 }
 
 bool
-command_eat(void)
+command_eat()
 {
   Item* obj = pack_get_item("eat", IO::Food);
   if (obj == nullptr)
@@ -570,7 +570,7 @@ command_run(char ch, bool cautiously)
   return move_do(runch);
 }
 
-bool command_drop(void)
+bool command_drop()
 {
   Item* obj = pack_get_item("drop", 0);
   if (obj == nullptr)
@@ -622,7 +622,7 @@ bool command_wear() {
 }
 
 bool
-command_ring_put_on(void)
+command_ring_put_on()
 {
   Item* obj = pack_get_item("put on", IO::Ring);
 
@@ -658,7 +658,7 @@ command_ring_put_on(void)
 }
 
 bool
-command_ring_take_off(void)
+command_ring_take_off()
 {
   enum equipment_pos ring;
 
@@ -749,7 +749,7 @@ void command_weapon_set_last_used(Item* weapon) {
   last_wielded_weapon = weapon;
 }
 
-bool command_weapon_wield_last_used(void) {
+bool command_weapon_wield_last_used() {
 
   if (last_wielded_weapon == nullptr || !pack_contains(last_wielded_weapon)) {
     last_wielded_weapon = nullptr;
@@ -760,6 +760,22 @@ bool command_weapon_wield_last_used(void) {
   return command_weapon_wield(last_wielded_weapon);
 }
 
+bool command_open() {
+  const Coordinate* dir = get_dir();
+  if (dir == nullptr) {
+    return false;
+  }
+
+  Coordinate const& player_pos = player->get_position();
+  Tile::Type door = Game::level->get_tile(player_pos.x + dir->x, player_pos.y + dir->y);
+  if (door == Tile::ClosedDoor) {
+    Game::level->set_tile(player_pos.x + dir->x, player_pos.y + dir->y, Tile::OpenDoor);
+    return true;
+  } else {
+    Game::io->message("Nothing to open there");
+    return false;
+  }
+}
 
 
 

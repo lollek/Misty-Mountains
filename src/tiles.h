@@ -9,7 +9,8 @@ struct Tile {
 
   enum Type {
     Wall,
-    Door,
+    ClosedDoor,
+    OpenDoor,
     Floor,
     Trap,
     Stairs,
