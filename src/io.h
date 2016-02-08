@@ -27,7 +27,7 @@ public:
   enum Tile {
     Shadow = ' ',
     Wall   = '#',
-    Floor  = ',',
+    Floor  = '.',
     Door   = '+',
     Trap   = '^',
     Stairs = '%',
