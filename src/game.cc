@@ -86,7 +86,7 @@ int Game::run() {
   signal(SIGTERM, save_auto);
   signal(SIGINT, command_signal_quit);
 #else
-  Game::io->message("Seed: #" + to_string(os_rand_seed));
+  Game::io->message("Seed: #" + to_string(starting_seed));
 #endif
 
   player->set_previous_room(Game::level->get_room(player->get_position()));
@@ -106,15 +106,16 @@ int Game::run() {
   // CODE NOT REACHED
 }
 
-Game::Game(string const& whoami_) {
-  whoami = new string(whoami_);
+Game::Game(string const& whoami_)
+  : starting_seed(os_rand_seed) {
+    Game::whoami = new string(whoami_);
 
   if (game_ptr != nullptr) {
     error("Game is a singleton class");
   }
   game_ptr = this;
 
-  cout << "Hello " << whoami << ", just a moment while I dig the dungeon..." << flush;
+  cout << "Hello " << *whoami << ", just a moment while I dig the dungeon..." << flush;
 
   // Init stuff
   Game::io = new IO();                  // Graphics

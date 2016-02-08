@@ -1,14 +1,6 @@
-#include <stdlib.h>
-#include <string.h>
-#include <signal.h>
-#include <unistd.h>
-#include <time.h>
 #include <getopt.h>
-#include <inttypes.h>
 
 #include <iostream>
-
-using namespace std;
 
 #include "error_handling.h"
 #include "game.h"
@@ -25,9 +17,9 @@ using namespace std;
 #include "rogue.h"
 #include "wizard.h"
 
-/** parse_args
- * Parse command-line arguments
- */
+using namespace std;
+
+// Parse command-line arguments
 static void
 parse_args(int argc, char* const* argv, std::string& whoami)
 {
@@ -50,10 +42,10 @@ parse_args(int argc, char* const* argv, std::string& whoami)
     {0,           0,                 0,  0 }
   };
 
-  /* Global default options */
+  // Global default options
   ESCDELAY = 0;
 
-  /* Set seed and dungeon number */
+  // Set seed and dungeon number
   os_rand_seed = static_cast<unsigned>(time(nullptr) + getpid());
 
   for (;;)
@@ -73,47 +65,43 @@ parse_args(int argc, char* const* argv, std::string& whoami)
                   whoami = optarg;
                 } break;
       case 'p': passgo = true; break;
-      case 's': score_show_and_exit(0, -1, 0); /* does not return */
-      case 'S': if (wizard)
-                  sscanf(optarg, "%" SCNu32, &os_rand_seed);
-                break;
+      case 's': score_show_and_exit(0, -1, 0); // does not return
+      case 'S': if (wizard && optarg != nullptr) {
+                  os_rand_seed = static_cast<unsigned>(stoul(optarg));
+                } break;
       case 'W': wizard = true; break;
       case '0':
-        printf("Usage: %s [OPTIONS] [FILE]\n"
-               "Run Rogue14 with selected options or a savefile\n\n"
-               "  -c, --no-colors      remove colors from the game\n"
-               "  -E, --escdelay=[NUM] set escdelay in ms. Not setting this\n"
-               "                       defaults to 0. If you do not give a NUM\n"
-               "                       argument, it's set to 64 (old standard)\n"
-               "  -f, --flush          flush typeahead during battle\n"
-               "  -j, --no-jump        draw each player step separately\n"
-               , argv[0]); printf(
-               "  -n, --name=NAME      set highscore name\n"
-               "  -p, --passgo         follow the turnings in passageways\n"
-               "  -r, --restore        restore game instead of creating a new\n"
-               "  -s, --score          display the highscore and exit\n"
-               ); printf(
-               "  -W, --wizard         run the game in debug-mode\n"
-               "  -S, --seed=NUMBER    (wizard) set map seed to NUMBER\n"
-               "      --help           display this help and exit\n"
-               "      --version        display game version and exit\n\n"
-               "%s\n"
-               , game_version.c_str());
+        cout << "Usage: " << argv[0] << " [OPTIONS] [FILE]\n"
+             << "Run Rogue14 with selected options or a savefile\n\n"
+             << "  -c, --no-colors      remove colors from the game\n"
+             << "  -E, --escdelay=[NUM] set escdelay in ms. Not setting this\n"
+             << "                       defaults to 0. If you do not give a NUM\n"
+             << "                       argument, it's set to 64 (old standard)\n"
+             << "  -f, --flush          flush typeahead during battle\n"
+             << "  -j, --no-jump        draw each player step separately\n"
+             << "  -n, --name=NAME      set highscore name\n"
+             << "  -p, --passgo         follow the turnings in passageways\n"
+             << "  -r, --restore        restore game instead of creating a new\n"
+             << "  -s, --score          display the highscore and exit\n"
+             << "  -W, --wizard         run the game in debug-mode\n"
+             << "  -S, --seed=NUMBER    (wizard) set map seed to NUMBER\n"
+             << "      --help           display this help and exit\n"
+             << "      --version        display game version and exit\n\n"
+             << game_version
+             << endl;
         exit(0);
       case '1':
-        puts(game_version.c_str());
+        cout << game_version << endl;
         exit(0);
       default:
-        fprintf(stderr, "Try '%s --help' for more information\n",
-                argv[0]);
+        cerr << "Try '" << argv[0] << " --help' for more information\n";
         exit(1);
     }
   }
 
   if (optind < argc)
   {
-    fprintf(stderr, "Try '%s --help' for more information\n",
-            argv[0]);
+    cerr << "Try '" << argv[0] << " --help' for more information\n";
     exit(1);
   }
 }

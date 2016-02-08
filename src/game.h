@@ -29,4 +29,5 @@ public:
 
 private:
   static Game* game_ptr;
+  unsigned     starting_seed;
 };
