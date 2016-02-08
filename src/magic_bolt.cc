@@ -23,55 +23,58 @@ magic_bolt_handle_bounces(Coordinate& pos, Coordinate* dir, char* dirtile)
 {
   int num_bounces = 0;
 recursive_loop:; /* ONLY called by end of function */
-  char ch = Game::level->get_type(pos);
-  if (ch != VWALL && ch != HWALL && ch != SHADOW)
+  Monster* monster = Game::level->get_monster(pos);
+  Tile::Type ch = Game::level->get_tile(pos);
+  if (monster != nullptr || (ch != Tile::Wall && ch != Tile::Shadow)) {
     return num_bounces != 0;
+  }
 
-  /* There are no known bugs with this functions at the moment,
-   * but just in case, we'll abort after too many bounces */
-  if (num_bounces > 10)
+  // There are no known bugs with this functions at the moment,
+  // but just in case, we'll abort after too many bounces
+  if (num_bounces > 10) {
     return true;
+  }
 
-  /* Treat shadow as a wall */
-  if (ch == SHADOW)
-  {
-    if (dir->x != 0 && dir->y == 0)
-      ch = VWALL;
-    else if (dir->y != 0 && dir->x == 0)
-      ch = HWALL;
-    else
-    {
+  // Treat shadow as a wall
+  if (ch == Tile::Shadow) {
+    ch = Tile::Wall;
+  }
+
+  // Handle potential bouncing
+  if (ch == Tile::Wall) {
+    enum bounce_type_t { Horizontal, Vertical} bounce_type;
+
+    if (dir->x != 0 && dir->y == 0) {
+      bounce_type = Vertical;
+
+    } else if (dir->y != 0 && dir->x == 0) {
+      bounce_type = Horizontal;
+
+    } else {
       int y = dir->y < 0 ? pos.y + 1 : pos.y - 1;
-      int y_ch;
+      Tile::Type y_ch;
       if (y >= NUMLINES || y <= 0)
-        y_ch = HWALL;
+        y_ch = Tile::Wall;
       else
-        y_ch = Game::level->get_ch(pos.x, y);
+        y_ch = Game::level->get_tile(pos.x, y);
 
-      ch = (y_ch == HWALL || y_ch == VWALL || y_ch == SHADOW)
-        ? VWALL : HWALL;
+      bounce_type = (y_ch == Tile::Wall || y_ch == Tile::Shadow)
+        ? Vertical : Horizontal;
+    }
+
+    if (bounce_type == Vertical) {
+      pos.x -= dir->x;
+      dir->x = -dir->x;
+    } else {
+      pos.y -= dir->y;
+      dir->y = -dir->y;
     }
   }
-  if (ch == SHADOW) {
-    error("ch was still SHADOW");
-  }
 
-  /* Handle potential bouncing */
-  if (ch == VWALL)
-  {
-    pos.x -= dir->x;
-    dir->x = -dir->x;
-  }
-  else if (ch == HWALL)
-  {
-    pos.y -= dir->y;
-    dir->y = -dir->y;
-  }
-
-  if (*dirtile == BOLT_DIAGDOWN)
-    *dirtile = BOLT_DIAGUP;
-  else if (*dirtile == BOLT_DIAGUP)
-    *dirtile = BOLT_DIAGDOWN;
+  if (*dirtile == IO::DiagonalDownBolt)
+    *dirtile = IO::DiagonalUpBolt;
+  else if (*dirtile == IO::DiagonalUpBolt)
+    *dirtile = IO::DiagonalDownBolt;
 
   /* It's possible for a bolt to bounce directly from one wall to another
    * if you hit a corner, thus, we need to go through everything again. */
@@ -118,20 +121,20 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
     error("pos was null");
   }
 
-  if (!monster_save_throw(VS_MAGIC, mon))
-  {
+  if (!monster_save_throw(VS_MAGIC, mon)) {
     Weapon bolt(Weapon::SPEAR);
     bolt.set_hit_plus(100);
     bolt.set_damage_plus(0);
     bolt.set_throw_damage({6,6});
     bolt.set_position(*pos);
 
-    if (mon->get_type() == 'D' && missile_name == "flame")
+    if (mon->get_type() == 'D' && missile_name == "flame") {
       Game::io->message("the flame bounces off the dragon");
-    else
+    } else {
       fight_against_monster(pos, &bolt, true, &missile_name);
+    }
   }
-  else if (Game::level->get_type(*pos) != 'M' || mon->t_disguise == 'M')
+  else if (mon->t_disguise == 'M')
   {
     if (start == &player->get_position())
       monster_start_running(pos);
@@ -155,13 +158,13 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
   char dirtile = '?';
   switch (dir->y + dir->x)
   {
-    case 0: dirtile = BOLT_DIAGUP; break;
+    case 0: dirtile = IO::DiagonalUpBolt; break;
     case 1: case -1:
       dirtile = (dir->y == 0
-          ? BOLT_HORIZONTAL
-          : BOLT_VERTICAL);
+          ? IO::HorizontalBolt
+          : IO::VerticalBolt);
       break;
-    case 2: case -2: dirtile = BOLT_DIAGDOWN; break;
+    case 2: case -2: dirtile = IO::DiagonalDownBolt; break;
   }
 
   IO::Attribute color = IO::Attribute::Red;
@@ -170,36 +173,7 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
   }
 
   Coordinate pos = *start;
-  struct charcoord {
-    int y;
-    int x;
-    char ch;
-  } spotpos[BOLT_LENGTH];
-
-  /* Special case when someone is standing in a doorway and aims at the wall
-   * nearby OR when stainding in a passage and aims at the wall
-   * Note that both of those things are really stupid to do */
-  char starting_pos = Game::level->get_ch(*start);
-  if (starting_pos == DOOR || starting_pos == PASSAGE)
-  {
-    char first_bounce = Game::level->get_ch(start->x + dir->x, start->y + dir->y);
-    bool is_player = *start == player->get_position();
-    if (first_bounce == HWALL || first_bounce == VWALL)
-    {
-      if (is_player)
-        for (int i = 0; i < BOLT_LENGTH; ++i)
-          magic_bolt_hit_player(start, name);
-      else
-        for (int i = 0; i < BOLT_LENGTH; ++i)
-          magic_bolt_hit_monster(Game::level->get_monster(*start),
-                                start, start, name);
-      return;
-    }
-  }
-
-  int i;
-  for (i = 0; i < BOLT_LENGTH; ++i)
-  {
+  for (int i = 0; i < BOLT_LENGTH; ++i) {
     pos.y += dir->y;
     pos.x += dir->x;
 
@@ -212,22 +186,14 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
 
     Monster* tp = Game::level->get_monster(pos);
     if (tp != nullptr) {
-      spotpos[i].ch = static_cast<char>(tp->get_type());
       magic_bolt_hit_monster(tp, start, &pos, name);
-    } else {
-      spotpos[i].ch = Game::level->get_ch(pos);
     }
 
-    spotpos[i].x = pos.x;
-    spotpos[i].y = pos.y;
     Game::io->print(pos.x, pos.y, dirtile, color);
   }
 
   refresh();
   os_usleep(200000);
-
-  for (int j = i -1; j >= 0; --j)
-    Game::io->print_color(spotpos[j].x, spotpos[j].y, spotpos[j].ch);
 }
 
 

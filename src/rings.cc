@@ -49,7 +49,7 @@ Ring::~Ring() {}
 Ring::Ring(bool random_stats) : Ring(random_ring_type(), random_stats) {}
 
 Ring::Ring(Ring::Type type, bool random_stats) : Item(), subtype(type) {
-  o_type = RING;
+  o_type = IO::Ring;
   o_which = type;
 
   switch (o_which) {

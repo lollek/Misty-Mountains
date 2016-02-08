@@ -106,20 +106,17 @@ Coordinate Character::possible_random_move() {
     return ret;
   }
 
-  char ch = Game::level->get_type(x, y);
-  if (!step_ok(ch)) {
+  if (!Game::level->can_step(x, y)) {
     ret.x = position.x;
     ret.y = position.y;
     return ret;
   }
 
-  if (ch == SCROLL) {
-    Item* item = Game::level->get_item(x, y);
-    if (item != nullptr && item->o_which == Scroll::Type::SCARE) {
-      ret.x = position.x;
-      ret.y = position.y;
-      return ret;
-    }
+  Item* item = Game::level->get_item(x, y);
+  if (item != nullptr && item->o_type == IO::Scroll && item->o_which == Scroll::SCARE) {
+    ret.x = position.x;
+    ret.y = position.y;
+    return ret;
   }
 
   return ret;

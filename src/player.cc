@@ -123,8 +123,8 @@ bool Player::can_see(Coordinate const& coord) const {
   if (dist(coord.y, coord.x, player_pos.y, player_pos.x) < see_distance) {
     if (Game::level->is_passage(coord)) {
       if (coord.y != player_pos.y && coord.x != player_pos.x &&
-          !step_ok(Game::level->get_ch(player_pos.x, coord.y))
-          && !step_ok(Game::level->get_ch(coord.x, player_pos.y))) {
+          !Game::level->can_step(player_pos.x, coord.y) &&
+          !Game::level->can_step(coord.x, player_pos.y)) {
         return false;
       }
     }
@@ -348,13 +348,13 @@ bool Player::is_stealthy() const {
 void Player::teleport(Coordinate const* target)
 {
   Coordinate new_pos;
-  Coordinate const& player_pos = get_position();
+  Coordinate const old_pos = get_position();
 
   // Set target location (nullptr means we generate a random position)
   if (target == nullptr) {
     do {
       Game::level->get_random_room_coord(nullptr, &new_pos, 0, true);
-    } while (new_pos == player_pos);
+    } while (new_pos == old_pos);
 
   } else {
     new_pos.y = target->y;
@@ -362,7 +362,7 @@ void Player::teleport(Coordinate const* target)
   }
 
   // Move target
-  Game::io->print_color(get_position().x, get_position().y, floor_at());
+  //
   if (Game::level->get_room(new_pos) != get_room()) {
     room_leave(get_position());
     set_position(new_pos);
@@ -371,6 +371,7 @@ void Player::teleport(Coordinate const* target)
   } else {
     set_position(new_pos);
   }
+  Game::io->print_tile(old_pos);
 
   /* Print @ new location */
   Game::io->print_color(new_pos.x, new_pos.y, get_type());
@@ -399,20 +400,20 @@ void Player::search() {
       }
 
       // If fake, give player a chance to discover it
-      switch (Game::level->get_ch(x, y)) {
+      switch (Game::level->get_tile(x, y)) {
 
-        case VWALL: case HWALL:
+        case Tile::Wall:
           if (!os_rand_range(5 + increased_difficulty)) {
-            Game::level->set_ch(x, y, DOOR);
+            Game::level->set_tile(x, y, Tile::Door);
             Game::io->message("a secret door");
             found = true;
             Game::level->set_real(x, y);
           }
           break;
 
-        case FLOOR:
+        case Tile::Floor:
           if (!os_rand_range(2 + increased_difficulty)) {
-            Game::level->set_ch(x, y, TRAP);
+            Game::level->set_tile(x, y, Tile::Trap);
             Game::io->message(Trap::name(static_cast<Trap::Type>(Game::level->get_trap_type(x, y))));
             Game::level->set_discovered(x, y);
 
@@ -421,13 +422,15 @@ void Player::search() {
           }
           break;
 
-        case SHADOW:
+        case Tile::Shadow:
           if (!os_rand_range(3 + increased_difficulty)) {
-            Game::level->set_ch(x, y, PASSAGE);
+            Game::level->set_tile(x, y, Tile::Floor);
             found = true;
             Game::level->set_real(x, y);
           }
           break;
+
+        case Tile::Door: case Tile::Trap: case Tile::Stairs: break;
       }
     }
   }
@@ -535,7 +538,7 @@ bool Player::has_ring_with_ability(int ability) const {
 
 void Player::rust_armor() {
   Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  if (arm == nullptr || arm->o_type != ARMOR || arm->o_which == Armor::Type::LEATHER ||
+  if (arm == nullptr || arm->o_type != IO::Armor || arm->o_which == Armor::Type::LEATHER ||
       arm->get_armor() >= 9) {
     return;
   }

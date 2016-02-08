@@ -21,7 +21,7 @@ static Monster* wand_find_target(int* y, int* x, int dy, int dx) {
   *y = player->get_position().y;
   *x = player->get_position().x;
 
-  while (step_ok(Game::level->get_type(*x, *y))) {
+  while (Game::level->can_step(*x, *y)) {
     *y += dy;
     *x += dx;
   }
@@ -51,7 +51,7 @@ wand_spell_drain_health(void) {
   vector<Monster*> drainee;
   bool in_passage = player->get_room()->r_flags & ISGONE;
   Coordinate const& player_pos = player->get_position();
-  struct room *corp = Game::level->get_ch(player_pos) == DOOR
+  struct room *corp = Game::level->get_tile(player_pos) == Tile::Door
     ? Game::level->get_passage(player_pos)
     : nullptr;
 
@@ -64,7 +64,7 @@ wand_spell_drain_health(void) {
     }
 
     // Nearby monster in same passage
-    else if (in_passage && Game::level->get_ch(monster->get_position()) == DOOR &&
+    else if (in_passage && Game::level->get_tile(monster->get_position()) == Tile::Door &&
         Game::level->get_passage(monster->get_position()) == player->get_room()) {
       drainee.push_back(monster);
     }
@@ -164,12 +164,12 @@ wand_zap(void)
     return false;
   }
 
-  Item* obj = pack_get_item("zap with", STICK);
+  Item* obj = pack_get_item("zap with", IO::Wand);
   Wand* wand = dynamic_cast<Wand*>(obj);
   if (obj == nullptr)
     return false;
 
-  else if (obj->o_type != STICK || wand == nullptr) {
+  else if (obj->o_type != IO::Wand || wand == nullptr) {
     Game::io->message("you can't zap with that!");
     return false;
 

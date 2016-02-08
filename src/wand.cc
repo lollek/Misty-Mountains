@@ -191,7 +191,7 @@ Wand::~Wand() {}
 Wand::Wand() : Wand(random_wand_type()) {}
 
 Wand::Wand(Wand::Type subtype_) : Item(), identified(false) {
-  o_type = STICK;
+  o_type = IO::Wand;
   set_attack_damage({1, 1});
   set_throw_damage({1, 1});
   set_armor(11);

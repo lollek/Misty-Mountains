@@ -7,21 +7,7 @@
 #include "monster.h"
 #include "item.h"
 #include "io.h"
-
-struct Tile {
-  Tile()
-    : p_ch(SHADOW), is_passage(false), is_discovered(false), is_real(true),
-      passage_number(0), trap_type(0), p_monst(nullptr)
-  {}
-
-  char     p_ch;
-  bool     is_passage;
-  bool     is_discovered;
-  bool     is_real;
-  size_t   passage_number;
-  size_t   trap_type;
-  Monster* p_monst;
-};
+#include "tiles.h"
 
 class Level {
 public:
@@ -39,14 +25,12 @@ public:
   bool is_discovered(Coordinate const& coord);
   bool is_real(int x, int y);
   bool is_real(Coordinate const& coord);
-  char get_ch(int x, int y);
-  char get_ch(Coordinate const& coord);
+  Tile::Type get_tile(int x, int y);
+  Tile::Type get_tile(Coordinate const& coord);
   size_t get_trap_type(int x, int y);
   size_t get_trap_type(Coordinate const& coord);
   size_t get_passage_number(int x, int y);
   size_t get_passage_number(Coordinate const& coord);
-  char get_type(int x, int y);
-  char get_type(Coordinate const& coord);
   bool get_random_room_coord(room* room, Coordinate* coord, int tries, bool monster);
   room* get_room(Coordinate const& coord);
   room* get_random_room();
@@ -66,15 +50,17 @@ public:
   void set_real(Coordinate const& coord);
   void set_not_real(int x, int y);
   void set_not_real(Coordinate const& coord);
-  void set_ch(int x, int y, char ch);
-  void set_ch(Coordinate const& coord, char ch);
-  void set_trap_type(int x, int y, size_t type);
-  void set_trap_type(Coordinate const& coord, size_t type);
+  void set_tile(int x, int y, Tile::Type tile);
+  void set_tile(Coordinate const& coord, Tile::Type tile);
+  void set_trap_type(int x, int y, Trap::Type type);
+  void set_trap_type(Coordinate const& coord, Trap::Type type);
   void set_passage_number(int x, int y, size_t number);
   void set_passage_number(Coordinate const& coord, size_t number);
 
   // Misc
   void wizard_show_passages();
+  bool can_step(int x, int y);
+  bool can_step(Coordinate const& coord);
 
   // Variables
   std::list<Item*>    items;    // List of items on level
@@ -109,7 +95,7 @@ private:
   void number_passage(int x, int y);
 
   // Misc
-  Tile& get_tile(int x, int y);
+  Tile& tile(int x, int y);
 
   // Variables
   std::vector<room>  rooms;         // all rooms on level

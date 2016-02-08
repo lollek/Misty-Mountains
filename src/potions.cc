@@ -124,7 +124,7 @@ Potion::~Potion() {}
 Potion::Potion() : Potion(random_potion_type()) {}
 
 Potion::Potion(Potion::Type subtype_) : Item() {
-  o_type       = POTION;
+  o_type       = IO::Potion;
   o_which      = subtype_;
   o_count      = 1;
   set_attack_damage({1, 2});
@@ -218,7 +218,7 @@ void Potion::quaffed_by(Character& victim) {
             if (item->is_magic()) {
               Potion::set_known(subtype);
               show = true;
-              mvwaddcch(Game::io->extra_screen, item->get_y(), item->get_x(), MAGIC);
+              mvwaddcch(Game::io->extra_screen, item->get_y(), item->get_x(), IO::Magic);
             }
           }
 
@@ -284,12 +284,12 @@ void Potion::quaffed_by(Character& victim) {
 bool
 potion_quaff_something(void)
 {
-  Potion* obj = dynamic_cast<Potion*>(pack_get_item("quaff", POTION));
+  Potion* obj = dynamic_cast<Potion*>(pack_get_item("quaff", IO::Potion));
   if (obj == nullptr) {
     return false;
 
   // Make certain that it is somethings that we want to drink
-  } else if (obj == nullptr || obj->o_type != POTION) {
+  } else if (obj == nullptr || obj->o_type != IO::Potion) {
     Game::io->message("that's undrinkable");
     return false;
   }

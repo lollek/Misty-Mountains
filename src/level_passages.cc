@@ -36,8 +36,8 @@ Level::number_passage(int x, int y)
 
   /* check to see if it is a door or secret door, i.e., a new exit,
    * or a numerable type of place */
-  char ch = get_ch(x, y);
-  if (ch == DOOR || (!is_real(x, y) && (ch == VWALL || ch == HWALL))) {
+  Tile::Type tile = get_tile(x, y);
+  if (tile == Tile::Door || (!is_real(x, y) && tile == Tile::Wall)) {
     struct room& rp = passages.at(static_cast<size_t>(pnum));
     rp.r_exit[rp.r_nexits].y = y;
     rp.r_exit[rp.r_nexits++].x = x;
@@ -68,14 +68,10 @@ Level::place_door(room* room, Coordinate* coord) {
   }
 
   if (os_rand_range(10) + 1 < Game::current_level && os_rand_range(5) == 0) {
-    if (coord->y == room->r_pos.y || coord->y == room->r_pos.y + room->r_max.y - 1) {
-      set_ch(*coord, HWALL);
-    } else {
-      set_ch(*coord, VWALL);
-    }
+    set_tile(*coord, Tile::Wall);
     set_not_real(*coord);
   } else {
-    set_ch(*coord, DOOR);
+    set_tile(*coord, Tile::Door);
   }
 }
 
@@ -375,7 +371,7 @@ void Level::place_passage(Coordinate* coord) {
   if (os_rand_range(10) + 1 < Game::current_level && os_rand_range(40) == 0) {
     set_not_real(*coord);
   } else {
-    set_ch(*coord, PASSAGE);
+    set_tile(*coord, Tile::Floor);
   }
 }
 
@@ -385,19 +381,19 @@ Level::wizard_show_passages() {
   for (int y = 1; y < NUMLINES - 1; y++) {
     for (int x = 0; x < NUMCOLS; x++) {
 
-      char ch = get_ch(x, y);
+      Tile::Type ch = get_tile(x, y);
 
-      if (is_passage(x, y) || ch == DOOR ||
-          (!is_real(x, y) && (ch == VWALL || ch == HWALL))) {
+      if (is_passage(x, y) || ch == Tile::Door ||
+          (!is_real(x, y) && ch == Tile::Wall)) {
         if (is_passage(x, y)) {
-          ch = PASSAGE;
+          ch = Tile::Floor;
         }
         set_discovered(x, y);
         if (is_real(x, y)) {
           Game::io->print_color(x, y, ch);
         } else {
           standout();
-          Game::io->print_color(x, y, is_passage(x, y) ? PASSAGE : DOOR);
+          Game::io->print_color(x, y, is_passage(x, y) ? Tile::Floor : Tile::Door);
           standend();
         }
       }

@@ -551,8 +551,8 @@ monster_seen_by_player(Monster const* monster)
   //if (dist_cp(&monster_pos, &player->get_position()) < LAMPDIST)
   {
     if (monster_y != player->get_position().y && monster_x != player->get_position().x
-        && !step_ok(Game::level->get_ch(player->get_position().x, monster_y))
-        && !step_ok(Game::level->get_ch(monster_x, player->get_position().y)))
+        && !Game::level->can_step(player->get_position().x, monster_y)
+        && !Game::level->can_step(monster_x, player->get_position().y))
       return false;
     return true;
   }
@@ -690,26 +690,6 @@ monster_unsense_all_hidden(void)
   }
 }
 
-void
-monster_print_all(void)
-{
-  for (Monster* mon : Game::level->monsters) {
-
-    if (player->can_see(mon->get_position())) {
-      int symbol = (!mon->is_invisible() || player->has_true_sight())
-        ? mon->t_disguise
-        : Game::level->get_ch(mon->get_position());
-      Game::io->print_color(mon->get_position().x, mon->get_position().y, symbol);
-
-    } else if (player->can_sense_monsters()) {
-      standout();
-      Game::io->print_color(mon->get_position().x, mon->get_position().y,
-               mon->get_type());
-      standend();
-    }
-  }
-}
-
 bool
 monster_show_if_magic_inventory(void)
 {
@@ -718,8 +698,9 @@ monster_show_if_magic_inventory(void)
     for (Item* item : mon->t_pack) {
       if (item->is_magic())
       {
+        Coordinate pos = mon->get_position();
         atleast_one = true;
-        mvwaddcch(Game::io->extra_screen, mon->get_position().y, mon->get_position().x, MAGIC);
+        mvwaddcch(Game::io->extra_screen, pos.y, pos.x, IO::Magic);
       }
     }
   }
@@ -741,7 +722,7 @@ monster_polymorph(Monster* target)
   bool was_seen = monster_seen_by_player(target);
   if (was_seen)
   {
-    Game::io->print_color(pos.x, pos.y, Game::level->get_ch(pos));
+    Game::io->print_color(pos.x, pos.y, Game::level->get_tile(pos));
     os << target->get_name();
   }
 

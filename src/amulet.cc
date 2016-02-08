@@ -12,7 +12,7 @@ Amulet::~Amulet() {}
 Amulet::Amulet() : Item() {
   set_attack_damage({1, 2});
   set_throw_damage({1, 2});
-  o_type    = AMULET;
+  o_type    = IO::Amulet;
 }
 
 string Amulet::get_description() const {

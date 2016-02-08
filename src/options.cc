@@ -28,15 +28,15 @@ static bool pickup_ammo    = true;
 
 bool option_autopickup(int type) {
   switch (type) {
-    case AMMO:   return pickup_ammo;
-    case POTION: return pickup_potions;
-    case SCROLL: return pickup_scrolls;
-    case FOOD:   return pickup_food;
-    case WEAPON: return pickup_weapons;
-    case ARMOR:  return pickup_armor;
-    case RING:   return pickup_rings;
-    case STICK:  return pickup_sticks;
-    case AMULET: return true;
+    case IO::Ammo:   return pickup_ammo;
+    case IO::Potion: return pickup_potions;
+    case IO::Scroll: return pickup_scrolls;
+    case IO::Food:   return pickup_food;
+    case IO::Weapon: return pickup_weapons;
+    case IO::Armor:  return pickup_armor;
+    case IO::Ring:   return pickup_rings;
+    case IO::Wand:   return pickup_sticks;
+    case IO::Amulet: return true;
     default:     error("option_autopickup: unknown type: " + to_string(type));
   }
 }
@@ -51,18 +51,18 @@ bool option() {
   };
 
   vector<option> optlist {
-    {'1',    "Flush typeahead during battle?....", &fight_flush,    option::BOOL},
-    {'2',    "Show position only at end of run?.", &jump,           option::BOOL},
-    {'3',    "Follow turnings in passageways?...", &passgo,         option::BOOL},
-    {POTION, "Pick up potions?..................", &pickup_potions, option::BOOL},
-    {SCROLL, "Pick up scrolls?..................", &pickup_scrolls, option::BOOL},
-    {FOOD,   "Pick up food?.....................", &pickup_food,    option::BOOL},
-    {WEAPON, "Pick up weapons?..................", &pickup_weapons, option::BOOL},
-    {ARMOR,  "Pick up armor?....................", &pickup_armor,   option::BOOL},
-    {RING,   "Pick up rings?....................", &pickup_rings,   option::BOOL},
-    {STICK,  "Pick up sticks?...................", &pickup_sticks,  option::BOOL},
-    {AMMO,   "Pick up ammo?.....................", &pickup_ammo,    option::BOOL},
-    {'4',    "Name..............................", Game::whoami,    option::STR},
+    {'1',        "Flush typeahead during battle?....", &fight_flush,    option::BOOL},
+    {'2',        "Show position only at end of run?.", &jump,           option::BOOL},
+    {'3',        "Follow turnings in passageways?...", &passgo,         option::BOOL},
+    {IO::Potion, "Pick up potions?..................", &pickup_potions, option::BOOL},
+    {IO::Scroll, "Pick up scrolls?..................", &pickup_scrolls, option::BOOL},
+    {IO::Food,   "Pick up food?.....................", &pickup_food,    option::BOOL},
+    {IO::Weapon, "Pick up weapons?..................", &pickup_weapons, option::BOOL},
+    {IO::Armor,  "Pick up armor?....................", &pickup_armor,   option::BOOL},
+    {IO::Ring,   "Pick up rings?....................", &pickup_rings,   option::BOOL},
+    {IO::Wand,   "Pick up sticks?...................", &pickup_sticks,  option::BOOL},
+    {IO::Ammo,   "Pick up ammo?.....................", &pickup_ammo,    option::BOOL},
+    {'4',        "Name..............................", Game::whoami,    option::STR},
   };
 
   string const query = "Which value do you want to change? (ESC to exit) ";

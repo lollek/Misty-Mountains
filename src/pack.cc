@@ -80,11 +80,11 @@ pack_print_evaluate_item(Item* item)
 
   switch (item->o_type)
   {
-    case FOOD:
+    case IO::Food:
       worth = 2 * item->o_count;
       break;
 
-    case WEAPON: case AMMO: {
+    case IO::Weapon: case IO::Ammo: {
       Weapon* weapon = dynamic_cast<Weapon*>(item);
       if (weapon == nullptr) {
         error("Could not cast weapon to Weapon class");
@@ -94,7 +94,7 @@ pack_print_evaluate_item(Item* item)
       weapon->set_identified();
     } break;
 
-    case ARMOR: {
+    case IO::Armor: {
       Armor* armor = dynamic_cast<Armor*>(item);
       if (armor == nullptr) {
         error("Could not cast armor to Armor class");
@@ -105,7 +105,7 @@ pack_print_evaluate_item(Item* item)
       armor->set_identified();
     } break;
 
-    case SCROLL:
+    case IO::Scroll:
       {
         Scroll::Type scroll = static_cast<Scroll::Type>(item->o_which);
         worth = Scroll::worth(scroll);
@@ -116,7 +116,7 @@ pack_print_evaluate_item(Item* item)
       }
       break;
 
-    case POTION: {
+    case IO::Potion: {
       Potion::Type subtype = static_cast<Potion::Type>(item->o_which);
       worth = Potion::worth(subtype);
       worth *= item->o_count;
@@ -126,7 +126,7 @@ pack_print_evaluate_item(Item* item)
       Potion::set_known(subtype);
     } break;
 
-    case RING: {
+    case IO::Ring: {
       Ring::Type subtype = static_cast<Ring::Type>(item->o_which);
       worth = Ring::worth(subtype);
       if (subtype == Ring::Type::ADDSTR || subtype == Ring::Type::ADDDAM ||
@@ -143,7 +143,7 @@ pack_print_evaluate_item(Item* item)
       Ring::set_known(subtype);
     } break;
 
-    case STICK: {
+    case IO::Wand: {
       Wand* wand = dynamic_cast<Wand* const>(item);
       if (wand == nullptr) {
         error("Could not cast wand to Wand class");
@@ -155,7 +155,7 @@ pack_print_evaluate_item(Item* item)
       Wand::set_known(static_cast<Wand::Type>(item->o_which));
     } break;
 
-    case AMULET:
+    case IO::Amulet:
       worth = 1000;
       break;
 
@@ -192,7 +192,7 @@ pack_add(Item* obj, bool silent, bool from_floor)
   }
 
   /* Check for and deal with scare monster scrolls */
-  if (obj->o_type == SCROLL && obj->o_which == Scroll::SCARE && obj->o_flags & ISFOUND)
+  if (obj->o_type == IO::Scroll && obj->o_which == Scroll::SCARE && obj->o_flags & ISFOUND)
   {
     Game::level->items.remove(obj);
     delete obj;
@@ -202,8 +202,8 @@ pack_add(Item* obj, bool silent, bool from_floor)
 
   /* See if we can stack it with something else in the pack */
   bool is_picked_up = false;
-  if (obj->o_type == POTION || obj->o_type == SCROLL || obj->o_type == FOOD
-      || obj->o_type == AMMO)
+  if (obj->o_type == IO::Potion || obj->o_type == IO::Scroll ||
+      obj->o_type == IO::Food || obj->o_type == IO::Ammo)
     for (Item* ptr : *player_pack) {
       if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which &&
           ptr->get_hit_plus() == obj->get_hit_plus() &&
@@ -297,7 +297,7 @@ void pack_pick_up(Coordinate const& coord, bool force) {
     Item* obj = *it;
     switch (obj->o_type) {
 
-      case GOLD: {
+      case IO::Gold: {
         player->get_room()->r_goldval = 0;
         Gold* gold = dynamic_cast<Gold*>(obj);
         if (gold == nullptr) {
@@ -316,8 +316,8 @@ void pack_pick_up(Coordinate const& coord, bool force) {
         it = items_here.erase(it);
       } break;
 
-      case POTION: case WEAPON: case AMMO: case FOOD: case ARMOR:
-      case SCROLL: case AMULET: case RING: case STICK: {
+      case IO::Potion: case IO::Weapon: case IO::Ammo: case IO::Food: case IO::Armor:
+      case IO::Scroll: case IO::Amulet: case IO::Ring: case IO::Wand: {
         if (force || option_autopickup(obj->o_type)) {
           pack_add(obj, false, true);
           it = items_here.erase(it);
@@ -409,8 +409,9 @@ pack_count_items_of_type(int type)
   int num = 0;
 
   for (Item const* list : *player_pack) {
-    if (!type || type == list->o_type ||
-        (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))) {
+    if (!type || type == list->o_type || 
+        (type == PACK_RENAMEABLE &&
+         (list->o_type != IO::Food && list->o_type != IO::Amulet))) {
       ++num;
     }
   }
@@ -422,7 +423,7 @@ pack_contains_amulet(void)
 {
   return find_if(player_pack->cbegin(), player_pack->cend(),
       [] (Item const* ptr) {
-    return ptr->o_type == AMULET;
+    return ptr->o_type == IO::Amulet;
   }) != player_pack->cend();
 }
 
@@ -474,7 +475,8 @@ pack_print_inventory(int type)
   /* Print out all items */
   for (Item const* list : *player_pack) {
     if (!type || type == list->o_type ||
-        (type == PACK_RENAMEABLE && (list->o_type != FOOD && list->o_type != AMULET))) {
+        (type == PACK_RENAMEABLE &&
+         (list->o_type != IO::Food && list->o_type != IO::Amulet))) {
       /* Print out the item and move to next row */
       wmove(invscr, ++num_items, 1);
       wprintw(invscr, "%c) %s", list->o_packch, list->get_description().c_str());
@@ -526,15 +528,15 @@ pack_equip_item(Item* item)
   enum equipment_pos pos;
   switch(item->o_type)
   {
-    case ARMOR:
+    case IO::Armor:
       pos = EQUIPMENT_ARMOR;
       break;
 
-    case WEAPON: case AMMO:
+    case IO::Weapon: case IO::Ammo:
       pos = EQUIPMENT_RHAND;
       break;
 
-    case RING:
+    case IO::Ring:
       pos = equipment->at(EQUIPMENT_RRING).ptr == nullptr
         ? EQUIPMENT_RRING
         : EQUIPMENT_LRING;
@@ -618,18 +620,18 @@ pack_identify_item(void)
 
   switch (obj->o_type)
   {
-    case SCROLL: Scroll::set_known(static_cast<Scroll::Type>(obj->o_which)); break;
-    case POTION: Potion::set_known(static_cast<Potion::Type>(obj->o_which)); break;
-    case STICK:  Wand::set_known(static_cast<Wand::Type>(obj->o_which)); break;
-    case RING:   Ring::set_known(static_cast<Ring::Type>(obj->o_which)); break;
-    case WEAPON: {
+    case IO::Scroll: Scroll::set_known(static_cast<Scroll::Type>(obj->o_which)); break;
+    case IO::Potion: Potion::set_known(static_cast<Potion::Type>(obj->o_which)); break;
+    case IO::Wand:   Wand::set_known(static_cast<Wand::Type>(obj->o_which)); break;
+    case IO::Ring:   Ring::set_known(static_cast<Ring::Type>(obj->o_which)); break;
+    case IO::Weapon: {
       Weapon* weapon = dynamic_cast<Weapon*>(obj);
       if (weapon == nullptr) {
         error("Could not cast weapon to Weapon class");
       }
       weapon->set_identified();
     } break;
-    case ARMOR: {
+    case IO::Armor: {
       Armor* armor = dynamic_cast<Armor*>(obj);
       if (armor == nullptr) {
         error("Could not cast armor to Armor class");

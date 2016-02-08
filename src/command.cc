@@ -108,7 +108,6 @@ command_do(char ch)
     case KEY_ESCAPE: return command_stop(true);
     case '.': return true;
     case ',': return command_pick_up();
-    case '/': return command_identify_character();
     case '>': return command_use_stairs(ch);
     case '<': return command_use_stairs(ch);
     case '?': return command_help();
@@ -187,7 +186,7 @@ command_wizard_do(char ch)
                     ? player->remove_sense_monsters()
                     : player->set_sense_monsters(); break;
     case CTRL('~'): {
-       Wand* wand = static_cast<Wand*>(pack_get_item("charge", STICK));
+       Wand* wand = static_cast<Wand*>(pack_get_item("charge", IO::Wand));
        if (wand != nullptr) {
          wand->set_charges(10000);
        }

@@ -122,23 +122,21 @@ rnd_thing(void)
   int i = os_rand_range(Game::current_level >= Game::amulet_min_level ? 10 : 9);
   switch (i)
   {
-    case 0: return POTION;
-    case 1: return SCROLL;
-    case 2: return RING;
-    case 3: return STICK;
-    case 4: return FOOD;
-    case 5: return WEAPON;
-    case 6: return ARMOR;
-    case 7: return STAIRS;
-    case 8: return GOLD;
+    case 0: return IO::Potion;
+    case 1: return IO::Scroll;
+    case 2: return IO::Ring;
+    case 3: return IO::Wand;
+    case 4: return IO::Food;
+    case 5: return IO::Weapon;
+    case 6: return IO::Armor;
+    case 7: return IO::Stairs;
+    case 8: return IO::Gold;
     case 9:
       if (Game::current_level < Game::amulet_min_level)
         io_debug("rnd_thing: Amulet spawned at a too low level", 0);
-      return AMULET;
+      return IO::Amulet;
 
-    default:
-      io_debug("rnd_thing got %d, expected value between 0 and 9", 0);
-      return GOLD;
+    default: error("rnd_thing out of bounds");
   }
 }
 
@@ -163,28 +161,14 @@ diag_ok(Coordinate const* sp, Coordinate const* ep)
     return false;
   if (ep->x == sp->x || ep->y == sp->y)
     return true;
-  return (step_ok(Game::level->get_ch(sp->x, ep->y))
-             && step_ok(Game::level->get_ch(ep->x, sp->y)));
+  return (Game::level->can_step(sp->x, ep->y) &&
+          Game::level->can_step(ep->x, sp->y));
 }
 
 int
 dist(int y1, int x1, int y2, int x2)
 {
     return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-}
-
-char
-floor_ch(void)
-{
-  return (player->get_room()->r_flags & ISGONE)
-    ? PASSAGE : FLOOR;
-}
-
-char
-floor_at(void)
-{
-  char ch = Game::level->get_ch(player->get_position());
-  return ch == FLOOR ? floor_ch() : ch;
 }
 
 bool
@@ -202,9 +186,8 @@ fallpos(Coordinate const* pos, Coordinate* newpos)
       if (y == player->get_position().y && x == player->get_position().x)
         continue;
 
-      int ch = Game::level->get_ch(x, y);
-      if ((ch == FLOOR || ch == PASSAGE) && os_rand_range(++cnt) == 0)
-      {
+      Tile::Type ch = Game::level->get_tile(x, y);
+      if (ch == Tile::Floor && os_rand_range(++cnt) == 0) {
         newpos->y = y;
         newpos->x = x;
       }

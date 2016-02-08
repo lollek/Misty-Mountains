@@ -181,7 +181,7 @@ static Trap::Type trap_arrow_monster(Monster** victim_ptr) {
 static Trap::Type trap_telep_player(Coordinate const* trap_coord) {
   player->teleport(nullptr);
   // Mark trap before we leave
-  Game::io->print_color(trap_coord->x, trap_coord->y, TRAP);
+  Game::io->print_color(trap_coord->x, trap_coord->y, IO::Trap);
   return Trap::Teleport;
 }
 
@@ -273,7 +273,7 @@ static Trap::Type trap_rust_monster(Monster* victim) {
 Trap::Type Trap::player(Coordinate const& trap_coord) {
   command_stop(true);
 
-  Game::level->set_ch(trap_coord, TRAP);
+  Game::level->set_tile(trap_coord, Tile::Trap);
   Game::level->set_discovered(trap_coord);
 
   switch (Game::level->get_trap_type(trap_coord)) {
@@ -298,7 +298,7 @@ Trap::Type Trap::spring(Monster** victim, Coordinate const& trap_coord) {
   }
 
   if (monster_seen_by_player(*victim)) {
-    Game::level->set_ch(trap_coord, TRAP);
+    Game::level->set_tile(trap_coord, Tile::Trap);
     Game::level->set_discovered(trap_coord);
   }
 

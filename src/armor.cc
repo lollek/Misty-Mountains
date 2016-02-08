@@ -53,7 +53,7 @@ Armor::Armor(bool random_stats) :
 
 Armor::Armor(Armor::Type type, bool random_stats) :
   Item(), subtype(type), identified(false) {
-  o_type = ARMOR;
+  o_type = IO::Armor;
   o_which = type;
   set_armor(Armor::ac(type));
 

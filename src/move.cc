@@ -22,26 +22,32 @@
 #include "os.h"
 #include "rogue.h"
 
-static void stop_on_interesting_stuff(Coordinate const& nh) {
+static void stop_on_interesting_stuff(Coordinate const& nh, int dx, int dy) {
   if (!door_stop) {
     return;
   }
 
-  int num_nearby_passage_tiles = 0;
+  // Check if we have reached some crossroads (if tunnel)
+  if (dx == 0 && dy != 0) {
+    if ((Game::level->get_tile(nh.x -1, nh.y - dy) == Tile::Wall &&
+         Game::level->get_tile(nh.x -1, nh.y)      != Tile::Wall) ||
+        (Game::level->get_tile(nh.x +1, nh.y - dy) == Tile::Wall &&
+         Game::level->get_tile(nh.x +1, nh.y     ) != Tile::Wall)) {
+      player->set_not_running();
+      return;
+    }
+  } else if (dx != 0 && dy == 0) {
+    if ((Game::level->get_tile(nh.x - dx, nh.y -1) == Tile::Wall &&
+         Game::level->get_tile(nh.x,      nh.y -1) != Tile::Wall) ||
+        (Game::level->get_tile(nh.x - dx, nh.y +1) == Tile::Wall &&
+         Game::level->get_tile(nh.x,      nh.y +1) != Tile::Wall)) {
+      player->set_not_running();
+      return;
+    }
+  }
+
   for (int x = nh.x -1; x <= nh.x +1; ++x) {
     for (int y = nh.y -1; y <= nh.y +1; ++y) {
-      char tile_ch = Game::level->get_ch(x, y);
-
-      // We want to count nearby passage tiles so we know if we reach a
-      // 'crossroad'. Since walking diagonally is limited in passages, we
-      // ignore those
-      if (tile_ch == PASSAGE && (nh.x == x || nh.y == y)) {
-        num_nearby_passage_tiles++;
-        if (num_nearby_passage_tiles > 3) {
-          player->set_not_running();
-          return;
-        }
-      }
 
       Monster* monster = Game::level->get_monster(x, y);
       // Monster are interesting, and they will notice you as well
@@ -64,9 +70,10 @@ static void stop_on_interesting_stuff(Coordinate const& nh) {
 
       // Always stop near traps and stairs, and doors IFF we can actually move
       // to it (not diagonal)
+      Tile::Type tile = Game::level->get_tile(x, y);
       Coordinate tile_coord(x, y);
-      if (tile_ch == STAIRS || tile_ch == TRAP ||
-          (tile_ch == DOOR && diag_ok(&nh, &tile_coord))) {
+      if ((tile == Tile::Stairs || tile == Tile::Trap || tile == Tile::Door) &&
+          diag_ok(&nh, &tile_coord)) {
         player->set_not_running();
         return;
       }
@@ -79,7 +86,7 @@ static void stop_on_interesting_stuff(Coordinate const& nh) {
 static bool
 move_turn_ok(int y, int x)
 {
-  return (Game::level->get_ch(x, y) == DOOR
+  return (Game::level->get_tile(x, y) == Tile::Door
       || (Game::level->is_real(x, y) && Game::level->is_passage(x, y)));
 }
 
@@ -162,7 +169,7 @@ move_do_loop_default(bool after, Coordinate& coord) {
   }
 
   // If there was a trap, get trapped!
-  if (Game::level->get_ch(coord) == TRAP) {
+  if (Game::level->get_tile(coord) == Tile::Trap) {
     char ch = Trap::player(coord);
     if (ch == Trap::Door || ch == Trap::Teleport) {
       return after;
@@ -172,7 +179,7 @@ move_do_loop_default(bool after, Coordinate& coord) {
   // Else, Move player
   Coordinate old_position = player->get_position();
   player->set_room(Game::level->get_room(old_position));
-  char previous_place = Game::level->get_ch(old_position);
+  Tile::Type previous_place = Game::level->get_tile(old_position);
   player->set_position(coord);
 
   // Try to pick up any items here
@@ -183,11 +190,11 @@ move_do_loop_default(bool after, Coordinate& coord) {
   }
 
   // Reprint (basically hide) old room, if we leave one
-  if (Game::level->is_passage(coord) && previous_place == DOOR) {
+  if (Game::level->is_passage(coord) && previous_place == Tile::Door) {
     room_leave(coord);
   }
 
-  if (Game::level->is_passage(old_position) && Game::level->get_ch(coord) == DOOR) {
+  if (Game::level->is_passage(old_position) && Game::level->get_tile(coord) == Tile::Door) {
     room_enter(coord);
     Game::io->print_tile(old_position);
   }
@@ -233,7 +240,7 @@ move_do_loop(int dx, int dy) {
 
     // Run a check if player wants to stop running
     if (player->is_running()) {
-      stop_on_interesting_stuff(nh);
+      stop_on_interesting_stuff(nh, dx, dy);
     }
 
     // Cannot escape from the flytrap
@@ -247,18 +254,23 @@ move_do_loop(int dx, int dy) {
 
     // If it was a trap there, try to spring it!
     // this will trigger for real in the move_do_loop_default function
-    char ch = Game::level->get_type(nh);
-    if (!Game::level->is_real(nh) && ch == FLOOR && !player->is_levitating()) {
-      ch = TRAP;
-      Game::level->set_ch(nh, TRAP);
+    Tile::Type ch = Game::level->get_tile(nh);
+    if (!Game::level->is_real(nh) && ch == Tile::Floor && !player->is_levitating()) {
+      ch = Tile::Trap;
+      Game::level->set_tile(nh, Tile::Trap);
       Game::level->set_real(nh);
     }
 
     switch (ch) {
-      case SHADOW:
-      case VWALL:
-      case HWALL:   loop = move_do_loop_wall(after, dx, dy); break;
-      default:      return move_do_loop_default(after, nh);
+      case Tile::Shadow:
+      case Tile::Wall:
+        loop = move_do_loop_wall(after, dx, dy); break;
+
+      case Tile::Floor:
+      case Tile::Door:
+      case Tile::Stairs:
+      case Tile::Trap:
+        return move_do_loop_default(after, nh);
     }
   }
   return after;

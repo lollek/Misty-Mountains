@@ -37,7 +37,7 @@ Food::Food(Food::Type subtype_) : Item(), subtype(subtype_) {
   Game::levels_without_food = 0;
 
   o_count = 1;
-  o_type = FOOD;
+  o_type = IO::Food;
   o_which = subtype;
 }
 

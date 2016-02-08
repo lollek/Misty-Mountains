@@ -13,7 +13,6 @@ bool command_attack(bool fight_to_death); /* Attack and fight something */
 bool command_drop(void);                  /* Drop something */
 bool command_eat(void);                   /* Eat something */
 bool command_help(void);                  /* Give command help */
-bool command_identify_character(void);    /* Identify monster or item */
 bool command_identify_trap(void);         /* Give the name of a trap          */
 bool command_name_item(void);             /* Call an item something */
 bool command_pick_up(void);               /* Pick up something at her feet */

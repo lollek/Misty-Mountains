@@ -24,7 +24,7 @@ monster_find_new_target(Monster* monster)
   }
 
   for (Item* obj : Game::level->items) {
-    if (obj->o_type == SCROLL && obj->o_which == Scroll::Type::SCARE)
+    if (obj->o_type == IO::Scroll && obj->o_which == Scroll::SCARE)
       continue;
 
     if (Game::level->get_room(obj->get_position()) == monster->get_room() &&

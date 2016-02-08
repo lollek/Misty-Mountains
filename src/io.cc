@@ -121,7 +121,7 @@ void IO::print_tile(int x, int y) {
   }
 
   // Next prio: Floor
-  print_color(x, y, Game::level->get_ch(x, y));
+  print_color(x, y, Game::level->get_tile(x, y));
 }
 
 void IO::hide_tile(Coordinate const& coord) {
@@ -129,7 +129,7 @@ void IO::hide_tile(Coordinate const& coord) {
 }
 
 void IO::hide_tile(int x, int y) {
-  print(x, y, SHADOW);
+  print(x, y, IO::Shadow);
 }
 
 chtype IO::colorize(chtype ch)
@@ -142,12 +142,12 @@ chtype IO::colorize(chtype ch)
   switch (ch)
   {
     // Dungeon
-    case HWALL: case VWALL: return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
-    case PASSAGE: case FLOOR: case STAIRS: return ch | COLOR_PAIR(COLOR_YELLOW);
-    case TRAP: return ch | COLOR_PAIR(COLOR_RED);
+    case IO::Wall: return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
+    case IO::Floor: case IO::Stairs: return ch | COLOR_PAIR(COLOR_YELLOW);
+    case IO::Trap: return ch | COLOR_PAIR(COLOR_RED);
 
     // Items
-    case GOLD: return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
+    case IO::Gold: return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
 
     // Monsters
     case 'B': return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
@@ -182,27 +182,27 @@ void IO::print_player_vision() {
     for (int x = player_pos.x -1; x <= player_pos.x +1; x++) {
 
       // Ignore ' ' (shadow)
-      char xy_ch = Game::level->get_ch(x, y);
-      if (xy_ch == SHADOW) {
+      ::Tile::Type xy_ch = Game::level->get_tile(x, y);
+      if (xy_ch == ::Tile::Shadow) {
         continue;
       }
 
       // Make sure we don't look though walls
       bool xy_is_passage = Game::level->is_passage(x, y);
       bool player_in_passage = Game::level->is_passage(player->get_position());
-      char player_ch = Game::level->get_ch(player->get_position());
-      if (player_ch != DOOR && xy_ch != DOOR &&
+      ::Tile::Type player_ch = Game::level->get_tile(player->get_position());
+      if (player_ch != ::Tile::Door && xy_ch != ::Tile::Door &&
           player_in_passage != xy_is_passage) {
         continue;
       }
 
       // Make sure we cannot see diagonals in passages, since that can be a bit
       // like cheating
-      if ((xy_is_passage || xy_ch == DOOR) &&
-          (player_in_passage || player_ch == DOOR) &&
+      if ((xy_is_passage || xy_ch == ::Tile::Door) &&
+          (player_in_passage || player_ch == ::Tile::Door) &&
           player->get_position().x != x && player->get_position().y != y
-          && !step_ok(Game::level->get_ch(player->get_position().x, y))
-          && !step_ok(Game::level->get_ch(x, player->get_position().y))) {
+          && !Game::level->can_step(player->get_position().x, y)
+          && !Game::level->can_step(x, player->get_position().y)) {
         continue;
       }
 
@@ -243,14 +243,14 @@ void IO::print_room(room const* room) {
 void IO::hide_room(room const* room) {
   for (int y = room->r_pos.y; y < room->r_max.y + room->r_pos.y; y++) {
     for (int x = room->r_pos.x; x < room->r_max.x + room->r_pos.x; x++) {
-      switch (Game::level->get_ch(x, y)) {
+      switch (Game::level->get_tile(x, y)) {
 
         // Things to NOT hide:
-        case HWALL: case VWALL: case DOOR: case STAIRS: case TRAP: {
+        case ::Tile::Wall: case ::Tile::Door: case ::Tile::Stairs: case ::Tile::Trap: {
           break;
         }
 
-        default: {
+        case ::Tile::Shadow: case ::Tile::Floor: {
           hide_tile(x, y);
         } break;
       }
@@ -263,64 +263,48 @@ void IO::print_level_layout() {
   for (int y = 1; y < NUMLINES - 1; y++) {
     for (int x = 0; x < NUMCOLS; x++) {
 
-      char ch = Game::level->get_ch(x, y);
+      ::Tile::Type ch = Game::level->get_tile(x, y);
       switch (ch) {
 
         // Doors and stairs are always what they seem
-        case DOOR: case STAIRS: break;
+        case ::Tile::Door: case ::Tile::Stairs: break;
 
         // Check if walls are actually hidden doors
-        case HWALL: case VWALL: {
+        case ::Tile::Wall: {
           if (!Game::level->is_real(x, y)) {
-            ch = DOOR;
-            Game::level->set_ch(x, y, DOOR);
+            ch = ::Tile::Door;
+            Game::level->set_tile(x, y, ::Tile::Door);
             Game::level->set_real(x, y);
           }
         } break;
 
         // Floor can be traps. If it's not, we don't print it
-        case FLOOR: {
+        case ::Tile::Floor: {
           if (Game::level->is_real(x, y)) {
-            ch = SHADOW;
+            ch = ::Tile::Floor;
+            Game::level->set_discovered(x, y);
           } else {
-            ch = TRAP;
-            Game::level->set_ch(x, y, ch);
+            ch = ::Tile::Trap;
+            Game::level->set_tile(x, y, ch);
             Game::level->set_discovered(x, y);
             Game::level->set_real(x, y);
           }
         } break;
 
+        case ::Tile::Trap: break;
+
         // Shadow can be a hidden passage
-        case SHADOW: {
+        case ::Tile::Shadow: {
           if (Game::level->is_real(x, y)) {
             break;
           }
-          ch = PASSAGE;
-          Game::level->set_ch(x, y, ch);
+          ch = ::Tile::Floor;
+          Game::level->set_tile(x, y, ch);
           Game::level->set_real(x, y);
-        } /* FALLTHROUGH */
-
-        [[clang::fallthrough]];
-        // Seems like many things can be a passage?
-        case PASSAGE: {
-pass:
-          if (!Game::level->is_real(x, y)) {
-            Game::level->set_ch(x, y, PASSAGE);
-          }
-          ch = PASSAGE;
-          Game::level->set_discovered(x, y);
-          Game::level->set_real(x, y);
-        } break;
-
-        default: {
-          if (Game::level->is_passage(x, y)) {
-            goto pass;
-          }
-          ch = SHADOW;
-        } break;
+        }
       }
 
-      if (ch != SHADOW) {
+      if (ch != ::Tile::Shadow) {
         Monster* obj = Game::level->get_monster(x, y);
         if (obj == nullptr || !player->can_sense_monsters()) {
           print_color(x, y, ch);
@@ -548,14 +532,6 @@ io_debug_fatal(char const* fmt, ...)
 
 #endif
 
-bool
-step_ok(int ch)
-{
-  if (ch == SHADOW || ch == HWALL || ch == VWALL)
-    return false;
-  return !isalpha(ch);
-}
-
 char
 io_readchar(bool is_question)
 {
@@ -603,14 +579,16 @@ void io_missile_motion(Item* item, int ydelta, int xdelta) {
     // Erase the old one
     if (item->get_position() != player->get_position() &&
         player->can_see(item->get_position())) {
-      ch = Game::level->get_ch(item->get_position());
+      ch = Game::level->get_tile(item->get_position());
       Game::io->print_color(item->get_x(), item->get_y(), ch);
     }
 
     // Get the new position
     item->set_y(item->get_y() + ydelta);
     item->set_x(item->get_x() + xdelta);
-    if (step_ok(ch = Game::level->get_type(item->get_position())) && ch != DOOR) {
+
+    Monster* monster = Game::level->get_monster(item->get_position());
+    if (monster == nullptr && Game::level->get_tile(item->get_position()) != Tile::Door) {
 
       // It hasn't hit anything yet, so display it if it alright.
       if (player->can_see(item->get_position())) {

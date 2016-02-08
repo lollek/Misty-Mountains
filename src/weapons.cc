@@ -55,7 +55,7 @@ Weapon::Weapon(bool random_stats) : Weapon(random_weapon_type(), random_stats) {
 Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
   : Item(), subtype(subtype_), identified(false)  {
 
-  o_type = WEAPON;
+  o_type = IO::Weapon;
   o_which = subtype;
   o_count = 1;
 
@@ -84,7 +84,7 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
       o_launch = BOW;
       o_count = os_rand_range(8) + 8;
       o_flags = ISMANY|ISMISL;
-      o_type = AMMO;
+      o_type = IO::Ammo;
     } break;
 
     case DAGGER: {
@@ -107,7 +107,7 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
       o_launch = NO_WEAPON;
       o_count = os_rand_range(8) + 8;
       o_flags = ISMANY|ISMISL;
-      o_type = AMMO;
+      o_type = IO::Ammo;
     } break;
 
     case SHIRAKEN: {
@@ -116,7 +116,7 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
       o_launch = NO_WEAPON;
       o_count = os_rand_range(8) + 8;
       o_flags = ISMANY|ISMISL;
-      o_type = AMMO;
+      o_type = IO::Ammo;
     } break;
 
     case SPEAR: {
@@ -216,10 +216,10 @@ string Weapon::get_description() const {
 
   int dices;
   int sides;
-  if (o_type == AMMO || o_which == Weapon::BOW) {
+  if (o_type == IO::Ammo || o_which == Weapon::BOW) {
     dices = get_throw_damage().dices;
     sides = get_throw_damage().sides;
-  } else if (o_type == WEAPON) {
+  } else if (o_type == IO::Weapon) {
     dices = get_attack_damage().dices;
     sides = get_attack_damage().sides;
   } else {

@@ -56,15 +56,13 @@ static Coordinate chase(Monster& monster, Coordinate const& target) {
         continue;
       }
 
-      char ch = Game::level->get_type(xy.x, xy.y);
-      if (step_ok(ch)) {
+      if (Game::level->can_step(xy.x, xy.y)) {
 
         // Cannot walk on a scare monster scroll
-        if (ch == SCROLL) {
-          Item* obj = Game::level->get_item(xy.x, xy.y);
-          if (obj != nullptr && obj->o_which == Scroll::Type::SCARE) {
-            continue;
-          }
+        Item* xy_item = Game::level->get_item(xy.x, xy.y);
+        if (xy_item != nullptr && xy_item->o_type == IO::Scroll &&
+            xy_item->o_which == Scroll::SCARE) {
+          continue;
         }
 
         // It can also be a Xeroc, which we shouldn't step on
@@ -120,7 +118,7 @@ chase_do(Monster* monster)
   // our goal
   //
   // We don't count doors as inside rooms for this routine
-  bool door = Game::level->get_ch(monster->get_position()) == DOOR;
+  bool door = Game::level->get_tile(monster->get_position()) == Tile::Door;
   Coordinate target;
   for (;;) {
     if (rer != ree) {
@@ -186,21 +184,20 @@ chase_do(Monster* monster)
   }
 
   if (chase_coord != monster->get_position()) {
-    char ch = Game::level->get_type(chase_coord);
-
-    char prev_ch = Game::level->get_ch(monster->get_position());
+    Tile::Type ch = Game::level->get_tile(chase_coord);
+    Tile::Type prev_ch = Game::level->get_tile(monster->get_position());
 
     // Remove monster from old position IFF we see it, or it was standing on a
     // passage we have previously seen
     Game::level->set_monster(monster->get_position(), nullptr);
-    if (((prev_ch == PASSAGE || prev_ch == DOOR) &&
+    if (((prev_ch == Tile::Floor || prev_ch == Tile::Door) &&
          Game::level->is_discovered(monster->get_position()))) {
       Game::io->print_tile(monster->get_position());
     }
 
     // Check if we stepped in a trap
-    if ((ch == TRAP || (!Game::level->is_real(chase_coord) && ch == FLOOR)) &&
-          !player->is_levitating()) {
+    if ((ch == Tile::Trap || (!Game::level->is_real(chase_coord) && ch == Tile::Floor)) &&
+          !monster->is_levitating()) {
       Coordinate orig_pos = monster->get_position();
 
       Trap::spring(&monster, chase_coord);

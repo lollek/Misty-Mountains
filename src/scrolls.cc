@@ -62,7 +62,7 @@ bool Scroll::is_magic() const {
 Scroll::Scroll() : Scroll(random_scroll_type()) {}
 
 Scroll::Scroll(Scroll::Type subtype_) : Item(), subtype(subtype_) {
-  o_type = SCROLL;
+  o_type = IO::Scroll;
   o_count = 1;
   o_which = subtype;
 }
@@ -259,7 +259,6 @@ static bool create_monster() {
 
   for (int y = player_pos.y - 1; y <= player_pos.y + 1; y++) {
     for (int x = player_pos.x - 1; x <= player_pos.x + 1; x++) {
-      char ch = Game::level->get_type(x, y);
 
       /* No duplicates */
       if ((y == player_pos.y && x == player_pos.x)) {
@@ -267,20 +266,14 @@ static bool create_monster() {
       }
 
       /* Cannot stand there */
-      if (!step_ok(ch)) {
+      if (!Game::level->can_step(x, y)) {
         continue;
       }
 
       /* Monsters cannot stand of scroll of stand monster */
-      if (ch == SCROLL) {
-        Item *item = Game::level->get_item(y, x);
-        if (item == nullptr) {
-          error("Should be an item here");
-        }
-
-        if (item->o_which == Scroll::Type::SCARE) {
-          continue;
-        }
+      Item* item = Game::level->get_item(x, y);
+      if (item != nullptr && item->o_type == IO::Scroll && item->o_which == Scroll::SCARE) {
+        continue;
       }
 
       /* RNGsus doesn't want a monster here */
@@ -316,9 +309,9 @@ static bool food_detection() {
   wclear(Game::io->extra_screen);
 
   for (Item const* obj : Game::level->items) {
-    if (obj->o_type == FOOD) {
+    if (obj->o_type == IO::Food) {
       food_seen = true;
-      mvwaddcch(Game::io->extra_screen, obj->get_y(), obj->get_x(), FOOD);
+      mvwaddcch(Game::io->extra_screen, obj->get_y(), obj->get_x(), IO::Food);
     }
   }
 

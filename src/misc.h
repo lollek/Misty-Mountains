@@ -29,8 +29,5 @@ inline int dist_cp(Coordinate const* c1, Coordinate const* c2) {
   return dist(c1->y, c1->x, c2->y, c2->x);
 }
 
-char floor_ch(void); /* Floor-type at hero's position */
-char floor_at(void); /* Return the character at hero's position */
-
 /* Pick a random position around the give (y, x) Coordinate */
 bool fallpos(Coordinate const* pos, Coordinate* newpos);

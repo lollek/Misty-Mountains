@@ -37,7 +37,8 @@ room_open_door(struct room* rp) {
   for (int y = rp->r_pos.y; y < rp->r_pos.y + rp->r_max.y; y++) {
     for (int x = rp->r_pos.x; x < rp->r_pos.x + rp->r_max.x; x++) {
       Game::level->set_discovered(x, y);
-      if (isupper(Game::level->get_type(x, y))) {
+      Monster* monster = Game::level->get_monster(x, y);
+      if (monster != nullptr) {
         monster_notice_player(y, x);
       }
     }
@@ -143,20 +144,20 @@ Level::draw_room(room const& rp) {
 
   /* Draw left + right side */
   for (int y = rp.r_pos.y + 1; y <= rp.r_max.y + rp.r_pos.y - 1; y++) {
-    set_ch(rp.r_pos.x, y, VWALL);
-    set_ch(rp.r_pos.x + rp.r_max.x - 1, y, VWALL);
+    set_tile(rp.r_pos.x, y, Tile::Wall);
+    set_tile(rp.r_pos.x + rp.r_max.x - 1, y, Tile::Wall);
   }
 
   /* Draw top + bottom side */
   for (int x = rp.r_pos.x; x <= rp.r_pos.x + rp.r_max.x - 1; x++) {
-    set_ch(x, rp.r_pos.y, HWALL);
-    set_ch(x, rp.r_pos.y + rp.r_max.y - 1, HWALL);
+    set_tile(x, rp.r_pos.y, Tile::Wall);
+    set_tile(x, rp.r_pos.y + rp.r_max.y - 1, Tile::Wall);
   }
 
   /* Put the floor down */
   for (int y = rp.r_pos.y + 1; y < rp.r_pos.y + rp.r_max.y - 1; y++) {
     for (int x = rp.r_pos.x + 1; x < rp.r_pos.x + rp.r_max.x - 1; x++) {
-      set_ch(x, y, FLOOR);
+      set_tile(x, y, Tile::Floor);
     }
   }
 }
@@ -272,12 +273,8 @@ Level::create_rooms() {
 bool
 Level::get_random_room_coord(room* room, Coordinate* coord, int tries, bool monst) {
   bool limited_tries = tries > 0;
-  char compchar = 0;
+  char compchar = Tile::Floor;
   bool pickroom = room == nullptr;
-
-  if (!pickroom) {
-    compchar = ((room->r_flags & ISMAZE) ? PASSAGE : FLOOR);
-  }
 
   for (;;) {
     if (limited_tries && tries-- == 0) {
@@ -286,16 +283,16 @@ Level::get_random_room_coord(room* room, Coordinate* coord, int tries, bool mons
 
     if (pickroom) {
       room = get_random_room();
-      compchar = ((room->r_flags & ISMAZE) ? PASSAGE : FLOOR);
     }
 
     /* Pick a random position */
     coord->x = room->r_pos.x + os_rand_range(room->r_max.x - 2) + 1;
     coord->y = room->r_pos.y + os_rand_range(room->r_max.y - 2) + 1;
 
-    char ch = get_ch(*coord);
+    Tile::Type ch = get_tile(*coord);
     if (monst) {
-      if (get_monster(*coord) == nullptr && step_ok(ch)) {
+      if (get_monster(*coord) == nullptr &&
+          Game::level->can_step(*coord)) {
         return true;
       }
     } else if (ch == compchar) {

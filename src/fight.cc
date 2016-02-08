@@ -197,7 +197,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
     if (!to_death) {
 
       if (thrown) {
-        if (weapon->o_type == WEAPON) {
+        if (weapon->o_type == IO::Weapon) {
           stringstream os;
           os
             << "the "
@@ -310,7 +310,7 @@ fight_swing_hits(int at_lvl, int op_arm, int wplus) {
 void
 fight_missile_miss(Item const* weap, string const& mname, string const* name_override) {
 
-  if (weap->o_type == WEAPON) {
+  if (weap->o_type == IO::Weapon) {
     if (name_override == nullptr) {
       Game::io->message("the " + Weapon::name(static_cast<Weapon::Type>(weap->o_which)) +
                         " misses " + mname);

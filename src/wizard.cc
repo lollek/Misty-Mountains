@@ -39,12 +39,12 @@ pr_spec(char type)
   size_t max;
   switch (type)
   {
-    case POTION: max = Potion::Type::NPOTIONS;  break;
-    case SCROLL: max = Scroll::Type::NSCROLLS;  break;
-    case RING:   max = Ring::Type::NRINGS;    break;
-    case STICK:  max = Wand::Type::NWANDS; break;
-    case ARMOR:  max = Armor::Type::NARMORS;   break;
-    case WEAPON: max = Weapon::NWEAPONS; break;
+    case IO::Potion: max = Potion::Type::NPOTIONS;  break;
+    case IO::Scroll: max = Scroll::Type::NSCROLLS;  break;
+    case IO::Ring:   max = Ring::Type::NRINGS;    break;
+    case IO::Wand:   max = Wand::Type::NWANDS; break;
+    case IO::Armor:  max = Armor::Type::NARMORS;   break;
+    case IO::Weapon: max = Weapon::NWEAPONS; break;
     default: error("Unknown type in pr_spec");
   }
 
@@ -56,32 +56,32 @@ pr_spec(char type)
     wmove(printscr, static_cast<int>(i) + 1, 1);
 
     switch (type) {
-      case SCROLL: {
+      case IO::Scroll: {
         name = Scroll::name(static_cast<Scroll::Type>(i));
         prob = Scroll::probability(static_cast<Scroll::Type>(i));
       } break;
 
-      case ARMOR: {
+      case IO::Armor: {
         name = Armor::name(static_cast<Armor::Type>(i));
         prob = Armor::probability(static_cast<Armor::Type>(i));
       } break;
 
-      case POTION: {
+      case IO::Potion: {
         name = Potion::name(static_cast<Potion::Type>(i));
         prob = Potion::probability(static_cast<Potion::Type>(i));
       } break;
 
-      case STICK: {
+      case IO::Wand: {
         name = Wand::name(static_cast<Wand::Type>(i));
         prob = Wand::probability(static_cast<Wand::Type>(i));
       } break;
 
-      case RING: {
+      case IO::Ring: {
         name = Ring::name(static_cast<Ring::Type>(i));
         prob = Ring::probability(static_cast<Ring::Type>(i));
       } break;
 
-      case WEAPON: {
+      case IO::Weapon: {
         name = Weapon::name(static_cast<Weapon::Type>(i));
         prob = Weapon::probability(static_cast<Weapon::Type>(i));
       } break;
@@ -101,7 +101,8 @@ pr_spec(char type)
 static void
 print_things(void)
 {
-  char index_to_char[] = { POTION, SCROLL, FOOD, WEAPON, ARMOR, RING, STICK };
+  char index_to_char[] = { IO::Potion, IO::Scroll, IO::Food, IO::Weapon, IO::Armor,
+                           IO::Ring, IO::Wand };
   WINDOW* tmp = dupwin(stdscr);
 
   Coordinate orig_pos;
@@ -148,8 +149,8 @@ void wizard_create_item(void) {
   switch (type) {
 
     // Supported types:
-    case WEAPON: case ARMOR: case RING: case STICK: case GOLD:
-    case POTION: case SCROLL: case TRAP: case FOOD: {
+    case IO::Weapon: case IO::Armor: case IO::Ring: case IO::Wand:
+    case IO::Gold: case IO::Potion: case IO::Scroll: case IO::Trap: case IO::Food: {
       break;
     }
 
@@ -168,35 +169,35 @@ void wizard_create_item(void) {
   // Allocate item
   Item* obj = nullptr;
   switch (type) {
-    case TRAP: {
+    case IO::Trap: {
       if (which < 0 || which >= Trap::NTRAPS) {
         Game::io->message("Bad trap id");
 
       } else {
         Game::level->set_not_real(player->get_position());
-        Game::level->set_trap_type(player->get_position(), static_cast<size_t>(which));
+        Game::level->set_trap_type(player->get_position(), static_cast<Trap::Type>(which));
       }
     } return;
 
-    case STICK: {
+    case IO::Wand: {
       obj = new Wand(static_cast<Wand::Type>(which));
     } break;
 
-    case SCROLL: {
+    case IO::Scroll: {
       obj = new Scroll(static_cast<Scroll::Type>(which));
       obj->o_count = 10;
     } break;
 
-    case POTION: {
+    case IO::Potion: {
       obj = new Potion(static_cast<Potion::Type>(which));
       obj->o_count = 10;
     } break;
 
-    case FOOD: {
+    case IO::Food: {
       obj = new Food(static_cast<Food::Type>(which));
     } break;
 
-    case WEAPON: {
+    case IO::Weapon: {
       obj = new Weapon(static_cast<Weapon::Type>(which), false);
 
       Game::io->message("blessing? (+,-,n)");
@@ -211,7 +212,7 @@ void wizard_create_item(void) {
         obj->modify_hit_plus(os_rand_range(3) + 1);
     } break;
 
-    case ARMOR: {
+    case IO::Armor: {
       obj = new Armor(false);
 
       Game::io->message("blessing? (+,-,n)");
@@ -225,7 +226,7 @@ void wizard_create_item(void) {
         obj->modify_armor(-os_rand_range(3) + 1);
     } break;
 
-    case RING: {
+    case IO::Ring: {
       obj = new Ring(static_cast<Ring::Type>(which), false);
 
       switch (obj->o_which) {
@@ -241,7 +242,7 @@ void wizard_create_item(void) {
       }
     } break;
 
-    case GOLD: {
+    case IO::Gold: {
       Game::io->message("how much?");
       int amount = stoi(Game::io->read_string());
       obj = new Gold(amount);
@@ -263,7 +264,16 @@ void wizard_show_map(void) {
 
   for (int y = 1; y < NUMLINES - 1; y++)  {
     for (int x = 0; x < NUMCOLS; x++) {
-      chtype ch = static_cast<chtype>(Game::level->get_ch(x, y));
+      Tile::Type tile = Game::level->get_tile(x, y);
+      chtype ch;
+      switch (tile) {
+        case Tile::Shadow: ch = IO::Shadow; break;
+        case Tile::Floor:  ch = IO::Floor; break;
+        case Tile::Wall:   ch = IO::Wall; break;
+        case Tile::Door:   ch = IO::Door; break;
+        case Tile::Trap:   ch = IO::Trap; break;
+        case Tile::Stairs: ch = IO::Stairs; break;
+      }
 
       if (!Game::level->is_real(x, y)) {
         ch |= A_STANDOUT;

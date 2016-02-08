@@ -112,8 +112,6 @@ void monster_hide_all_invisible(void);
  * Return true if there was atleast one, else false */
 bool monster_sense_all_hidden(void);
 void monster_unsense_all_hidden(void);
-/* Print all monsters as they look (or hide, is in disguise) */
-void monster_print_all(void);
 /* Print a $ where there is a monster with a magic item
  * Returns true if there was atleast one, else false */
 bool monster_show_if_magic_inventory(void);

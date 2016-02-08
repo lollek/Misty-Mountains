@@ -24,6 +24,35 @@ public:
     None
   };
 
+  enum Tile {
+    Shadow = ' ',
+    Wall   = '#',
+    Floor  = ',',
+    Door   = '+',
+    Trap   = '^',
+    Stairs = '%',
+
+    VerticalBolt = '|',
+    DiagonalUpBolt = '/',
+    HorizontalBolt = '-',
+    DiagonalDownBolt = '\\',
+
+    Gold   = '*',
+    Potion = '!',
+    Scroll = '?',
+    Magic  = '$',
+    Food   = ':',
+    Ammo   = '(',
+    Weapon = ')',
+    Armor  = ']',
+    Amulet = ',',
+    Ring   = '=',
+    Wand   = '/',
+
+    Player = '@',
+
+  };
+
   template <typename T>
   void print(int x, int y, T ch, Attribute attr=None);
 
@@ -85,38 +114,6 @@ private:
 // Extra named keys for curses
 #define KEY_SPACE	' '
 #define KEY_ESCAPE	27
-
-// Magic bolts
-#define BOLT_VERTICAL    '|'
-#define BOLT_DIAGUP      '/'
-#define BOLT_HORIZONTAL  '-'
-#define BOLT_DIAGDOWN    '\\'
-
-// Glyphs for things
-#define SHADOW		' '
-#define VWALL		'|'
-#define HWALL		'-'
-#define PASSAGE		'#'
-#define DOOR		'+'
-#define FLOOR		'.'
-
-#define TRAP		'^'
-#define STAIRS		'%'
-
-#define GOLD		'*'
-#define POTION		'!'
-#define SCROLL		'?'
-#define MAGIC		'$'
-#define FOOD		':'
-#define AMMO		'('
-#define WEAPON		')'
-#define ARMOR		']'
-#define AMULET		','
-#define RING		'='
-#define STICK		'/'
-
-/* TODO: (Re)move these */
-bool step_ok(int ch);  /* True of it's OK to step on ch */
 
 /* Encrypted read/write to/from file */
 size_t io_encwrite(char const* start, size_t size, FILE* outf);

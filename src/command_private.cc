@@ -65,15 +65,16 @@ static bool command_attack_melee(bool fight_to_death, Coordinate const& delta)
   }
 
   string msg;
-  switch (Game::level->get_ch(delta))
+  switch (Game::level->get_tile(delta))
   {
-    case SHADOW: case HWALL: case VWALL: {
-      msg = "you swing at the wall";
-    } break;
+    case Tile::Shadow:
+    case Tile::Wall:   msg = "you swing at the wall"; break;
 
-    default: {
-      msg = "you swing at the air";
-    } break;
+    case Tile::Stairs: msg = "you swing at the stairs"; break;
+
+    case Tile::Door:
+    case Tile::Floor:
+    case Tile::Trap:   msg = "you swing at the air"; break;
   }
 
   Game::io->message(msg);
@@ -89,7 +90,7 @@ command_use_stairs(char up_or_down)
 
   if (player->is_levitating())
     Game::io->message("You can't. You're floating off the ground!");
-  else if (Game::level->get_ch(player->get_position()) != STAIRS)
+  else if (Game::level->get_tile(player->get_position()) != Tile::Stairs)
     Game::io->message("You're not standing on any stairs");
 
   else if (up_or_down == '>') /* DOWN */ {
@@ -155,24 +156,24 @@ command_name_item(void)
   string* guess = nullptr;
   switch (obj->o_type)
   {
-    case FOOD: Game::io->message("Don't play with your food!"); return false;
+    case IO::Food: Game::io->message("Don't play with your food!"); return false;
 
-    case RING:
+    case IO::Ring:
       already_known = Ring::is_known(static_cast<Ring::Type>(obj->o_which));
       guess = &Ring::guess(static_cast<Ring::Type>(obj->o_which));
       break;
 
-    case POTION:
+    case IO::Potion:
       already_known = Potion::is_known(static_cast<Potion::Type>(obj->o_which));
       guess = &Potion::guess(static_cast<Potion::Type>(obj->o_which));
       break;
 
-    case SCROLL:
+    case IO::Scroll:
       already_known = Scroll::is_known(static_cast<Scroll::Type>(obj->o_which));
       guess = &Scroll::guess(static_cast<Scroll::Type>(obj->o_which));
       break;
 
-    case STICK:
+    case IO::Wand:
       already_known = Wand::is_known(static_cast<Wand::Type>(obj->o_which));
       guess = &Wand::guess(static_cast<Wand::Type>(obj->o_which));
       break;
@@ -204,54 +205,6 @@ command_name_item(void)
 }
 
 bool
-command_identify_character(void)
-{
-  Game::io->message("what do you want identified?");
-  int ch = io_readchar(true);
-  Game::io->clear_message();
-
-  if (ch == KEY_ESCAPE)
-  {
-    Game::io->clear_message();
-    return false;
-  }
-
-  if (isalpha(ch))
-  {
-    ch = toupper(ch);
-    Game::io->message("'" + string(1, UNCTRL(ch)) + "': " +
-                      monster_name_by_type(static_cast<char>(ch)));
-    return false;
-  }
-
-  struct character_list
-  {
-    int ch;
-    char const* description;
-  } const ident_list[] = {
-    {VWALL,               "wall of a room"}, {HWALL,   "wall of a room"},
-    {GOLD,                "gold"},           {STAIRS,  "a staircase"},
-    {DOOR,                "door"},           {FLOOR,   "room floor"},
-    {player->get_type(),  "you"},            {PASSAGE, "passage"},
-    {TRAP,                "trap"},           {POTION,  "potion"},
-    {SCROLL,              "scroll"},         {FOOD,    "food"},
-    {WEAPON,              "weapon"},         {SHADOW,  "solid rock"},
-    {ARMOR,               "armor"},          {AMULET,  "the Amulet of Yendor"},
-    {RING,                "ring"},           {STICK,   "wand or staff"},
-    {'\0', ""}
-  };
-  for (struct character_list const* ptr = ident_list; ptr->ch != '\0'; ++ptr)
-    if (ptr->ch == ch)
-    {
-      Game::io->message("'" + string(1, UNCTRL(ch)) + "': " + ptr->description);
-      return false;
-    }
-
-  Game::io->message("'" + string(1, UNCTRL(ch)) + "': " + "unknown character");
-  return false;
-}
-
-bool
 command_identify_trap(void)
 {
   const Coordinate* dir = get_dir();
@@ -262,7 +215,7 @@ command_identify_trap(void)
   delta.x += dir->x;
   delta.y += dir->y;
 
-  if (Game::level->get_ch(delta) != TRAP) {
+  if (Game::level->get_tile(delta) != Tile::Trap) {
     Game::io->message("no trap there");
   } else if (player->has_confusing_attack()) {
     Trap::Type rand_trap = static_cast<Trap::Type>(os_rand_range(static_cast<size_t>(Trap::NTRAPS)));
@@ -309,7 +262,6 @@ command_help(void)
   } const helpstr[] = {
     {',',	"	pick something up",			true},
     {'.',	"	rest for a turn",			true},
-    {'/',	"	identify object",			true},
     {'<',	"	go up a staircase",			true},
     {'>',	"	go down a staircase",			true},
     {'?',	"	prints help",				true},
@@ -491,7 +443,7 @@ bool command_throw(void)
   if (obj == nullptr)
     return false;
 
-  if (obj->o_type == ARMOR)
+  if (obj->o_type == IO::Armor)
   {
     Game::io->message("you can't throw armor");
     return false;
@@ -519,7 +471,7 @@ bool command_throw(void)
 
   if (missed)
   {
-    if (obj->o_type == POTION)
+    if (obj->o_type == IO::Potion)
       Game::io->message("the potion crashes into the wall");
     else
       weapon_missile_fall(obj, true);
@@ -533,12 +485,12 @@ bool command_throw(void)
 bool
 command_wield(void)
 {
-  Item* obj = pack_get_item("wield", WEAPON);
+  Item* obj = pack_get_item("wield", IO::Weapon);
 
   if (obj == nullptr)
     return false;
 
-  if (obj->o_type == ARMOR)
+  if (obj->o_type == IO::Armor)
   {
     Game::io->message("you can't wield armor");
     return command_wield();
@@ -574,11 +526,11 @@ bool command_rest(void)
 bool
 command_eat(void)
 {
-  Item* obj = pack_get_item("eat", FOOD);
+  Item* obj = pack_get_item("eat", IO::Food);
   if (obj == nullptr)
     return false;
 
-  if (obj->o_type != FOOD)
+  if (obj->o_type != IO::Food)
   {
     Game::io->message("that's inedible!");
     return false;
@@ -621,14 +573,6 @@ command_run(char ch, bool cautiously)
 
 bool command_drop(void)
 {
-  char ch = Game::level->get_ch(player->get_position());
-
-  if (ch != FLOOR && ch != PASSAGE)
-  {
-    Game::io->message("there is something there already");
-    return false;
-  }
-
   Item* obj = pack_get_item("drop", 0);
   if (obj == nullptr)
     return false;
@@ -653,13 +597,13 @@ bool command_drop(void)
 }
 
 bool command_wear() {
-  Item* obj = pack_get_item("wear", ARMOR);
+  Item* obj = pack_get_item("wear", IO::Armor);
 
   if (obj == nullptr) {
     return false;
   }
 
-  if (obj->o_type != ARMOR) {
+  if (obj->o_type != IO::Armor) {
     Game::io->message("you can't wear that");
     return command_wear();
   }
@@ -681,14 +625,14 @@ bool command_wear() {
 bool
 command_ring_put_on(void)
 {
-  Item* obj = pack_get_item("put on", RING);
+  Item* obj = pack_get_item("put on", IO::Ring);
 
   /* Make certain that it is somethings that we want to wear */
   if (obj == nullptr)
     return false;
 
   Ring* ring = dynamic_cast<Ring*>(obj);
-  if (obj->o_type != RING || ring == nullptr)
+  if (obj->o_type != IO::Ring || ring == nullptr)
   {
     Game::io->message("not a ring");
     return command_ring_put_on();
@@ -745,13 +689,13 @@ command_ring_take_off(void)
 bool
 command_read_scroll() {
 
-  Item* obj = pack_get_item("read", SCROLL);
+  Item* obj = pack_get_item("read", IO::Scroll);
   if (obj == nullptr) {
     return false;
   }
 
   Scroll* scroll = dynamic_cast<Scroll*>(obj);
-  if (obj->o_type != SCROLL || scroll == nullptr) {
+  if (obj->o_type != IO::Scroll || scroll == nullptr) {
     Game::io->message("there is nothing on it to read");
     return false;
   }
