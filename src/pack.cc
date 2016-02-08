@@ -362,8 +362,7 @@ pack_find_magic_item(void)
 Item*
 pack_get_item(std::string const& purpose, int type)
 {
-  if (pack_count_items_of_type(type) < 1)
-  {
+  if (pack_count_items_of_type(type) < 1) {
     Game::io->message("You have no item to " + purpose);
     return nullptr;
   }
@@ -387,7 +386,7 @@ pack_get_item(std::string const& purpose, int type)
     }
   }
 
-  Game::io->message("'" + string(1, UNCTRL(ch)) + "s' is not a valid item");
+  Game::io->message("'" + string(1, ch) + "s' is not a valid item");
   return nullptr;
 }
 
