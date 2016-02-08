@@ -318,3 +318,10 @@ bool Level::can_step(Coordinate const& coord) {
   return can_step(coord.x, coord.y);
 }
 
+bool Level::is_dark(int x, int y) {
+  return tile(x, y).is_dark;
+}
+
+bool Level::is_dark(Coordinate const& coord) {
+  return is_dark(coord.x, coord.y);
+}

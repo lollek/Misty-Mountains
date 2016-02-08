@@ -311,7 +311,12 @@ void Level::place_passage(Coordinate* coord) {
     error("coord was null");
   }
 
-  set_passage(*coord);
+  tile(coord->x, coord->y).is_passage = true;
+
+  room* passage_room = get_room(*coord);
+  if (passage_room != nullptr && passage_room->r_flags & ISDARK) {
+    tile(coord->x, coord->y).is_dark = true;
+  }
 
   if (os_rand_range(10) + 1 < Game::current_level && os_rand_range(40) == 0) {
     set_not_real(*coord);

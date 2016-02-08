@@ -540,37 +540,39 @@ io_wait_for_key(int ch)
 }
 
 void io_missile_motion(Item* item, int ydelta, int xdelta) {
-  int ch;
 
   // Come fly with us ...
   item->set_position(player->get_position());
 
   for (;;) {
 
-    // Erase the old one
-    if (item->get_position() != player->get_position() &&
-        player->can_see(item->get_position())) {
-      ch = Game::level->get_tile(item->get_position());
-      Game::io->print_color(item->get_x(), item->get_y(), ch);
-    }
+    Coordinate prev_pos = item->get_position();
 
     // Get the new position
     item->set_y(item->get_y() + ydelta);
     item->set_x(item->get_x() + xdelta);
 
-    Monster* monster = Game::level->get_monster(item->get_position());
-    if (monster == nullptr && Game::level->get_tile(item->get_position()) != Tile::Door) {
+    Coordinate new_pos = item->get_position();
 
-      // It hasn't hit anything yet, so display it if it alright.
-      if (player->can_see(item->get_position())) {
-        os_usleep(10000);
-        Game::io->print_color(item->get_x(), item->get_y(), item->o_type);
-        move(item->get_y(), item->get_x());
-        refresh();
-      }
-      continue;
+    // Print old position
+    if (player->can_see(prev_pos)) {
+      Game::io->print_tile(prev_pos);
     }
-    break;
+
+    // See if we hit something
+    Monster* monster = Game::level->get_monster(new_pos);
+    Tile::Type tile = Game::level->get_tile(new_pos);
+    if (monster != nullptr || tile == Tile::Wall) {
+      break;
+    }
+
+    // Print new position
+    if (player->can_see(new_pos)) {
+      os_usleep(10000);
+      Game::io->print_color(new_pos.x, new_pos.y, item->o_type);
+      move(new_pos.y, new_pos.x);
+      refresh();
+    }
   }
 }
 

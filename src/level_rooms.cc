@@ -157,7 +157,9 @@ Level::draw_room(room const& rp) {
   /* Put the floor down */
   for (int y = rp.r_pos.y + 1; y < rp.r_pos.y + rp.r_max.y - 1; y++) {
     for (int x = rp.r_pos.x + 1; x < rp.r_pos.x + rp.r_max.x - 1; x++) {
-      set_tile(x, y, Tile::Floor);
+      Tile& t = tile(x, y);
+      t.type = Tile::Floor;
+      t.is_dark = rp.r_flags & ISDARK;
     }
   }
 }

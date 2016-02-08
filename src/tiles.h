@@ -19,6 +19,7 @@ struct Tile {
   bool       is_passage;
   bool       is_discovered;
   bool       is_real;
+  bool       is_dark;
   Trap::Type trap_type;
   Monster*   monster;
 };

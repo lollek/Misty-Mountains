@@ -108,17 +108,12 @@ bool Player::has_seen_stairs() const {
 
 bool Player::can_see(Coordinate const& coord) const {
 
-  Coordinate const& player_pos = get_position();
-  int see_distance = LAMPDIST;
-
-  struct room const* rer = Game::level->get_room(coord);
-  if (rer->r_flags & ISDARK) {
-    see_distance = 2;
-  }
-
   if (is_blind()) {
     return false;
   }
+
+  Coordinate const& player_pos = get_position();
+  int see_distance = Game::level->is_dark(coord) ? 2 : LAMPDIST;
 
   if (dist(coord.y, coord.x, player_pos.y, player_pos.x) < see_distance) {
     if (Game::level->is_passage(coord)) {
@@ -131,12 +126,10 @@ bool Player::can_see(Coordinate const& coord) const {
     return true;
   }
 
-  /* We can only see if the hero in the same room as
-   * the coordinate and the room is lit or if it is close.  */
-  if (rer != get_room())
-    return false;
-
-  return !(rer->r_flags & ISDARK);
+  // We can only see if the hero in the same room as
+  // the coordinate and the room is lit or if it is close.
+  return get_room() == Game::level->get_room(coord) &&
+      !Game::level->is_dark(coord);
 }
 
 string Player::get_attack_string(bool successful_hit) const {

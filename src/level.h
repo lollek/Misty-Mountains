@@ -25,6 +25,8 @@ public:
   bool is_discovered(Coordinate const& coord);
   bool is_real(int x, int y);
   bool is_real(Coordinate const& coord);
+  bool is_dark(int x, int y);
+  bool is_dark(Coordinate const& coord);
   Tile::Type get_tile(int x, int y);
   Tile::Type get_tile(Coordinate const& coord);
   size_t get_trap_type(int x, int y);
