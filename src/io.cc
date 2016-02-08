@@ -186,9 +186,6 @@ void IO::print_player_vision() {
 
       // Ignore ' ' (shadow)
       ::Tile::Type xy_ch = Game::level->get_tile(x, y);
-      if (xy_ch == ::Tile::Shadow) {
-        continue;
-      }
 
       // Make sure we don't look though walls
       bool xy_is_passage = Game::level->is_passage(x, y);
@@ -253,7 +250,7 @@ void IO::hide_room(room const* room) {
           break;
         }
 
-        case ::Tile::Shadow: case ::Tile::Floor: {
+        case ::Tile::Floor: {
           hide_tile(x, y);
         } break;
       }
@@ -295,25 +292,13 @@ void IO::print_level_layout() {
         } break;
 
         case ::Tile::Trap: break;
-
-        // Shadow can be a hidden passage
-        case ::Tile::Shadow: {
-          if (Game::level->is_real(x, y)) {
-            break;
-          }
-          ch = ::Tile::Floor;
-          Game::level->set_tile(x, y, ch);
-          Game::level->set_real(x, y);
-        }
       }
 
-      if (ch != ::Tile::Shadow) {
-        Monster* obj = Game::level->get_monster(x, y);
-        if (obj == nullptr || !player->can_sense_monsters()) {
-          print_color(x, y, ch);
-        } else {
-          print_monster(obj, IO::Attribute::Standout);
-        }
+      Monster* obj = Game::level->get_monster(x, y);
+      if (obj == nullptr || !player->can_sense_monsters()) {
+        print_color(x, y, ch);
+      } else {
+        print_monster(obj, IO::Attribute::Standout);
       }
     }
   }

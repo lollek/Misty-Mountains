@@ -422,14 +422,6 @@ void Player::search() {
           }
           break;
 
-        case Tile::Shadow:
-          if (!os_rand_range(3 + increased_difficulty)) {
-            Game::level->set_tile(x, y, Tile::Floor);
-            found = true;
-            Game::level->set_real(x, y);
-          }
-          break;
-
         case Tile::Door: case Tile::Trap: case Tile::Stairs: break;
       }
     }

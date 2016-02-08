@@ -67,7 +67,6 @@ static bool command_attack_melee(bool fight_to_death, Coordinate const& delta)
   string msg;
   switch (Game::level->get_tile(delta))
   {
-    case Tile::Shadow:
     case Tile::Wall:   msg = "you swing at the wall"; break;
 
     case Tile::Stairs: msg = "you swing at the stairs"; break;

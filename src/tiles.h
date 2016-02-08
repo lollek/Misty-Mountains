@@ -8,7 +8,6 @@ struct Tile {
   ~Tile();
 
   enum Type {
-    Shadow,
     Wall,
     Door,
     Floor,

@@ -25,7 +25,7 @@ magic_bolt_handle_bounces(Coordinate& pos, Coordinate* dir, char* dirtile)
 recursive_loop:; /* ONLY called by end of function */
   Monster* monster = Game::level->get_monster(pos);
   Tile::Type ch = Game::level->get_tile(pos);
-  if (monster != nullptr || (ch != Tile::Wall && ch != Tile::Shadow)) {
+  if (monster != nullptr || ch != Tile::Wall) {
     return num_bounces != 0;
   }
 
@@ -33,11 +33,6 @@ recursive_loop:; /* ONLY called by end of function */
   // but just in case, we'll abort after too many bounces
   if (num_bounces > 10) {
     return true;
-  }
-
-  // Treat shadow as a wall
-  if (ch == Tile::Shadow) {
-    ch = Tile::Wall;
   }
 
   // Handle potential bouncing
@@ -58,8 +53,7 @@ recursive_loop:; /* ONLY called by end of function */
       else
         y_ch = Game::level->get_tile(pos.x, y);
 
-      bounce_type = (y_ch == Tile::Wall || y_ch == Tile::Shadow)
-        ? Vertical : Horizontal;
+      bounce_type = y_ch == Tile::Wall ? Vertical : Horizontal;
     }
 
     if (bounce_type == Vertical) {

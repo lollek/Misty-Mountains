@@ -63,7 +63,6 @@ template <>
 void IO::print_color<::Tile::Type>(int x, int y, ::Tile::Type tile, IO::Attribute attr) {
   chtype ch;
   switch (tile) {
-    case ::Tile::Shadow: ch = IO::Shadow; break;
     case ::Tile::Floor:  ch = IO::Floor; break;
     case ::Tile::Wall:   ch = IO::Wall; break;
     case ::Tile::Door:   ch = IO::Door; break;

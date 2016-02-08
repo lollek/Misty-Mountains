@@ -332,8 +332,7 @@ int Level::get_stairs_y() const {
 }
 
 bool Level::can_step(int x, int y) {
-  Tile::Type ch = get_tile(x, y);
-  if (ch == Tile::Shadow || ch == Tile::Wall) {
+  if (get_tile(x, y) == Tile::Wall) {
     return false;
   }
 

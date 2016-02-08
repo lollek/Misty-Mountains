@@ -262,7 +262,6 @@ move_do_loop(int dx, int dy) {
     }
 
     switch (ch) {
-      case Tile::Shadow:
       case Tile::Wall:
         loop = move_do_loop_wall(after, dx, dy); break;
 
