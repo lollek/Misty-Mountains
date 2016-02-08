@@ -386,7 +386,7 @@ pack_get_item(std::string const& purpose, int type)
     }
   }
 
-  Game::io->message("'" + string(1, ch) + "s' is not a valid item");
+  Game::io->message("'" + string(1, ch) + "' is not a valid item");
   return nullptr;
 }
 
