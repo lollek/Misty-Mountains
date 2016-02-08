@@ -181,36 +181,14 @@ void IO::print_player_vision() {
     error("player_pos is too close to the edge");
   }
 
-  for (int y = player_pos.y -1; y <= player_pos.y +1; y++) {
-    for (int x = player_pos.x -1; x <= player_pos.x +1; x++) {
+  if (player->is_blind()) {
+    print_tile(player_pos);
+  }
 
-      // Ignore ' ' (shadow)
-      ::Tile::Type xy_ch = Game::level->get_tile(x, y);
+  int fov_range = 1;
 
-      // Make sure we don't look though walls
-      bool xy_is_passage = Game::level->is_passage(x, y);
-      bool player_in_passage = Game::level->is_passage(player->get_position());
-      ::Tile::Type player_ch = Game::level->get_tile(player->get_position());
-      if (player_ch != ::Tile::Door && xy_ch != ::Tile::Door &&
-          player_in_passage != xy_is_passage) {
-        continue;
-      }
-
-      // Make sure we cannot see diagonals in passages, since that can be a bit
-      // like cheating
-      if ((xy_is_passage || xy_ch == ::Tile::Door) &&
-          (player_in_passage || player_ch == ::Tile::Door) &&
-          player->get_position().x != x && player->get_position().y != y
-          && !Game::level->can_step(player->get_position().x, y)
-          && !Game::level->can_step(x, player->get_position().y)) {
-        continue;
-      }
-
-      if (player->is_blind() &&
-          (y != player->get_position().y || x != player->get_position().x)) {
-        continue;
-      }
-
+  for (int y = player_pos.y -fov_range; y <= player_pos.y +fov_range; y++) {
+    for (int x = player_pos.x -fov_range; x <= player_pos.x +fov_range; x++) {
       print_tile(x, y);
       Game::level->set_discovered(x, y);
     }
