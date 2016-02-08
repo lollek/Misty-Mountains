@@ -108,6 +108,7 @@ private:
   // player_pack_management.cc
   bool pack_show_equip();
   bool pack_show_drop();
+  bool pack_show_remove();
 
   // player_pack.cc
   static std::string  equipment_pos_to_string(Equipment pos);

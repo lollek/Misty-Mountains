@@ -67,6 +67,32 @@ bool Player::pack_show_drop() {
   }
 }
 
+bool Player::pack_show_remove() {
+  for (;;) {
+    pack_print_equipment();
+    Game::io->message("remove what item? (ESC to abort)");
+
+    char ch = io_readchar(true);
+    Game::io->clear_message();
+
+    if (ch == KEY_ESCAPE) {
+      return false;
+    }
+
+    size_t position = static_cast<size_t>(ch - 'a');
+    if (position < equipment.size()) {
+      if (equipment.at(position) == nullptr) {
+        return false;
+      }
+
+      pack_unequip(static_cast<Equipment>(position), false);
+      return equipment.at(position) == nullptr;
+    }
+  }
+}
+
+
+
 bool Player::pack_show() {
   enum cur_win_t { INVENTORY, EQUIPMENT };
   cur_win_t current_window = INVENTORY;
@@ -123,10 +149,13 @@ bool Player::pack_show() {
       } break;
 
       case EQUIPMENT: {
-        size_t position = static_cast<size_t>(ch - 'a');
-        if (position < equipment.size()) {
-          //return equipment->at(position).ptr;
-          break;
+        switch (ch) {
+          case 'r': {
+            if (pack_show_remove()) {
+              touchwin(stdscr);
+              return true;
+            }
+          } break;
         }
       } break;
     }
