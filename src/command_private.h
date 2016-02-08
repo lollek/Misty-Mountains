@@ -23,6 +23,7 @@ bool command_rest();                  // Rest until full hp
 bool command_run(char ch, bool cautiously); // Run in a direction
 void command_shell();                 // Let them escape for a while
 bool command_show_inventory();        // Print player inventory
+bool command_show_equipment();        // Print player equpment
 bool command_take_off(enum equipment_pos pos); // Unequip something
 bool command_throw();                 // Throw or shoot something*/
 bool command_use_stairs(char up_or_down); // Go to next/previous level

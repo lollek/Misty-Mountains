@@ -136,7 +136,7 @@ command_do(char ch)
     case 'Y': case 'U': case 'B': case 'N':
       return command_run(ch, false);
     case 'A': return command_attack(true);
-    case 'I': return pack_print_equipment();
+    case 'I': return command_show_equipment();
     case 'O': return option();
     case 'P': return command_ring_put_on();
     case 'Q': return command_quit();

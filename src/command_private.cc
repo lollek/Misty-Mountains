@@ -401,6 +401,17 @@ command_shell()
 }
 
 bool
+command_show_equipment()
+{
+  pack_print_equipment();
+  Game::io->message("--Press any key to continue--");
+  io_readchar(false);
+  pack_clear_inventory();
+  Game::io->clear_message();
+  return false;
+}
+
+bool
 command_show_inventory()
 {
   if (pack_is_empty())

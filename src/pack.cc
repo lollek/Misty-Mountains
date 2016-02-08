@@ -359,35 +359,58 @@ pack_find_magic_item(void)
   return nullptr;
 }
 
-Item*
-pack_get_item(std::string const& purpose, int type)
-{
+Item* pack_get_item(std::string const& purpose, int type) {
   if (pack_count_items_of_type(type) < 1) {
     Game::io->message("You have no item to " + purpose);
     return nullptr;
   }
 
-  pack_print_inventory(type);
-  Game::io->message("which object do you want to " + purpose + "?");
-  char ch = io_readchar(true);
-  Game::io->clear_message();
+  enum cur_win_t { INVENTORY, EQUIPMENT };
+  cur_win_t current_window = INVENTORY;
 
-  pack_clear_inventory();
+  for (;;) {
+    switch (current_window) {
+      case INVENTORY: pack_print_inventory(type); break;
+      case EQUIPMENT: pack_print_equipment(); break;
+    }
 
-  if (ch == KEY_ESCAPE || ch == KEY_SPACE)
-  {
+    Game::io->message("which object do you want to " + purpose + "?");
+    char ch = io_readchar(true);
     Game::io->clear_message();
-    return nullptr;
-  }
 
-  for (Item* obj : *player_pack) {
-    if (obj->o_packch == ch) {
-      return obj;
+    pack_clear_inventory();
+
+    if (ch == KEY_SPACE) {
+      if (current_window == INVENTORY) {
+        current_window = EQUIPMENT;
+      } else if (current_window == EQUIPMENT) {
+        current_window = INVENTORY;
+      }
+      continue;
+    }
+
+    if (ch == KEY_ESCAPE) {
+      Game::io->clear_message();
+      return nullptr;
+    }
+
+    switch (current_window) {
+      case INVENTORY: {
+        for (Item* obj : *player_pack) {
+          if (obj->o_packch == ch) {
+            return obj;
+          }
+        }
+      } break;
+
+      case EQUIPMENT: {
+        size_t position = static_cast<size_t>(ch - 'a');
+        if (position < equipment->size()) {
+          return equipment->at(position).ptr;
+        }
+      } break;
     }
   }
-
-  Game::io->message("'" + string(1, ch) + "' is not a valid item");
-  return nullptr;
 }
 
 bool
@@ -455,10 +478,7 @@ pack_print_equipment(void)
   move(orig_pos.y, orig_pos.x);
   wrefresh(equipscr);
   delwin(equipscr);
-  Game::io->message("--Press any key to continue--");
-  io_readchar(false);
-  touchwin(stdscr);
-  Game::io->clear_message();
+  untouchwin(stdscr);
   return false;
 }
 
