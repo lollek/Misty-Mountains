@@ -154,17 +154,6 @@ strucpy(char* dst, char const* src, size_t len)
   *dst = '\0';
 }
 
-bool
-diag_ok(Coordinate const* sp, Coordinate const* ep)
-{
-  if (ep->x < 0 || ep->x >= NUMCOLS || ep->y <= 0 || ep->y >= NUMLINES - 1)
-    return false;
-  if (ep->x == sp->x || ep->y == sp->y)
-    return true;
-  return (Game::level->can_step(sp->x, ep->y) &&
-          Game::level->can_step(ep->x, sp->y));
-}
-
 int
 dist(int y1, int x1, int y2, int x2)
 {

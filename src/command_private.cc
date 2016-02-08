@@ -53,7 +53,7 @@ static bool command_attack_bow(Coordinate const* delta)
 static bool command_attack_melee(bool fight_to_death, Coordinate const& delta)
 {
   Monster* mp = Game::level->get_monster(delta);
-  if (mp != nullptr && diag_ok(&player->get_position(), &delta))
+  if (mp != nullptr)
   {
     if (fight_to_death)
     {

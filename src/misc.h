@@ -19,7 +19,6 @@ char rnd_thing(void);         /* Pick a random thing appropriate for this level 
 /* Copy string using unctrl for things */
 void strucpy(char* s1, char const* s2, size_t len);
 
-bool diag_ok(Coordinate const* sp, Coordinate const* ep); /* Check if move is legal if diagonal */
 /** Dist
  * Calculate the "distance" between to points.  Actually,
  * this calculates d^2, not d, but that's good enough for

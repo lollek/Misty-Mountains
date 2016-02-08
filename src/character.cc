@@ -98,14 +98,6 @@ Coordinate Character::possible_random_move() {
     return ret;
   }
 
-  // Now check to see if that's a legal move.
-  // If not, don't move.(I.e., bump into the wall or whatever)
-  if (!diag_ok(&position, &ret)) {
-    ret.x = position.x;
-    ret.y = position.y;
-    return ret;
-  }
-
   if (!Game::level->can_step(x, y)) {
     ret.x = position.x;
     ret.y = position.y;

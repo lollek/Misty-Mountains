@@ -51,11 +51,6 @@ static Coordinate chase(Monster& monster, Coordinate const& target) {
   for (xy.x = max(mon_pos.x - 1, 0); xy.x <= min(mon_pos.x + 1, NUMCOLS -1); xy.x++) {
     for (xy.y = max(mon_pos.y - 1, 0); xy.y <= min(mon_pos.y + 1, NUMLINES - 2); xy.y++) {
 
-      // If we cannot move there, skip it;
-      if (!diag_ok(&mon_pos, &xy)) {
-        continue;
-      }
-
       if (Game::level->can_step(xy.x, xy.y)) {
 
         // Cannot walk on a scare monster scroll

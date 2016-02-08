@@ -73,8 +73,7 @@ static void stop_on_interesting_stuff(Coordinate const& nh, int dx, int dy) {
       // to it (not diagonal)
       Tile::Type tile = Game::level->get_tile(x, y);
       Coordinate tile_coord(x, y);
-      if ((tile == Tile::Stairs || tile == Tile::Trap || tile == Tile::OpenDoor) &&
-          diag_ok(&nh, &tile_coord)) {
+      if ((tile == Tile::Stairs || tile == Tile::Trap || tile == Tile::OpenDoor)) {
         player->set_not_running();
         return;
       }
@@ -220,12 +219,6 @@ move_do_loop(int dx, int dy) {
     if (nh.x < 1 || nh.x >= NUMCOLS -1 || nh.y < 1 || nh.y >= NUMLINES - 1) {
       loop = move_do_loop_wall(after, dx, dy);
       continue;
-    }
-
-    // Refuse illegal moves
-    if (!diag_ok(&player->get_position(), &nh)) {
-      player->set_not_running();
-      return false;
     }
 
     // If we end up in the same position, stop so we don't deadlock
