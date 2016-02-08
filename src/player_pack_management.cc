@@ -1,7 +1,34 @@
+#include <list>
+
 #include "game.h"
 
-
 #include "player.h"
+
+using namespace std;
+
+bool Player::pack_show_equip() {
+  for (;;) {
+    pack_print_inventory(0);
+    Game::io->message("Equip what item? (ESC to abort)");
+
+    char ch = io_readchar(true);
+    Game::io->clear_message();
+
+    if (ch == KEY_ESCAPE) {
+      return false;
+    }
+
+    for (Item* obj : pack) {
+      if (obj->o_packch == ch) {
+        if (player->pack_equip(obj, false)) {
+          Game::io->clear_message();
+          return true;
+        }
+        break;
+      }
+    }
+  }
+}
 
 bool Player::pack_show() {
   enum cur_win_t { INVENTORY, EQUIPMENT };
@@ -40,20 +67,9 @@ bool Player::pack_show() {
     switch (current_window) {
       case INVENTORY: {
         if (ch == 'e') {
-          Game::io->message("Equip what item?");
-          ch = io_readchar(true);
-          Game::io->clear_message();
-
-          for (Item* obj : pack) {
-            if (obj->o_packch == ch) {
-              if (player->pack_equip(obj, false)) {
-                Game::io->clear_message();
-                return true;
-              }
-              break;
-            }
+          if (pack_show_equip()) {
+            return true;
           }
-
         }
       } break;
 

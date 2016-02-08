@@ -105,6 +105,9 @@ private:
   bool         senses_monsters;
   int          speed;
 
+  // player_pack_management.cc
+  bool pack_show_equip();
+
   // player_pack.cc
   static std::string  equipment_pos_to_string(Equipment pos);
   static std::vector<Equipment> all_rings();
