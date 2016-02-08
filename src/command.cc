@@ -29,7 +29,7 @@ using namespace std;
 static bool
 unknown_command(char ch)
 {
-  Game::io->message("illegal command '" + string(1, UNCTRL(ch)) + "'");
+  Game::io->message("illegal command '" + string(1, ch) + "'");
   return false;
 }
 
