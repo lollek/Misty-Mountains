@@ -50,22 +50,18 @@ wand_spell_drain_health(void) {
   // Add nearby monsters to a list
   vector<Monster*> drainee;
   bool in_passage = player->get_room()->r_flags & ISGONE;
-  Coordinate const& player_pos = player->get_position();
-  struct room *corp = Game::level->get_tile(player_pos) == Tile::Door
-    ? Game::level->get_passage(player_pos)
-    : nullptr;
 
   for (Monster* monster : Game::level->monsters) {
 
     // Monsters in same room
     if (monster->get_room() == player->get_room() ||
-        monster->get_room() == corp) {
+        monster->get_room() == nullptr) {
       drainee.push_back(monster);
     }
 
     // Nearby monster in same passage
     else if (in_passage && Game::level->get_tile(monster->get_position()) == Tile::Door &&
-        Game::level->get_passage(monster->get_position()) == player->get_room()) {
+             player->get_room() == nullptr) {
       drainee.push_back(monster);
     }
   }

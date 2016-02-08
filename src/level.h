@@ -29,12 +29,9 @@ public:
   Tile::Type get_tile(Coordinate const& coord);
   size_t get_trap_type(int x, int y);
   size_t get_trap_type(Coordinate const& coord);
-  size_t get_passage_number(int x, int y);
-  size_t get_passage_number(Coordinate const& coord);
   bool get_random_room_coord(room* room, Coordinate* coord, int tries, bool monster);
   room* get_room(Coordinate const& coord);
   room* get_random_room();
-  room* get_passage(Coordinate const& coord);
   Coordinate const& get_stairs_pos() const;
   int get_stairs_x() const;
   int get_stairs_y() const;
@@ -54,8 +51,6 @@ public:
   void set_tile(Coordinate const& coord, Tile::Type tile);
   void set_trap_type(int x, int y, Trap::Type type);
   void set_trap_type(Coordinate const& coord, Trap::Type type);
-  void set_passage_number(int x, int y, size_t number);
-  void set_passage_number(Coordinate const& coord, size_t number);
 
   // Misc
   void wizard_show_passages();
@@ -92,7 +87,7 @@ private:
   void place_door(room* room, Coordinate* coord);
   void place_passage(Coordinate* coord);
   void connect_passages(int r1, int r2);
-  void number_passage(int x, int y);
+  void number_passage(int x, int y, bool new_passage_number);
 
   // Misc
   Tile& tile(int x, int y);

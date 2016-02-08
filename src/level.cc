@@ -133,17 +133,18 @@ void Level::create_stairs() {
 
 
 Level::Level() {
-
-  clear();
-  rooms.resize(9);
+  tiles.resize(MAXLINES * MAXCOLS);
   if (player != nullptr) {
     player->set_previous_room(nullptr);
   }
-  tiles.resize(MAXLINES * MAXCOLS);
-  passages.resize(12);
 
+  clear();
+
+  rooms.resize(9);
   create_rooms();
+
   create_passages();
+
   Game::levels_without_food++;
   create_loot();
   create_traps();
@@ -271,14 +272,6 @@ void Level::set_trap_type(Coordinate const& coord, Trap::Type type) {
   set_trap_type(coord.x, coord.y, type);
 }
 
-void Level::set_passage_number(int x, int y, size_t num) {
-  tile(x, y).passage_number = num;
-}
-
-void Level::set_passage_number(Coordinate const& coord, size_t num) {
-  set_passage_number(coord.x, coord.y, num);
-}
-
 size_t Level::get_trap_type(int x, int y) {
   return tile(x, y).trap_type;
 }
@@ -287,20 +280,7 @@ size_t Level::get_trap_type(Coordinate const& coord) {
   return get_trap_type(coord.x, coord.y);
 }
 
-size_t Level::get_passage_number(int x, int y) {
-  return tile(x, y).passage_number;
-}
-
-size_t Level::get_passage_number(Coordinate const& coord) {
-  return get_passage_number(coord.x, coord.y);
-}
-
 room* Level::get_room(Coordinate const& coord) {
-
-  if (is_passage(coord)) {
-    return get_passage(coord);
-  }
-
   for (struct room& room : rooms) {
     if (coord.x <= room.r_pos.x + room.r_max.x
         && room.r_pos.x <= coord.x
@@ -310,13 +290,8 @@ room* Level::get_room(Coordinate const& coord) {
     }
   }
 
-  // Not sure if this should be an error, or just if monster is in corridor?
-  //error("Coordinate was not in any room");
+  // Was corridor, probably
   return nullptr;
-}
-
-room* Level::get_passage(Coordinate const& coord) {
-  return &passages.at(get_passage_number(coord));
 }
 
 Coordinate const& Level::get_stairs_pos() const {

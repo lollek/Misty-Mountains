@@ -283,7 +283,12 @@ void IO::print_level_layout() {
 }
 
 void IO::refresh() {
-  print_room(player->get_room());
+  room* player_room = player->get_room();
+  if (player_room == nullptr) {
+    print_player_vision();
+  } else {
+    print_room(player_room);
+  }
 
   refresh_statusline();
   move(player->get_position().y, player->get_position().x);

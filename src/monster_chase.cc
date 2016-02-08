@@ -99,83 +99,36 @@ chase_do(Monster* monster)
     error("monster = null");
   }
 
-  // Room of chaser
-  room* rer = monster->get_room();
-
   // If gold has been taken, run after hero
-  if (monster->is_greedy() && rer->r_goldval == 0) {
+  room* chaser_room = Game::level->get_room(monster->get_position());
+  if (monster->is_greedy() && chaser_room != nullptr && chaser_room->r_goldval == 0) {
     monster->t_dest = &player->get_position();
   }
 
-  // Find room of chasee
-  room* ree = monster->t_dest == &player->get_position()
-    ? player->get_room()
-    : Game::level->get_room(*monster->t_dest);
-
-
-  // If the object of our desire is in a different room,
-  // and we are not in a corridor, run to the door nearest to
-  // our goal
-  //
-  // We don't count doors as inside rooms for this routine
-  bool door = Game::level->get_tile(monster->get_position()) == Tile::Door;
-  Coordinate target;
-  for (;;) {
-    if (rer != ree) {
-      for (int i = 0, mindist = 32767; i < rer->r_nexits; ++i) {
-        int curdist = dist_cp(monster->t_dest, &rer->r_exit[i]);
-        if (curdist < mindist) {
-          target = rer->r_exit[i];
-          mindist = curdist;
-        }
-      }
-
-      if (door) {
-        rer = Game::level->get_passage(monster->get_position());
-        door = false;
-        continue;
-      }
-
-    } else {
-      target = *monster->t_dest;
-      if (monster_try_breathe_fire_on_player(*monster)) {
-        return 0;
-      }
-    }
-    break;
+  Coordinate target = *monster->t_dest;
+  if (monster_try_breathe_fire_on_player(*monster)) {
+    return 0;
   }
 
-   // This now contains what we want to run to this time
-   // so we run to it.  If we hit it we either want to fight it
-   // or stop running
-  bool stoprun = false; // true means we are there
   Coordinate chase_coord = chase(*monster, target);
-  if (dist_cp(&chase_coord, &target) == 0 ||
-      chase_coord == player->get_position()) {
 
-    // If we have run into the player, fight it
+  // If we have reached the target, do stuff
+  if (dist_cp(&chase_coord, &target) == 0) {
+    // Reached player, and want to fight
     if (chase_coord == player->get_position()) {
       return fight_against_player(monster);
 
-    // If we have run into something else we like, pick it up
+    // Reached shiny thing
     } else if (target == *monster->t_dest) {
       for (Item *obj : Game::level->items) {
         if (monster->t_dest == &obj->get_position()) {
           Game::level->items.remove(obj);
           monster->t_pack.push_back(obj);
           monster_find_new_target(monster);
+          monster->set_not_running();
           break;
         }
       }
-
-      if (monster->get_type() != 'F') {
-        stoprun = true;
-      }
-    }
-
-  } else {
-    if (monster->get_type() == 'F') {
-      return 0;
     }
   }
 
@@ -183,6 +136,7 @@ chase_do(Monster* monster)
     return 1;
   }
 
+  // Show movement
   if (chase_coord != monster->get_position()) {
     Tile::Type ch = Game::level->get_tile(chase_coord);
     Tile::Type prev_ch = Game::level->get_tile(monster->get_position());
@@ -217,11 +171,6 @@ chase_do(Monster* monster)
     monster->set_room(Game::level->get_room(chase_coord));
     monster->set_position(chase_coord);
     Game::level->set_monster(chase_coord, monster);
-  }
-
-  // And stop running if need be
-  if (stoprun && (&monster->get_position() == monster->t_dest)) {
-    monster->set_not_running();
   }
 
   return 0;

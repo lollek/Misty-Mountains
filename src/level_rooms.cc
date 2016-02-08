@@ -319,13 +319,14 @@ room_enter(Coordinate const& cp) {
 void
 room_leave(Coordinate const& cp)
 {
+  (void)cp;
   struct room* rp = player->get_room();
 
   if (rp->r_flags & ISMAZE) {
     return;
   }
 
-  player->set_room(Game::level->get_passage(cp));
+  player->set_room(nullptr);
 
   // If we leave dark rooms, we want to hide everything inside of it
   if (rp->r_flags & ISDARK) {

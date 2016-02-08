@@ -1,8 +1,6 @@
 #include <cstdlib>
 #include <exception>
 
-using namespace std;
-
 #include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
@@ -13,48 +11,7 @@ using namespace std;
 
 #include "level.h"
 
-static int pnum;
-static bool newpnum;
-
-/** numpass:
- * Number a passageway square and its brethren */
-void
-Level::number_passage(int x, int y)
-{
-  if (x >= NUMCOLS || x < 0 || y >= NUMLINES || y <= 0) {
-    return;
-  }
-
-  if (get_passage_number(x, y) != 0) {
-    return;
-  }
-
-  if (newpnum) {
-    pnum++;
-    newpnum = false;
-  }
-
-  /* check to see if it is a door or secret door, i.e., a new exit,
-   * or a numerable type of place */
-  Tile::Type tile = get_tile(x, y);
-  if (tile == Tile::Door || (!is_real(x, y) && tile == Tile::Wall)) {
-    struct room& rp = passages.at(static_cast<size_t>(pnum));
-    rp.r_exit[rp.r_nexits].y = y;
-    rp.r_exit[rp.r_nexits++].x = x;
-  }
-
-  else if (!is_passage(x, y)) {
-    return;
-  }
-
-  set_passage_number(x, y, static_cast<size_t>(pnum));
-
-  /* recurse on the surrounding places */
-  number_passage(x, y + 1);
-  number_passage(x, y - 1);
-  number_passage(x + 1, y);
-  number_passage(x - 1, y);
-}
+using namespace std;
 
 /** door:
  * Add a door or possibly a secret door.  Also enters the door in
@@ -236,6 +193,8 @@ Level::create_passages()
     bool ingraph;         /* this room in graph already? */
   };
 
+  passages.clear();
+
   vector<Destination> destinations {
     { { 0, 1, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
     { { 1, 0, 1, 0, 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
@@ -247,11 +206,6 @@ Level::create_passages()
     { { 0, 0, 0, 0, 1, 0, 1, 0, 1 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
     { { 0, 0, 0, 0, 0, 1, 0, 1, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
   };
-
-  for (room& passage : passages) {
-  //            r_pos   r_max   r_gold r_goldval r_flags        r_nexits r_exit[12]
-    passage = { {0, 0}, {0, 0}, {0, 0}, 0,       ISGONE|ISDARK, 0,       {{0,0}} };
-  }
 
   if (destinations.size() != 9) {
     error("Expected 9 rooms in destinations");
@@ -348,15 +302,6 @@ Level::create_passages()
   /* Assign a number to each passageway */
   for (room& passage : passages) {
     passage.r_nexits = 0;
-  }
-
-  pnum = 0;
-  newpnum = false;
-  for (struct room& room : rooms) {
-    for (int j = 0; j < room.r_nexits; ++j) {
-      newpnum = true;
-      number_passage(room.r_exit[j].x, room.r_exit[j].y);
-    }
   }
 }
 

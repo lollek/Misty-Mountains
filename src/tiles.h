@@ -19,7 +19,6 @@ struct Tile {
   bool       is_passage;
   bool       is_discovered;
   bool       is_real;
-  size_t     passage_number;
   Trap::Type trap_type;
   Monster*   monster;
 };
