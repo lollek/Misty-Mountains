@@ -608,12 +608,6 @@ pack_find_arrow(void)
 void
 pack_identify_item(void)
 {
-  if (pack_is_empty())
-  {
-    Game::io->message("you don't have anything in your pack to identify");
-    return;
-  }
-
   Item* obj = pack_get_item("identify", 0);
   if (obj == nullptr)
     return;
