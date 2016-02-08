@@ -8,7 +8,6 @@
 #include "scrolls.h"
 #include "io.h"
 #include "armor.h"
-#include "pack.h"
 #include "daemons.h"
 #include "colors.h"
 #include "level.h"
@@ -126,7 +125,6 @@ Game::Game(string const& whoami_)
   Wand::init_wands();                   // Materials of wands
   Daemons::init_daemons();              // Over-time-effects
   Monster::init_monsters();             // Monster types
-  init_pack();                          // Player pack
   Trap::init_traps();                   // Trap types
   Game::new_level(Game::current_level); // Level (and player)
 
@@ -138,7 +136,6 @@ Game::Game(string const& whoami_)
 
 Game::~Game() {
   Trap::free_traps();
-  free_pack();
   Monster::free_monsters();
   Daemons::free_daemons();
   Wand::free_wands();

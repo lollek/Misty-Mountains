@@ -5,7 +5,6 @@
 #include "game.h"
 #include "command.h"
 #include "io.h"
-#include "pack.h"
 #include "player.h"
 #include "rings.h"
 #include "os.h"

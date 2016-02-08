@@ -13,7 +13,6 @@
 #include "monster.h"
 #include "options.h"
 #include "os.h"
-#include "pack.h"
 #include "player.h"
 #include "rogue.h"
 
@@ -40,7 +39,7 @@ static Weapon::Type random_weapon_type() {
   error("Error! Sum of probabilities is not 100%");
 }
 
-Weapon* Weapon::clone() const {
+class Weapon* Weapon::clone() const {
   return new Weapon(*this);
 }
 

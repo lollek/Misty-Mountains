@@ -12,7 +12,6 @@
 #include "rogue.h"
 #include "level.h"
 #include "death.h"
-#include "pack.h"
 
 #include "score.h"
 
@@ -251,8 +250,8 @@ score_win_and_exit(void)
   mvaddstr(LINES - 1, 0, "--Press space to continue--");
   refresh();
   io_wait_for_key(KEY_SPACE);
-  pack_gold += pack_evaluate();
-  score_show_and_exit(pack_gold, 2, ' ');
+  player->give_gold(static_cast<int>(player->pack_print_value()));
+  score_show_and_exit(player->get_gold(), 2, ' ');
 }
 
 

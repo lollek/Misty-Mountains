@@ -6,7 +6,6 @@
 #include "game.h"
 #include "command.h"
 #include "io.h"
-#include "pack.h"
 #include "score.h"
 #include "misc.h"
 #include "level_rooms.h"

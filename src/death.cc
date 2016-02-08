@@ -11,7 +11,6 @@ using namespace std;
 #include "io.h"
 #include "misc.h"
 #include "monster.h"
-#include "pack.h"
 #include "score.h"
 
 #include "death.h"
@@ -49,14 +48,15 @@ death_reason(char buf[], int reason)
 void
 death(int monst)
 {
-  pack_gold -= pack_gold / 10;
+  player->give_gold(-player->get_gold() / 10);
 
   Game::io->refresh();
   Game::io->message("You die!");
   io_readchar(false);
 
-  pack_evaluate();
-  score_show_and_exit(pack_gold, pack_contains_amulet() ? 3 : 0, static_cast<char>(monst));
+  player->pack_print_value();
+  score_show_and_exit(player->get_gold(), player->pack_contains_amulet() ? 3 : 0,
+                      static_cast<char>(monst));
 }
 
 

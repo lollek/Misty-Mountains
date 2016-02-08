@@ -6,7 +6,6 @@
 #include "error_handling.h"
 #include "game.h"
 #include "Coordinate.h"
-#include "pack.h"
 #include "rings.h"
 #include "misc.h"
 #include "io.h"
@@ -50,52 +49,52 @@ Player::Player() :
   //        str, xp, lvl, armor, hp, dmg
   Character(16,  0,  1,   10,    12, {{1,4}}, Coordinate(), nullptr, 0, '@'),
   previous_room(nullptr), senses_monsters(false), speed(0),
+  pack(), equipment(equipment_size(), nullptr), gold(0),
   nutrition_left(get_starting_nutrition()) {
 
   /* Give him some food */
-  pack_add(new Food(), true);
+  pack_add(new Food(), true, false);
 
   /* And his suit of armor */
-  Armor* armor = new Armor(Armor::RING_MAIL, false);
-  armor->set_identified();
-  armor->modify_armor(-1);
-  pack_equip_item(armor);
+  class Armor* armor_ = new class Armor(Armor::RING_MAIL, false);
+  armor_->set_identified();
+  armor_->modify_armor(-1);
+  pack_equip(armor_, true);
 
   /* Give him his weaponry.  First a mace. */
-  Weapon* mace = new Weapon(Weapon::MACE, false);
+  class Weapon* mace = new class Weapon(Weapon::MACE, false);
   mace->set_hit_plus(1);
   mace->set_damage_plus(1);
   mace->set_identified();
-  pack_equip_item(mace);
+  pack_equip(mace, true);
 
   /* Now a +1 bow */
-  Weapon* bow = new Weapon(Weapon::BOW, false);
+  class Weapon* bow = new class Weapon(Weapon::BOW, false);
   bow->set_hit_plus(1);
   bow->set_identified();
-  pack_add(bow, true);
-  command_weapon_set_last_used(bow);
+  pack_equip(bow, true);
 
   /* Now some arrows */
-  Weapon* arrow = new Weapon(Weapon::ARROW, false);
+  class Weapon* arrow = new class Weapon(Weapon::ARROW, false);
   arrow->o_count  = os_rand_range(15) + 25;
   arrow->set_identified();
-  pack_add(arrow, true);
+  pack_add(arrow, true, false);
 }
 
 int Player::get_armor() const {
   // If we are naked, use base armor, otherwise use armor's
-  Item const* const arm = pack_equipped_item(EQUIPMENT_ARMOR);
-  int ac = arm ? arm->get_armor() : Character::get_armor();
+  Item const* const arm = equipment.at(static_cast<size_t>(Armor));
+  int ac = arm != nullptr ? arm->get_armor() : Character::get_armor();
 
   // If weapon help protection, add it
-  Item const* const weapon = pack_equipped_item(EQUIPMENT_RHAND);
-  if (weapon)
+  Item const* const weapon = equipment.at(static_cast<size_t>(Weapon));
+  if (weapon != nullptr) {
     ac -= weapon->get_armor();
+  }
 
   // If rings help, add their stats as well
-  for (int i = 0; i < PACK_RING_SLOTS; ++i)
-  {
-    Item const* ring = pack_equipped_item(pack_ring_slots[i]);
+  for (Equipment position : all_rings()) {
+    Item const* ring = equipment.at(static_cast<size_t>(position));
     if (ring != nullptr && ring->o_which == Ring::Type::PROTECT)
       ac -= ring->get_armor();
   }
@@ -189,9 +188,8 @@ void Player::waste_time(int rounds) const {
 
 int Player::get_strength_with_bonuses() const {
   int bonuses = 0;
-  for (int i = 0; i < PACK_RING_SLOTS; ++i)
-  {
-    Item const* ring = pack_equipped_item(pack_ring_slots[i]);
+  for (Equipment position : all_rings()) {
+    Item const* ring = equipment.at(static_cast<size_t>(position));
     if (ring != nullptr && ring->o_which == Ring::Type::ADDSTR)
       bonuses += ring->get_armor();
   }
@@ -199,13 +197,14 @@ int Player::get_strength_with_bonuses() const {
 }
 
 bool Player::saving_throw(int which) const {
-  if (which == VS_MAGIC)
-    for (int i = 0; i < PACK_RING_SLOTS; ++i)
-    {
-      Item* ring = pack_equipped_item(pack_ring_slots[i]);
-      if (ring != nullptr && ring->o_which == Ring::Type::PROTECT)
+  if (which == VS_MAGIC) {
+    for (Equipment position : all_rings()) {
+      Item const* ring = equipment.at(static_cast<size_t>(position));
+      if (ring != nullptr && ring->o_which == Ring::Type::PROTECT) {
         which -= ring->get_armor();
+      }
     }
+  }
 
   int need = 14 + which - get_level() / 2;
   return (roll(1, 20) >= need);
@@ -529,9 +528,8 @@ void Player::check_for_level_up() {
 
 
 bool Player::has_ring_with_ability(int ability) const {
-  for (int i = 0; i < PACK_RING_SLOTS; ++i) {
-
-    Item* ring = pack_equipped_item(pack_ring_slots[i]);
+  for (Equipment position : all_rings()) {
+    Item const* ring = equipment.at(static_cast<size_t>(position));
     if (ring != nullptr && ring->o_which == ability)
       return true;
   }
@@ -539,7 +537,7 @@ bool Player::has_ring_with_ability(int ability) const {
 }
 
 void Player::rust_armor() {
-  Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  Item* arm = equipment.at(static_cast<size_t>(Armor));
   if (arm == nullptr || arm->o_type != IO::Armor || arm->o_which == Armor::Type::LEATHER ||
       arm->get_armor() >= 9) {
     return;
@@ -564,3 +562,38 @@ room* Player::get_previous_room() const {
   return previous_room;
 }
 
+vector<Equipment> Player::all_rings() {
+  return {Ring1, Ring2};
+}
+
+int Player::equipment_food_drain_amount() {
+  int total_eat = 0;
+  vector<int> uses {
+    1, /* R_PROTECT */  1, /* R_ADDSTR   */  1, /* R_SUSTSTR  */
+    1, /* R_SEARCH  */  1, /* R_SEEINVIS */  0, /* R_NOP      */
+    0, /* R_AGGR    */  1, /* R_ADDHIT   */  1, /* R_ADDDAM   */
+    2, /* R_REGEN   */ -1, /* R_DIGEST   */  0, /* R_TELEPORT */
+    1, /* R_STEALTH */  1, /* R_SUSTARM  */
+  };
+
+  for (Equipment position : all_rings()) {
+    Item *ring = equipment.at(position);
+    if (ring != nullptr) {
+      total_eat += uses.at(static_cast<size_t>(ring->o_which));
+    }
+  }
+
+  return total_eat;
+}
+
+void Player::pack_uncurse() {
+  for (Item* item : pack) {
+    item->set_not_cursed();
+  }
+
+  for (Item* equip : equipment) {
+    if (equip != nullptr) {
+      equip->set_not_cursed();
+    }
+  }
+}

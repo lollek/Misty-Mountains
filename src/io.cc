@@ -19,7 +19,6 @@
 #include "misc.h"
 #include "options.h"
 #include "os.h"
-#include "pack.h"
 #include "player.h"
 #include "rogue.h"
 
@@ -287,7 +286,7 @@ void IO::refresh_statusline() {
   // Move to statusline and print
   mvprintw(NUMLINES -1, 0,
       "Level: %d  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  Arm: %-2d  Exp: %d/%d  %s",
-      Game::current_level, pack_gold, hpwidth, player->get_health(), hpwidth,
+      Game::current_level, player->get_gold(), hpwidth, player->get_health(), hpwidth,
       player->get_max_health(), player->get_strength(), player->get_default_strength(),
       player->get_armor(), player->get_level(), player->get_experience(),
       player->get_hunger_state().c_str());

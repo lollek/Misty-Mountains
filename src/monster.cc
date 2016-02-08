@@ -14,7 +14,6 @@
 #include "error_handling.h"
 #include "game.h"
 #include "io.h"
-#include "pack.h"
 #include "scrolls.h"
 #include "rings.h"
 #include "level_rooms.h"
@@ -185,7 +184,7 @@ Monster::Monster(char type, Coordinate const& pos, struct room* room,
   // they also give more experience
   gain_experience(extra_experience(get_level(), get_max_health()));
 
-  if (player->has_ring_with_ability(Ring::Type::AGGR)) {
+  if (player != nullptr && player->has_ring_with_ability(Ring::Type::AGGR)) {
     monster_start_running(&pos);
   }
 
@@ -456,14 +455,14 @@ monster_do_special_ability(Monster** monster)
       monster_remove_from_screen(monster, false);
       *monster = nullptr;
 
-      pack_gold -= Gold::random_gold_amount();
+      player->give_gold(-Gold::random_gold_amount());
       if (!player->saving_throw(VS_MAGIC)) {
-        pack_gold -=  Gold::random_gold_amount() + Gold::random_gold_amount() +
-                      Gold::random_gold_amount() + Gold::random_gold_amount();
+        player->give_gold(-Gold::random_gold_amount() + Gold::random_gold_amount() +
+                      Gold::random_gold_amount() + Gold::random_gold_amount());
       }
 
-      if (pack_gold < 0) {
-        pack_gold = 0;
+      if (player->get_gold() < 0) {
+        player->give_gold(-player->get_gold());
       }
       Game::io->message("your pack_gold feels lighter");
     } return;
@@ -471,11 +470,11 @@ monster_do_special_ability(Monster** monster)
 
     /* Nymph's steal a magic item and disappears */
     case 'N': {
-      Item* steal = pack_find_magic_item();
+      Item* steal = player->pack_find_magic_item();
       if (steal != nullptr) {
         monster_remove_from_screen(monster, false);
         *monster = nullptr;
-        pack_remove(steal, false, false);
+        player->pack_remove(steal, false, false);
         Game::io->message("your pack feels lighter");
         delete steal;
       }

@@ -5,8 +5,6 @@
 
 #include <string>
 
-using namespace std;
-
 #include "error_handling.h"
 #include "game.h"
 #include "armor.h"
@@ -18,13 +16,14 @@ using namespace std;
 #include "move.h"
 #include "options.h"
 #include "os.h"
-#include "pack.h"
 #include "player.h"
 #include "rings.h"
 #include "rogue.h"
 #include "level_rooms.h"
 
 #include "misc.h"
+
+using namespace std;
 
 int
 roll(int number, int sides)

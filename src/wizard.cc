@@ -11,7 +11,6 @@
 #include "options.h"
 #include "io.h"
 #include "armor.h"
-#include "pack.h"
 #include "rings.h"
 #include "misc.h"
 #include "level.h"
@@ -198,7 +197,7 @@ void wizard_create_item(void) {
     } break;
 
     case IO::Weapon: {
-      obj = new Weapon(static_cast<Weapon::Type>(which), false);
+      obj = new class Weapon(static_cast<Weapon::Type>(which), false);
 
       Game::io->message("blessing? (+,-,n)");
       char bless = io_readchar(true);
@@ -213,7 +212,7 @@ void wizard_create_item(void) {
     } break;
 
     case IO::Armor: {
-      obj = new Armor(false);
+      obj = new class Armor(false);
 
       Game::io->message("blessing? (+,-,n)");
       char bless = io_readchar(true);
@@ -256,7 +255,7 @@ void wizard_create_item(void) {
   if (obj == nullptr) {
     error("object was null");
   }
-  pack_add(obj, false);
+  player->pack_add(obj, false, false);
 }
 
 void wizard_show_map(void) {
@@ -289,19 +288,19 @@ void wizard_levels_and_gear(void) {
   player->raise_level(9);
 
   /* Give him a sword (+1,+1) */
-  if (pack_equipped_item(EQUIPMENT_RHAND) == nullptr) {
-    Weapon* weapon = new Weapon(Weapon::TWOSWORD, false);
-    weapon->set_hit_plus(1);
-    weapon->set_damage_plus(1);
-    weapon->set_identified();
-    pack_equip_item(weapon);
+  class Weapon* weapon = new class Weapon(Weapon::TWOSWORD, false);
+  weapon->set_hit_plus(1);
+  weapon->set_damage_plus(1);
+  weapon->set_identified();
+  if (!player->pack_equip(weapon, false)) {
+    delete weapon;
   }
 
   /* And his suit of armor */
-  if (pack_equipped_item(EQUIPMENT_ARMOR) == nullptr) {
-    Armor* armor = new Armor(Armor::Type::PLATE_MAIL, false);
-    armor->set_armor(-5);
-    armor->set_identified();
-    pack_equip_item(armor);
+  class Armor* armor = new class Armor(Armor::Type::PLATE_MAIL, false);
+  armor->set_armor(-5);
+  armor->set_identified();
+  if (!player->pack_equip(armor, false)) {
+    delete armor;
   }
 }

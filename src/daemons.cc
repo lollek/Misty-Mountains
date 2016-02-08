@@ -3,7 +3,6 @@
 #include "error_handling.h"
 #include "game.h"
 #include "io.h"
-#include "pack.h"
 #include "command.h"
 #include "monster.h"
 #include "rings.h"
@@ -172,10 +171,9 @@ void Daemons::daemon_doctor() {
     player->restore_health(os_rand_range(player->get_level() - 7) + 1, false);
   }
 
-  for (int i = 0; i < PACK_RING_SLOTS; ++i) {
-    Item *ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != nullptr && ring->o_which == Ring::Type::REGEN)
-      player->restore_health(1, false);
+  int rings_of_regen = static_cast<int>(player->pack_num_items(IO::Ring, Ring::REGEN));
+  if (rings_of_regen > 0) {
+    player->restore_health(rings_of_regen, false);
   }
 
   if (ohp != player->get_health())
@@ -188,15 +186,6 @@ void Daemons::daemon_runners_move() {
 }
 
 void Daemons::daemon_ring_abilities() {
-  for (int i = 0; i < PACK_RING_SLOTS; ++i) {
-    Item* obj = pack_equipped_item(pack_ring_slots[i]);
-    if (obj == nullptr) {
-      continue;
-
-    } else if (obj->o_which == Ring::Type::SEARCH) {
-      player->search();
-    } else if (obj->o_which == Ring::Type::TELEPORT && os_rand_range(50) == 0) {
-      player->teleport(nullptr);
-    }
-  }
+  player->equipment_run_abilities();
 }
+

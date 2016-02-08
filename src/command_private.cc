@@ -2,8 +2,6 @@
 
 #include <string>
 
-using namespace std;
-
 #include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
@@ -17,7 +15,6 @@ using namespace std;
 #include "move.h"
 #include "options.h"
 #include "os.h"
-#include "pack.h"
 #include "player.h"
 #include "potions.h"
 #include "rings.h"
@@ -27,12 +24,15 @@ using namespace std;
 #include "traps.h"
 #include "wand.h"
 #include "weapons.h"
+#include "gold.h"
 
 #include "command_private.h"
 
+using namespace std;
+
 static bool command_attack_bow(Coordinate const* delta)
 {
-  Item* ptr = pack_find_arrow();
+  Item* ptr = player->pack_find_item(IO::Ammo, Weapon::ARROW);
 
   if (ptr == nullptr)
   {
@@ -40,7 +40,7 @@ static bool command_attack_bow(Coordinate const* delta)
     return true;
   }
 
-  Item* arrow = pack_remove(ptr, true, false);
+  Item* arrow = player->pack_remove(ptr, true, false);
   io_missile_motion(arrow, delta->y, delta->x);
   Monster* monster_at_pos = Game::level->get_monster(arrow->get_position());
 
@@ -98,7 +98,7 @@ command_use_stairs(char up_or_down)
 
   else if (up_or_down == '<') /* UP */
   {
-    bool has_amulet = pack_contains_amulet();
+    bool has_amulet = player->pack_contains_amulet();
 
     if (Game::current_level < 0) {
       error("Level should not go lower than 0");
@@ -136,7 +136,7 @@ command_attack(bool fight_to_death)
   delta.x += dir->x;
   delta.y += dir->y;
 
-  Item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
+  Item* weapon = player->equipped_weapon();
 
   return weapon != nullptr && weapon->o_which == Weapon::BOW
     ? command_attack_bow(dir)
@@ -146,7 +146,7 @@ command_attack(bool fight_to_death)
 bool
 command_name_item()
 {
-  Item* obj = pack_get_item("rename", PACK_RENAMEABLE);
+  Item* obj = player->pack_find_item("rename", 0);
 
   if (obj == nullptr)
     return false;
@@ -155,6 +155,7 @@ command_name_item()
   string* guess = nullptr;
   switch (obj->o_type)
   {
+    case IO::Amulet: already_known = true; break;
     case IO::Food: Game::io->message("Don't play with your food!"); return false;
 
     case IO::Ring:
@@ -235,18 +236,85 @@ command_quit()
 }
 
 bool
-command_pick_up() {
+command_pick_up(bool force) {
   if (player->is_levitating()) {
-    Game::io->message("You can't. You're floating off the ground!");
+    if (force) {
+      Game::io->message("You can't. You're floating off the ground!");
+    }
+    return false;
   }
 
+
+  // Collect all items which are at this location
   Coordinate const& coord = player->get_position();
-  if (Game::level->get_item(coord) == nullptr) {
+  list<Item*> items_here;
+  for (Item* item : Game::level->items) {
+    if (item->get_position() == coord) {
+      items_here.push_back(item);
+
+      // If the item was of someone's desire, they will get mad and attack
+      monster_aggro_all_which_desire_item(item);
+    }
+  }
+
+  if (force && items_here.empty()) {
     Game::io->message("nothing to pick up");
     return false;
   }
 
-  pack_pick_up(coord, true);
+  // No iterator in this loop, so we can delete while looping
+  auto it = items_here.begin();
+  while (it != items_here.end()) {
+    Item* obj = *it;
+    switch (obj->o_type) {
+
+      case IO::Gold: {
+        player->get_room()->r_goldval = 0;
+        Gold* gold = dynamic_cast<Gold*>(obj);
+        if (gold == nullptr) {
+          error("casted gold to Gold* which became null");
+        }
+
+        int value = gold->get_amount();
+        if (value > 0) {
+          Game::io->message("you found " + to_string(value) + " gold pieces");
+        }
+
+        player->give_gold(value);
+        Game::level->items.remove(obj);
+
+        delete obj;
+        it = items_here.erase(it);
+      } break;
+
+      case IO::Potion: case IO::Weapon: case IO::Ammo: case IO::Food: case IO::Armor:
+      case IO::Scroll: case IO::Amulet: case IO::Ring: case IO::Wand: {
+        if (force || option_autopickup(obj->o_type)) {
+          player->pack_add(obj, false, true);
+          it = items_here.erase(it);
+        } else {
+          ++it;
+        }
+      } break;
+
+      default: {
+        error("Unknown type to pick up");
+      }
+    }
+  }
+
+  if (!items_here.empty()) {
+    stringstream os;
+    os << "items here: ";
+    for (Item* item : items_here) {
+      os << item->get_description();
+      if (item != items_here.back()) {
+        os << ", ";
+      }
+    }
+    Game::io->message(os.str());
+  }
+
   return true;
 }
 
@@ -267,18 +335,13 @@ command_help()
     {'A',	"	attack till either of you dies",	true},
     {'B',	"	run down & left",			false},
     {'H',	"	run left",				false},
-    {'I',	"	equipment",				true},
     {'J',	"	run down",				false},
     {'K',	"	run up",				false},
     {'L',	"	run right",				false},
     {'N',	"	run down & right",			false},
-    {'P',	"	put on ring",				true},
     {'Q',	"	quit",					true},
-    {'R',	"	remove ring",				true},
     {'S',	"	save game",				true},
-    {'T',	"	take armor off",			true},
     {'U',	"	run up & right",			false},
-    {'W',	"	wear armor",				true},
     {'Y',	"	run up & left",				false},
     {'Z',	"	rest until healed",			true},
     {'\0',	"	<CTRL><dir>: run till adjacent",	true},
@@ -300,8 +363,6 @@ command_help()
     {'s',	"	search for trap/secret door",		true},
     {'t',	"	throw something",			true},
     {'u',	"	up & right",				true},
-    {'w',	"	wield a weapon",			true},
-    {'x',	"	wield last used weapon",		true},
     {'y',	"	up & left",				true},
     {'z',	"	zap a wand in a direction",		true},
     {CTRL('B'),	"	run down & left until adjacent",	false},
@@ -400,44 +461,6 @@ command_shell()
   clearok(stdscr, true);
 }
 
-bool
-command_show_equipment()
-{
-  pack_print_equipment();
-  Game::io->message("--Press any key to continue--");
-  io_readchar(false);
-  pack_clear_inventory();
-  Game::io->clear_message();
-  return false;
-}
-
-bool
-command_show_inventory()
-{
-  if (pack_is_empty())
-  {
-    Game::io->message("You inventory is empty");
-    return false;
-  }
-
-  pack_print_inventory(0);
-  Game::io->message("--Press any key to continue--");
-  io_readchar(false);
-  pack_clear_inventory();
-  Game::io->clear_message();
-  return false;
-}
-
-bool
-command_take_off(enum equipment_pos pos)
-{
-  if (pack_equipped_item(pos) == nullptr)
-    return false;
-
-  pack_unequip(pos, false);
-  return pack_equipped_item(pos) != nullptr;
-}
-
 bool command_throw()
 {
   const Coordinate* dir = get_dir();
@@ -448,7 +471,7 @@ bool command_throw()
   int xdelta = dir->x;
   dir = nullptr;
 
-  Item* obj = pack_get_item("throw", 0);
+  Item* obj = player->pack_find_item("throw", 0);
   if (obj == nullptr)
     return false;
 
@@ -458,7 +481,7 @@ bool command_throw()
     return false;
   }
 
-  obj = pack_remove(obj, true, false);
+  obj = player->pack_remove(obj, true, false);
   io_missile_motion(obj, ydelta, xdelta);
   Monster* monster_at_pos = Game::level->get_monster(obj->get_position());
 
@@ -491,23 +514,6 @@ bool command_throw()
 
 }
 
-bool
-command_wield()
-{
-  Item* obj = pack_get_item("wield", IO::Weapon);
-
-  if (obj == nullptr)
-    return false;
-
-  if (obj->o_type == IO::Armor)
-  {
-    Game::io->message("you can't wield armor");
-    return command_wield();
-  }
-
-  return command_weapon_wield(obj);
-}
-
 bool command_rest()
 {
   if (monster_is_anyone_seen_by_player())
@@ -535,7 +541,7 @@ bool command_rest()
 bool
 command_eat()
 {
-  Item* obj = pack_get_item("eat", IO::Food);
+  Item* obj = player->pack_find_item("eat", IO::Food);
   if (obj == nullptr)
     return false;
 
@@ -560,7 +566,7 @@ command_eat()
   else
     Game::io->message("that tasted good");
 
-  pack_remove(obj, false, false);
+  player->pack_remove(obj, false, false);
   return true;
 }
 
@@ -582,7 +588,7 @@ command_run(char ch, bool cautiously)
 
 bool command_drop()
 {
-  Item* obj = pack_get_item("drop", 0);
+  Item* obj = player->pack_find_item("drop", 0);
   if (obj == nullptr)
     return false;
 
@@ -594,7 +600,7 @@ bool command_drop()
     Game::io->clear_message();
   }
 
-  obj = pack_remove(obj, true, drop_all);
+  obj = player->pack_remove(obj, true, drop_all);
 
   /* Link it into the level object list */
   Game::level->items.push_back(obj);
@@ -605,100 +611,10 @@ bool command_drop()
   return true;
 }
 
-bool command_wear() {
-  Item* obj = pack_get_item("wear", IO::Armor);
-
-  if (obj == nullptr) {
-    return false;
-  }
-
-  if (obj->o_type != IO::Armor) {
-    Game::io->message("you can't wear that");
-    return command_wear();
-  }
-
-  if (pack_equipped_item(EQUIPMENT_ARMOR) != nullptr) {
-    if (!pack_unequip(EQUIPMENT_ARMOR, false)) {
-      return true;
-    }
-  }
-
-  player->waste_time(1);
-  pack_remove(obj, false, true);
-  pack_equip_item(obj);
-
-  Game::io->message("now wearing " + obj->get_description());
-  return true;
-}
-
-bool
-command_ring_put_on()
-{
-  Item* obj = pack_get_item("put on", IO::Ring);
-
-  /* Make certain that it is somethings that we want to wear */
-  if (obj == nullptr)
-    return false;
-
-  Ring* ring = dynamic_cast<Ring*>(obj);
-  if (obj->o_type != IO::Ring || ring == nullptr)
-  {
-    Game::io->message("not a ring");
-    return command_ring_put_on();
-  }
-
-  /* Try to put it on */
-  if (!pack_equip_item(obj))
-  {
-    Game::io->message("you already have a ring on each hand");
-    return false;
-  }
-  pack_remove(obj, false, true);
-
-  /* Calculate the effect it has on the poor guy. */
-  switch (obj->o_which)
-  {
-    case Ring::AGGR: monster_aggravate_all(); break;
-  }
-
-  string msg = ring->get_description();
-  msg.at(0) = static_cast<char>(tolower(msg.at(0)));
-  Game::io->message("now wearing " + msg);
-  return true;
-}
-
-bool
-command_ring_take_off()
-{
-  enum equipment_pos ring;
-
-  /* Try right, then left */
-  if (pack_equipped_item(EQUIPMENT_RRING) != nullptr)
-    ring = EQUIPMENT_RRING;
-  else
-    ring = EQUIPMENT_LRING;
-
-  Item* obj = pack_equipped_item(ring);
-
-  if (!pack_unequip(ring, false))
-    return false;
-
-  switch (obj->o_which)
-  {
-    case Ring::ADDSTR:
-      break;
-
-    case Ring::SEEINVIS:
-      Daemons::daemon_extinguish_fuse(Daemons::daemon_function::remove_true_sight);
-      break;
-  }
-  return true;
-}
-
 bool
 command_read_scroll() {
 
-  Item* obj = pack_get_item("read", IO::Scroll);
+  Item* obj = player->pack_find_item("read", IO::Scroll);
   if (obj == nullptr) {
     return false;
   }
@@ -711,7 +627,7 @@ command_read_scroll() {
 
   /* Get rid of the thing */
   bool discardit = scroll->o_count == 1;
-  pack_remove(scroll, false, false);
+  player->pack_remove(scroll, false, false);
 
   Scroll::Type subtype = scroll->get_type();
   bool was_known = Scroll::is_known(subtype);
@@ -735,39 +651,6 @@ command_read_scroll() {
 
   return true;
 
-}
-
-static Item* last_wielded_weapon = nullptr;
-
-bool command_weapon_wield(Item* weapon) {
-  Item* currently_wielding = pack_equipped_item(EQUIPMENT_RHAND);
-  if (currently_wielding != nullptr) {
-    if (!pack_unequip(EQUIPMENT_RHAND, true)) {
-      return true;
-    }
-  }
-
-  pack_remove(weapon, false, true);
-  pack_equip_item(weapon);
-
-  Game::io->message("wielding " + weapon->get_description());
-  last_wielded_weapon = currently_wielding;
-  return true;
-}
-
-void command_weapon_set_last_used(Item* weapon) {
-  last_wielded_weapon = weapon;
-}
-
-bool command_weapon_wield_last_used() {
-
-  if (last_wielded_weapon == nullptr || !pack_contains(last_wielded_weapon)) {
-    last_wielded_weapon = nullptr;
-    Game::io->message("you have no weapon to switch to");
-    return false;
-  }
-
-  return command_weapon_wield(last_wielded_weapon);
 }
 
 bool command_open() {

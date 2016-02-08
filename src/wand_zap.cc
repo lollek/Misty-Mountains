@@ -7,7 +7,6 @@
 #include "player.h"
 #include "game.h"
 #include "colors.h"
-#include "pack.h"
 #include "fight.h"
 #include "misc.h"
 
@@ -124,7 +123,7 @@ wand_spell_cancel(Monster& target)
 static void
 wand_spell_magic_missile(int dy, int dx)
 {
-  Weapon bolt(Weapon::DAGGER);
+  class Weapon bolt(Weapon::DAGGER);
   bolt.o_type    = '*';
   bolt.set_hit_plus(100);
   bolt.set_damage_plus(1);
@@ -132,7 +131,7 @@ wand_spell_magic_missile(int dy, int dx)
   bolt.set_attack_damage({0, 0});
   bolt.set_throw_damage({1, 4});
 
-  Item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
+  Item* weapon = player->equipped_weapon();
   if (weapon != nullptr) {
     bolt.o_launch = weapon->o_which;
   }
@@ -161,7 +160,7 @@ wand_zap(void)
     return false;
   }
 
-  Item* obj = pack_get_item("zap with", IO::Wand);
+  Item* obj = player->pack_find_item("zap with", IO::Wand);
   Wand* wand = dynamic_cast<Wand*>(obj);
   if (obj == nullptr)
     return false;

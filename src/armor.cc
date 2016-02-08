@@ -2,20 +2,19 @@
 #include <vector>
 #include <sstream>
 
-using namespace std;
-
 #include "error_handling.h"
 #include "io.h"
 #include "item.h"
 #include "misc.h"
 #include "options.h"
 #include "os.h"
-#include "pack.h"
 #include "player.h"
 #include "rings.h"
 #include "rogue.h"
 
 #include "armor.h"
+
+using namespace std;
 
 Armor::~Armor() {}
 
@@ -24,7 +23,7 @@ bool Armor::is_magic() const {
       get_armor() != Armor::ac(subtype));
 }
 
-Armor* Armor::clone() const {
+class Armor* Armor::clone() const {
   return new Armor(*this);
 }
 

@@ -14,7 +14,6 @@
 #include "monster.h"
 #include "options.h"
 #include "os.h"
-#include "pack.h"
 #include "player.h"
 #include "potions.h"
 #include "rings.h"
@@ -235,7 +234,7 @@ void Scroll::free_scrolls() {
 }
 
 static bool enchant_players_armor() {
-  Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  Item* arm = player->equipped_armor();
 
   if (arm == nullptr) {
     switch (os_rand_range(3)) {
@@ -326,7 +325,7 @@ static bool food_detection() {
 
 static bool player_enchant_weapon() {
 
-  Item* weapon = pack_equipped_item(EQUIPMENT_RHAND);
+  Item* weapon = player->equipped_weapon();
   if (weapon == nullptr) {
     switch (os_rand_range(2)) {
       case 0: Game::io->message("you feel a strange sense of loss"); break;
@@ -352,18 +351,13 @@ static bool player_enchant_weapon() {
 }
 
 static void remove_curse() {
-  for (int i = 0; i < NEQUIPMENT; ++i) {
-    if (pack_equipped_item(static_cast<equipment_pos>(i)) != nullptr) {
-      pack_equipped_item(static_cast<equipment_pos>(i))->set_not_cursed();
-    }
-  }
-
+  player->pack_uncurse();
   Game::io->message("you feel as if somebody is watching over you");
 }
 
 static bool protect_armor() {
 
-  Item* arm = pack_equipped_item(EQUIPMENT_ARMOR);
+  Item* arm = player->equipped_armor();
   if (arm == nullptr) {
     switch (os_rand_range(2)) {
       case 0: Game::io->message("you feel a strange sense of loss"); break;
@@ -418,7 +412,7 @@ void Scroll::read() const {
         Game::io->message(os.str());
       }
       set_known(Scroll::ID);
-      pack_identify_item();
+      player->pack_identify_item();
     } break;
 
     case Scroll::MAP: {

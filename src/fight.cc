@@ -10,7 +10,6 @@ using namespace std;
 #include "command.h"
 #include "io.h"
 #include "armor.h"
-#include "pack.h"
 #include "daemons.h"
 #include "monster.h"
 #include "rings.h"
@@ -30,21 +29,8 @@ using namespace std;
 static void
 add_ring_attack_modifiers(attack_modifier& mod) {
 
-  for (int i = 0; i < PACK_RING_SLOTS; ++i) {
-
-    Item const* ring_thing = pack_equipped_item(pack_ring_slots[i]);
-    if (ring_thing == nullptr) {
-      continue;
-    }
-
-    Item const* ring = ring_thing;
-
-    if (ring->o_which == Ring::Type::ADDDAM) {
-      mod.to_dmg += ring->get_armor();
-    } else if (ring->o_which == Ring::Type::ADDHIT) {
-      mod.to_dmg += ring->get_armor();
-    }
-  }
+  mod.to_dmg += player->pack_num_items(IO::Ring, Ring::ADDDAM);
+  mod.to_hit += player->pack_num_items(IO::Ring, Ring::ADDHIT);
 }
 
 // Calculate the damage an attacker does.
@@ -80,7 +66,7 @@ calculate_attacker(Character const& attacker, Item* weapon, bool thrown)
     add_ring_attack_modifiers(mod);
     if (thrown) {
 
-      Item const* held_weapon = pack_equipped_item(EQUIPMENT_RHAND);
+      Item const* held_weapon = player->equipped_weapon();
 
       // If the weapon was an arrow and player is holding the bow. Add
       // modifiers

@@ -4,7 +4,6 @@
 #include "command.h"
 #include "game.h"
 #include "os.h"
-#include "pack.h"
 
 #include "player.h"
 
@@ -39,29 +38,9 @@ void Player::eat() {
   hunger_state = HungerState::Normal;
 }
 
-static int ring_drain_amount() {
-  int total_eat = 0;
-  vector<int> uses {
-    1, /* R_PROTECT */  1, /* R_ADDSTR   */  1, /* R_SUSTSTR  */
-    1, /* R_SEARCH  */  1, /* R_SEEINVIS */  0, /* R_NOP      */
-    0, /* R_AGGR    */  1, /* R_ADDHIT   */  1, /* R_ADDDAM   */
-    2, /* R_REGEN   */ -1, /* R_DIGEST   */  0, /* R_TELEPORT */
-    1, /* R_STEALTH */  1, /* R_SUSTARM  */
-  };
-
-  for (int i = 0; i < PACK_RING_SLOTS; ++i) {
-    Item *ring = pack_equipped_item(pack_ring_slots[i]);
-    if (ring != nullptr) {
-      total_eat += uses.at(static_cast<size_t>(ring->o_which));
-    }
-  }
-
-  return total_eat;
-}
-
 void Player::digest_food() {
   int old_nutrition_left = nutrition_left;
-  nutrition_left -= 1 + ring_drain_amount() - pack_contains_amulet();
+  nutrition_left -= 1 + player->equipment_food_drain_amount() - pack_contains_amulet();
 
   if (nutrition_left < hunger_alert && old_nutrition_left >= hunger_alert) {
     hunger_state = HungerState::Hungry;

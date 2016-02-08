@@ -10,7 +10,6 @@
 #include "misc.h"
 #include "move.h"
 #include "options.h"
-#include "pack.h"
 #include "player.h"
 #include "potions.h"
 #include "rings.h"
@@ -107,7 +106,7 @@ command_do(char ch)
     case KEY_SPACE: return false;
     case KEY_ESCAPE: return command_stop(true);
     case '.': return true;
-    case ',': return command_pick_up();
+    case ',': return command_pick_up(true);
     case '>': return command_use_stairs(ch);
     case '<': return command_use_stairs(ch);
     case '?': return command_help();
@@ -121,14 +120,12 @@ command_do(char ch)
     case 'c': return command_close();
     case 'd': return command_drop();
     case 'e': return command_eat();
-    case 'i': return command_show_inventory();
+    case 'i': return player->pack_show();
     case 'o': return command_open();
     case 'q': return potion_quaff_something();
     case 'r': return command_read_scroll();
     case 's': player->search(); return true;
     case 't': return command_throw();
-    case 'w': return command_wield();
-    case 'x': return command_weapon_wield_last_used();
     case 'z': return wand_zap();
 
     /* Upper case */
@@ -136,13 +133,8 @@ command_do(char ch)
     case 'Y': case 'U': case 'B': case 'N':
       return command_run(ch, false);
     case 'A': return command_attack(true);
-    case 'I': return command_show_equipment();
     case 'O': return option();
-    case 'P': return command_ring_put_on();
     case 'Q': return command_quit();
-    case 'R': return command_ring_take_off();
-    case 'T': return command_take_off(EQUIPMENT_ARMOR);
-    case 'W': return command_wear();
     case 'Z': return command_rest();
 
     /* Ctrl case */
@@ -171,7 +163,6 @@ command_wizard_do(char ch)
       Game::io->message("@ " + to_string(c.x) + "," + to_string(c.y));
     } break;
     case 'C': wizard_create_item(); break;
-    case '$': Game::io->message("inpack = " + to_string(pack_count_items())); break;
     case '*' : wizard_list_items(); break;
     case CTRL('A'): Game::new_level(Game::current_level -1); break;
     case CTRL('Q'): Game::level->wizard_show_passages(); break;
@@ -182,12 +173,12 @@ command_wizard_do(char ch)
     case CTRL('F'): wizard_show_map(); break;
     case CTRL('I'): wizard_levels_and_gear(); break;
     case CTRL('T'): player->teleport(nullptr); break;
-    case CTRL('W'): pack_identify_item(); break;
+    case CTRL('W'): player->pack_identify_item(); break;
     case CTRL('X'): player->can_sense_monsters()
                     ? player->remove_sense_monsters()
                     : player->set_sense_monsters(); break;
     case CTRL('~'): {
-       Wand* wand = static_cast<Wand*>(pack_get_item("charge", IO::Wand));
+       Wand* wand = static_cast<Wand*>(player->pack_find_item("charge", IO::Wand));
        if (wand != nullptr) {
          wand->set_charges(10000);
        }
@@ -219,8 +210,8 @@ command_signal_quit(__attribute__((unused)) int sig)
   {
   /* Reset the signal in case we got here via an interrupt */
     signal(SIGINT, command_signal_leave);
-    pack_evaluate();
-    score_show_and_exit(pack_gold, 1, 0);
+    player->pack_print_value();
+    score_show_and_exit(player->get_gold(), 1, 0);
   }
   else
   {

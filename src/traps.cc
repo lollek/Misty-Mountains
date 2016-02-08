@@ -138,7 +138,7 @@ static Trap::Type trap_arrow_player(void) {
     }
 
   } else {
-    Item* arrow = new Weapon(Weapon::ARROW, false);
+    Item* arrow = new class Weapon(Weapon::ARROW, false);
     arrow->o_count = 1;
     arrow->set_position(player->get_position());
     weapon_missile_fall(arrow, false);
@@ -167,7 +167,7 @@ static Trap::Type trap_arrow_monster(Monster** victim_ptr) {
     }
 
   } else {
-    Item* arrow = new Weapon(Weapon::ARROW, false);
+    Item* arrow = new class Weapon(Weapon::ARROW, false);
     arrow->o_count = 1;
     arrow->set_position(victim->get_position());
     weapon_missile_fall(arrow, false);

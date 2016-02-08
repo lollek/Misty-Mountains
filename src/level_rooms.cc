@@ -7,7 +7,6 @@ using namespace std;
 #include "game.h"
 #include "coordinate.h"
 #include "io.h"
-#include "pack.h"
 #include "monster.h"
 #include "misc.h"
 #include "level.h"
@@ -232,8 +231,7 @@ Level::create_rooms() {
     }
 
     /* Put the gold in */
-    if (os_rand_range(2) == 0 &&
-        (!pack_contains_amulet() || Game::current_level >= Game::max_level_visited)) {
+    if (os_rand_range(2)) {
       get_random_room_coord(&room, &room.r_gold, 0, false);
       Gold *gold = new Gold();
       gold->set_position(room.r_gold);

@@ -9,7 +9,6 @@
 #include "misc.h"
 #include "options.h"
 #include "os.h"
-#include "pack.h"
 #include "player.h"
 #include "rogue.h"
 #include "weapons.h"

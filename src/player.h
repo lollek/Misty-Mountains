@@ -3,6 +3,16 @@
 #include "rogue.h"
 #include "monster.h"
 
+enum Equipment {
+  Armor,
+  Weapon,
+  BackupWeapon,
+  Ring1,
+  Ring2,
+  NEQUIPMENT
+};
+
+
 class Player : public Character {
 public:
   explicit Player();
@@ -47,6 +57,32 @@ public:
   int          get_nutrition_left() const;
   static int   get_starting_nutrition();
 
+  // player_pack_management.cc
+  bool pack_show();
+
+  // player_pack.cc
+  static size_t equipment_size();
+  static size_t pack_size();
+  bool          pack_add(Item* item, bool silent, bool from_floor);
+  Item*         pack_remove(Item* item, bool create_new, bool all);
+  Item*         pack_find_magic_item();
+  Item*         pack_find_item(int type, int subtype);
+  Item*         pack_find_item(std::string const& purpose, int subtype);
+  Item*         equipped_weapon();
+  Item*         equipped_armor();
+  size_t        pack_num_items(int type, int subtype);
+  bool          pack_contains_amulet();
+  bool          pack_contains(Item const* item);
+  size_t        pack_print_value();
+  bool          pack_equip(Item *item, bool silent);
+  bool          pack_unequip(Equipment pos, bool silent_on_success);
+  void          give_gold(int amount);
+  int           get_gold();
+  void          pack_identify_item();
+  void          equipment_run_abilities();
+  int           equipment_food_drain_amount();
+  void          pack_uncurse();
+
   // Misc
   bool saving_throw(int which) const;
   bool has_ring_with_ability(int ability) const;
@@ -63,11 +99,23 @@ public:
   std::string get_attack_string(bool successful_hit) const override;
   std::string get_name() const override;
 
+
 private:
   struct room* previous_room;
   bool         senses_monsters;
   int          speed;
 
+  // player_pack.cc
+  static std::string  equipment_pos_to_string(Equipment pos);
+  static std::vector<Equipment> all_rings();
+  std::list<Item*>    pack;
+  std::vector<Item*>  equipment;
+  int                 gold;
+
+  bool   pack_print_equipment();
+  bool   pack_print_inventory(int subtype);
+
+  // player_food.cc
   int          nutrition_left;
 };
 

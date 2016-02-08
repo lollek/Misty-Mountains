@@ -5,11 +5,11 @@
 #include "game.h"
 #include "coordinate.h"
 #include "scrolls.h"
+#include "command_private.h"
 #include "command.h"
 #include "traps.h"
 #include "io.h"
 #include "armor.h"
-#include "pack.h"
 #include "fight.h"
 #include "monster.h"
 #include "move.h"
@@ -21,6 +21,8 @@
 #include "level.h"
 #include "os.h"
 #include "rogue.h"
+
+using namespace std;
 
 static void stop_on_interesting_stuff(Coordinate const& nh, int dx, int dy) {
   if (!door_stop) {
@@ -168,7 +170,7 @@ move_do_loop_default(bool after, Coordinate& coord) {
 
   // If there was a monster there, fight it!
   if (Game::level->get_monster(coord) != nullptr) {
-    fight_against_monster(&coord, pack_equipped_item(EQUIPMENT_RHAND), false);
+    fight_against_monster(&coord, player->equipped_weapon(), false);
     return after;
   }
 
@@ -188,7 +190,7 @@ move_do_loop_default(bool after, Coordinate& coord) {
   // Try to pick up any items here
   Item *item = Game::level->get_item(coord);
   if (item != nullptr) {
-    pack_pick_up(item->get_position(), false);
+    command_pick_up(false);
     player->set_not_running();
   }
 

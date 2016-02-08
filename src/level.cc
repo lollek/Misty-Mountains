@@ -5,7 +5,6 @@
 #include "game.h"
 #include "traps.h"
 #include "io.h"
-#include "pack.h"
 #include "daemons.h"
 #include "monster.h"
 #include "misc.h"
@@ -64,7 +63,8 @@ void Level::create_loot() {
 
   // Once you have found the amulet, the only way to get new stuff is
   // go down into the dungeon.
-  if (pack_contains_amulet() && Game::current_level < Game::max_level_visited) {
+  if (player != nullptr && player->pack_contains_amulet() &&
+      Game::current_level < Game::max_level_visited) {
       return;
   }
 
@@ -89,7 +89,8 @@ void Level::create_loot() {
 
   // If he is really deep in the dungeon and he hasn't found the
   // amulet yet, put it somewhere on the ground
-  if (Game::current_level >= Game::amulet_min_level && !pack_contains_amulet()) {
+  if (player != nullptr && !player->pack_contains_amulet() &&
+      Game::current_level >= Game::amulet_min_level) {
     Amulet* amulet = new Amulet();
     items.push_back(amulet);
 

@@ -4,7 +4,6 @@
 
 #include "error_handling.h"
 #include "io.h"
-#include "pack.h"
 #include "level.h"
 #include "misc.h"
 #include "player.h"
@@ -284,7 +283,7 @@ void Potion::quaffed_by(Character& victim) {
 bool
 potion_quaff_something(void)
 {
-  Potion* obj = dynamic_cast<Potion*>(pack_get_item("quaff", IO::Potion));
+  Potion* obj = dynamic_cast<Potion*>(player->pack_find_item("quaff", IO::Potion));
   if (obj == nullptr) {
     return false;
 
@@ -296,7 +295,7 @@ potion_quaff_something(void)
 
   // Calculate the effect it has on the poor guy.
   bool discardit = obj->o_count == 1;
-  pack_remove(obj, false, false);
+  player->pack_remove(obj, false, false);
 
   obj->quaffed_by(*player);
 
