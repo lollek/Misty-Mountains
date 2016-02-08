@@ -349,7 +349,6 @@ command_help()
     {'^',	"	identify trap type",			true},
     {'a',	"	attack in a direction",			true},
     {'b',	"	down & left",				true},
-    {'d',	"	drop object",				true},
     {'e',	"	eat food",				true},
     {'h',	"	left",					true},
     {'i',	"	inventory",				true},
@@ -584,31 +583,6 @@ command_run(char ch, bool cautiously)
 
   runch = static_cast<char>(tolower(ch));
   return move_do(runch);
-}
-
-bool command_drop()
-{
-  Item* obj = player->pack_find_item("drop", 0);
-  if (obj == nullptr)
-    return false;
-
-  bool drop_all = false;
-  if (obj->o_count > 1)
-  {
-    Game::io->message("Drop all? (y/N) ");
-    drop_all = io_readchar(true) == 'y';
-    Game::io->clear_message();
-  }
-
-  obj = player->pack_remove(obj, true, drop_all);
-
-  /* Link it into the level object list */
-  Game::level->items.push_back(obj);
-
-  obj->set_position(player->get_position());
-
-  Game::io->message("dropped " + obj->get_description());
-  return true;
 }
 
 bool

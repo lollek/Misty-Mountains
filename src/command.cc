@@ -118,7 +118,6 @@ command_do(char ch)
       return move_do(ch);
     case 'a': return command_attack(false);
     case 'c': return command_close();
-    case 'd': return command_drop();
     case 'e': return command_eat();
     case 'i': return player->pack_show();
     case 'o': return command_open();

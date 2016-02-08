@@ -11,7 +11,6 @@ bool command_wizard_do(char ch);
 // In command_sub.c
 bool command_attack(bool fight_to_death); // Attack and fight something
 bool command_close();                  // Close door
-bool command_drop();                  // Drop something
 bool command_eat();                   // Eat something
 bool command_help();                  // Give command help
 bool command_identify_trap();         // Give the name of a trap
