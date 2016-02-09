@@ -197,7 +197,12 @@ void Ring::free_rings() {
 std::string Ring::get_description() const {
   stringstream os;
 
-  os << materials->at(subtype) << " ring";
+  os
+    << "a"
+    << vowelstr(materials->at(subtype))
+    << " "
+    << materials->at(subtype)
+    << " ring";
 
   if (Ring::is_known(subtype)) {
     os << " of " << Ring::name(subtype);
