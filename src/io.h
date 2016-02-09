@@ -1,5 +1,7 @@
 #pragma once
 
+#include <list>
+
 #include <curses.h>
 #include <string.h>
 
@@ -76,7 +78,7 @@ public:
 
   chtype colorize(chtype ch);
 
-  void repeat_last_message();
+  void repeat_last_messages();
   void clear_message();
   void show_extra_screen(std::string const& message);
 
@@ -87,7 +89,7 @@ public:
 
 
   // Temp var
-  std::string last_message;
+  std::list<std::string> last_messages;
   std::string message_buffer;
   WINDOW* extra_screen;
 

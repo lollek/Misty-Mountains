@@ -373,7 +373,7 @@ command_help()
     {CTRL('K'),	"	run up until adjacent",			false},
     {CTRL('L'),	"	run right until adjacent",		false},
     {CTRL('N'),	"	run down & right until adjacent",	false},
-    {CTRL('P'),	"	repeat last message",			true},
+    {CTRL('P'),	"	show previous messages",		true},
     {CTRL('R'),	"	redraw screen",				true},
     {CTRL('U'),	"	run up & right until adjacent",		false},
     {CTRL('Y'),	"	run up & left until adjacent",		false},

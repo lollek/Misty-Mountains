@@ -143,7 +143,7 @@ command_do(char ch)
     case CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
     case CTRL('Y'): case CTRL('U'): case CTRL('B'): case CTRL('N'):
       return command_run(UNCTRL(ch), true);
-    case CTRL('P'): Game::io->repeat_last_message(); return false;
+    case CTRL('P'): Game::io->repeat_last_messages(); return false;
     case CTRL('R'): clearok(curscr, true); wrefresh(curscr); return false;
     case CTRL('Z'): command_shell(); return false;
 

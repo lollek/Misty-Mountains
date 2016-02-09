@@ -26,7 +26,7 @@
 
 using namespace std;
 
-IO::IO() : last_message(), message_buffer(), extra_screen(nullptr) {
+IO::IO() : last_messages(), message_buffer(), extra_screen(nullptr) {
   initscr();  // Start up cursor package
 
   // Ncurses colors
@@ -295,8 +295,15 @@ void IO::refresh_statusline() {
   move(original_position.y, original_position.x);
 }
 
-void IO::repeat_last_message() {
-  message(last_message);
+void IO::repeat_last_messages() {
+  wclear(extra_screen);
+  wmove(extra_screen, 1, 0);
+  for (string const& msg : last_messages) {
+    waddch(extra_screen, '>');
+    waddstr(extra_screen, msg.c_str());
+    waddch(extra_screen, '\n');
+  }
+  show_extra_screen("Previous Messages: (press SPACE to return)");
 }
 
 string IO::read_string(WINDOW* win, string const* initial_string) {
@@ -437,7 +444,12 @@ void IO::message(string const& message) {
 
   message_buffer = os.str();
   mvaddstr(0, 0, message_buffer.c_str());
-  last_message = message_buffer;
+
+  last_messages.push_front(message_buffer);
+  if (last_messages.size() > 20) {
+    last_messages.pop_back();
+  }
+
   clrtoeol();
 }
 
