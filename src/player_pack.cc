@@ -418,15 +418,17 @@ bool Player::pack_equip(Item* item, bool silent) {
   // Some equipment types have several slots
   for (;;) {
     if (equipment.at(static_cast<size_t>(position)) == nullptr) {
-        equipment.at(static_cast<size_t>(position)) = item;
 
-      if (position == Armor) {
-        waste_time(1);
-      }
+      equipment.at(static_cast<size_t>(position)) = item;
+      pack_remove(item, false, true);
 
       string doing;
       switch (position) {
-        case Armor: doing = "wearing"; break;
+        case Armor: {
+          doing = "wearing";
+          waste_time(1);
+        } break;
+
         case Ring1: doing = "wearing"; break;
         case Ring2: {
           doing = "wearing";
@@ -441,11 +443,9 @@ bool Player::pack_equip(Item* item, bool silent) {
         case NEQUIPMENT: error("NEQUIPMENT received");
       }
 
-      pack_remove(item, false, true);
       if (!silent) {
         Game::io->message("now " + doing + " " + item->get_description());
       }
-
       return true;
 
     } else if (position == Ring1) {
@@ -456,10 +456,6 @@ bool Player::pack_equip(Item* item, bool silent) {
       if (pack_unequip(position, true)) {
         continue;
       }
-
-    } else if (position == Weapon) {
-      position = BackupWeapon;
-      continue;
 
     } else {
       return false;
