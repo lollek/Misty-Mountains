@@ -262,16 +262,6 @@ monster_notice_player(int y, int x)
       }
     }
   }
-
-  /* Let greedy ones guard gold */
-  if (monster->is_greedy() && !monster->is_chasing())
-  {
-    monster->set_target(player->get_room()->r_goldval
-        ? &player->get_room()->r_gold
-        : &player->get_position());
-    monster->set_chasing();
-  }
-
   return monster;
 }
 
@@ -310,8 +300,7 @@ monster_start_running(Coordinate const* runner)
   Monster *tp = Game::level->get_monster(*runner);
 
   monster_find_new_target(tp);
-  if (!tp->is_stuck())
-  {
+  if (!tp->is_stuck()) {
     tp->set_not_held();
     tp->set_chasing();
   }
@@ -839,4 +828,36 @@ void Monster::decrease_speed() {
     speed = -1;
   }
   turns_not_moved = 0;
+}
+
+void
+monster_find_new_target(Monster* monster)
+{
+  int prob = Monster::monsters->at(static_cast<size_t>(monster->get_type() - 'A')).m_carry;
+  if (prob <= 0 || monster->get_room() == player->get_room()
+      || monster_seen_by_player(monster)) {
+    monster->set_target(&player->get_position());
+    return;
+  }
+
+  for (Item* obj : Game::level->items) {
+    if (obj->o_type == IO::Scroll && obj->o_which == Scroll::SCARE)
+      continue;
+
+    if (Game::level->get_room(obj->get_position()) == monster->get_room() &&
+        os_rand_range(100) < prob)
+    {
+      auto result = find_if(Game::level->monsters.cbegin(), Game::level->monsters.cend(),
+          [&] (Monster const* m) {
+          return m->t_dest == &obj->get_position();
+      });
+
+      if (result == Game::level->monsters.cend()) {
+        monster->set_target(&obj->get_position());
+        return;
+      }
+    }
+  }
+
+  monster->set_target(&player->get_position());
 }

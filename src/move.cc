@@ -83,109 +83,26 @@ static void stop_on_interesting_stuff(Coordinate const& nh, int dx, int dy) {
   }
 }
 
-/** move_turn_ok:
- * Decide whether it is legal to turn onto the given space */
 static bool
-move_turn_ok(int y, int x)
-{
-  switch (Game::level->get_tile(x, y)) {
-    case Tile::Floor: case Tile::OpenDoor: case Tile::Stairs:
-      return true;
-
-    case Tile::Wall: case Tile::Trap: case Tile::ClosedDoor:
-      return false;
-  }
-}
-
-/** move_turnref:
- * Decide whether to refresh at a passage turning or not */
-static void
-move_turnref(void)
-{
-  if (!Game::level->is_discovered(player->get_position())) {
-    if (jump) {
-      leaveok(stdscr, true);
-      refresh();
-      leaveok(stdscr, false);
-    }
-    Game::level->set_discovered(player->get_position());
-  }
-}
-
-static bool
-move_do_loop_wall(bool& after, int& dx, int& dy) {
-  if (passgo && player->is_running()) {
-
-
-    if (dx != 0 && dy == 0) {
-      Coordinate const* player_pos = &player->get_position();
-      bool b1 = (player_pos->y != 1 && move_turn_ok(player_pos->y - 1, player_pos->x));
-      bool b2 = (player_pos->y != NUMLINES - 2 && move_turn_ok(player_pos->y + 1, player_pos->x));
-      if (!(b1 ^ b2)) {
-        return false;
-      }
-
-      if (b1) {
-        runch = 'k';
-        dy = -1;
-
-      } else {
-        runch = 'j';
-        dy = 1;
-      }
-
-      dx = 0;
-      move_turnref();
-      return true;
-
-    } else if (dx == 0 && dy != 0) {
-      Coordinate const* player_pos = &player->get_position();
-      bool b1 = (player_pos->x != 0 && move_turn_ok(player_pos->y, player_pos->x - 1));
-      bool b2 = (player_pos->x != NUMCOLS - 1 && move_turn_ok(player_pos->y, player_pos->x + 1));
-      if (!(b1 ^ b2)) {
-        return false;
-      }
-
-      if (b1) {
-        runch = 'h';
-        dx = -1;
-
-      } else {
-        runch = 'l';
-        dx = 1;
-      }
-
-      dy = 0;
-      move_turnref();
-      return true;
-    }
-  }
-  player->set_not_running();
-  after = false;
-  return false;
-}
-
-static bool
-move_do_loop_default(bool after, Coordinate& coord) {
+move_do_loop_default(Coordinate& coord) {
 
   // If there was a monster there, fight it!
   if (Game::level->get_monster(coord) != nullptr) {
     fight_against_monster(&coord, player->equipped_weapon(), false);
-    return after;
+    return true;
   }
 
   // If there was a trap, get trapped!
   if (Game::level->get_tile(coord) == Tile::Trap) {
     char ch = Trap::player(coord);
     if (ch == Trap::Door || ch == Trap::Teleport) {
-      return after;
+      return true;
     }
   }
 
   // Else, Move player
-  Coordinate old_position = player->get_position();
-  player->set_room(Game::level->get_room(old_position));
   player->set_position(coord);
+  player->set_room(Game::level->get_room(coord));
 
   // Try to pick up any items here
   Item *item = Game::level->get_item(coord);
@@ -194,77 +111,64 @@ move_do_loop_default(bool after, Coordinate& coord) {
     player->set_not_running();
   }
 
-  player->set_room(Game::level->get_room(coord));
 
-  return after;
+  return true;
 }
 
 static bool
 move_do_loop(int dx, int dy) {
-  bool loop = true;
-  bool after = true;
 
-  // If passgo is enabled and we are running, this function will loop until we
-  // reach something of interest. See move_do_loop_wall for this
-  while (loop) {
-
-    Coordinate nh;
-    nh.y = player->get_position().y + dy;
-    nh.x = player->get_position().x + dx;
-
-    // Stop running if we change rooms
-    if (Game::level->get_room(nh) != player->get_room()) {
-      player->set_not_running();
-    }
-
-    // If we are too close to the edge of map, treat is as wall automatically
-    if (nh.x < 1 || nh.x >= NUMCOLS -1 || nh.y < 1 || nh.y >= NUMLINES - 1) {
-      loop = move_do_loop_wall(after, dx, dy);
-      continue;
-    }
-
-    // If we end up in the same position, stop so we don't deadlock
-    if (player->is_running() && player->get_position() == nh) {
-      after = false;
-      player->set_not_running();
-    }
-
-    // Run a check if player wants to stop running
-    if (player->is_running()) {
-      stop_on_interesting_stuff(nh, dx, dy);
-    }
-
-    // Cannot escape from the flytrap
-    Monster* mon = Game::level->get_monster(nh);
-    if (player->is_held()) {
-      if (mon == nullptr || mon->get_type() != 'F') {
-        Game::io->message("you are being held");
-        return after;
-      }
-    }
-
-    // If it was a trap there, try to spring it!
-    // this will trigger for real in the move_do_loop_default function
-    Tile::Type ch = Game::level->get_tile(nh);
-    if (!Game::level->is_real(nh) && ch == Tile::Floor && !player->is_levitating()) {
-      ch = Tile::Trap;
-      Game::level->set_tile(nh, Tile::Trap);
-      Game::level->set_real(nh);
-    }
-
-    switch (ch) {
-      case Tile::Wall:
-      case Tile::ClosedDoor:
-        loop = move_do_loop_wall(after, dx, dy); break;
-
-      case Tile::Floor:
-      case Tile::Stairs:
-      case Tile::Trap:
-      case Tile::OpenDoor:
-        return move_do_loop_default(after, nh);
-    }
+  if (dx == 0 && dy == 0) {
+    player->set_not_running();
+    return true;
   }
-  return after;
+
+  Coordinate nh;
+  nh.y = player->get_position().y + dy;
+  nh.x = player->get_position().x + dx;
+
+  // Stop running if we change rooms
+  if (Game::level->get_room(nh) != player->get_room()) {
+    player->set_not_running();
+  }
+
+  // If we are too close to the edge of map, treat is as wall automatically
+  if (nh.x < 1 || nh.x >= NUMCOLS -1 || nh.y < 1 || nh.y >= NUMLINES - 1) {
+    player->set_not_running();
+    return true;
+  }
+
+  // Run a check if player wants to stop running
+  stop_on_interesting_stuff(nh, dx, dy);
+
+  // Cannot escape from the flytrap
+  if (player->is_held()) {
+    Game::io->message("you are being held");
+    return true;
+  }
+
+  // If it was a trap there, try to spring it!
+  // this will trigger for real in the move_do_loop_default function
+  Tile::Type ch = Game::level->get_tile(nh);
+  if (!Game::level->is_real(nh) && ch == Tile::Floor && !player->is_levitating()) {
+    ch = Tile::Trap;
+    Game::level->set_tile(nh, Tile::Trap);
+    Game::level->set_real(nh);
+  }
+
+  switch (ch) {
+    case Tile::Wall:
+    case Tile::ClosedDoor: {
+      player->set_not_running();
+      return false;
+    } 
+
+    case Tile::Floor:
+    case Tile::Stairs:
+    case Tile::Trap:
+    case Tile::OpenDoor:
+      return move_do_loop_default(nh);
+  }
 }
 
 
@@ -293,13 +197,10 @@ move_do(char ch) {
 
   // If we are confused, we don't decide ourselves where to stumble
   if (player->is_confused() && os_rand_range(5) != 0) {
+    player->set_not_running();
+    to_death = false;
 
     Coordinate nh = player->possible_random_move();
-    if (nh == player->get_position()) {
-      player->set_not_running();
-      to_death = false;
-      return false;
-    }
     dx = nh.x - player->get_position().x;
     dy = nh.y - player->get_position().y;
 
