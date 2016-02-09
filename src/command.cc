@@ -125,6 +125,7 @@ command_do(char ch)
     case 'r': return command_read_scroll();
     case 's': player->search(); return true;
     case 't': return command_throw();
+    case 'x': return player->pack_swap_weapons();
     case 'z': return wand_zap();
 
     /* Upper case */

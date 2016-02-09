@@ -363,6 +363,7 @@ command_help()
     {'s',	"	search for trap/secret door",		true},
     {'t',	"	throw something",			true},
     {'u',	"	up & right",				true},
+    {'x',	"	swap weapons",				true},
     {'y',	"	up & left",				true},
     {'z',	"	zap a wand in a direction",		true},
     {CTRL('B'),	"	run down & left until adjacent",	false},
@@ -661,7 +662,5 @@ bool command_close() {
     return false;
   }
 }
-
-
 
 

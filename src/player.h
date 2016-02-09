@@ -83,6 +83,7 @@ public:
   void          equipment_run_abilities();
   int           equipment_food_drain_amount();
   void          pack_uncurse();
+  bool          pack_swap_weapons();
 
   // Misc
   bool saving_throw(int which) const;

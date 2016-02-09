@@ -588,3 +588,19 @@ size_t Player::equipment_size() {
 size_t Player::pack_size() {
   return 22;
 }
+
+bool Player::pack_swap_weapons() {
+  Item* main_weapon = equipment.at(Weapon);
+  if (main_weapon != nullptr && main_weapon->is_cursed()) {
+    Game::io->message("you can't. It appears to be cursed");
+    return true;
+  }
+
+  Item *backup_weapon = equipment.at(BackupWeapon);
+
+  equipment.at(Weapon) = backup_weapon;
+  equipment.at(BackupWeapon) = main_weapon;
+
+  Game::io->message(equipment.at(Weapon)->get_description());
+  return true;
+}
