@@ -213,19 +213,16 @@ string Weapon::get_description() const {
     buffer << o_count << " " << obj_name << "s";
   }
 
-  int dices;
-  int sides;
-  if (o_type == IO::Ammo || o_which == Weapon::BOW) {
-    dices = get_throw_damage().dices;
-    sides = get_throw_damage().sides;
+  if (o_which == Weapon::BOW) {
+    buffer
+      << " (" << get_throw_damage().sides
+      << "d"  << get_throw_damage().dices << ")";
   } else if (o_type == IO::Weapon) {
-    dices = get_attack_damage().dices;
-    sides = get_attack_damage().sides;
-  } else {
-    error("Bad item type");
+    buffer
+      << " (" << get_attack_damage().sides
+      << "d"  << get_attack_damage().dices << ")";
   }
 
-  buffer << " (" << sides << "d" << dices << ")";
 
   if (identified) {
     buffer << " (";
