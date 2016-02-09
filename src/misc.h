@@ -16,9 +16,6 @@ int spread(int nm);            /* Give a spread around a given number (+/- 20%) 
 
 char rnd_thing(void);         /* Pick a random thing appropriate for this level */
 
-/* Copy string using unctrl for things */
-void strucpy(char* s1, char const* s2, size_t len);
-
 /** Dist
  * Calculate the "distance" between to points.  Actually,
  * this calculates d^2, not d, but that's good enough for

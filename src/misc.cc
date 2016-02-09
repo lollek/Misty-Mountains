@@ -139,20 +139,6 @@ rnd_thing(void)
   }
 }
 
-void
-strucpy(char* dst, char const* src, size_t len)
-{
-  if (len > MAXINP)
-    len = MAXINP;
-  while (len--)
-  {
-    if (isprint(*src) || *src == ' ')
-      *dst++ = *src;
-    src++;
-  }
-  *dst = '\0';
-}
-
 int
 dist(int y1, int x1, int y2, int x2)
 {
