@@ -14,9 +14,9 @@ Character::Character(int strength_, int experience_, int level_, int armor_,
   level(level_), armor(armor_), health(health_), attacks(attacks_),
   max_health(health), position(position_), room(room_), type(type_),
   confusing_attack(0), true_sight(0), blind(0), cancelled(0), levitating(0),
-  found(0), greedy(0), hasted(0), players_target(0), held(0), confused(0),
+  found(0), greedy(0), players_target(0), held(0), confused(0),
   invisible(0), mean(0), regenerating(0), running(0),
-  flying(0), slowed(0), stuck(0)
+  flying(0), stuck(0)
 {
   if (flags & 010000000000000000000) { greedy = true; }
   if (flags & 020000000000000000000) { mean = true; }
@@ -40,8 +40,6 @@ bool Character::is_running() const { return running; }
 bool Character::is_mean() const { return mean; }
 bool Character::is_greedy() const { return greedy; }
 bool Character::is_players_target() const { return players_target; }
-bool Character::is_slowed() const { return slowed; }
-bool Character::is_hasted() const { return hasted; }
 bool Character::is_flying() const { return flying; }
 
 void Character::set_blind() { blind = true; }
@@ -212,10 +210,6 @@ void Character::gain_experience(int experience_) {
 void Character::set_not_mean() { mean = false; }
 void Character::set_greedy() { greedy = true; }
 void Character::set_not_greedy() { greedy = false; }
-void Character::set_slowed() { slowed = true; }
-void Character::set_not_slowed() { slowed = false; }
-void Character::set_hasted() { hasted = true; }
-void Character::set_not_hasted() { hasted = false; }
 void Character::set_flying() { flying = true; }
 void Character::set_not_flying() { flying = false; }
 void Character::set_running() { running = true; }

@@ -30,8 +30,8 @@ public:
   struct room* get_previous_room() const;
 
   // Modifier
-  void increase_speed();
-  void decrease_speed();
+  void increase_speed() override;
+  void decrease_speed() override;
   void restore_strength() override;
   void modify_strength(int amount) override;
   void raise_level(int amount) override;

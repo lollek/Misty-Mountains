@@ -31,6 +31,8 @@ public:
   virtual void set_position(Coordinate const& position);
 
   // Modifiers
+  virtual void increase_speed() = 0;
+  virtual void decrease_speed() = 0;
   virtual void take_damage(int damage);
   virtual void gain_experience(int experience);
   virtual void restore_strength();
@@ -60,8 +62,6 @@ public:
   virtual bool is_mean() const;
   virtual bool is_greedy() const;
   virtual bool is_players_target() const;
-  virtual bool is_slowed() const;
-  virtual bool is_hasted() const;
   virtual bool is_flying() const;
 
   // Flag setters
@@ -93,10 +93,6 @@ public:
   virtual void set_not_greedy();
   virtual void set_players_target();
   virtual void set_not_players_target();
-  virtual void set_slowed();
-  virtual void set_not_slowed();
-  virtual void set_hasted();
-  virtual void set_not_hasted();
   virtual void set_flying();
   virtual void set_not_flying();
   virtual void set_running();
@@ -135,7 +131,6 @@ private:
   bool levitating;
   bool found;
   bool greedy;
-  bool hasted;
   bool players_target;
   bool held;
   bool confused;
@@ -144,7 +139,6 @@ private:
   bool regenerating;
   bool running;
   bool flying;
-  bool slowed;
   bool stuck;
 };
 

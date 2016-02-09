@@ -42,59 +42,59 @@ void Monster::init_monsters() {
 //      001000000000000000000: regen
 //      002000000000000000000: invis
   monsters = new vector<monster_template> const {
-//CARRY  FLAG                       exp,lvl, amr, dmg              */
+//CARRY  FLAG                   speed,  exp,lvl, amr, dmg              */
     { "aquator",
-     0,  020000000000000000000ULL,   20,  5,  18, {{0,1}}},
+     0,  020000000000000000000ULL,  1,   20,  5,  18, {{0,1}}},
     { "bat",
-     0,  040000000000000000000ULL,    1,  1,  17, {{1,2}}},
+     0,  040000000000000000000ULL,  1,    1,  1,  17, {{1,2}}},
     { "centaur",
-    15,  000000000000000000000ULL,   17,  4,  16, {{1,2},{1,5},{1,5}}},
+    15,  000000000000000000000ULL,  1,   17,  4,  16, {{1,2},{1,5},{1,5}}},
     { "dragon",
-   100,  020000000000000000000ULL, 5000, 10,  21, {{1,8},{1,8},{3,10}}},
+   100,  020000000000000000000ULL,  2, 5000, 10,  21, {{1,8},{1,8},{3,10}}},
     { "emu",
-     0,  020000000000000000000ULL,    2,  1,  13, {{1,2}}},
+     0,  020000000000000000000ULL,  1,    2,  1,  13, {{1,2}}},
     { "venus flytrap",
-     0,  020000000000000000000ULL,   80,  8,  17, {{0,1}}},
+     0,  020000000000000000000ULL,  1,   80,  8,  17, {{0,1}}},
     { "griffin",
-    20,  061000000000000000000ULL, 2000, 13,  18, {{4,3},{3,5}}},
+    20,  061000000000000000000ULL,  2, 2000, 13,  18, {{4,3},{3,5}}},
     { "hobgoblin",
-     0,  020000000000000000000ULL,    3,  1,  15, {{1,8}}},
+     0,  020000000000000000000ULL,  1,    3,  1,  15, {{1,8}}},
     { "ice monster",
-     0,  000000000000000000000ULL,    5,  1,  11, {{0,1}}},
+     0,  000000000000000000000ULL,  1,    5,  1,  11, {{0,1}}},
     { "jabberwock",
-    70,  000000000000000000000ULL, 3000, 15,  14, {{2,12},{2,4}}},
+    70,  000000000000000000000ULL,  1, 3000, 15,  14, {{2,12},{2,4}}},
     { "kestrel",
-     0,  060000000000000000000ULL,    1,  1,  13, {{1,4}}},
+     0,  060000000000000000000ULL,  2,    1,  1,  13, {{1,4}}},
     { "leprechaun",
-     0,  000000000000000000000ULL,   10,  3,  12, {{1,1}}},
+     0,  000000000000000000000ULL,  1,   10,  3,  12, {{1,1}}},
     { "medusa",
-    40,  020000000000000000000ULL,  200,  8,  18, {{3,4},{3,4},{2,5}}},
+    40,  020000000000000000000ULL,  1,  200,  8,  18, {{3,4},{3,4},{2,5}}},
     { "nymph",
-   100,  000000000000000000000ULL,   37,  3,  11, {{0,1}}},
+   100,  000000000000000000000ULL,  1,   37,  3,  11, {{0,1}}},
     { "orc",
-    15,  010000000000000000000ULL,    5,  1,  14, {{1,8}}},
+    15,  010000000000000000000ULL,  1,    5,  1,  14, {{1,8}}},
     { "phantom",
-     0,  002000000000000000000ULL,  120,  8,  17, {{4,4}}},
+     0,  002000000000000000000ULL,  1,  120,  8,  17, {{4,4}}},
     { "quagga",
-     0,  020000000000000000000ULL,   15,  3,  17, {{1,5},{1,5}}},
+     0,  020000000000000000000ULL,  1,   15,  3,  17, {{1,5},{1,5}}},
     { "rattlesnake",
-     0,  020000000000000000000ULL,    9,  2,  17, {{1,6}}},
+     0,  020000000000000000000ULL,  1,    9,  2,  17, {{1,6}}},
     { "snake",
-     0,  000000000000000000000ULL,    2,  1,  15, {{1,3}}},
+     0,  000000000000000000000ULL,  1,    2,  1,  15, {{1,3}}},
     { "troll",
-    50,  021000000000000000000ULL,  120,  6,  16, {{1,8},{1,8},{2,6}}},
+    50,  021000000000000000000ULL,  1,  120,  6,  16, {{1,8},{1,8},{2,6}}},
     { "black unicorn",
-     0,  020000000000000000000ULL,  190,  7,  22, {{1,9},{1,9},{2,9}}},
+     0,  020000000000000000000ULL,  1,  190,  7,  22, {{1,9},{1,9},{2,9}}},
     { "vampire",
-    20,  021000000000000000000ULL,  350,  8,  19, {{1,10}}},
+    20,  021000000000000000000ULL,  1,  350,  8,  19, {{1,10}}},
     { "wraith",
-     0,  000000000000000000000ULL,   55,  5,  16, {{1,6}}},
+     0,  000000000000000000000ULL,  1,   55,  5,  16, {{1,6}}},
     { "xeroc",
-    30,  000000000000000000000ULL,  100,  7,  13, {{4,4}}},
+    30,  000000000000000000000ULL,  1,  100,  7,  13, {{4,4}}},
     { "yeti",
-    30,  000000000000000000000ULL,   50,  4,  14, {{1,6},{1,6}}},
+    30,  000000000000000000000ULL,  1,   50,  4,  14, {{1,6},{1,6}}},
     { "zombie",
-     0,  020000000000000000000ULL,    6,  2,  12, {{1,8}}},
+     0,  020000000000000000000ULL,  1,    6,  2,  12, {{1,8}}},
   };
 }
 
@@ -203,7 +203,8 @@ Monster::Monster(char type, Coordinate const& pos, struct room* room,
   Character(10, m_template.m_basexp, m_template.m_level, m_template.m_armor,
             roll(m_template.m_level, 8), m_template.m_dmg, pos, room,
             m_template.m_flags, type),
-  t_dest(), t_pack(), t_disguise(type), t_turn(true) {
+  t_dest(), t_pack(), t_disguise(type), turns_not_moved(0),
+  speed(m_template.m_speed) {
 
   // All monsters are equal, but some monsters are more equal than others, so
   // they also give more experience
@@ -626,18 +627,25 @@ monster_move_all(void)
   while (it != Game::level->monsters.end()) {
     Monster* mon = *it++;
 
-    if (!mon->is_held() && mon->is_chasing()) {
+    // Speed < 0 means one move each x turns
+    int speed = mon->get_speed();
+    if (speed < 0) {
+      if (mon->turns_not_moved >= -speed) {
+        mon->turns_not_moved = 0;
+        speed = 1;
+      } else {
+        ++mon->turns_not_moved;
+      }
+    }
+
+    // One move per turn
+    for (int i = 0; i < speed; ++i) {
       bool wastarget = mon->is_players_target();
       Coordinate orig_pos = mon->get_position();
-      if (!monster_chase(mon)) {
-        continue;
-      }
 
-      if (mon->is_flying()
-          && dist_cp(&player->get_position(), &mon->get_position()) >= 3) {
-        if (!monster_chase(mon)) {
-          continue;
-        }
+      if (!monster_take_turn(mon)) {
+        // Monster is dead
+        break;
       }
 
       if (wastarget && !(orig_pos == mon->get_position()))
@@ -813,4 +821,18 @@ bool monster_try_breathe_fire_on_player(Monster const& monster) {
   }
 
   return false;
+}
+
+int Monster::get_speed() const {
+  return speed;
+}
+
+void Monster::increase_speed() {
+  ++speed;
+  turns_not_moved = 0;
+}
+
+void Monster::decrease_speed() {
+  --speed;
+  turns_not_moved = 0;
 }

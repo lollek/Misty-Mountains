@@ -258,11 +258,7 @@ wand_zap(void)
         Coordinate c;
         Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
         if (tp != nullptr) {
-          if (tp->is_slowed()) {
-            tp->set_not_slowed();
-          } else {
-            tp->set_hasted();
-          }
+          tp->increase_speed();
           monster_start_running(&c);
           Game::io->message(tp->get_name() + " became faster");
 
@@ -275,13 +271,7 @@ wand_zap(void)
         Coordinate c;
         Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
         if (tp != nullptr) {
-
-          if (tp->is_hasted()) {
-            tp->set_not_hasted();
-          } else {
-            tp->set_slowed();
-          }
-          tp->t_turn = true;
+          tp->decrease_speed();
           monster_start_running(&c);
           Game::io->message(tp->get_name() + " became slower");
 

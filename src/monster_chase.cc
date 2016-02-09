@@ -172,24 +172,20 @@ chase_do(Monster* monster)
 }
 
 bool
-monster_chase(Monster *tp)
+monster_take_turn(Monster* tp)
 {
   if (tp == nullptr) {
-    error("monster_chase for null monster");
-  } else if (tp->t_dest == nullptr) {
-    error("Cannot chase after null");
+    error("null parameter");
   }
 
+  if (tp->is_held()) {
+    return true;
 
-  if (!tp->is_slowed() || tp->t_turn)
-    if (chase_do(tp) == -1)
-      return false;
+  } else if (tp->is_chasing() && tp->t_dest != nullptr) {
+    return chase_do(tp) != -1;
 
-  if (tp->is_hasted())
-    if (chase_do(tp) == -1)
-      return false;
-
-  tp->t_turn ^= true;
-  return true;
+  } else {
+    return true;
+  }
 }
 

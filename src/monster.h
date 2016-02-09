@@ -14,6 +14,7 @@ struct monster_template {
     std::string const    m_name;    // What to call the monster
     int                  m_carry;   // Probability of carrying something
     unsigned long long   m_flags;   // things about the monster
+    int                  m_speed;   // Moves per turn
     int                  m_basexp;  // Base xp
     int                  m_level;   // Level
     int                  m_armor;   // Armor
@@ -34,11 +35,16 @@ public:
   void set_invisible() override;
   void set_target(Coordinate const* target);
 
+  // Modifiers
+  void increase_speed() override;
+  void decrease_speed() override;
+
   // Getters
   int get_armor() const override;
   std::string get_attack_string(bool successful_hit) const override;
   std::string get_name() const override;
   char get_disguise() const;
+  int get_speed() const;
 
   // Statics
   static void init_monsters();
@@ -51,12 +57,13 @@ public:
   static std::vector<monster_template> const* monsters;
 
   char               t_disguise;// What mimic looks like
-  bool               t_turn;    // If slowed, is it a turn to move
+  int                turns_not_moved;
 
 private:
   Monster(char type, Coordinate const& pos, struct room* room,
           monster_template const& m_template);
 
+  int                speed;
 };
 
 
@@ -123,4 +130,4 @@ void monster_polymorph(Monster* monster);
 bool monster_try_breathe_fire_on_player(Monster const& monster);
 
 /** monster_chase.c **/
-bool monster_chase(Monster* tp); /* Make a monster chase */
+bool monster_take_turn(Monster* tp); /* Make a monster chase */
