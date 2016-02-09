@@ -334,6 +334,7 @@ command_help()
     {'?',	"	prints help",				true},
     {'A',	"	attack till either of you dies",	true},
     {'B',	"	run down & left",			false},
+    {'C',	"	tag/call an item something",		false},
     {'E',	"	eat food",				true},
     {'H',	"	run left",				false},
     {'J',	"	run down",				false},

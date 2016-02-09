@@ -133,6 +133,7 @@ command_do(char ch)
     case 'Y': case 'U': case 'B': case 'N':
       return command_run(ch, false);
     case 'A': return command_attack(true);
+    case 'C': return command_name_item();
     case 'E': return command_eat();
     case 'O': return option();
     case 'Q': return command_quit();
@@ -159,20 +160,16 @@ command_wizard_do(char ch)
   switch (ch)
   {
     case '_': raise(SIGINT); break;
-    case '|': {
-      Coordinate c = player->get_position();
-      Game::io->message("@ " + to_string(c.x) + "," + to_string(c.y));
-    } break;
-    case 'C': wizard_create_item(); break;
     case '*' : wizard_list_items(); break;
+    case '&': wizard_create_item(); break;
     case CTRL('A'): Game::new_level(Game::current_level -1); break;
-    case CTRL('Q'): Game::level->wizard_show_passages(); break;
     case CTRL('D'): Game::new_level(Game::current_level +1); break;
     case CTRL('E'): {
       Game::io->message("food left: " + to_string(player->get_nutrition_left()));
     } break;
     case CTRL('F'): wizard_show_map(); break;
     case CTRL('I'): wizard_levels_and_gear(); break;
+    case CTRL('Q'): Game::level->wizard_show_passages(); break;
     case CTRL('T'): player->teleport(nullptr); break;
     case CTRL('W'): player->pack_identify_item(); break;
     case CTRL('X'): player->can_sense_monsters()
