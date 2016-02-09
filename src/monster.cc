@@ -828,11 +828,15 @@ int Monster::get_speed() const {
 }
 
 void Monster::increase_speed() {
-  ++speed;
+  if (++speed == 0) {
+    speed = 1;
+  }
   turns_not_moved = 0;
 }
 
 void Monster::decrease_speed() {
-  --speed;
+  if (--speed) {
+    speed = -1;
+  }
   turns_not_moved = 0;
 }
