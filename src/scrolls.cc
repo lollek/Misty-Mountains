@@ -154,7 +154,7 @@ string Scroll::get_description() const {
   if (Scroll::is_known(subtype)) {
     os << " of " << Scroll::name(subtype);
   } else if (!Scroll::guess(subtype).empty()) {
-    os << " called " << Scroll::guess(subtype);
+    os << " {" << Scroll::guess(subtype) << "}";
   } else {
     os << " titled " << Scroll::fake_name->at(subtype);
   }
@@ -458,4 +458,12 @@ void Scroll::read() const {
 
     case Scroll::NSCROLLS: error("Unknown scroll subtype NSCROLLS");
   }
+}
+
+void Scroll::set_identified() {
+  set_known(subtype);
+}
+
+bool Scroll::is_identified() const {
+  return is_known(subtype);
 }

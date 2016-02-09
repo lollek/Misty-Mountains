@@ -37,3 +37,9 @@ bool Gold::is_magic() const {
   return false;
 }
 
+void Gold::set_identified() {
+}
+
+bool Gold::is_identified() const {
+  return true;
+}

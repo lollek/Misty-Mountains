@@ -30,13 +30,12 @@ public:
   Armor& operator=(Armor&&) = default;
 
   // Setters
-  void set_identified();
-  void set_not_identified();
+  void set_identified() override;
 
   // Getters
-  bool        is_identified() const;
   std::string get_description() const override;
   bool        is_magic() const override;
+  bool        is_identified() const override;
 
   // Static
   static int probability(Type type);

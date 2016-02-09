@@ -33,10 +33,14 @@ public:
   Scroll& operator=(Scroll const&) = default;
   Scroll& operator=(Scroll&&) = default;
 
+  // Setters
+  void       set_identified() override;
+
   // Getters
   Type        get_type() const;
   std::string get_description() const override;
   bool        is_magic() const override;
+  bool        is_identified() const override;
 
   // Misc
   void read() const;

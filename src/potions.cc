@@ -156,7 +156,7 @@ string Potion::get_description() const {
 
     string const& nickname = Potion::guess(subtype);
     if (!nickname.empty()) {
-      os << " called " << nickname;
+      os << " {" << nickname << "}";
     }
   }
 
@@ -358,3 +358,10 @@ void Potion::free_potions() {
 }
 
 
+void Potion::set_identified() {
+  set_known(subtype);
+}
+
+bool Potion::is_identified() const {
+  return is_known(subtype);
+}

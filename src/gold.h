@@ -16,10 +16,14 @@ public:
   Gold& operator=(Gold const&) = default;
   Gold& operator=(Gold&&) = default;
 
+  // setters
+  void        set_identified() override;
+
   // getters
   int         get_amount() const;
   std::string get_description() const override;
   bool        is_magic() const override;
+  bool        is_identified() const override;
 
   // static
   static int random_gold_amount();

@@ -47,7 +47,8 @@ Ring::~Ring() {}
 
 Ring::Ring(bool random_stats) : Ring(random_ring_type(), random_stats) {}
 
-Ring::Ring(Ring::Type type, bool random_stats) : Item(), subtype(type) {
+Ring::Ring(Ring::Type type, bool random_stats)
+  : Item(), subtype(type), identified(false) {
   o_type = IO::Ring;
   o_which = type;
 
@@ -209,10 +210,14 @@ std::string Ring::get_description() const {
 
     switch (subtype) {
       case Ring::PROTECT: case Ring::ADDSTR: case Ring::ADDDAM: case Ring::ADDHIT: {
-        if (get_armor() > 0) {
-          os << " [+" << get_armor() << "]";
+        if (identified) {
+          if (get_armor() > 0) {
+            os << " [+" << get_armor() << "]";
+          } else {
+            os << " [" << get_armor() << "]";
+          }
         } else {
-          os << " [" << get_armor() << "]";
+          os << " [+/-?]";
         }
       } break;
 
@@ -224,9 +229,17 @@ std::string Ring::get_description() const {
     }
 
   } else if (!Ring::guess(subtype).empty()) {
-    os << " called " << Ring::guess(subtype);
+    os << " {" << Ring::guess(subtype) << "}";
   }
 
   return os.str();
 }
 
+void Ring::set_identified() {
+  identified = true;
+  set_known(subtype);
+}
+
+bool Ring::is_identified() const {
+  return identified;
+}

@@ -35,6 +35,9 @@ public:
   Item& operator=(Item&&) = default;
   virtual Item* clone() const = 0;
 
+  // Setters (virtual)
+  virtual void    set_identified() = 0;
+
   // Setters
   void set_position(Coordinate const&);
   void set_x(int);
@@ -48,14 +51,15 @@ public:
   void set_cursed();
   void set_not_cursed();
 
-  // Getters (virtual)
-  virtual std::string   get_description() const = 0;
-  virtual bool          is_magic() const = 0;
-
   // Modifiers
   void modify_hit_plus(int amount);
   void modify_damage_plus(int amount);
   void modify_armor(int amount);
+
+  // Getters (virtual)
+  virtual std::string   get_description() const = 0;
+  virtual bool          is_magic() const = 0;
+  virtual bool          is_identified() const = 0;
 
   // Getters
   Coordinate const&     get_position() const;

@@ -22,10 +22,14 @@ public:
   Food& operator=(Food const&) = default;
   Food& operator=(Food&&) = default;
 
+  // Setters
+  void        set_identified() override;
+
   // Getters
   Type        get_type() const;
   std::string get_description() const override;
   bool        is_magic() const override;
+  bool        is_identified() const override;
 
 private:
   Type subtype;

@@ -63,3 +63,9 @@ string Food::get_description() const {
   return os.str();
 }
 
+void Food::set_identified() {
+}
+
+bool Food::is_identified() const {
+  return true;
+}

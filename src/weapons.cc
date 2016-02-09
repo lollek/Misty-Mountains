@@ -146,10 +146,6 @@ void Weapon::set_identified() {
   identified = true;
 }
 
-void Weapon::set_not_identified() {
-  identified = false;
-}
-
 bool Weapon::is_identified() const {
   return identified;
 }
@@ -249,7 +245,7 @@ string Weapon::get_description() const {
   }
 
   if (!get_nickname().empty()) {
-    buffer << " called " << get_nickname();
+    buffer << " {" << get_nickname() << "}";
   }
 
   return buffer.str();

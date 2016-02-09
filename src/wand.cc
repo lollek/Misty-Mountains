@@ -177,6 +177,7 @@ string const& Wand::material(Wand::Type subtype) {
 }
 
 void Wand::set_identified() {
+  set_known(subtype);
   identified = true;
 }
 
@@ -219,31 +220,24 @@ string Wand::get_description() const {
   bool is_known = Wand::is_known(subtype);
   string const& guess = Wand::guess(subtype);
 
-  if (is_known || !guess.empty()) {
-    if (o_count == 1) {
-      os << "a wand";
-    } else {
-      os << to_string(o_count) << " wands";
-    }
+  os
+    << "a"
+    << vowelstr(Wand::material(subtype))
+    << " "
+    << Wand::material(subtype)
+    << " wand";
 
-    if (is_known) {
-      os << " of " << Wand::name(subtype);
-    } else if (!guess.empty()) {
-      os << " called " << guess;
-    }
+  if (is_known) {
+    os << " of " << Wand::name(subtype);
 
-    if (is_identified()) {
+    if (identified) {
       os << " [" << charges << " charges]";
-    }
-
-    os << " (" << Wand::material(subtype) << ")";
-
-  } else {
-    if (o_count == 1) {
-      os << "a " << Wand::material(subtype) << " wand";
     } else {
-      os << to_string(o_count) << " " << Wand::material(subtype) << " wands";
+      os << " [? charges]";
     }
+
+  } else if (!guess.empty()) {
+    os << " {" << guess << "}";
   }
 
   return os.str();

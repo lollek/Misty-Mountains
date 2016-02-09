@@ -35,10 +35,14 @@ public:
   Potion& operator=(Potion const&) = default;
   Potion& operator=(Potion&&) = default;
 
+  // Setters
+  void        set_identified() override;
+
   // Getters
   Type        get_type() const;
   std::string get_description() const override;
   bool        is_magic() const override;
+  bool        is_identified() const override;
 
   // Misc
   void quaffed_by(Character&); // Someone drank the potion

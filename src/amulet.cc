@@ -27,3 +27,9 @@ bool Amulet::is_magic() const {
   return true;
 }
 
+bool Amulet::is_identified() const {
+  return true;
+}
+
+void Amulet::set_identified() {
+}

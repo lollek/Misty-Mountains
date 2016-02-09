@@ -72,10 +72,6 @@ void Armor::set_identified() {
   identified = true;
 }
 
-void Armor::set_not_identified() {
-  identified = false;
-}
-
 bool Armor::is_identified() const {
   return identified;
 }
@@ -143,7 +139,13 @@ string Armor::get_description() const {
   int bonus_ac = Armor::ac(static_cast<Armor::Type>(o_which)) - get_armor();
   int base_ac = 10 - get_armor() - bonus_ac;
 
-  buffer << "a" << vowelstr(obj_name) << " " <<obj_name << " [" << base_ac;
+  buffer
+    << "a"
+    << vowelstr(obj_name)
+    << " "
+    << obj_name
+    << " ["
+    << base_ac;
 
   if (identified) {
     buffer << ",";
@@ -152,10 +154,11 @@ string Armor::get_description() const {
     }
     buffer << bonus_ac;
   }
+
   buffer << "]";
 
   if (!get_nickname().empty()) {
-    buffer << " called " << get_nickname();
+    buffer << " {" << get_nickname() << "}";
   }
 
   return buffer.str();

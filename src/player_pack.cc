@@ -539,30 +539,7 @@ void Player::pack_identify_item() {
     return;
   }
 
-  switch (obj->o_type) {
-    case IO::Scroll: Scroll::set_known(static_cast<Scroll::Type>(obj->o_which)); break;
-    case IO::Potion: Potion::set_known(static_cast<Potion::Type>(obj->o_which)); break;
-    case IO::Wand:   Wand::set_known(static_cast<Wand::Type>(obj->o_which)); break;
-    case IO::Ring:   Ring::set_known(static_cast<Ring::Type>(obj->o_which)); break;
-
-    case IO::Weapon: {
-      class Weapon* weapon = dynamic_cast<class Weapon*>(obj);
-      if (weapon == nullptr) {
-        error("Could not cast weapon to Weapon class");
-      }
-      weapon->set_identified();
-    } break;
-
-    case IO::Armor: {
-      class Armor* armor = dynamic_cast<class Armor*>(obj);
-      if (armor == nullptr) {
-        error("Could not cast armor to Armor class");
-      }
-      armor->set_identified();
-    } break;
-    default: break;
-  }
-
+  obj->set_identified();
   Game::io->message(obj->get_description());
 }
 

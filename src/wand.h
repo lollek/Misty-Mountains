@@ -39,14 +39,14 @@ public:
   void modify_charges(int amount);
 
   // Setters
-  void set_identified();
+  void set_identified() override;
   void set_charges(int amount);
 
   // Getters
   std::string get_description() const override;
   bool        is_magic() const override;
   std::string get_material() const;
-  bool        is_identified() const;
+  bool        is_identified() const override;
   int         get_charges() const;
 
 

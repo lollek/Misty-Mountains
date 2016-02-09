@@ -34,9 +34,13 @@ public:
   Ring& operator=(Ring const&) = default;
   Ring& operator=(Ring&&) = default;
 
+  // Setters
+  void        set_identified() override;
+
   // Getters
   std::string get_description() const override;
   bool        is_magic() const override;
+  bool        is_identified() const override;
 
   // Static
   static int          probability(Type type);
@@ -51,6 +55,7 @@ public:
 
 private:
   Type subtype;
+  bool identified;
 
   static std::vector<std::string>* materials;
   static std::vector<std::string>* guesses;
