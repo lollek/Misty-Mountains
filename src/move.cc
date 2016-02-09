@@ -24,27 +24,24 @@
 
 using namespace std;
 
-static void stop_on_interesting_stuff(Coordinate const& nh, int dx, int dy) {
-  if (!door_stop) {
-    return;
-  }
+static void handle_surrounding(Coordinate const& nh, int dx, int dy, bool cautious) {
 
   // Check if we have reached some crossroads (if tunnel)
-  if (dx == 0 && dy != 0) {
-    if ((Game::level->get_tile(nh.x -1, nh.y - dy) == Tile::Wall &&
-         Game::level->get_tile(nh.x -1, nh.y)      != Tile::Wall) ||
-        (Game::level->get_tile(nh.x +1, nh.y - dy) == Tile::Wall &&
-         Game::level->get_tile(nh.x +1, nh.y     ) != Tile::Wall)) {
-      player->set_not_running();
-      return;
-    }
-  } else if (dx != 0 && dy == 0) {
-    if ((Game::level->get_tile(nh.x - dx, nh.y -1) == Tile::Wall &&
-         Game::level->get_tile(nh.x,      nh.y -1) != Tile::Wall) ||
-        (Game::level->get_tile(nh.x - dx, nh.y +1) == Tile::Wall &&
-         Game::level->get_tile(nh.x,      nh.y +1) != Tile::Wall)) {
-      player->set_not_running();
-      return;
+  if (cautious) {
+    if (dx == 0 && dy != 0) {
+      if ((Game::level->get_tile(nh.x -1, nh.y - dy) == Tile::Wall &&
+           Game::level->get_tile(nh.x -1, nh.y)      != Tile::Wall) ||
+          (Game::level->get_tile(nh.x +1, nh.y - dy) == Tile::Wall &&
+           Game::level->get_tile(nh.x +1, nh.y     ) != Tile::Wall)) {
+        player->set_not_running();
+      }
+    } else if (dx != 0 && dy == 0) {
+      if ((Game::level->get_tile(nh.x - dx, nh.y -1) == Tile::Wall &&
+           Game::level->get_tile(nh.x,      nh.y -1) != Tile::Wall) ||
+          (Game::level->get_tile(nh.x - dx, nh.y +1) == Tile::Wall &&
+           Game::level->get_tile(nh.x,      nh.y +1) != Tile::Wall)) {
+        player->set_not_running();
+      }
     }
   }
 
@@ -58,26 +55,27 @@ static void stop_on_interesting_stuff(Coordinate const& nh, int dx, int dy) {
         monster_notice_player(y, x);
 
         // Only actually notice it if we can see it
-        if (player->can_sense_monsters() || !monster->is_invisible()) {
+        if (cautious && (player->can_sense_monsters() || !monster->is_invisible())) {
           player->set_not_running();
+          continue;
         }
-        return;
       }
 
       // Items are interesting
       Item *item = Game::level->get_item(x, y);
-      if (item != nullptr) {
+      if (cautious && item != nullptr) {
         player->set_not_running();
-        return;
+        continue;
       }
 
       // Always stop near traps and stairs, and doors IFF we can actually move
       // to it (not diagonal)
       Tile::Type tile = Game::level->get_tile(x, y);
       Coordinate tile_coord(x, y);
-      if ((tile == Tile::Stairs || tile == Tile::Trap || tile == Tile::OpenDoor)) {
+      if (cautious &&
+          (tile == Tile::Stairs || tile == Tile::Trap || tile == Tile::OpenDoor)) {
         player->set_not_running();
-        return;
+        continue;
       }
     }
   }
@@ -116,7 +114,7 @@ move_do_loop_default(Coordinate& coord) {
 }
 
 static bool
-move_do_loop(int dx, int dy) {
+move_do_loop(int dx, int dy, bool cautious) {
 
   if (dx == 0 && dy == 0) {
     player->set_not_running();
@@ -139,7 +137,7 @@ move_do_loop(int dx, int dy) {
   }
 
   // Run a check if player wants to stop running
-  stop_on_interesting_stuff(nh, dx, dy);
+  handle_surrounding(nh, dx, dy, cautious);
 
   // Cannot escape from the flytrap
   if (player->is_held()) {
@@ -174,9 +172,10 @@ move_do_loop(int dx, int dy) {
 
 
 bool
-move_do(char ch) {
+move_do(char ch, bool cautiously) {
   int dy = 0, dx = 0;
 
+  ch = static_cast<char>(tolower(ch));
   switch (ch) {
     case 'h': dy =  0; dx = -1; break;
     case 'j': dy =  1; dx =  0; break;
@@ -205,6 +204,6 @@ move_do(char ch) {
     dy = nh.y - player->get_position().y;
 
   }
-  return move_do_loop(dx, dy);
+  return move_do_loop(dx, dy, cautiously);
 }
 

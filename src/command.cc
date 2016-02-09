@@ -29,13 +29,13 @@ static bool
 unknown_command(char ch)
 {
   Game::io->message("illegal command '" + string(1, ch) + "'");
+  player->set_not_running();
   return false;
 }
 
 bool
 command_stop(bool stop_fighting)
 {
-  door_stop = false;
   player->set_not_running();
   player_alerted = true;
 
@@ -56,9 +56,6 @@ command()
   while (num_moves-- > 0)
   {
     Game::io->refresh();
-
-    if (!player->is_running())
-      door_stop = false;
 
     if (player_turns_without_action > 0 &&
         --player_turns_without_action == 0) {
@@ -82,14 +79,7 @@ command()
       if (!command_do(ch))
         num_moves++;
 
-      /* turn off flags if no longer needed */
-      if (!player->is_running())
-        door_stop = false;
     }
-
-
-    if (!player->is_running())
-      door_stop = false;
   }
 
   player->digest_food();
@@ -115,7 +105,7 @@ command_do(char ch)
     /* Lower case */
     case 'h': case 'j': case 'k': case 'l':
     case 'y': case 'u': case 'b': case 'n':
-      return move_do(ch);
+      return move_do(ch, false);
     case 'a': return command_attack(false);
     case 'c': return command_close();
     case 'e': return player->pack_show_equipment();
@@ -142,7 +132,7 @@ command_do(char ch)
     /* Ctrl case */
     case CTRL('H'): case CTRL('J'): case CTRL('K'): case CTRL('L'):
     case CTRL('Y'): case CTRL('U'): case CTRL('B'): case CTRL('N'):
-      return command_run(UNCTRL(ch), true);
+      return command_run(ch, true);
     case CTRL('P'): Game::io->repeat_last_messages(); return false;
     case CTRL('R'): clearok(curscr, true); wrefresh(curscr); return false;
     case CTRL('Z'): command_shell(); return false;

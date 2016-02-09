@@ -16,7 +16,6 @@
 
 /* External variables */
 
-extern bool door_stop;
 extern bool to_death;
 
 extern char dir_ch;

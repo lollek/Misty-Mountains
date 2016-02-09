@@ -575,17 +575,19 @@ command_eat()
 bool
 command_run(char ch, bool cautiously)
 {
+  runch = ch;
+
   if (player->is_blind()) {
     Game::io->message("You stumble forward");
   } else {
-    if (cautiously) {
-      door_stop = true;
-    }
     player->set_running();
   }
 
-  runch = static_cast<char>(tolower(ch));
-  return move_do(runch);
+  if (cautiously) {
+    ch = UNCTRL(ch);
+  }
+
+  return move_do(ch, cautiously);
 }
 
 bool
