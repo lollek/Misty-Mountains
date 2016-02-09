@@ -13,7 +13,7 @@
 struct monster_template {
     std::string const    m_name;    // What to call the monster
     int                  m_carry;   // Probability of carrying something
-    int                  m_flags;   // things about the monster
+    unsigned long long   m_flags;   // things about the monster
     int                  m_basexp;  // Base xp
     int                  m_level;   // Level
     int                  m_armor;   // Armor

@@ -9,7 +9,7 @@ using namespace std;
 
 Character::Character(int strength_, int experience_, int level_, int armor_,
     int health_, std::vector<damage> const& attacks_,
-    Coordinate const& position_, struct room* room_, int flags, char type_) :
+    Coordinate const& position_, struct room* room_, unsigned long long flags, char type_) :
   strength(strength_), default_strength(strength),experience(experience_),
   level(level_), armor(armor_), health(health_), attacks(attacks_),
   max_health(health), position(position_), room(room_), type(type_),
@@ -18,23 +18,11 @@ Character::Character(int strength_, int experience_, int level_, int armor_,
   invisible(0), mean(0), regenerating(0), running(0),
   flying(0), slowed(0), stuck(0)
 {
-  if (flags & 0000001) { confusing_attack = true; }
-  if (flags & 0000002) { true_sight = true; }
-  if (flags & 0000004) { blind = true; }
-  if (flags & 0000010) { blind = true; levitating = true; }
-  if (flags & 0000020) { found = true; }
-  if (flags & 0000040) { greedy = true; }
-  if (flags & 0000100) { hasted = true; }
-  if (flags & 0000200) { players_target = true; }
-  if (flags & 0000400) { held = true; }
-  if (flags & 0001000) { confused = true; }
-  if (flags & 0002000) { invisible = true; }
-  if (flags & 0004000) { mean = true; }
-  if (flags & 0010000) { regenerating = true; }
-  if (flags & 0020000) { running = true; }
-  if (flags & 0040000) { flying = true; }
-  if (flags & 0100000) { slowed = true; }
-  if (flags & 0200000) { stuck = true; }
+  if (flags & 010000000000000000000) { greedy = true; }
+  if (flags & 020000000000000000000) { mean = true; }
+  if (flags & 040000000000000000000) { flying = true; }
+  if (flags & 001000000000000000000) { regenerating = true; }
+  if (flags & 002000000000000000000) { invisible = true; }
 }
 
 bool Character::is_blind() const { return blind; }

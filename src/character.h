@@ -107,7 +107,7 @@ public:
 protected:
   Character(int strength, int experience, int level, int armor, int health,
             std::vector<damage> const& attacks, Coordinate const& position,
-            room* room, int flags, char type);
+            room* room, unsigned long long flags, char type);
 
   explicit Character(Character const&) = default;
   explicit Character(Character&&) = default;
