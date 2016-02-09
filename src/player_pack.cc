@@ -251,11 +251,17 @@ Item* Player::pack_find_item(string const& purpose, int type) {
 
   for (;;) {
     switch (current_window) {
-      case INVENTORY: pack_print_inventory(type); break;
-      case EQUIPMENT: pack_print_equipment(); break;
+      case INVENTORY: {
+        pack_print_inventory(type);
+        Game::io->message("Inventory [" + purpose + "?|ESC|SPACE]");
+      } break;
+
+      case EQUIPMENT: {
+        pack_print_equipment();
+        Game::io->message("Equipment [" + purpose + "?|ESC|SPACE]");
+      } break;
     }
 
-    Game::io->message("which object do you want to " + purpose + "?");
     char ch = io_readchar(true);
     Game::io->clear_message();
     touchwin(stdscr);
