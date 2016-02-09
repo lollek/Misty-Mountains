@@ -213,6 +213,13 @@ bool Player::pack_add(Item* obj, bool silent, bool from_floor) {
 Item* Player::pack_remove(Item* obj, bool newobj, bool all) {
   Item* return_value = obj;
 
+  // If equipped, remove it
+  for (size_t i = 0; i < equipment.size(); ++i) {
+    if (equipment.at(i) == obj) {
+      equipment.at(i) = nullptr;
+    }
+  }
+
   /* If there are several, we need to alloate a new item to hold it */
   if (obj->o_count > 1 && !all) {
     obj->o_count--;
@@ -421,12 +428,11 @@ bool Player::pack_equip(Item* item, bool silent) {
   }
 
 
-  // Some equipment types have several slots
   for (;;) {
     if (equipment.at(static_cast<size_t>(position)) == nullptr) {
 
-      equipment.at(static_cast<size_t>(position)) = item;
       pack_remove(item, false, true);
+      equipment.at(static_cast<size_t>(position)) = item;
 
       string doing;
       switch (position) {
@@ -464,6 +470,7 @@ bool Player::pack_equip(Item* item, bool silent) {
       }
 
     } else {
+      Game::io->message("the slot is already in use");
       return false;
     }
   }
