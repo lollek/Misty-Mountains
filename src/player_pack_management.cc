@@ -110,12 +110,12 @@ bool Player::pack_show(int mode) {
     switch (current_window) {
       case INVENTORY: {
         pack_print_inventory(0);
-        Game::io->message("Inventory [(e)quip|(d)rop|ESC|SPACE]", true);
+        Game::io->message("Inventory [e d E ESC]", true);
       } break;
 
       case EQUIPMENT: {
         pack_print_equipment();
-        Game::io->message("Equipment [(r)emove|ESC|SPACE]", true);
+        Game::io->message("Equipment [r I ESC]", true);
       } break;
     }
 
@@ -123,15 +123,7 @@ bool Player::pack_show(int mode) {
     Game::io->clear_message();
     touchwin(stdscr);
 
-    if (ch == KEY_SPACE) {
-      if (current_window == INVENTORY) {
-        current_window = EQUIPMENT;
-      } else if (current_window == EQUIPMENT) {
-        current_window = INVENTORY;
-      }
-      continue;
-
-    } else if (ch == KEY_ESCAPE) {
+    if (ch == KEY_ESCAPE) {
       Game::io->clear_message();
       return false;
     }
@@ -139,6 +131,7 @@ bool Player::pack_show(int mode) {
     switch (current_window) {
       case INVENTORY: {
         switch (ch) {
+          case 'E': current_window = EQUIPMENT; break;
           case 'e':  {
             if (pack_show_equip()) {
               touchwin(stdscr);
@@ -159,6 +152,7 @@ bool Player::pack_show(int mode) {
 
       case EQUIPMENT: {
         switch (ch) {
+          case 'I': current_window = INVENTORY; break;
           case 'r': {
             if (pack_show_remove()) {
               touchwin(stdscr);

@@ -108,8 +108,7 @@ command_do(char ch)
       return move_do(ch, false);
     case 'a': return command_attack(false);
     case 'c': return command_close();
-    case 'e': return player->pack_show_equipment();
-    case 'i': return player->pack_show_inventory();
+    case 'e': return command_eat();
     case 'o': return command_open();
     case 'q': return potion_quaff_something();
     case 'r': return command_read_scroll();
@@ -124,7 +123,8 @@ command_do(char ch)
       return command_run(ch, false);
     case 'A': return command_attack(true);
     case 'C': return command_name_item();
-    case 'E': return command_eat();
+    case 'E': return player->pack_show_equipment();
+    case 'I': return player->pack_show_inventory();
     case 'O': return option();
     case 'Q': return command_quit();
     case 'Z': return command_rest();
