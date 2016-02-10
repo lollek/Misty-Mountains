@@ -171,29 +171,23 @@ chase_do(Monster* monster)
   return 0;
 }
 
-bool
-monster_take_turn(Monster* monster)
+bool Monster::take_turn()
 {
-  if (monster == nullptr) {
-    error("null parameter");
-  }
-
   // Return if stuck
-  if (monster->is_held()) {
+  if (is_held()) {
     return true;
 
   // Chase player, if there's a target
-  } else if (monster->is_chasing() && monster->t_dest != nullptr) {
-    return chase_do(monster) != -1;
+  } else if (is_chasing() && t_dest != nullptr) {
+    return chase_do(this) != -1;
 
   // Chase gold, if greedy
-  } else if (!monster->is_chasing() && monster->is_greedy()) {
-    room* mon_room = monster->get_room();
-    if (mon_room != nullptr) {
-      monster->set_target(mon_room->r_goldval
-          ? &mon_room->r_gold
+  } else if (!is_chasing() && is_greedy()) {
+    if (get_room() != nullptr) {
+      set_target(get_room()->r_goldval
+          ? &get_room()->r_gold
           : &player->get_position());
-      monster->set_chasing();
+      set_chasing();
     }
     return true;
 

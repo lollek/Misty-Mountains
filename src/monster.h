@@ -42,6 +42,9 @@ public:
   void increase_speed() override;
   void decrease_speed() override;
 
+  // monster_chase.c
+  bool take_turn(); // True if monster is still alive
+
   // Getters
   int         get_armor() const override;
   std::string get_attack_string(bool successful_hit) const override;
@@ -63,12 +66,12 @@ public:
   int                turns_not_moved;
 
 private:
-  Monster(char type, Coordinate const& pos, struct room* room,
-          monster_template const& m_template);
-
   int                speed;
 
   static std::vector<monster_template> const* monsters;
+
+  Monster(char type, Coordinate const& pos, struct room* room,
+          monster_template const& m_template);
 };
 
 
@@ -121,5 +124,3 @@ void monster_polymorph(Monster* monster);
 // Attempt to breathe fire on player. True if it tried, false when it didnt
 bool monster_try_breathe_fire_on_player(Monster const& monster);
 
-/** monster_chase.c **/
-bool monster_take_turn(Monster* tp); /* Make a monster chase */

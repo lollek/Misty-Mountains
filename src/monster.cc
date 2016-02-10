@@ -586,7 +586,7 @@ monster_move_all(void)
       bool wastarget = mon->is_players_target();
       Coordinate orig_pos = mon->get_position();
 
-      if (!monster_take_turn(mon)) {
+      if (!mon->take_turn()) {
         // Monster is dead
         break;
       }
