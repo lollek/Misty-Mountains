@@ -98,6 +98,5 @@ private:
   // Variables
   std::vector<room>  rooms;         // all rooms on level
   std::vector<Tile>  tiles;        // level map
-  std::vector<room>  passages;      // Passages between rooms
   Coordinate         stairs_coord;  // Where the stairs are
 };

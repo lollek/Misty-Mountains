@@ -195,8 +195,6 @@ Level::create_passages()
     bool ingraph;         /* this room in graph already? */
   };
 
-  passages.clear();
-
   vector<Destination> destinations {
     { { 0, 1, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
     { { 1, 0, 1, 0, 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 0 },
@@ -299,11 +297,6 @@ Level::create_passages()
       r1->isconn.at(r1i) = true;
       r2->isconn.at(r2i) = true;
     }
-  }
-
-  /* Assign a number to each passageway */
-  for (room& passage : passages) {
-    passage.r_nexits = 0;
   }
 }
 
