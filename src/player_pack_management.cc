@@ -30,9 +30,12 @@ bool Player::pack_show_equip() {
   }
 }
 
-bool Player::pack_show_drop() {
+bool Player::pack_show_drop(Window window) {
   for (;;) {
-    pack_print_inventory(0);
+    switch (window) {
+      case INVENTORY: pack_print_inventory(0); break;
+      case EQUIPMENT: pack_print_equipment(); break;
+    }
     Game::io->message("Drop what item? (ESC to abort)", true);
 
     char ch = io_readchar(true);
@@ -42,28 +45,52 @@ bool Player::pack_show_drop() {
       return false;
     }
 
-    for (Item* obj : pack) {
-      if (obj->o_packch == ch) {
-        bool drop_all = false;
-        if (obj->o_count > 1) {
-          Game::io->message("Drop all? (y/N) ");
-
-          ch = io_readchar(true);
-          if (ch == KEY_ESCAPE) {
-            return false;
-          } else {
-            drop_all = ch == 'y';
+    Item* obj = nullptr;
+    switch (window) {
+      case INVENTORY: {
+        for (Item* i : pack) {
+          if (i->o_packch == ch) {
+            obj = i;
+            break;
           }
-          Game::io->clear_message();
         }
+      } break;
 
-        obj = player->pack_remove(obj, true, drop_all);
-        Game::level->items.push_back(obj);
-        obj->set_position(player->get_position());
-        Game::io->message("dropped " + obj->get_description());
-        return true;
-      }
+      case EQUIPMENT: {
+        size_t position = static_cast<size_t>(ch - 'a');
+        if (position < equipment.size()) {
+          obj = equipment.at(position);
+        }
+      } break;
     }
+
+    if (obj == nullptr) {
+      Game::io->message("No item at position " +string(1, ch));
+      return false;
+    }
+
+    bool drop_all = false;
+    if (obj->o_count > 1) {
+      Game::io->message("Drop all? (y/N) ");
+
+      ch = io_readchar(true);
+      if (ch == KEY_ESCAPE) {
+        return false;
+      } else {
+        drop_all = ch == 'y';
+      }
+      Game::io->clear_message();
+    }
+
+    if (window == EQUIPMENT && !pack_unequip(static_cast<Equipment>(ch - 'a'), true)) {
+      return true;
+    }
+
+    obj = player->pack_remove(obj, true, drop_all);
+    Game::level->items.push_back(obj);
+    obj->set_position(player->get_position());
+    Game::io->message("dropped " + obj->get_description());
+    return true;
   }
 }
 
@@ -94,17 +121,15 @@ bool Player::pack_show_remove() {
 
 
 bool Player::pack_show_inventory() {
-  return pack_show(0);
+  return pack_show(INVENTORY);
 }
 
 bool Player::pack_show_equipment() {
-  return pack_show(1);
+  return pack_show(EQUIPMENT);
 }
 
 
-bool Player::pack_show(int mode) {
-  enum cur_win_t { INVENTORY, EQUIPMENT };
-  cur_win_t current_window = static_cast<cur_win_t>(mode);
+bool Player::pack_show(Window current_window) {
 
   for (;;) {
     switch (current_window) {
@@ -115,7 +140,7 @@ bool Player::pack_show(int mode) {
 
       case EQUIPMENT: {
         pack_print_equipment();
-        Game::io->message("Equipment [r I ESC]", true);
+        Game::io->message("Equipment [r d I ESC]", true);
       } break;
     }
 
@@ -140,7 +165,7 @@ bool Player::pack_show(int mode) {
           } break;
 
           case 'd': {
-            if (pack_show_drop()) {
+            if (pack_show_drop(current_window)) {
               touchwin(stdscr);
               return true;
             }
@@ -153,6 +178,13 @@ bool Player::pack_show(int mode) {
       case EQUIPMENT: {
         switch (ch) {
           case 'I': current_window = INVENTORY; break;
+          case 'd': {
+            if (pack_show_drop(current_window)) {
+              touchwin(stdscr);
+              return true;
+            }
+          } break;
+
           case 'r': {
             if (pack_show_remove()) {
               touchwin(stdscr);

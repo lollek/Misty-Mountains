@@ -108,9 +108,14 @@ private:
   int          speed;
 
   // player_pack_management.cc
-  bool pack_show(int mode);
+  enum Window {
+    INVENTORY,
+    EQUIPMENT
+  };
+
+  bool pack_show(Window mode);
   bool pack_show_equip();
-  bool pack_show_drop();
+  bool pack_show_drop(Window mode);
   bool pack_show_remove();
 
   // player_pack.cc
