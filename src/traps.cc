@@ -54,7 +54,7 @@ static Trap::Type trap_door_player(void) {
 static Trap::Type trap_door_monster(Monster** victim_ptr) {
   Monster* victim = *victim_ptr;
 
-  if (monster_seen_by_player(victim)) {
+  if (player->can_see(*victim)) {
     stringstream os;
     os << victim->get_name()
        << " fell through the floor";
@@ -72,7 +72,7 @@ static Trap::Type trap_bear_player(void) {
 }
 
 static Trap::Type trap_bear_monster(Monster* victim) {
-  if (monster_seen_by_player(victim)) {
+  if (player->can_see(*victim)) {
     stringstream os;
     os << victim->get_name()
        << " was caught in a bear trap";
@@ -102,7 +102,7 @@ static Trap::Type trap_myst_player(void) {
 }
 
 static Trap::Type trap_myst_monster(Monster* victim) {
-  if (monster_seen_by_player(victim)) {
+  if (player->can_see(*victim)) {
     stringstream os;
     os << victim->get_name() << " seems to have stepped on something";
     Game::io->message(os.str());
@@ -117,7 +117,7 @@ static Trap::Type trap_sleep_player(void) {
 }
 
 static Trap::Type trap_sleep_monster(Monster* victim) {
-  if (monster_seen_by_player(victim)) {
+  if (player->can_see(*victim)) {
     stringstream os;
     os << victim->get_name() << " collapsed to the ground";
     Game::io->message(os.str());
@@ -156,13 +156,13 @@ static Trap::Type trap_arrow_monster(Monster** victim_ptr) {
     victim->take_damage(roll(1,6));
 
     if (victim->get_health() <= 0) {
-      if (monster_seen_by_player(victim)) {
+      if (player->can_see(*victim)) {
         Game::io->message("An arrow killed " +  victim->get_name());
       }
       monster_on_death(victim_ptr, false);
       victim = nullptr;
 
-    } else if (monster_seen_by_player(victim)) {
+    } else if (player->can_see(*victim)) {
       Game::io->message("An arrow shot " +  victim->get_name());
     }
 
@@ -171,7 +171,7 @@ static Trap::Type trap_arrow_monster(Monster** victim_ptr) {
     arrow->o_count = 1;
     arrow->set_position(victim->get_position());
     weapon_missile_fall(arrow, false);
-    if (monster_seen_by_player(victim)) {
+    if (player->can_see(*victim)) {
       Game::io->message("An arrow barely missed " + victim->get_name());
     }
   }
@@ -188,21 +188,21 @@ static Trap::Type trap_telep_player(Coordinate const* trap_coord) {
 static Trap::Type trap_telep_monster(Monster* victim) {
   stringstream os;
 
-  bool was_seen = monster_seen_by_player(victim);
+  bool was_seen = player->can_see(*victim);
   if (was_seen) {
     os << victim->get_name();
   }
 
   monster_teleport(victim, nullptr);
   if (was_seen) {
-    if (monster_seen_by_player(victim)) {
+    if (player->can_see(*victim)) {
       os << " teleported a short distance";
     } else {
       os << " disappeared";
     }
   }
 
-  if (!was_seen && monster_seen_by_player(victim)) {
+  if (!was_seen && player->can_see(*victim)) {
     os << victim->get_name()
        << " appeared out of thin air";
   }
@@ -241,17 +241,17 @@ static Trap::Type trap_dart_monster(Monster** victim_ptr) {
     victim->take_damage(roll(1,4));
 
     if (victim->get_health() <= 0) {
-      if (monster_seen_by_player(victim)) {
+      if (player->can_see(*victim)) {
         Game::io->message("A poisoned dart killed " + victim->get_name());
       }
       monster_on_death(victim_ptr, false);
       victim = nullptr;
 
-    } else if (monster_seen_by_player(victim)) {
+    } else if (player->can_see(*victim)) {
       Game::io->message("An dart hit " + victim->get_name());
     }
 
-  } else if (monster_seen_by_player(victim)) {
+  } else if (player->can_see(*victim)) {
     Game::io->message("A dart barely missed " + victim->get_name());
   }
   return Trap::Dart;
@@ -264,7 +264,7 @@ static Trap::Type trap_rust_player(void) {
 }
 
 static Trap::Type trap_rust_monster(Monster* victim) {
-  if (monster_seen_by_player(victim)) {
+  if (player->can_see(*victim)) {
     Game::io->message("a gush of water hits " + victim->get_name());
   }
   return Trap::Rust;
@@ -296,13 +296,11 @@ Trap::Type Trap::player(Coordinate const& trap_coord) {
 }
 
 Trap::Type Trap::spring(Monster** victim, Coordinate const& trap_coord) {
-  if (victim == nullptr) {
-    error("victim = nullptr");
-  } else if (*victim == nullptr) {
-    error("*victim = nullptr");
+  if (victim == nullptr || *victim == nullptr) {
+    error("null");
   }
 
-  if (monster_seen_by_player(*victim)) {
+  if (::player->can_see(**victim)) {
     Game::level->set_tile(trap_coord, Tile::Trap);
     Game::level->set_discovered(trap_coord);
   }

@@ -38,6 +38,7 @@ public:
   // Modifiers
   void give_pack();
   void find_new_target();
+  void notice_player();
   void increase_speed() override;
   void decrease_speed() override;
 
@@ -75,9 +76,6 @@ private:
 extern int    monster_flytrap_hit;
 
 
-/* What to do when the hero steps next to a monster */
-Monster *monster_notice_player(int y, int x);
-
 /* See if a creature save against something */
 int monster_save_throw(int which, Monster const* mon);
 
@@ -94,8 +92,6 @@ void monster_remove_from_screen(Monster** monster, bool was_killed);
 void monster_teleport(Monster* monster, Coordinate const* destination);
 
 void monster_do_special_ability(Monster** monster);
-
-bool monster_seen_by_player(Monster const* monster);
 
 /* Is any monster seen by the player? */
 bool monster_is_anyone_seen_by_player(void);

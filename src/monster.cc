@@ -1,8 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <assert.h>
-
 #include <string>
 #include <vector>
 #include <sstream>
@@ -134,7 +129,7 @@ string Monster::get_attack_string(bool successful_hit) const {
 
 string Monster::get_name() const {
 
-  if (!monster_seen_by_player(this) && !player->can_sense_monsters()) {
+  if (!player->can_see(*this) && !player->can_sense_monsters()) {
     return "something";
 
   } else {
@@ -226,43 +221,34 @@ char Monster::get_disguise() const {
   return t_disguise;
 }
 
-Monster*
-monster_notice_player(int y, int x)
-{
-  Monster *monster = Game::level->get_monster(x, y);
+void Monster::notice_player() {
 
   /* Monster can begin chasing after the player if: */
-  if (!monster->is_chasing()
-      && monster->is_mean()
-      && !monster->is_held()
-      && !player->is_stealthy()
-      && !os_rand_range(3))
-  {
-    monster->set_target(&player->get_position());
-    if (!monster->is_stuck())
-      monster->set_chasing();
+  if (!is_chasing() && is_mean() && !is_held() && !player->is_stealthy() &&
+      !os_rand_range(3)) {
+
+    set_target(&player->get_position());
+    if (!is_stuck()) {
+      set_chasing();
+    }
   }
 
   /* Medusa can confuse player */
-  if (monster->get_type() == 'M'
-      && !player->is_blind()
-      && !monster->is_found()
-      && !monster->is_cancelled()
-      && monster->is_chasing())
-  {
+  if (get_type() == 'M' && !player->is_blind() && !is_found() && !is_cancelled() &&
+      is_chasing()) {
+
     struct room const* rp = player->get_room();
+    Coordinate const& coord = get_position();
+    Coordinate const& player_pos = player->get_position();
     if ((rp != nullptr && !(rp->r_flags & ISDARK))
-        || dist(y, x, player->get_position().y, player->get_position().x) < LAMPDIST)
-    {
-      monster->set_found();
-      if (!player->saving_throw(VS_MAGIC))
-      {
-        Game::io->message(monster->get_name() + "'s gaze has confused you");
+        || dist(coord.y, coord.x, player_pos.y, player_pos.x) < LAMPDIST) {
+      set_found();
+      if (!player->saving_throw(VS_MAGIC)) {
+        Game::io->message(get_name() + "'s gaze has confused you");
         player->set_confused();
       }
     }
   }
-  return monster;
 }
 
 void Monster::give_pack() {
@@ -285,7 +271,6 @@ string const& Monster::name(char monster_type) {
 int
 monster_save_throw(int which, Monster const* mon)
 {
-  assert(mon != nullptr);
 
   int need = 14 + which - mon->get_level() / 2;
   return (roll(1, 20) >= need);
@@ -394,6 +379,9 @@ monster_remove_from_screen(Monster** monster_ptr, bool was_killed)
 void
 monster_teleport(Monster* monster, Coordinate const* destination)
 {
+  if (monster == nullptr) {
+    error("monster = null");
+  }
   Coordinate old_position = monster->get_position();
 
   /* Select destination */
@@ -412,7 +400,7 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   monster->set_position(new_pos);
   monster->set_not_held();
 
-  if (monster_seen_by_player(monster))
+  if (player->can_see(*monster))
     Game::io->print_color(new_pos.x, new_pos.y, monster->t_disguise);
   else if (player->can_sense_monsters()) {
     standout();
@@ -421,7 +409,7 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   }
 
   /* Remove monster */
-  if (monster_seen_by_player(monster)) {
+  if (player->can_see(*monster)) {
     Game::io->print_tile(old_position);
   }
 }
@@ -429,8 +417,11 @@ monster_teleport(Monster* monster, Coordinate const* destination)
 void
 monster_do_special_ability(Monster** monster)
 {
-  assert(monster != nullptr);
-  assert(*monster != nullptr);
+  if (monster == nullptr) {
+    error("monster = null");
+  } else if (*monster == nullptr) {
+    error("*monster = null");
+  }
 
   if ((*monster)->is_cancelled())
     return;
@@ -540,41 +531,10 @@ monster_do_special_ability(Monster** monster)
 }
 
 bool
-monster_seen_by_player(Monster const* monster)
-{
-  assert(monster != nullptr);
-
-  Coordinate const& monster_pos = monster->get_position();
-  int monster_y = monster_pos.y;
-  int monster_x = monster_pos.x;
-
-  // Special cases when not seen
-  if (player->is_blind() ||
-      (monster->is_invisible() && !player->has_true_sight()))
-    return false;
-
-  // Dark place ?
-  int dist = dist_cp(&monster_pos, &player->get_position());
-  if (dist < LAMPDIST)
-  //if (dist_cp(&monster_pos, &player->get_position()) < LAMPDIST)
-  {
-    if (monster_y != player->get_position().y && monster_x != player->get_position().x
-        && !Game::level->can_step(player->get_position().x, monster_y)
-        && !Game::level->can_step(monster_x, player->get_position().y))
-      return false;
-    return true;
-  }
-
-  if (monster->get_room() != player->get_room())
-    return false;
-  return !(monster->get_room()->r_flags & ISDARK);
-}
-
-bool
 monster_is_anyone_seen_by_player(void)
 {
   for (Monster* mon : Game::level->monsters) {
-    if (monster_seen_by_player(mon)) {
+    if (player->can_see(*mon)) {
       return true;
     }
   }
@@ -587,7 +547,7 @@ monster_show_all_as_trippy(void)
   bool seemonst = player->can_sense_monsters();
   for (Monster const* tp : Game::level->monsters) {
 
-    if (monster_seen_by_player(tp)) {
+    if (player->can_see(*tp)) {
       chtype symbol = (tp->get_type() == 'X' && tp->t_disguise != 'X')
         ? static_cast<chtype>(rnd_thing())
         : static_cast<chtype>(os_rand_range(26) + 'A');
@@ -652,7 +612,7 @@ void
 monster_show_all_hidden(void)
 {
   for (Monster* mon : Game::level->monsters) {
-    if (mon->is_invisible() && monster_seen_by_player(mon)) {
+    if (mon->is_invisible() && player->can_see(*mon)) {
       Game::io->print_color(mon->get_position().x, mon->get_position().y,
           mon->t_disguise);
     }
@@ -673,7 +633,7 @@ void
 monster_hide_all_invisible(void)
 {
   for (Monster* mon : Game::level->monsters) {
-    if (mon->is_invisible() && monster_seen_by_player(mon)) {
+    if (mon->is_invisible() && player->can_see(*mon)) {
       Game::io->print_tile(mon->get_position());
     }
   }
@@ -684,7 +644,7 @@ monster_sense_all_hidden(void)
 {
   bool spotted_something = false;
   for (Monster* mon : Game::level->monsters) {
-    if (!monster_seen_by_player(mon)) {
+    if (!player->can_see(*mon)) {
       standout();
       Game::io->print_color(mon->get_position().x, mon->get_position().y,
            mon->get_type());
@@ -699,7 +659,7 @@ void
 monster_unsense_all_hidden(void)
 {
   for (Monster* mon : Game::level->monsters) {
-    if (!monster_seen_by_player(mon)) {
+    if (!player->can_see(*mon)) {
       Game::io->print_tile(mon->get_position());
     }
   }
@@ -725,7 +685,9 @@ monster_show_if_magic_inventory(void)
 void
 monster_polymorph(Monster* target)
 {
-  assert(target != nullptr);
+  if (target == nullptr) {
+    error("null");
+  }
   stringstream os;
 
   // Venus Flytrap loses its grip
@@ -734,7 +696,7 @@ monster_polymorph(Monster* target)
 
 
   Coordinate pos = target->get_position();
-  bool was_seen = monster_seen_by_player(target);
+  bool was_seen = player->can_see(*target);
   if (was_seen)
   {
     Game::io->print_color(pos.x, pos.y, Game::level->get_tile(pos));
@@ -751,7 +713,7 @@ monster_polymorph(Monster* target)
   // TODO: Test this. Important that pack and damage gets copied
   *target = Monster(monster, pos, Game::level->get_room(pos));
 
-  if (monster_seen_by_player(target))
+  if (player->can_see(*target))
   {
     Game::io->print_color(pos.x, pos.y, monster);
     if (same_monster)
@@ -828,7 +790,7 @@ void Monster::find_new_target()
 {
   int prob = monsters->at(static_cast<size_t>(get_type() - 'A')).m_carry;
   if (prob <= 0 || get_room() == player->get_room()
-      || monster_seen_by_player(this)) {
+      || player->can_see(*this)) {
     set_target(&player->get_position());
     return;
   }

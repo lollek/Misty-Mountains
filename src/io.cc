@@ -96,7 +96,7 @@ void IO::print_tile_seen(Coordinate const& coord) {
   // Next prio: Monsters
   Monster* mon = Game::level->get_monster(coord);
   if (mon != nullptr) {
-    if (monster_seen_by_player(mon)) {
+    if (player->can_see(*mon)) {
       print_monster(mon);
       return;
 

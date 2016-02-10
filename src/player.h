@@ -96,6 +96,7 @@ public:
   void teleport(Coordinate const* target); // random spot if target is nullptr
   bool has_seen_stairs() const;
   bool can_see(Coordinate const& coord) const;
+  bool can_see(Monster const& monster) const;
   void search();
   void rust_armor();
   std::string get_attack_string(bool successful_hit) const override;

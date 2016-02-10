@@ -84,7 +84,7 @@ wand_spell_drain_health(void) {
     monster->take_damage(damage);
 
     if (monster->get_health() < 0) {
-      monster_on_death(&monster, monster_seen_by_player(monster));
+      monster_on_death(&monster, player->can_see(*monster));
 
     } else {
       monster_start_running(&monster->get_position());
@@ -97,7 +97,7 @@ static void
 wand_spell_polymorph(Monster& target)
 {
   monster_polymorph(&target);
-  if (monster_seen_by_player(&target)) {
+  if (player->can_see(*&target)) {
     Wand::set_known(Wand::Type::POLYMORPH);
   }
 }
@@ -114,7 +114,7 @@ wand_spell_cancel(Monster& target)
   target.remove_confusing_attack();
 
   target.t_disguise = static_cast<char>(target.get_type());
-  if (monster_seen_by_player(&target)) {
+  if (player->can_see(*&target)) {
     Game::io->print_color(target.get_position().x, target.get_position().y,
         target.t_disguise);
   }

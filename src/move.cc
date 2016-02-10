@@ -52,7 +52,7 @@ static void handle_surrounding(Coordinate const& nh, int dx, int dy, bool cautio
       Monster* monster = Game::level->get_monster(x, y);
       // Monster are interesting, and they will notice you as well
       if (monster != nullptr) {
-        monster_notice_player(y, x);
+        monster->notice_player();
 
         // Only actually notice it if we can see it
         if (cautious && (player->can_sense_monsters() || !monster->is_invisible())) {
