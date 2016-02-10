@@ -97,10 +97,10 @@ chase_do(Monster* monster)
   // If gold has been taken, run after hero
   room* chaser_room = Game::level->get_room(monster->get_position());
   if (monster->is_greedy() && chaser_room != nullptr && chaser_room->r_goldval == 0) {
-    monster->t_dest = &player->get_position();
+    monster->set_target(&player->get_position());
   }
 
-  Coordinate target = *monster->t_dest;
+  Coordinate target = *monster->get_target();
   if (monster_try_breathe_fire_on_player(*monster)) {
     return 0;
   }
@@ -114,9 +114,9 @@ chase_do(Monster* monster)
       return fight_against_player(monster);
 
     // Reached shiny thing
-    } else if (target == *monster->t_dest) {
+    } else if (target == *monster->get_target()) {
       for (Item *obj : Game::level->items) {
-        if (monster->t_dest == &obj->get_position()) {
+        if (monster->get_target() == &obj->get_position()) {
           Game::level->items.remove(obj);
           monster->t_pack.push_back(obj);
           monster->find_new_target();
@@ -178,7 +178,7 @@ bool Monster::take_turn()
     return true;
 
   // Chase player, if there's a target
-  } else if (is_chasing() && t_dest != nullptr) {
+  } else if (is_chasing() && get_target() != nullptr) {
     return chase_do(this) != -1;
 
   // Chase gold, if greedy

@@ -46,11 +46,12 @@ public:
   bool take_turn(); // True if monster is still alive
 
   // Getters
-  int         get_armor() const override;
-  std::string get_attack_string(bool successful_hit) const override;
-  std::string get_name() const override;
-  char        get_disguise() const;
-  int         get_speed() const;
+  int               get_armor() const override;
+  std::string       get_attack_string(bool successful_hit) const override;
+  std::string       get_name() const override;
+  char              get_disguise() const;
+  int               get_speed() const;
+  Coordinate const* get_target() const;
 
   // Statics
   static void               init_monsters();
@@ -59,7 +60,6 @@ public:
   static std::string const& name(char monster_type);
 
   // Variables (TODO: Make these private)
-  Coordinate const*  t_dest;    // Where it is running to
   std::list<Item*>   t_pack;    // What the thing is carrying
 
   char               t_disguise;// What mimic looks like
@@ -67,6 +67,7 @@ public:
 
 private:
   int                speed;
+  Coordinate const*  target;
 
   static std::vector<monster_template> const* monsters;
 

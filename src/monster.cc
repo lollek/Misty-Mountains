@@ -198,8 +198,8 @@ Monster::Monster(char type, Coordinate const& pos, struct room* room,
   Character(10, m_template.m_basexp, m_template.m_level, m_template.m_armor,
             roll(m_template.m_level, 8), m_template.m_dmg, pos, room,
             m_template.m_flags, type),
-  t_dest(), t_pack(), t_disguise(type), turns_not_moved(0),
-  speed(m_template.m_speed) {
+  t_pack(), t_disguise(type), turns_not_moved(0),
+  speed(m_template.m_speed), target(nullptr) {
 
   // All monsters are equal, but some monsters are more equal than others, so
   // they also give more experience
@@ -214,7 +214,11 @@ Monster::Monster(char type, Coordinate const& pos, struct room* room,
 }
 
 void Monster::set_target(Coordinate const* new_target) {
-  t_dest = new_target;
+  target = new_target;
+}
+
+Coordinate const* Monster::get_target() const {
+  return target;
 }
 
 char Monster::get_disguise() const {
@@ -623,8 +627,8 @@ void
 monster_aggro_all_which_desire_item(Item* item)
 {
   for (Monster* mon : Game::level->monsters) {
-    if (mon->t_dest == &item->get_position()) {
-      mon->t_dest = &player->get_position();
+    if (mon->get_target() == &item->get_position()) {
+      mon->set_target(&player->get_position());
     }
   }
 }
@@ -804,7 +808,7 @@ void Monster::find_new_target()
     {
       auto result = find_if(Game::level->monsters.cbegin(), Game::level->monsters.cend(),
           [&] (Monster const* m) {
-          return m->t_dest == &obj->get_position();
+          return m->get_target() == &obj->get_position();
       });
 
       if (result == Game::level->monsters.cend()) {
