@@ -27,7 +27,7 @@ int constexpr Level::treasure_room_min_items;
 void Level::create_treasure_room() {
 
   room& room = *get_random_room();
-  int spots = max((room.r_max.y - 2) * (room.r_max.x - 2) - treasure_room_min_items,
+  int spots = min((room.r_max.y - 2) * (room.r_max.x - 2) - treasure_room_min_items,
               treasure_room_max_items - treasure_room_min_items);
 
   int num_items = os_rand_range(spots) + treasure_room_min_items;
@@ -41,7 +41,7 @@ void Level::create_treasure_room() {
   }
 
   // fill up room with monsters from the next level down
-  int num_monsters = max({os_rand_range(spots) + treasure_room_min_items,
+  int num_monsters = min({os_rand_range(spots) + treasure_room_min_items,
                          num_items + 2,
                          (room.r_max.y - 2) * (room.r_max.x - 2)});
 

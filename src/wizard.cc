@@ -263,15 +263,28 @@ void wizard_show_map(void) {
 
   for (int y = 1; y < NUMLINES - 1; y++)  {
     for (int x = 0; x < NUMCOLS; x++) {
-      Tile::Type tile = Game::level->get_tile(x, y);
-      chtype ch;
-      switch (tile) {
-        case Tile::Floor:        ch = IO::Floor; break;
-        case Tile::Wall:         ch = IO::Wall; break;
-        case Tile::OpenDoor:     ch = IO::OpenDoor; break;
-        case Tile::ClosedDoor:   ch = IO::ClosedDoor; break;
-        case Tile::Trap:         ch = IO::Trap; break;
-        case Tile::Stairs:       ch = IO::Stairs; break;
+      chtype ch = 0;
+
+      Monster* monster = Game::level->get_monster(x, y);
+      if (ch == 0 && monster != nullptr) {
+        ch = static_cast<chtype>(monster->get_type());
+      }
+
+      Item* item = Game::level->get_item(x, y);
+      if (ch == 0 && item != nullptr) {
+        ch = static_cast<chtype>(item->get_type());
+      }
+
+      if (ch == 0) {
+        Tile::Type tile = Game::level->get_tile(x, y);
+        switch (tile) {
+          case Tile::Floor:        ch = IO::Floor; break;
+          case Tile::Wall:         ch = IO::Wall; break;
+          case Tile::OpenDoor:     ch = IO::OpenDoor; break;
+          case Tile::ClosedDoor:   ch = IO::ClosedDoor; break;
+          case Tile::Trap:         ch = IO::Trap; break;
+          case Tile::Stairs:       ch = IO::Stairs; break;
+        }
       }
 
       if (!Game::level->is_real(x, y)) {
