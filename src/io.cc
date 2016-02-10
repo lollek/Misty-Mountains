@@ -73,7 +73,7 @@ IO::~IO() {
 
 
 void IO::print_monster(Monster* monster, IO::Attribute attr) {
-  int symbol_to_print = monster->get_disguise();
+  char symbol_to_print = monster->get_disguise();
   Coordinate const& coord = monster->get_position();
   print_color(coord.x, coord.y, symbol_to_print, attr);
 }
@@ -176,15 +176,15 @@ chtype IO::colorize(chtype ch)
     case IO::Gold: return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
 
     // Monsters
-    case 'B': return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
-    case 'E': return ch | COLOR_PAIR(COLOR_MAGENTA);
-    case 'H': return ch | COLOR_PAIR(COLOR_GREEN);
-    case 'I': return ch | COLOR_PAIR(COLOR_CYAN);
-    case 'K': return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
-    case 'L': return ch | COLOR_PAIR(COLOR_GREEN) | A_BOLD;
-    case 'N': return ch | COLOR_PAIR(COLOR_GREEN) | A_BOLD;
-    case 'R': return ch | COLOR_PAIR(COLOR_RED);
-    case 'S': return ch | COLOR_PAIR(COLOR_GREEN);
+    case 'b': return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
+    case 'e': return ch | COLOR_PAIR(COLOR_MAGENTA);
+    case 'h': return ch | COLOR_PAIR(COLOR_GREEN);
+    case 'i': return ch | COLOR_PAIR(COLOR_CYAN);
+    case 'k': return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
+    case 'l': return ch | COLOR_PAIR(COLOR_GREEN) | A_BOLD;
+    case 'n': return ch | COLOR_PAIR(COLOR_GREEN) | A_BOLD;
+    case 'r': return ch | COLOR_PAIR(COLOR_RED);
+    case 's': return ch | COLOR_PAIR(COLOR_GREEN);
 
 
     default: return ch | COLOR_PAIR(COLOR_BLACK);

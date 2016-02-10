@@ -10,8 +10,22 @@
 #include "item.h"
 #include "rogue.h"
 
-struct monster_template {
+class Monster : public Character {
+public:
+  enum Type {
+    Aquator, Bat, Centaur, Dragon, Emu, Flytrap, Griffin, Hobgoblin,
+    IceMonster, Jabberwock, Kobold, Leprechaun, Medusa, Nymph, Orc,
+    Phantom, Quagga, Rattlesnake, Snake, Troll, BlackUnicorn, Vampire,
+    Wraith, Xeroc, Yeti, Zombie,
+
+    NMONSTERS,
+  };
+  struct Template {
     std::string const    m_name;    // What to call the monster
+    Type                 m_subtype; // Monster subtype
+    char                 m_char;    // Monster character on screen
+    int                  m_startlvl; // Start spawning at level (inclusive)
+    int                  m_stoplvl; // Stop spawning at level (inclusive)
     int                  m_carry;   // Probability of carrying something
     unsigned long long   m_flags;   // things about the monster
     int                  m_speed;   // Moves per turn
@@ -19,11 +33,11 @@ struct monster_template {
     int                  m_level;   // Level
     int                  m_armor;   // Armor
     std::vector<damage>  m_dmg;     // Monster attacks
-};
+  };
 
-class Monster : public Character {
-public:
-  Monster(char type, Coordinate const& pos, struct room* room);
+
+
+  Monster(Type subtype, Coordinate const& pos, struct room* room);
   Monster(Monster const&) = delete; // Deleted since they would share inventory
 
   ~Monster();
@@ -34,6 +48,7 @@ public:
   // Setters
   void set_invisible() override;
   void set_target(Coordinate const* target);
+  void set_disguise(char);
 
   // Modifiers
   void give_pack();
@@ -52,28 +67,31 @@ public:
   char              get_disguise() const;
   int               get_speed() const;
   Coordinate const* get_target() const;
+  Type              get_subtype() const;
 
   // Statics
-  static void               init_monsters();
-  static void               free_monsters();
-  static char               random_monster_type();
-  static std::string const& name(char monster_type);
-  static void               all_move();
+  static void                 init_monsters();
+  static void                 free_monsters();
+  static std::string const&   name(Type type);
+  static void                 all_move();
+  static Template const&      monster_data(Type type);
+  static Type                 random_monster_type_for_level();
+  static Type                 random_monster_type();
 
   // Variables (TODO: Make these private)
   std::list<Item*>   t_pack;    // What the thing is carrying
 
-  char               t_disguise;// What mimic looks like
   int                turns_not_moved;
 
 private:
+  char               disguise;
+  Type               subtype;
   int                speed;
   Coordinate const*  target;
 
-  static std::vector<monster_template> const* monsters;
+  static std::vector<Template> const* monsters;
 
-  Monster(char type, Coordinate const& pos, struct room* room,
-          monster_template const& m_template);
+  Monster(Coordinate const& pos, struct room* room, Template const& m_template);
 };
 
 

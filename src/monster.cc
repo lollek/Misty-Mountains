@@ -28,9 +28,10 @@ using namespace std;
 
 int            monster_flytrap_hit = 0; // Number of time flytrap has hit
 
-vector<monster_template> const* Monster::monsters = nullptr;
+vector<Monster::Template> const* Monster::monsters = nullptr;
 
 void Monster::init_monsters() {
+
 //       010000000000000000000: greedy
 //       020000000000000000000: mean
 //       040000000000000000000: flying
@@ -43,60 +44,86 @@ void Monster::init_monsters() {
 //       000010000000000000000: attack drains strength
 //       000020000000000000000: attack drains health
 //       000040000000000000000: attack drains experience
-  monsters = new vector<monster_template> const {
+  monsters = new vector<Template> const {
+    // Name,           Type,    char,  start, stop,
 //drop%, ability_flags,         speed,  exp,lvl, amr, dmg              */
-    { "aquator",
-     0,  020100000000000000000ULL,  1,   20,  5,  18, {{0,1}}},
-    { "bat",
-     0,  040000000000000000000ULL,  1,    1,  1,  17, {{1,2}}},
-    { "centaur",
-    15,  000000000000000000000ULL,  1,   17,  4,  16, {{1,2},{1,5},{1,5}}},
-    { "dragon",
-   100,  020000000000000000000ULL,  2, 5000, 10,  21, {{1,8},{1,8},{3,10}}},
-    { "emu",
+    { "emu",           Emu,          'e',  1,    5,
      0,  020000000000000000000ULL,  1,    2,  1,  13, {{1,2}}},
-    { "venus flytrap",
-     0,  020000000000000000000ULL,  1,   80,  8,  17, {{0,1}}},
-    { "griffin",
-    20,  061000000000000000000ULL,  2, 2000, 13,  18, {{4,3},{3,5}}},
-    { "hobgoblin",
-     0,  020000000000000000000ULL,  1,    3,  1,  15, {{1,8}}},
-    { "ice monster",
-     0,  004000000000000000000ULL,  1,    5,  1,  11, {{0,1}}},
-    { "jabberwock",
-    70,  000000000000000000000ULL,  1, 3000, 15,  14, {{2,12},{2,4}}},
-    { "kobold",
-     0,  060000000000000000000ULL,  1,    1,  1,  13, {{1,4}}},
-    { "leprechaun",
-     0,  000200000000000000000ULL,  1,   10,  3,  12, {{1,1}}},
-    { "medusa",
-    40,  020000000000000000000ULL,  1,  200,  8,  18, {{3,4},{3,4},{2,5}}},
-    { "nymph",
-   100,  000400000000000000000ULL,  1,   37,  3,  11, {{0,1}}},
-    { "orc",
-    15,  010000000000000000000ULL,  1,    5,  1,  14, {{1,8}}},
-    { "phantom",
-     0,  002000000000000000000ULL,  1,  120,  8,  17, {{4,4}}},
-    { "quagga",
-     0,  020000000000000000000ULL,  1,   15,  3,  17, {{1,5},{1,5}}},
-    { "rattlesnake",
-     0,  020010000000000000000ULL,  1,    9,  2,  17, {{1,6}}},
-    { "snake",
+
+    { "bat",           Bat,          'b',  1,    5,
+     0,  040000000000000000000ULL,  1,    1,  1,  17, {{1,2}}},
+
+    { "snake",         Snake,        's',  1,    5,
      0,  000000000000000000000ULL,  1,    2,  1,  15, {{1,3}}},
-    { "troll",
-    50,  021000000000000000000ULL,  1,  120,  6,  16, {{1,8},{1,8},{2,6}}},
-    { "black unicorn",
-     0,  020000000000000000000ULL,  1,  190,  7,  22, {{1,9},{1,9},{2,9}}},
-    { "vampire",
-    20,  021020000000000000000ULL,  1,  350,  8,  19, {{1,10}}},
-    { "wraith",
-     0,  000040000000000000000ULL,  1,   55,  5,  16, {{1,6}}},
-    { "xeroc",
-    30,  000000000000000000000ULL,  1,  100,  7,  13, {{4,4}}},
-    { "yeti",
-    30,  000000000000000000000ULL,  1,   50,  4,  14, {{1,6},{1,6}}},
-    { "zombie",
+
+    { "kobold",        Kobold,       'k',  1,   10,
+     0,  060000000000000000000ULL,  1,    1,  1,  13, {{1,4}}},
+
+    { "ice monster",   IceMonster,   'i',  1,   10,
+     0,  004000000000000000000ULL,  1,    5,  1,  11, {{0,1}}},
+
+    { "hobgoblin",     Hobgoblin,    'h',  3,   13,
+     0,  020000000000000000000ULL,  1,    3,  1,  15, {{1,8}}},
+
+    { "orc",           Orc,          'o',  5,   15,
+    15,  010000000000000000000ULL,  1,    5,  1,  14, {{1,8}}},
+
+    { "rattlesnake",   Rattlesnake,  'r',  5,   15,
+     0,  020010000000000000000ULL,  1,    9,  2,  17, {{1,6}}},
+
+    { "zombie",        Zombie,       'z',  5,   15,
      0,  020000000000000000000ULL,  1,    6,  2,  12, {{1,8}}},
+
+    { "nymph",         Nymph,        'n',  1,   25,
+   100,  000400000000000000000ULL,  1,   37,  3,  11, {{0,1}}},
+
+    { "leprechaun",    Leprechaun,   'l',  1,   25,
+     0,  000200000000000000000ULL,  1,   10,  3,  12, {{1,1}}},
+
+    { "centaur",       Centaur,      'C', 10,   20,
+    15,  000000000000000000000ULL,  1,   17,  4,  16, {{1,2},{1,5},{1,5}}},
+
+    { "quagga",        Quagga,       'q', 10,   20,
+     0,  020000000000000000000ULL,  1,   15,  3,  17, {{1,5},{1,5}}},
+
+    { "aquator",       Aquator,      'a', 10,   20,
+     0,  020100000000000000000ULL,  1,   20,  5,  18, {{0,1}}},
+
+    { "yeti",          Yeti,         'y', 13,   23,
+    30,  000000000000000000000ULL,  1,   50,  4,  14, {{1,6},{1,6}}},
+
+    { "venus flytrap", Flytrap,      'F', 15,   25,
+     0,  020000000000000000000ULL,  1,   80,  8,  17, {{0,1}}},
+
+    { "troll",         Troll,        'T', 15,   25,
+    50,  021000000000000000000ULL,  1,  120,  6,  16, {{1,8},{1,8},{2,6}}},
+
+    { "wraith",        Wraith,       'W', 15,   25,
+     0,  000040000000000000000ULL,  1,   55,  5,  16, {{1,6}}},
+
+    { "phantom",       Phantom,      'P', 15,   50,
+     0,  002000000000000000000ULL,  1,  120,  8,  17, {{4,4}}},
+
+    { "xeroc",         Xeroc,        'x', 15,   50,
+    30,  000000000000000000000ULL,  1,  100,  7,  13, {{4,4}}},
+
+    { "black unicorn", BlackUnicorn, 'U', 20,   50,
+     0,  020000000000000000000ULL,  1,  190,  7,  22, {{1,9},{1,9},{2,9}}},
+
+    { "medusa",        Medusa,       'M', 20,   50,
+    40,  020000000000000000000ULL,  1,  200,  8,  18, {{3,4},{3,4},{2,5}}},
+
+    { "vampire",       Vampire,      'V', 20,   50,
+    20,  021020000000000000000ULL,  1,  350,  8,  19, {{1,10}}},
+
+    { "griffin",       Griffin,      'G', 25,   50,
+    20,  061000000000000000000ULL,  2, 2000, 13,  18, {{4,3},{3,5}}},
+
+    { "jabberwock",    Jabberwock,   'J', 27,   50,
+    70,  000000000000000000000ULL,  1, 3000, 15,  14, {{2,12},{2,4}}},
+
+    { "dragon",        Dragon,       'd', 30,   50,
+   100,  020000000000000000000ULL,  2, 5000, 10,  21, {{1,8},{1,8},{3,10}}},
   };
 }
 
@@ -141,7 +168,7 @@ string Monster::get_name() const {
 
   } else {
     stringstream ss;
-    ss << "the " << name(static_cast<char>(get_type()));
+    ss << "the " << name(subtype);
     return ss.str();
   }
 }
@@ -156,27 +183,31 @@ void Monster::set_invisible() {
   }
 }
 
-char Monster::random_monster_type() {
+Monster::Type Monster::random_monster_type() {
+  return static_cast<Monster::Type>(os_rand_range(Monster::NMONSTERS));
+}
 
-  /* List of monsters in rough order of vorpalness */
-  string const mons =  "KEBSHIROZLCQANYFTWPXUMVGJD";
-  int const default_spread = 5;
 
-  // Formula for generating monster type
-  int index = Game::current_level + (os_rand_range(10) - 6);
+Monster::Type Monster::random_monster_type_for_level() {
 
-  // If we are in deep, only pick a default spread of the hardest monsters
-  int mons_size = static_cast<int>(mons.size());
-  if (index >= mons_size) {
-    index = mons_size - default_spread + os_rand_range(default_spread);
+  vector<Monster::Template const*> mon_types;
+
+  // Make list of relevant monsters
+  for (Template const& mon : *monsters) {
+    if (mon.m_startlvl <= Game::current_level &&
+        mon.m_stoplvl  >= Game::current_level) {
+      mon_types.push_back(&mon);
+    }
   }
 
-  // If we are in shallow, only pick a default spread of easy monsters
-  if (index < 0) {
-    index = os_rand_range(default_spread);
-  }
+  // If we found something, pick one at random
+  if (!mon_types.empty()) {
+    return mon_types.at(os_rand_range(mon_types.size()))->m_subtype;
 
-  return mons.at(static_cast<size_t>(index));
+  // Hmm, otherwise just lets pick the last one
+  } else {
+    return monsters->back().m_subtype;
+  }
 }
 
 // Experience to add for this monster's level/hit points
@@ -196,17 +227,17 @@ static int extra_experience(int level, int max_health) {
 
 Monster::~Monster() {}
 
-Monster::Monster(char type, Coordinate const& pos, struct room* room) :
-  Monster(type, pos, room, monsters->at(static_cast<size_t>(type - 'A')))
+Monster::Monster(Monster::Type subtype_, Coordinate const& pos, struct room* room) :
+  Monster(pos, room, monster_data(subtype_))
 {}
 
-Monster::Monster(char type, Coordinate const& pos, struct room* room,
-                 monster_template const& m_template) :
+Monster::Monster(Coordinate const& pos, struct room* room,
+                 Template const& m_template) :
   Character(10, m_template.m_basexp, m_template.m_level, m_template.m_armor,
             roll(m_template.m_level, 8), m_template.m_dmg, pos, room,
-            m_template.m_flags, type),
-  t_pack(), t_disguise(type), turns_not_moved(0),
-  speed(m_template.m_speed), target(nullptr) {
+            m_template.m_flags, m_template.m_char),
+  t_pack(), turns_not_moved(0), disguise(m_template.m_char),
+  subtype(m_template.m_subtype), speed(m_template.m_speed), target(nullptr) {
 
   // All monsters are equal, but some monsters are more equal than others, so
   // they also give more experience
@@ -216,8 +247,8 @@ Monster::Monster(char type, Coordinate const& pos, struct room* room,
     monster_start_running(&pos);
   }
 
-  if (type == 'X')
-    t_disguise = rnd_thing();
+  if (subtype == Monster::Xeroc)
+    disguise = rnd_thing();
 }
 
 void Monster::set_target(Coordinate const* new_target) {
@@ -229,7 +260,7 @@ Coordinate const* Monster::get_target() const {
 }
 
 char Monster::get_disguise() const {
-  return t_disguise;
+  return disguise;
 }
 
 void Monster::notice_player() {
@@ -264,8 +295,7 @@ void Monster::notice_player() {
 
 void Monster::give_pack() {
 
-  size_t monster_id = static_cast<size_t>(get_type() - 'A');
-  int carry_chance = Monster::monsters->at(monster_id).m_carry;
+  int carry_chance = monster_data(subtype).m_carry;
 
   if (Game::current_level >= Game::max_level_visited &&
       os_rand_range(100) < carry_chance) {
@@ -273,8 +303,29 @@ void Monster::give_pack() {
   }
 }
 
-string const& Monster::name(char monster_type) {
-  return Monster::monsters->at(static_cast<size_t>(monster_type - 'A')).m_name;
+string const& Monster::name(Type subtype) {
+  return monster_data(subtype).m_name;
+}
+
+Monster::Template const& Monster::monster_data(Monster::Type subtype) {
+  // Special case when printing highscore
+  bool did_temp_allocation = false;
+  if (monsters == nullptr) {
+    init_monsters();
+    did_temp_allocation = true;
+  }
+
+  for (Template const& mon : *monsters) {
+    if (subtype == mon.m_subtype) {
+
+      if (did_temp_allocation) {
+        free_monsters();
+      }
+
+      return mon;
+    }
+  }
+  error("Non-templated subtype: " + to_string(subtype));
 }
 
 
@@ -412,7 +463,7 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   monster->set_not_held();
 
   if (player->can_see(*monster))
-    Game::io->print_color(new_pos.x, new_pos.y, monster->t_disguise);
+    Game::io->print_color(new_pos.x, new_pos.y, monster->get_disguise());
   else if (player->can_sense_monsters()) {
     standout();
     Game::io->print_color(new_pos.x, new_pos.y, monster->get_type());
@@ -493,7 +544,7 @@ monster_do_special_ability(Monster** monster_ptr)
     player->take_damage(fewer);
     player->modify_max_health(-fewer);
     if (player->get_health() <= 0) {
-      death('V');
+      death(DEATH_NO_HEALTH);
     }
     Game::io->message("you feel weaker");
   }
@@ -501,7 +552,7 @@ monster_do_special_ability(Monster** monster_ptr)
   if (monster->attack_drains_experience() && os_rand_range(100) < 15) {
     // Death by no level
     if (player->get_level() == 1) {
-      death('W');
+      death(DEATH_NO_EXP);
     }
     player->lower_level(1);
 
@@ -509,7 +560,7 @@ monster_do_special_ability(Monster** monster_ptr)
     player->take_damage(fewer);
     player->modify_max_health(-fewer);
     if (player->get_health() <= 0) {
-      death('W');
+      death(DEATH_NO_HEALTH);
     }
     Game::io->message("you feel weaker");
   }
@@ -521,7 +572,7 @@ monster_do_special_ability(Monster** monster_ptr)
     ++monster_flytrap_hit;
     player->take_damage(1);
     if (player->get_health() <= 0) {
-      death('F');
+      death(Monster::Flytrap);
     }
   }
 }
@@ -669,15 +720,14 @@ monster_polymorph(Monster* target)
   list<Item*> target_pack = target->t_pack;
 
   // Generate the new monster
-  char monster = static_cast<char>(os_rand_range(26) + 'A');
-  bool same_monster = monster == target->get_type();
+  Monster::Type monster = Monster::random_monster_type();
+  bool same_monster = monster == target->get_subtype();
 
   // TODO: Test this. Important that pack and damage gets copied
   *target = Monster(monster, pos, Game::level->get_room(pos));
 
   if (player->can_see(*target))
   {
-    Game::io->print_color(pos.x, pos.y, monster);
     if (same_monster)
     {
       os << " now looks a bit different";
@@ -750,7 +800,7 @@ void Monster::decrease_speed() {
 
 void Monster::find_new_target()
 {
-  int prob = monsters->at(static_cast<size_t>(get_type() - 'A')).m_carry;
+  int prob = monster_data(subtype).m_carry;
   if (prob <= 0 || get_room() == player->get_room()
       || player->can_see(*this)) {
     set_target(&player->get_position());
@@ -777,4 +827,12 @@ void Monster::find_new_target()
   }
 
   set_target(&player->get_position());
+}
+
+Monster::Type Monster::get_subtype() const {
+  return subtype;
+}
+
+void Monster::set_disguise(char new_disguise) {
+  disguise = new_disguise;
 }

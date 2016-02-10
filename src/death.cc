@@ -4,8 +4,7 @@
 #include <time.h>
 
 #include <string>
-
-using namespace std;
+#include <sstream>
 
 #include "game.h"
 #include "io.h"
@@ -15,39 +14,37 @@ using namespace std;
 
 #include "death.h"
 
-char*
-death_reason(char buf[], int reason)
-{
-  if (isupper(reason))
-  {
-    string monster = Monster::name(static_cast<char>(reason));
-    sprintf(buf, "Killed by a%s %s", vowelstr(monster).c_str(), monster.c_str());
-  }
-  else
-  {
-    char const* death_reason = "???";
-    switch (reason)
-    {
-      case 'a': case DEATH_ARROW: death_reason = "Pierced by an arrow"; break;
-      case 'b': case DEATH_BOLT:  death_reason = "Pierced by a bolt"; break;
-      case 'd': case DEATH_DART:  death_reason = "Poisoned by a dart"; break;
-      case 'f': case DEATH_FLAME: death_reason = "Burned to crisp"; break;
-      case 'h': case 'i': case DEATH_ICE: death_reason = "Frozen solid"; break;
-      case 's': case DEATH_HUNGER: death_reason = "Starved to death"; break;
+using namespace std;
 
-      default:
-      case DEATH_UNKNOWN:
-        io_debug_fatal("Unknown death reason: %d(%c)", reason, reason);
+static void death(int type) __attribute__((noreturn));
+
+string death_reason(int reason) {
+  if (reason < 256) {
+    string monster = Monster::name(static_cast<Monster::Type>(reason));
+    stringstream os;
+    os
+      << "Killed by a"
+      << vowelstr(monster)
+      << " "
+      << monster;
+    return os.str();
+
+  } else {
+    switch (static_cast<enum death_reason>(reason)) {
+      case DEATH_UNKNOWN:    return "Died by an unknown cause";
+      case DEATH_ARROW:      return "Pierced by an arrow";
+      case DEATH_BOLT:       return "Pierced by a bolt";
+      case DEATH_DART:       return "Poisoned by a dart";
+      case DEATH_FLAME:      return "Burned to crisp";
+      case DEATH_ICE:        return "Incased in ice";
+      case DEATH_HUNGER:     return "Starved to death";
+      case DEATH_NO_HEALTH:  return "Reduced to a lifeless shell";
+      case DEATH_NO_EXP:     return "Got their soul drained";
     }
-    sprintf(buf, "%s", death_reason);
   }
-
-  return buf;
 }
 
-void
-death(int monst)
-{
+static void death(int type) {
   player->give_gold(-player->get_gold() / 10);
 
   Game::io->refresh();
@@ -55,8 +52,13 @@ death(int monst)
   io_readchar(false);
 
   player->pack_print_value();
-  score_show_and_exit(player->get_gold(), player->pack_contains_amulet() ? 3 : 0,
-                      static_cast<char>(monst));
+  score_show_and_exit(player->get_gold(), player->pack_contains_amulet() ? 3 : 0, type);
 }
 
+void death(enum death_reason reason) {
+  death(static_cast<int>(reason));
+}
 
+void death(Monster::Type reason) {
+  death(static_cast<int>(reason));
+}

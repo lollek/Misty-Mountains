@@ -96,7 +96,7 @@ magic_bolt_hit_player(Coordinate* start, string const& missile_name)
           default:  death(DEATH_UNKNOWN);
         }
       else
-        death(Game::level->get_monster(*start)->get_type());
+        death(Game::level->get_monster(*start)->get_subtype());
     }
     Game::io->message("you are hit by the " + missile_name);
   }
@@ -128,7 +128,7 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
       fight_against_monster(pos, &bolt, true, &missile_name);
     }
   }
-  else if (mon->t_disguise == 'M')
+  else if (mon->get_subtype() == Monster::Medusa)
   {
     if (start == &player->get_position())
       monster_start_running(pos);

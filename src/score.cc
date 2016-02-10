@@ -21,7 +21,7 @@ struct score {
   unsigned uid;
   int      score;
   int      flags;
-  int      monster;
+  int      death_type;
   char     name[MAXSTR];
   int      level;
   unsigned time;
@@ -91,7 +91,7 @@ score_read(struct score* top_ten)
     io_encread(buf, sizeof(buf), scoreboard);
     sscanf(buf, " %u %d %d %d %d %x \n",
         &top_ten[i].uid, &top_ten[i].score,
-        &top_ten[i].flags, &top_ten[i].monster,
+        &top_ten[i].flags, &top_ten[i].death_type,
         &top_ten[i].level, &top_ten[i].time);
   }
 
@@ -115,7 +115,7 @@ score_write(struct score* top_ten)
     memset(buf, '\0', sizeof(buf));
     sprintf(buf, " %u %d %d %d %d %x \n",
         top_ten[i].uid, top_ten[i].score,
-        top_ten[i].flags, top_ten[i].monster,
+        top_ten[i].flags, top_ten[i].death_type,
         top_ten[i].level, top_ten[i].time);
     io_encwrite(buf, sizeof(buf), scoreboard);
   }
@@ -128,7 +128,7 @@ score_write(struct score* top_ten)
 
 
 static void
-score_insert(struct score* top_ten, int amount, int flags, char monst)
+score_insert(struct score* top_ten, int amount, int flags, int death_type)
 {
   unsigned uid = getuid();
   for (unsigned i = 0; i < SCORE_MAX; ++i)
@@ -145,7 +145,7 @@ score_insert(struct score* top_ten, int amount, int flags, char monst)
       top_ten[i].level = flags == 2
         ? Game::max_level_visited
         : Game::current_level;
-      top_ten[i].monster = monst;
+      top_ten[i].death_type = death_type;
       top_ten[i].uid = uid;
 
       /* Write score to disk */
@@ -157,7 +157,6 @@ score_insert(struct score* top_ten, int amount, int flags, char monst)
 static void
 score_print(struct score* top_ten)
 {
-  char buf[2*MAXSTR];
   endwin();
   printf("Top %d %s:\n   Score Name\n", SCORE_MAX, "Scores");
   for (unsigned i = 0; i < SCORE_MAX; ++i)
@@ -172,14 +171,14 @@ score_print(struct score* top_ten)
         );
 
     if (top_ten[i].flags == 0)
-      printf("%s", death_reason(buf, top_ten[i].monster));
+      printf("%s", death_reason(top_ten[i].death_type).c_str());
     else if (top_ten[i].flags == 1)
       printf("Quit");
     else if (top_ten[i].flags == 2)
       printf("A total winner");
     else if (top_ten[i].flags == 3)
       printf("%s while holding the amulet",
-          death_reason(buf, top_ten[i].monster));
+          death_reason(top_ten[i].death_type).c_str());
 
     printf(" on level %d.\n", top_ten[i].level);
   }
@@ -201,7 +200,7 @@ score_open(void)
 }
 
 void
-score_show_and_exit(int amount, int flags, char monst)
+score_show_and_exit(int amount, int flags, int death_type)
 {
 
   if (flags >= 0 || wizard)
@@ -218,7 +217,7 @@ score_show_and_exit(int amount, int flags, char monst)
   score_read(top_ten);
 
   /* Insert her in list if need be */
-  score_insert(top_ten, amount, flags, monst);
+  score_insert(top_ten, amount, flags, death_type);
 
   /* Print the highscore */
   score_print(top_ten);

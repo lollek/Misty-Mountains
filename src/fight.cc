@@ -164,9 +164,10 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
   Daemons::daemon_reset_doctor();
 
   /* Let him know it was really a xeroc (if it was one) */
-  if (tp->get_type() == 'X' && tp->t_disguise != 'X' && !player->is_blind()) {
+  if (!player->is_blind() && tp->get_subtype() == Monster::Xeroc &&
+      tp->get_disguise() != tp->get_type()) {
 
-    tp->t_disguise = 'X';
+    tp->set_disguise(static_cast<char>(tp->get_type()));
     Game::io->message("wait!  That's a xeroc!");
     if (!thrown) {
       return false;
@@ -246,8 +247,9 @@ fight_against_player(Monster* mp) {
   }
 
   // If it's a xeroc, tag it as known
-  if (mp->get_type() == 'X' && mp->t_disguise != 'X' && !player->is_blind()) {
-    mp->t_disguise = 'X';
+  if (!player->is_blind() && mp->get_subtype() == Monster::Xeroc &&
+      mp->get_disguise() != mp->get_type()) {
+    mp->set_disguise('X');
   }
 
   if (roll_attacks(mp, player, nullptr, false)) {
@@ -260,7 +262,7 @@ fight_against_player(Monster* mp) {
 
     // Check player death (doesn't return)
     if (player->get_health() <= 0) {
-      death(mp->get_type());
+      death(mp->get_subtype());
     }
 
     // Do monster ability (mp can be null after this!)
@@ -272,7 +274,7 @@ fight_against_player(Monster* mp) {
 
       player->take_damage(monster_flytrap_hit);
       if (player->get_health() <= 0) {
-        death(mp->get_type());
+        death(mp->get_subtype());
       }
     }
 
