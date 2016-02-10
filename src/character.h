@@ -63,6 +63,13 @@ public:
   virtual bool is_greedy() const;
   virtual bool is_players_target() const;
   virtual bool is_flying() const;
+  virtual bool attack_freezes() const;
+  virtual bool attack_damages_armor() const;
+  virtual bool attack_steals_gold() const;
+  virtual bool attack_steals_item() const;
+  virtual bool attack_drains_strength() const;
+  virtual bool attack_drains_health() const;
+  virtual bool attack_drains_experience() const;
 
   // Flag setters
   virtual void set_blind();
@@ -140,5 +147,12 @@ private:
   bool running;
   bool flying;
   bool stuck;
+  bool attack_freeze;
+  bool attack_damage_armor;
+  bool attack_steal_gold;
+  bool attack_steal_item;
+  bool attack_drain_strength;
+  bool attack_drain_health;
+  bool attack_drain_experience;
 };
 

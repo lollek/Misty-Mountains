@@ -234,38 +234,39 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
 int
 fight_against_player(Monster* mp) {
 
-  /* Since this is an attack, stop running and any healing that was
-   * going on at the time */
+  // Since this is an attack, stop running and any healing that was
+  // going on at the time
   player_alerted = true;
   command_stop(false);
   Daemons::daemon_reset_doctor();
 
-  /* If we're fighting something to death and get backstabbed, return command */
+  // Stop fighting to death if we are backstabbed
   if (to_death && !mp->is_players_target()) {
     to_death = false;
   }
 
-  /* If it's a xeroc, tag it as known */
+  // If it's a xeroc, tag it as known
   if (mp->get_type() == 'X' && mp->t_disguise != 'X' && !player->is_blind()) {
     mp->t_disguise = 'X';
   }
 
   if (roll_attacks(mp, player, nullptr, false)) {
+    // Monster hit player, and probably delt damage
 
-    if (mp->get_type() != 'I' && !to_death) {
+    // berzerking causes to much text
+    if (!to_death) {
       print_attack(true, mp, player);
     }
 
+    // Check player death (doesn't return)
     if (player->get_health() <= 0) {
       death(mp->get_type());
     }
 
+    // Do monster ability (mp can be null after this!)
     monster_do_special_ability(&mp);
-    /* N.B! mp can be null after this point! */
 
-  }
-
-  else if (mp->get_type() != 'I') {
+  } else {
 
     if (mp->get_type() == 'F') {
 

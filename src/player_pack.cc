@@ -235,16 +235,14 @@ Item* Player::pack_remove(Item* obj, bool newobj, bool all) {
   return return_value;
 }
 
-Item* Player::pack_find_magic_item()
-{
-  int nobj = 0;
-
-  for (Item* obj : pack) {
-    if (obj->is_magic() && os_rand_range(++nobj) == 0) {
-      return obj;
-    }
+Item* Player::pack_find_random_item() {
+  if (pack.empty()) {
+    return nullptr;
   }
-  return nullptr;
+
+  auto it = pack.begin();
+  advance(it, static_cast<long>(os_rand_range(pack.size())));
+  return *it;
 }
 
 Item* Player::pack_find_item(string const& purpose, int type) {

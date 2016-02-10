@@ -66,7 +66,7 @@ public:
   static size_t pack_size();
   bool          pack_add(Item* item, bool silent, bool from_floor);
   Item*         pack_remove(Item* item, bool create_new, bool all);
-  Item*         pack_find_magic_item();
+  Item*         pack_find_random_item();
   Item*         pack_find_item(int type, int subtype);
   Item*         pack_find_item(std::string const& purpose, int subtype);
   Item*         equipped_weapon();

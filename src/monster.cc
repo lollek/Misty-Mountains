@@ -31,15 +31,22 @@ int            monster_flytrap_hit = 0; // Number of time flytrap has hit
 vector<monster_template> const* Monster::monsters = nullptr;
 
 void Monster::init_monsters() {
-//      010000000000000000000: greedy
-//      020000000000000000000: mean
-//      040000000000000000000: flying
-//      001000000000000000000: regen
-//      002000000000000000000: invis
+//       010000000000000000000: greedy
+//       020000000000000000000: mean
+//       040000000000000000000: flying
+//       001000000000000000000: regenerating health
+//       002000000000000000000: invisible
+//       004000000000000000000: attack freezes
+//       000100000000000000000: attack damages armor
+//       000200000000000000000: attack steals gold
+//       000400000000000000000: attack steals item
+//       000010000000000000000: attack drains strength
+//       000020000000000000000: attack drains health
+//       000040000000000000000: attack drains experience
   monsters = new vector<monster_template> const {
-//CARRY  FLAG                   speed,  exp,lvl, amr, dmg              */
+//drop%, ability_flags,         speed,  exp,lvl, amr, dmg              */
     { "aquator",
-     0,  020000000000000000000ULL,  1,   20,  5,  18, {{0,1}}},
+     0,  020100000000000000000ULL,  1,   20,  5,  18, {{0,1}}},
     { "bat",
      0,  040000000000000000000ULL,  1,    1,  1,  17, {{1,2}}},
     { "centaur",
@@ -55,17 +62,17 @@ void Monster::init_monsters() {
     { "hobgoblin",
      0,  020000000000000000000ULL,  1,    3,  1,  15, {{1,8}}},
     { "ice monster",
-     0,  000000000000000000000ULL,  1,    5,  1,  11, {{0,1}}},
+     0,  004000000000000000000ULL,  1,    5,  1,  11, {{0,1}}},
     { "jabberwock",
     70,  000000000000000000000ULL,  1, 3000, 15,  14, {{2,12},{2,4}}},
     { "kestrel",
      0,  060000000000000000000ULL,  2,    1,  1,  13, {{1,4}}},
     { "leprechaun",
-     0,  000000000000000000000ULL,  1,   10,  3,  12, {{1,1}}},
+     0,  000200000000000000000ULL,  1,   10,  3,  12, {{1,1}}},
     { "medusa",
     40,  020000000000000000000ULL,  1,  200,  8,  18, {{3,4},{3,4},{2,5}}},
     { "nymph",
-   100,  000000000000000000000ULL,  1,   37,  3,  11, {{0,1}}},
+   100,  000400000000000000000ULL,  1,   37,  3,  11, {{0,1}}},
     { "orc",
     15,  010000000000000000000ULL,  1,    5,  1,  14, {{1,8}}},
     { "phantom",
@@ -73,7 +80,7 @@ void Monster::init_monsters() {
     { "quagga",
      0,  020000000000000000000ULL,  1,   15,  3,  17, {{1,5},{1,5}}},
     { "rattlesnake",
-     0,  020000000000000000000ULL,  1,    9,  2,  17, {{1,6}}},
+     0,  020010000000000000000ULL,  1,    9,  2,  17, {{1,6}}},
     { "snake",
      0,  000000000000000000000ULL,  1,    2,  1,  15, {{1,3}}},
     { "troll",
@@ -81,9 +88,9 @@ void Monster::init_monsters() {
     { "black unicorn",
      0,  020000000000000000000ULL,  1,  190,  7,  22, {{1,9},{1,9},{2,9}}},
     { "vampire",
-    20,  021000000000000000000ULL,  1,  350,  8,  19, {{1,10}}},
+    20,  021020000000000000000ULL,  1,  350,  8,  19, {{1,10}}},
     { "wraith",
-     0,  000000000000000000000ULL,  1,   55,  5,  16, {{1,6}}},
+     0,  000040000000000000000ULL,  1,   55,  5,  16, {{1,6}}},
     { "xeroc",
     30,  000000000000000000000ULL,  1,  100,  7,  13, {{4,4}}},
     { "yeti",
@@ -419,118 +426,103 @@ monster_teleport(Monster* monster, Coordinate const* destination)
 }
 
 void
-monster_do_special_ability(Monster** monster)
+monster_do_special_ability(Monster** monster_ptr)
 {
-  if (monster == nullptr) {
-    error("monster = null");
-  } else if (*monster == nullptr) {
-    error("*monster = null");
+  if (monster_ptr == nullptr || *monster_ptr == nullptr) { error("null"); }
+
+  Monster* monster = *monster_ptr;
+  if (monster->is_cancelled()) {
+    return;
   }
 
-  if ((*monster)->is_cancelled())
+  if (monster->attack_damages_armor()) {
+    player->rust_armor();
+  }
+
+  if (monster->attack_freezes()) {
+    player->set_not_running();
+    if (!player_turns_without_action) {
+      Game::io->message("you are frozen by the " + monster->get_name());
+    }
+    player_turns_without_action += os_rand_range(2) + 2;
+    if (player_turns_without_action > 50) {
+      death(DEATH_ICE);
+    }
+  }
+
+  if (monster->attack_steals_gold() && player->get_gold() > 0) {
+    Game::io->message(monster->get_name() + " steals some of your gold");
+
+    monster_remove_from_screen(monster_ptr, false);
+    monster = *monster_ptr = nullptr;
+
+    player->give_gold(-Gold::random_gold_amount());
+    if (!player->saving_throw(VS_MAGIC)) {
+      player->give_gold(-Gold::random_gold_amount() + Gold::random_gold_amount() +
+          Gold::random_gold_amount() + Gold::random_gold_amount());
+    }
+
+    if (player->get_gold() < 0) {
+      player->give_gold(-player->get_gold());
+    }
     return;
+  }
 
-  switch ((*monster)->get_type())
-  {
-    /* If an aquator hits, you can lose armor class */
-    case 'A': {
-      player->rust_armor();
-    } return;
-
-    /* Venus Flytrap stops the poor guy from moving */
-    case 'F': {
-      player->set_held();
-      ++monster_flytrap_hit;
-      player->take_damage(1);
-      if (player->get_health() <= 0) {
-        death('F');
-      }
-    } return;
-
-    /* The ice monster freezes you */
-    case 'I': {
-      player->set_not_running();
-      if (!player_turns_without_action) {
-        Game::io->message("you are frozen by the " + (*monster)->get_name());
-      }
-      player_turns_without_action += os_rand_range(2) + 2;
-      if (player_turns_without_action > 50) {
-        death(DEATH_ICE);
-      }
-    } return;
-
-
-    /* Leperachaun steals some gold and disappears */
-    case 'L': {
-      monster_remove_from_screen(monster, false);
-      *monster = nullptr;
-
-      player->give_gold(-Gold::random_gold_amount());
-      if (!player->saving_throw(VS_MAGIC)) {
-        player->give_gold(-Gold::random_gold_amount() + Gold::random_gold_amount() +
-                      Gold::random_gold_amount() + Gold::random_gold_amount());
-      }
-
-      if (player->get_gold() < 0) {
-        player->give_gold(-player->get_gold());
-      }
-      Game::io->message("your pack_gold feels lighter");
-    } return;
-
-
-    /* Nymph's steal a magic item and disappears */
-    case 'N': {
-      Item* steal = player->pack_find_magic_item();
+  if (monster->attack_steals_item()) {
+      Item* steal = player->pack_find_random_item();
       if (steal != nullptr) {
-        monster_remove_from_screen(monster, false);
-        *monster = nullptr;
+        monster_remove_from_screen(monster_ptr, false);
+        monster = *monster_ptr = nullptr;
         player->pack_remove(steal, false, false);
         Game::io->message("your pack feels lighter");
         delete steal;
+        return;
       }
-    } return;
+  }
 
-    /* Rattlesnakes have poisonous bites */
-    case 'R': {
-      if (!player->saving_throw(VS_POISON)
-          && !player->has_ring_with_ability(Ring::Type::SUSTSTR)) {
-        player->modify_strength(-1);
-        Game::io->message("you feel weaker");
-      }
-    } return;
+  if (monster->attack_drains_strength()) {
+    if (!player->saving_throw(VS_POISON)
+        && !player->has_ring_with_ability(Ring::Type::SUSTSTR)) {
+      player->modify_strength(-1);
+      Game::io->message("you feel weaker");
+    }
+  }
 
-    /* Vampires can steal max hp */
-    case 'V': {
-      if (os_rand_range(100) < 30) {
-        int fewer = roll(1, 3);
-        player->take_damage(fewer);
-        player->modify_max_health(-fewer);
-        if (player->get_health() <= 0) {
-          death('V');
-        }
-        Game::io->message("you feel weaker");
-      }
-    } return;
+  if (monster->attack_drains_health() && os_rand_range(100) < 30) {
+    int fewer = roll(1, 3);
+    player->take_damage(fewer);
+    player->modify_max_health(-fewer);
+    if (player->get_health() <= 0) {
+      death('V');
+    }
+    Game::io->message("you feel weaker");
+  }
 
-    /* Wraiths might drain exp */
-    case 'W': {
-      if (os_rand_range(100) < 15) {
-        if (player->get_level() == 1) {
-          death('W');  /* Death by no level */
-        }
-        player->lower_level(1);
+  if (monster->attack_drains_experience() && os_rand_range(100) < 15) {
+    // Death by no level
+    if (player->get_level() == 1) {
+      death('W');
+    }
+    player->lower_level(1);
 
-        int fewer = roll(1, 10);
-        player->take_damage(fewer);
-        player->modify_max_health(-fewer);
-        if (player->get_health() <= 0) {
-          death('W');
-        }
-        Game::io->message("you feel weaker");
-      }
-    } return;
+    int fewer = roll(1, 10);
+    player->take_damage(fewer);
+    player->modify_max_health(-fewer);
+    if (player->get_health() <= 0) {
+      death('W');
+    }
+    Game::io->message("you feel weaker");
+  }
 
-    default: return;
+
+  // Venus Flytrap stops the poor guy from moving
+  if (monster->get_type() == 'F') {
+    player->set_held();
+    ++monster_flytrap_hit;
+    player->take_damage(1);
+    if (player->get_health() <= 0) {
+      death('F');
+    }
   }
 }
 

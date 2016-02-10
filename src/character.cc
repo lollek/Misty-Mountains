@@ -16,13 +16,22 @@ Character::Character(int strength_, int experience_, int level_, int armor_,
   confusing_attack(0), true_sight(0), blind(0), cancelled(0), levitating(0),
   found(0), greedy(0), players_target(0), held(0), confused(0),
   invisible(0), mean(0), regenerating(0), running(0),
-  flying(0), stuck(0)
+  flying(0), stuck(0), attack_freeze(0), attack_damage_armor(0),
+  attack_steal_gold(0), attack_steal_item(0), attack_drain_strength(0),
+  attack_drain_health(0), attack_drain_experience(0)
 {
   if (flags & 010000000000000000000) { greedy = true; }
   if (flags & 020000000000000000000) { mean = true; }
   if (flags & 040000000000000000000) { flying = true; }
   if (flags & 001000000000000000000) { regenerating = true; }
   if (flags & 002000000000000000000) { invisible = true; }
+  if (flags & 004000000000000000000) { attack_freeze = true; }
+  if (flags & 000100000000000000000) { attack_damage_armor = true; }
+  if (flags & 000200000000000000000) { attack_steal_gold = true; }
+  if (flags & 000400000000000000000) { attack_steal_item = true; }
+  if (flags & 000010000000000000000) { attack_drain_strength = true; }
+  if (flags & 000020000000000000000) { attack_drain_health = true; }
+  if (flags & 000040000000000000000) { attack_drain_experience = true; }
 }
 
 bool Character::is_blind() const { return blind; }
@@ -41,6 +50,13 @@ bool Character::is_mean() const { return mean; }
 bool Character::is_greedy() const { return greedy; }
 bool Character::is_players_target() const { return players_target; }
 bool Character::is_flying() const { return flying; }
+bool Character::attack_freezes() const { return attack_freeze; }
+bool Character::attack_damages_armor() const { return attack_damage_armor; }
+bool Character::attack_steals_gold() const { return attack_steal_gold; }
+bool Character::attack_steals_item() const { return attack_steal_item; }
+bool Character::attack_drains_strength() const { return attack_drain_strength; }
+bool Character::attack_drains_health() const { return attack_drain_health; }
+bool Character::attack_drains_experience() const { return attack_drain_experience; }
 
 void Character::set_blind() { blind = true; }
 void Character::set_cancelled() { cancelled = true; }
