@@ -403,19 +403,21 @@ void IO::show_extra_screen(string const& message)
   clear_message();
 }
 
-void IO::message(string const& message) {
+void IO::message(string const& message, bool force_flush) {
 
   string const more_string = " --More--";
   size_t max_message = static_cast<size_t>(NUMCOLS) - more_string.size();
 
   // Pause when beginning on new line
-  if (message_buffer.size() + message.size() > max_message) {
+  if (!message_buffer.empty() &&
+      (message_buffer.size() + message.size() > max_message ||
+      force_flush)) {
     message_buffer += more_string;
 
     mvaddstr(0, 0, message_buffer.c_str());
     clrtoeol();
     move(0, static_cast<int>(message_buffer.size()));
-    refresh();
+    ::refresh();
     int ch = getch();
     while (ch != KEY_SPACE && ch != '\n' && ch != '\r' && ch != KEY_ESCAPE) {
       ch = getch();

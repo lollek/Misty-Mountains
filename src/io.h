@@ -85,7 +85,7 @@ public:
   void refresh();
 
   std::string read_string(WINDOW* win=stdscr, std::string const* initial_string=nullptr);
-  void message(std::string const& message);
+  void message(std::string const& message, bool force_flush=false);
 
 
   // Temp var

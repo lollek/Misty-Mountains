@@ -10,7 +10,7 @@ using namespace std;
 bool Player::pack_show_equip() {
   for (;;) {
     pack_print_inventory(0);
-    Game::io->message("Equip what item? (ESC to abort)");
+    Game::io->message("Equip what item? (ESC to abort)", true);
 
     char ch = io_readchar(true);
     Game::io->clear_message();
@@ -33,7 +33,7 @@ bool Player::pack_show_equip() {
 bool Player::pack_show_drop() {
   for (;;) {
     pack_print_inventory(0);
-    Game::io->message("Drop what item? (ESC to abort)");
+    Game::io->message("Drop what item? (ESC to abort)", true);
 
     char ch = io_readchar(true);
     Game::io->clear_message();
@@ -70,7 +70,7 @@ bool Player::pack_show_drop() {
 bool Player::pack_show_remove() {
   for (;;) {
     pack_print_equipment();
-    Game::io->message("remove what item? (ESC to abort)");
+    Game::io->message("remove what item? (ESC to abort)", true);
 
     char ch = io_readchar(true);
     Game::io->clear_message();
@@ -82,6 +82,7 @@ bool Player::pack_show_remove() {
     size_t position = static_cast<size_t>(ch - 'a');
     if (position < equipment.size()) {
       if (equipment.at(position) == nullptr) {
+        Game::io->message("No item at position " +string(1, ch));
         return false;
       }
 
@@ -109,12 +110,12 @@ bool Player::pack_show(int mode) {
     switch (current_window) {
       case INVENTORY: {
         pack_print_inventory(0);
-        Game::io->message("Inventory [(e)quip|(d)rop|ESC|SPACE]");
+        Game::io->message("Inventory [(e)quip|(d)rop|ESC|SPACE]", true);
       } break;
 
       case EQUIPMENT: {
         pack_print_equipment();
-        Game::io->message("Equipment [(r)emove|ESC|SPACE]");
+        Game::io->message("Equipment [(r)emove|ESC|SPACE]", true);
       } break;
     }
 
