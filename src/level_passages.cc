@@ -314,6 +314,7 @@ void Level::place_passage(Coordinate* coord) {
   }
 
   if (os_rand_range(10) + 1 < Game::current_level && os_rand_range(40) == 0) {
+    set_tile(*coord, Tile::Wall);
     set_not_real(*coord);
   } else {
     set_tile(*coord, Tile::Floor);

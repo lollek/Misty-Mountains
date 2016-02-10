@@ -114,14 +114,14 @@ Level::~Level() {
 
 void Level::create_traps() {
   if (os_rand_range(10) < Game::current_level) {
-    int ntraps = max(os_rand_range(Game::current_level / 4) + 1, max_traps);
+    int ntraps = min(os_rand_range(Game::current_level / 4) + 1, max_traps);
     for (int i = 0; i < ntraps; ++i) {
       do {
         get_random_room_coord(nullptr, &stairs_coord, 0, false);
       } while (get_tile(stairs_coord) != Tile::Floor);
 
-      Trap::Type trap_type = static_cast<Trap::Type>(os_rand_range(Trap::NTRAPS));
       set_not_real(stairs_coord);
+      Trap::Type trap_type = static_cast<Trap::Type>(os_rand_range(Trap::NTRAPS));
       set_trap_type(stairs_coord, trap_type);
     }
   }
