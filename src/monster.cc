@@ -546,27 +546,6 @@ monster_is_anyone_seen_by_player(void)
 }
 
 void
-monster_show_all_as_trippy(void)
-{
-  bool seemonst = player->can_sense_monsters();
-  for (Monster const* tp : Game::level->monsters) {
-
-    if (player->can_see(*tp)) {
-      chtype symbol = (tp->get_type() == 'X' && tp->t_disguise != 'X')
-        ? static_cast<chtype>(rnd_thing())
-        : static_cast<chtype>(os_rand_range(26) + 'A');
-      Game::io->print_color(tp->get_position().x, tp->get_position().y, symbol);
-    }
-    else if (seemonst) {
-      standout();
-      Game::io->print_color(tp->get_position().x, tp->get_position().y,
-          os_rand_range(26) + 'A');
-      standend();
-    }
-  }
-}
-
-void
 monster_move_all(void)
 {
   // This function needs a manual loop, since monsters can die

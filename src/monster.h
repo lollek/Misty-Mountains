@@ -99,8 +99,6 @@ void monster_do_special_ability(Monster** monster);
 
 /* Is any monster seen by the player? */
 bool monster_is_anyone_seen_by_player(void);
-/* Change all monster visuals due to player tripping */
-void monster_show_all_as_trippy(void);
 /* Make all monsters take their turn */
 void monster_move_all(void);
 /* Make all monsters start chasing the player */
