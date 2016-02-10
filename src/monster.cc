@@ -139,7 +139,7 @@ string Monster::get_name() const {
 
   } else {
     stringstream ss;
-    ss << "the " << monster_name_by_type(static_cast<char>(get_type()));
+    ss << "the " << name(static_cast<char>(get_type()));
     return ss.str();
   }
 }
@@ -265,21 +265,22 @@ monster_notice_player(int y, int x)
   return monster;
 }
 
-void
-monster_give_pack(Monster* mon) {
+void Monster::give_pack() {
 
-  if (mon == nullptr) {
-    error("Monster was null");
-  }
-
-  size_t monster_id = static_cast<size_t>(mon->get_type() - 'A');
+  size_t monster_id = static_cast<size_t>(get_type() - 'A');
   int carry_chance = Monster::monsters->at(monster_id).m_carry;
 
   if (Game::current_level >= Game::max_level_visited &&
       os_rand_range(100) < carry_chance) {
-    mon->t_pack.push_back(Item::random());
+    t_pack.push_back(Item::random());
   }
 }
+
+string const& Monster::name(char monster_type) {
+  return Monster::monsters->at(static_cast<size_t>(monster_type - 'A')).m_name;
+}
+
+
 
 int
 monster_save_throw(int which, Monster const* mon)
@@ -298,8 +299,7 @@ monster_start_running(Coordinate const* runner)
   }
 
   Monster *tp = Game::level->get_monster(*runner);
-
-  monster_find_new_target(tp);
+  tp->find_new_target();
   if (!tp->is_stuck()) {
     tp->set_not_held();
     tp->set_chasing();
@@ -537,12 +537,6 @@ monster_do_special_ability(Monster** monster)
 
     default: return;
   }
-}
-
-string const&
-monster_name_by_type(char monster_type)
-{
-  return Monster::monsters->at(static_cast<size_t>(monster_type - 'A')).m_name;
 }
 
 bool
@@ -830,13 +824,12 @@ void Monster::decrease_speed() {
   turns_not_moved = 0;
 }
 
-void
-monster_find_new_target(Monster* monster)
+void Monster::find_new_target()
 {
-  int prob = Monster::monsters->at(static_cast<size_t>(monster->get_type() - 'A')).m_carry;
-  if (prob <= 0 || monster->get_room() == player->get_room()
-      || monster_seen_by_player(monster)) {
-    monster->set_target(&player->get_position());
+  int prob = monsters->at(static_cast<size_t>(get_type() - 'A')).m_carry;
+  if (prob <= 0 || get_room() == player->get_room()
+      || monster_seen_by_player(this)) {
+    set_target(&player->get_position());
     return;
   }
 
@@ -844,7 +837,7 @@ monster_find_new_target(Monster* monster)
     if (obj->o_type == IO::Scroll && obj->o_which == Scroll::SCARE)
       continue;
 
-    if (Game::level->get_room(obj->get_position()) == monster->get_room() &&
+    if (Game::level->get_room(obj->get_position()) == get_room() &&
         os_rand_range(100) < prob)
     {
       auto result = find_if(Game::level->monsters.cbegin(), Game::level->monsters.cend(),
@@ -853,11 +846,11 @@ monster_find_new_target(Monster* monster)
       });
 
       if (result == Game::level->monsters.cend()) {
-        monster->set_target(&obj->get_position());
+        set_target(&obj->get_position());
         return;
       }
     }
   }
 
-  monster->set_target(&player->get_position());
+  set_target(&player->get_position());
 }

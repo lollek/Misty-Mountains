@@ -245,7 +245,7 @@ Level::create_rooms() {
       get_random_room_coord(&room, &mp, 0, true);
       Monster* monster = new Monster(Monster::random_monster_type(), mp, &room);
       monsters.push_back(monster);
-      monster_give_pack(monster);
+      monster->give_pack();
       set_monster(mp, monster);
     }
   }

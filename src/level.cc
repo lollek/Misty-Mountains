@@ -52,7 +52,7 @@ void Level::create_treasure_room() {
       Monster* monster = new Monster(Monster::random_monster_type(), monster_pos, &room);
       monster->set_mean();  // no sloughers in THIS room
       monsters.push_back(monster);
-      monster_give_pack(monster);
+      monster->give_pack();
       set_monster(monster_pos, monster);
     }
   }

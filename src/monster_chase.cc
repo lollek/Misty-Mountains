@@ -119,7 +119,7 @@ chase_do(Monster* monster)
         if (monster->t_dest == &obj->get_position()) {
           Game::level->items.remove(obj);
           monster->t_pack.push_back(obj);
-          monster_find_new_target(monster);
+          monster->find_new_target();
           monster->set_not_running();
           break;
         }

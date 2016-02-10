@@ -36,25 +36,27 @@ public:
   void set_target(Coordinate const* target);
 
   // Modifiers
+  void give_pack();
+  void find_new_target();
   void increase_speed() override;
   void decrease_speed() override;
 
   // Getters
-  int get_armor() const override;
+  int         get_armor() const override;
   std::string get_attack_string(bool successful_hit) const override;
   std::string get_name() const override;
-  char get_disguise() const;
-  int get_speed() const;
+  char        get_disguise() const;
+  int         get_speed() const;
 
   // Statics
-  static void init_monsters();
-  static void free_monsters();
-  static char random_monster_type();
+  static void               init_monsters();
+  static void               free_monsters();
+  static char               random_monster_type();
+  static std::string const& name(char monster_type);
 
   // Variables (TODO: Make these private)
   Coordinate const*  t_dest;    // Where it is running to
   std::list<Item*>   t_pack;    // What the thing is carrying
-  static std::vector<monster_template> const* monsters;
 
   char               t_disguise;// What mimic looks like
   int                turns_not_moved;
@@ -64,11 +66,9 @@ private:
           monster_template const& m_template);
 
   int                speed;
+
+  static std::vector<monster_template> const* monsters;
 };
-
-
-void monster_find_new_target(Monster* tp);
-
 
 
 /* Variables, TODO: Remove these */
@@ -77,9 +77,6 @@ extern int    monster_flytrap_hit;
 
 /* What to do when the hero steps next to a monster */
 Monster *monster_notice_player(int y, int x);
-
-/* Give a pack to a monster if it deserves one */
-void monster_give_pack(Monster* mon);
 
 /* See if a creature save against something */
 int monster_save_throw(int which, Monster const* mon);
@@ -98,7 +95,6 @@ void monster_teleport(Monster* monster, Coordinate const* destination);
 
 void monster_do_special_ability(Monster** monster);
 
-std::string const& monster_name_by_type(char monster_type);
 bool monster_seen_by_player(Monster const* monster);
 
 /* Is any monster seen by the player? */

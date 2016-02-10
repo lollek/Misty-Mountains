@@ -20,7 +20,7 @@ death_reason(char buf[], int reason)
 {
   if (isupper(reason))
   {
-    string monster = monster_name_by_type(static_cast<char>(reason));
+    string monster = Monster::name(static_cast<char>(reason));
     sprintf(buf, "Killed by a%s %s", vowelstr(monster).c_str(), monster.c_str());
   }
   else
