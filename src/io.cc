@@ -177,7 +177,7 @@ chtype IO::colorize(chtype ch)
 
     // Monsters
     case 'b': return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
-    case 'g': return ch | COLOR_PAIR(COLOR_GREEN);
+    case 'g': return ch | COLOR_PAIR(COLOR_YELLOW);
     case 'h': return ch | COLOR_PAIR(COLOR_GREEN);
     case 'i': return ch | COLOR_PAIR(COLOR_CYAN);
     case 'k': return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
