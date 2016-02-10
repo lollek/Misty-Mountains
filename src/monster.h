@@ -58,6 +58,7 @@ public:
   static void               free_monsters();
   static char               random_monster_type();
   static std::string const& name(char monster_type);
+  static void               all_move();
 
   // Variables (TODO: Make these private)
   std::list<Item*>   t_pack;    // What the thing is carrying
@@ -99,8 +100,6 @@ void monster_do_special_ability(Monster** monster);
 
 /* Is any monster seen by the player? */
 bool monster_is_anyone_seen_by_player(void);
-/* Make all monsters take their turn */
-void monster_move_all(void);
 /* Make all monsters start chasing the player */
 void monster_aggravate_all(void);
 /* Show all monsters as they truly are */

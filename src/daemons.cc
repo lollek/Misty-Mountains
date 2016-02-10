@@ -182,7 +182,7 @@ void Daemons::daemon_doctor() {
 
 // Make all running monsters move
 void Daemons::daemon_runners_move() {
-  monster_move_all();
+  Monster::all_move();
 }
 
 void Daemons::daemon_ring_abilities() {

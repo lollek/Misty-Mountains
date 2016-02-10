@@ -545,9 +545,8 @@ monster_is_anyone_seen_by_player(void)
   return false;
 }
 
-void
-monster_move_all(void)
-{
+void Monster::all_move() {
+
   // This function needs a manual loop, since monsters can die
   auto it = Game::level->monsters.begin();
   while (it != Game::level->monsters.end()) {
@@ -574,8 +573,7 @@ monster_move_all(void)
         break;
       }
 
-      if (wastarget && !(orig_pos == mon->get_position()))
-      {
+      if (wastarget && !(orig_pos == mon->get_position())) {
         mon->set_not_players_target();
         to_death = false;
       }
