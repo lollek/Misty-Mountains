@@ -590,17 +590,6 @@ monster_aggravate_all(void)
 }
 
 void
-monster_show_all_hidden(void)
-{
-  for (Monster* mon : Game::level->monsters) {
-    if (mon->is_invisible() && player->can_see(*mon)) {
-      Game::io->print_color(mon->get_position().x, mon->get_position().y,
-          mon->t_disguise);
-    }
-  }
-}
-
-void
 monster_aggro_all_which_desire_item(Item* item)
 {
   for (Monster* mon : Game::level->monsters) {

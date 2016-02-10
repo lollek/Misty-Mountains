@@ -102,8 +102,6 @@ void monster_do_special_ability(Monster** monster);
 bool monster_is_anyone_seen_by_player(void);
 /* Make all monsters start chasing the player */
 void monster_aggravate_all(void);
-/* Show all monsters as they truly are */
-void monster_show_all_hidden(void);
 /* Does any monster desire this item? If so, aggro player */
 void monster_aggro_all_which_desire_item(Item* item);
 /* Hide all invisible monsters */
