@@ -260,27 +260,18 @@ Item* Player::pack_find_item(string const& purpose, int type) {
     switch (current_window) {
       case INVENTORY: {
         pack_print_inventory(type);
-        Game::io->message("Inventory [" + purpose + "?|ESC|SPACE]");
+        Game::io->message("Inventory [" + purpose + "? E ESC]");
       } break;
 
       case EQUIPMENT: {
         pack_print_equipment();
-        Game::io->message("Equipment [" + purpose + "?|ESC|SPACE]");
+        Game::io->message("Equipment [" + purpose + "? I ESC]");
       } break;
     }
 
     char ch = io_readchar(true);
     Game::io->clear_message();
     touchwin(stdscr);
-
-    if (ch == KEY_SPACE) {
-      if (current_window == INVENTORY) {
-        current_window = EQUIPMENT;
-      } else if (current_window == EQUIPMENT) {
-        current_window = INVENTORY;
-      }
-      continue;
-    }
 
     if (ch == KEY_ESCAPE) {
       Game::io->clear_message();
@@ -289,6 +280,11 @@ Item* Player::pack_find_item(string const& purpose, int type) {
 
     switch (current_window) {
       case INVENTORY: {
+        if (ch == 'E') {
+          current_window = EQUIPMENT;
+          continue;
+        }
+
         for (Item* obj : pack) {
           if (obj->o_packch == ch) {
             return obj;
@@ -297,6 +293,10 @@ Item* Player::pack_find_item(string const& purpose, int type) {
       } break;
 
       case EQUIPMENT: {
+        if (ch == 'I') {
+          current_window = INVENTORY;
+          continue;
+        }
         size_t position = static_cast<size_t>(ch - 'a');
         if (position < equipment.size() && equipment.at(position) != nullptr) {
           return equipment.at(position);
