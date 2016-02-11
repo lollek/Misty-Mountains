@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <fstream>
 
 #include "item.h"
 
@@ -52,6 +53,8 @@ public:
 
   // Static
   static void init_wands();
+  static void save_wands(std::ofstream&);
+  static void load_wands(std::ifstream&);
   static void free_wands();
 
   static std::string        name(Type subtype);
@@ -70,6 +73,11 @@ private:
   static std::vector<std::string>* materials;
   static std::vector<std::string>* guesses;
   static std::vector<bool>*        known;
+
+  static unsigned long long constexpr TAG_WANDS     = 0x2000000000000000ULL;
+  static unsigned long long constexpr TAG_MATERIALS = 0x2000000000000001ULL;
+  static unsigned long long constexpr TAG_KNOWN     = 0x2000000000000002ULL;
+  static unsigned long long constexpr TAG_GUESSES   = 0x2000000000000003ULL;
 };
 
 /* Perform a zap with a wand */
