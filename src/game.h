@@ -20,7 +20,7 @@ public:
 
   static void exit() __attribute__((noreturn));
   static void new_level(int dungeon_level);
-  static void save(std::ofstream&);
+  static void save();
 
   static IO*           io;
   static Level*        level;

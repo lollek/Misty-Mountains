@@ -126,6 +126,7 @@ command_do(char ch)
     case 'E': return player->pack_show_equipment();
     case 'I': return player->pack_show_inventory();
     case 'O': return option();
+    case 'S': return command_save();
     case 'Q': return command_quit();
     case 'Z': return command_rest();
 

@@ -26,3 +26,4 @@ bool command_use_stairs(char up_or_down); // Go to next/previous level
 bool command_ring_put_on();               // Put on a ring
 bool command_ring_take_off();             // Take off a ring
 bool command_read_scroll();               // Read a scroll
+bool command_save();               // Save and exit

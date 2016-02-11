@@ -125,30 +125,9 @@ main(int argc, char** argv)
   }
 
 
-  string savepath = "savefile";
-  Game* game = new Game(whoami);
-  (void)game;
-
-  ofstream output(savepath, fstream::out | fstream::trunc);
-  if (!output) {
-    error("Could not open output");
-  }
-  Game::save(output);
-  output.close();
-
-  ifstream input(savepath);
-  if (!input) {
-    error("Could not open input");
-  }
-  Game* loadgame = new Game(input);
-  input.close();
-  (void)loadgame;
-
-  Game::exit();
-
-#if 0
   Game* game = nullptr;
   if (restore) {
+    string savepath = "savefile";
     ifstream savefile(savepath);
     if (savefile) {
       game = new Game(savefile);
@@ -166,6 +145,5 @@ main(int argc, char** argv)
   }
 
   return 0;
-#endif
 }
 

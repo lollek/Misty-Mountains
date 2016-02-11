@@ -171,9 +171,9 @@ void Wand::save_wands(std::ofstream& data) {
 
 void Wand::load_wands(std::ifstream& data) {
   if (!Disk::load_tag(TAG_WANDS, data))            { error("No wands found"); }
-  if (!Disk::load(TAG_MATERIALS, materials, data)) { error("Wand tag error 1"); }
-  if (!Disk::load(TAG_KNOWN, known, data))         { error("Wand tag error 2"); }
-  if (!Disk::load(TAG_GUESSES, guesses, data))     { error("Wand tag error 3"); }
+  if (!Disk::load(TAG_MATERIALS, &materials, data)) { error("Wand tag error 1"); }
+  if (!Disk::load(TAG_KNOWN, &known, data))         { error("Wand tag error 2"); }
+  if (!Disk::load(TAG_GUESSES, &guesses, data))     { error("Wand tag error 3"); }
 }
 
 

@@ -194,9 +194,9 @@ void Ring::save_rings(std::ofstream& data) {
 
 void Ring::load_rings(std::ifstream& data) {
   if (!Disk::load_tag(TAG_RINGS, data))             { error("No Rings found"); }
-  if (!Disk::load(TAG_MATERIALS, materials, data)) { error("Ring tag error 1"); }
-  if (!Disk::load(TAG_KNOWN, known, data))         { error("Ring tag error 2"); }
-  if (!Disk::load(TAG_GUESSES, guesses, data))     { error("Ring tag error 3"); }
+  if (!Disk::load(TAG_MATERIALS, &materials, data)) { error("Ring tag error 1"); }
+  if (!Disk::load(TAG_KNOWN, &known, data))         { error("Ring tag error 2"); }
+  if (!Disk::load(TAG_GUESSES, &guesses, data))     { error("Ring tag error 3"); }
 }
 
 void Ring::free_rings() {

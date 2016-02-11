@@ -166,7 +166,7 @@ Game::Game(ifstream& savefile) {
   Trap::init_traps();
 
   Disk::load_tag(TAG_GAME, savefile);
-  Disk::load(TAG_WHOAMI, Game::whoami, savefile);
+  Disk::load(TAG_WHOAMI, &Game::whoami, savefile);
   Disk::load(TAG_LEVEL, Game::current_level, savefile);
   Disk::load(TAG_FOODLESS, Game::levels_without_food, savefile);
   Disk::load(TAG_MAXLEVEL, Game::max_level_visited, savefile);
@@ -175,7 +175,9 @@ Game::Game(ifstream& savefile) {
   Game::new_level(Game::current_level);
 }
 
-void Game::save(std::ofstream& savefile) {
+void Game::save() {
+  ofstream savefile("savefile", fstream::out | fstream::trunc);
+
   Scroll::save_scrolls(savefile);
   Potion::save_potions(savefile);
   Ring::save_rings(savefile);
@@ -187,4 +189,6 @@ void Game::save(std::ofstream& savefile) {
   Disk::save(TAG_LEVEL, Game::current_level, savefile);
   Disk::save(TAG_FOODLESS, Game::levels_without_food, savefile);
   Disk::save(TAG_MAXLEVEL, Game::max_level_visited, savefile);
+
+  savefile.close();
 }

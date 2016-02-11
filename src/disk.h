@@ -18,19 +18,19 @@ namespace Disk {
   bool load(tag_type tag, int&, std::ifstream& data);
 
   void save(tag_type tag, std::string*, std::ofstream& data);
-  bool load(tag_type tag, std::string*, std::ifstream& data);
+  bool load(tag_type tag, std::string**, std::ifstream& data);
 
   // Vector types
   void save(tag_type tag, std::vector<bool>*, std::ofstream& data);
-  bool load(tag_type tag, std::vector<bool>*, std::ifstream& data);
+  bool load(tag_type tag, std::vector<bool>**, std::ifstream& data);
 
   void save(tag_type tag, std::vector<std::string>*, std::ofstream& data);
-  bool load(tag_type tag, std::vector<std::string>*, std::ifstream& data);
+  bool load(tag_type tag, std::vector<std::string>**, std::ifstream& data);
 
   // List types
   void save(tag_type tag, std::list<Daemons::Daemon>*, std::ofstream& data);
-  bool load(tag_type tag, std::list<Daemons::Daemon>*, std::ifstream& data);
+  bool load(tag_type tag, std::list<Daemons::Daemon>**, std::ifstream& data);
 
   void save(tag_type tag, std::list<Daemons::Fuse>*, std::ofstream& data);
-  bool load(tag_type tag, std::list<Daemons::Fuse>*, std::ifstream& data);
+  bool load(tag_type tag, std::list<Daemons::Fuse>**, std::ifstream& data);
 }

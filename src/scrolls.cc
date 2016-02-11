@@ -232,9 +232,9 @@ void Scroll::save_scrolls(std::ofstream& data) {
 
 void Scroll::load_scrolls(std::ifstream& data) {
   if (!Disk::load_tag(TAG_SCROLL, data))           { error("No scrolls found"); }
-  if (!Disk::load(TAG_FAKE_NAME, fake_name, data)) { error("Scroll tag error 1"); }
-  if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) { error("Scroll tag error 2"); }
-  if (!Disk::load(TAG_GUESSES,   guesses, data))   { error("Scroll tag error 3"); }
+  if (!Disk::load(TAG_FAKE_NAME, &fake_name, data)) { error("Scroll tag error 1"); }
+  if (!Disk::load(TAG_KNOWLEDGE, &knowledge, data)) { error("Scroll tag error 2"); }
+  if (!Disk::load(TAG_GUESSES,   &guesses, data))   { error("Scroll tag error 3"); }
 }
 
 void Scroll::free_scrolls() {
