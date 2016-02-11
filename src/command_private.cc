@@ -670,8 +670,9 @@ bool command_save() {
   Game::io->message("really save and exit?");
 
   if (io_readchar(true) == 'y') {
-    Game::save();
-    Game::exit();
+    if (Game::save()) {
+      Game::exit();
+    }
   }
 
   return false;

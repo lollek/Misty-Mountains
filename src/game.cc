@@ -30,6 +30,7 @@ Game*   Game::game_ptr = nullptr;
 IO*     Game::io = nullptr;
 Level*  Game::level = nullptr;
 string* Game::whoami = nullptr;
+string* Game::save_game_path = nullptr;
 int     Game::current_level = 1;
 int     Game::levels_without_food = 0;
 int     Game::max_level_visited = 1;
@@ -107,9 +108,10 @@ int Game::run() {
   // CODE NOT REACHED
 }
 
-Game::Game(string const& whoami_)
+Game::Game(string const& whoami_, string const& save_path_)
   : starting_seed(os_rand_seed) {
     Game::whoami = new string(whoami_);
+    Game::save_game_path = new string(save_path_);
 
   if (game_ptr != nullptr) {
     error("Game is a singleton class");
@@ -167,6 +169,7 @@ Game::Game(ifstream& savefile) {
 
   Disk::load_tag(TAG_GAME, savefile);
   Disk::load(TAG_WHOAMI, &Game::whoami, savefile);
+  Disk::load(TAG_SAVEPATH, &Game::save_game_path, savefile);
   Disk::load(TAG_LEVEL, Game::current_level, savefile);
   Disk::load(TAG_FOODLESS, Game::levels_without_food, savefile);
   Disk::load(TAG_MAXLEVEL, Game::max_level_visited, savefile);
@@ -175,8 +178,12 @@ Game::Game(ifstream& savefile) {
   Game::new_level(Game::current_level);
 }
 
-void Game::save() {
-  ofstream savefile("savefile", fstream::out | fstream::trunc);
+bool Game::save() {
+  ofstream savefile(*save_game_path, fstream::out | fstream::trunc);
+  if (!savefile) {
+    Game::io->message("Failed to save file " + *save_game_path);
+    return false;
+  }
 
   Scroll::save_scrolls(savefile);
   Potion::save_potions(savefile);
@@ -186,9 +193,11 @@ void Game::save() {
 
   Disk::save_tag(TAG_GAME, savefile);
   Disk::save(TAG_WHOAMI, Game::whoami, savefile);
+  Disk::save(TAG_SAVEPATH, Game::save_game_path, savefile);
   Disk::save(TAG_LEVEL, Game::current_level, savefile);
   Disk::save(TAG_FOODLESS, Game::levels_without_food, savefile);
   Disk::save(TAG_MAXLEVEL, Game::max_level_visited, savefile);
 
   savefile.close();
+  return true;
 }

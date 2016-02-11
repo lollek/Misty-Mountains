@@ -19,11 +19,10 @@
 
 using namespace std;
 
-static bool restore = false;
 
 // Parse command-line arguments
 static void
-parse_args(int argc, char* const* argv, std::string& whoami)
+parse_args(int argc, char* const* argv, bool& restore, string& save_path, string& whoami)
 {
   string const game_version = "Misty Mountains v2.0-alpha1-dev - Based on Rogue5.4.4";
   int option_index = 0;
@@ -35,7 +34,7 @@ parse_args(int argc, char* const* argv, std::string& whoami)
     {"no-jump",   no_argument,       0, 'j'},
     {"name",      required_argument, 0, 'n'},
     {"passgo",    no_argument,       0, 'p'},
-    {"restore",   no_argument,       0, 'r'},
+    {"restore",   optional_argument, 0, 'r'},
     {"score",     no_argument,       0, 's'},
     {"seed",      required_argument, 0, 'S'},
     {"wizard",    no_argument,       0, 'W'},
@@ -67,7 +66,12 @@ parse_args(int argc, char* const* argv, std::string& whoami)
                   whoami = optarg;
                 } break;
       case 'p': passgo = true; break;
-      case 'r': restore = true; break;
+      case 'r': {
+        restore = true;
+        if (optarg != nullptr) {
+          save_path = optarg;
+        }
+      } break;
       case 's': score_show_and_exit(0, -1, 0); // does not return
       case 'S': if (wizard && optarg != nullptr) {
                   os_rand_seed = static_cast<unsigned>(stoul(optarg));
@@ -117,26 +121,33 @@ main(int argc, char** argv)
   /* Open scoreboard, so we can modify the score later */
   score_open();
 
-  /* Parse args and then init new (or old) game */
+  bool   restore = false;
+  string save_path;
   string whoami;
-  parse_args(argc, argv, whoami);
+
+  /* Parse args and then init new (or old) game */
+  parse_args(argc, argv, restore, save_path, whoami);
+
   if (whoami.empty()) {
     whoami = os_whoami();
+  }
+
+  if (save_path.empty()) {
+    save_path = os_homedir() + ".misty_mountain.save";
   }
 
 
   Game* game = nullptr;
   if (restore) {
-    string savepath = "savefile";
-    ifstream savefile(savepath);
-    if (savefile) {
-      game = new Game(savefile);
-    } else {
-      cerr << "Failed to load file: " + savepath + "\n";
+    ifstream savefile(save_path);
+    if (!savefile) {
+      cerr << "Failed to load file: " + save_path + "\n";
+      return 1;
     }
 
+    game = new Game(savefile);
   } else {
-    game = new Game(whoami);
+    game = new Game(whoami, save_path);
   }
 
 
