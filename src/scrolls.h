@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <fstream>
 
 #include "item.h"
 
@@ -54,13 +55,20 @@ public:
   static void         set_known(Type subtype);
 
   static void         init_scrolls();
+  static void         save_scrolls(std::ofstream&);
+  static void         load_scrolls(std::ifstream&);
   static void         free_scrolls();
 
 private:
   Type subtype;
 
-  static std::vector<std::string>* guesses;
-  static std::vector<bool>*        knowledge;
   static std::vector<std::string>* fake_name;
+  static std::vector<bool>*        knowledge;
+  static std::vector<std::string>* guesses;
+
+  static unsigned long long constexpr TAG_SCROLL    = 0x1000000000000000ULL;
+  static unsigned long long constexpr TAG_FAKE_NAME = 0x1000000000000001ULL;
+  static unsigned long long constexpr TAG_KNOWLEDGE = 0x1000000000000002ULL;
+  static unsigned long long constexpr TAG_GUESSES   = 0x1000000000000003ULL;
 };
 

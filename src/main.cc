@@ -1,6 +1,7 @@
 #include <getopt.h>
 
 #include <iostream>
+#include <fstream>
 
 #include "error_handling.h"
 #include "game.h"
@@ -17,6 +18,8 @@
 #include "wizard.h"
 
 using namespace std;
+
+static bool restore = false;
 
 // Parse command-line arguments
 static void
@@ -64,6 +67,7 @@ parse_args(int argc, char* const* argv, std::string& whoami)
                   whoami = optarg;
                 } break;
       case 'p': passgo = true; break;
+      case 'r': restore = true; break;
       case 's': score_show_and_exit(0, -1, 0); // does not return
       case 'S': if (wizard && optarg != nullptr) {
                   os_rand_seed = static_cast<unsigned>(stoul(optarg));
@@ -119,7 +123,49 @@ main(int argc, char** argv)
   if (whoami.empty()) {
     whoami = os_whoami();
   }
-  Game* new_game = new Game(whoami);
-  return new_game->run();
+
+
+  string savepath = "savefile";
+  Game* game = new Game(whoami);
+  (void)game;
+
+  ofstream output(savepath, fstream::out | fstream::trunc);
+  if (!output) {
+    error("Could not open output");
+  }
+  Game::save(output);
+  output.close();
+
+  ifstream input(savepath);
+  if (!input) {
+    error("Could not open input");
+  }
+  Game* loadgame = new Game(input);
+  input.close();
+  (void)loadgame;
+
+  Game::exit();
+
+#if 0
+  Game* game = nullptr;
+  if (restore) {
+    ifstream savefile(savepath);
+    if (savefile) {
+      game = new Game(savefile);
+    } else {
+      cerr << "Failed to load file: " + savepath + "\n";
+    }
+
+  } else {
+    game = new Game(whoami);
+  }
+
+
+  if (game != nullptr) {
+    return game->run();
+  }
+
+  return 0;
+#endif
 }
 

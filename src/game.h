@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <fstream>
 
 #include "level.h"
 #include "io.h"
@@ -8,16 +9,18 @@
 class Game {
 public:
   Game(std::string const& whoami);
+  Game(std::ifstream&);
   Game(Game const&) = delete;
 
   ~Game();
 
   Game& operator=(Game const&) = delete;
 
-  int run();
+  int  run();
 
   static void exit() __attribute__((noreturn));
   static void new_level(int dungeon_level);
+  static void save(std::ofstream&);
 
   static IO*           io;
   static Level*        level;

@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 
+#include "disk.h"
 #include "magic.h"
 #include "error_handling.h"
 #include "game.h"
@@ -222,15 +223,29 @@ void Scroll::init_scrolls() {
   }
 }
 
+void Scroll::save_scrolls(std::ofstream& data) {
+  Disk::save_tag(TAG_SCROLL, data);
+  Disk::save(TAG_FAKE_NAME, fake_name, data);
+  Disk::save(TAG_KNOWLEDGE, knowledge, data);
+  Disk::save(TAG_GUESSES, guesses, data);
+}
+
+void Scroll::load_scrolls(std::ifstream& data) {
+  if (!Disk::load_tag(TAG_SCROLL, data))           { error("No scrolls found"); }
+  if (!Disk::load(TAG_FAKE_NAME, fake_name, data)) { error("Scroll tag error 1"); }
+  if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) { error("Scroll tag error 2"); }
+  if (!Disk::load(TAG_GUESSES,   guesses, data))   { error("Scroll tag error 3"); }
+}
+
 void Scroll::free_scrolls() {
-  delete guesses;
-  guesses = nullptr;
+  delete fake_name;
+  fake_name = nullptr;
 
   delete knowledge;
   knowledge = nullptr;
 
-  delete fake_name;
-  fake_name = nullptr;
+  delete guesses;
+  guesses = nullptr;
 }
 
 static bool enchant_players_armor() {

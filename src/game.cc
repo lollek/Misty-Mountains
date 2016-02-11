@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <fstream>
 
 #include "command.h"
 #include "error_handling.h"
@@ -149,4 +150,29 @@ Game::~Game() {
 
   delete Game::whoami;
   Game::whoami = nullptr;
+
+  cerr << "\nOK\n";
+}
+
+Game::Game(ifstream& savefile) {
+  Game::io = new IO();
+
+  Scroll::load_scrolls(savefile);
+#if 0
+  Scroll::init_scrolls();
+  Color::init_colors();
+  Potion::init_potions();
+  Ring::init_rings();
+  Wand::init_wands();
+  Daemons::init_daemons();
+  Monster::init_monsters();
+  Trap::init_traps();
+  Game::new_level(Game::current_level);
+#endif
+}
+
+void Game::save(std::ofstream& savefile) {
+  Scroll::save_scrolls(savefile);
+#if 0
+#endif
 }
