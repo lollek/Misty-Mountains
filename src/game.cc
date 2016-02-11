@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "disk.h"
 #include "command.h"
 #include "error_handling.h"
 #include "os.h"
@@ -150,29 +151,40 @@ Game::~Game() {
 
   delete Game::whoami;
   Game::whoami = nullptr;
-
-  cerr << "\nOK\n";
 }
+
 
 Game::Game(ifstream& savefile) {
   Game::io = new IO();
-
   Scroll::load_scrolls(savefile);
-#if 0
-  Scroll::init_scrolls();
   Color::init_colors();
-  Potion::init_potions();
-  Ring::init_rings();
-  Wand::init_wands();
-  Daemons::init_daemons();
+  Potion::load_potions(savefile);
+  Ring::load_rings(savefile);
+  Wand::load_wands(savefile);
+  Daemons::load_daemons(savefile);
   Monster::init_monsters();
   Trap::init_traps();
+
+  Disk::load_tag(TAG_GAME, savefile);
+  Disk::load(TAG_WHOAMI, Game::whoami, savefile);
+  Disk::load(TAG_LEVEL, Game::current_level, savefile);
+  Disk::load(TAG_FOODLESS, Game::levels_without_food, savefile);
+  Disk::load(TAG_MAXLEVEL, Game::max_level_visited, savefile);
+
+
   Game::new_level(Game::current_level);
-#endif
 }
 
 void Game::save(std::ofstream& savefile) {
   Scroll::save_scrolls(savefile);
-#if 0
-#endif
+  Potion::save_potions(savefile);
+  Ring::save_rings(savefile);
+  Wand::save_wands(savefile);
+  Daemons::save_daemons(savefile);
+
+  Disk::save_tag(TAG_GAME, savefile);
+  Disk::save(TAG_WHOAMI, Game::whoami, savefile);
+  Disk::save(TAG_LEVEL, Game::current_level, savefile);
+  Disk::save(TAG_FOODLESS, Game::levels_without_food, savefile);
+  Disk::save(TAG_MAXLEVEL, Game::max_level_visited, savefile);
 }

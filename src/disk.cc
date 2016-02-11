@@ -11,6 +11,39 @@ bool Disk::load_tag(tag_type tag, std::ifstream& data) {
   return loaded_tag == tag;
 }
 
+void Disk::save(tag_type tag, int& element, ofstream& data) {
+  save_tag(tag, data);
+  data.write(reinterpret_cast<char*>(&element), sizeof(element));
+}
+bool Disk::load(tag_type tag, int& element, ifstream& data) {
+  if (!load_tag(tag, data)) {
+    return false;
+  }
+
+  data.read(reinterpret_cast<char*>(&element), sizeof(element));
+  return true;
+}
+
+void Disk::save(tag_type tag, string* element, ofstream& data) {
+  save_tag(tag, data);
+
+  size_t element_size = element->size();
+  data.write(reinterpret_cast<char*>(&element_size), sizeof(element_size));
+  data.write(element->c_str(), static_cast<long>(element_size));
+}
+bool Disk::load(tag_type tag, string* element, ifstream& data) {
+  if (!load_tag(tag, data)) {
+    return false;
+  }
+
+  size_t element_size;
+  data.read(reinterpret_cast<char*>(&element_size), sizeof(element_size));
+  element = new string;
+  element->resize(element_size);
+  data.read(const_cast<char*>(element->c_str()), static_cast<long>(element_size));
+  return true;
+}
+
 void Disk::save(tag_type tag, vector<bool>* list, ofstream& data) {
   save_tag(tag, data);
 

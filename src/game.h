@@ -9,7 +9,7 @@
 class Game {
 public:
   Game(std::string const& whoami);
-  Game(std::ifstream&);
+  Game(std::ifstream& savefile);
   Game(Game const&) = delete;
 
   ~Game();
@@ -33,4 +33,10 @@ public:
 private:
   static Game* game_ptr;
   unsigned     starting_seed;
+
+  static unsigned long long constexpr TAG_GAME      = 0x6000000000000000ULL;
+  static unsigned long long constexpr TAG_WHOAMI    = 0x6000000000000000ULL;
+  static unsigned long long constexpr TAG_LEVEL     = 0x6000000000000000ULL;
+  static unsigned long long constexpr TAG_FOODLESS  = 0x6000000000000000ULL;
+  static unsigned long long constexpr TAG_MAXLEVEL  = 0x6000000000000000ULL;
 };
