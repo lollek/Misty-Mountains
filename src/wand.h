@@ -74,10 +74,10 @@ private:
   static std::vector<std::string>* guesses;
   static std::vector<bool>*        known;
 
-  static unsigned long long constexpr TAG_WANDS     = 0x2000000000000000ULL;
-  static unsigned long long constexpr TAG_MATERIALS = 0x2000000000000001ULL;
-  static unsigned long long constexpr TAG_KNOWN     = 0x2000000000000002ULL;
-  static unsigned long long constexpr TAG_GUESSES   = 0x2000000000000003ULL;
+  static unsigned long long constexpr TAG_WANDS     = 0x4000000000000000ULL;
+  static unsigned long long constexpr TAG_MATERIALS = 0x4000000000000001ULL;
+  static unsigned long long constexpr TAG_KNOWN     = 0x4000000000000002ULL;
+  static unsigned long long constexpr TAG_GUESSES   = 0x4000000000000003ULL;
 };
 
 /* Perform a zap with a wand */
