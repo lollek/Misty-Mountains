@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 
+#include "disk.h"
 #include "error_handling.h"
 #include "daemons.h"
 #include "io.h"
@@ -182,6 +183,20 @@ void Ring::init_rings() {
   } else if (guesses->size() != static_cast<size_t>(Ring::NRINGS)) {
     error("Ring init: wrong number of guesses");
   }
+}
+
+void Ring::save_rings(std::ofstream& data) {
+  Disk::save_tag(TAG_RINGS, data);
+  Disk::save(TAG_MATERIALS, materials, data);
+  Disk::save(TAG_KNOWN, known, data);
+  Disk::save(TAG_GUESSES, guesses, data);
+}
+
+void Ring::load_rings(std::ifstream& data) {
+  if (!Disk::load_tag(TAG_RINGS, data))             { error("No Rings found"); }
+  if (!Disk::load(TAG_MATERIALS, materials, data)) { error("Ring tag error 1"); }
+  if (!Disk::load(TAG_KNOWN, known, data))         { error("Ring tag error 2"); }
+  if (!Disk::load(TAG_GUESSES, guesses, data))     { error("Ring tag error 3"); }
 }
 
 void Ring::free_rings() {

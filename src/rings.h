@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <fstream>
 
 #include "item.h"
 
@@ -51,6 +52,8 @@ public:
   static void         set_known(Type type);
 
   static void         init_rings();
+  static void         save_rings(std::ofstream&);
+  static void         load_rings(std::ifstream&);
   static void         free_rings();
 
 private:
@@ -60,5 +63,10 @@ private:
   static std::vector<std::string>* materials;
   static std::vector<std::string>* guesses;
   static std::vector<bool>*        known;
+
+  static unsigned long long constexpr TAG_RINGS     = 0x2000000000000000ULL;
+  static unsigned long long constexpr TAG_MATERIALS = 0x2000000000000001ULL;
+  static unsigned long long constexpr TAG_KNOWN     = 0x2000000000000002ULL;
+  static unsigned long long constexpr TAG_GUESSES   = 0x2000000000000003ULL;
 };
 
