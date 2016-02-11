@@ -56,14 +56,21 @@ public:
   static void         set_known(Type subtype);
 
   static void         init_potions();
+  static void         save_potions(std::ofstream&);
+  static void         load_potions(std::ifstream&);
   static void         free_potions();
 
 private:
   Type subtype;
 
-  static std::vector<std::string>*        guesses;
-  static std::vector<bool>*               knowledge;
-  static std::vector<std::string const*>* colors;
+  static std::vector<std::string>* colors;
+  static std::vector<bool>*        knowledge;
+  static std::vector<std::string>* guesses;
+
+  static unsigned long long constexpr TAG_POTION    = 0x2000000000000000ULL;
+  static unsigned long long constexpr TAG_COLORS    = 0x2000000000000001ULL;
+  static unsigned long long constexpr TAG_KNOWLEDGE = 0x2000000000000002ULL;
+  static unsigned long long constexpr TAG_GUESSES   = 0x2000000000000003ULL;
 };
 
 bool potion_quaff_something(void);  /* Quaff a potion from the pack */

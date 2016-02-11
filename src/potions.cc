@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 
+#include "disk.h"
 #include "error_handling.h"
 #include "io.h"
 #include "level.h"
@@ -18,9 +19,9 @@
 
 using namespace std;
 
-std::vector<std::string>*        Potion::guesses;
-std::vector<bool>*               Potion::knowledge;
-std::vector<std::string const*>* Potion::colors;
+std::vector<std::string>* Potion::guesses;
+std::vector<bool>*        Potion::knowledge;
+std::vector<std::string>* Potion::colors;
 
 static Potion::Type random_potion_type() {
   int value = os_rand_range(100);
@@ -147,7 +148,7 @@ string Potion::get_description() const {
     }
 
   } else {
-    string const& color = *colors->at(static_cast<size_t>(subtype));
+    string const& color = colors->at(static_cast<size_t>(subtype));
     if (o_count == 1) {
       os << "a" << vowelstr(color) << " " << color << " potion";
     } else {
@@ -318,7 +319,7 @@ potion_quaff_something(void)
 }
 
 void Potion::init_potions() {
-  colors = new vector<string const*>;
+  colors = new vector<string>;
   knowledge = new vector<bool>(Potion::NPOTIONS, false);
   guesses = new vector<string>(Potion::NPOTIONS, "");
 
@@ -327,12 +328,12 @@ void Potion::init_potions() {
     for (;;) {
       size_t color = os_rand_range(Color::max());
 
-      if (find(colors->cbegin(), colors->cend(), &Color::get(color)) !=
+      if (find(colors->cbegin(), colors->cend(), Color::get(color)) !=
           colors->cend()) {
         continue;
       }
 
-      colors->push_back(&Color::get(color));
+      colors->push_back(Color::get(color));
       break;
     }
 
@@ -345,6 +346,22 @@ void Potion::init_potions() {
     error("Potion init: wrong number of guesses");
   }
 }
+
+void Potion::save_potions(std::ofstream& data) {
+  Disk::save_tag(TAG_POTION, data);
+  Disk::save(TAG_COLORS, colors, data);
+  Disk::save(TAG_KNOWLEDGE, knowledge, data);
+  Disk::save(TAG_GUESSES, guesses, data);
+}
+
+void Potion::load_potions(std::ifstream& data) {
+  if (!Disk::load_tag(TAG_POTION, data))           { error("No potions found"); }
+  if (!Disk::load(TAG_COLORS, colors, data))       { error("Potion tag error 1"); }
+  if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) { error("Potion tag error 2"); }
+  if (!Disk::load(TAG_GUESSES,   guesses, data))   { error("Potion tag error 3"); }
+}
+
+
 
 void Potion::free_potions() {
   delete colors;
