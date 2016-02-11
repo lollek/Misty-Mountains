@@ -1,5 +1,6 @@
 #include <list>
 
+#include "disk.h"
 #include "error_handling.h"
 #include "game.h"
 #include "io.h"
@@ -17,23 +18,28 @@
 
 using namespace std;
 
-struct Fuse {
-    int type;
-    Daemons::daemon_function func;
-    int time;
-};
-
-struct Daemon {
-    int type;
-    Daemons::daemon_function func;
-};
-
-static list<Daemon>* daemons = nullptr;
-static list<Fuse>*   fuses = nullptr;
+static list<Daemons::Daemon>* daemons = nullptr;
+static list<Daemons::Fuse>*   fuses = nullptr;
 
 void Daemons::init_daemons() {
   daemons = new list<Daemon>;
   fuses   = new list<Fuse>;
+}
+
+static unsigned long long constexpr TAG_DAEMONS   = 0x5000000000000000ULL;
+static unsigned long long constexpr TAG_DAEMONLIST= 0x5000000000000001ULL;
+static unsigned long long constexpr TAG_FUSELIST  = 0x5000000000000002ULL;
+
+void Daemons::save_daemons(std::ofstream& data) {
+  Disk::save_tag(TAG_DAEMONS, data);
+  Disk::save(TAG_DAEMONLIST, daemons, data);
+  Disk::save(TAG_FUSELIST, fuses, data);
+}
+
+void Daemons::load_daemons(std::ifstream& data) {
+  if (!Disk::load_tag(TAG_DAEMONS, data))             { error("No daemons found"); }
+  if (!Disk::load(TAG_DAEMONLIST, daemons, data))     { error("Daemon tag error 1"); }
+  if (!Disk::load(TAG_FUSELIST, fuses, data))         { error("Daemon tag error 2"); }
 }
 
 void Daemons::free_daemons() {
@@ -62,7 +68,7 @@ static void execute_daemon_function(Daemons::daemon_function func) {
 
 // Run all the daemons that are active with the current flag
 static void daemon_run_all(int flag) {
-  for (Daemon& daemon : *daemons) {
+  for (Daemons::Daemon& daemon : *daemons) {
     if (daemon.type == flag) {
       execute_daemon_function(daemon.func);
     }

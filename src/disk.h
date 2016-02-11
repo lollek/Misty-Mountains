@@ -2,7 +2,10 @@
 
 #include <fstream>
 #include <vector>
+#include <list>
 #include <string>
+
+#include "daemons.h"
 
 namespace Disk {
   using tag_type = unsigned long long;
@@ -15,4 +18,10 @@ namespace Disk {
 
   void save(tag_type tag, std::vector<std::string>*, std::ofstream& data);
   bool load(tag_type tag, std::vector<std::string>*, std::ifstream& data);
+
+  void save(tag_type tag, std::list<Daemons::Daemon>*, std::ofstream& data);
+  bool load(tag_type tag, std::list<Daemons::Daemon>*, std::ifstream& data);
+
+  void save(tag_type tag, std::list<Daemons::Fuse>*, std::ofstream& data);
+  bool load(tag_type tag, std::list<Daemons::Fuse>*, std::ifstream& data);
 }

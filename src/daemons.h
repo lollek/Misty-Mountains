@@ -1,10 +1,14 @@
 #pragma once
 
+#include <fstream>
+
 #include "Player.h"
 
 namespace Daemons {
 
 void init_daemons();
+void save_daemons(std::ofstream&);
+void load_daemons(std::ifstream&);
 void free_daemons();
 
 enum daemon_function {
@@ -17,6 +21,17 @@ enum daemon_function {
   decrease_speed,
   set_not_blind,
   set_not_levitating
+};
+
+struct Fuse {
+    int type;
+    Daemons::daemon_function func;
+    int time;
+};
+
+struct Daemon {
+    int type;
+    Daemons::daemon_function func;
 };
 
 /* API */
