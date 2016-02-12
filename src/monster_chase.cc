@@ -163,7 +163,6 @@ chase_do(Monster* monster)
     }
 
     // Put monster in new position
-    monster->set_room(Game::level->get_room(chase_coord));
     monster->set_position(chase_coord);
     Game::level->set_monster(chase_coord, monster);
   }
@@ -180,16 +179,6 @@ bool Monster::take_turn()
   // Chase player, if there's a target
   } else if (is_chasing() && get_target() != nullptr) {
     return chase_do(this) != -1;
-
-  // Chase gold, if greedy
-  } else if (!is_chasing() && is_greedy()) {
-    if (get_room() != nullptr) {
-      set_target(get_room()->r_goldval
-          ? &get_room()->r_gold
-          : &player->get_position());
-      set_chasing();
-    }
-    return true;
 
   // Do nothing
   } else {

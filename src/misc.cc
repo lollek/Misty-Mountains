@@ -152,11 +152,6 @@ fallpos(Coordinate const* pos, Coordinate* newpos)
   for (int y = pos->y - 1; y <= pos->y + 1; y++)
     for (int x = pos->x - 1; x <= pos->x + 1; x++)
     {
-      /*
-       * check to make certain the spot is empty, if it is,
-       * put the object there, set it in the level list
-       * and re-draw the room if he can see it
-       */
       if (y == player->get_position().y && x == player->get_position().x)
         continue;
 

@@ -11,7 +11,6 @@
 #include "io.h"
 #include "scrolls.h"
 #include "rings.h"
-#include "level_rooms.h"
 #include "misc.h"
 #include "level.h"
 #include "player.h"
@@ -227,14 +226,13 @@ static int extra_experience(int level, int max_health) {
 
 Monster::~Monster() {}
 
-Monster::Monster(Monster::Type subtype_, Coordinate const& pos, struct room* room) :
-  Monster(pos, room, monster_data(subtype_))
+Monster::Monster(Monster::Type subtype_, Coordinate const& pos) :
+  Monster(pos, monster_data(subtype_))
 {}
 
-Monster::Monster(Coordinate const& pos, struct room* room,
-                 Template const& m_template) :
+Monster::Monster(Coordinate const& pos, Template const& m_template) :
   Character(10, m_template.m_basexp, m_template.m_level, m_template.m_armor,
-            roll(m_template.m_level, 8), m_template.m_dmg, pos, room,
+            roll(m_template.m_level, 8), m_template.m_dmg, pos,
             m_template.m_flags, m_template.m_char),
   t_pack(), turns_not_moved(0), disguise(m_template.m_char),
   subtype(m_template.m_subtype), speed(m_template.m_speed), target(nullptr) {
@@ -279,9 +277,9 @@ void Monster::notice_player() {
   if (get_type() == 'M' && !player->is_blind() && !is_found() && !is_cancelled() &&
       is_chasing()) {
 
-    struct room const* rp = player->get_room();
     Coordinate const& coord = get_position();
     Coordinate const& player_pos = player->get_position();
+    struct room const* rp = Game::level->get_room(player_pos);
     if ((rp != nullptr && !(rp->r_flags & ISDARK))
         || dist(coord.y, coord.x, player_pos.y, player_pos.x) < LAMPDIST) {
       set_found();
@@ -375,16 +373,19 @@ monster_on_death(Monster** monster_ptr, bool print_message)
 
     /* Leprechauns drop gold */
     case 'L': {
-      if (fallpos(&monster->get_position(), &monster->get_room()->r_gold)) {
-        if (player->saving_throw(VS_MAGIC)) {
-          int gold_amount =
-            Gold::random_gold_amount() + Gold::random_gold_amount() +
-            Gold::random_gold_amount() + Gold::random_gold_amount();
-          monster->t_pack.push_back(new Gold(gold_amount));
-        } else {
-          monster->t_pack.push_back(new Gold());
-        }
+      Gold* gold = nullptr;
+
+      if (player->saving_throw(VS_MAGIC)) {
+        int gold_amount =
+          Gold::random_gold_amount() + Gold::random_gold_amount() +
+          Gold::random_gold_amount() + Gold::random_gold_amount();
+        gold = new Gold(gold_amount);
+      } else {
+        gold = new Gold();
       }
+
+      gold->set_position(monster->get_position());
+      monster->t_pack.push_back(gold);
     } break;
   }
 
@@ -458,7 +459,6 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   Game::level->set_monster(monster->get_position(), nullptr);
 
   /* Add monster */
-  monster->set_room(Game::level->get_room(new_pos));
   monster->set_position(new_pos);
   monster->set_not_held();
 
@@ -724,7 +724,7 @@ monster_polymorph(Monster* target)
   bool same_monster = monster == target->get_subtype();
 
   // TODO: Test this. Important that pack and damage gets copied
-  *target = Monster(monster, pos, Game::level->get_room(pos));
+  *target = Monster(monster, pos);
 
   if (player->can_see(*target))
   {
@@ -801,8 +801,7 @@ void Monster::decrease_speed() {
 void Monster::find_new_target()
 {
   int prob = monster_data(subtype).m_carry;
-  if (prob <= 0 || get_room() == player->get_room()
-      || player->can_see(*this)) {
+  if (prob <= 0 || player->can_see(*this)) {
     set_target(&player->get_position());
     return;
   }
@@ -811,7 +810,8 @@ void Monster::find_new_target()
     if (obj->o_type == IO::Scroll && obj->o_which == Scroll::SCARE)
       continue;
 
-    if (Game::level->get_room(obj->get_position()) == get_room() &&
+    if (Game::level->get_room(obj->get_position()) == 
+        Game::level->get_room(get_position()) &&
         os_rand_range(100) < prob)
     {
       auto result = find_if(Game::level->monsters.cbegin(), Game::level->monsters.cend(),

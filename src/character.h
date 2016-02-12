@@ -1,10 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <fstream>
 
 #include "damage.h"
 #include "coordinate.h"
-#include "level_rooms.h"
 
 class Character {
 public:
@@ -22,12 +22,10 @@ public:
   int                        get_health() const;
   int                        get_max_health() const;
   Coordinate const&          get_position() const;
-  room*                      get_room() const;
   std::vector<damage> const& get_attacks() const;
   int                        get_type() const;
 
   // Setters
-  virtual void set_room(room* new_room);
   virtual void set_position(Coordinate const& position);
 
   // Modifiers
@@ -110,7 +108,7 @@ public:
 protected:
   Character(int strength, int experience, int level, int armor, int health,
             std::vector<damage> const& attacks, Coordinate const& position,
-            room* room, unsigned long long flags, char type);
+            unsigned long long flags, char type);
 
   explicit Character(Character const&) = default;
   explicit Character(Character&&) = default;
@@ -127,7 +125,6 @@ private:
   std::vector<damage>  attacks;
   int                  max_health;
   Coordinate           position;
-  room*                room;
   char                 type;
 
   // Flags

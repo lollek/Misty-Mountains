@@ -1,3 +1,4 @@
+#include "disk.h"
 #include "os.h"
 #include "misc.h"
 #include "game.h"
@@ -9,10 +10,10 @@ using namespace std;
 
 Character::Character(int strength_, int experience_, int level_, int armor_,
     int health_, std::vector<damage> const& attacks_,
-    Coordinate const& position_, struct room* room_, unsigned long long flags, char type_) :
+    Coordinate const& position_, unsigned long long flags, char type_) :
   strength(strength_), default_strength(strength),experience(experience_),
   level(level_), armor(armor_), health(health_), attacks(attacks_),
-  max_health(health), position(position_), room(room_), type(type_),
+  max_health(health), position(position_), type(type_),
   confusing_attack(0), true_sight(0), blind(0), cancelled(0), levitating(0),
   found(0), greedy(0), players_target(0), held(0), confused(0),
   invisible(0), mean(0), regenerating(0), running(0),
@@ -83,10 +84,6 @@ void Character::set_held() {
 
 void Character::take_damage(int damage) {
   health -= damage;
-}
-
-void Character::set_room(struct room* new_room) {
-  room = new_room;
 }
 
 Coordinate Character::possible_random_move() {
@@ -186,10 +183,6 @@ int Character::get_armor() const {
 
 int Character::get_type() const {
   return type;
-}
-
-room* Character::get_room() const {
-  return room;
 }
 
 int Character::get_experience() const {

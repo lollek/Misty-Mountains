@@ -100,7 +100,6 @@ move_do_loop_default(Coordinate& coord) {
 
   // Else, Move player
   player->set_position(coord);
-  player->set_room(Game::level->get_room(coord));
 
   // Try to pick up any items here
   Item *item = Game::level->get_item(coord);
@@ -124,11 +123,6 @@ move_do_loop(int dx, int dy, bool cautious) {
   Coordinate nh;
   nh.y = player->get_position().y + dy;
   nh.x = player->get_position().x + dx;
-
-  // Stop running if we change rooms
-  if (Game::level->get_room(nh) != player->get_room()) {
-    player->set_not_running();
-  }
 
   // If we are too close to the edge of map, treat is as wall automatically
   if (nh.x < 1 || nh.x >= NUMCOLS -1 || nh.y < 1 || nh.y >= NUMLINES - 1) {

@@ -47,7 +47,7 @@ bool         player_alerted              = false;
 
 Player::Player() :
   //        str, xp, lvl, armor, hp, dmg
-  Character(16,  0,  1,   10,    12, {{1,4}}, Coordinate(), nullptr, 0, '@'),
+  Character(16,  0,  1,   10,    12, {{1,4}}, Coordinate(), 0, '@'),
   previous_room(nullptr), senses_monsters(false), speed(0),
   pack(), equipment(equipment_size(), nullptr), gold(0),
   nutrition_left(get_starting_nutrition()) {
@@ -379,7 +379,6 @@ void Player::teleport(Coordinate const* target)
   }
 
   set_position(new_pos);
-  player->set_room(Game::level->get_room(new_pos));
 
   // Reprint around player
   for (int x = old_pos.x -1; x <= old_pos.x +1; ++x) {

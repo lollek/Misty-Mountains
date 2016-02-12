@@ -30,7 +30,7 @@ static Monster* wand_find_target(int* y, int* x, int dy, int dx) {
 
 static void wand_spell_light(void)
 {
-  room* player_room = player->get_room();
+  room* player_room = Game::level->get_room(player->get_position());
   if (player_room == nullptr || player_room->r_flags & ISGONE) {
     Game::io->message("the corridor glows and then fades");
 
@@ -48,20 +48,9 @@ wand_spell_drain_health(void) {
 
   // Add nearby monsters to a list
   vector<Monster*> drainee;
-  bool in_passage = player->get_room()->r_flags & ISGONE;
 
   for (Monster* monster : Game::level->monsters) {
-
-    // Monsters in same room
-    if (monster->get_room() == player->get_room() ||
-        monster->get_room() == nullptr) {
-      drainee.push_back(monster);
-    }
-
-    // Nearby monster in same passage
-    else if (in_passage &&
-             Game::level->get_tile(monster->get_position()) == Tile::OpenDoor &&
-             player->get_room() == nullptr) {
+    if (player->can_see(*monster)) {
       drainee.push_back(monster);
     }
   }

@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "character.h"
-#include "level_rooms.h"
 #include "Coordinate.h"
 #include "item.h"
 #include "rogue.h"
@@ -37,7 +36,7 @@ public:
 
 
 
-  Monster(Type subtype, Coordinate const& pos, struct room* room);
+  Monster(Type subtype, Coordinate const& pos);
   Monster(Monster const&) = delete; // Deleted since they would share inventory
 
   ~Monster();
@@ -91,7 +90,7 @@ private:
 
   static std::vector<Template> const* monsters;
 
-  Monster(Coordinate const& pos, struct room* room, Template const& m_template);
+  Monster(Coordinate const& pos, Template const& m_template);
 };
 
 

@@ -269,7 +269,6 @@ command_pick_up(bool force) {
     switch (obj->o_type) {
 
       case IO::Gold: {
-        player->get_room()->r_goldval = 0;
         Gold* gold = dynamic_cast<Gold*>(obj);
         if (gold == nullptr) {
           error("casted gold to Gold* which became null");
