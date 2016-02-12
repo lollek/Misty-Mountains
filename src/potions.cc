@@ -356,9 +356,9 @@ void Potion::save_potions(std::ofstream& data) {
 
 void Potion::load_potions(std::ifstream& data) {
   if (!Disk::load_tag(TAG_POTION, data))           { error("No potions found"); }
-  if (!Disk::load(TAG_COLORS, &colors, data))       { error("Potion tag error 1"); }
-  if (!Disk::load(TAG_KNOWLEDGE, &knowledge, data)) { error("Potion tag error 2"); }
-  if (!Disk::load(TAG_GUESSES,   &guesses, data))   { error("Potion tag error 3"); }
+  if (!Disk::load(TAG_COLORS, colors, data))       { error("Potion tag error 1"); }
+  if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) { error("Potion tag error 2"); }
+  if (!Disk::load(TAG_GUESSES,   guesses, data))   { error("Potion tag error 3"); }
 }
 
 

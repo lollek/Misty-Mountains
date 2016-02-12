@@ -1,5 +1,6 @@
 #include <string>
 
+#include "disk.h"
 #include "potions.h"
 #include "scrolls.h"
 #include "food.h"
@@ -190,3 +191,46 @@ Item* Item::random() {
   }
 }
 
+
+void Item::save(std::ofstream& data) const {
+  Disk::save_tag(TAG_ITEM, data);
+
+  Disk::save(TAG_ITEM_PUBLIC, o_type, data);
+  Disk::save(TAG_ITEM_PUBLIC, o_launch, data);
+  Disk::save(TAG_ITEM_PUBLIC, o_count, data);
+  Disk::save(TAG_ITEM_PUBLIC, o_which, data);
+  Disk::save(TAG_ITEM_PUBLIC, o_flags, data);
+  Disk::save(TAG_ITEM_PUBLIC, o_packch, data);
+
+  Disk::save(TAG_ITEM_PRIVATE, position_on_screen, data);
+  Disk::save(TAG_ITEM_PRIVATE, nickname, data);
+  Disk::save(TAG_ITEM_PRIVATE, attack_damage, data);
+  Disk::save(TAG_ITEM_PRIVATE, throw_damage, data);
+  Disk::save(TAG_ITEM_PRIVATE, hit_plus, data);
+  Disk::save(TAG_ITEM_PRIVATE, damage_plus, data);
+  Disk::save(TAG_ITEM_PRIVATE, armor, data);
+  Disk::save(TAG_ITEM_PRIVATE, cursed, data);
+}
+
+bool Item::load(std::ifstream& data) {
+  if (!Disk::load_tag(TAG_ITEM, data) ||
+
+      !Disk::load(TAG_ITEM_PUBLIC, o_type, data) ||
+      !Disk::load(TAG_ITEM_PUBLIC, o_launch, data) ||
+      !Disk::load(TAG_ITEM_PUBLIC, o_count, data) ||
+      !Disk::load(TAG_ITEM_PUBLIC, o_which, data) ||
+      !Disk::load(TAG_ITEM_PUBLIC, o_flags, data) ||
+      !Disk::load(TAG_ITEM_PUBLIC, o_packch, data) ||
+
+      !Disk::load(TAG_ITEM_PRIVATE, position_on_screen, data) ||
+      !Disk::load(TAG_ITEM_PRIVATE, nickname, data) ||
+      !Disk::load(TAG_ITEM_PRIVATE, attack_damage, data) ||
+      !Disk::load(TAG_ITEM_PRIVATE, throw_damage, data) ||
+      !Disk::load(TAG_ITEM_PRIVATE, hit_plus, data) ||
+      !Disk::load(TAG_ITEM_PRIVATE, damage_plus, data) ||
+      !Disk::load(TAG_ITEM_PRIVATE, armor, data) ||
+      !Disk::load(TAG_ITEM_PRIVATE, cursed, data)) {
+    return false;
+  }
+  return true;
+}

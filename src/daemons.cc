@@ -38,8 +38,8 @@ void Daemons::save_daemons(std::ofstream& data) {
 
 void Daemons::load_daemons(std::ifstream& data) {
   if (!Disk::load_tag(TAG_DAEMONS, data))             { error("No daemons found"); }
-  if (!Disk::load(TAG_DAEMONLIST, &daemons, data))     { error("Daemon tag error 1"); }
-  if (!Disk::load(TAG_FUSELIST, &fuses, data))         { error("Daemon tag error 2"); }
+  if (!Disk::load(TAG_DAEMONLIST, daemons, data))     { error("Daemon tag error 1"); }
+  if (!Disk::load(TAG_FUSELIST, fuses, data))         { error("Daemon tag error 2"); }
 }
 
 void Daemons::free_daemons() {

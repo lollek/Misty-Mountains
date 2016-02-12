@@ -23,7 +23,7 @@ namespace Disk {
   template <class T>
   void save(tag_type, T*, std::ofstream&);
   template <class T>
-  bool load(tag_type, T**, std::ifstream&);
+  bool load(tag_type, T*&, std::ifstream&);
 
   // Containers of simple types
   template <template <class, class> class C, class T>

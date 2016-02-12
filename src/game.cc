@@ -168,8 +168,8 @@ Game::Game(ifstream& savefile) {
   Player::load_player(savefile);
 
   Disk::load_tag(TAG_GAME, savefile);
-  Disk::load(TAG_WHOAMI, &Game::whoami, savefile);
-  Disk::load(TAG_SAVEPATH, &Game::save_game_path, savefile);
+  Disk::load(TAG_WHOAMI, Game::whoami, savefile);
+  Disk::load(TAG_SAVEPATH, Game::save_game_path, savefile);
   Disk::load(TAG_LEVEL, Game::current_level, savefile);
   Disk::load(TAG_FOODLESS, Game::levels_without_food, savefile);
   Disk::load(TAG_MAXLEVEL, Game::max_level_visited, savefile);

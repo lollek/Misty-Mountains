@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <fstream>
 
 #include "damage.h"
 #include "Coordinate.h"
@@ -81,6 +82,9 @@ public:
   int           o_flags;               // information about objects
   char          o_packch;              // What character it is in the pack
 
+  void          save(std::ofstream&) const;
+  bool          load(std::ifstream&);
+
   // Static
   static int         probability(Type type);
   static std::string name(Type type);
@@ -98,5 +102,10 @@ private:
   int           damage_plus;           // Plusses to damage
   int           armor;                 // Armor protection
   bool          cursed;
+
+
+  static unsigned long long constexpr TAG_ITEM            = 0x9000000000000000ULL;
+  static unsigned long long constexpr TAG_ITEM_PUBLIC     = 0x9000000000000001ULL;
+  static unsigned long long constexpr TAG_ITEM_PRIVATE    = 0x9000000000000002ULL;
 };
 

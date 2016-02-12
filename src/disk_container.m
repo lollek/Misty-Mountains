@@ -16,12 +16,15 @@ bool load(tag_type tag, C<T, std::allocator<T>>& container, std::ifstream& data)
 
   size_t size;
   if (!load(tag, size, data)) { return false; }
+  container.resize(size);
 
-  for (size_t i = 0; i < size; ++i) {
-    T new_value;
-    if (!load(tag, new_value, data)) { return false; }
-    container.push_back(new_value);
+  for (T& element : container) {
+    if (!load(tag, element, data)) { return false; }
   }
   return true;
 }
 
+
+// Special case for vector<bool> since it wanna feel special
+template <>
+bool load<std::vector, bool>(tag_type tag, std::vector<bool>& container, std::ifstream& data);

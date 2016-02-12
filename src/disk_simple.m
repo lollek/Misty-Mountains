@@ -20,3 +20,8 @@ void save<std::string>(tag_type tag, std::string const& element, std::ofstream& 
 template <>
 bool load<std::string>(tag_type tag, std::string& element, std::ifstream& data);
 
+// item
+template <>
+void save<Item>(tag_type tag, Item const& element, std::ofstream& data);
+template <>
+bool load<Item>(tag_type tag, Item& element, std::ifstream& data);

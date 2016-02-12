@@ -613,27 +613,25 @@ void Player::save_player(ofstream& data) {
   Disk::save_tag(TAG_PLAYER, data);
   Character* c_player = dynamic_cast<Character*>(player);
   c_player->save(data);
-  /*
   Disk::save(TAG_INVENTORY,       player->pack,            data);
   Disk::save(TAG_EQUIPMENT,       player->equipment,       data);
   Disk::save(TAG_SENSES_MONSTERS, player->senses_monsters, data);
   Disk::save(TAG_SPEED,           player->speed,           data);
   Disk::save(TAG_GOLD,            player->gold,            data);
   Disk::save(TAG_NUTRITION,       player->nutrition_left,  data);
-  */
 }
 
 void Player::load_player(ifstream& data) {
   Disk::load_tag(TAG_PLAYER, data);
   player = new Player(false);
   Character* c_player = static_cast<Character*>(player);
-  if (!c_player->load(data))        { error("No player character found"); }
-  /*
-  Disk::load(TAG_INVENTORY,       player->pack,           data);
-  Disk::load(TAG_EQUIPMENT,       player->equipment,      data);
-  Disk::load(TAG_SENSES_MONSTERS, player->senses_monsters, data);
-  Disk::load(TAG_SPEED,           player->speed,           data);
-  Disk::load(TAG_GOLD,            player->gold,            data);
-  Disk::load(TAG_NUTRITION,       player->nutrition_left,  data);
-  */
+  if (!c_player->load(data) ||
+      !Disk::load(TAG_INVENTORY,       player->pack,           data) ||
+      !Disk::load(TAG_EQUIPMENT,       player->equipment,      data) ||
+      !Disk::load(TAG_SENSES_MONSTERS, player->senses_monsters, data) ||
+      !Disk::load(TAG_SPEED,           player->speed,           data) ||
+      !Disk::load(TAG_GOLD,            player->gold,            data) ||
+      !Disk::load(TAG_NUTRITION,       player->nutrition_left,  data)) {
+    error("No player character found");
+  }
 }

@@ -19,3 +19,15 @@ bool Disk::load<std::string>(tag_type tag, std::string& element, std::ifstream& 
   return true;
 }
 
+// item
+template <>
+void Disk::save<Item>(tag_type tag, Item const& element, std::ofstream& data) {
+  save_tag(tag, data);
+  element.save(data);
+}
+template <>
+bool Disk::load<Item>(tag_type tag, Item& element, std::ifstream& data) {
+  if (!load_tag(tag, data)) { return false; }
+  element.load(data);
+  return true;
+}
