@@ -40,3 +40,19 @@ bool Disk::load<Daemons::Fuse>(tag_type tag, Daemons::Fuse& element, std::ifstre
   return true;
 }
 
+// Coordinate
+template <>
+void save<Coordinate>(tag_type tag, Coordinate const& element, std::ofstream& data) {
+  save_tag(tag, data);
+  data.write(reinterpret_cast<char const*>(&element.x), sizeof(element.x));
+  data.write(reinterpret_cast<char const*>(&element.y), sizeof(element.y));
+}
+template <>
+bool load<Coordinate>(tag_type tag, Coordinate& element, std::ifstream& data) {
+  if (!load_tag(tag, data)) {
+    return false;
+  }
+  data.read(const_cast<char*>(element.x), static_cast<long>(element.x));
+  data.read(const_cast<char*>(element.y), static_cast<long>(element.y));
+}
+

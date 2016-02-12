@@ -21,4 +21,3 @@ bool Disk::load<std::string>(tag_type tag, std::string& element, std::ifstream& 
   return true;
 }
 
-
