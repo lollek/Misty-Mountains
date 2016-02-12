@@ -51,7 +51,7 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
 
   for (;;)
   {
-    int c = getopt_long(argc, argv, "cE::fjn:prsS:W",
+    int c = getopt_long(argc, argv, "cE::fjn:pr::sS:W",
                         long_options, &option_index);
     if (c == -1)
       break;
@@ -141,11 +141,13 @@ main(int argc, char** argv)
   if (restore) {
     ifstream savefile(save_path);
     if (!savefile) {
-      cerr << "Failed to load file: " + save_path + "\n";
+      cerr << save_path + ": " + strerror(errno) + "\n";
       return 1;
     }
 
     game = new Game(savefile);
+    savefile.close();
+    remove(save_path.c_str());
   } else {
     game = new Game(whoami, save_path);
   }
