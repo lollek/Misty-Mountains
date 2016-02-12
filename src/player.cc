@@ -626,8 +626,8 @@ void Player::save_player(ofstream& data) {
 void Player::load_player(ifstream& data) {
   Disk::load_tag(TAG_PLAYER, data);
   player = new Player(false);
-  Character* c_player = dynamic_cast<Character*>(player);
-  c_player->load(data);
+  Character* c_player = static_cast<Character*>(player);
+  if (!c_player->load(data))        { error("No player character found"); }
   /*
   Disk::load(TAG_INVENTORY,       player->pack,           data);
   Disk::load(TAG_EQUIPMENT,       player->equipment,      data);

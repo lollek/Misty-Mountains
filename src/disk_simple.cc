@@ -10,9 +10,7 @@ void Disk::save<std::string>(tag_type tag, std::string const& element, std::ofst
 }
 template <>
 bool Disk::load<std::string>(tag_type tag, std::string& element, std::ifstream& data) {
-  if (!load_tag(tag, data)) {
-    return false;
-  }
+  if (!load_tag(tag, data)) { return false; }
   size_t element_size;
   data.read(reinterpret_cast<char*>(&element_size), sizeof(element_size));
   element.resize(element_size);

@@ -14,9 +14,7 @@ void Disk::save<Daemons::Daemon>(tag_type tag, Daemons::Daemon const& element, s
 }
 template<>
 bool Disk::load<Daemons::Daemon>(tag_type tag, Daemons::Daemon& element, std::ifstream& data) {
-  if (!load_tag(tag, data)) {
-    return false;
-  }
+  if (!load_tag(tag, data)) { return false; }
 
   data.read(reinterpret_cast<char*>(&element.type), sizeof(element.type));
   data.read(reinterpret_cast<char*>(&element.func), sizeof(element.func));
@@ -39,9 +37,7 @@ void Disk::save<Daemons::Fuse>(tag_type tag, Daemons::Fuse const& element, std::
 }
 template<>
 bool Disk::load<Daemons::Fuse>(tag_type tag, Daemons::Fuse& element, std::ifstream& data) {
-  if (!load_tag(tag, data)) {
-    return false;
-  }
+  if (!load_tag(tag, data)) { return false; }
 
   data.read(reinterpret_cast<char*>(&element.type), sizeof(element.type));
   data.read(reinterpret_cast<char*>(&element.func), sizeof(element.func));
@@ -62,11 +58,28 @@ void Disk::save<Coordinate>(tag_type tag, Coordinate const& element, std::ofstre
 }
 template <>
 bool Disk::load<Coordinate>(tag_type tag, Coordinate& element, std::ifstream& data) {
-  if (!load_tag(tag, data)) {
-    return false;
-  }
-  data.read(reinterpret_cast<char*>(element.x), static_cast<long>(element.x));
-  data.read(reinterpret_cast<char*>(element.y), static_cast<long>(element.y));
+  if (!load_tag(tag, data)) { return false; }
+  data.read(reinterpret_cast<char*>(&element.x), sizeof(element.x));
+  data.read(reinterpret_cast<char*>(&element.y), sizeof(element.y));
+  return true;
+}
+
+// damage
+static_assert(sizeof(damage) ==
+    sizeof(damage::sides) +
+    sizeof(damage::dices),
+    "damage size has changed");
+template <>
+void Disk::save<damage>(tag_type tag, damage const& element, std::ofstream& data) {
+  save_tag(tag, data);
+  data.write(reinterpret_cast<char const*>(&element.sides), sizeof(element.sides));
+  data.write(reinterpret_cast<char const*>(&element.dices), sizeof(element.dices));
+}
+template <>
+bool Disk::load<damage>(tag_type tag, damage& element, std::ifstream& data) {
+  if (!load_tag(tag, data)) { return false; }
+  data.read(reinterpret_cast<char*>(&element.sides), sizeof(element.sides));
+  data.read(reinterpret_cast<char*>(&element.dices), sizeof(element.dices));
   return true;
 }
 

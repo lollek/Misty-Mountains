@@ -27,9 +27,9 @@ namespace Disk {
 
   // Containers of simple types
   template <template <class, class> class C, class T>
-  void save(tag_type, C<T, std::allocator<T>>*, std::ofstream&);
+  void save(tag_type, C<T, std::allocator<T>> const&, std::ofstream&);
   template <template <class, class> class C, class T>
-  bool load(tag_type, C<T, std::allocator<T>>**, std::ifstream&);
+  bool load(tag_type, C<T, std::allocator<T>>&, std::ifstream&);
 
 #include "disk_simple.m"
 #include "disk_pointers.m"

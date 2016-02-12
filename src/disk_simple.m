@@ -9,9 +9,7 @@ void save(tag_type tag, T const& element, std::ofstream& data) {
 template <class T>
 bool load(tag_type tag, T& element, std::ifstream& data) {
   static_assert(std::is_fundamental<T>::value, "Not fundamental type T");
-  if (!load_tag(tag, data)) {
-    return false;
-  }
+  if (!load_tag(tag, data)) { return false; }
   data.read(reinterpret_cast<char*>(&element), sizeof(element));
   return true;
 }

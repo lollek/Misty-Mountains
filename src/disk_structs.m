@@ -16,3 +16,9 @@ template <>
 void save<Coordinate>(tag_type tag, Coordinate const& element, std::ofstream& data);
 template <>
 bool load<Coordinate>(tag_type tag, Coordinate& element, std::ifstream& data);
+
+// damage
+template <>
+void save<damage>(tag_type tag, damage const& element, std::ofstream& data);
+template <>
+bool load<damage>(tag_type tag, damage& element, std::ifstream& data);
