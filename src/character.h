@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <fstream>
 
 #include "damage.h"
 #include "coordinate.h"
@@ -103,6 +102,8 @@ public:
   virtual void set_running();
   virtual void set_not_running();
 
+  void  save(std::ofstream&);
+  bool  load(std::ifstream&);
 
 
 protected:
@@ -151,5 +152,8 @@ private:
   bool attack_drain_strength;
   bool attack_drain_health;
   bool attack_drain_experience;
+
+
+  static unsigned long long constexpr TAG_CHARACTER       = 0x8000000000000000ULL;
 };
 

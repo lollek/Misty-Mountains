@@ -231,3 +231,79 @@ void Character::set_position(Coordinate const& position_) {
   position = position_;
 }
 
+
+void Character::save(ofstream& data) {
+  Disk::save_tag(TAG_CHARACTER, data);
+  Disk::save(TAG_CHARACTER, strength, data);
+  Disk::save(TAG_CHARACTER, default_strength, data);
+  Disk::save(TAG_CHARACTER, experience, data);
+  Disk::save(TAG_CHARACTER, level, data);
+  Disk::save(TAG_CHARACTER, armor, data);
+  Disk::save(TAG_CHARACTER, health, data);
+  Disk::save(TAG_CHARACTER, max_health, data);
+  Disk::save(TAG_CHARACTER, position, data);
+  Disk::save(TAG_CHARACTER, type, data);
+
+  Disk::save(TAG_CHARACTER, confusing_attack, data);
+  Disk::save(TAG_CHARACTER, true_sight, data);
+  Disk::save(TAG_CHARACTER, blind, data);
+  Disk::save(TAG_CHARACTER, cancelled, data);
+  Disk::save(TAG_CHARACTER, levitating, data);
+  Disk::save(TAG_CHARACTER, found, data);
+  Disk::save(TAG_CHARACTER, greedy, data);
+  Disk::save(TAG_CHARACTER, players_target, data);
+  Disk::save(TAG_CHARACTER, held, data);
+  Disk::save(TAG_CHARACTER, confused, data);
+  Disk::save(TAG_CHARACTER, invisible, data);
+  Disk::save(TAG_CHARACTER, mean, data);
+  Disk::save(TAG_CHARACTER, regenerating, data);
+  Disk::save(TAG_CHARACTER, running, data);
+  Disk::save(TAG_CHARACTER, flying, data);
+  Disk::save(TAG_CHARACTER, stuck, data);
+  Disk::save(TAG_CHARACTER, attack_freeze, data);
+  Disk::save(TAG_CHARACTER, attack_damage_armor, data);
+  Disk::save(TAG_CHARACTER, attack_steal_gold, data);
+  Disk::save(TAG_CHARACTER, attack_steal_item, data);
+  Disk::save(TAG_CHARACTER, attack_drain_strength, data);
+  Disk::save(TAG_CHARACTER, attack_drain_health, data);
+  Disk::save(TAG_CHARACTER, attack_drain_experience, data);
+}
+
+bool Character::load(ifstream& data) {
+  if (!Disk::load_tag(TAG_CHARACTER, data)) {
+    return false;
+  }
+  Disk::load(TAG_CHARACTER, default_strength, data);
+  Disk::load(TAG_CHARACTER, experience, data);
+  Disk::load(TAG_CHARACTER, level, data);
+  Disk::load(TAG_CHARACTER, armor, data);
+  Disk::load(TAG_CHARACTER, health, data);
+  Disk::load(TAG_CHARACTER, max_health, data);
+  Disk::load(TAG_CHARACTER, position, data);
+  Disk::load(TAG_CHARACTER, type, data);
+
+  Disk::load(TAG_CHARACTER, confusing_attack, data);
+  Disk::load(TAG_CHARACTER, true_sight, data);
+  Disk::load(TAG_CHARACTER, blind, data);
+  Disk::load(TAG_CHARACTER, cancelled, data);
+  Disk::load(TAG_CHARACTER, levitating, data);
+  Disk::load(TAG_CHARACTER, found, data);
+  Disk::load(TAG_CHARACTER, greedy, data);
+  Disk::load(TAG_CHARACTER, players_target, data);
+  Disk::load(TAG_CHARACTER, held, data);
+  Disk::load(TAG_CHARACTER, confused, data);
+  Disk::load(TAG_CHARACTER, invisible, data);
+  Disk::load(TAG_CHARACTER, mean, data);
+  Disk::load(TAG_CHARACTER, regenerating, data);
+  Disk::load(TAG_CHARACTER, running, data);
+  Disk::load(TAG_CHARACTER, flying, data);
+  Disk::load(TAG_CHARACTER, stuck, data);
+  Disk::load(TAG_CHARACTER, attack_freeze, data);
+  Disk::load(TAG_CHARACTER, attack_damage_armor, data);
+  Disk::load(TAG_CHARACTER, attack_steal_gold, data);
+  Disk::load(TAG_CHARACTER, attack_steal_item, data);
+  Disk::load(TAG_CHARACTER, attack_drain_strength, data);
+  Disk::load(TAG_CHARACTER, attack_drain_health, data);
+  Disk::load(TAG_CHARACTER, attack_drain_experience, data);
+  return true;
+}

@@ -58,7 +58,7 @@ void Game::new_level(int dungeon_level) {
 
   // Drop player in the new dungeon level
   if (player == nullptr) {
-    player = new Player();
+    player = new Player(true);
   }
 
   Coordinate new_player_pos = player->get_position();
@@ -165,6 +165,7 @@ Game::Game(ifstream& savefile) {
   Daemons::load_daemons(savefile);
   Monster::init_monsters();
   Trap::init_traps();
+  Player::load_player(savefile);
 
   Disk::load_tag(TAG_GAME, savefile);
   Disk::load(TAG_WHOAMI, &Game::whoami, savefile);
@@ -189,6 +190,7 @@ bool Game::save() {
   Ring::save_rings(savefile);
   Wand::save_wands(savefile);
   Daemons::save_daemons(savefile);
+  Player::save_player(savefile);
 
   Disk::save_tag(TAG_GAME, savefile);
   Disk::save(TAG_WHOAMI, Game::whoami, savefile);

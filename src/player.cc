@@ -1,6 +1,7 @@
 #include <string>
 #include <cmath>
 
+#include "disk.h"
 #include "command_private.h"
 #include "food.h"
 #include "error_handling.h"
@@ -45,12 +46,16 @@ bool         player_alerted              = false;
 
 
 
-Player::Player() :
+Player::Player(bool give_equipment) :
   //        str, xp, lvl, armor, hp, dmg
   Character(16,  0,  1,   10,    12, {{1,4}}, Coordinate(), 0, '@'),
   previous_room(nullptr), senses_monsters(false), speed(0),
   pack(), equipment(equipment_size(), nullptr), gold(0),
   nutrition_left(get_starting_nutrition()) {
+
+  if (!give_equipment) {
+    return;
+  }
 
   /* Give him some food */
   pack_add(new Food(), true, false);
@@ -602,4 +607,33 @@ void Player::pack_uncurse() {
       equip->set_not_cursed();
     }
   }
+}
+
+void Player::save_player(ofstream& data) {
+  Disk::save_tag(TAG_PLAYER, data);
+  Character* c_player = dynamic_cast<Character*>(player);
+  c_player->save(data);
+  /*
+  Disk::save(TAG_INVENTORY,       player->pack,            data);
+  Disk::save(TAG_EQUIPMENT,       player->equipment,       data);
+  Disk::save(TAG_SENSES_MONSTERS, player->senses_monsters, data);
+  Disk::save(TAG_SPEED,           player->speed,           data);
+  Disk::save(TAG_GOLD,            player->gold,            data);
+  Disk::save(TAG_NUTRITION,       player->nutrition_left,  data);
+  */
+}
+
+void Player::load_player(ifstream& data) {
+  Disk::load_tag(TAG_PLAYER, data);
+  player = new Player(false);
+  Character* c_player = dynamic_cast<Character*>(player);
+  c_player->load(data);
+  /*
+  Disk::load(TAG_INVENTORY,       player->pack,           data);
+  Disk::load(TAG_EQUIPMENT,       player->equipment,      data);
+  Disk::load(TAG_SENSES_MONSTERS, player->senses_monsters, data);
+  Disk::load(TAG_SPEED,           player->speed,           data);
+  Disk::load(TAG_GOLD,            player->gold,            data);
+  Disk::load(TAG_NUTRITION,       player->nutrition_left,  data);
+  */
 }

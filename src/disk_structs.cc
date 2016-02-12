@@ -1,6 +1,10 @@
 #include "disk.h"
 
 //Daemons::Daemon
+static_assert(sizeof(Daemons::Daemon) ==
+    sizeof(Daemons::Daemon::type) +
+    sizeof(Daemons::Daemon::func),
+    "Daemons::Daemon size has changed");
 template<>
 void Disk::save<Daemons::Daemon>(tag_type tag, Daemons::Daemon const& element, std::ofstream& data) {
   save_tag(tag, data);
@@ -20,6 +24,11 @@ bool Disk::load<Daemons::Daemon>(tag_type tag, Daemons::Daemon& element, std::if
 }
 
 //Daemons::Fuse
+static_assert(sizeof(Daemons::Fuse) ==
+    sizeof(Daemons::Fuse::type) +
+    sizeof(Daemons::Fuse::func) +
+    sizeof(Daemons::Fuse::func),
+    "Daemons::Func size has changed");
 template<>
 void Disk::save<Daemons::Fuse>(tag_type tag, Daemons::Fuse const& element, std::ofstream& data) {
   save_tag(tag, data);
@@ -41,18 +50,23 @@ bool Disk::load<Daemons::Fuse>(tag_type tag, Daemons::Fuse& element, std::ifstre
 }
 
 // Coordinate
+static_assert(sizeof(Coordinate) ==
+    sizeof(Coordinate::x) +
+    sizeof(Coordinate::y),
+    "Coordinate size has changed");
 template <>
-void save<Coordinate>(tag_type tag, Coordinate const& element, std::ofstream& data) {
+void Disk::save<Coordinate>(tag_type tag, Coordinate const& element, std::ofstream& data) {
   save_tag(tag, data);
   data.write(reinterpret_cast<char const*>(&element.x), sizeof(element.x));
   data.write(reinterpret_cast<char const*>(&element.y), sizeof(element.y));
 }
 template <>
-bool load<Coordinate>(tag_type tag, Coordinate& element, std::ifstream& data) {
+bool Disk::load<Coordinate>(tag_type tag, Coordinate& element, std::ifstream& data) {
   if (!load_tag(tag, data)) {
     return false;
   }
-  data.read(const_cast<char*>(element.x), static_cast<long>(element.x));
-  data.read(const_cast<char*>(element.y), static_cast<long>(element.y));
+  data.read(reinterpret_cast<char*>(element.x), static_cast<long>(element.x));
+  data.read(reinterpret_cast<char*>(element.y), static_cast<long>(element.y));
+  return true;
 }
 

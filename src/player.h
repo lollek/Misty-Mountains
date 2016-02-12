@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fstream>
+
 #include "rogue.h"
 #include "monster.h"
 
@@ -15,10 +17,13 @@ enum Equipment {
 
 class Player : public Character {
 public:
-  explicit Player();
+  explicit Player(bool give_equipment);
 
   Player(Player const&) = delete;
   Player& operator=(Player const&) = delete;
+
+  static void save_player(std::ofstream&);
+  static void load_player(std::ifstream&);
 
   // Getters
   int get_armor() const override;
@@ -131,6 +136,14 @@ private:
 
   // player_food.cc
   int          nutrition_left;
+
+  static unsigned long long constexpr TAG_PLAYER          = 0x7000000000000000ULL;
+  static unsigned long long constexpr TAG_INVENTORY       = 0x7000000000000001ULL;
+  static unsigned long long constexpr TAG_EQUIPMENT       = 0x7000000000000002ULL;
+  static unsigned long long constexpr TAG_SENSES_MONSTERS = 0x7000000000000003ULL;
+  static unsigned long long constexpr TAG_SPEED           = 0x7000000000000004ULL;
+  static unsigned long long constexpr TAG_GOLD            = 0x7000000000000005ULL;
+  static unsigned long long constexpr TAG_NUTRITION       = 0x7000000000000006ULL;
 };
 
 extern Player* player;
