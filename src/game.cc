@@ -116,7 +116,6 @@ Game::Game(string const& whoami_, string const& save_path_)
     error("Game is a singleton class");
   }
   game_ptr = this;
-
   cout << "Hello " << *whoami << ", just a moment while I dig the dungeon..." << flush;
 
   // Init stuff
@@ -156,6 +155,14 @@ Game::~Game() {
 
 
 Game::Game(ifstream& savefile) {
+
+  if (game_ptr != nullptr) {
+    error("Game is a singleton class");
+  }
+  game_ptr = this;
+  cout << "Hello " << *whoami << ", just a moment while I dig the dungeon..." << flush;
+
+
   Game::io = new IO();
   Scroll::load_scrolls(savefile);
   Color::init_colors();
