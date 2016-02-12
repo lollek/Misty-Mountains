@@ -14,23 +14,26 @@ namespace Disk {
   bool load_tag(tag_type tag, std::ifstream& data);
 
   // Simple types
-  void save(tag_type tag, int&, std::ofstream& data);
-  bool load(tag_type tag, int&, std::ifstream& data);
+  template <class T>
+  void save(tag_type, T const&, std::ofstream&);
+  template <class T>
+  bool load(tag_type, T&, std::ifstream&);
 
-  void save(tag_type tag, std::string*, std::ofstream& data);
-  bool load(tag_type tag, std::string**, std::ifstream& data);
+  // Pointers to simple types
+  template <class T>
+  void save(tag_type, T*, std::ofstream&);
+  template <class T>
+  bool load(tag_type, T**, std::ifstream&);
 
-  // Vector types
-  void save(tag_type tag, std::vector<bool>*, std::ofstream& data);
-  bool load(tag_type tag, std::vector<bool>**, std::ifstream& data);
+  // Containers of simple types
+  template <template <class, class> class C, class T>
+  void save(tag_type, C<T, std::allocator<T>>*, std::ofstream&);
+  template <template <class, class> class C, class T>
+  bool load(tag_type, C<T, std::allocator<T>>**, std::ifstream&);
 
-  void save(tag_type tag, std::vector<std::string>*, std::ofstream& data);
-  bool load(tag_type tag, std::vector<std::string>**, std::ifstream& data);
+#include "disk_simple.m"
+#include "disk_pointers.m"
+#include "disk_structs.m"
+#include "disk_container.m"
 
-  // List types
-  void save(tag_type tag, std::list<Daemons::Daemon>*, std::ofstream& data);
-  bool load(tag_type tag, std::list<Daemons::Daemon>**, std::ifstream& data);
-
-  void save(tag_type tag, std::list<Daemons::Fuse>*, std::ofstream& data);
-  bool load(tag_type tag, std::list<Daemons::Fuse>**, std::ifstream& data);
 }
