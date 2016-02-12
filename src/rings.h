@@ -29,6 +29,7 @@ public:
   ~Ring();
   explicit Ring(Type type, bool random_stats);
   explicit Ring(bool random_stats);
+  explicit Ring(std::ifstream&);
   explicit Ring(Ring const&) = default;
 
   Ring* clone() const override;

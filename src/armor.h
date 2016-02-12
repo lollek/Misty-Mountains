@@ -23,6 +23,7 @@ public:
   ~Armor();
   explicit Armor(Type type, bool random_stats); // Armor of given type
   explicit Armor(bool random_stats);            // Armor of random type
+  explicit Armor(std::ifstream&);
   explicit Armor(Armor const&) = default;
 
   Armor* clone() const override;

@@ -59,6 +59,10 @@ bool Scroll::is_magic() const {
   return true;
 }
 
+Scroll::Scroll(std::ifstream& data) {
+  load(data);
+}
+
 Scroll::Scroll() : Scroll(random_scroll_type()) {}
 
 Scroll::Scroll(Scroll::Type subtype_) : Item(), subtype(subtype_) {

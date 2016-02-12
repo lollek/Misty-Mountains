@@ -29,6 +29,11 @@ bool Food::is_magic() const {
   return false;
 }
 
+
+Food::Food(std::ifstream& data) {
+  load(data);
+}
+
 Food::Food() : Food(random_food_type()) {}
 
 Food::Food(Food::Type subtype_) : Item(), subtype(subtype_) {

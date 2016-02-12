@@ -30,6 +30,7 @@ public:
   ~Potion();
   explicit Potion();     // Random potion
   explicit Potion(Type); // Potion of given type
+  explicit Potion(std::ifstream&);
   explicit Potion(Potion const&) = default;
 
   Potion* clone() const override;

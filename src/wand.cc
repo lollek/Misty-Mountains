@@ -205,6 +205,10 @@ bool Wand::is_identified() const {
 
 Wand::~Wand() {}
 
+Wand::Wand(std::ifstream& data) {
+  load(data);
+}
+
 Wand::Wand() : Wand(random_wand_type()) {}
 
 Wand::Wand(Wand::Type subtype_) : Item(), identified(false) {

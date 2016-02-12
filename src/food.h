@@ -17,6 +17,7 @@ public:
 
   explicit Food();
   explicit Food(Type subtype);
+  explicit Food(std::ifstream&);
   explicit Food(Food const&) = default;
 
   Food* clone() const override;

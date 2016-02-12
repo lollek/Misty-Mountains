@@ -24,6 +24,7 @@ public:
   ~Weapon();
   explicit Weapon(Type subtype, bool random_stats);
   explicit Weapon(bool random_stats);
+  explicit Weapon(std::ifstream&);
   explicit Weapon(Weapon const&) = default;
 
   Weapon* clone() const override;

@@ -123,6 +123,10 @@ Potion::~Potion() {}
 
 Potion::Potion() : Potion(random_potion_type()) {}
 
+Potion::Potion(std::ifstream& data) {
+  load(data);
+}
+
 Potion::Potion(Potion::Type subtype_) : Item() {
   o_type       = IO::Potion;
   o_which      = subtype_;

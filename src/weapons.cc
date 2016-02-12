@@ -52,6 +52,10 @@ Weapon::~Weapon() {}
 
 Weapon::Weapon(bool random_stats) : Weapon(random_weapon_type(), random_stats) {}
 
+Weapon::Weapon(std::ifstream& data) {
+  load(data);
+}
+
 Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
   : Item(), subtype(subtype_), identified(false)  {
 

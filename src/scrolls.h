@@ -28,6 +28,7 @@ public:
   ~Scroll();
   explicit Scroll();
   explicit Scroll(Type);
+  explicit Scroll(std::ifstream&);
   explicit Scroll(Scroll const&) = default;
 
   Scroll* clone() const override;

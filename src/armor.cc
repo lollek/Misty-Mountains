@@ -51,6 +51,10 @@ Armor::Armor(bool random_stats) :
   Armor(random_armor_type(), random_stats)
 {}
 
+Armor::Armor(std::ifstream& data) {
+  load(data);
+}
+
 Armor::Armor(Armor::Type type, bool random_stats) :
   Item(), subtype(type), identified(false) {
   o_type = IO::Armor;

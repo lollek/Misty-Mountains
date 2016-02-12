@@ -48,6 +48,10 @@ Ring::~Ring() {}
 
 Ring::Ring(bool random_stats) : Ring(random_ring_type(), random_stats) {}
 
+Ring::Ring(std::ifstream& data) {
+  load(data);
+}
+
 Ring::Ring(Ring::Type type, bool random_stats)
   : Item(), subtype(type), identified(false) {
   o_type = IO::Ring;

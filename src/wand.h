@@ -29,6 +29,7 @@ public:
   ~Wand();
   Wand();     // Random wand
   explicit Wand(Type); // Wand of given type
+  explicit Wand(std::ifstream&);
   explicit Wand(Wand const&) = default;
 
   Wand* clone() const override;

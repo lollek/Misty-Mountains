@@ -24,7 +24,7 @@ void Disk::save<Item>(tag_type tag, Item* element, std::ofstream& data) {
   } else {
     save(tag, 1, data);
     save(tag, element->o_type, data);
-    save(tag, *element, data);
+    element->save(data);
   }
 }
 
@@ -41,17 +41,18 @@ bool Disk::load<Item>(tag_type tag, Item*& element, std::ifstream& data) {
   int type;
   load(tag, type, data);
   switch (type) {
-    case IO::Potion: element = new class Potion(); break;
-    case IO::Scroll: element = new class Scroll(); break;
-    case IO::Food:   element = new class Food(); break;
-    case IO::Amulet: element = new class Amulet(); break;
-    case IO::Ammo:   element = new class Weapon(false); break;
-    case IO::Weapon: element = new class Weapon(false); break;
-    case IO::Armor:  element = new class Armor(false); break;
-    case IO::Ring:   element = new class Ring(false); break;
-    case IO::Wand:   element = new class Wand(); break;
+    case IO::Potion: element = new class Potion(data); break;
+    case IO::Scroll: element = new class Scroll(data); break;
+    case IO::Food:   element = new class Food(data); break;
+    case IO::Amulet: element = new class Amulet(data); break;
+    case IO::Ammo:   element = new class Weapon(data); break;
+    case IO::Weapon: element = new class Weapon(data); break;
+    case IO::Armor:  element = new class Armor(data); break;
+    case IO::Ring:   element = new class Ring(data); break;
+    case IO::Wand:   element = new class Wand(data); break;
 
-    default: error("Unknown item: " + string(1, type));
+    default: error("Unknown item");
   }
-  return load(tag, *element, data);
+
+  return true;
 }

@@ -15,6 +15,10 @@ Amulet::Amulet() : Item() {
   o_type    = IO::Amulet;
 }
 
+Amulet::Amulet(std::ifstream& data) {
+  load(data);
+}
+
 string Amulet::get_description() const {
   return "the Amulet of Yendor";
 }
