@@ -271,3 +271,22 @@ void Wand::set_charges(int amount) {
 void Wand::modify_charges(int amount) {
   charges += amount;
 }
+
+void Wand::save(std::ofstream& data) const {
+  Item::save(data);
+  static_assert(sizeof(Wand::Type) == sizeof(int), "Wrong Wand::Type size");
+  Disk::save(TAG_WANDS, static_cast<int>(subtype), data);
+  Disk::save(TAG_WANDS, identified, data);
+  Disk::save(TAG_WANDS, charges, data);
+}
+
+bool Wand::load(std::ifstream& data) {
+  if (!Item::load(data) ||
+      !Disk::load(TAG_WANDS, reinterpret_cast<int&>(subtype), data) ||
+      !Disk::load(TAG_WANDS, identified, data) ||
+      !Disk::load(TAG_WANDS, charges, data)) {
+    return false;
+  }
+  return true;
+}
+

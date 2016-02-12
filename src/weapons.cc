@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 
+#include "disk.h"
 #include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
@@ -288,4 +289,21 @@ weapon_missile_fall(Item* obj, bool pr) {
   }
   delete obj;
 }
+
+void Weapon::save(std::ofstream& data) const {
+  Item::save(data);
+  static_assert(sizeof(Weapon::Type) == sizeof(int), "Wrong Weapon::Type size");
+  Disk::save(TAG_WEAPON, static_cast<int>(subtype), data);
+  Disk::save(TAG_WEAPON, identified, data);
+}
+
+bool Weapon::load(std::ifstream& data) {
+  if (!Item::load(data) ||
+      !Disk::load(TAG_WEAPON, reinterpret_cast<int&>(subtype), data) ||
+      !Disk::load(TAG_WEAPON, identified, data)) {
+    return false;
+  }
+  return true;
+}
+
 

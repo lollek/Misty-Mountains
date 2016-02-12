@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 
+#include "disk.h"
 #include "error_handling.h"
 #include "game.h"
 #include "command.h"
@@ -69,3 +70,19 @@ void Food::set_identified() {
 bool Food::is_identified() const {
   return true;
 }
+
+void Food::save(std::ofstream& data) const {
+  Item::save(data);
+  static_assert(sizeof(Food::Type) == sizeof(int), "Wrong Food::Type size");
+  Disk::save(TAG_FOOD, static_cast<int>(subtype), data);
+}
+
+bool Food::load(std::ifstream& data) {
+  if (!Item::load(data) ||
+      !Disk::load(TAG_FOOD, reinterpret_cast<int&>(subtype), data)) {
+    return false;
+  }
+  return true;
+}
+
+

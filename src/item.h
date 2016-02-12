@@ -82,8 +82,8 @@ public:
   int           o_flags;               // information about objects
   char          o_packch;              // What character it is in the pack
 
-  void          save(std::ofstream&) const;
-  bool          load(std::ifstream&);
+  virtual void          save(std::ofstream&) const;
+  virtual bool          load(std::ifstream&);
 
   // Static
   static int         probability(Type type);

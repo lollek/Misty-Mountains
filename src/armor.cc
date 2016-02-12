@@ -2,6 +2,7 @@
 #include <vector>
 #include <sstream>
 
+#include "disk.h"
 #include "error_handling.h"
 #include "io.h"
 #include "item.h"
@@ -163,4 +164,21 @@ string Armor::get_description() const {
 
   return buffer.str();
 }
+
+void Armor::save(std::ofstream& data) const {
+  Item::save(data);
+  static_assert(sizeof(Armor::Type) == sizeof(int), "Wrong Armor::Type size");
+  Disk::save(TAG_ARMOR, static_cast<int>(subtype), data);
+  Disk::save(TAG_ARMOR, identified, data);
+}
+
+bool Armor::load(std::ifstream& data) {
+  if (!Item::load(data) ||
+      !Disk::load(TAG_ARMOR, reinterpret_cast<int&>(subtype), data) ||
+      !Disk::load(TAG_ARMOR, identified, data)) {
+    return false;
+  }
+  return true;
+}
+
 

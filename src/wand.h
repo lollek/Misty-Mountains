@@ -50,6 +50,8 @@ public:
   bool        is_identified() const override;
   int         get_charges() const;
 
+  void save(std::ofstream&) const override;
+  bool load(std::ifstream&) override;
 
   // Static
   static void init_wands();

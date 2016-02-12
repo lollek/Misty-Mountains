@@ -258,3 +258,20 @@ void Ring::set_identified() {
 bool Ring::is_identified() const {
   return identified;
 }
+void Ring::save(std::ofstream& data) const {
+  Item::save(data);
+  static_assert(sizeof(Ring::Type) == sizeof(int), "Wrong Ring::Type size");
+  Disk::save(TAG_RINGS, static_cast<int>(subtype), data);
+  Disk::save(TAG_RINGS, identified, data);
+}
+
+bool Ring::load(std::ifstream& data) {
+  if (!Item::load(data) ||
+      !Disk::load(TAG_RINGS, reinterpret_cast<int&>(subtype), data) ||
+      !Disk::load(TAG_RINGS, identified, data)) {
+    return false;
+  }
+  return true;
+}
+
+

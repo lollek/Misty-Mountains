@@ -10,7 +10,7 @@
 
 class Potion : public Item {
 public:
-  enum Type {
+  enum Type : int {
     CONFUSION,
     POISON,
     STRENGTH,
@@ -47,6 +47,9 @@ public:
 
   // Misc
   void quaffed_by(Character&); // Someone drank the potion
+
+  virtual void save(std::ofstream&) const override;
+  virtual bool load(std::ifstream&) override;
 
   // Static
   static std::string  name(Type subtype);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <fstream>
 
 #include "item.h"
 
@@ -22,6 +23,9 @@ public:
   Food& operator=(Food const&) = default;
   Food& operator=(Food&&) = default;
 
+  virtual void save(std::ofstream&) const override;
+  virtual bool load(std::ifstream&) override;
+
   // Setters
   void        set_identified() override;
 
@@ -33,5 +37,8 @@ public:
 
 private:
   Type subtype;
+
+
+  static unsigned long long constexpr TAG_FOOD      = 0xa000000000000000ULL;
 };
 

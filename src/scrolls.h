@@ -46,6 +46,9 @@ public:
   // Misc
   void read() const;
 
+  virtual void save(std::ofstream&) const override;
+  virtual bool load(std::ifstream&) override;
+
   // Static
   static std::string  name(Type subtype);
   static int          probability(Type subtype);

@@ -248,6 +248,21 @@ void Scroll::free_scrolls() {
   guesses = nullptr;
 }
 
+
+void Scroll::save(std::ofstream& data) const {
+  Item::save(data);
+  static_assert(sizeof(Scroll::Type) == sizeof(int), "Wrong Scroll::Type size");
+  Disk::save(TAG_SCROLL, static_cast<int>(subtype), data);
+}
+
+bool Scroll::load(std::ifstream& data) {
+  if (!Item::load(data) ||
+      !Disk::load(TAG_SCROLL, reinterpret_cast<int&>(subtype), data)) {
+    return false;
+  }
+  return true;
+}
+
 static bool enchant_players_armor() {
   Item* arm = player->equipped_armor();
 

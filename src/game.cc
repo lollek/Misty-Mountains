@@ -160,8 +160,6 @@ Game::Game(ifstream& savefile) {
     error("Game is a singleton class");
   }
   game_ptr = this;
-  cout << "Hello " << *whoami << ", just a moment while I dig the dungeon..." << flush;
-
 
   Game::io = new IO();
   Scroll::load_scrolls(savefile);

@@ -232,7 +232,7 @@ void Character::set_position(Coordinate const& position_) {
 }
 
 
-void Character::save(ofstream& data) {
+void Character::save(ofstream& data) const {
   Disk::save_tag(TAG_CHARACTER, data);
   Disk::save(TAG_CHARACTER, strength, data);
   Disk::save(TAG_CHARACTER, default_strength, data);

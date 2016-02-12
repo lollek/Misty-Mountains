@@ -361,6 +361,19 @@ void Potion::load_potions(std::ifstream& data) {
   if (!Disk::load(TAG_GUESSES,   guesses, data))   { error("Potion tag error 3"); }
 }
 
+void Potion::save(std::ofstream& data) const {
+  Item::save(data);
+  static_assert(sizeof(Potion::Type) == sizeof(int), "Wrong Potion::Type size");
+  Disk::save(TAG_POTION, static_cast<int>(subtype), data);
+}
+
+bool Potion::load(std::ifstream& data) {
+  if (!Item::load(data) ||
+      !Disk::load(TAG_POTION, reinterpret_cast<int&>(subtype), data)) {
+    return false;
+  }
+  return true;
+}
 
 
 void Potion::free_potions() {

@@ -38,6 +38,9 @@ public:
   bool        is_magic() const override;
   bool        is_identified() const override;
 
+  void save(std::ofstream&) const override;
+  bool load(std::ifstream&) override;
+
   // Static
   static int probability(Type type);
   static std::string name(Type type);
@@ -47,6 +50,8 @@ public:
 private:
   Type subtype;
   bool identified;
+
+  static unsigned long long constexpr TAG_WEAPON    = 0xb000000000000000ULL;
 };
 
 /* Drop an item someplace around here. */
