@@ -176,9 +176,18 @@ bool Monster::take_turn()
   if (is_held()) {
     return true;
 
+
   // Chase player, if there's a target
   } else if (is_chasing() && get_target() != nullptr) {
     return chase_do(this) != -1;
+
+
+  // If monster sees player and is mean, have a chance to attack
+  } else if (is_mean() && player->can_see(*this) && os_rand_range(2)) {
+    set_target(&player->get_position());
+    set_chasing();
+    return chase_do(this) != -1;
+
 
   // Do nothing
   } else {
