@@ -143,13 +143,14 @@ string Item::name(Item::Type type) {
 }
 
 int Item::probability(Item::Type type) {
+  static_assert(30 + 30 + 15 + 10 + 10 + 1 + 4 == 100, "Item probability");
   switch (type) {
-    case Potion: return 26;
-    case Scroll: return 36;
-    case Food:   return 16;
-    case Weapon: return  7;
-    case Armor:  return  7;
-    case Ring:   return  7;
+    case Potion: return 30;
+    case Scroll: return 30;
+    case Food:   return 15;
+    case Weapon: return 10;
+    case Armor:  return 10;
+    case Ring:   return  1;
     case Wand:   return  4;
     case NITEMS: error("Unknown type NITEMS");
   }
@@ -190,7 +191,6 @@ Item* Item::random() {
     case NITEMS: error("Unknown type NITEMS");
   }
 }
-
 
 void Item::save(std::ofstream& data) const {
   Disk::save_tag(TAG_ITEM, data);

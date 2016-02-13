@@ -19,27 +19,45 @@
 
 using namespace std;
 
-std::vector<std::string>* Potion::guesses;
-std::vector<bool>*        Potion::knowledge;
-std::vector<std::string>* Potion::colors;
+vector<string>* Potion::guesses;
+vector<bool>*   Potion::knowledge;
+vector<string>* Potion::colors;
 
 static Potion::Type random_potion_type() {
-  int value = os_rand_range(100);
+  vector<Potion::Type> potential_potions;
 
-  int end = static_cast<int>(Potion::Type::NPOTIONS);
-  for (int i = 0; i < end; ++i) {
-    Potion::Type type = static_cast<Potion::Type>(i);
-    int probability = Potion::probability(type);
+  switch (Game::current_level) {
+    default:
+      [[clang::fallthrough]];
+    case 15:
+      potential_potions.push_back(Potion::XHEAL);
+      potential_potions.push_back(Potion::RAISE);
 
-    if (value < probability) {
-      return type;
+      [[clang::fallthrough]];
+    case 10:
+      potential_potions.push_back(Potion::STRENGTH);
+      potential_potions.push_back(Potion::MFIND);
+      potential_potions.push_back(Potion::TFIND);
 
-    } else {
-      value -= probability;
-    }
+      [[clang::fallthrough]];
+    case 5:
+      potential_potions.push_back(Potion::HEALING);
+      potential_potions.push_back(Potion::RESTORE);
+
+      [[clang::fallthrough]];
+    case 3:
+      potential_potions.push_back(Potion::POISON);
+      potential_potions.push_back(Potion::SEEINVIS);
+
+      [[clang::fallthrough]];
+    case 1:
+      potential_potions.push_back(Potion::CONFUSION);
+      potential_potions.push_back(Potion::BLIND);
+      potential_potions.push_back(Potion::LEVIT);
+      potential_potions.push_back(Potion::HASTE);
   }
 
-  error("Error! Sum of probabilities is not 100%");
+  return potential_potions.at(os_rand_range(potential_potions.size()));
 }
 
 Potion* Potion::clone() const {
@@ -65,25 +83,6 @@ string Potion::name(Potion::Type subtype) {
     case RESTORE:   return "restore strength";
     case BLIND:     return "blindness";
     case LEVIT:     return "levitation";
-    case NPOTIONS:  error("Unknown subtype NPOTIONS");
-  }
-}
-
-int Potion::probability(Potion::Type subtype) {
-  switch(subtype) {
-    case CONFUSION: return 8;
-    case POISON:    return 10;
-    case STRENGTH:  return 13;
-    case SEEINVIS:  return 3;
-    case HEALING:   return 13;
-    case MFIND:     return 6;
-    case TFIND:     return 6;
-    case RAISE:     return 2;
-    case XHEAL:     return 5;
-    case HASTE:     return 7;
-    case RESTORE:   return 13;
-    case BLIND:     return 5;
-    case LEVIT:     return 9;
     case NPOTIONS:  error("Unknown subtype NPOTIONS");
   }
 }
