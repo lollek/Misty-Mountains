@@ -544,13 +544,17 @@ command_eat()
   if (obj == nullptr)
     return false;
 
-  Food* food = dynamic_cast<Food*>(obj);
-  if (obj->o_type != IO::Food || food == nullptr) {
+  if (obj->o_type != IO::Food) {
     Game::io->message("that's inedible!");
     return false;
   }
 
   player->pack_remove(obj, false, false);
+  Food* food = dynamic_cast<Food*>(obj);
+  if (food == nullptr) {
+    error("Error casting food");
+  }
+  player->eat(food);
   return true;
 }
 
