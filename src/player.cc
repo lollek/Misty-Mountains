@@ -63,7 +63,6 @@ Player::Player(bool give_equipment) :
   /* And his suit of armor */
   class Armor* armor_ = new class Armor(Armor::RING_MAIL, false);
   armor_->set_identified();
-  armor_->modify_armor(-1);
   equipment.at(Armor) = armor_;
 
   /* Give him his weaponry.  First a mace. */
@@ -80,17 +79,17 @@ int Player::get_armor() const {
   // If weapon help protection, add it
   Item const* const weapon = equipment.at(static_cast<size_t>(Weapon));
   if (weapon != nullptr) {
-    ac -= weapon->get_armor();
+    ac += weapon->get_armor();
   }
 
   // If rings help, add their stats as well
   for (Equipment position : all_rings()) {
     Item const* ring = equipment.at(static_cast<size_t>(position));
     if (ring != nullptr && ring->o_which == Ring::Type::PROTECT)
-      ac -= ring->get_armor();
+      ac += ring->get_armor();
   }
 
-  return 20 - ac;
+  return ac;
 }
 
 bool Player::has_seen_stairs() const {
@@ -199,7 +198,7 @@ bool Player::saving_throw(int which) const {
     for (Equipment position : all_rings()) {
       Item const* ring = equipment.at(static_cast<size_t>(position));
       if (ring != nullptr && ring->o_which == Ring::Type::PROTECT) {
-        which -= ring->get_armor();
+        which += ring->get_armor();
       }
     }
   }
@@ -535,8 +534,7 @@ bool Player::has_ring_with_ability(int ability) const {
 
 void Player::rust_armor() {
   class Armor* arm = dynamic_cast<class Armor*>(equipment.at(static_cast<size_t>(Armor)));
-  if (arm == nullptr || arm->o_type != IO::Armor || arm->o_which == Armor::Type::LEATHER ||
-      arm->get_armor() >= 9) {
+  if (arm == nullptr) {
     return;
   }
 
@@ -546,7 +544,7 @@ void Player::rust_armor() {
     }
   }
   else {
-    arm->modify_armor(1);
+    arm->modify_armor(-1);
     Game::io->message("your armor weakens");
   }
 }
