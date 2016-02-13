@@ -40,43 +40,45 @@ static Armor::Type random_armor_type() {
       potential_armor.push_back(Armor::Mithrilchainmail);
 
       [[clang::fallthrough]];
-    case 40:
+    case 45: case 46: case 47: case 48: case 49:
+    case 40: case 41: case 42: case 43: case 44:
       potential_armor.push_back(Armor::Lamellararmor);
 
       [[clang::fallthrough]];
-    case 30:
+    case 35: case 36: case 37: case 38: case 39:
+    case 30: case 31: case 32: case 33: case 34:
       potential_armor.push_back(Armor::Laminatedarmor);
 
       [[clang::fallthrough]];
-    case 25:
+    case 25: case 26: case 27: case 28: case 29:
       potential_armor.push_back(Armor::Brigandinearmor);
 
       [[clang::fallthrough]];
-    case 20:
+    case 20: case 21: case 22: case 23: case 24:
       potential_armor.push_back(Armor::Scalemail);
 
       [[clang::fallthrough]];
-    case 15:
+    case 15: case 16: case 17: case 18: case 19:
       potential_armor.push_back(Armor::Chainmail);
 
       [[clang::fallthrough]];
-    case 12:
+    case 12: case 13: case 14:
       potential_armor.push_back(Armor::Hardleatherringmail);
 
       [[clang::fallthrough]];
-    case 10:
+    case 10: case 11:
       potential_armor.push_back(Armor::Softleatherringmail);
 
       [[clang::fallthrough]];
-    case 7:
+    case 7: case 8: case 9:
       potential_armor.push_back(Armor::Hardstuddedleather);
 
       [[clang::fallthrough]];
-    case 5:
+    case 5: case 6:
       potential_armor.push_back(Armor::Hardleatherarmor);
 
       [[clang::fallthrough]];
-    case 3:
+    case 3: case 4:
       potential_armor.push_back(Armor::Softstuddedleather);
 
       [[clang::fallthrough]];

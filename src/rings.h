@@ -9,26 +9,27 @@
 class Ring : public Item {
 public:
   enum Type {
-    PROTECT = 0,
-    ADDSTR = 1,
-    SUSTSTR = 2,
-    SEARCH = 3,
-    SEEINVIS = 4,
-    NOP = 5,
-    AGGR = 6,
-    ADDHIT = 7,
-    ADDDAM = 8,
-    REGEN = 9,
-    DIGEST = 10,
-    TELEPORT = 11,
-    STEALTH = 12,
-    SUSTARM = 13,
+    Adornment,
+    AggravateMonsters,
+    Teleportation,
+    Protection,
+    Searching,
+    SlowDigestation,
+    Damage,
+    Accuracy,
+    Regeneration,
+    Stealth,
+    Strength,
+    SeeInvisible,
+    SustainStrenght,
+    Speed,
+
     NRINGS
   };
 
   ~Ring();
-  explicit Ring(Type type, bool random_stats);
-  explicit Ring(bool random_stats);
+  explicit Ring(Type type);
+  explicit Ring();
   explicit Ring(std::ifstream&);
   explicit Ring(Ring const&) = default;
 
@@ -48,7 +49,6 @@ public:
   bool load(std::ifstream&) override;
 
   // Static
-  static int          probability(Type type);
   static std::string  name(Type type);
   static int          worth(Type type);
   static std::string& guess(Type type);

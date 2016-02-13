@@ -222,7 +222,7 @@ static Trap::Type trap_dart_player(void) {
       death(DEATH_DART);
     }
 
-    if (!player->has_ring_with_ability(Ring::Type::SUSTSTR) &&
+    if (!player->has_ring_with_ability(Ring::SustainStrenght) &&
         !player->saving_throw(VS_POISON)) {
       player->modify_strength(-1);
     }

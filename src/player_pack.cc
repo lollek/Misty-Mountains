@@ -84,12 +84,12 @@ pack_print_evaluate_item(Item* item)
     case IO::Ring: {
       Ring::Type subtype = static_cast<Ring::Type>(item->o_which);
       worth = Ring::worth(subtype);
-      if (subtype == Ring::Type::ADDSTR || subtype == Ring::Type::ADDDAM ||
-          subtype == Ring::Type::PROTECT || subtype == Ring::Type::ADDHIT) {
+      if (subtype == Ring::Strength || subtype == Ring::Protection ||
+          subtype == Ring::Damage || subtype == Ring::Accuracy) {
         if (item->get_armor() > 0) {
           worth += item->get_armor() * 100;
         } else {
-          worth = 10;
+          worth = 0;
         }
       }
       if (Ring::is_known(subtype)) {
@@ -437,10 +437,10 @@ bool Player::pack_equip(Item* item, bool silent) {
           waste_time(1);
         } break;
 
-        case Ring1: doing = "wearing"; break;
+        case Ring1:
         case Ring2: {
           doing = "wearing";
-          if (item->o_which == Ring::AGGR) {
+          if (item->o_which == Ring::AggravateMonsters) {
             monster_aggravate_all();
           }
         } break;
@@ -559,9 +559,9 @@ void Player::equipment_run_abilities() {
     if (obj == nullptr) {
       continue;
 
-    } else if (obj->o_which == Ring::Type::SEARCH) {
+    } else if (obj->o_which == Ring::Searching) {
       player->search();
-    } else if (obj->o_which == Ring::Type::TELEPORT && os_rand_range(50) == 0) {
+    } else if (obj->o_which == Ring::Teleportation && os_rand_range(50) == 0) {
       player->teleport(nullptr);
     }
   }
@@ -589,4 +589,19 @@ bool Player::pack_swap_weapons() {
 
   Game::io->message(equipment.at(Weapon)->get_description());
   return true;
+}
+
+int Player::pack_get_ring_modifier(Ring::Type ring_type) {
+  int return_value = 0;
+  for (Equipment position : all_rings()) {
+    Ring* obj = dynamic_cast<Ring*>(equipment.at(position));
+    if (obj == nullptr) {
+      continue;
+
+    } else if (obj->o_which == ring_type) {
+      return_value += obj->get_armor();
+    }
+  }
+
+  return return_value;
 }

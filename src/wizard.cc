@@ -219,19 +219,7 @@ void wizard_create_item(void) {
     } break;
 
     case IO::Ring: {
-      obj = new Ring(static_cast<Ring::Type>(which), false);
-
-      switch (obj->o_which) {
-        case Ring::Type::PROTECT: case Ring::Type::ADDSTR:
-        case Ring::Type::ADDHIT:  case Ring::Type::ADDDAM: {
-          Game::io->message("blessing? (+,-,n)");
-          char bless = io_readchar(true);
-          Game::io->clear_message();
-          if (bless == '-')
-            obj->set_cursed();
-          obj->set_armor(bless == '-' ? -1 : os_rand_range(2) + 1);
-        } break;
-      }
+      obj = new Ring(static_cast<Ring::Type>(which));
     } break;
 
     case IO::Gold: {

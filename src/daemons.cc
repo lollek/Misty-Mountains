@@ -167,6 +167,11 @@ void Daemons::daemon_doctor() {
     return;
   }
 
+  int rings_of_regen = static_cast<int>(player->pack_num_items(IO::Ring, Ring::Regeneration));
+  if (rings_of_regen > 0) {
+    player->restore_health(rings_of_regen, false);
+  }
+
   quiet_rounds++;
   if (player->get_level() < 8) {
     if (quiet_rounds + (player->get_level() << 1) > 20) {
@@ -177,10 +182,6 @@ void Daemons::daemon_doctor() {
     player->restore_health(os_rand_range(player->get_level() - 7) + 1, false);
   }
 
-  int rings_of_regen = static_cast<int>(player->pack_num_items(IO::Ring, Ring::REGEN));
-  if (rings_of_regen > 0) {
-    player->restore_health(rings_of_regen, false);
-  }
 
   if (ohp != player->get_health())
     quiet_rounds = 0;

@@ -89,8 +89,9 @@ int Player::get_armor() const {
   // If rings help, add their stats as well
   for (Equipment position : all_rings()) {
     Item const* ring = equipment.at(static_cast<size_t>(position));
-    if (ring != nullptr && ring->o_which == Ring::Type::PROTECT)
+    if (ring != nullptr && ring->o_which == Ring::Protection) {
       ac += ring->get_armor();
+    }
   }
 
   return ac;
@@ -191,8 +192,9 @@ int Player::get_strength_with_bonuses() const {
   int bonuses = 0;
   for (Equipment position : all_rings()) {
     Item const* ring = equipment.at(static_cast<size_t>(position));
-    if (ring != nullptr && ring->o_which == Ring::Type::ADDSTR)
+    if (ring != nullptr && ring->o_which == Ring::Strength) {
       bonuses += ring->get_armor();
+    }
   }
   return get_strength() + bonuses;
 }
@@ -201,7 +203,7 @@ bool Player::saving_throw(int which) const {
   if (which == VS_MAGIC) {
     for (Equipment position : all_rings()) {
       Item const* ring = equipment.at(static_cast<size_t>(position));
-      if (ring != nullptr && ring->o_which == Ring::Type::PROTECT) {
+      if (ring != nullptr && ring->o_which == Ring::Protection) {
         which += ring->get_armor();
       }
     }
@@ -213,7 +215,7 @@ bool Player::saving_throw(int which) const {
 
 bool Player::has_true_sight() const {
   return Character::has_true_sight() ||
-    player->has_ring_with_ability(Ring::Type::SEEINVIS);
+    player->has_ring_with_ability(Ring::SeeInvisible);
 }
 
 void Player::set_true_sight() {
@@ -342,7 +344,7 @@ void Player::become_stuck() {
 }
 
 void Player::become_poisoned() {
-  if (player->has_ring_with_ability(Ring::Type::SUSTSTR)) {
+  if (player->has_ring_with_ability(Ring::SustainStrenght)) {
     Game::io->message("you feel momentarily nauseous");
 
   } else {
@@ -352,7 +354,7 @@ void Player::become_poisoned() {
 }
 
 bool Player::is_stealthy() const {
-  return player->has_ring_with_ability(Ring::Type::STEALTH)
+  return player->has_ring_with_ability(Ring::Stealth)
     || is_levitating();
 }
 
@@ -542,7 +544,7 @@ void Player::rust_armor() {
     return;
   }
 
-  if (arm->is_rustproof() || has_ring_with_ability(Ring::Type::SUSTARM)) {
+  if (arm->is_rustproof()) {
     if (!to_death) {
       Game::io->message("the rust vanishes instantly");
     }

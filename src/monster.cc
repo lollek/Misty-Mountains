@@ -241,7 +241,7 @@ Monster::Monster(Coordinate const& pos, Template const& m_template) :
   // they also give more experience
   gain_experience(extra_experience(get_level(), get_max_health()));
 
-  if (player != nullptr && player->has_ring_with_ability(Ring::Type::AGGR)) {
+  if (player != nullptr && player->has_ring_with_ability(Ring::AggravateMonsters)) {
     monster_start_running(&pos);
   }
 
@@ -525,7 +525,7 @@ monster_do_special_ability(Monster** monster_ptr)
 
   if (monster->attack_drains_strength()) {
     if (!player->saving_throw(VS_POISON)
-        && !player->has_ring_with_ability(Ring::Type::SUSTSTR)) {
+        && !player->has_ring_with_ability(Ring::SustainStrenght)) {
       player->modify_strength(-1);
       Game::io->message("you feel weaker");
     }

@@ -186,7 +186,7 @@ Item* Item::random() {
     case Food:   return new class Food();
     case Weapon: return new class Weapon(true);
     case Armor:  return new class Armor(true);
-    case Ring:   return new class Ring(true);
+    case Ring:   return new class Ring();
     case Wand:   return new class Wand();
     case NITEMS: error("Unknown type NITEMS");
   }

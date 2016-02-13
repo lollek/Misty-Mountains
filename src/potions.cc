@@ -34,23 +34,23 @@ static Potion::Type random_potion_type() {
       potential_potions.push_back(Potion::RAISE);
 
       [[clang::fallthrough]];
-    case 10:
+    case 10: case 11: case 12: case 13: case 14:
       potential_potions.push_back(Potion::STRENGTH);
       potential_potions.push_back(Potion::MFIND);
       potential_potions.push_back(Potion::TFIND);
 
       [[clang::fallthrough]];
-    case 5:
+    case 5: case 6: case 7 : case 8: case 9:
       potential_potions.push_back(Potion::HEALING);
       potential_potions.push_back(Potion::RESTORE);
 
       [[clang::fallthrough]];
-    case 3:
+    case 3: case 4:
       potential_potions.push_back(Potion::POISON);
       potential_potions.push_back(Potion::SEEINVIS);
 
       [[clang::fallthrough]];
-    case 1:
+    case 1: case 2:
       potential_potions.push_back(Potion::CONFUSION);
       potential_potions.push_back(Potion::BLIND);
       potential_potions.push_back(Potion::LEVIT);

@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 
+#include "game.h"
 #include "disk.h"
 #include "error_handling.h"
 #include "daemons.h"
@@ -24,56 +25,131 @@ vector<string>* Ring::guesses = nullptr;
 vector<bool>*   Ring::known = nullptr;
 
 static Ring::Type random_ring_type() {
-  int value = os_rand_range(100);
+  vector<Ring::Type> potential_rings;
 
-  int end = static_cast<int>(Ring::Type::NRINGS);
-  for (int i = 0; i < end; ++i) {
-    Ring::Type type = static_cast<Ring::Type>(i);
-    int probability = Ring::probability(type);
+  switch (Game::current_level) {
+    default:
 
-    if (value < probability) {
-      return type;
+      [[clang::fallthrough]];
+    case 50:
+      potential_rings.push_back(Ring::Speed);
 
-    } else {
-      value -= probability;
-    }
+      [[clang::fallthrough]];
+    case 45: case 46: case 47: case 48: case 49:
+    case 40: case 41: case 42: case 43: case 44:
+      potential_rings.push_back(Ring::SeeInvisible);
+      potential_rings.push_back(Ring::SustainStrenght);
+
+      [[clang::fallthrough]];
+    case 35: case 36: case 37: case 38: case 39:
+    case 30: case 31: case 32: case 33: case 34:
+      potential_rings.push_back(Ring::Strength);
+
+      [[clang::fallthrough]];
+    case 25: case 26: case 27: case 28: case 29:
+    case 20: case 21: case 22: case 23: case 24:
+      potential_rings.push_back(Ring::Damage);
+      potential_rings.push_back(Ring::Accuracy);
+      potential_rings.push_back(Ring::Regeneration);
+      potential_rings.push_back(Ring::Stealth);
+
+      [[clang::fallthrough]];
+    case 15: case 16: case 17: case 18: case 19:
+    case 10: case 11: case 12: case 13: case 14:
+    case 7: case 8: case 9:
+      potential_rings.push_back(Ring::AggravateMonsters);
+      potential_rings.push_back(Ring::Teleportation);
+      potential_rings.push_back(Ring::Protection);
+      potential_rings.push_back(Ring::Searching);
+      potential_rings.push_back(Ring::SlowDigestation);
+
+      [[clang::fallthrough]];
+    case 5: case 6:
+    case 1: case 2: case 3: case 4:
+      potential_rings.push_back(Ring::Adornment);
   }
 
-  error("Error! Sum of probabilities is not 100%");
+  return potential_rings.at(os_rand_range(potential_rings.size()));
 }
 
 
 
 Ring::~Ring() {}
 
-Ring::Ring(bool random_stats) : Ring(random_ring_type(), random_stats) {}
+Ring::Ring() : Ring(random_ring_type()) {}
 
 Ring::Ring(std::ifstream& data) {
   load(data);
 }
 
-Ring::Ring(Ring::Type type, bool random_stats)
+Ring::Ring(Ring::Type type)
   : Item(), subtype(type), identified(false) {
   o_type = IO::Ring;
   o_which = type;
 
-  switch (o_which) {
-    case ADDSTR: case PROTECT: case ADDHIT: case ADDDAM: {
-      if (random_stats) {
-        set_armor(os_rand_range(3));
-        if (get_armor() == 0) {
-          set_armor(-1);
-          set_cursed();
-        }
+  switch (type) {
 
-      } else {
-        set_armor(1);
+    // -20 - 20
+    case Ring::Strength:
+    case Ring::Protection: case Ring::Damage: case Ring::Accuracy: {
+      switch (os_rand_range(100)) {
+        case  0: set_armor(-20); break;
+        case  1: set_armor(-19); break;
+        case  2: set_armor(-18); break;
+        case  3: case  4: set_armor(-17); break;
+        case  5: case  6: set_armor(-16); break;
+        case  7: case  8: set_armor(-15); break;
+        case  9: case 10: set_armor(-14); break;
+        case 11: case 12: set_armor(-13); break;
+        case 13: case 14: set_armor(-12); break;
+        case 15: case 16: set_armor(-11); break;
+        case 17: case 18: set_armor(-10); break;
+        case 19: case 20: set_armor(-9); break;
+        case 21: case 22: set_armor(-7); break;
+        case 23: case 24: case 25: set_armor(-6); break;
+        case 26: case 27: case 28: set_armor(-5); break;
+        case 29: case 30: case 31: set_armor(-4); break;
+        case 32: case 33: case 34: set_armor(-3); break;
+        case 35: case 36: case 37: case 38: set_armor(-2); break;
+        case 39: case 40: case 41: case 42: case 43: case 44: set_armor(-1); break;
+        case 45: case 46: case 47: case 48: case 49: case 50: case 51: set_armor(1); break;
+        case 52: case 53: case 54: case 55: case 56: case 57: set_armor(2); break;
+        case 58: case 59: case 60: case 61: set_armor(3); break;
+        case 62: case 63: case 64: case 65: set_armor(4); break;
+        case 66: case 67: case 68: case 69: set_armor(5); break;
+        case 70: case 71: case 72: set_armor(6); break;
+        case 73: case 74: case 75: set_armor(7); break;
+        case 76: case 77: case 78: set_armor(8); break;
+        case 79: case 80: case 81: set_armor(9); break;
+        case 82: case 83: case 84: set_armor(10); break;
+        case 85: case 86: set_armor(11); break;
+        case 87: case 88: set_armor(12); break;
+        case 89: case 90: set_armor(13); break;
+        case 91: case 92: set_armor(15); break;
+        case 93: case 94: set_armor(16); break;
+        case 95: case 96: set_armor(17); break;
+        case 97: set_armor(18); break;
+        case 98: set_armor(19); break;
+        case 99: set_armor(20); break;
+      }
+
+      if (get_armor() < 0) {
+        set_cursed();
       }
     } break;
 
-    case AGGR: case TELEPORT: {
+    // Cursed things
+    case Ring::AggravateMonsters: case Ring::Teleportation: {
       set_cursed();
     } break;
+
+    case Ring::Adornment: case Ring::Searching: case Ring::SlowDigestation:
+    case Ring::Regeneration: case Ring::Stealth: case Ring::SeeInvisible:
+    case Ring::SustainStrenght: case Ring::Speed: {
+      break;
+    }
+
+    case Ring::NRINGS: error("Unknown type NRINGS");
   }
 }
 
@@ -87,60 +163,42 @@ bool Ring::is_magic() const {
 
 string Ring::name(Ring::Type type) {
   switch (type) {
-    case PROTECT:  return "protection";
-    case ADDSTR:   return "add strength";
-    case SUSTSTR:  return "sustain strength";
-    case SEARCH:   return "searching";
-    case SEEINVIS: return "see invisible";
-    case NOP:      return "adornment";
-    case AGGR:     return "aggravate monster";
-    case ADDHIT:   return "dexterity";
-    case ADDDAM:   return "increase damage";
-    case REGEN:    return "regeneration";
-    case DIGEST:   return "slow digestion";
-    case TELEPORT: return "teleportation";
-    case STEALTH:  return "stealth";
-    case SUSTARM:  return "maintain armor";
-    case NRINGS:   error("Unknown ring NRINGS");
-  }
-}
+    case Adornment:           return "adornment";
+    case AggravateMonsters:   return "aggravate monster";
+    case Teleportation:       return "teleportation";
+    case Protection:          return "protection";
+    case Searching:           return "searching";
+    case SlowDigestation:     return "slow digestation";
+    case Damage:              return "damage";
+    case Accuracy:            return "accuracy";
+    case Regeneration:        return "regeneration";
+    case Stealth:             return "stealth";
+    case Strength:            return "strength";
+    case SeeInvisible:        return "see invisible";
+    case SustainStrenght:     return "sustain strenght";
+    case Speed:               return "speed";
 
-int Ring::probability(Ring::Type type) {
-  switch (type) {
-    case PROTECT:  return  9;
-    case ADDSTR:   return  9;
-    case SUSTSTR:  return  5;
-    case SEARCH:   return 10;
-    case SEEINVIS: return 10;
-    case NOP:      return  1;
-    case AGGR:     return 10;
-    case ADDHIT:   return  8;
-    case ADDDAM:   return  8;
-    case REGEN:    return  4;
-    case DIGEST:   return  9;
-    case TELEPORT: return  5;
-    case STEALTH:  return  7;
-    case SUSTARM:  return  5;
-    case NRINGS:   error("Unknown ring NRINGS");
+    case NRINGS:            error("Unknown ring NRINGS");
   }
 }
 
 int Ring::worth(Ring::Type type) {
   switch (type) {
-    case PROTECT:  return 400;
-    case ADDSTR:   return 400;
-    case SUSTSTR:  return 280;
-    case SEARCH:   return 420;
-    case SEEINVIS: return 310;
-    case NOP:      return  10;
-    case AGGR:     return  10;
-    case ADDHIT:   return 440;
-    case ADDDAM:   return 400;
-    case REGEN:    return 460;
-    case DIGEST:   return 240;
-    case TELEPORT: return  30;
-    case STEALTH:  return 470;
-    case SUSTARM:  return 380;
+    case Adornment:           return 40;
+    case AggravateMonsters:   return 0;
+    case Teleportation:       return 0;
+    case Protection:          return 100;
+    case Searching:           return 250;
+    case SlowDigestation:     return 200;
+    case Damage:              return 100;
+    case Accuracy:            return 100;
+    case Regeneration:        return 400;
+    case Stealth:             return 400;
+    case Strength:            return 400;
+    case SeeInvisible:        return 500;
+    case SustainStrenght:     return 650;
+    case Speed:               return 3000;
+
     case NRINGS:   error("Unknown ring NRINGS");
   }
 }
@@ -228,7 +286,8 @@ std::string Ring::get_description() const {
     os << " of " << Ring::name(subtype);
 
     switch (subtype) {
-      case Ring::PROTECT: case Ring::ADDSTR: case Ring::ADDDAM: case Ring::ADDHIT: {
+      case Ring::Protection: case Ring::Strength: case Ring::Damage:
+      case Ring::Accuracy: {
         if (identified) {
           if (get_armor() > 0) {
             os << " [+" << get_armor() << "]";
@@ -240,8 +299,10 @@ std::string Ring::get_description() const {
         }
       } break;
 
-    case SUSTSTR: case SEARCH: case SEEINVIS: case NOP: case AGGR:
-    case REGEN: case DIGEST: case TELEPORT: case STEALTH: case SUSTARM:
+      case Ring::Adornment: case Ring::AggravateMonsters: case Ring::Teleportation:
+      case Ring::Searching: case Ring::SlowDigestation: case Ring::Regeneration:
+      case Ring::Stealth: case Ring::SeeInvisible: case Ring::SustainStrenght:
+      case Ring::Speed:
         break;
 
     case NRINGS:   error("Unknown ring NRINGS");

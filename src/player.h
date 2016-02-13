@@ -2,6 +2,7 @@
 
 #include <fstream>
 
+#include "rings.h"
 #include "weapons.h"
 #include "rogue.h"
 #include "food.h"
@@ -92,6 +93,7 @@ public:
   int           equipment_food_drain_amount();
   void          pack_uncurse();
   bool          pack_swap_weapons();
+  int           pack_get_ring_modifier(Ring::Type);
 
   // Misc
   bool saving_throw(int which) const;

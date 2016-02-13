@@ -35,19 +35,20 @@ static Weapon::Type random_weapon_type() {
       potential_weapons.push_back(Weapon::Compositebow);
 
       [[clang::fallthrough]];
-    case 20:
+    case 25: case 26: case 27: case 28: case 29:
+    case 20: case 21: case 22: case 23: case 24:
       potential_weapons.push_back(Weapon::Bastardsword);
       potential_weapons.push_back(Weapon::Halberd);
       potential_weapons.push_back(Weapon::Katana);
 
       [[clang::fallthrough]];
-    case 15:
+    case 15: case 16: case 17: case 18: case 19:
       potential_weapons.push_back(Weapon::Battleaxe);
       potential_weapons.push_back(Weapon::Warhammer);
       potential_weapons.push_back(Weapon::Yari);
 
       [[clang::fallthrough]];
-    case 10:
+    case 10: case 11: case 12: case 13: case 14:
       potential_weapons.push_back(Weapon::Morningstar);
       potential_weapons.push_back(Weapon::Longsword);
       potential_weapons.push_back(Weapon::Wakizashi);
@@ -55,7 +56,7 @@ static Weapon::Type random_weapon_type() {
       potential_weapons.push_back(Weapon::Throwingaxe);
 
       [[clang::fallthrough]];
-    case 5:
+    case 5: case 6: case 7: case 8: case 9:
       potential_weapons.push_back(Weapon::Mace);
       potential_weapons.push_back(Weapon::Spear);
       potential_weapons.push_back(Weapon::Handaxe);
@@ -64,12 +65,12 @@ static Weapon::Type random_weapon_type() {
       potential_weapons.push_back(Weapon::Throwingknife);
 
       [[clang::fallthrough]];
-    case 3:
+    case 3: case 4:
       potential_weapons.push_back(Weapon::Shortsword);
       potential_weapons.push_back(Weapon::Rapier);
 
       [[clang::fallthrough]];
-    case 1:
+    case 1: case 2:
       potential_weapons.push_back(Weapon::Sling);
       potential_weapons.push_back(Weapon::Arrow);
       potential_weapons.push_back(Weapon::Rock);

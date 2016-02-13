@@ -29,8 +29,8 @@ using namespace std;
 static void
 add_ring_attack_modifiers(attack_modifier& mod) {
 
-  mod.to_dmg += player->pack_num_items(IO::Ring, Ring::ADDDAM);
-  mod.to_hit += player->pack_num_items(IO::Ring, Ring::ADDHIT);
+  mod.to_dmg += player->pack_get_ring_modifier(Ring::Damage);
+  mod.to_hit += player->pack_get_ring_modifier(Ring::Accuracy);
 }
 
 // Calculate the damage an attacker does.
