@@ -5,6 +5,9 @@
 #include "food.h"
 #include "player.h"
 #include "game.h"
+#include "weapons.h"
+#include "armor.h"
+#include "scrolls.h"
 
 #include "shop.h"
 
@@ -21,7 +24,15 @@ Shop::~Shop() {
 }
 
 Shop::Shop() {
-  inventory.push_back(new Food(Food::IronRation));
+  inventory.push_back(new class Food(Food::IronRation));
+  inventory.push_back(new class Weapon(Weapon::Sling, false));
+  inventory.push_back(new class Weapon(Weapon::Arrow, false));
+  inventory.push_back(new class Weapon(Weapon::Dagger, false));
+  inventory.push_back(new class Weapon(Weapon::Club, false));
+  inventory.push_back(new class Weapon(Weapon::Shortbow, false));
+  inventory.push_back(new class Armor(Armor::Robe, false));
+  inventory.push_back(new class Armor(Armor::Softleatherarmor, false));
+  inventory.push_back(new class Scroll(Scroll::ID));
 }
 
 void Shop::print() const {
