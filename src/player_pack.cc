@@ -245,6 +245,16 @@ Item* Player::pack_find_random_item() {
   return *it;
 }
 
+class Weapon* Player::pack_find_ammo(Weapon::AmmoType ammo_type) {
+  auto results = find_if(pack.begin(), pack.end(),
+      [ammo_type] (Item* i) {
+    class Weapon* w = dynamic_cast<class Weapon*>(i);
+    return w != nullptr && w->get_ammo_type() == ammo_type;
+  });
+
+  return results == pack.end() ? nullptr : dynamic_cast<class Weapon*>(*results);
+}
+
 Item* Player::pack_find_item(string const& purpose, int type) {
   if (pack_num_items(type, -1) < 1) {
     Game::io->message("You have no item to " + purpose);
@@ -528,8 +538,8 @@ Item* Player::pack_find_item(int type, int subtype)
   return results == pack.end() ? nullptr : *results;
 }
 
-Item* Player::equipped_weapon() {
-  return equipment.at(Weapon);
+class Weapon* Player::equipped_weapon() {
+  return dynamic_cast<class Weapon*>(equipment.at(Weapon));
 }
 
 Item* Player::equipped_armor() {

@@ -7,16 +7,43 @@
 
 class Weapon : public Item {
 public:
+  enum AmmoType {
+    SlingShot,
+    BowArrow,
+    None
+  };
+
   enum Type {
-    MACE     = 0,
-    SWORD    = 1,
-    BOW      = 2,
-    ARROW    = 3,
-    DAGGER   = 4,
-    TWOSWORD = 5,
-    DART     = 6,
-    SHIRAKEN = 7,
-    SPEAR    = 8,
+    Sling,
+    Arrow,
+    Rock,
+    Dagger,
+    Club,
+    Quarterstaff,
+    Shortbow,
+    Throwingknife,
+    Mace,
+    Spear,
+    Rapier,
+    Kukri,
+    Handaxe,
+    Shortsword,
+    Longsword,
+    Wakizashi,
+    Longbow,
+    Throwingaxe,
+    Morningstar,
+    Battleaxe,
+    Warhammer,
+    Yari,
+    Bastardsword,
+    Halberd,
+    Katana,
+    Claymore,
+    Nodachi,
+    Warpike,
+    Compositebow,
+
     NWEAPONS,
     NO_WEAPON
   };
@@ -38,19 +65,26 @@ public:
   std::string get_description() const override;
   bool        is_magic() const override;
   bool        is_identified() const override;
+  bool        is_missile_launcher() const;
+  AmmoType    get_ammo_used() const;
+  AmmoType    get_ammo_type() const;
+  int         get_ammo_multiplier() const;
 
   void save(std::ofstream&) const override;
   bool load(std::ifstream&) override;
 
   // Static
-  static int probability(Type type);
   static std::string name(Type type);
   static int worth(Type type);
 
 
 private:
-  Type subtype;
-  bool identified;
+  Type       subtype;
+  AmmoType   is_ammo_type;
+  AmmoType   uses_ammo_type;
+  int        ammo_multiplier;
+  bool       identified;
+  bool       good_missile;
 
   static unsigned long long constexpr TAG_WEAPON    = 0xb000000000000000ULL;
 };

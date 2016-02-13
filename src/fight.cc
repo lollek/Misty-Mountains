@@ -47,6 +47,13 @@ calculate_attacker(Character const& attacker, Item* weapon, bool thrown)
 
     if (thrown) {
       mod.damage.push_back(weapon->get_throw_damage());
+      class Weapon* bow = player->equipped_weapon();
+      if (bow != nullptr) {
+        int multiplier = bow->get_ammo_multiplier();
+        for (damage& dmg : mod.damage) {
+          dmg.dices *= multiplier;
+        }
+      }
     } else {
       mod.damage.push_back(weapon->get_attack_damage());
     }

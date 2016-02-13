@@ -32,11 +32,10 @@ using namespace std;
 
 static bool command_attack_bow(Coordinate const* delta)
 {
-  Item* ptr = player->pack_find_item(IO::Ammo, Weapon::ARROW);
+  class Weapon* ptr = player->pack_find_ammo(player->equipped_weapon()->get_ammo_used());
 
-  if (ptr == nullptr)
-  {
-    Game::io->message("you've run out of arrows!");
+  if (ptr == nullptr) {
+    Game::io->message("you've run out of ammunition!");
     return true;
   }
 
@@ -136,9 +135,9 @@ command_attack(bool fight_to_death)
   delta.x += dir->x;
   delta.y += dir->y;
 
-  Item* weapon = player->equipped_weapon();
+  class Weapon* weapon = player->equipped_weapon();
 
-  return weapon != nullptr && weapon->o_which == Weapon::BOW
+  return weapon != nullptr && weapon->is_missile_launcher()
     ? command_attack_bow(dir)
     : command_attack_melee(fight_to_death, delta);
 }
@@ -487,10 +486,8 @@ bool command_throw()
   Monster* monster_at_pos = Game::level->get_monster(obj->get_position());
 
   /* Throwing an arrow always misses */
-  if (obj->o_which == Weapon::ARROW)
-  {
-    if (monster_at_pos && !to_death)
-    {
+  if (obj->o_which == Weapon::Arrow) {
+    if (monster_at_pos && !to_death) {
       fight_missile_miss(obj, monster_at_pos->get_name().c_str());
     }
     weapon_missile_fall(obj, true);
