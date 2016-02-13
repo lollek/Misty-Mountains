@@ -1,7 +1,5 @@
 #include <string>
 
-using namespace std;
-
 #include "error_handling.h"
 #include "game.h"
 #include "scrolls.h"
@@ -20,6 +18,8 @@ using namespace std;
 #include "magic.h"
 
 #include "monster.h"
+
+using namespace std;
 
 // Find the spot for the chaser(er) to move closer to the chasee(ee).
 static Coordinate chase(Monster& monster, Coordinate const& target) {

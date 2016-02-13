@@ -245,8 +245,9 @@ Monster::Monster(Coordinate const& pos, Template const& m_template) :
     monster_start_running(&pos);
   }
 
-  if (subtype == Monster::Xeroc)
+  if (subtype == Monster::Xeroc) {
     disguise = rnd_thing();
+  }
 }
 
 void Monster::set_target(Coordinate const* new_target) {
@@ -295,8 +296,7 @@ void Monster::give_pack() {
 
   int carry_chance = monster_data(subtype).m_carry;
 
-  if (Game::current_level >= Game::max_level_visited &&
-      os_rand_range(100) < carry_chance) {
+  if (os_rand_range(100) < carry_chance) {
     t_pack.push_back(Item::random());
   }
 }

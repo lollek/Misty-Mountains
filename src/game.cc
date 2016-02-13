@@ -33,7 +33,6 @@ string* Game::whoami = nullptr;
 string* Game::save_game_path = nullptr;
 int     Game::current_level = 1;
 int     Game::levels_without_food = 0;
-int     Game::max_level_visited = 1;
 
 void Game::exit() {
   if (game_ptr != nullptr) {
@@ -44,11 +43,7 @@ void Game::exit() {
 
 void Game::new_level(int dungeon_level) {
 
-  /* Set max level we've been to */
   Game::current_level = dungeon_level;
-  if (Game::current_level > Game::max_level_visited) {
-    Game::max_level_visited = Game::current_level;
-  }
 
   if (Game::level != nullptr) {
     delete Game::level;
@@ -177,7 +172,6 @@ Game::Game(ifstream& savefile) {
   Disk::load(TAG_SAVEPATH, Game::save_game_path, savefile);
   Disk::load(TAG_LEVEL, Game::current_level, savefile);
   Disk::load(TAG_FOODLESS, Game::levels_without_food, savefile);
-  Disk::load(TAG_MAXLEVEL, Game::max_level_visited, savefile);
 
 
   Game::new_level(Game::current_level);
@@ -202,7 +196,6 @@ bool Game::save() {
   Disk::save(TAG_SAVEPATH, Game::save_game_path, savefile);
   Disk::save(TAG_LEVEL, Game::current_level, savefile);
   Disk::save(TAG_FOODLESS, Game::levels_without_food, savefile);
-  Disk::save(TAG_MAXLEVEL, Game::max_level_visited, savefile);
 
   savefile.close();
   return true;

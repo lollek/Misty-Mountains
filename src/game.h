@@ -29,7 +29,6 @@ public:
   static int           current_level;
   static int constexpr amulet_min_level = 26;
   static int           levels_without_food;
-  static int           max_level_visited;
 
 private:
   static Game* game_ptr;
@@ -40,5 +39,4 @@ private:
   static unsigned long long constexpr TAG_SAVEPATH  = 0x6000000000000002ULL;
   static unsigned long long constexpr TAG_LEVEL     = 0x6000000000000003ULL;
   static unsigned long long constexpr TAG_FOODLESS  = 0x6000000000000004ULL;
-  static unsigned long long constexpr TAG_MAXLEVEL  = 0x6000000000000005ULL;
 };

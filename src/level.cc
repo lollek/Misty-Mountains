@@ -62,13 +62,6 @@ void Level::create_treasure_room() {
 
 void Level::create_loot() {
 
-  // Once you have found the amulet, the only way to get new stuff is
-  // go down into the dungeon.
-  if (player != nullptr && player->pack_contains_amulet() &&
-      Game::current_level < Game::max_level_visited) {
-      return;
-  }
-
   // check for treasure rooms, and if so, put it in.
   if (os_rand_range(100) < treasure_room_chance) {
     create_treasure_room();
