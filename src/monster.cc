@@ -299,7 +299,7 @@ void Monster::give_pack() {
 
   // Leprechauns are rich
   if (subtype == Monster::Leprechaun) {
-    int gold_amount = 0;
+    int gold_amount = 1;
     int gold_exp = os_rand_range(5);
     for (int i = 0; i < gold_exp; ++i) {
       gold_amount += Gold::random_gold_amount();
