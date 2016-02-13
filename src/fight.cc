@@ -303,8 +303,10 @@ fight_swing_hits(int at_lvl, int op_arm, int wplus) {
   // Forced hit
   } else if (rand == 20) {
     return true;
+
+  } else {
+    return at_lvl + wplus + rand >= op_arm;
   }
-  return at_lvl + wplus + rand >= op_arm;
 }
 
 void
