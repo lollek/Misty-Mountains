@@ -193,7 +193,7 @@ string Armor::get_description() const {
 
   string const& obj_name = Armor::name(static_cast<Armor::Type>(o_which));
   int bonus_ac = Armor::ac(static_cast<Armor::Type>(o_which)) - get_armor();
-  int base_ac = 10 - get_armor() - bonus_ac;
+  int base_ac = get_armor() - bonus_ac;
 
   buffer
     << "a"

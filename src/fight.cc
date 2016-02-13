@@ -25,14 +25,6 @@ using namespace std;
 
 #include "fight.h"
 
-// Add item bonuses to damage and to-hit
-static void
-add_ring_attack_modifiers(attack_modifier& mod) {
-
-  mod.to_dmg += player->pack_get_ring_modifier(Ring::Damage);
-  mod.to_hit += player->pack_get_ring_modifier(Ring::Accuracy);
-}
-
 // Calculate the damage an attacker does.
 // Weapon can be null when no weapon was used
 static attack_modifier
@@ -70,7 +62,8 @@ calculate_attacker(Character const& attacker, Item* weapon, bool thrown)
 
   if (&attacker == player) {
 
-    add_ring_attack_modifiers(mod);
+    mod.to_dmg += player->pack_get_ring_modifier(Ring::Damage);
+    mod.to_hit += player->pack_get_ring_modifier(Ring::Accuracy);
     if (thrown) {
 
       Item const* held_weapon = player->equipped_weapon();
@@ -298,8 +291,19 @@ fight_against_player(Monster* mp) {
 int
 fight_swing_hits(int at_lvl, int op_arm, int wplus) {
 
-  int rand = os_rand_range(20);
-  /* io_msg("%d + %d + %d vs %d", at_lvl, wplus, rand, op_arm); */
+  int rand = os_rand_range(20) + 1;
+  stringstream os;
+  os << at_lvl << " + " << wplus << " + " << rand << " vs " << op_arm;
+  Game::io->message(os.str());
+
+  // Forced miss
+  if (rand == 1) {
+    return false;
+
+  // Forced hit
+  } else if (rand == 20) {
+    return true;
+  }
   return at_lvl + wplus + rand >= op_arm;
 }
 
