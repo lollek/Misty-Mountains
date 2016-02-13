@@ -391,7 +391,7 @@ string Weapon::get_description() const {
   }
 
   if (uses_ammo_type != AmmoType::None) {
-    buffer << "(x" << ammo_multiplier << ")";
+    buffer << " (x" << ammo_multiplier << ")";
   } else if (o_type == IO::Ammo) {
     buffer
       << " (" << get_throw_damage().sides
