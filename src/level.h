@@ -9,6 +9,7 @@
 #include "item.h"
 #include "io.h"
 #include "tiles.h"
+#include "shop.h"
 
 class Level {
 public:
@@ -63,6 +64,7 @@ public:
   // Variables
   std::list<Item*>    items;    // List of items on level
   std::list<Monster*> monsters; // List of monsters on level
+  Shop*               shop;     // Ye local shop
 
 private:
 

@@ -107,8 +107,10 @@ command_use_stairs(char up_or_down)
       if (has_amulet) {
         score_win_and_exit();
       } else {
-        Shop shop;
-        shop.enter();
+        if (Game::level->shop == nullptr) {
+          Game::level->shop = new Shop();
+        }
+        Game::level->shop->enter();
         return false;
       }
     }

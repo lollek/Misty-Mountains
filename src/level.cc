@@ -104,6 +104,10 @@ Level::~Level() {
   for (Item* item : items) {
     delete item;
   }
+
+  if (shop != nullptr) {
+    delete shop;
+  }
 }
 
 void Level::create_traps() {
@@ -127,7 +131,7 @@ void Level::create_stairs() {
 }
 
 
-Level::Level() {
+Level::Level() : items(), monsters(), shop(), rooms(), tiles(), stairs_coord({0,0}) {
   tiles.resize(MAXLINES * MAXCOLS);
   if (player != nullptr) {
     player->set_previous_room(nullptr);
