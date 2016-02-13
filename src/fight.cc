@@ -292,6 +292,7 @@ int
 fight_swing_hits(int at_lvl, int op_arm, int wplus) {
 
   int rand = os_rand_range(20) + 1;
+
   stringstream os;
   os << at_lvl << " + " << wplus << " + " << rand << " vs " << op_arm;
   Game::io->message(os.str());

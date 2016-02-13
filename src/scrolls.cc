@@ -43,24 +43,24 @@ static Scroll::Type random_scroll_type() {
       potential_scrolls.push_back(Scroll::ENCH);
 
       [[clang::fallthrough]];
-    case 10:
+    case 10: case 11:
       potential_scrolls.push_back(Scroll::HOLD);
       potential_scrolls.push_back(Scroll::TELEP);
       potential_scrolls.push_back(Scroll::PROTECT);
 
       [[clang::fallthrough]];
-    case 7:
+    case 7: case 8: case 9:
       potential_scrolls.push_back(Scroll::REMOVE);
 
       [[clang::fallthrough]];
-    case 5:
+    case 5: case 6:
       potential_scrolls.push_back(Scroll::AGGR);
       potential_scrolls.push_back(Scroll::MAP);
       potential_scrolls.push_back(Scroll::CONFUSE);
       potential_scrolls.push_back(Scroll::SCARE);
 
       [[clang::fallthrough]];
-    case 1:
+    case 1: case 2: case 3: case 4:
       potential_scrolls.push_back(Scroll::SLEEP);
       potential_scrolls.push_back(Scroll::ID);
       potential_scrolls.push_back(Scroll::FDET);
