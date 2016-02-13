@@ -293,12 +293,21 @@ void Monster::notice_player() {
 }
 
 void Monster::give_pack() {
-
-  int carry_chance = monster_data(subtype).m_carry;
-
-  if (os_rand_range(100) < carry_chance) {
-    t_pack.push_back(Item::random());
+  if (os_rand_range(100) >= monster_data(subtype).m_carry) {
+    return;
   }
+
+  // Leprechauns are rich
+  if (subtype == Monster::Leprechaun) {
+    int gold_amount = 0;
+    int gold_exp = os_rand_range(5);
+    for (int i = 0; i < gold_exp; ++i) {
+      gold_amount += Gold::random_gold_amount();
+    }
+    t_pack.push_back(new Gold(gold_amount));
+  }
+
+  t_pack.push_back(Item::random());
 }
 
 string const& Monster::name(Type subtype) {
@@ -369,23 +378,6 @@ monster_on_death(Monster** monster_ptr, bool print_message)
     case 'F': {
       player->set_not_held();
       monster_flytrap_hit = 0;
-    } break;
-
-    /* Leprechauns drop gold */
-    case 'L': {
-      Gold* gold = nullptr;
-
-      if (player->saving_throw(VS_MAGIC)) {
-        int gold_amount =
-          Gold::random_gold_amount() + Gold::random_gold_amount() +
-          Gold::random_gold_amount() + Gold::random_gold_amount();
-        gold = new Gold(gold_amount);
-      } else {
-        gold = new Gold();
-      }
-
-      gold->set_position(monster->get_position());
-      monster->t_pack.push_back(gold);
     } break;
   }
 
