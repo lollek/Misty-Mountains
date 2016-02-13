@@ -128,6 +128,9 @@ void Shop::enter() {
       advance(it, static_cast<long>(item_pos - inventory.size()));
       item_to_buy = *it;
       limited_item = true;
+
+    } else {
+      continue;
     }
 
     int value = static_cast<int>(lround(item_to_buy->get_value() * 1.1));
