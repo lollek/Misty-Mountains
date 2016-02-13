@@ -1,6 +1,8 @@
 #include <string>
 
+#include "gold.h"
 #include "disk.h"
+#include "amulet.h"
 #include "potions.h"
 #include "scrolls.h"
 #include "food.h"
@@ -138,6 +140,8 @@ string Item::name(Item::Type type) {
     case Armor:  return "armor";
     case Ring:   return "ring";
     case Wand:   return "wand";
+    case Amulet: return "amulet";
+    case Gold:   return "gold";
     case NITEMS: error("Unknown type NITEMS");
   }
 }
@@ -152,6 +156,8 @@ int Item::probability(Item::Type type) {
     case Armor:  return 10;
     case Ring:   return  1;
     case Wand:   return  4;
+    case Amulet: return  0;
+    case Gold:   return  0;
     case NITEMS: error("Unknown type NITEMS");
   }
 }
@@ -188,6 +194,8 @@ Item* Item::random() {
     case Armor:  return new class Armor(true);
     case Ring:   return new class Ring();
     case Wand:   return new class Wand();
+    case Amulet: return new class Amulet();
+    case Gold:   return new class Gold();
     case NITEMS: error("Unknown type NITEMS");
   }
 }

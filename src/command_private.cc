@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "shop.h"
 #include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
@@ -95,22 +96,19 @@ command_use_stairs(char up_or_down)
     Game::new_level(Game::current_level +1);
   }
 
-  else if (up_or_down == '<') /* UP */
-  {
+  else if (up_or_down == '<') /* UP */ {
     bool has_amulet = player->pack_contains_amulet();
 
     if (Game::current_level < 0) {
       error("Level should not go lower than 0");
     }
 
-    if (Game::current_level == 1)
-    {
-      if (has_amulet)
+    if (Game::current_level == 1) {
+      if (has_amulet) {
         score_win_and_exit();
-      else
-      {
-        /* This either quits, or player did not want to leave */
-        command_quit();
+      } else {
+        Shop shop;
+        shop.enter();
         return false;
       }
     }

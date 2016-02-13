@@ -22,7 +22,7 @@ Armor::~Armor() {}
 
 bool Armor::is_magic() const {
   return (rustproof ||
-      get_armor() != Armor::ac(subtype));
+      get_armor() > Armor::ac(subtype));
 }
 
 class Armor* Armor::clone() const {
@@ -112,10 +112,10 @@ Armor::Armor(Armor::Type type, bool random_stats) :
     int rand = os_rand_range(100);
     if (rand < 20) {
       set_cursed();
-      modify_armor(os_rand_range(3) + 1);
+      modify_armor(-os_rand_range(3) + 1);
     }
     else if (rand < 28) {
-      modify_armor(-os_rand_range(3) + 1);
+      modify_armor(os_rand_range(3) + 1);
     }
   }
 }
@@ -192,8 +192,7 @@ string Armor::get_description() const {
   stringstream buffer;
 
   string const& obj_name = Armor::name(static_cast<Armor::Type>(o_which));
-  int bonus_ac = Armor::ac(static_cast<Armor::Type>(o_which)) - get_armor();
-  int base_ac = get_armor() - bonus_ac;
+  int bonus_ac = get_armor() - ac(subtype);
 
   buffer
     << "a"
@@ -201,7 +200,7 @@ string Armor::get_description() const {
     << " "
     << obj_name
     << " ["
-    << base_ac;
+    << ac(subtype);
 
   if (identified) {
     buffer << ",";
@@ -243,4 +242,17 @@ void Armor::set_rustproof() {
 
 bool Armor::is_rustproof() const {
   return rustproof;
+}
+
+int Armor::get_base_value() const {
+  return value(subtype);
+}
+
+int Armor::get_value() const {
+  int worth = get_base_value();
+  int bonus_ac = get_armor() - ac(subtype);
+  worth += 100 * bonus_ac;
+
+  worth *= o_count;
+  return worth;
 }

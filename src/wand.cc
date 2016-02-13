@@ -289,3 +289,18 @@ bool Wand::load(std::ifstream& data) {
   return true;
 }
 
+
+int Wand::get_base_value() const {
+  return worth(subtype);
+}
+
+int Wand::get_value() const {
+  int value = get_base_value();
+  if (is_identified()) {
+    value *= get_charges() * 1.05;
+  } else {
+    value /= 2;
+  }
+  value *= o_count;
+  return value;
+}

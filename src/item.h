@@ -16,6 +16,8 @@ public:
     Armor,
     Ring,
     Wand,
+    Amulet,
+    Gold,
     NITEMS
   };
 
@@ -65,6 +67,8 @@ public:
   virtual int                   get_damage_plus() const;
   virtual int                   get_armor() const;
   virtual bool                  is_cursed() const;
+  virtual int                   get_value() const = 0;
+  virtual int                   get_base_value() const = 0;
 
   int           o_type;                // What kind of object it is
   int           o_launch;              // What you need to launch it

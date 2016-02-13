@@ -63,6 +63,8 @@ public:
 
   // Getters
   std::string get_description() const override;
+  int         get_value() const override;
+  int         get_base_value() const override;
   bool        is_magic() const override;
   bool        is_identified() const override;
   bool        is_missile_launcher() const;

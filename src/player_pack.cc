@@ -32,95 +32,8 @@ pack_print_evaluate_item(Item* item)
   int worth = 0;
   if (item == nullptr)
     return 0;
-
-  switch (item->o_type)
-  {
-    case IO::Food:
-      worth = 2 * item->o_count;
-      break;
-
-    case IO::Weapon: case IO::Ammo: {
-      class Weapon* weapon = dynamic_cast<class Weapon*>(item);
-      if (weapon == nullptr) {
-        error("Could not cast weapon to Weapon class");
-      }
-      worth = Weapon::worth(static_cast<Weapon::Type>(item->o_which));
-      worth *= 3 * (item->get_hit_plus() + item->get_damage_plus()) + item->o_count;
-      weapon->set_identified();
-    } break;
-
-    case IO::Armor: {
-      class Armor* armor = dynamic_cast<class Armor*>(item);
-      if (armor == nullptr) {
-        error("Could not cast armor to Armor class");
-      }
-      worth = Armor::value(static_cast<Armor::Type>(item->o_which));
-      worth += (9 - item->get_armor()) * 100;
-      worth += (10 * (Armor::ac(static_cast<Armor::Type>(item->o_which)) - item->get_armor()));
-      armor->set_identified();
-    } break;
-
-    case IO::Scroll:
-      {
-        Scroll::Type scroll = static_cast<Scroll::Type>(item->o_which);
-        worth = Scroll::worth(scroll);
-        worth *= item->o_count;
-        if (!Scroll::is_known(scroll))
-          worth /= 2;
-        Scroll::set_known(scroll);
-      }
-      break;
-
-    case IO::Potion: {
-      Potion::Type subtype = static_cast<Potion::Type>(item->o_which);
-      worth = Potion::worth(subtype);
-      worth *= item->o_count;
-      if (!Potion::is_known(subtype)) {
-        worth /= 2;
-      }
-      Potion::set_known(subtype);
-    } break;
-
-    case IO::Ring: {
-      Ring::Type subtype = static_cast<Ring::Type>(item->o_which);
-      worth = Ring::worth(subtype);
-      if (subtype == Ring::Strength || subtype == Ring::Protection ||
-          subtype == Ring::Damage || subtype == Ring::Accuracy) {
-        if (item->get_armor() > 0) {
-          worth += item->get_armor() * 100;
-        } else {
-          worth = 0;
-        }
-      }
-      if (Ring::is_known(subtype)) {
-        worth /= 2;
-      }
-      Ring::set_known(subtype);
-    } break;
-
-    case IO::Wand: {
-      Wand* wand = dynamic_cast<Wand* const>(item);
-      if (wand == nullptr) {
-        error("Could not cast wand to Wand class");
-      }
-      Wand::worth(static_cast<Wand::Type>(item->o_which));
-      worth += 20 * wand->get_charges();
-      if (!Wand::is_known(static_cast<Wand::Type>(item->o_which)))
-        worth /= 2;
-      Wand::set_known(static_cast<Wand::Type>(item->o_which));
-    } break;
-
-    case IO::Amulet:
-      worth = 1000;
-      break;
-
-    default:
-      io_debug_fatal("Unknown type: %c(%d)", item->o_type, item->o_type);
-      break;
-  }
-
-  if (worth < 0)
-    worth = 0;
+  worth = item->get_value();
+  item->set_identified();
 
   printw("%5d  %s\n", worth, item->get_description().c_str());
 
@@ -587,7 +500,11 @@ bool Player::pack_swap_weapons() {
   equipment.at(Weapon) = backup_weapon;
   equipment.at(BackupWeapon) = main_weapon;
 
-  Game::io->message(equipment.at(Weapon)->get_description());
+  if (equipped_weapon() != nullptr) {
+    Game::io->message(equipped_weapon()->get_description());
+  } else {
+    Game::io->message("no weapon");
+  }
   return true;
 }
 

@@ -502,3 +502,16 @@ void Scroll::set_identified() {
 bool Scroll::is_identified() const {
   return is_known(subtype);
 }
+
+int Scroll::get_base_value() const {
+  return worth(subtype);
+}
+
+int Scroll::get_value() const {
+  int value = get_base_value();
+  value *= o_count;
+  if (!is_identified()) {
+    value /= 2;
+  }
+  return value;
+}

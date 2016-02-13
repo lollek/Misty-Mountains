@@ -503,3 +503,14 @@ int Weapon::get_ammo_multiplier() const {
 Weapon::AmmoType Weapon::get_ammo_type() const {
   return is_ammo_type;
 }
+
+int Weapon::get_base_value() const {
+  return worth(subtype);
+}
+
+int Weapon::get_value() const {
+  int value = get_base_value();
+  value += 100 * (get_hit_plus() + get_damage_plus());
+  value *= o_count;
+  return value;
+}

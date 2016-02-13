@@ -398,3 +398,16 @@ void Potion::set_identified() {
 bool Potion::is_identified() const {
   return is_known(subtype);
 }
+
+int Potion::get_base_value() const {
+  return worth(subtype);
+}
+
+int Potion::get_value() const {
+  int value = get_base_value();
+  value *= o_count;
+  if (!is_identified()) {
+    value /= 2;
+  }
+  return value;
+}

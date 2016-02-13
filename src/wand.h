@@ -47,8 +47,10 @@ public:
   // Getters
   std::string get_description() const override;
   bool        is_magic() const override;
-  std::string get_material() const;
   bool        is_identified() const override;
+  int         get_value() const override;
+  int         get_base_value() const override;
+  std::string get_material() const;
   int         get_charges() const;
 
   void save(std::ofstream&) const override;

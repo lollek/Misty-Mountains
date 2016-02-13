@@ -37,3 +37,11 @@ bool Amulet::is_identified() const {
 
 void Amulet::set_identified() {
 }
+
+int Amulet::get_base_value() const {
+  return 1000;
+}
+
+int Amulet::get_value() const {
+  return get_base_value();
+}

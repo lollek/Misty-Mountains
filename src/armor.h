@@ -45,6 +45,8 @@ public:
   bool        is_magic() const override;
   bool        is_identified() const override;
   bool        is_rustproof() const;
+  int         get_value() const override;
+  int         get_base_value() const override;
 
   void save(std::ofstream&) const override;
   bool load(std::ifstream&) override;

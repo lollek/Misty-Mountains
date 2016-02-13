@@ -42,3 +42,11 @@ void Gold::set_identified() {
 bool Gold::is_identified() const {
   return true;
 }
+
+int Gold::get_base_value() const {
+  return amount;
+}
+
+int Gold::get_value() const {
+  return get_base_value();
+}

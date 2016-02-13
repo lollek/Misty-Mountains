@@ -339,4 +339,22 @@ bool Ring::load(std::ifstream& data) {
   return true;
 }
 
+int Ring::get_base_value() const {
+  return worth(subtype);
+}
 
+int Ring::get_value() const {
+  int value = get_base_value();
+  value += 100 * get_armor();
+
+  if (!is_identified()) {
+    value /= 2;
+  }
+  value *= o_count;
+
+  if (value < 0) {
+    value = 0;
+  }
+
+  return value;
+}

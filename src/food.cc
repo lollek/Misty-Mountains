@@ -117,3 +117,11 @@ int Food::food_for_type(Type subtype) {
     case NFOODS: error("Bad value NFOODS");
   }
 }
+
+int Food::get_base_value() const {
+  return food_value / 1000;
+}
+
+int Food::get_value() const {
+  return get_base_value() * o_count;
+}
