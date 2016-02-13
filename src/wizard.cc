@@ -303,7 +303,7 @@ void wizard_levels_and_gear(void) {
   }
 
   /* And his suit of armor */
-  class Armor* armor = new class Armor(Armor::Type::PLATE_MAIL, false);
+  class Armor* armor = new class Armor(Armor::Type::Mithrilchainmail, false);
   armor->set_armor(-5);
   armor->set_identified();
   if (!player->pack_equip(armor, false)) {

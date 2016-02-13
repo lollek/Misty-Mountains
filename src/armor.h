@@ -9,14 +9,20 @@
 class Armor : public Item {
 public:
   enum Type {
-    LEATHER = 0,
-    RING_MAIL = 1,
-    STUDDED_LEATHER = 2,
-    SCALE_MAIL = 3,
-    CHAIN_MAIL = 4,
-    SPLINT_MAIL = 5,
-    BANDED_MAIL = 6,
-    PLATE_MAIL = 7,
+    Robe,
+    Softleatherarmor,
+    Softstuddedleather,
+    Hardleatherarmor,
+    Hardstuddedleather,
+    Softleatherringmail,
+    Hardleatherringmail,
+    Chainmail,
+    Scalemail,
+    Brigandinearmor,
+    Laminatedarmor,
+    Lamellararmor,
+    Mithrilchainmail,
+
     NARMORS
   };
 
@@ -44,7 +50,6 @@ public:
   bool load(std::ifstream&) override;
 
   // Static
-  static int probability(Type type);
   static std::string name(Type type);
   static int value(Type type);
   static int ac(Type type);

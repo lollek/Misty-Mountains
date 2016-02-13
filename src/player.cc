@@ -61,7 +61,7 @@ Player::Player(bool give_equipment) :
   pack_add(new Food(), true, false);
 
   /* And his suit of armor */
-  class Armor* armor_ = new class Armor(Armor::RING_MAIL, false);
+  class Armor* armor_ = new class Armor(Armor::Softleatherarmor, false);
   armor_->set_identified();
   equipment.at(Armor) = armor_;
 
@@ -72,12 +72,16 @@ Player::Player(bool give_equipment) :
 }
 
 int Player::get_armor() const {
-  // If we are naked, use base armor, otherwise use armor's
-  Item const* const arm = equipment.at(static_cast<size_t>(Armor));
-  int ac = arm != nullptr ? arm->get_armor() : Character::get_armor();
+  int ac = Character::get_armor();
+
+
+  class Armor* arm = equipped_armor();
+  if (arm != nullptr) {
+    ac += arm->get_armor();
+  }
 
   // If weapon help protection, add it
-  Item const* const weapon = equipment.at(static_cast<size_t>(Weapon));
+  class Weapon* weapon = equipped_weapon();
   if (weapon != nullptr) {
     ac += weapon->get_armor();
   }

@@ -2,6 +2,7 @@
 #include <vector>
 #include <sstream>
 
+#include "game.h"
 #include "disk.h"
 #include "error_handling.h"
 #include "io.h"
@@ -29,22 +30,66 @@ class Armor* Armor::clone() const {
 }
 
 static Armor::Type random_armor_type() {
-  int value = os_rand_range(100);
+  vector<Armor::Type> potential_armor;
 
-  int end = static_cast<int>(Armor::Type::NARMORS);
-  for (int i = 0; i < end; ++i) {
-    Armor::Type type = static_cast<Armor::Type>(i);
-    int probability = Armor::probability(type);
+  switch (Game::current_level) {
+    default:
 
-    if (value < probability) {
-      return type;
+      [[clang::fallthrough]];
+    case 50:
+      potential_armor.push_back(Armor::Mithrilchainmail);
 
-    } else {
-      value -= probability;
-    }
+      [[clang::fallthrough]];
+    case 40:
+      potential_armor.push_back(Armor::Lamellararmor);
+
+      [[clang::fallthrough]];
+    case 30:
+      potential_armor.push_back(Armor::Laminatedarmor);
+
+      [[clang::fallthrough]];
+    case 25:
+      potential_armor.push_back(Armor::Brigandinearmor);
+
+      [[clang::fallthrough]];
+    case 20:
+      potential_armor.push_back(Armor::Scalemail);
+
+      [[clang::fallthrough]];
+    case 15:
+      potential_armor.push_back(Armor::Chainmail);
+
+      [[clang::fallthrough]];
+    case 12:
+      potential_armor.push_back(Armor::Hardleatherringmail);
+
+      [[clang::fallthrough]];
+    case 10:
+      potential_armor.push_back(Armor::Softleatherringmail);
+
+      [[clang::fallthrough]];
+    case 7:
+      potential_armor.push_back(Armor::Hardstuddedleather);
+
+      [[clang::fallthrough]];
+    case 5:
+      potential_armor.push_back(Armor::Hardleatherarmor);
+
+      [[clang::fallthrough]];
+    case 3:
+      potential_armor.push_back(Armor::Softstuddedleather);
+
+      [[clang::fallthrough]];
+    case 2:
+      potential_armor.push_back(Armor::Softleatherarmor);
+
+      [[clang::fallthrough]];
+    case 1:
+      potential_armor.push_back(Armor::Robe);
+
   }
 
-  error("Error! Sum of probabilities is not 100%");
+  return potential_armor.at(os_rand_range(potential_armor.size()));
 }
 
 Armor::Armor(bool random_stats) :
@@ -81,58 +126,62 @@ bool Armor::is_identified() const {
   return identified;
 }
 
-int Armor::probability(Armor::Type type) {
-  switch (type) {
-    case LEATHER:         return 20;
-    case RING_MAIL:       return 15;
-    case STUDDED_LEATHER: return 15;
-    case SCALE_MAIL:      return 13;
-    case CHAIN_MAIL:      return 12;
-    case SPLINT_MAIL:     return 10;
-    case BANDED_MAIL:     return 10;
-    case PLATE_MAIL:      return  5;
-    case NARMORS:         error("Unknown type NARMORS");
-  }
-}
-
 string Armor::name(Armor::Type type) {
   switch (type) {
-    case LEATHER:         return "leather armor";
-    case RING_MAIL:       return "ring mail";
-    case STUDDED_LEATHER: return "studded leather armor";
-    case SCALE_MAIL:      return "scale mail";
-    case CHAIN_MAIL:      return "chain mail";
-    case SPLINT_MAIL:     return "splint mail";
-    case BANDED_MAIL:     return "banded mail";
-    case PLATE_MAIL:      return "plate mail";
+    case Robe:                  return "robe";
+    case Softleatherarmor:      return "soft leather armor";
+    case Softstuddedleather:    return "soft studded leather";
+    case Hardleatherarmor:      return "hard leather armor";
+    case Hardstuddedleather:    return "hard studded leather";
+    case Softleatherringmail:   return "soft leather ringmail";
+    case Hardleatherringmail:   return "hard leather ringmail";
+    case Chainmail:             return "chainmail";
+    case Scalemail:             return "scalemail";
+    case Brigandinearmor:       return "brigandine armor";
+    case Laminatedarmor:        return "laminated armor";
+    case Lamellararmor:         return "lamellar armor";
+    case Mithrilchainmail:      return "mithril chainmail";
+
     case NARMORS:         error("Unknown type NARMORS");
   }
 }
 
 int Armor::value(Armor::Type type) {
   switch (type) {
-    case LEATHER:         return 20;
-    case RING_MAIL:       return 25;
-    case STUDDED_LEATHER: return 20;
-    case SCALE_MAIL:      return 30;
-    case CHAIN_MAIL:      return 75;
-    case SPLINT_MAIL:     return 80;
-    case BANDED_MAIL:     return 90;
-    case PLATE_MAIL:      return 150;
+    case Robe:                  return 1;
+    case Softleatherarmor:      return 5;
+    case Softstuddedleather:    return 25;
+    case Hardleatherarmor:      return 50;
+    case Hardstuddedleather:    return 125;
+    case Softleatherringmail:   return 170;
+    case Hardleatherringmail:   return 250;
+    case Chainmail:             return 350;
+    case Scalemail:             return 530;
+    case Brigandinearmor:       return 670;
+    case Laminatedarmor:        return 800;
+    case Lamellararmor:         return 1000;
+    case Mithrilchainmail:      return 5000;
+
     case NARMORS:         error("Unknown type NARMORS");
   }
 }
 
 int Armor::ac(Armor::Type type) {
   switch (type) {
-    case LEATHER:         return 8;
-    case RING_MAIL:       return 7;
-    case STUDDED_LEATHER: return 7;
-    case SCALE_MAIL:      return 6;
-    case CHAIN_MAIL:      return 5;
-    case SPLINT_MAIL:     return 4;
-    case BANDED_MAIL:     return 4;
-    case PLATE_MAIL:      return 3;
+    case Robe:                  return 2;
+    case Softleatherarmor:      return 4;
+    case Softstuddedleather:    return 5;
+    case Hardleatherarmor:      return 6;
+    case Hardstuddedleather:    return 7;
+    case Softleatherringmail:   return 8;
+    case Hardleatherringmail:   return 10;
+    case Chainmail:             return 12;
+    case Scalemail:             return 13;
+    case Brigandinearmor:       return 14;
+    case Laminatedarmor:        return 16;
+    case Lamellararmor:         return 20;
+    case Mithrilchainmail:      return 30;
+
     case NARMORS:         error("Unknown type NARMORS");
   }
 }

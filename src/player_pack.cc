@@ -526,11 +526,11 @@ Item* Player::pack_find_item(int type, int subtype)
   return results == pack.end() ? nullptr : *results;
 }
 
-class Weapon* Player::equipped_weapon() {
+class Weapon* Player::equipped_weapon() const {
   return dynamic_cast<class Weapon*>(equipment.at(Weapon));
 }
 
-class Armor* Player::equipped_armor() {
+class Armor* Player::equipped_armor() const {
   return dynamic_cast<class Armor*>(equipment.at(Armor));
 }
 
