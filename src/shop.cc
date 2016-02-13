@@ -84,6 +84,7 @@ void Shop::sell() {
   Game::io->message("Item sold");
 
   obj = player->pack_remove(obj, true, false);
+  obj->set_identified();
   player->give_gold(value);
   limited_inventory.push_back(obj);
 }
