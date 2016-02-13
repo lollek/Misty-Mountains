@@ -40,20 +40,20 @@ void Shop::print() const {
 
   mvprintw(1, 1, "You have %d gold", player->get_gold());
   mvprintw(3, 4, "Item");
-  mvprintw(3, 40, "Price");
+  mvprintw(3, 60, "Price");
 
   // Unlimited inventory
   for (int i = 0; i < static_cast<int>(inventory.size()); ++i) {
     Item const* item = inventory.at(static_cast<size_t>(i));
     mvprintw(i + 4,  1, "%c) %s", sym, item->get_description().c_str());
-    mvprintw(i + 4, 40, "%d", item->get_value());
+    mvprintw(i + 4, 60, "%d", item->get_value());
     ++sym;
   }
 
   // Buyback
   for (Item* item : limited_inventory) {
     mvprintw(4 + sym - 'a',  1, "%c) %s", sym, item->get_description().c_str());
-    mvprintw(4 + sym - 'a', 40, "%d", item->get_value());
+    mvprintw(4 + sym - 'a', 60, "%d", item->get_value());
     ++sym;
   }
 

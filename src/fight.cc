@@ -40,12 +40,18 @@ calculate_attacker(Character const& attacker, Item* weapon, bool thrown)
 
     if (thrown) {
       mod.damage.push_back(weapon->get_throw_damage());
+
       class Weapon* bow = player->equipped_weapon();
-      if (bow != nullptr) {
+      class Weapon* w_weapon = dynamic_cast<class Weapon*>(weapon);
+      if (bow != nullptr && w_weapon != nullptr &&
+          w_weapon->get_ammo_type() != Weapon::AmmoType::None &&
+          bow->get_ammo_used() == w_weapon->get_ammo_type()) {
         int multiplier = bow->get_ammo_multiplier();
         for (damage& dmg : mod.damage) {
           dmg.dices *= multiplier;
         }
+        mod.to_hit       += bow->get_hit_plus();
+        mod.to_dmg       += bow->get_damage_plus();
       }
     } else {
       mod.damage.push_back(weapon->get_attack_damage());
@@ -62,23 +68,8 @@ calculate_attacker(Character const& attacker, Item* weapon, bool thrown)
   mod.add_strength_modifiers(attacker.get_strength());
 
   if (&attacker == player) {
-
     mod.to_dmg += player->pack_get_ring_modifier(Ring::Damage);
     mod.to_hit += player->pack_get_ring_modifier(Ring::Accuracy);
-    if (thrown) {
-
-      Item const* held_weapon = player->equipped_weapon();
-
-      // If the weapon was an arrow and player is holding the bow. Add
-      // modifiers
-      if (weapon->o_launch != Weapon::NO_WEAPON && held_weapon != nullptr &&
-          weapon->o_launch == held_weapon->o_which) {
-
-          mod.damage.at(0)  = held_weapon->get_throw_damage();
-          mod.to_hit       += held_weapon->get_hit_plus();
-          mod.to_dmg       += held_weapon->get_damage_plus();
-      }
-    }
 
   // Venus Flytraps have a different kind of dmg system. It adds damage for
   // every successful hit
@@ -125,6 +116,13 @@ roll_attacks(Character* attacker, Character* defender, Item* weapon, bool thrown
     if (fight_swing_hits(attacker->get_level(), defense, mod.to_hit)) {
 
       int damage = roll(dmg.dices, dmg.sides) + mod.to_dmg;
+
+      if (wizard_dicerolls) {
+        stringstream os;
+        os << dmg.dices << "d" << dmg.sides << " + " << mod.to_dmg;
+        Game::io->message(os.str());
+      }
+
       if (damage > 0) {
         defender->take_damage(damage);
       }
@@ -314,7 +312,8 @@ fight_swing_hits(int at_lvl, int op_arm, int wplus) {
 }
 
 void
-fight_missile_miss(Item const* weap, string const& mname, string const* name_override) {
+fight_missile_miss(Item const* weap, string const& mname,
+                   string const* name_override) {
 
   if (weap->o_type == IO::Weapon) {
     if (name_override == nullptr) {

@@ -394,12 +394,12 @@ string Weapon::get_description() const {
     buffer << " (x" << ammo_multiplier << ")";
   } else if (o_type == IO::Ammo) {
     buffer
-      << " (" << get_throw_damage().sides
-      << "d"  << get_throw_damage().dices << ")";
+      << " (" << get_throw_damage().dices
+      << "d"  << get_throw_damage().sides << ")";
   } else {
     buffer
-      << " (" << get_attack_damage().sides
-      << "d"  << get_attack_damage().dices << ")";
+      << " (" << get_attack_damage().dices
+      << "d"  << get_attack_damage().sides << ")";
   }
 
   if (identified) {

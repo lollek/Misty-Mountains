@@ -2,6 +2,6 @@
 
 struct damage
 {
-  int sides;
   int dices;
+  int sides;
 };

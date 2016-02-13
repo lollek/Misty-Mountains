@@ -44,7 +44,8 @@ static bool command_attack_bow(Coordinate const* delta)
   io_missile_motion(arrow, delta->y, delta->x);
   Monster* monster_at_pos = Game::level->get_monster(arrow->get_position());
 
-  if (monster_at_pos == nullptr || !fight_against_monster(&arrow->get_position(), arrow, true))
+  if (monster_at_pos == nullptr ||
+      !fight_against_monster(&arrow->get_position(), arrow, true))
     weapon_missile_fall(arrow, true);
 
   return true;
