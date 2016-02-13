@@ -31,22 +31,22 @@ public:
   virtual void    set_identified() = 0;
 
   // Setters
-  void set_position(Coordinate const&);
-  void set_x(int);
-  void set_y(int);
-  void set_nickname(std::string const&);
-  void set_attack_damage(damage const&);
-  void set_throw_damage(damage const&);
-  void set_hit_plus(int value);
-  void set_damage_plus(int value);
-  void set_armor(int value);
-  void set_cursed();
-  void set_not_cursed();
+  virtual void set_position(Coordinate const&);
+  virtual void set_x(int);
+  virtual void set_y(int);
+  virtual void set_nickname(std::string const&);
+  virtual void set_attack_damage(damage const&);
+  virtual void set_throw_damage(damage const&);
+  virtual void set_hit_plus(int value);
+  virtual void set_damage_plus(int value);
+  virtual void set_armor(int value);
+  virtual void set_cursed();
+  virtual void set_not_cursed();
 
   // Modifiers
-  void modify_hit_plus(int amount);
-  void modify_damage_plus(int amount);
-  void modify_armor(int amount);
+  virtual void modify_hit_plus(int amount);
+  virtual void modify_damage_plus(int amount);
+  virtual void modify_armor(int amount);
 
   // Getters (virtual)
   virtual std::string   get_description() const = 0;
@@ -54,17 +54,17 @@ public:
   virtual bool          is_identified() const = 0;
 
   // Getters
-  Coordinate const&     get_position() const;
-  int                   get_x() const;
-  int                   get_y() const;
-  std::string const&    get_nickname() const;
-  int                   get_type() const;
-  damage const&         get_attack_damage() const;
-  damage const&         get_throw_damage() const;
-  int                   get_hit_plus() const;
-  int                   get_damage_plus() const;
-  int                   get_armor() const;
-  bool                  is_cursed() const;
+  virtual Coordinate const&     get_position() const;
+  virtual int                   get_x() const;
+  virtual int                   get_y() const;
+  virtual std::string const&    get_nickname() const;
+  virtual int                   get_item_type() const;
+  virtual damage const&         get_attack_damage() const;
+  virtual damage const&         get_throw_damage() const;
+  virtual int                   get_hit_plus() const;
+  virtual int                   get_damage_plus() const;
+  virtual int                   get_armor() const;
+  virtual bool                  is_cursed() const;
 
   int           o_type;                // What kind of object it is
   int           o_launch;              // What you need to launch it

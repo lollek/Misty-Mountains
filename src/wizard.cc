@@ -253,7 +253,7 @@ void wizard_show_map(void) {
 
       Item* item = Game::level->get_item(x, y);
       if (ch == 0 && item != nullptr) {
-        ch = static_cast<chtype>(item->get_type());
+        ch = static_cast<chtype>(item->get_item_type());
       }
 
       if (ch == 0) {

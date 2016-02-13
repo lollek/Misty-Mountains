@@ -79,7 +79,7 @@ void IO::print_monster(Monster* monster, IO::Attribute attr) {
 }
 
 void IO::print_item(Item* item) {
-  int symbol_to_print = item->get_type();
+  int symbol_to_print = item->get_item_type();
   Coordinate const& coord = item->get_position();
   print_color(coord.x, coord.y, symbol_to_print);
 }

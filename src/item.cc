@@ -61,7 +61,7 @@ string const& Item::get_nickname() const {
   return nickname;
 }
 
-int Item::get_type() const {
+int Item::get_item_type() const {
   return o_type;
 }
 
