@@ -3,6 +3,8 @@ Misty Mountain:
   Reimplement saving and loading
   Change inventory management
   Remove/add/change some monsters and when they appear
+  Added a lot of weapons and armor, and removed a few
+  Item drops now depend on depth
 
 v2.0-alpha1
   Too many changes to mention. Misty Mountains is only based on Rogue14, not the
