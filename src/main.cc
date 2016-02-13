@@ -39,6 +39,7 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
     {"seed",      required_argument, 0, 'S'},
     {"wizard",    no_argument,       0, 'W'},
     {"help",      no_argument,       0, '0'},
+    {"dicerolls", no_argument,       0,  1 },
     {"version",   no_argument,       0, '1'},
     {0,           0,                 0,  0 }
   };
@@ -73,10 +74,13 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
         }
       } break;
       case 's': score_show_and_exit(0, -1, 0); // does not return
+      case 'W': wizard = true; break;
       case 'S': if (wizard && optarg != nullptr) {
                   os_rand_seed = static_cast<unsigned>(stoul(optarg));
                 } break;
-      case 'W': wizard = true; break;
+      case   1: if (wizard) {
+                  wizard_dicerolls = true;
+                } break;
       case '0':
         cout << "Usage: " << argv[0] << " [OPTIONS] [FILE]\n"
              << "Run Rogue14 with selected options or a savefile\n\n"
@@ -91,6 +95,7 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
              << "  -r, --restore        restore game instead of creating a new\n"
              << "  -s, --score          display the highscore and exit\n"
              << "  -W, --wizard         run the game in debug-mode\n"
+             << "      --dicerolls      (wizard) show all dice rolls\n"
              << "  -S, --seed=NUMBER    (wizard) set map seed to NUMBER\n"
              << "      --help           display this help and exit\n"
              << "      --version        display game version and exit\n\n"

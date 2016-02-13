@@ -26,6 +26,7 @@
 using namespace std;
 
 bool wizard = false;
+bool wizard_dicerolls = false;
 
 static void
 pr_spec(char type)

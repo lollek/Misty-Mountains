@@ -2,8 +2,7 @@
 #include <vector>
 #include <sstream>
 
-using namespace std;
-
+#include "wizard.h"
 #include "error_handling.h"
 #include "game.h"
 #include "colors.h"
@@ -24,6 +23,8 @@ using namespace std;
 #include "attack_modifier.h"
 
 #include "fight.h"
+
+using namespace std;
 
 // Calculate the damage an attacker does.
 // Weapon can be null when no weapon was used
@@ -293,9 +294,11 @@ fight_swing_hits(int at_lvl, int op_arm, int wplus) {
 
   int rand = os_rand_range(20) + 1;
 
-  stringstream os;
-  os << at_lvl << " + " << wplus << " + " << rand << " vs " << op_arm;
-  Game::io->message(os.str());
+  if (wizard_dicerolls) {
+    stringstream os;
+    os << at_lvl << " + " << wplus << " + " << rand << " vs " << op_arm;
+    Game::io->message(os.str());
+  }
 
   // Forced miss
   if (rand == 1) {
