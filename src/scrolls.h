@@ -52,7 +52,6 @@ public:
 
   // Static
   static std::string  name(Type subtype);
-  static int          probability(Type subtype);
   static int          worth(Type subtype);
   static std::string& guess(Type subtype);
   static bool         is_known(Type subtype);

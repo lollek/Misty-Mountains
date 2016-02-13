@@ -31,22 +31,41 @@ vector<bool>*   Scroll::knowledge;
 vector<string>* Scroll::fake_name;
 
 static Scroll::Type random_scroll_type() {
-  int value = os_rand_range(100);
+  vector<Scroll::Type> potential_scrolls;
 
-  int end = static_cast<int>(Scroll::Type::NSCROLLS);
-  for (int i = 0; i < end; ++i) {
-    Scroll::Type type = static_cast<Scroll::Type>(i);
-    int probability = Scroll::probability(type);
+  switch (Game::current_level) {
+    default:
 
-    if (value < probability) {
-      return type;
+      [[clang::fallthrough]];
+    case 12:
+      potential_scrolls.push_back(Scroll::ENCHARMOR);
+      potential_scrolls.push_back(Scroll::ENCH);
 
-    } else {
-      value -= probability;
-    }
+      [[clang::fallthrough]];
+    case 10:
+      potential_scrolls.push_back(Scroll::HOLD);
+      potential_scrolls.push_back(Scroll::TELEP);
+      potential_scrolls.push_back(Scroll::PROTECT);
+
+      [[clang::fallthrough]];
+    case 7:
+      potential_scrolls.push_back(Scroll::REMOVE);
+
+      [[clang::fallthrough]];
+    case 5:
+      potential_scrolls.push_back(Scroll::AGGR);
+      potential_scrolls.push_back(Scroll::MAP);
+      potential_scrolls.push_back(Scroll::CONFUSE);
+      potential_scrolls.push_back(Scroll::SCARE);
+
+      [[clang::fallthrough]];
+    case 1:
+      potential_scrolls.push_back(Scroll::SLEEP);
+      potential_scrolls.push_back(Scroll::ID);
+      potential_scrolls.push_back(Scroll::FDET);
+      potential_scrolls.push_back(Scroll::CREATE);
   }
-
-  error("Error! Sum of probabilities is not 100%");
+  return potential_scrolls.at(os_rand_range(potential_scrolls.size()));
 }
 
 Scroll::~Scroll() {}
@@ -87,26 +106,6 @@ string Scroll::name(Scroll::Type subtype) {
     case REMOVE:    return "remove curse";
     case AGGR:      return "aggravate monsters";
     case PROTECT:   return "protect armor";
-    case NSCROLLS:  error("Unknown subtype NSCROLLS");
-  }
-}
-
-int Scroll::probability(Scroll::Type subtype) {
-  switch (subtype) {
-    case CONFUSE:   return  7;
-    case MAP:       return  4;
-    case HOLD:      return  2;
-    case SLEEP:     return  3;
-    case ENCHARMOR: return  7;
-    case ID:        return 43;
-    case SCARE:     return  3;
-    case FDET:      return  2;
-    case TELEP:     return  5;
-    case ENCH:      return  8;
-    case CREATE:    return  4;
-    case REMOVE:    return  7;
-    case AGGR:      return  3;
-    case PROTECT:   return  2;
     case NSCROLLS:  error("Unknown subtype NSCROLLS");
   }
 }
