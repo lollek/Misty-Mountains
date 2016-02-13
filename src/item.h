@@ -6,15 +6,6 @@
 #include "damage.h"
 #include "Coordinate.h"
 
-// flags for objects
-#define ISMISL	0000004		/* object is a missile type */
-#define ISMANY	0000010		/* object comes in groups */
-#ifndef ISFOUND
-#define ISFOUND 0000020		/*...is used for both objects and creatures */
-#endif /* ISFOUND */
-#define ISPROT	0000040		/* armor is permanently protected */
-
-
 class Item {
 public:
   enum Type {

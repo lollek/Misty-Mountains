@@ -32,11 +32,13 @@ public:
 
   // Setters
   void set_identified() override;
+  void set_rustproof();
 
   // Getters
   std::string get_description() const override;
   bool        is_magic() const override;
   bool        is_identified() const override;
+  bool        is_rustproof() const;
 
   void save(std::ofstream&) const override;
   bool load(std::ifstream&) override;
@@ -50,6 +52,7 @@ public:
 private:
   Type subtype;
   bool identified;
+  bool rustproof;
 
   static unsigned long long constexpr TAG_ARMOR     = 0xc000000000000000ULL;
 };

@@ -13,7 +13,6 @@ Gold::~Gold() {}
 Gold::Gold() : Gold(random_gold_amount()) {}
 
 Gold::Gold(int amount_) : Item(), amount(amount_) {
-  o_flags = ISMANY;
   o_type = IO::Gold;
 }
 

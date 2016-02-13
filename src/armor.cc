@@ -20,7 +20,7 @@ using namespace std;
 Armor::~Armor() {}
 
 bool Armor::is_magic() const {
-  return ((o_flags & ISPROT) ||
+  return (rustproof ||
       get_armor() != Armor::ac(subtype));
 }
 
@@ -56,7 +56,7 @@ Armor::Armor(std::ifstream& data) {
 }
 
 Armor::Armor(Armor::Type type, bool random_stats) :
-  Item(), subtype(type), identified(false) {
+  Item(), subtype(type), identified(false), rustproof(false) {
   o_type = IO::Armor;
   o_which = type;
   set_armor(Armor::ac(type));
@@ -186,3 +186,10 @@ bool Armor::load(std::ifstream& data) {
 }
 
 
+void Armor::set_rustproof() {
+  rustproof = true;
+}
+
+bool Armor::is_rustproof() const {
+  return rustproof;
+}

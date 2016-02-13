@@ -534,13 +534,13 @@ bool Player::has_ring_with_ability(int ability) const {
 }
 
 void Player::rust_armor() {
-  Item* arm = equipment.at(static_cast<size_t>(Armor));
+  class Armor* arm = dynamic_cast<class Armor*>(equipment.at(static_cast<size_t>(Armor)));
   if (arm == nullptr || arm->o_type != IO::Armor || arm->o_which == Armor::Type::LEATHER ||
       arm->get_armor() >= 9) {
     return;
   }
 
-  if ((arm->o_flags & ISPROT) || has_ring_with_ability(Ring::Type::SUSTARM)) {
+  if (arm->is_rustproof() || has_ring_with_ability(Ring::Type::SUSTARM)) {
     if (!to_death) {
       Game::io->message("the rust vanishes instantly");
     }

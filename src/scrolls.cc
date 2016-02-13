@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 
+#include "armor.h"
 #include "disk.h"
 #include "magic.h"
 #include "error_handling.h"
@@ -267,7 +268,7 @@ bool Scroll::load(std::ifstream& data) {
 }
 
 static bool enchant_players_armor() {
-  Item* arm = player->equipped_armor();
+  class Armor* arm = player->equipped_armor();
 
   if (arm == nullptr) {
     switch (os_rand_range(3)) {
@@ -391,7 +392,7 @@ static void remove_curse() {
 
 static bool protect_armor() {
 
-  Item* arm = player->equipped_armor();
+  class Armor* arm = player->equipped_armor();
   if (arm == nullptr) {
     switch (os_rand_range(2)) {
       case 0: Game::io->message("you feel a strange sense of loss"); break;
@@ -400,7 +401,7 @@ static bool protect_armor() {
     return false;
   }
 
-  arm->o_flags |= ISPROT;
+  arm->set_rustproof();
   stringstream os;
   os << "your armor is covered by a shimmering gold shield";
   Game::io->message(os.str());

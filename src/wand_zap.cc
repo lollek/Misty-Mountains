@@ -116,7 +116,6 @@ wand_spell_magic_missile(int dy, int dx)
   bolt.o_type    = '*';
   bolt.set_hit_plus(100);
   bolt.set_damage_plus(1);
-  bolt.o_flags   = ISMISL;
   bolt.set_attack_damage({0, 0});
   bolt.set_throw_damage({1, 4});
 

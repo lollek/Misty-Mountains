@@ -140,15 +140,6 @@ bool Player::pack_add(Item* obj, bool silent, bool from_floor) {
     from_floor = true;
   }
 
-  /* Check for and deal with scare monster scrolls */
-  if (obj->o_type == IO::Scroll && obj->o_which == Scroll::SCARE && obj->o_flags & ISFOUND)
-  {
-    Game::level->items.remove(obj);
-    delete obj;
-    Game::io->message("the scroll turns to dust as you pick it up");
-    return false;
-  }
-
   /* See if we can stack it with something else in the pack */
   bool is_picked_up = false;
   if (obj->o_type == IO::Potion || obj->o_type == IO::Scroll ||
@@ -198,9 +189,6 @@ bool Player::pack_add(Item* obj, bool silent, bool from_floor) {
       }
     }
   }
-
-  obj->o_flags |= ISFOUND;
-
 
   /* Notify the user */
   if (!silent) {
@@ -542,8 +530,8 @@ class Weapon* Player::equipped_weapon() {
   return dynamic_cast<class Weapon*>(equipment.at(Weapon));
 }
 
-Item* Player::equipped_armor() {
-  return equipment.at(Armor);
+class Armor* Player::equipped_armor() {
+  return dynamic_cast<class Armor*>(equipment.at(Armor));
 }
 
 void Player::give_gold(int amount) {

@@ -78,7 +78,7 @@ public:
   class Weapon* pack_find_ammo(::Weapon::AmmoType);
   Item*         pack_find_item(std::string const& purpose, int subtype);
   class Weapon* equipped_weapon();
-  Item*         equipped_armor();
+  class Armor*  equipped_armor();
   size_t        pack_num_items(int type, int subtype);
   bool          pack_contains_amulet();
   bool          pack_contains(Item const* item);
