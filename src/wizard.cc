@@ -51,44 +51,37 @@ pr_spec(char type)
   for (size_t i = 0; i < max; ++i)
   {
     string name;
-    int prob;
     wmove(printscr, static_cast<int>(i) + 1, 1);
 
     switch (type) {
       case IO::Scroll: {
         name = Scroll::name(static_cast<Scroll::Type>(i));
-        prob = Scroll::probability(static_cast<Scroll::Type>(i));
       } break;
 
       case IO::Armor: {
         name = Armor::name(static_cast<Armor::Type>(i));
-        prob = Armor::probability(static_cast<Armor::Type>(i));
       } break;
 
       case IO::Potion: {
         name = Potion::name(static_cast<Potion::Type>(i));
-        prob = Potion::probability(static_cast<Potion::Type>(i));
       } break;
 
       case IO::Wand: {
         name = Wand::name(static_cast<Wand::Type>(i));
-        prob = Wand::probability(static_cast<Wand::Type>(i));
       } break;
 
       case IO::Ring: {
         name = Ring::name(static_cast<Ring::Type>(i));
-        prob = Ring::probability(static_cast<Ring::Type>(i));
       } break;
 
       case IO::Weapon: {
         name = Weapon::name(static_cast<Weapon::Type>(i));
-        prob = Weapon::probability(static_cast<Weapon::Type>(i));
       } break;
 
       default: error("Unknown type in pr_spec");
     }
 
-    wprintw(printscr, "%c: %s (%d%%)", ch, name.c_str(), prob);
+    wprintw(printscr, "%c: %s", ch, name.c_str());
     ch = ch == '9' ? 'a' : (ch + 1);
   }
 
@@ -301,7 +294,7 @@ void wizard_levels_and_gear(void) {
   player->raise_level(9);
 
   /* Give him a sword (+1,+1) */
-  class Weapon* weapon = new class Weapon(Weapon::TWOSWORD, false);
+  class Weapon* weapon = new class Weapon(Weapon::Claymore, false);
   weapon->set_hit_plus(1);
   weapon->set_damage_plus(1);
   weapon->set_identified();

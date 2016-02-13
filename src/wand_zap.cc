@@ -112,7 +112,7 @@ wand_spell_cancel(Monster& target)
 static void
 wand_spell_magic_missile(int dy, int dx)
 {
-  class Weapon bolt(Weapon::DAGGER);
+  class Weapon bolt(Weapon::Dagger);
   bolt.o_type    = '*';
   bolt.set_hit_plus(100);
   bolt.set_damage_plus(1);

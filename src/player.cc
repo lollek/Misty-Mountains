@@ -67,23 +67,9 @@ Player::Player(bool give_equipment) :
   equipment.at(Armor) = armor_;
 
   /* Give him his weaponry.  First a mace. */
-  class Weapon* mace = new class Weapon(Weapon::MACE, false);
-  mace->set_hit_plus(1);
-  mace->set_damage_plus(1);
-  mace->set_identified();
-  equipment.at(Weapon) = mace;
-
-  /* Now a +1 bow */
-  class Weapon* bow = new class Weapon(Weapon::BOW, false);
-  bow->set_hit_plus(1);
-  bow->set_identified();
-  equipment.at(BackupWeapon) = bow;
-
-  /* Now some arrows */
-  class Weapon* arrow = new class Weapon(Weapon::ARROW, false);
-  arrow->o_count  = os_rand_range(15) + 25;
-  arrow->set_identified();
-  pack_add(arrow, true, false);
+  class Weapon* dagger = new class Weapon(Weapon::Dagger, false);
+  dagger->set_identified();
+  equipment.at(Weapon) = dagger;
 }
 
 int Player::get_armor() const {
