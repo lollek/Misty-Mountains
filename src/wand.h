@@ -9,20 +9,20 @@
 class Wand : public Item {
 public:
   enum Type {
-    LIGHT     = 0,
-    INVIS     = 1,
-    ELECT     = 2,
-    FIRE      = 3,
-    COLD      = 4,
-    POLYMORPH = 5,
-    MISSILE   = 6,
-    HASTE_M   = 7,
-    SLOW_M    = 8,
-    DRAIN     = 9,
-    NOP       = 10,
-    TELAWAY   = 11,
-    TELTO     = 12,
-    CANCEL    = 13,
+    HasteMonster,
+    SlowMonster,
+    InvisibleOther,
+    Light,
+    MagicMissile,
+    ElectricBolt,
+    FireBolt,
+    ColdBolt,
+    Cancellation,
+    Polymorph,
+    TeleportTo,
+    TeleportAway,
+    DrainLife,
+
     NWANDS
   };
 
@@ -61,7 +61,6 @@ public:
   static void free_wands();
 
   static std::string        name(Type subtype);
-  static int                probability(Type subtype);
   static int                worth(Type subtype);
   static std::string&       guess(Type subtype);
   static bool               is_known(Type subtype);

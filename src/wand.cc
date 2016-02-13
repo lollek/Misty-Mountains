@@ -29,22 +29,35 @@ vector<string>* Wand::guesses;
 vector<bool>*   Wand::known;
 
 static Wand::Type random_wand_type() {
-  int value = os_rand_range(100);
+  vector<Wand::Type> potential_wands;
 
-  int end = static_cast<int>(Wand::Type::NWANDS);
-  for (int i = 0; i < end; ++i) {
-    Wand::Type type = static_cast<Wand::Type>(i);
-    int probability = Wand::probability(type);
+  switch (Game::current_level) {
+    default:
 
-    if (value < probability) {
-      return type;
+      [[clang::fallthrough]];
+    case 20:
+      potential_wands.push_back(Wand::Polymorph);
+      potential_wands.push_back(Wand::TeleportAway);
+      potential_wands.push_back(Wand::TeleportTo);
+      potential_wands.push_back(Wand::Cancellation);
+      potential_wands.push_back(Wand::DrainLife);
 
-    } else {
-      value -= probability;
-    }
+      [[clang::fallthrough]];
+    case 15:
+      potential_wands.push_back(Wand::ElectricBolt);
+      potential_wands.push_back(Wand::FireBolt);
+      potential_wands.push_back(Wand::ColdBolt);
+
+      [[clang::fallthrough]];
+    case 2:
+      potential_wands.push_back(Wand::HasteMonster);
+      potential_wands.push_back(Wand::SlowMonster);
+      potential_wands.push_back(Wand::Light);
+      potential_wands.push_back(Wand::MagicMissile);
+      potential_wands.push_back(Wand::InvisibleOther);
   }
 
-  error("Error! Sum of probabilities is not 100%");
+  return potential_wands.at(os_rand_range(potential_wands.size()));
 }
 
 bool Wand::is_magic() const {
@@ -54,61 +67,41 @@ bool Wand::is_magic() const {
 
 string Wand::name(Wand::Type subtype) {
   switch (subtype) {
-  case LIGHT:     return "light";
-  case INVIS:     return "invisibility";
-  case ELECT:     return "lightning";
-  case FIRE:      return "fire";
-  case COLD:      return "cold";
-  case POLYMORPH: return "polymorph";
-  case MISSILE:   return "magic missile";
-  case HASTE_M:   return "haste monster";
-  case SLOW_M:    return "slow monster";
-  case DRAIN:     return "drain life";
-  case NOP:       return "nothing";
-  case TELAWAY:   return "teleport away";
-  case TELTO:     return "teleport to";
-  case CANCEL:    return "cancellation";
-  case NWANDS:    error("Unknown type NWANDS");
-  };
-}
+    case HasteMonster:   return "haste monster";
+    case SlowMonster:    return "slow monster";
+    case InvisibleOther: return "invisible other";
+    case Light:          return "light";
+    case MagicMissile:   return "magic missile";
+    case ElectricBolt:   return "electric bolt";
+    case FireBolt:       return "fire bolt";
+    case ColdBolt:       return "cold bolt";
+    case Cancellation:   return "cancellation";
+    case Polymorph:      return "polymorph";
+    case TeleportTo:     return "teleport to";
+    case TeleportAway:   return "teleport away";
+    case DrainLife:      return "drain life";
 
-int Wand::probability(Wand::Type subtype) {
-  switch (subtype) {
-  case LIGHT:     return 12;
-  case INVIS:     return  6;
-  case ELECT:     return  3;
-  case FIRE:      return  3;
-  case COLD:      return  3;
-  case POLYMORPH: return 15;
-  case MISSILE:   return 10;
-  case HASTE_M:   return 10;
-  case SLOW_M:    return 11;
-  case DRAIN:     return  9;
-  case NOP:       return  1;
-  case TELAWAY:   return  6;
-  case TELTO:     return  6;
-  case CANCEL:    return  5;
-  case NWANDS:    error("Unknown type NWANDS");
+    case NWANDS:    error("Unknown type NWANDS");
   };
 }
 
 int Wand::worth(Wand::Type subtype) {
   switch (subtype) {
-  case LIGHT:     return 250;
-  case INVIS:     return   5;
-  case ELECT:     return 330;
-  case FIRE:      return 330;
-  case COLD:      return 330;
-  case POLYMORPH: return 310;
-  case MISSILE:   return 170;
-  case HASTE_M:   return   5;
-  case SLOW_M:    return 350;
-  case DRAIN:     return 300;
-  case NOP:       return   5;
-  case TELAWAY:   return 340;
-  case TELTO:     return  50;
-  case CANCEL:    return 280;
-  case NWANDS:    error("Unknown type NWANDS");
+    case HasteMonster:   return 0;
+    case SlowMonster:    return 500;
+    case InvisibleOther: return 0;
+    case Light:          return 200;
+    case MagicMissile:   return 200;
+    case ElectricBolt:   return 600;
+    case FireBolt:       return 600;
+    case ColdBolt:       return 600;
+    case Cancellation:   return 500;
+    case Polymorph:      return 400;
+    case TeleportTo:     return 350;
+    case TeleportAway:   return 350;
+    case DrainLife:      return 600;
+
+    case NWANDS:    error("Unknown type NWANDS");
   };
 }
 
@@ -220,7 +213,7 @@ Wand::Wand(Wand::Type subtype_) : Item(), identified(false) {
   o_which = subtype_;
   subtype = subtype_;
 
-  if (subtype == LIGHT) {
+  if (subtype == Wand::Light) {
     charges = os_rand_range(10) + 10;
   } else {
     charges = os_rand_range(5) + 3;

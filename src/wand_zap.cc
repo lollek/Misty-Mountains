@@ -87,7 +87,7 @@ wand_spell_polymorph(Monster& target)
 {
   monster_polymorph(&target);
   if (player->can_see(*&target)) {
-    Wand::set_known(Wand::Type::POLYMORPH);
+    Wand::set_known(Wand::Polymorph);
   }
 }
 
@@ -166,12 +166,12 @@ wand_zap(void)
   switch (subtype)
   {
 
-    case Wand::LIGHT: {
+    case Wand::Light: {
       Wand::set_known(subtype);
       wand_spell_light();
     } break;
 
-    case Wand::DRAIN: {
+    case Wand::DrainLife: {
       if (player->get_health() > 1) {
         wand_spell_drain_health();
 
@@ -181,7 +181,7 @@ wand_zap(void)
       }
     } break;
 
-    case Wand::INVIS: {
+    case Wand::InvisibleOther: {
         Coordinate c;
         Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
         if (tp != nullptr) {
@@ -191,7 +191,7 @@ wand_zap(void)
         }
       } break;
 
-    case Wand::POLYMORPH:
+    case Wand::Polymorph:
       {
         Coordinate c;
         Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
@@ -201,7 +201,7 @@ wand_zap(void)
           Game::io->message("You did not hit anything");
       } break;
 
-    case Wand::CANCEL: {
+    case Wand::Cancellation: {
         Coordinate c;
         Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
         if (tp != nullptr) {
@@ -211,12 +211,12 @@ wand_zap(void)
         }
       } break;
 
-    case Wand::TELAWAY: {
+    case Wand::TeleportAway: {
       Wand::set_known(subtype);
       player->teleport(nullptr);
     } break;
 
-    case Wand::TELTO: {
+    case Wand::TeleportTo: {
         Wand::set_known(subtype);
         int x;
         int y;
@@ -237,12 +237,12 @@ wand_zap(void)
           Game::io->message("You did not hit anything");
       } break;
 
-    case Wand::MISSILE: {
+    case Wand::MagicMissile: {
       Wand::set_known(subtype);
       wand_spell_magic_missile(dir->y, dir->x);
     } break;
 
-    case Wand::HASTE_M: {
+    case Wand::HasteMonster: {
         Coordinate c;
         Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
         if (tp != nullptr) {
@@ -255,7 +255,7 @@ wand_zap(void)
         }
       } break;
 
-    case Wand::SLOW_M: {
+    case Wand::SlowMonster: {
         Coordinate c;
         Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
         if (tp != nullptr) {
@@ -268,29 +268,25 @@ wand_zap(void)
         }
       } break;
 
-    case Wand::ELECT: {
+    case Wand::ElectricBolt: {
       Wand::set_known(subtype);
       Coordinate delta = *dir;
       Coordinate coord = player->get_position();
       magic_bolt(&coord, &delta, "bolt");
     } break;
 
-    case Wand::FIRE: {
+    case Wand::FireBolt: {
       Wand::set_known(subtype);
       Coordinate coord = player->get_position();
       Coordinate delta = *dir;
       magic_bolt(&coord, &delta, "flame");
     } break;
 
-    case Wand::COLD: {
+    case Wand::ColdBolt: {
       Wand::set_known(subtype);
       Coordinate coord = player->get_position();
       Coordinate delta = *dir;
       magic_bolt(&coord, &delta, "ice");
-    } break;
-
-    case Wand::NOP: {
-      Game::io->message("You are usure if anything happened");
     } break;
 
     case Wand::NWANDS: error("Unknown type NWANDS");
