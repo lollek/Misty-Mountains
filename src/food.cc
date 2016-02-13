@@ -16,7 +16,17 @@
 using namespace std;
 
 static Food::Type random_food_type() {
-  return os_rand_range(10) ? Food::IronRation : Food::Fruit;
+  vector<Food::Type> potential_food;
+
+  switch (Game::current_level) {
+    default:
+
+    case 1:
+      potential_food.push_back(Food::Fruit);
+      potential_food.push_back(Food::IronRation);
+  }
+
+  return potential_food.at(os_rand_range(potential_food.size()));
 }
 
 Food::~Food() {}
@@ -37,6 +47,8 @@ Food::Food(std::ifstream& data) {
 Food::Food() : Food(random_food_type()) {}
 
 Food::Food(Food::Type subtype_) : Item(), subtype(subtype_) {
+
+  food_value = food_for_type(subtype);
 
   // Reset global food counter
   Game::levels_without_food = 0;
@@ -76,18 +88,32 @@ bool Food::is_identified() const {
   return true;
 }
 
+int Food::get_nutrition_value() const {
+  return food_value;
+}
+
 void Food::save(std::ofstream& data) const {
   Item::save(data);
   static_assert(sizeof(Food::Type) == sizeof(int), "Wrong Food::Type size");
   Disk::save(TAG_FOOD, static_cast<int>(subtype), data);
+  Disk::save(TAG_FOOD, food_value, data);
 }
 
 bool Food::load(std::ifstream& data) {
   if (!Item::load(data) ||
-      !Disk::load(TAG_FOOD, reinterpret_cast<int&>(subtype), data)) {
+      !Disk::load(TAG_FOOD, reinterpret_cast<int&>(subtype), data) ||
+      !Disk::load(TAG_FOOD, food_value, data)) {
     return false;
   }
   return true;
 }
 
 
+int Food::food_for_type(Type subtype) {
+  switch (subtype) {
+    case Food::Fruit:        return 1000;
+    case Food::IronRation:   return 3500;
+
+    case NFOODS: error("Bad value NFOODS");
+  }
+}

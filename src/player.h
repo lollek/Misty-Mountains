@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "rogue.h"
+#include "food.h"
 #include "monster.h"
 
 enum Equipment {
@@ -56,7 +57,7 @@ public:
   void set_previous_room(struct room* room);
 
   // player_food.cc
-  void         eat();
+  void         eat(Food*);
   void         digest_food();
   std::string  get_hunger_state() const;
   int          get_nutrition_left() const;

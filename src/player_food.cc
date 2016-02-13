@@ -1,5 +1,6 @@
 #include <vector>
 
+#include "food.h"
 #include "death.h"
 #include "command.h"
 #include "game.h"
@@ -24,12 +25,26 @@ static int const starvation_start = 0;
 static int const starvation_death = -1000;
 static HungerState hunger_state = HungerState::Normal;
 
-void Player::eat() {
+void Player::eat(Food* food) {
+  if (food->get_type() == Food::Fruit) {
+    Game::io->message("my, that was a yummy fruit");
+
+  } else if (os_rand_range(100) > 70) {
+    gain_experience(1);
+    Game::io->message("this food tastes awful");
+    check_for_level_up();
+
+  } else {
+    Game::io->message("that tasted good");
+  }
+
+
+
   if (nutrition_left < 0) {
     nutrition_left = 0;
   }
 
-  nutrition_left += satiated - 200 + os_rand_range(400);
+  nutrition_left += food->get_nutrition_value();
 
   if (nutrition_left > full) {
     nutrition_left = full;

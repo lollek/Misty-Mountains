@@ -546,26 +546,11 @@ command_eat()
   if (obj == nullptr)
     return false;
 
-  if (obj->o_type != IO::Food)
-  {
+  Food* food = dynamic_cast<Food*>(obj);
+  if (obj->o_type != IO::Food || food == nullptr) {
     Game::io->message("that's inedible!");
     return false;
   }
-
-  player->eat();
-
-  if (obj->o_which == 1)
-    Game::io->message("my, that was a yummy fruit");
-
-  else if (os_rand_range(100) > 70)
-  {
-    player->gain_experience(1);
-    Game::io->message("this food tastes awful");
-    player->check_for_level_up();
-  }
-
-  else
-    Game::io->message("that tasted good");
 
   player->pack_remove(obj, false, false);
   return true;
