@@ -224,12 +224,14 @@ void Armor::save(std::ofstream& data) const {
   static_assert(sizeof(Armor::Type) == sizeof(int), "Wrong Armor::Type size");
   Disk::save(TAG_ARMOR, static_cast<int>(subtype), data);
   Disk::save(TAG_ARMOR, identified, data);
+  Disk::save(TAG_ARMOR, rustproof, data);
 }
 
 bool Armor::load(std::ifstream& data) {
   if (!Item::load(data) ||
       !Disk::load(TAG_ARMOR, reinterpret_cast<int&>(subtype), data) ||
-      !Disk::load(TAG_ARMOR, identified, data)) {
+      !Disk::load(TAG_ARMOR, identified, data) ||
+      !Disk::load(TAG_ARMOR, rustproof, data)) {
     return false;
   }
   return true;
