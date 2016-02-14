@@ -31,8 +31,7 @@
 
 using namespace std;
 
-static bool command_attack_bow(Coordinate const* delta)
-{
+static bool command_attack_bow(Coordinate const* delta) {
   class Weapon* ptr = player->pack_find_ammo(player->equipped_weapon()->get_ammo_used());
 
   if (ptr == nullptr) {
@@ -45,19 +44,17 @@ static bool command_attack_bow(Coordinate const* delta)
   Monster* monster_at_pos = Game::level->get_monster(arrow->get_position());
 
   if (monster_at_pos == nullptr ||
-      !fight_against_monster(&arrow->get_position(), arrow, true))
+      !fight_against_monster(&arrow->get_position(), arrow, true)) {
     weapon_missile_fall(arrow, true);
+  }
 
   return true;
 }
 
-static bool command_attack_melee(bool fight_to_death, Coordinate const& delta)
-{
+static bool command_attack_melee(bool fight_to_death, Coordinate const& delta) {
   Monster* mp = Game::level->get_monster(delta);
-  if (mp != nullptr)
-  {
-    if (fight_to_death)
-    {
+  if (mp != nullptr) {
+    if (fight_to_death) {
       to_death = true;
       mp->set_players_target();
     }
@@ -66,8 +63,7 @@ static bool command_attack_melee(bool fight_to_death, Coordinate const& delta)
   }
 
   string msg;
-  switch (Game::level->get_tile(delta))
-  {
+  switch (Game::level->get_tile(delta)) {
     case Tile::Wall:       msg = "you swing at the wall"; break;
     case Tile::ClosedDoor: msg = "you swing at the door"; break;
     case Tile::Stairs:     msg = "you swing at the stairs"; break;
@@ -81,23 +77,23 @@ static bool command_attack_melee(bool fight_to_death, Coordinate const& delta)
   return true;
 }
 
-bool
-command_use_stairs(char up_or_down)
-{
+bool command_use_stairs(char up_or_down) {
   if (up_or_down != '>' && up_or_down != '<') {
     error("Unknown stairs: " + to_string(up_or_down));
   }
 
-  if (player->is_levitating())
+  if (player->is_levitating()) {
     Game::io->message("You can't. You're floating off the ground!");
-  else if (Game::level->get_tile(player->get_position()) != Tile::Stairs)
+  } else if (Game::level->get_tile(player->get_position()) != Tile::Stairs) {
     Game::io->message("You're not standing on any stairs");
-
-  else if (up_or_down == '>') /* DOWN */ {
-    Game::new_level(Game::current_level +1);
   }
 
-  else if (up_or_down == '<') /* UP */ {
+  // DOWN
+  else if (up_or_down == '>') {
+    Game::new_level(Game::current_level +1);
+
+  // UP
+  } else if (up_or_down == '<') {
     bool has_amulet = player->pack_contains_amulet();
 
     if (Game::current_level < 0) {
@@ -118,19 +114,19 @@ command_use_stairs(char up_or_down)
 
     Game::new_level(Game::current_level -1);
 
-    if (has_amulet)
+    if (has_amulet) {
       Game::io->message("you feel a wrenching sensation in your gut");
+    }
   }
 
   return false;
 }
 
-bool
-command_attack(bool fight_to_death)
-{
+bool command_attack(bool fight_to_death) {
   Coordinate const* dir = get_dir();
-  if (dir == nullptr)
+  if (dir == nullptr) {
     return false;
+  }
 
   Coordinate delta = player->get_position();
   delta.x += dir->x;
@@ -143,18 +139,16 @@ command_attack(bool fight_to_death)
     : command_attack_melee(fight_to_death, delta);
 }
 
-bool
-command_name_item()
-{
+bool command_name_item() {
   Item* obj = player->pack_find_item("rename", 0);
 
-  if (obj == nullptr)
+  if (obj == nullptr) {
     return false;
+  }
 
   bool already_known;
   string* guess = nullptr;
-  switch (obj->o_type)
-  {
+  switch (obj->o_type) {
     case IO::Amulet: already_known = true; break;
     case IO::Food: Game::io->message("Don't play with your food!"); return false;
 
@@ -183,8 +177,7 @@ command_name_item()
       break;
   }
 
-  if (already_known)
-  {
+  if (already_known) {
     Game::io->message("that has already been identified");
     return false;
   }
@@ -204,12 +197,11 @@ command_name_item()
   return false;
 }
 
-bool
-command_identify_trap()
-{
+bool command_identify_trap() {
   const Coordinate* dir = get_dir();
-  if (dir == nullptr)
+  if (dir == nullptr) {
     return false;
+  }
 
   Coordinate delta = player->get_position();
   delta.x += dir->x;
@@ -220,23 +212,19 @@ command_identify_trap()
   } else if (player->has_confusing_attack()) {
     Trap::Type rand_trap = static_cast<Trap::Type>(os_rand_range(static_cast<size_t>(Trap::NTRAPS)));
     Game::io->message(Trap::name(rand_trap));
-  } else
-  {
+  } else {
     Game::io->message(Trap::name(static_cast<Trap::Type>(Game::level->get_trap_type(delta))));
     Game::level->set_discovered(delta);
   }
   return false;
 }
 
-bool
-command_quit()
-{
+bool command_quit() {
   command_signal_quit(0);
   return false;
 }
 
-bool
-command_pick_up(bool force) {
+bool command_pick_up(bool force) {
   if (player->is_levitating()) {
     if (force) {
       Game::io->message("You can't. You're floating off the ground!");
@@ -317,11 +305,8 @@ command_pick_up(bool force) {
   return true;
 }
 
-bool
-command_help()
-{
-  struct list
-  {
+bool command_help() {
+  struct list {
     char sym;
     string description;
     bool print;
@@ -387,17 +372,16 @@ command_help()
 
   /* If its not a *, print the right help string
    * or an error if he typed a funny character. */
-  if (helpch != '*')
-  {
+  if (helpch != '*') {
     move(0, 0);
-    for (int i = 0; i < helpstrsize; ++i)
-      if (helpstr[i].sym == helpch)
-      {
+    for (int i = 0; i < helpstrsize; ++i) {
+      if (helpstr[i].sym == helpch) {
         Game::io->message(string(1, UNCTRL(helpstr[i].sym)) + ")" + 
                           helpstr[i].description);
         return false;
       }
-    Game::io->message("unknown character '" + string(1, UNCTRL(helpch)) + "'");
+    }
+    Game::io->message("unknown character '" + string(1, helpch) + "'");
     return false;
   }
 
@@ -405,28 +389,33 @@ command_help()
    * Then wait before we return to command mode */
 
   int numprint = 0;
-  for (int i = 0; i < helpstrsize; ++i)
-    if (helpstr[i].print)
+  for (int i = 0; i < helpstrsize; ++i) {
+    if (helpstr[i].print) {
       ++numprint;
+    }
+  }
 
   numprint /= 2;
-  if (numprint > LINES - 1)
+  if (numprint > LINES - 1) {
     numprint = LINES - 1;
+  }
 
   wclear(Game::io->extra_screen);
   int print_i = 0;
-  for (int i = 0; i < helpstrsize; ++i)
-  {
-    if (!helpstr[i].print)
+  for (int i = 0; i < helpstrsize; ++i) {
+    if (!helpstr[i].print) {
       continue;
+    }
 
     wmove(Game::io->extra_screen, print_i % numprint, print_i >= numprint ? COLS / 2 : 0);
-    if (helpstr[i].sym)
+    if (helpstr[i].sym) {
       waddstr(Game::io->extra_screen, unctrl(static_cast<chtype>(helpstr[i].sym)));
+    }
     waddstr(Game::io->extra_screen, helpstr[i].description.c_str());
 
-    if (++print_i >= numprint * 2)
+    if (++print_i >= numprint * 2) {
       break;
+    }
   }
 
   wmove(Game::io->extra_screen, LINES - 1, 0);
@@ -442,9 +431,7 @@ command_help()
 }
 
 /* Let them escape for a while */
-void
-command_shell()
-{
+void command_shell() {
   /* Set the terminal back to original mode */
   move(LINES-1, 0);
   refresh();
@@ -462,22 +449,22 @@ command_shell()
   clearok(stdscr, true);
 }
 
-bool command_throw()
-{
+bool command_throw() {
   const Coordinate* dir = get_dir();
-  if (dir == nullptr)
+  if (dir == nullptr) {
     return false;
+  }
 
   int ydelta = dir->y;
   int xdelta = dir->x;
   dir = nullptr;
 
   Item* obj = player->pack_find_item("throw", 0);
-  if (obj == nullptr)
+  if (obj == nullptr) {
     return false;
+  }
 
-  if (obj->o_type == IO::Armor)
-  {
+  if (obj->o_type == IO::Armor) {
     Game::io->message("you can't throw armor");
     return false;
   }
@@ -500,12 +487,12 @@ bool command_throw()
   bool missed = monster_at_pos == nullptr ||
     !fight_against_monster(&obj->get_position(), obj, true);
 
-  if (missed)
-  {
-    if (obj->o_type == IO::Potion)
+  if (missed) {
+    if (obj->o_type == IO::Potion) {
       Game::io->message("the potion crashes into the wall");
-    else
+    } else {
       weapon_missile_fall(obj, true);
+    }
   }
 
   return true;
@@ -513,36 +500,31 @@ bool command_throw()
 
 }
 
-bool command_rest()
-{
-  if (monster_is_anyone_seen_by_player())
-  {
+bool command_rest() {
+  if (monster_is_anyone_seen_by_player()) {
     Game::io->message("cannot rest with monsters nearby");
     return false;
   }
 
-  if (!player->is_hurt())
-  {
+  if (!player->is_hurt()) {
     Game::io->message("you don't feel the least bit tired");
     return false;
   }
 
   Game::io->message("you rest for a while");
   player_alerted = false;
-  while (!player_alerted && player->is_hurt())
-  {
+  while (!player_alerted && player->is_hurt()) {
     Daemons::daemon_run_before();
     Daemons::daemon_run_after();
   }
   return true;
 }
 
-bool
-command_eat()
-{
+bool command_eat() {
   Item* obj = player->pack_find_item("eat", IO::Food);
-  if (obj == nullptr)
+  if (obj == nullptr) {
     return false;
+  }
 
   if (obj->o_type != IO::Food) {
     Game::io->message("that's inedible!");
@@ -558,9 +540,7 @@ command_eat()
   return true;
 }
 
-bool
-command_run(char ch, bool cautiously)
-{
+bool command_run(char ch, bool cautiously) {
   runch = ch;
 
   if (player->is_blind()) {
@@ -576,8 +556,7 @@ command_run(char ch, bool cautiously)
   return move_do(ch, cautiously);
 }
 
-bool
-command_read_scroll() {
+bool command_read_scroll() {
 
   Item* obj = player->pack_find_item("read", IO::Scroll);
   if (obj == nullptr) {
@@ -615,7 +594,6 @@ command_read_scroll() {
   }
 
   return true;
-
 }
 
 bool command_open() {
