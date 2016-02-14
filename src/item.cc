@@ -45,8 +45,6 @@ void Item::set_nickname(std::string const& new_value) {
   nickname = new_value;
 }
 
-
-
 Coordinate const& Item::get_position() const {
   return position_on_screen;
 }
@@ -147,17 +145,17 @@ string Item::name(Item::Type type) {
 }
 
 int Item::probability(Item::Type type) {
-  static_assert(30 + 30 + 15 + 10 + 10 + 1 + 4 == 100, "Item probability");
+  static_assert(25 + 25 + 10 + 10 + 10 + 1 + 4 + 0 + 15 == 100, "Item probability");
   switch (type) {
-    case Potion: return 30;
-    case Scroll: return 30;
-    case Food:   return 15;
+    case Potion: return 25;
+    case Scroll: return 25;
+    case Food:   return 10;
     case Weapon: return 10;
     case Armor:  return 10;
     case Ring:   return  1;
     case Wand:   return  4;
     case Amulet: return  0;
-    case Gold:   return  0;
+    case Gold:   return 15;
     case NITEMS: error("Unknown type NITEMS");
   }
 }

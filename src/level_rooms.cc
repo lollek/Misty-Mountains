@@ -230,15 +230,6 @@ Level::create_rooms() {
       draw_room(room);
     }
 
-    /* Put the gold in */
-    if (os_rand_range(2)) {
-      get_random_room_coord(&room, &room.r_gold, 0, false);
-      Gold *gold = new Gold();
-      gold->set_position(room.r_gold);
-      room.r_goldval = gold->get_amount();
-      items.push_back(gold);
-    }
-
     /* Put the monster in */
     if (os_rand_range(100) < (room.r_goldval > 0 ? 80 : 25)) {
       Coordinate mp;

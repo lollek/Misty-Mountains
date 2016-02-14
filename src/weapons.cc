@@ -345,12 +345,12 @@ string Weapon::name(Weapon::Type type) {
 int Weapon::worth(Weapon::Type type) {
   switch (type) {
     case Sling:         return 5;
-    case Arrow:         return 2;
-    case Rock:          return 1;
+    case Arrow:         return 5;
+    case Rock:          return 2;
     case Dagger:        return 10;
     case Club:          return 2;
     case Quarterstaff:  return 3;
-    case Shortbow:      return 20;
+    case Shortbow:      return 50;
     case Throwingknife: return 20;
     case Mace:          return 240;
     case Spear:         return 70;
