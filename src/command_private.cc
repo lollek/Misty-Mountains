@@ -614,20 +614,27 @@ bool command_open() {
 }
 
 bool command_close() {
-  const Coordinate* dir = get_dir();
+  const Coordinate* dir{get_dir()};
   if (dir == nullptr) {
     return false;
   }
 
-  Coordinate const& player_pos = player->get_position();
-  Tile::Type door = Game::level->get_tile(player_pos.x + dir->x, player_pos.y + dir->y);
-  if (door == Tile::OpenDoor) {
-    Game::level->set_tile(player_pos.x + dir->x, player_pos.y + dir->y, Tile::ClosedDoor);
-    return true;
-  } else {
+  Coordinate const& player_pos{player->get_position()};
+  Coordinate door_coord{player_pos.x + dir->x, player_pos.y + dir->y};
+  Tile::Type door{Game::level->get_tile(door_coord)};
+  if (door != Tile::OpenDoor) {
     Game::io->message("Nothing to close there");
     return false;
   }
+
+  Monster* monster = Game::level->get_monster(door_coord);
+  if (monster != nullptr) {
+    Game::io->message(monster->get_name() + " is blocking the doorway");
+    return false;
+  }
+
+  Game::level->set_tile(door_coord, Tile::ClosedDoor);
+  return true;
 }
 
 bool command_save() {
