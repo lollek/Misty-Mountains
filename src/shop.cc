@@ -33,6 +33,10 @@ Shop::Shop() {
   inventory.push_back(new class Armor(Armor::Robe, false));
   inventory.push_back(new class Armor(Armor::Softleatherarmor, false));
   inventory.push_back(new class Scroll(Scroll::ID));
+
+  for (Item* item : inventory) {
+    item->set_identified();
+  }
 }
 
 void Shop::print() const {
