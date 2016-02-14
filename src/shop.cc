@@ -39,6 +39,32 @@ Shop::Shop() {
   }
 }
 
+int Shop::buy_value(Item const* item) const {
+  return static_cast<int>(lround(item->get_value() * 1.1));
+}
+
+int Shop::sell_value(Item const* item) const {
+  int value;
+  if (item->is_identified()) {
+    value = item->get_value();
+  } else {
+    value = item->get_base_value();
+  }
+
+  // Cheap items
+  if (10 > value && value > 0) {
+    value /= 2;
+    if (value <= 0) {
+      value = 1;
+    }
+
+  // Normal and expensive items
+  } else {
+    value /= 10;
+  }
+  return value;
+}
+
 void Shop::print() const {
   char sym = 'a';
 
@@ -50,14 +76,14 @@ void Shop::print() const {
   for (int i = 0; i < static_cast<int>(inventory.size()); ++i) {
     Item const* item = inventory.at(static_cast<size_t>(i));
     mvprintw(i + 4,  1, "%c) %s", sym, item->get_description().c_str());
-    mvprintw(i + 4, 60, "%d", item->get_value());
+    mvprintw(i + 4, 60, "%d", buy_value(item));
     ++sym;
   }
 
   // Buyback
   for (Item* item : limited_inventory) {
     mvprintw(4 + sym - 'a',  1, "%c) %s", sym, item->get_description().c_str());
-    mvprintw(4 + sym - 'a', 60, "%d", item->get_value());
+    mvprintw(4 + sym - 'a', 60, "%d", buy_value(item));
     ++sym;
   }
 
@@ -70,19 +96,7 @@ void Shop::sell() {
     return;
   }
 
-  int value;
-  if (obj->is_identified()) {
-    value = obj->get_value();
-  } else {
-    value = obj->get_base_value();
-  }
-
-  if (10 > value && value > 0) {
-    value = 1;
-  } else {
-    value /= 10;
-  }
-
+  int value = sell_value(obj);
   if (value <= 0) {
     Game::io->message("the shopkeeper is not interested in buying that");
     return;
@@ -137,7 +151,7 @@ void Shop::enter() {
       continue;
     }
 
-    int value = static_cast<int>(lround(item_to_buy->get_value() * 1.1));
+    int value = buy_value(item_to_buy);
     if (player->get_gold() < value) {
       Game::io->message("you cannot afford it");
       continue;

@@ -21,6 +21,9 @@ private:
   void print() const;
   void sell();
 
+  int  buy_value(Item const*) const;
+  int  sell_value(Item const*) const;
+
   std::vector<Item*> inventory;
   std::list<Item*> limited_inventory;
 };
