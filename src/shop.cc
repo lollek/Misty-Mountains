@@ -84,6 +84,11 @@ void Shop::print() const {
   for (Item* item : limited_inventory) {
     mvprintw(4 + sym - 'a',  1, "%c) %s", sym, item->get_description().c_str());
     mvprintw(4 + sym - 'a', 60, "%d", buy_value(item));
+
+    // Make sure we don't have too many items
+    if (sym == 'a' + max_items_per_page) {
+      break;
+    }
     ++sym;
   }
 
@@ -136,6 +141,10 @@ void Shop::enter() {
 
 
     size_t item_pos = static_cast<size_t>(ch - 'a');
+    if (item_pos > max_items_per_page) {
+      continue;
+    }
+
     Item* item_to_buy = nullptr;
     bool limited_item = false;
     if (item_pos < inventory.size()) {

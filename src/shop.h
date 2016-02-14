@@ -26,4 +26,6 @@ private:
 
   std::vector<Item*> inventory;
   std::list<Item*> limited_inventory;
+
+  static int constexpr max_items_per_page = 25;
 };
