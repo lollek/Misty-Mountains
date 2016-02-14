@@ -45,3 +45,7 @@ int Amulet::get_base_value() const {
 int Amulet::get_value() const {
   return get_base_value();
 }
+
+bool Amulet::is_stackable() const {
+  return false;
+}

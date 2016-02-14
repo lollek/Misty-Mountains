@@ -44,9 +44,10 @@ public:
   std::string get_description() const override;
   bool        is_magic() const override;
   bool        is_identified() const override;
-  bool        is_rustproof() const;
+  bool        is_stackable() const override;
   int         get_value() const override;
   int         get_base_value() const override;
+  bool        is_rustproof() const;
 
   void save(std::ofstream&) const override;
   bool load(std::ifstream&) override;

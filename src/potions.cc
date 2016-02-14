@@ -411,3 +411,7 @@ int Potion::get_value() const {
   }
   return value;
 }
+
+bool Potion::is_stackable() const {
+  return true;
+}

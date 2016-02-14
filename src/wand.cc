@@ -304,3 +304,7 @@ int Wand::get_value() const {
   value *= o_count;
   return value;
 }
+
+bool Wand::is_stackable() const {
+  return false;
+}

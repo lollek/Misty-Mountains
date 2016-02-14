@@ -46,6 +46,7 @@ public:
   bool        is_identified() const override;
   int         get_value() const override;
   int         get_base_value() const override;
+  bool        is_stackable() const override;
 
   void save(std::ofstream&) const override;
   bool load(std::ifstream&) override;

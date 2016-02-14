@@ -50,3 +50,7 @@ int Gold::get_base_value() const {
 int Gold::get_value() const {
   return get_base_value();
 }
+
+bool Gold::is_stackable() const {
+  return true;
+}

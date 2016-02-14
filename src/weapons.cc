@@ -523,3 +523,12 @@ int Weapon::get_value() const {
   value *= o_count;
   return value;
 }
+
+bool Weapon::is_stackable() const {
+  if (o_type == IO::Ammo) {
+    return true;
+  } else if (o_type == IO::Weapon) {
+    return false;
+  }
+  error("unknown type");
+}

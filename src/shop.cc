@@ -116,11 +116,40 @@ void Shop::sell() {
   }
   Game::io->clear_message();
   Game::io->message("Item sold");
-
   obj = player->pack_remove(obj, true, false);
   obj->set_identified();
   player->give_gold(value);
-  limited_inventory.push_back(obj);
+
+
+  // Try to stack it
+  for (Item *ptr : inventory) {
+    if (ptr->o_type == obj->o_type &&
+        ptr->o_which == obj->o_which &&
+        ptr->get_hit_plus() == obj->get_hit_plus() &&
+        ptr->get_damage_plus() == obj->get_damage_plus()) {
+      delete obj;
+      obj = nullptr;
+      break;
+    }
+  }
+
+  if (obj != nullptr && obj->is_stackable()) {
+    for (Item *ptr : limited_inventory) {
+      if (ptr->o_type == obj->o_type &&
+          ptr->o_which == obj->o_which &&
+          ptr->get_hit_plus() == obj->get_hit_plus() &&
+          ptr->get_damage_plus() == obj->get_damage_plus()) {
+        ptr->o_count += obj->o_count;
+        delete obj;
+        obj = nullptr;
+        break;
+      }
+    }
+  }
+
+  if (obj != nullptr) {
+    limited_inventory.push_back(obj);
+  }
 }
 
 void Shop::enter() {

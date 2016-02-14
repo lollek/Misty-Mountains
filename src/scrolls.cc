@@ -515,3 +515,7 @@ int Scroll::get_value() const {
   }
   return value;
 }
+
+bool Scroll::is_stackable() const {
+  return true;
+}

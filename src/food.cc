@@ -125,3 +125,7 @@ int Food::get_base_value() const {
 int Food::get_value() const {
   return get_base_value() * o_count;
 }
+
+bool Food::is_stackable() const {
+  return true;
+}

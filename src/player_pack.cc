@@ -55,8 +55,7 @@ bool Player::pack_add(Item* obj, bool silent, bool from_floor) {
 
   /* See if we can stack it with something else in the pack */
   bool is_picked_up = false;
-  if (obj->o_type == IO::Potion || obj->o_type == IO::Scroll ||
-      obj->o_type == IO::Food || obj->o_type == IO::Ammo)
+  if (obj->is_stackable())
     for (Item* ptr : pack) {
       if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which &&
           ptr->get_hit_plus() == obj->get_hit_plus() &&

@@ -258,3 +258,6 @@ int Armor::get_value() const {
   worth *= o_count;
   return worth;
 }
+bool Armor::is_stackable() const {
+  return false;
+}

@@ -358,3 +358,7 @@ int Ring::get_value() const {
 
   return value;
 }
+
+bool Ring::is_stackable() const {
+  return true;
+}

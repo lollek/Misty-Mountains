@@ -67,6 +67,7 @@ public:
   int         get_base_value() const override;
   bool        is_magic() const override;
   bool        is_identified() const override;
+  bool        is_stackable() const override;
   bool        is_missile_launcher() const;
   AmmoType    get_ammo_used() const;
   AmmoType    get_ammo_type() const;
