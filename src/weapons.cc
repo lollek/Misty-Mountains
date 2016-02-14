@@ -474,14 +474,23 @@ weapon_missile_fall(Item* obj, bool pr) {
 void Weapon::save(std::ofstream& data) const {
   Item::save(data);
   static_assert(sizeof(Weapon::Type) == sizeof(int), "Wrong Weapon::Type size");
+  static_assert(sizeof(Weapon::AmmoType) == sizeof(int), "Wrong AmmoType size");
   Disk::save(TAG_WEAPON, static_cast<int>(subtype), data);
+  Disk::save(TAG_WEAPON, static_cast<int>(is_ammo_type), data);
+  Disk::save(TAG_WEAPON, static_cast<int>(uses_ammo_type), data);
+  Disk::save(TAG_WEAPON, ammo_multiplier, data);
   Disk::save(TAG_WEAPON, identified, data);
+  Disk::save(TAG_WEAPON, good_missile, data);
 }
 
 bool Weapon::load(std::ifstream& data) {
   if (!Item::load(data) ||
       !Disk::load(TAG_WEAPON, reinterpret_cast<int&>(subtype), data) ||
-      !Disk::load(TAG_WEAPON, identified, data)) {
+      !Disk::load(TAG_WEAPON, reinterpret_cast<int&>(is_ammo_type), data) ||
+      !Disk::load(TAG_WEAPON, reinterpret_cast<int&>(uses_ammo_type), data) ||
+      !Disk::load(TAG_WEAPON, ammo_multiplier, data) ||
+      !Disk::load(TAG_WEAPON, identified, data) ||
+      !Disk::load(TAG_WEAPON, good_missile, data)) {
     return false;
   }
   return true;
