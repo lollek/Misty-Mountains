@@ -174,7 +174,8 @@ Game::Game(ifstream& savefile) {
   Disk::load(TAG_FOODLESS, Game::levels_without_food, savefile);
 
 
-  Game::new_level(Game::current_level);
+  //Game::new_level(Game::current_level);
+  Game::new_level(1);
 }
 
 bool Game::save() {
