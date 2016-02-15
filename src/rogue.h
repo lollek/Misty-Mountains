@@ -7,7 +7,6 @@
 #define LEFT		0
 #define RIGHT		1
 #define BOLT_LENGTH	6
-#define LAMPDIST	3
 
 /* Save against things */
 #define VS_POISON	00

@@ -282,7 +282,7 @@ void Monster::notice_player() {
     Coordinate const& player_pos = player->get_position();
     struct room const* rp = Game::level->get_room(player_pos);
     if ((rp != nullptr && !(rp->r_flags & ISDARK))
-        || dist(coord.y, coord.x, player_pos.y, player_pos.x) < LAMPDIST) {
+        || dist(coord.y, coord.x, player_pos.y, player_pos.x) < 3) {
       set_found();
       if (!player->saving_throw(VS_MAGIC)) {
         Game::io->message(get_name() + "'s gaze has confused you");
