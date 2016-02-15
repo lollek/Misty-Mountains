@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "character.h"
-#include "Coordinate.h"
+#include "coordinate.h"
 #include "item.h"
 #include "rogue.h"
 

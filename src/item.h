@@ -4,7 +4,7 @@
 #include <fstream>
 
 #include "damage.h"
-#include "Coordinate.h"
+#include "coordinate.h"
 
 class Item {
 public:

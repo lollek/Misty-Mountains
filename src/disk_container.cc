@@ -1,6 +1,21 @@
+#include <vector>
+
 #include "disk.h"
 
 using namespace std;
+
+template <>
+void Disk::save<vector, bool>(tag_type tag, vector<bool> const& container, std::ofstream& data) {
+  save_tag(tag, data);
+
+  size_t size = container.size();
+  save(tag, size, data);
+
+  for (bool const element : container) {
+    save(tag, element, data);
+  }
+}
+
 
 template <>
 bool Disk::load<vector, bool>(tag_type tag, vector<bool>& container, std::ifstream& data) {

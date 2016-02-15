@@ -136,7 +136,7 @@ void wizard_create_item(void) {
 
   // Get itemtype
   Game::io->message("type of item?");
-  int type = io_readchar(true);
+  char type = static_cast<char>(io_readchar(true));
   Game::io->clear_message();
 
   switch (type) {

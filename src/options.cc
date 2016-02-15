@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "game.h"
 #include "error_handling.h"

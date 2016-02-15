@@ -1,9 +1,3 @@
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-pragmas"
-#pragma clang diagnostic ignored "-Wreserved-id-macro"
-#define _XOPEN_SOURCE 500
-#pragma clang diagnostic pop
-
 #include <unistd.h>
 #include <pwd.h>
 #include <fcntl.h>
@@ -31,6 +25,10 @@ int os_rand_range(int max) {
 
 int os_rand() {
   return rand_r(&os_rand_seed);
+}
+
+int os_process_id() {
+  return getpid();
 }
 
 int os_usleep(unsigned int usec) {

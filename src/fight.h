@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Coordinate.h"
+#include "coordinate.h"
 #include "monster.h"
 
 /** fight_against_monster:

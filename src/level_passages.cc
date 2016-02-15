@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <exception>
+#include <algorithm>
 
 #include "error_handling.h"
 #include "game.h"

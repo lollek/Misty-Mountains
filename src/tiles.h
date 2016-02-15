@@ -5,7 +5,6 @@
 
 struct Tile {
   Tile();
-  ~Tile();
 
   enum Type {
     Wall,

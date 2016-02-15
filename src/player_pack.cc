@@ -1,5 +1,6 @@
 #include <string>
 #include <list>
+#include <algorithm>
 
 #include "error_handling.h"
 #include "coordinate.h"

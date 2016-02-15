@@ -27,4 +27,6 @@ bool load(tag_type tag, C<T, std::allocator<T>>& container, std::ifstream& data)
 
 // Special case for vector<bool> since it wanna feel special
 template <>
-bool load<std::vector, bool>(tag_type tag, std::vector<bool>& container, std::ifstream& data);
+void save<std::vector, bool>(tag_type, std::vector<bool> const&, std::ofstream&);
+template <>
+bool load<std::vector, bool>(tag_type, std::vector<bool>&, std::ifstream&);

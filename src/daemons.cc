@@ -1,4 +1,5 @@
 #include <list>
+#include <algorithm>
 
 #include "disk.h"
 #include "error_handling.h"

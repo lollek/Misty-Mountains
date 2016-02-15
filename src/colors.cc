@@ -7,10 +7,10 @@
 
 using namespace std;
 
-static vector<string const>* rainbow = nullptr;
+static vector<string>* rainbow = nullptr;
 
 void Color::init_colors() {
-  rainbow = new vector<string const> {
+  rainbow = new vector<string> {
     "amber",     "aquamarine", "black",      "blue",       "brown",
     "clear",     "crimson",    "cyan",       "ecru",       "gold",
     "green",     "grey",       "magenta",    "orange",     "pink",

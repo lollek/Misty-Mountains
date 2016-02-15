@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 #include "options.h"
 #include "game.h"

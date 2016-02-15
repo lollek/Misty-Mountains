@@ -22,7 +22,7 @@
 #include "rogue.h"
 #include "traps.h"
 
-#include "Game.h"
+#include "game.h"
 
 using namespace std;
 

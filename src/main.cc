@@ -48,7 +48,7 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
   ESCDELAY = 0;
 
   // Set seed and dungeon number
-  os_rand_seed = static_cast<unsigned>(time(nullptr) + getpid());
+  os_rand_seed = static_cast<unsigned>(time(nullptr) + os_process_id());
 
   for (;;)
   {

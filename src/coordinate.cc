@@ -1,4 +1,4 @@
-#include "Coordinate.h"
+#include "coordinate.h"
 
 Coordinate::Coordinate(int _x, int _y)
   : x(_x), y(_y)

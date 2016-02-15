@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 #include "options.h"
 #include "disk.h"
@@ -331,13 +332,13 @@ void Potion::init_potions() {
   for (int i = 0; i < Potion::NPOTIONS; i++)
     for (;;) {
       size_t color = os_rand_range(Color::max());
+      string color_name = Color::get(color);
 
-      if (find(colors->cbegin(), colors->cend(), Color::get(color)) !=
-          colors->cend()) {
+      if (find(colors->cbegin(), colors->cend(), color_name) != colors->cend()) {
         continue;
       }
 
-      colors->push_back(Color::get(color));
+      colors->push_back(color_name);
       break;
     }
 

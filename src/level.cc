@@ -1,4 +1,5 @@
 #include <list>
+#include <algorithm>
 
 #include "amulet.h"
 #include "error_handling.h"

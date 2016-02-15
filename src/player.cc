@@ -6,7 +6,7 @@
 #include "food.h"
 #include "error_handling.h"
 #include "game.h"
-#include "Coordinate.h"
+#include "coordinate.h"
 #include "rings.h"
 #include "misc.h"
 #include "io.h"
