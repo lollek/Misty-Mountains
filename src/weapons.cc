@@ -426,8 +426,9 @@ string Weapon::get_description() const {
     buffer << p_armor << "]";
   }
 
-  if (!get_nickname().empty()) {
-    buffer << " {" << get_nickname() << "}";
+  string const& nickname = get_nickname();
+  if (!nickname.empty()) {
+    buffer << " {" << nickname << "}";
   }
 
   return buffer.str();

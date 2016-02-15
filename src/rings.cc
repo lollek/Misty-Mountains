@@ -309,9 +309,11 @@ std::string Ring::get_description() const {
 
     case NRINGS:   error("Unknown ring NRINGS");
     }
+  }
 
-  } else if (!Ring::guess(subtype).empty()) {
-    os << " {" << Ring::guess(subtype) << "}";
+  string const& inscription = guess(subtype);
+  if (!inscription.empty()) {
+    os << " {" << inscription << "}";
   }
 
   return os.str();

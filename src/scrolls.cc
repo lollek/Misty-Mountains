@@ -156,11 +156,18 @@ string Scroll::get_description() const {
     os << to_string(o_count) << " scrolls";
   }
 
+  bool prefix_added = false;
   if (Scroll::is_known(subtype)) {
     os << " of " << Scroll::name(subtype);
-  } else if (!Scroll::guess(subtype).empty()) {
+    prefix_added = true;
+  }
+
+  if (!Scroll::guess(subtype).empty()) {
     os << " {" << Scroll::guess(subtype) << "}";
-  } else {
+    prefix_added = true;
+  }
+
+  if (!prefix_added) {
     os << " titled " << Scroll::fake_name->at(subtype);
   }
 

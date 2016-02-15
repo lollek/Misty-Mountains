@@ -159,11 +159,11 @@ string Potion::get_description() const {
     } else {
       os << to_string(o_count) << " " << color << " potions";
     }
+  }
 
-    string const& nickname = Potion::guess(subtype);
-    if (!nickname.empty()) {
-      os << " {" << nickname << "}";
-    }
+  string const& nickname = Potion::guess(subtype);
+  if (!nickname.empty()) {
+    os << " {" << nickname << "}";
   }
 
   return os.str();

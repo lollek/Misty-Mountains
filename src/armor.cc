@@ -212,8 +212,9 @@ string Armor::get_description() const {
 
   buffer << "]";
 
-  if (!get_nickname().empty()) {
-    buffer << " {" << get_nickname() << "}";
+  string const& nickname = get_nickname();
+  if (!nickname.empty()) {
+    buffer << " {" << nickname << "}";
   }
 
   return buffer.str();

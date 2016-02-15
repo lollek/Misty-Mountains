@@ -236,7 +236,6 @@ string Wand::get_description() const {
   stringstream os;
 
   bool is_known = Wand::is_known(subtype);
-  string const& guess = Wand::guess(subtype);
 
   os
     << "a"
@@ -253,9 +252,12 @@ string Wand::get_description() const {
     } else {
       os << " [? charges]";
     }
+  }
 
-  } else if (!guess.empty()) {
-    os << " {" << guess << "}";
+
+  string const& inscription = Wand::guess(subtype);
+  if (!inscription.empty()) {
+    os << " {" << inscription << "}";
   }
 
   return os.str();
