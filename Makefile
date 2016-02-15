@@ -23,7 +23,7 @@ $(PROGRAM): $(OBJS)
 	$(CXX) -o $@ $(LDFLAGS) $(OBJS)
 
 analyze:
-	clang --analyze -Xanalyzer $(CXXFLAGS) $(DFLAGS) src/*.cc
+	clang++ --analyze -Xanalyzer -analyzer-output=text $(CXXFLAGS) $(DFLAGS) src/*.cc
 	$(RM) *.plist
 .PHONY: analyze
 
