@@ -14,7 +14,7 @@ bool command_close();                  // Close door
 bool command_eat();                   // Eat something
 bool command_help();                  // Give command help
 bool command_identify_trap();         // Give the name of a trap
-bool command_name_item();             // Call an item something
+bool command_inscribe_item();             // Call an item something
 bool command_open();                  // Open door
 bool command_pick_up(bool force);     // Pick up something at her feet
 bool command_quit();                  // Ask player if she wants to quit

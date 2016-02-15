@@ -101,6 +101,7 @@ command_do(char ch)
     case '<': return command_use_stairs(ch);
     case '?': return command_help();
     case '^': return command_identify_trap();
+    case '{': return command_inscribe_item();
 
     /* Lower case */
     case 'h': case 'j': case 'k': case 'l':
@@ -122,7 +123,6 @@ command_do(char ch)
     case 'Y': case 'U': case 'B': case 'N':
       return command_run(ch, false);
     case 'A': return command_attack(true);
-    case 'C': return command_name_item();
     case 'E': return player->pack_show_equipment();
     case 'I': return player->pack_show_inventory();
     case 'O': return option();

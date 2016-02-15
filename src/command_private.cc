@@ -139,50 +139,35 @@ bool command_attack(bool fight_to_death) {
     : command_attack_melee(fight_to_death, delta);
 }
 
-bool command_name_item() {
-  Item* obj = player->pack_find_item("rename", 0);
-
+bool command_inscribe_item() {
+  Item* obj = player->pack_find_item("inscribe", 0);
   if (obj == nullptr) {
     return false;
   }
 
-  bool already_known;
   string* guess = nullptr;
   switch (obj->o_type) {
-    case IO::Amulet: already_known = true; break;
+    case IO::Amulet: Game::io->message("Cannot inscribe the amulet"); return false;
     case IO::Food: Game::io->message("Don't play with your food!"); return false;
 
     case IO::Ring:
-      already_known = Ring::is_known(static_cast<Ring::Type>(obj->o_which));
       guess = &Ring::guess(static_cast<Ring::Type>(obj->o_which));
       break;
 
     case IO::Potion:
-      already_known = Potion::is_known(static_cast<Potion::Type>(obj->o_which));
       guess = &Potion::guess(static_cast<Potion::Type>(obj->o_which));
       break;
 
     case IO::Scroll:
-      already_known = Scroll::is_known(static_cast<Scroll::Type>(obj->o_which));
       guess = &Scroll::guess(static_cast<Scroll::Type>(obj->o_which));
       break;
 
     case IO::Wand:
-      already_known = Wand::is_known(static_cast<Wand::Type>(obj->o_which));
       guess = &Wand::guess(static_cast<Wand::Type>(obj->o_which));
       break;
-
-    default:
-      already_known = false;
-      break;
   }
 
-  if (already_known) {
-    Game::io->message("that has already been identified");
-    return false;
-  }
-
-  Game::io->message("what do you want to call it?");
+  Game::io->message("what do you want to inscribe on it?");
 
   string new_name = Game::io->read_string();
   if (!new_name.empty()) {
@@ -316,9 +301,9 @@ bool command_help() {
     {'<',	"	go up a staircase",			true},
     {'>',	"	go down a staircase",			true},
     {'?',	"	prints help",				true},
+    {'{',	"	inscribe something",			true},
     {'A',	"	attack till either of you dies",	true},
     {'B',	"	run down & left",			false},
-    {'C',	"	tag/call an item something",		false},
     {'E',	"	equipment",				true},
     {'H',	"	run left",				false},
     {'I',	"	inventory",				true},
