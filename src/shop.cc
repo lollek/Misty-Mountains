@@ -116,7 +116,7 @@ void Shop::sell() {
   }
   Game::io->clear_message();
   Game::io->message("Item sold");
-  obj = player->pack_remove(obj, true, false);
+  obj = player->pack_remove(obj, true, true);
   obj->set_identified();
   player->give_gold(value);
 
