@@ -375,6 +375,8 @@ bool Player::pack_equip(Item* item, bool silent) {
     } else if (position == Armor) {
       if (pack_unequip(position, true)) {
         continue;
+      } else {
+        return false;
       }
 
     } else {
@@ -405,7 +407,8 @@ bool Player::pack_unequip(Equipment pos, bool silent_on_success) {
   }
 
   if (obj->is_cursed()) {
-    Game::io->message("you can't. It appears to be cursed");
+    Game::io->message("you can't unequip it. It appears to be cursed");
+    obj->set_identified();
     return false;
   }
 
