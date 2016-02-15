@@ -118,6 +118,9 @@ private:
   bool         senses_monsters;
   int          speed;
 
+  static int constexpr darkvision = 2;
+  static int constexpr lightvision = 4;
+
   // player_pack_management.cc
   enum Window {
     INVENTORY,

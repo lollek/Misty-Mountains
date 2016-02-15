@@ -113,9 +113,6 @@ bool Player::can_see(Coordinate const& coord) const {
     return false;
   }
 
-  int darkvision = 2;
-  int lightvision = 3;
-
   Coordinate const& player_pos = get_position();
   int real_distance = Game::level->is_dark(coord) ? darkvision : lightvision;
 
