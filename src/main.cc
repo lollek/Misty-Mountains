@@ -24,7 +24,7 @@ using namespace std;
 static void
 parse_args(int argc, char* const* argv, bool& restore, string& save_path, string& whoami)
 {
-  string const game_version = "Misty Mountains v2.0-alpha2 - Based on Rogue5.4.4";
+  string const game_version = "Misty Mountains v2.0-alpha2-dev - Based on Rogue5.4.4";
   int option_index = 0;
   struct option const long_options[] = {
     {"no-colors", no_argument,       0, 'c'},
