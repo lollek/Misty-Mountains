@@ -1,5 +1,8 @@
 Misty Mountain:
 
+  Increase view distance of your torch
+
+v2.0-alpha2
   Reimplement saving and loading
   Change inventory management
   Remove/add/change some monsters and when they appear
