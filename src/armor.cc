@@ -261,3 +261,7 @@ int Armor::get_value() const {
 bool Armor::is_stackable() const {
   return false;
 }
+
+bool Armor::autopickup() const {
+  return option_autopickup(o_type);
+}

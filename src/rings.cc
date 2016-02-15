@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 
+#include "options.h"
 #include "game.h"
 #include "disk.h"
 #include "error_handling.h"
@@ -361,4 +362,7 @@ int Ring::get_value() const {
 
 bool Ring::is_stackable() const {
   return true;
+}
+bool Ring::autopickup() const {
+  return option_autopickup(o_type);
 }

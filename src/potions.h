@@ -46,6 +46,7 @@ public:
   bool        is_magic() const override;
   bool        is_identified() const override;
   bool        is_stackable() const override;
+  bool        autopickup() const override;
   int         get_value() const override;
   int         get_base_value() const override;
 

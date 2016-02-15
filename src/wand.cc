@@ -2,6 +2,7 @@
 #include <vector>
 #include <sstream>
 
+#include "options.h"
 #include "disk.h"
 #include "error_handling.h"
 #include "game.h"
@@ -307,4 +308,8 @@ int Wand::get_value() const {
 
 bool Wand::is_stackable() const {
   return false;
+}
+
+bool Wand::autopickup() const {
+  return option_autopickup(o_type);
 }

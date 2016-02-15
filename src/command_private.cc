@@ -276,7 +276,7 @@ bool command_pick_up(bool force) {
 
       case IO::Potion: case IO::Weapon: case IO::Ammo: case IO::Food: case IO::Armor:
       case IO::Scroll: case IO::Amulet: case IO::Ring: case IO::Wand: {
-        if (force || option_autopickup(obj->o_type)) {
+        if (force || obj->autopickup()) {
           player->pack_add(obj, false, true);
           it = items_here.erase(it);
         } else {

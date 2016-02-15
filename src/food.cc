@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 
+#include "options.h"
 #include "disk.h"
 #include "error_handling.h"
 #include "game.h"
@@ -128,4 +129,8 @@ int Food::get_value() const {
 
 bool Food::is_stackable() const {
   return true;
+}
+
+bool Food::autopickup() const {
+  return option_autopickup(o_type);
 }

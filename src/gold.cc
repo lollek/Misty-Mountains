@@ -54,3 +54,7 @@ int Gold::get_value() const {
 bool Gold::is_stackable() const {
   return true;
 }
+
+bool Gold::autopickup() const {
+  return true;
+}

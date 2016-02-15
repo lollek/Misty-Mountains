@@ -49,3 +49,7 @@ int Amulet::get_value() const {
 bool Amulet::is_stackable() const {
   return false;
 }
+
+bool Amulet::autopickup() const {
+  return true;
+}

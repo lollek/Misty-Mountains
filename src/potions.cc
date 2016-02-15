@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 
+#include "options.h"
 #include "disk.h"
 #include "error_handling.h"
 #include "io.h"
@@ -414,4 +415,12 @@ int Potion::get_value() const {
 
 bool Potion::is_stackable() const {
   return true;
+}
+
+bool Potion::autopickup() const {
+  string const& guess_ = guess(subtype);
+  if (!guess_.empty() && guess_.find('!') != string::npos) {
+    return false;
+  }
+  return option_autopickup(o_type);
 }

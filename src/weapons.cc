@@ -532,3 +532,6 @@ bool Weapon::is_stackable() const {
   }
   error("unknown type");
 }
+bool Weapon::autopickup() const {
+  return option_autopickup(o_type);
+}

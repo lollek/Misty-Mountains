@@ -519,3 +519,10 @@ int Scroll::get_value() const {
 bool Scroll::is_stackable() const {
   return true;
 }
+bool Scroll::autopickup() const {
+  string const& guess_ = guess(subtype);
+  if (!guess_.empty() && guess_.find('!') != string::npos) {
+    return false;
+  }
+  return option_autopickup(o_type);
+}

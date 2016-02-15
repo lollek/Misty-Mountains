@@ -55,6 +55,7 @@ public:
   virtual bool          is_magic() const = 0;
   virtual bool          is_identified() const = 0;
   virtual bool          is_stackable() const = 0;
+  virtual bool          autopickup() const = 0;
   virtual int           get_value() const = 0;
   virtual int           get_base_value() const = 0;
 

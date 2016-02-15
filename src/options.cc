@@ -36,7 +36,6 @@ bool option_autopickup(int type) {
     case IO::Armor:  return pickup_armor;
     case IO::Ring:   return pickup_rings;
     case IO::Wand:   return pickup_sticks;
-    case IO::Amulet: return true;
     default:     error("option_autopickup: unknown type: " + to_string(type));
   }
 }
