@@ -33,7 +33,10 @@ bool Disk::load<Item>(tag_type tag, Item*& element, std::ifstream& data) {
   if (!load_tag(tag, data)) { return false; }
 
   int null_checker;
-  load(tag, null_checker, data);
+  if (!load(tag, null_checker, data)) {
+    return false;
+  }
+
   if (null_checker == 0) {
     return true;
   }
