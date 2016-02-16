@@ -31,104 +31,67 @@ bool wizard_dicerolls = false;
 static void
 pr_spec(char type)
 {
-  WINDOW* printscr = dupwin(stdscr);
-
-  Coordinate orig_pos;
-  getyx(stdscr, orig_pos.y, orig_pos.x);
-
   size_t max;
-  switch (type)
-  {
+  switch (type) {
     case IO::Potion: max = Potion::Type::NPOTIONS;  break;
     case IO::Scroll: max = Scroll::Type::NSCROLLS;  break;
     case IO::Ring:   max = Ring::Type::NRINGS;    break;
     case IO::Wand:   max = Wand::Type::NWANDS; break;
     case IO::Armor:  max = Armor::Type::NARMORS;   break;
     case IO::Weapon: max = Weapon::NWEAPONS; break;
-    default: error("Unknown type in pr_spec");
+    case IO::Trap:   max = Trap::NTRAPS; break;
+
+    default:
+      Game::io->message("Unknown type in pr_spec"); return;
   }
 
   char ch = '0';
-  for (size_t i = 0; i < max; ++i)
-  {
+  for (size_t i = 0; i < max; ++i) {
     string name;
-    wmove(printscr, static_cast<int>(i) + 1, 1);
+    move(static_cast<int>(i) + 1, 1);
 
     switch (type) {
-      case IO::Scroll: {
-        name = Scroll::name(static_cast<Scroll::Type>(i));
-      } break;
-
-      case IO::Armor: {
-        name = Armor::name(static_cast<Armor::Type>(i));
-      } break;
-
-      case IO::Potion: {
-        name = Potion::name(static_cast<Potion::Type>(i));
-      } break;
-
-      case IO::Wand: {
-        name = Wand::name(static_cast<Wand::Type>(i));
-      } break;
-
-      case IO::Ring: {
-        name = Ring::name(static_cast<Ring::Type>(i));
-      } break;
-
-      case IO::Weapon: {
-        name = Weapon::name(static_cast<Weapon::Type>(i));
-      } break;
-
+      case IO::Scroll: name = Scroll::name(static_cast<Scroll::Type>(i)); break;
+      case IO::Armor:  name = Armor::name(static_cast<Armor::Type>(i)); break;
+      case IO::Potion: name = Potion::name(static_cast<Potion::Type>(i)); break;
+      case IO::Wand:   name = Wand::name(static_cast<Wand::Type>(i)); break;
+      case IO::Ring:   name = Ring::name(static_cast<Ring::Type>(i)); break;
+      case IO::Weapon: name = Weapon::name(static_cast<Weapon::Type>(i)); break;
+      case IO::Trap:   name = Trap::name(static_cast<Trap::Type>(i)); break;
       default: error("Unknown type in pr_spec");
     }
 
-    wprintw(printscr, "%c: %s", ch, name.c_str());
+    printw("%c: %s", ch, name.c_str());
     ch = ch == '9' ? 'a' : (ch + 1);
   }
 
-  wmove(stdscr, orig_pos.y, orig_pos.x);
-  wrefresh(printscr);
-  delwin(printscr);
-}
-
-static void
-print_things(void)
-{
-  char index_to_char[] = { IO::Potion, IO::Scroll, IO::Food, IO::Weapon, IO::Armor,
-                           IO::Ring, IO::Wand };
-  WINDOW* tmp = dupwin(stdscr);
-
-  Coordinate orig_pos;
-  getyx(stdscr, orig_pos.y, orig_pos.x);
-
-  for (int i = 0; i < static_cast<int>(Item::NITEMS); ++i)
-  {
-    wmove(tmp, i + 1, 1);
-    wprintw(tmp, "%c %s", index_to_char[i], Item::name(static_cast<Item::Type>(i)).c_str());
-  }
-
-  wmove(stdscr, orig_pos.y, orig_pos.x);
-  wrefresh(tmp);
-  delwin(tmp);
+  refresh();
+  io_readchar(false);
+  Game::io->clear_message();
+  clear();
 }
 
 int
 wizard_list_items(void)
 {
   Game::io->message("for what type of object do you want a list?");
-  print_things();
+  vector<char> things {
+    IO::Potion, IO::Scroll, IO::Food, IO::Weapon, IO::Armor, IO::Ring, IO::Wand,
+    IO::Trap
+  };
+  vector<string> names {
+    "potion", "scroll", "food", "weapon", "armor", "ring", "wand", "trap",
+  };
 
-  int ch = io_readchar(true);
-  touchwin(stdscr);
+  for (size_t i = 0; i < things.size(); ++i) {
+    move(static_cast<int>(i) + 1, 1);
+    printw("%c %s", things.at(i), names.at(i).c_str());
+  }
+
+  char ch = static_cast<char>(io_readchar(true));
   refresh();
 
-  pr_spec(static_cast<char>(ch));
-  Game::io->clear_message();
-  Game::io->message("--Press any key to continue--");
-  io_readchar(false);
-
-  Game::io->clear_message();
-  touchwin(stdscr);
+  pr_spec(ch);
   return 0;
 }
 
