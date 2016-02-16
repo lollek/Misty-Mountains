@@ -219,28 +219,6 @@ chtype IO::colorize(chtype ch)
   }
 }
 
-void IO::print_player_vision() {
-
-  Coordinate const& player_pos = player->get_position();
-  if (player_pos.x < 1 || player_pos.x >= NUMCOLS -1 ||
-      player_pos.y < 1 || player_pos.y >= NUMLINES -1) {
-    error("player_pos is too close to the edge");
-  }
-
-  if (player->is_blind()) {
-    print_tile(player_pos);
-  }
-
-  int fov_range = 1;
-
-  for (int y = player_pos.y -fov_range; y <= player_pos.y +fov_range; y++) {
-    for (int x = player_pos.x -fov_range; x <= player_pos.x +fov_range; x++) {
-      print_tile(x, y);
-      Game::level->set_discovered(x, y);
-    }
-  }
-}
-
 void IO::print_level_layout() {
   /* take all the things we want to keep hidden out of the window */
   for (int y = 1; y < NUMLINES - 1; y++) {
@@ -285,6 +263,14 @@ void IO::print_level_layout() {
       }
     }
   }
+}
+
+void IO::print_coordinate(Coordinate const& coord) {
+  print_coordinate(coord.x, coord.y);
+}
+void IO::print_coordinate(int x, int y) {
+  (void)x;
+  (void)y;
 }
 
 void IO::refresh() {

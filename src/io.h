@@ -81,6 +81,8 @@ public:
   void clear_message();
   void show_extra_screen(std::string const& message);
 
+  void print_coordinate(Coordinate const& coord);
+  void print_coordinate(int x, int y);
   void refresh();
 
   std::string read_string(WINDOW* win=stdscr, std::string const* initial_string=nullptr);
@@ -93,8 +95,6 @@ public:
   WINDOW* extra_screen;
 
 private:
-  void print_player_vision();
-
   void print_tile_seen(Coordinate const& coord);
   void print_tile_discovered(Coordinate const& coord);
 
