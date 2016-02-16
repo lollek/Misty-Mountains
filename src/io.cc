@@ -483,44 +483,6 @@ void IO::message(string const& message, bool force_flush) {
   clrtoeol();
 }
 
-#ifndef NDEBUG
-__attribute__((__format__(__printf__, 1, 2)))
-bool
-io_fail(char const* fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  vprintf(fmt, args);
-  va_end(args);
-  return 1;
-}
-
-__attribute__((__format__(__printf__, 1, 2)))
-void
-io_debug(char const* fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  vprintf(fmt, args);
-  va_end(args);
-}
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-__attribute__((__format__(__printf__, 1, 2)))
-void
-io_debug_fatal(char const* fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  vprintf(fmt, args);
-  va_end(args);
-  assert(0);
-}
-#pragma clang diagnostic pop
-
-#endif
-
 void io_missile_motion(Item* item, int ydelta, int xdelta) {
 
   // Come fly with us ...

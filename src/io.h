@@ -124,25 +124,6 @@ size_t io_encread(char* start, size_t size, FILE* inf);
 
 void io_missile_motion(Item* item, int ydelta, int xdelta);
 
-
-
-
-#ifdef NDEBUG
-#  define io_fail(err, ...) 1
-#  define io_debug(err, ...)
-#  define io_debug_fatal(err, ...)
-#else
-  /* Print debug message (if debug mode) and return 1 */
-  bool io_fail(char const* fmt, ...);
-  /* Print debug message (if debug mode) or do nothing */
-  void io_debug(char const* fmt, ...);
-  /* Print debug message and crash (if debug mode) or do nothing */
-  void io_debug_fatal(char const* fmt, ...);
-#endif /* NDEBUG */
-
-
-
-
 /* old ncurses functions, with custom color support, to be removed */
 #define waddcch(_w, _c)           waddch(_w, Game::io->colorize(_c))
 #define mvwaddcch(_w, _y, _x, _c) mvwaddch(_w, _y, _x, Game::io->colorize(_c))

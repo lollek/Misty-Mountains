@@ -130,10 +130,7 @@ rnd_thing(void)
     case 6: return IO::Armor;
     case 7: return IO::Stairs;
     case 8: return IO::Gold;
-    case 9:
-      if (Game::current_level < Game::amulet_min_level)
-        io_debug("rnd_thing: Amulet spawned at a too low level", 0);
-      return IO::Amulet;
+    case 9: return IO::Amulet;
 
     default: error("rnd_thing out of bounds");
   }

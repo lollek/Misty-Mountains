@@ -154,8 +154,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
 
   Monster* tp = Game::level->get_monster(*monster_pos);
   if (tp == nullptr) {
-    return !io_fail("fight_against_monster(%p, %p, %b) nullptr monster\r\n",
-                 monster_pos, weapon, thrown);
+    error("No monster on pos");
   }
 
   /* Since we are fighting, things are not quiet so no healing takes place */
