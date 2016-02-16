@@ -1,5 +1,6 @@
 Misty Mountain:
 
+  Change trap symbol from ^ to _
   Can inscribe to know items, with the following effects:
     ! means it will not be automatically picked up
   Increase view distance of your torch
