@@ -32,7 +32,7 @@ public:
     Floor  = '.',
     OpenDoor   = '\'',
     ClosedDoor   = '+',
-    Trap   = '^',
+    Trap   = '_',
     Stairs = '%',
 
     VerticalBolt = '|',
