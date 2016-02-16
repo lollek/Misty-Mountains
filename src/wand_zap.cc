@@ -103,10 +103,6 @@ wand_spell_cancel(Monster& target)
   target.remove_confusing_attack();
 
   target.set_disguise(static_cast<char>(target.get_type()));
-  if (player->can_see(*&target)) {
-    Game::io->print_color(target.get_position().x, target.get_position().y,
-        target.get_disguise());
-  }
 }
 
 static void
