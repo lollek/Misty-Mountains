@@ -26,7 +26,7 @@ std::string name(Type type);
 
 // Spring a trap on the victim.
 // NB! victim can be null after this!
-Type spring(Monster** victim, Coordinate const& trap_coord);
+Type spring(Monster** victim, Type type);
 
 // Spring a trap on the player.
 Type player(Coordinate const& trap_coord);

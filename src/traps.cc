@@ -293,22 +293,12 @@ Trap::Type Trap::player(Coordinate const& trap_coord) {
   }
 }
 
-Trap::Type Trap::spring(Monster** victim, Coordinate const& trap_coord) {
+Trap::Type Trap::spring(Monster** victim, Trap::Type trap_type) {
   if (victim == nullptr || *victim == nullptr) {
     error("null");
   }
 
-  if (::player->can_see(**victim)) {
-    Game::level->set_tile(trap_coord, Tile::Trap);
-    Game::level->set_discovered(trap_coord);
-  }
-
-  Trap::Type trap = Game::level->get_trap_type(trap_coord);
-  if (trap == Trap::NTRAPS) {
-    Game::level->set_trap_type(trap_coord, random());
-  }
-
-  switch (Game::level->get_trap_type(trap_coord)) {
+  switch (trap_type) {
     case Door:     return trap_door_monster(victim);
     case Beartrap: return trap_bear_monster(*victim);
     case Mystery:  return trap_myst_monster(*victim);

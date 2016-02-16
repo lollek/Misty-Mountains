@@ -131,25 +131,36 @@ chase_do(Monster* monster)
     return 1;
   }
 
-  // Show movement
-  if (chase_coord != monster->get_position()) {
-    Tile::Type ch = Game::level->get_tile(chase_coord);
-    Tile::Type prev_ch = Game::level->get_tile(monster->get_position());
 
-    // Remove monster from old position IFF we see it, or it was standing on a
-    // passage we have previously seen
+  // If we moved
+  if (chase_coord != monster->get_position()) {
+
+    // Remove monster from old position
     Game::level->set_monster(monster->get_position(), nullptr);
-    if (((prev_ch == Tile::Floor || prev_ch == Tile::OpenDoor) &&
-         Game::level->is_discovered(monster->get_position()))) {
-      Game::io->print_tile(monster->get_position());
-    }
 
     // Check if we stepped in a trap
-    if ((ch == Tile::Trap || (!Game::level->is_real(chase_coord) && ch == Tile::Floor)) &&
-          !monster->is_levitating()) {
+    bool was_trap = false;
+    Tile::Type ch = Game::level->get_tile(chase_coord);
+    if (!Game::level->is_real(chase_coord) && Game::level->get_tile(chase_coord)) {
+      was_trap = true;
+
+      // Only show it's a trap if player can see this position
+      if (player->can_see(chase_coord)) {
+        Game::level->set_real(chase_coord);
+        Game::level->set_tile(chase_coord, Tile::Trap);
+        Game::level->set_discovered(chase_coord);
+      }
+    }
+
+    if ((ch == Tile::Trap || was_trap) && !monster->is_levitating()) {
       Coordinate orig_pos = monster->get_position();
 
-      Trap::spring(&monster, chase_coord);
+      Trap::Type trap = Game::level->get_trap_type(chase_coord);
+      if (trap == Trap::NTRAPS) {
+        trap = Trap::random();
+        Game::level->set_trap_type(chase_coord, trap);
+      }
+      Trap::spring(&monster, trap);
 
       // Monster is dead?
       if (monster == nullptr) {
