@@ -311,6 +311,10 @@ std::string Ring::get_description() const {
     }
   }
 
+  if (identified && is_cursed()) {
+    os << " [C]";
+  }
+
   string const& inscription = guess(subtype);
   if (!inscription.empty()) {
     os << " {" << inscription << "}";

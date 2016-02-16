@@ -212,6 +212,10 @@ string Armor::get_description() const {
 
   buffer << "]";
 
+  if (identified && is_cursed()) {
+    buffer << " [C]";
+  }
+
   string const& nickname = get_nickname();
   if (!nickname.empty()) {
     buffer << " {" << nickname << "}";

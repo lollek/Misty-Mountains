@@ -426,6 +426,10 @@ string Weapon::get_description() const {
     buffer << p_armor << "]";
   }
 
+  if (identified && is_cursed()) {
+    buffer << " [C]";
+  }
+
   string const& nickname = get_nickname();
   if (!nickname.empty()) {
     buffer << " {" << nickname << "}";
