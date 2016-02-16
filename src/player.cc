@@ -225,11 +225,6 @@ void Player::set_true_sight() {
   }
 }
 
-void Player::remove_true_sight() {
-  monster_hide_all_invisible();
-  Character::remove_true_sight();
-}
-
 void Player::set_confused() {
   if (is_confused()) {
     Daemons::daemon_lengthen_fuse(Daemons::set_not_confused, HUHDURATION);
@@ -255,15 +250,13 @@ void Player::set_sense_monsters() {
 
   senses_monsters = true;
 
-  bool spotted_something = monster_sense_all_hidden();
-  if (!spotted_something) {
+  if (Game::level->monsters.empty()) {
     Game::io->message("you have a strange feeling for a moment, then it passes");
   }
 }
 
 void Player::remove_sense_monsters() {
   senses_monsters = false;
-  monster_unsense_all_hidden();
 }
 
 int Player::get_speed() const {

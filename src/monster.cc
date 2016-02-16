@@ -174,13 +174,11 @@ string Monster::get_name() const {
 }
 
 void Monster::set_invisible() {
+  if (player->can_see(get_position())) {
+    Game::io->message(get_name() + " disappeared");
+  }
 
   Character::set_invisible();
-  if (player->can_see(get_position()))
-  {
-    Game::io->message(get_name() + " disappeared");
-    Game::io->print_tile(get_position());
-  }
 }
 
 Monster::Type Monster::random_monster_type() {
@@ -421,7 +419,6 @@ monster_remove_from_screen(Monster** monster_ptr, bool was_killed)
   Game::level->set_monster(position, nullptr);
   Game::level->monsters.remove(monster);
 
-  Game::io->print_tile(position.x, position.y);
   if (monster->is_players_target()) {
     to_death = false;
     if (fight_flush)
@@ -438,7 +435,6 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   if (monster == nullptr) {
     error("monster = null");
   }
-  Coordinate old_position = monster->get_position();
 
   /* Select destination */
   Coordinate new_pos;
@@ -454,19 +450,6 @@ monster_teleport(Monster* monster, Coordinate const* destination)
   /* Add monster */
   monster->set_position(new_pos);
   monster->set_not_held();
-
-  if (player->can_see(*monster))
-    Game::io->print_color(new_pos.x, new_pos.y, monster->get_disguise());
-  else if (player->can_sense_monsters()) {
-    standout();
-    Game::io->print_color(new_pos.x, new_pos.y, monster->get_type());
-    standend();
-  }
-
-  /* Remove monster */
-  if (player->can_see(*monster)) {
-    Game::io->print_tile(old_position);
-  }
 }
 
 void
@@ -635,42 +618,6 @@ monster_aggro_all_which_desire_item(Item* item)
   }
 }
 
-void
-monster_hide_all_invisible(void)
-{
-  for (Monster* mon : Game::level->monsters) {
-    if (mon->is_invisible() && player->can_see(*mon)) {
-      Game::io->print_tile(mon->get_position());
-    }
-  }
-}
-
-bool
-monster_sense_all_hidden(void)
-{
-  bool spotted_something = false;
-  for (Monster* mon : Game::level->monsters) {
-    if (!player->can_see(*mon)) {
-      standout();
-      Game::io->print_color(mon->get_position().x, mon->get_position().y,
-           mon->get_type());
-      standend();
-      spotted_something = true;
-    }
-  }
-  return spotted_something;
-}
-
-void
-monster_unsense_all_hidden(void)
-{
-  for (Monster* mon : Game::level->monsters) {
-    if (!player->can_see(*mon)) {
-      Game::io->print_tile(mon->get_position());
-    }
-  }
-}
-
 bool
 monster_show_if_magic_inventory(void)
 {
@@ -703,9 +650,7 @@ monster_polymorph(Monster* target)
 
   Coordinate pos = target->get_position();
   bool was_seen = player->can_see(*target);
-  if (was_seen)
-  {
-    Game::io->print_color(pos.x, pos.y, Game::level->get_tile(pos));
+  if (was_seen) {
     os << target->get_name();
   }
 

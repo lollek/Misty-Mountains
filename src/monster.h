@@ -121,12 +121,7 @@ bool monster_is_anyone_seen_by_player(void);
 void monster_aggravate_all(void);
 /* Does any monster desire this item? If so, aggro player */
 void monster_aggro_all_which_desire_item(Item* item);
-/* Hide all invisible monsters */
-void monster_hide_all_invisible(void);
-/* Show all monsters that the player does not currently sees
- * Return true if there was atleast one, else false */
-bool monster_sense_all_hidden(void);
-void monster_unsense_all_hidden(void);
+
 /* Print a $ where there is a monster with a magic item
  * Returns true if there was atleast one, else false */
 bool monster_show_if_magic_inventory(void);

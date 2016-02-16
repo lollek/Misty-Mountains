@@ -48,7 +48,6 @@ public:
   void set_sense_monsters();
   void remove_sense_monsters();
   void set_true_sight() override;
-  void remove_true_sight() override;
   void set_confused() override;
   void set_not_confused() override;
   void set_blind() override;
