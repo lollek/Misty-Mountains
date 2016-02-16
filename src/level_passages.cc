@@ -321,29 +321,3 @@ void Level::place_passage(Coordinate* coord) {
     set_tile(*coord, Tile::Floor);
   }
 }
-
-void
-Level::wizard_show_passages() {
-
-  for (int y = 1; y < NUMLINES - 1; y++) {
-    for (int x = 0; x < NUMCOLS; x++) {
-
-      Tile::Type ch = get_tile(x, y);
-
-      if (is_passage(x, y) || ch == Tile::OpenDoor || ch == Tile::ClosedDoor ||
-          (!is_real(x, y) && ch == Tile::Wall)) {
-        if (is_passage(x, y)) {
-          ch = Tile::Floor;
-        }
-        set_discovered(x, y);
-        if (is_real(x, y)) {
-          Game::io->print_color(x, y, ch);
-        } else {
-          standout();
-          Game::io->print_color(x, y, is_passage(x, y) ? Tile::Floor : Tile::ClosedDoor);
-          standend();
-        }
-      }
-    }
-  }
-}

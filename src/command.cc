@@ -160,7 +160,6 @@ command_wizard_do(char ch)
     } break;
     case CTRL('F'): wizard_show_map(); break;
     case CTRL('I'): wizard_levels_and_gear(); break;
-    case CTRL('Q'): Game::level->wizard_show_passages(); break;
     case CTRL('T'): player->teleport(nullptr); break;
     case CTRL('W'): player->pack_identify_item(); break;
     case CTRL('X'): player->can_sense_monsters()

@@ -57,7 +57,6 @@ public:
   void set_trap_type(Coordinate const& coord, Trap::Type type);
 
   // Misc
-  void wizard_show_passages();
   bool can_step(int x, int y);
   bool can_step(Coordinate const& coord);
 
