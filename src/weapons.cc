@@ -315,7 +315,7 @@ string Weapon::name(Weapon::Type type) {
     case Quarterstaff: return "quarterstaff";
     case Shortbow: return "shortbow";
     case Throwingknife: return "throwing knife";
-    case Mace: return "cace";
+    case Mace: return "mace";
     case Spear: return "spear";
     case Rapier: return "rapier";
     case Kukri: return "kukri";
