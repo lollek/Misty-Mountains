@@ -178,10 +178,8 @@ static Trap::Type trap_arrow_monster(Monster** victim_ptr) {
   return Trap::Arrow;
 }
 
-static Trap::Type trap_telep_player(Coordinate const* trap_coord) {
+static Trap::Type trap_telep_player() {
   player->teleport(nullptr);
-  // Mark trap before we leave
-  Game::io->print_color(trap_coord->x, trap_coord->y, IO::Trap);
   return Trap::Teleport;
 }
 
@@ -287,7 +285,7 @@ Trap::Type Trap::player(Coordinate const& trap_coord) {
     case Mystery:   return trap_myst_player();
     case Sleep:     return trap_sleep_player();
     case Arrow:     return trap_arrow_player();
-    case Teleport:  return trap_telep_player(&trap_coord);
+    case Teleport:  return trap_telep_player();
     case Dart:      return trap_dart_player();
     case Rust:      return trap_rust_player();
 
