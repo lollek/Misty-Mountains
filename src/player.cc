@@ -373,20 +373,11 @@ void Player::teleport(Coordinate const* target)
 
   set_position(new_pos);
 
-  // Reprint around player
-  for (int x = old_pos.x -1; x <= old_pos.x +1; ++x) {
-    for (int y = old_pos.y -1; y <= old_pos.y +1; ++y) {
-      Game::io->print_tile(x, y);
-    }
-  }
-
-  /* Print @ new location */
-  Game::io->print_color(new_pos.x, new_pos.y, get_type());
-  if (is_held())
-  {
+  if (is_held()) {
     set_not_held();
     monster_flytrap_hit = 0;
   }
+
   player_turns_without_moving = 0;
   command_stop(true);
   flushinp();
