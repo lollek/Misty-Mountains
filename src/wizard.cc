@@ -66,7 +66,7 @@ pr_spec(char type)
   }
 
   refresh();
-  io_readchar(false);
+  Game::io->readchar(false);
   Game::io->clear_message();
   clear();
 }
@@ -88,7 +88,7 @@ wizard_list_items(void)
     printw("%c %s", things.at(i), names.at(i).c_str());
   }
 
-  char ch = static_cast<char>(io_readchar(true));
+  char ch = static_cast<char>(Game::io->readchar(true));
   refresh();
 
   pr_spec(ch);
@@ -99,7 +99,7 @@ void wizard_create_item(void) {
 
   // Get itemtype
   Game::io->message("type of item?");
-  char type = static_cast<char>(io_readchar(true));
+  char type = static_cast<char>(Game::io->readchar(true));
   Game::io->clear_message();
 
   switch (type) {
@@ -118,7 +118,7 @@ void wizard_create_item(void) {
 
   // Get item subtype
   Game::io->message("which " + string(1, type) + " do you want? (0-f)");
-  char ch = io_readchar(true);
+  char ch = Game::io->readchar(true);
   int which = isdigit(ch) ? ch - '0' : ch - 'a' + 10;
   Game::io->clear_message();
 
@@ -157,7 +157,7 @@ void wizard_create_item(void) {
       obj = new class Weapon(static_cast<Weapon::Type>(which), false);
 
       Game::io->message("blessing? (+,-,n)");
-      char bless = io_readchar(true);
+      char bless = Game::io->readchar(true);
       Game::io->clear_message();
 
       if (bless == '-') {
@@ -172,7 +172,7 @@ void wizard_create_item(void) {
       obj = new class Armor(false);
 
       Game::io->message("blessing? (+,-,n)");
-      char bless = io_readchar(true);
+      char bless = Game::io->readchar(true);
       Game::io->clear_message();
       if (bless == '-') {
         obj->set_cursed();

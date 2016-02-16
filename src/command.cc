@@ -70,7 +70,7 @@ command()
         ch = runch;
       else
       {
-        ch = io_readchar(false);
+        ch = Game::io->readchar(false);
         Game::io->clear_message();
       }
 
@@ -194,7 +194,7 @@ command_signal_quit(__attribute__((unused)) int sig)
   Game::io->clear_message();
   Game::io->message("really quit?");
 
-  if (io_readchar(true) == 'y')
+  if (Game::io->readchar(true) == 'y')
   {
   /* Reset the signal in case we got here via an interrupt */
     signal(SIGINT, command_signal_leave);

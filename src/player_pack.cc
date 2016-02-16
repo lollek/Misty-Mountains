@@ -178,7 +178,7 @@ Item* Player::pack_find_item(string const& purpose, int type) {
       } break;
     }
 
-    char ch = io_readchar(true);
+    char ch = Game::io->readchar(true);
     Game::io->clear_message();
     touchwin(stdscr);
 

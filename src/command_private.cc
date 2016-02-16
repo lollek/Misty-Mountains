@@ -352,7 +352,7 @@ bool command_help() {
   int const helpstrsize = sizeof(helpstr) / sizeof(*helpstr);
 
   Game::io->message("character you want help for (* for all): ");
-  char helpch = io_readchar(true);
+  char helpch = Game::io->readchar(true);
   Game::io->clear_message();
 
   /* If its not a *, print the right help string
@@ -406,7 +406,7 @@ bool command_help() {
   wmove(Game::io->extra_screen, LINES - 1, 0);
   waddstr(Game::io->extra_screen, "--Press space to continue--");
   wrefresh(Game::io->extra_screen);
-  io_wait_for_key(KEY_SPACE);
+  Game::io->wait_for_key(KEY_SPACE);
   clearok(stdscr, true);
 
   Game::io->clear_message();
@@ -625,7 +625,7 @@ bool command_close() {
 bool command_save() {
   Game::io->message("really save and exit?");
 
-  if (io_readchar(true) == 'y') {
+  if (Game::io->readchar(true) == 'y') {
     if (Game::save()) {
       Game::exit();
     }

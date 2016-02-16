@@ -61,7 +61,7 @@ lock_sc(void)
          "for it to become free so your score can get posted?\n"
          "If so, type \"y\"\n");
 
-  return io_readchar(true) == 'y'
+  return Game::io->readchar(true) == 'y'
     ? lock_sc()
     : false;
 }
@@ -246,7 +246,7 @@ score_win_and_exit(void)
 
   mvaddstr(LINES - 1, 0, "--Press space to continue--");
   refresh();
-  io_wait_for_key(KEY_SPACE);
+  Game::io->wait_for_key(KEY_SPACE);
   player->give_gold(static_cast<int>(player->pack_print_value()));
   score_show_and_exit(player->get_gold(), 2, ' ');
 }

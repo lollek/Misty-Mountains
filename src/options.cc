@@ -94,7 +94,7 @@ bool option() {
 
     wmove(optscr, msg_pos.y, msg_pos.x);
     wrefresh(optscr);
-    c = io_readchar(true);
+    c = Game::io->readchar(true);
 
     auto change_option = find_if(optlist.begin(), optlist.end(),
         [c] (option const& o) {

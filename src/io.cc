@@ -71,6 +71,39 @@ IO::~IO() {
   endwin();
 }
 
+char IO::readchar(bool is_question) {
+  if (is_question) {
+    move(0, static_cast<int>(Game::io->message_buffer.size()));
+  }
+
+  char ch = static_cast<char>(getch());
+  switch (ch) {
+    case 3:
+      command_signal_quit(0);
+      return KEY_ESCAPE;
+
+    default:
+      return ch;
+  }
+}
+
+void IO::wait_for_key(int ch) {
+  switch (ch) {
+    case KEY_ENTER: case '\n':
+      for (;;)
+        if ((ch = readchar(true)) == '\n' || ch == '\r')
+          return;
+
+    default:
+      for (;;)
+        if (readchar(true) == ch)
+          return;
+  }
+}
+
+
+
+
 
 void IO::print_monster(Monster* monster, IO::Attribute attr) {
   char symbol_to_print = monster->get_disguise();
@@ -316,7 +349,7 @@ string IO::read_string(WINDOW* win, string const* initial_string) {
   for (;;) {
 
     wrefresh(win);
-    int c = io_readchar(false);
+    int c = readchar(false);
 
     // Return on ESCAPE chars or ENTER
     if (c == '\n' || c == '\r' || c == -1 || c == KEY_ESCAPE) {
@@ -391,7 +424,7 @@ void IO::show_extra_screen(string const& message)
   wrefresh(extra_screen);
   untouchwin(stdscr);
 
-  io_wait_for_key(KEY_SPACE);
+  wait_for_key(KEY_SPACE);
 
   clearok(curscr, true);
   touchwin(stdscr);
@@ -487,42 +520,6 @@ io_debug_fatal(char const* fmt, ...)
 #pragma clang diagnostic pop
 
 #endif
-
-char
-io_readchar(bool is_question)
-{
-  if (is_question) {
-    move(0, static_cast<int>(Game::io->message_buffer.size()));
-  }
-
-  char ch = static_cast<char>(getch());
-  switch (ch)
-  {
-    case 3:
-      command_signal_quit(0);
-      return KEY_ESCAPE;
-
-    default:
-      return ch;
-  }
-}
-
-void
-io_wait_for_key(int ch)
-{
-  switch (ch)
-  {
-    case KEY_ENTER: case '\n':
-      for (;;)
-        if ((ch = io_readchar(true)) == '\n' || ch == '\r')
-          return;
-
-    default:
-      for (;;)
-        if (io_readchar(true) == ch)
-          return;
-  }
-}
 
 void io_missile_motion(Item* item, int ydelta, int xdelta) {
 

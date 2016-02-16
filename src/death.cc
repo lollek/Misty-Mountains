@@ -49,7 +49,7 @@ static void death(int type) {
 
   Game::io->refresh();
   Game::io->message("You die!");
-  io_readchar(false);
+  Game::io->readchar(false);
 
   player->pack_print_value();
   score_show_and_exit(player->get_gold(), player->pack_contains_amulet() ? 3 : 0, type);

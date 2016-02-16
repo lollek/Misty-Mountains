@@ -12,7 +12,7 @@ bool Player::pack_show_equip() {
     pack_print_inventory(0);
     Game::io->message("Equip what item? (ESC to abort)", true);
 
-    char ch = io_readchar(true);
+    char ch = Game::io->readchar(true);
     Game::io->clear_message();
 
     if (ch == KEY_ESCAPE) {
@@ -38,7 +38,7 @@ bool Player::pack_show_drop(Window window) {
     }
     Game::io->message("Drop what item? (ESC to abort)", true);
 
-    char ch = io_readchar(true);
+    char ch = Game::io->readchar(true);
     Game::io->clear_message();
 
     if (ch == KEY_ESCAPE) {
@@ -73,7 +73,7 @@ bool Player::pack_show_drop(Window window) {
     if (obj->o_count > 1) {
       Game::io->message("Drop all? (y/N) ");
 
-      ch = io_readchar(true);
+      ch = Game::io->readchar(true);
       if (ch == KEY_ESCAPE) {
         return false;
       } else {
@@ -99,7 +99,7 @@ bool Player::pack_show_remove() {
     pack_print_equipment();
     Game::io->message("remove what item? (ESC to abort)", true);
 
-    char ch = io_readchar(true);
+    char ch = Game::io->readchar(true);
     Game::io->clear_message();
 
     if (ch == KEY_ESCAPE) {
@@ -144,7 +144,7 @@ bool Player::pack_show(Window current_window) {
       } break;
     }
 
-    char ch = io_readchar(true);
+    char ch = Game::io->readchar(true);
     Game::io->clear_message();
     touchwin(stdscr);
 

@@ -111,7 +111,7 @@ void Shop::sell() {
   os << "sell " << obj->get_description() << " for " << value << "? (y/N)";
   Game::io->message(os.str());
 
-  if (io_readchar(true) != 'y') {
+  if (Game::io->readchar(true) != 'y') {
     return;
   }
   Game::io->clear_message();
@@ -157,7 +157,7 @@ void Shop::enter() {
   for (;;) {
     print();
     Game::io->message("Which item do you want to buy? [S to sell, ESC to return]", true);
-    char ch = io_readchar(true);
+    char ch = Game::io->readchar(true);
     Game::io->clear_message();
     clear();
 

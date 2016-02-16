@@ -56,6 +56,9 @@ public:
 
   };
 
+  char readchar(bool is_question);
+  void wait_for_key(int ch);
+
   template <typename T>
   void print(int x, int y, T ch, Attribute attr=None);
 
@@ -122,11 +125,7 @@ size_t io_encread(char* start, size_t size, FILE* inf);
 void io_missile_motion(Item* item, int ydelta, int xdelta);
 
 
-/* Interruptable read char from user (getch) */
-char io_readchar(bool is_question);
 
-/* Wait for the specified key */
-void io_wait_for_key(int ch);
 
 #ifdef NDEBUG
 #  define io_fail(err, ...) 1
