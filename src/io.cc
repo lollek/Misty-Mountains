@@ -143,15 +143,10 @@ void IO::print_tile(int x, int y) {
 
   } else if (Game::level->is_discovered(coord)) {
     print_tile_discovered(coord);
+
+  } else {
+    print(x, y, IO::Shadow);
   }
-}
-
-void IO::hide_tile(Coordinate const& coord) {
-  hide_tile(coord.x, coord.y);
-}
-
-void IO::hide_tile(int x, int y) {
-  print(x, y, IO::Shadow);
 }
 
 chtype IO::colorize(chtype ch)

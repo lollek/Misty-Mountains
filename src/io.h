@@ -65,9 +65,6 @@ public:
   void print_tile(Coordinate const& coord);
   void print_tile(int x, int y);
 
-  void hide_tile(Coordinate const& coord);
-  void hide_tile(int x, int y);
-
   void print_level_layout();
 
   void print_room(room const* room);
