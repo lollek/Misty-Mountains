@@ -71,7 +71,6 @@ public:
   void print_level_layout();
 
   void print_room(room const* room);
-  void hide_room(room const* room);
 
   void print_monster(Monster* monster, Attribute attr=None);
   void print_item(Item* item);
