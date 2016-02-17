@@ -497,6 +497,10 @@ void Player::check_for_level_up() {
    750000L, 1500000L, 2500000L, 5000000L
   };
 
+  if (get_level() >= 40) {
+    return;
+  }
+
   int experience_to_next_level = levels.at(static_cast<size_t>(get_level()));
   int current_experience = get_experience();
 
