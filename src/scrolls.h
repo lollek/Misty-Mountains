@@ -15,7 +15,6 @@ public:
     ENCHARMOR,
     ID,
     SCARE,
-    FDET,
     TELEP,
     ENCH,
     CREATE,

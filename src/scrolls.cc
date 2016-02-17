@@ -63,7 +63,6 @@ static Scroll::Type random_scroll_type() {
     case 1: case 2: case 3: case 4:
       potential_scrolls.push_back(Scroll::SLEEP);
       potential_scrolls.push_back(Scroll::ID);
-      potential_scrolls.push_back(Scroll::FDET);
       potential_scrolls.push_back(Scroll::CREATE);
   }
   return potential_scrolls.at(os_rand_range(potential_scrolls.size()));
@@ -100,7 +99,6 @@ string Scroll::name(Scroll::Type subtype) {
     case ENCHARMOR: return "enchant armor";
     case ID:        return "identify";
     case SCARE:     return "scare monster";
-    case FDET:      return "food detection";
     case TELEP:     return "teleportation";
     case ENCH:      return "enchant weapon";
     case CREATE:    return "create monster";
@@ -120,7 +118,6 @@ int Scroll::worth(Scroll::Type subtype) {
     case ENCHARMOR: return 160;
     case ID:        return 115;
     case SCARE:     return 200;
-    case FDET:      return  60;
     case TELEP:     return 165;
     case ENCH:      return 150;
     case CREATE:    return  75;
@@ -345,26 +342,6 @@ static bool create_monster() {
   return i;
 }
 
-static bool food_detection() {
-  bool food_seen = false;
-  wclear(Game::io->extra_screen);
-
-  for (Item const* obj : Game::level->items) {
-    if (obj->o_type == IO::Food) {
-      food_seen = true;
-      mvwaddcch(Game::io->extra_screen, obj->get_y(), obj->get_x(), IO::Food);
-    }
-  }
-
-  if (food_seen) {
-    Game::io->show_extra_screen("Your nose tingles and you smell food.--More--");
-  } else {
-    Game::io->message("your nose tingles");
-  }
-
-  return food_seen;
-}
-
 static bool player_enchant_weapon() {
 
   Item* weapon = player->equipped_weapon();
@@ -461,12 +438,6 @@ void Scroll::read() const {
       set_known(Scroll::MAP);
       Game::io->message("this scroll has a map on it");
       Game::io->print_level_layout();
-    } break;
-
-    case Scroll::FDET: {
-      if (food_detection()) {
-        set_known(Scroll::FDET);
-      }
     } break;
 
     case Scroll::TELEP: {
