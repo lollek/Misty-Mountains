@@ -215,7 +215,9 @@ score_show_and_exit(int amount, int flags, int death_type)
   score_read(top_ten);
 
   /* Insert her in list if need be */
-  score_insert(top_ten, amount, flags, death_type);
+  if (!wizard) {
+    score_insert(top_ten, amount, flags, death_type);
+  }
 
   /* Print the highscore */
   score_print(top_ten);
