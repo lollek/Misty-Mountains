@@ -304,6 +304,7 @@ bool command_help() {
     {'{',	"	inscribe something",			true},
     {'A',	"	attack till either of you dies",	true},
     {'B',	"	run down & left",			false},
+    {'D',	"	drop item",				true},
     {'E',	"	equipment",				true},
     {'H',	"	run left",				false},
     {'I',	"	inventory",				true},
