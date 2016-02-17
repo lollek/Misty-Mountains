@@ -122,10 +122,6 @@ void monster_aggravate_all(void);
 /* Does any monster desire this item? If so, aggro player */
 void monster_aggro_all_which_desire_item(Item* item);
 
-/* Print a $ where there is a monster with a magic item
- * Returns true if there was atleast one, else false */
-bool monster_show_if_magic_inventory(void);
-
 /* Transform the monster into something else */
 void monster_polymorph(Monster* monster);
 

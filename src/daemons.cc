@@ -61,6 +61,7 @@ static void execute_daemon_function(Daemons::daemon_function func) {
     case Daemons::remove_true_sight:     player->remove_true_sight(); break;
     case Daemons::set_not_confused:      player->set_not_confused(); break;
     case Daemons::remove_sense_monsters: player->remove_sense_monsters(); break;
+    case Daemons::remove_sense_magic:    player->remove_sense_magic(); break;
     case Daemons::decrease_speed:        player->decrease_speed(); break;
     case Daemons::set_not_blind:         player->set_not_blind(); break;
     case Daemons::set_not_levitating:    player->set_not_levitating(); break;

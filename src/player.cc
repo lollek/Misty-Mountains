@@ -49,7 +49,7 @@ bool         player_alerted              = false;
 Player::Player(bool give_equipment) :
   //        str, xp, lvl, armor, hp, dmg
   Character(16,  0,  1,   10,    12, {{1,4}}, Coordinate(), 0, '@'),
-  previous_room(nullptr), senses_monsters(false), speed(0),
+  previous_room(nullptr), senses_monsters(false), senses_magic(false), speed(0),
   pack(), equipment(equipment_size(), nullptr), gold(0),
   nutrition_left(get_starting_nutrition()) {
 
@@ -239,6 +239,24 @@ void Player::set_confused() {
 void Player::set_not_confused() {
   Character::set_not_confused();
   Game::io->message("you feel less confused now");
+}
+
+bool Player::can_sense_magic() const {
+  return senses_magic;
+}
+
+void Player::set_sense_magic() {
+  Daemons::daemon_start_fuse(Daemons::remove_sense_magic, MFINDDURATION, AFTER);
+
+  senses_magic = true;
+
+  if (Game::level->monsters.empty() && Game::level->items.empty()) {
+    Game::io->message("you have a strange feeling for a moment, then it passes");
+  }
+}
+
+void Player::remove_sense_magic() {
+  senses_magic = false;
 }
 
 bool Player::can_sense_monsters() const {
@@ -587,6 +605,7 @@ void Player::save_player(ofstream& data) {
   Disk::save(TAG_INVENTORY,       player->pack,            data);
   Disk::save(TAG_EQUIPMENT,       player->equipment,       data);
   Disk::save(TAG_SENSES_MONSTERS, player->senses_monsters, data);
+  Disk::save(TAG_SENSES_MAGIC,    player->senses_magic,    data);
   Disk::save(TAG_SPEED,           player->speed,           data);
   Disk::save(TAG_GOLD,            player->gold,            data);
   Disk::save(TAG_NUTRITION,       player->nutrition_left,  data);
@@ -597,9 +616,10 @@ void Player::load_player(ifstream& data) {
   player = new Player(false);
   Character* c_player = static_cast<Character*>(player);
   if (!c_player->load(data) ||
-      !Disk::load(TAG_INVENTORY,       player->pack,           data) ||
-      !Disk::load(TAG_EQUIPMENT,       player->equipment,      data) ||
+      !Disk::load(TAG_INVENTORY,       player->pack,            data) ||
+      !Disk::load(TAG_EQUIPMENT,       player->equipment,       data) ||
       !Disk::load(TAG_SENSES_MONSTERS, player->senses_monsters, data) ||
+      !Disk::load(TAG_SENSES_MAGIC,    player->senses_magic,    data) ||
       !Disk::load(TAG_SPEED,           player->speed,           data) ||
       !Disk::load(TAG_GOLD,            player->gold,            data) ||
       !Disk::load(TAG_NUTRITION,       player->nutrition_left,  data)) {

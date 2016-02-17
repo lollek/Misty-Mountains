@@ -101,122 +101,147 @@ void IO::wait_for_key(int ch) {
   }
 }
 
-
-
-
-
-void IO::print_monster(Monster* monster, IO::Attribute attr) {
-  char symbol_to_print = monster->get_disguise();
-  Coordinate const& coord = monster->get_position();
-  print_color(coord.x, coord.y, symbol_to_print, attr);
+void IO::print(int x, int y, long unsigned int ch, IO::Attribute attr) {
+  if (y < 0 || y >= MAXLINES ||
+      x < 0 || x >= MAXCOLS) {
+    error("Attempted to print beyond screen! X: " +
+          to_string(x) + ", Y: " + to_string(y) +
+          "MAXLINES: " + to_string(MAXLINES) +
+          "MAXCOLS: " + to_string(MAXCOLS));
+  }
+  switch (attr) {
+    case IO::Attribute::None: break;
+    case IO::Attribute::Standout: ch |= A_STANDOUT; break;
+    case IO::Attribute::Red: ch |= COLOR_PAIR(COLOR_RED); break;
+    case IO::Attribute::BoldRed: ch |= COLOR_PAIR(COLOR_RED) | A_BOLD; break;
+    case IO::Attribute::Green: ch |= COLOR_PAIR(COLOR_GREEN); break;
+    case IO::Attribute::BoldGreen: ch |= COLOR_PAIR(COLOR_GREEN) | A_BOLD; break;
+    case IO::Attribute::Yellow: ch |= COLOR_PAIR(COLOR_YELLOW); break;
+    case IO::Attribute::BoldYellow: ch |= COLOR_PAIR(COLOR_YELLOW) | A_BOLD; break;
+    case IO::Attribute::Blue: ch |= COLOR_PAIR(COLOR_BLUE); break;
+    case IO::Attribute::BoldBlue: ch |= COLOR_PAIR(COLOR_BLUE) | A_BOLD; break;
+    case IO::Attribute::Magenta: ch |= COLOR_PAIR(COLOR_MAGENTA); break;
+    case IO::Attribute::BoldMagenta: ch |= COLOR_PAIR(COLOR_MAGENTA) | A_BOLD; break;
+    case IO::Attribute::Cyan: ch |= COLOR_PAIR(COLOR_CYAN); break;
+    case IO::Attribute::BoldCyan: ch |= COLOR_PAIR(COLOR_CYAN) | A_BOLD; break;
+    case IO::Attribute::Black: ch |= COLOR_PAIR(COLOR_WHITE); break;
+    case IO::Attribute::BoldBlack: ch |= COLOR_PAIR(COLOR_WHITE) | A_BOLD; break;
+    case IO::Attribute::White: ch |= COLOR_PAIR(COLOR_BLACK); break;
+    case IO::Attribute::BoldWhite: ch |= COLOR_PAIR(COLOR_BLACK) | A_BOLD; break;
+  }
+  mvaddch(y, x, ch);
 }
 
-void IO::print_item(Item* item) {
-  int symbol_to_print = item->get_item_type();
-  Coordinate const& coord = item->get_position();
-  print_color(coord.x, coord.y, symbol_to_print);
+
+
+bool IO::print_monster(int x, int y, Monster* monster) {
+  chtype symbol_to_print = static_cast<chtype>(monster->get_disguise());
+  bool print_sensed_monster = false;
+  IO::Attribute attr = IO::None;
+
+  if (!player->can_see(*monster)) {
+    if (player->can_sense_monsters()) {
+      print_sensed_monster = true;
+    } else if (player->can_sense_magic()) {
+      symbol_to_print = IO::Magic;
+    } else {
+      return false;
+    }
+  }
+
+  switch (symbol_to_print) {
+    case 'b': attr = BoldBlack; break;
+    case 'g': attr = Yellow; break;
+    case 'h': attr = Green; break;
+    case 'i': attr = Cyan; break;
+    case 'k': attr = BoldYellow; break;
+    case 'l': attr = BoldGreen; break;
+    case 'n': attr = BoldGreen; break;
+    case 'r': attr = Red; break;
+    case 's': attr = Green; break;
+  }
+
+  if (print_sensed_monster) {
+    standout();
+    print(x, y, symbol_to_print, attr);
+    standend();
+  } else {
+    print(x, y, symbol_to_print, attr);
+  }
+
+  return true;
 }
 
-void IO::print_tile_seen(Coordinate const& coord) {
+bool IO::print_item(int x, int y, Item* item) {
+  chtype symbol_to_print = static_cast<chtype>(item->get_item_type());
+  IO::Attribute attr = IO::None;
+  if (symbol_to_print == IO::Gold) {
+    attr = IO::BoldYellow;
+  }
+  print(x, y, symbol_to_print, attr);
+  return true;
+}
+
+void IO::print_coordinate_seen(Coordinate const& coord) {
   Game::level->set_discovered(coord);
 
   // Next prio: Player
   if (player->get_position() == coord) {
-    print_color(coord.x, coord.y, player->get_type());
+    print(coord.x, coord.y, Tile::Player);
     return;
   }
 
   // Next prio: Monsters
   Monster* mon = Game::level->get_monster(coord);
-  if (mon != nullptr) {
-    if (player->can_see(*mon)) {
-      print_monster(mon);
-      return;
-
-    } else if (player->can_sense_monsters()) {
-      standout();
-      print_monster(mon);
-      standend();
-      return;
-    }
+  if (mon != nullptr && print_monster(coord.x, coord.y, mon)) {
+    return;
   }
 
   // Next prio: Items
   Item* item = Game::level->get_item(coord);
-  if (item != nullptr) {
-    print_item(item);
+  if (item != nullptr && print_item(coord.x, coord.y, item)) {
     return;
   }
 
   // Next prio: Floor
-  print_color(coord.x, coord.y, Game::level->get_tile(coord));
+  print_tile(coord.x, coord.y, Game::level->get_tile(coord));
 }
 
-void IO::print_tile_discovered(Coordinate const& coord) {
+void IO::print_tile(int x, int y, ::Tile::Type tile) {
+  chtype char_to_print = '?';
+  IO::Attribute attr = IO::None;
+  switch (tile) {
+    case ::Tile::Type::ClosedDoor: {
+      char_to_print = IO::ClosedDoor;
+      attr = IO::BoldBlack;
+    } break;
 
-  // Next prio: Floor
-  ::Tile::Type tile = Game::level->get_tile(coord);
-  if (tile == ::Tile::Floor) {
-    print_color(coord.x, coord.y, IO::Shadow);
-  } else {
-    print_color(coord.x, coord.y, tile);
+    case ::Tile::Type::Wall: {
+      char_to_print = IO::Wall;
+      attr = IO::BoldBlack;
+    } break;
+
+    case ::Tile::Type::Trap: {
+      char_to_print = IO::Trap;
+      attr = IO::Red;
+    } break;
+
+    case ::Tile::Type::OpenDoor: {
+      char_to_print = IO::OpenDoor;
+      attr = Game::level->is_dark(x, y) ? IO::BoldBlack : IO::Yellow;
+    } break;
+
+    case ::Tile::Type::Floor: {
+      char_to_print = IO::Floor;
+      attr = Game::level->is_dark(x, y) ? IO::BoldBlack : IO::Yellow;
+    } break;
+
+    case ::Tile::Type::Stairs: {
+      char_to_print = IO::Stairs;
+      attr = Game::level->is_dark(x, y) ? IO::BoldBlack : IO::Yellow;
+    } break;
   }
-
-}
-
-void IO::print_tile(Coordinate const& coord) {
-  print_tile(coord.x, coord.y);
-}
-
-void IO::print_tile(int x, int y) {
-  Coordinate coord(x, y);
-
-  if (player->can_see(coord)) {
-    print_tile_seen(coord);
-
-  } else if (Game::level->is_discovered(coord)) {
-    print_tile_discovered(coord);
-
-  } else {
-    print(x, y, IO::Shadow);
-  }
-}
-
-chtype IO::colorize(chtype ch)
-{
-  if (!use_colors)
-    return ch;
-
-  // NOTE: COLOR_WHITE is black and COLOR_BLACK is white, because reasons
-
-  switch (ch)
-  {
-    // Dungeon
-    case IO::ClosedDoor:
-    case IO::Wall: return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
-    case IO::Trap: return ch | COLOR_PAIR(COLOR_RED);
-
-    case IO::Floor:
-    case IO::OpenDoor:
-    case IO::Stairs: return ch | COLOR_PAIR(COLOR_YELLOW);
-
-    // Items
-    case IO::Gold: return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
-
-    // Monsters
-    case 'b': return ch | COLOR_PAIR(COLOR_WHITE) | A_BOLD;
-    case 'g': return ch | COLOR_PAIR(COLOR_YELLOW);
-    case 'h': return ch | COLOR_PAIR(COLOR_GREEN);
-    case 'i': return ch | COLOR_PAIR(COLOR_CYAN);
-    case 'k': return ch | COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
-    case 'l': return ch | COLOR_PAIR(COLOR_GREEN) | A_BOLD;
-    case 'n': return ch | COLOR_PAIR(COLOR_GREEN) | A_BOLD;
-    case 'r': return ch | COLOR_PAIR(COLOR_RED);
-    case 's': return ch | COLOR_PAIR(COLOR_GREEN);
-
-
-    default: return ch | COLOR_PAIR(COLOR_BLACK);
-  }
+  print(x, y, char_to_print, attr);
 }
 
 void IO::print_level_layout() {
@@ -256,10 +281,8 @@ void IO::print_level_layout() {
       }
 
       Monster* obj = Game::level->get_monster(x, y);
-      if (obj == nullptr || !player->can_sense_monsters()) {
-        print_color(x, y, ch);
-      } else {
-        print_monster(obj, IO::Attribute::Standout);
+      if (obj == nullptr) {
+        print_monster(x, y, obj);
       }
     }
   }
@@ -269,16 +292,51 @@ void IO::print_coordinate(Coordinate const& coord) {
   print_coordinate(coord.x, coord.y);
 }
 void IO::print_coordinate(int x, int y) {
-  (void)x;
-  (void)y;
+  Coordinate coord(x, y);
+
+  // What we see right now
+  if (player->can_see(coord)) {
+    print_coordinate_seen(coord);
+
+  // Print from memory, which is only the tile
+  } else if (Game::level->is_discovered(coord)) {
+    ::Tile::Type tile = Game::level->get_tile(coord);
+    if (tile == ::Tile::Floor) {
+      print(coord.x, coord.y, IO::Shadow);
+    } else {
+      print_tile(coord.x, coord.y, tile);
+    }
+
+  // It's a good idea to draw black otherwise, to reduce artifacts
+  } else {
+    print(x, y, IO::Shadow);
+  }
 }
 
 void IO::refresh() {
   for (int x = 0; x < NUMCOLS -1; ++x) {
     for (int y = 1; y < NUMLINES -1; ++y) {
-      print_tile(x, y);
+      print_coordinate(x, y);
     }
   }
+
+  // Print stuff we sense
+  if (player->can_sense_magic()) {
+    for (Item* item : Game::level->items) {
+      if (item->is_magic()) {
+        Game::io->print(item->get_x(), item->get_y(), IO::Magic, IO::None);
+      }
+    }
+    for (Monster* mon : Game::level->monsters) {
+      for (Item* item : mon->t_pack) {
+        if (item->is_magic()) {
+          Coordinate pos = mon->get_position();
+          Game::io->print(pos.x, pos.y, IO::Magic, IO::None);
+        }
+      }
+    }
+  }
+
 
   refresh_statusline();
   move(player->get_position().y, player->get_position().x);
@@ -469,7 +527,7 @@ void IO::message(string const& message, bool force_flush) {
   clrtoeol();
 }
 
-void io_missile_motion(Item* item, int ydelta, int xdelta) {
+void IO::missile_motion(Item* item, int ydelta, int xdelta) {
 
   // Come fly with us ...
   item->set_position(player->get_position());
@@ -486,20 +544,20 @@ void io_missile_motion(Item* item, int ydelta, int xdelta) {
 
     // Print old position
     if (player->can_see(prev_pos)) {
-      Game::io->print_tile(prev_pos);
+      Game::io->print_coordinate(prev_pos);
     }
 
     // See if we hit something
     Monster* monster = Game::level->get_monster(new_pos);
-    Tile::Type tile = Game::level->get_tile(new_pos);
-    if (monster != nullptr || tile == Tile::Wall) {
+    ::Tile::Type tile = Game::level->get_tile(new_pos);
+    if (monster != nullptr || tile == ::Tile::Wall) {
       break;
     }
 
     // Print new position
     if (player->can_see(new_pos)) {
       os_usleep(10000);
-      Game::io->print_color(new_pos.x, new_pos.y, item->o_type);
+      Game::io->print(new_pos.x, new_pos.y, static_cast<chtype>(item->o_type), IO::None);
       move(new_pos.y, new_pos.x);
       refresh();
     }

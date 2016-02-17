@@ -183,7 +183,7 @@ magic_bolt(Coordinate* start, Coordinate* dir, string const& name)
       magic_bolt_hit_monster(tp, start, &pos, name);
     }
 
-    Game::io->print(pos.x, pos.y, dirtile, color);
+    Game::io->print(pos.x, pos.y, static_cast<chtype>(dirtile), color);
   }
 
   refresh();

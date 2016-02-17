@@ -18,6 +18,7 @@ enum daemon_function {
   remove_true_sight,
   set_not_confused,
   remove_sense_monsters,
+  remove_sense_magic,
   decrease_speed,
   set_not_blind,
   set_not_levitating

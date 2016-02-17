@@ -9,6 +9,7 @@
 #include "coordinate.h"
 #include "item.h"
 #include "monster.h"
+#include "tiles.h"
 
 class IO {
 public:
@@ -21,8 +22,14 @@ public:
 
   enum Attribute {
     Standout,
-    Red,
-    Blue,
+    Red,     BoldRed,
+    Green,   BoldGreen,
+    Yellow,  BoldYellow,
+    Blue,    BoldBlue,
+    Magenta, BoldMagenta,
+    Cyan,    BoldCyan,
+    White,   BoldWhite,
+    Black,   BoldBlack,
     None
   };
 
@@ -59,28 +66,17 @@ public:
   char readchar(bool is_question);
   void wait_for_key(int ch);
 
-  template <typename T>
-  void print(int x, int y, T ch, Attribute attr=None);
-
-  template <typename T>
-  void print_color(int x, int y, T ch, Attribute attr=None);
-
-  void print_tile(Coordinate const& coord);
-  void print_tile(int x, int y);
-
   void print_level_layout();
 
   void print_room(room const* room);
 
-  void print_monster(Monster* monster, Attribute attr=None);
-  void print_item(Item* item);
-
-  chtype colorize(chtype ch);
+  void missile_motion(Item* item, int ydelta, int xdelta);
 
   void repeat_last_messages();
   void clear_message();
   void show_extra_screen(std::string const& message);
 
+  void print(int x, int y, long unsigned int ch, Attribute attr=None);
   void print_coordinate(Coordinate const& coord);
   void print_coordinate(int x, int y);
   void refresh();
@@ -95,8 +91,10 @@ public:
   WINDOW* extra_screen;
 
 private:
-  void print_tile_seen(Coordinate const& coord);
-  void print_tile_discovered(Coordinate const& coord);
+  void print_coordinate_seen(Coordinate const& coord);
+  bool print_monster(int x, int y, Monster* monster);
+  bool print_item(int x, int y, Item* item);
+  void print_tile(int x, int y, ::Tile::Type tile);
 
   void refresh_statusline();
 };
@@ -121,8 +119,3 @@ private:
 size_t io_encwrite(char const* start, size_t size, FILE* outf);
 size_t io_encread(char* start, size_t size, FILE* inf);
 
-void io_missile_motion(Item* item, int ydelta, int xdelta);
-
-/* old ncurses functions, with custom color support, to be removed */
-#define waddcch(_w, _c)           waddch(_w, Game::io->colorize(_c))
-#define mvwaddcch(_w, _y, _x, _c) mvwaddch(_w, _y, _x, Game::io->colorize(_c))

@@ -618,23 +618,6 @@ monster_aggro_all_which_desire_item(Item* item)
   }
 }
 
-bool
-monster_show_if_magic_inventory(void)
-{
-  bool atleast_one = false;
-  for (Monster* mon : Game::level->monsters) {
-    for (Item* item : mon->t_pack) {
-      if (item->is_magic())
-      {
-        Coordinate pos = mon->get_position();
-        atleast_one = true;
-        mvwaddcch(Game::io->extra_screen, pos.y, pos.x, IO::Magic);
-      }
-    }
-  }
-  return atleast_one;
-}
-
 void
 monster_polymorph(Monster* target)
 {

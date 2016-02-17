@@ -120,7 +120,7 @@ wand_spell_magic_missile(int dy, int dx)
     bolt.o_launch = weapon->o_which;
   }
 
-  io_missile_motion(&bolt, dy, dx);
+  Game::io->missile_motion(&bolt, dy, dx);
 
   Monster* target = Game::level->get_monster(bolt.get_position());
   if (target == nullptr) {

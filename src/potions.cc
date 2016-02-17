@@ -216,28 +216,7 @@ void Potion::quaffed_by(Character& victim) {
 
     case TFIND: {
       if (&victim == player) {
-        bool show = false;
-        if (!Game::level->items.empty()) {
-          wclear(Game::io->extra_screen);
-          for (Item* item : Game::level->items) {
-            if (item->is_magic()) {
-              Potion::set_known(subtype);
-              show = true;
-              mvwaddcch(Game::io->extra_screen, item->get_y(), item->get_x(), IO::Magic);
-            }
-          }
-
-          if (monster_show_if_magic_inventory()) {
-            show = true;
-          }
-        }
-
-        if (show) {
-          Potion::set_known(subtype);
-          Game::io->show_extra_screen("You sense the presence of magic on this level.--More--");
-        } else {
-          Game::io->message("you have a strange feeling for a moment, then it passes");
-        }
+        player->set_sense_magic();
       }
     } break;
 

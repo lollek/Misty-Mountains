@@ -204,8 +204,6 @@ void wizard_create_item(void) {
 }
 
 void wizard_show_map(void) {
-  wclear(Game::io->extra_screen);
-
   for (int y = 1; y < NUMLINES - 1; y++)  {
     for (int x = 0; x < NUMCOLS; x++) {
       chtype ch = 0;
@@ -236,10 +234,13 @@ void wizard_show_map(void) {
         ch |= A_STANDOUT;
       }
 
-      mvwaddcch(Game::io->extra_screen, y, x, ch);
+      Game::io->print(x, y, ch);
     }
   }
-  Game::io->show_extra_screen("---More (level map)---");
+
+  refresh();
+  Game::io->readchar(false);
+  clear();
 }
 
 void wizard_levels_and_gear(void) {

@@ -40,7 +40,7 @@ static bool command_attack_bow(Coordinate const* delta) {
   }
 
   Item* arrow = player->pack_remove(ptr, true, false);
-  io_missile_motion(arrow, delta->y, delta->x);
+  Game::io->missile_motion(arrow, delta->y, delta->x);
   Monster* monster_at_pos = Game::level->get_monster(arrow->get_position());
 
   if (monster_at_pos == nullptr ||
@@ -455,7 +455,7 @@ bool command_throw() {
   }
 
   obj = player->pack_remove(obj, true, false);
-  io_missile_motion(obj, ydelta, xdelta);
+  Game::io->missile_motion(obj, ydelta, xdelta);
   Monster* monster_at_pos = Game::level->get_monster(obj->get_position());
 
   /* Throwing an arrow always misses */
