@@ -485,41 +485,23 @@ void Player::raise_level(int amount)
 
 void Player::check_for_level_up() {
   vector<int> levels = {
-    10L,
-    20L,
-    40L,
-    80L,
-    160L,
-    320L,
-    640L,
-    1300L,
-    2600L,
-    5200L,
-    13000L,
-    26000L,
-    50000L,
-    100000L,
-    200000L,
-    400000L,
-    800000L,
-    2000000L,
-    4000000L,
-    8000000L,
-    0L
+//   1    2    3    4     5    6     7     8     9     10    11
+    10L, 25L, 45L, 70L, 100L, 140L, 200L, 280L, 380L, 500L, 650L,
+//   12    13     14     15     16     17     18     19     20
+    850L, 1100L, 1400L, 1800L, 2300L, 2900L, 3600L, 4400L, 5400L,
+//   21    22     23     24     25     26     27     28     29
+    6800L,8400L,10200L,12500L,17500L,25000L,35000L,50000L,75000L,
+//   30        31       32       33      34       35
+   100000L, 150000L, 200000L, 300000L, 400000L, 500000L,
+//   36        37       38        39
+   750000L, 1500000L, 2500000L, 5000000L
   };
 
-  int new_level;
-  int old_level = get_level();
+  int experience_to_next_level = levels.at(static_cast<size_t>(get_level()));
+  int current_experience = get_experience();
 
-  for (new_level = 0; levels.at(static_cast<size_t>(new_level)) != 0; ++new_level) {
-    if (levels.at(static_cast<size_t>(new_level)) > get_experience()) {
-      break;
-    }
-  }
-
-  ++new_level;
-  if (new_level > old_level) {
-    raise_level(new_level - old_level);
+  if (experience_to_next_level < current_experience) {
+    raise_level(1);
   }
 }
 
