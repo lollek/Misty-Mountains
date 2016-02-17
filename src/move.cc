@@ -73,7 +73,8 @@ static void handle_surrounding(Coordinate const& nh, int dx, int dy, bool cautio
       Tile::Type tile = Game::level->get_tile(x, y);
       Coordinate tile_coord(x, y);
       if (cautious &&
-          (tile == Tile::Stairs || tile == Tile::Trap || tile == Tile::OpenDoor)) {
+          (tile == Tile::StairsDown || tile == Tile::StairsUp ||
+           tile == Tile::Trap || tile == Tile::OpenDoor)) {
         player->set_not_running();
         continue;
       }
@@ -164,7 +165,8 @@ move_do_loop(int dx, int dy, bool cautious) {
     } return false;
 
     case Tile::Floor:
-    case Tile::Stairs:
+    case Tile::StairsDown:
+    case Tile::StairsUp:
     case Tile::Trap:
     case Tile::OpenDoor:
       return move_do_loop_default(nh);

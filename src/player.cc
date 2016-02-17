@@ -138,8 +138,8 @@ bool Player::can_see(Coordinate const& coord) const {
       case Tile::Wall: case Tile::ClosedDoor:
         return false;
 
-      case Tile::Floor: case Tile::Stairs: case Tile::Trap:
-      case Tile::OpenDoor: case Tile::Shop:
+      case Tile::Floor: case Tile::StairsDown: case Tile::StairsUp: 
+      case Tile::Trap: case Tile::OpenDoor: case Tile::Shop:
         break;
     }
   }
@@ -424,7 +424,7 @@ void Player::search() {
           break;
 
         case Tile::OpenDoor: case Tile::ClosedDoor: case Tile::Trap:
-        case Tile::Stairs: case Tile::Shop: break;
+        case Tile::StairsDown: case Tile::StairsUp: case Tile::Shop: break;
       }
     }
   }

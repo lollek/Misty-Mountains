@@ -12,7 +12,8 @@ struct Tile {
     OpenDoor,
     Floor,
     Trap,
-    Stairs,
+    StairsDown,
+    StairsUp,
     Shop,
   };
 

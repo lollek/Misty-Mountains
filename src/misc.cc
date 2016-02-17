@@ -118,19 +118,20 @@ spread(int nm)
 char
 rnd_thing(void)
 {
-  int i = os_rand_range(Game::current_level >= Game::amulet_min_level ? 10 : 9);
+  int i = os_rand_range(Game::current_level >= Game::amulet_min_level ? 11 : 10);
   switch (i)
   {
-    case 0: return IO::Potion;
-    case 1: return IO::Scroll;
-    case 2: return IO::Ring;
-    case 3: return IO::Wand;
-    case 4: return IO::Food;
-    case 5: return IO::Weapon;
-    case 6: return IO::Armor;
-    case 7: return IO::Stairs;
-    case 8: return IO::Gold;
-    case 9: return IO::Amulet;
+    case  0: return IO::Potion;
+    case  1: return IO::Scroll;
+    case  2: return IO::Ring;
+    case  3: return IO::Wand;
+    case  4: return IO::Food;
+    case  5: return IO::Weapon;
+    case  6: return IO::Armor;
+    case  7: return IO::StairsDown;
+    case  8: return IO::StairsUp;
+    case  9: return IO::Gold;
+    case 10: return IO::Amulet;
 
     default: error("rnd_thing out of bounds");
   }

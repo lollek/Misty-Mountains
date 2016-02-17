@@ -234,8 +234,13 @@ void IO::print_tile(int x, int y, ::Tile::Type tile) {
       attr = Game::level->is_dark(x, y) ? IO::BoldBlack : IO::Yellow;
     } break;
 
-    case ::Tile::Type::Stairs: {
-      char_to_print = IO::Stairs;
+    case ::Tile::Type::StairsDown: {
+      char_to_print = IO::StairsDown;
+      attr = Game::level->is_dark(x, y) ? IO::BoldBlack : IO::Yellow;
+    } break;
+
+    case ::Tile::Type::StairsUp: {
+      char_to_print = IO::StairsUp;
       attr = Game::level->is_dark(x, y) ? IO::BoldBlack : IO::Yellow;
     } break;
 
@@ -257,8 +262,8 @@ void IO::print_level_layout() {
       switch (ch) {
 
         // Doors and stairs are always what they seem
-        case ::Tile::OpenDoor: case ::Tile::ClosedDoor: case ::Tile::Stairs:
-        case ::Tile::Shop: break;
+        case ::Tile::OpenDoor: case ::Tile::ClosedDoor: case ::Tile::StairsDown:
+        case ::Tile::StairsUp: case ::Tile::Shop: break;
 
         // Check if walls are actually hidden doors
         case ::Tile::Wall: {

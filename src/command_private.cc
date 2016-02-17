@@ -66,7 +66,8 @@ static bool command_attack_melee(bool fight_to_death, Coordinate const& delta) {
   switch (Game::level->get_tile(delta)) {
     case Tile::Wall:       msg = "you swing at the wall"; break;
     case Tile::ClosedDoor: msg = "you swing at the door"; break;
-    case Tile::Stairs:     msg = "you swing at the stairs"; break;
+    case Tile::StairsDown:
+    case Tile::StairsUp:  msg = "you swing at the stairs"; break;
 
     case Tile::Shop:
     case Tile::OpenDoor:
@@ -85,16 +86,23 @@ bool command_use_stairs(char up_or_down) {
 
   if (player->is_levitating()) {
     Game::io->message("You can't. You're floating off the ground!");
-  } else if (Game::level->get_tile(player->get_position()) != Tile::Stairs) {
+    return false;
+  }
+
+  Tile::Type tile = Game::level->get_tile(player->get_position());
+  if (tile != Tile::StairsDown && tile != Tile::StairsUp) {
     Game::io->message("You're not standing on any stairs");
+    return false;
   }
 
   // DOWN
-  else if (up_or_down == '>') {
+  if (up_or_down == '>' && tile == Tile::StairsDown) {
     Game::new_level(Game::current_level +1);
+    return false;
+  }
 
   // UP
-  } else if (up_or_down == '<') {
+  if (up_or_down == '<' && tile == Tile::StairsUp) {
     bool has_amulet = player->pack_contains_amulet();
 
     if (Game::current_level < 0) {
@@ -105,6 +113,7 @@ bool command_use_stairs(char up_or_down) {
       if (has_amulet) {
         score_win_and_exit();
       } else {
+        Game::io->message("you shouldn't leave without the amulet");
         return false;
       }
     }

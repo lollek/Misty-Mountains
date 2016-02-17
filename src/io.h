@@ -40,7 +40,8 @@ public:
     OpenDoor   = '\'',
     ClosedDoor   = '+',
     Trap   = '_',
-    Stairs = '%',
+    StairsDown = '>',
+    StairsUp = '<',
     Shop = '~',
 
     VerticalBolt = '|',

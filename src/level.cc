@@ -130,7 +130,10 @@ void Level::create_traps() {
 void Level::create_stairs() {
   Coordinate stairs_coord;
   get_random_room_coord(nullptr, &stairs_coord, 0, false);
-  set_tile(stairs_coord, Tile::Stairs);
+  set_tile(stairs_coord, Tile::StairsUp);
+
+  get_random_room_coord(nullptr, &stairs_coord, 0, false);
+  set_tile(stairs_coord, Tile::StairsDown);
 }
 
 void Level::create_shop() {
@@ -306,8 +309,8 @@ bool Level::can_step(int x, int y) {
     case Tile::Wall: case Tile::ClosedDoor: case Tile::Shop:
       return false;
 
-    case Tile::Floor: case Tile::OpenDoor: case Tile::Stairs:
-    case Tile::Trap:
+    case Tile::Floor: case Tile::OpenDoor: case Tile::StairsDown:
+    case Tile::Trap:  case Tile::StairsUp:
       break;
   }
 
