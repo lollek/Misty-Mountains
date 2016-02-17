@@ -1,6 +1,7 @@
 #include <csignal>
 #include <string>
 
+#include "death.h"
 #include "game.h"
 #include "armor.h"
 #include "daemons.h"
@@ -198,8 +199,7 @@ command_signal_quit(__attribute__((unused)) int sig)
   {
   /* Reset the signal in case we got here via an interrupt */
     signal(SIGINT, command_signal_leave);
-    player->pack_print_value();
-    score_show_and_exit(player->get_gold(), 1, 0);
+    score_show_and_exit(QUIT);
   }
   else
   {

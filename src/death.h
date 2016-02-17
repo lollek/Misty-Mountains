@@ -15,6 +15,9 @@ enum death_reason {
   DEATH_HUNGER    = 262,
   DEATH_NO_HEALTH = 263,
   DEATH_NO_EXP    = 264,
+
+  QUIT            = 265,
+  WON             = 266,
 };
 
 // Return a string describing the death

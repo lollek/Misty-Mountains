@@ -7,6 +7,7 @@
 #include "game.h"
 #include "command.h"
 #include "io.h"
+#include "death.h"
 #include "score.h"
 #include "misc.h"
 #include "level_rooms.h"
@@ -73,7 +74,7 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
           save_path = optarg;
         }
       } break;
-      case 's': score_show_and_exit(0, -1, 0); // does not return
+      case 's': score_show_and_exit(QUIT); // does not return
       case 'W': wizard = true; break;
       case 'S': if (wizard && optarg != nullptr) {
                   os_rand_seed = static_cast<unsigned>(stoul(optarg));

@@ -31,6 +31,9 @@ string death_reason(int reason) {
 
   } else {
     switch (static_cast<enum death_reason>(reason)) {
+      case QUIT:   return "Quit";
+      case WON:    return "A total winner";
+
       case DEATH_UNKNOWN:    return "Died by an unknown cause";
       case DEATH_ARROW:      return "Pierced by an arrow";
       case DEATH_BOLT:       return "Pierced by a bolt";
@@ -51,8 +54,7 @@ static void death(int type) {
   Game::io->message("You die!");
   Game::io->readchar(false);
 
-  player->pack_print_value();
-  score_show_and_exit(player->get_gold(), player->pack_contains_amulet() ? 3 : 0, type);
+  score_show_and_exit(type);
 }
 
 void death(enum death_reason reason) {

@@ -128,7 +128,7 @@ score_write(struct score* top_ten)
 
 
 static void
-score_insert(struct score* top_ten, int amount, int flags, int death_type)
+score_insert(struct score* top_ten, int amount, int death_type)
 {
   unsigned uid = getuid();
   for (unsigned i = 0; i < SCORE_MAX; ++i)
@@ -141,7 +141,7 @@ score_insert(struct score* top_ten, int amount, int flags, int death_type)
       /* Add new scores */
       top_ten[i].score = amount;
       strcpy(top_ten[i].name, Game::whoami->c_str());
-      top_ten[i].flags = flags;
+      top_ten[i].flags = 0;
       top_ten[i].level = Game::current_level;
       top_ten[i].death_type = death_type;
       top_ten[i].uid = uid;
@@ -168,17 +168,8 @@ score_print(struct score* top_ten)
         ,top_ten[i].name      /* Name */
         );
 
-    if (top_ten[i].flags == 0)
-      printf("%s", death_reason(top_ten[i].death_type).c_str());
-    else if (top_ten[i].flags == 1)
-      printf("Quit");
-    else if (top_ten[i].flags == 2)
-      printf("A total winner");
-    else if (top_ten[i].flags == 3)
-      printf("%s while holding the amulet",
-          death_reason(top_ten[i].death_type).c_str());
-
-    printf(" on level %d.\n", top_ten[i].level);
+    printf("%s on level %d.\n", death_reason(top_ten[i].death_type).c_str(),
+                                top_ten[i].level);
   }
 }
 
@@ -198,11 +189,13 @@ score_open(void)
 }
 
 void
-score_show_and_exit(int amount, int flags, int death_type)
+score_show_and_exit(int death_type)
 {
+  int amount = 0;
 
-  if (flags >= 0 || wizard)
-  {
+  if (player != nullptr) {
+    amount = static_cast<int>(player->pack_print_value());
+
     char buf[2*MAXSTR];
     mvaddstr(LINES - 1, 0 , "[Press return to continue]");
     refresh();
@@ -216,7 +209,7 @@ score_show_and_exit(int amount, int flags, int death_type)
 
   /* Insert her in list if need be */
   if (!wizard) {
-    score_insert(top_ten, amount, flags, death_type);
+    score_insert(top_ten, amount, death_type);
   }
 
   /* Print the highscore */
@@ -249,8 +242,7 @@ score_win_and_exit(void)
   mvaddstr(LINES - 1, 0, "--Press space to continue--");
   refresh();
   Game::io->wait_for_key(KEY_SPACE);
-  player->give_gold(static_cast<int>(player->pack_print_value()));
-  score_show_and_exit(player->get_gold(), 2, ' ');
+  score_show_and_exit(WON);
 }
 
 
