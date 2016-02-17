@@ -36,9 +36,6 @@ public:
   bool get_random_room_coord(room* room, Coordinate* coord, int tries, bool monster);
   room* get_room(Coordinate const& coord);
   room* get_random_room();
-  Coordinate const& get_stairs_pos() const;
-  int get_stairs_x() const;
-  int get_stairs_y() const;
 
   // Setters
   void set_monster(int x, int y, Monster* monster);
@@ -100,5 +97,4 @@ private:
   // Variables
   std::vector<room>  rooms;         // all rooms on level
   std::vector<Tile>  tiles;        // level map
-  Coordinate         stairs_coord;  // Where the stairs are
 };

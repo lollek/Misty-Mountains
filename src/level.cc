@@ -114,19 +114,21 @@ Level::~Level() {
 void Level::create_traps() {
   if (os_rand_range(10) < Game::current_level) {
     int ntraps = min(os_rand_range(Game::current_level / 4) + 1, max_traps);
+    Coordinate coord;
     for (int i = 0; i < ntraps; ++i) {
       do {
-        get_random_room_coord(nullptr, &stairs_coord, 0, false);
-      } while (get_tile(stairs_coord) != Tile::Floor);
+        get_random_room_coord(nullptr, &coord, 0, false);
+      } while (get_tile(coord) != Tile::Floor);
 
-      set_not_real(stairs_coord);
+      set_not_real(coord);
       Trap::Type trap_type = static_cast<Trap::Type>(os_rand_range(Trap::NTRAPS));
-      set_trap_type(stairs_coord, trap_type);
+      set_trap_type(coord, trap_type);
     }
   }
 }
 
 void Level::create_stairs() {
+  Coordinate stairs_coord;
   get_random_room_coord(nullptr, &stairs_coord, 0, false);
   set_tile(stairs_coord, Tile::Stairs);
 }
@@ -138,7 +140,7 @@ void Level::create_shop() {
 }
 
 
-Level::Level() : items(), monsters(), shop(), rooms(), tiles(), stairs_coord({0,0}) {
+Level::Level() : items(), monsters(), shop(), rooms(), tiles() {
   tiles.resize(MAXLINES * MAXCOLS);
   if (player != nullptr) {
     player->set_previous_room(nullptr);
@@ -297,18 +299,6 @@ room* Level::get_room(Coordinate const& coord) {
 
   // Was corridor, probably
   return nullptr;
-}
-
-Coordinate const& Level::get_stairs_pos() const {
-  return stairs_coord;
-}
-
-int Level::get_stairs_x() const {
-  return stairs_coord.x;
-}
-
-int Level::get_stairs_y() const {
-  return stairs_coord.y;
 }
 
 bool Level::can_step(int x, int y) {

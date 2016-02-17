@@ -106,7 +106,6 @@ public:
   void become_stuck();
   void become_poisoned();
   void teleport(Coordinate const* target); // random spot if target is nullptr
-  bool has_seen_stairs() const;
   bool can_see(Coordinate const& coord) const;
   bool can_see(Monster const& monster) const;
   void search();

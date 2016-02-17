@@ -97,10 +97,6 @@ int Player::get_armor() const {
   return ac;
 }
 
-bool Player::has_seen_stairs() const {
-  return Game::level->is_discovered(Game::level->get_stairs_pos());
-}
-
 bool Player::can_see(Monster const& monster) const {
   if (monster.is_invisible() && !has_true_sight()) {
     return false;
