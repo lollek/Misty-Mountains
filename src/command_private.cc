@@ -362,7 +362,7 @@ bool command_help() {
     move(0, 0);
     for (int i = 0; i < helpstrsize; ++i) {
       if (helpstr[i].sym == helpch) {
-        Game::io->message(string(1, UNCTRL(helpstr[i].sym)) + ")" + 
+        Game::io->message(string(1, helpstr[i].sym) + ")" + 
                           helpstr[i].description);
         return false;
       }
