@@ -248,15 +248,13 @@ bool Player::can_sense_magic() const {
 void Player::set_sense_magic() {
   Daemons::daemon_start_fuse(Daemons::remove_sense_magic, MFINDDURATION, AFTER);
 
+  Game::io->message("you can smell magic in the air");
   senses_magic = true;
-
-  if (Game::level->monsters.empty() && Game::level->items.empty()) {
-    Game::io->message("you have a strange feeling for a moment, then it passes");
-  }
 }
 
 void Player::remove_sense_magic() {
   senses_magic = false;
+  Game::io->message("you can no longer smell magic");
 }
 
 bool Player::can_sense_monsters() const {
@@ -266,15 +264,13 @@ bool Player::can_sense_monsters() const {
 void Player::set_sense_monsters() {
   Daemons::daemon_start_fuse(Daemons::remove_sense_monsters, MFINDDURATION, AFTER);
 
+  Game::io->message("you can sense monsters nearby");
   senses_monsters = true;
-
-  if (Game::level->monsters.empty()) {
-    Game::io->message("you have a strange feeling for a moment, then it passes");
-  }
 }
 
 void Player::remove_sense_monsters() {
   senses_monsters = false;
+  Game::io->message("you can no longer sense any monsters");
 }
 
 int Player::get_speed() const {

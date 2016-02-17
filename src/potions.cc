@@ -216,6 +216,7 @@ void Potion::quaffed_by(Character& victim) {
 
     case TFIND: {
       if (&victim == player) {
+        Potion::set_known(subtype);
         player->set_sense_magic();
       }
     } break;

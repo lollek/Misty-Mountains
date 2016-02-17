@@ -316,6 +316,14 @@ void IO::print_coordinate(int x, int y) {
     }
   }
 
+  if (player->can_sense_monsters()) {
+    Monster* monster = Game::level->get_monster(x, y);
+    if (monster != nullptr) {
+      print(x, y, static_cast<chtype>(monster->get_type()), IO::Standout);
+      return;
+    }
+  }
+
   // 3. What we remember
   if (Game::level->is_discovered(coord)) {
     ::Tile::Type tile = Game::level->get_tile(coord);
