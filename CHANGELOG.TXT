@@ -1,5 +1,6 @@
 Misty Mountain:
 
+  Stairs up and stairs down are now separate
   Shop is now its own symbol (~)
   Rebalanced experience gain
   Cursed items are now described with a [C]
