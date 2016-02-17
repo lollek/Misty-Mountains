@@ -634,3 +634,16 @@ bool command_save() {
   return false;
 }
 
+bool command_drop() {
+  Item* obj = player->pack_find_item("drop", 0);
+  if (obj == nullptr) {
+    return false;
+  }
+
+  obj = player->pack_remove(obj, true, true);
+  Game::level->items.push_back(obj);
+  obj->set_position(player->get_position());
+  Game::io->message("dropped " + obj->get_description());
+
+  return true;
+}

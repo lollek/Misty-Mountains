@@ -124,6 +124,7 @@ command_do(char ch)
     case 'Y': case 'U': case 'B': case 'N':
       return command_run(ch, false);
     case 'A': return command_attack(true);
+    case 'D': return command_drop();
     case 'E': return player->pack_show_equipment();
     case 'I': return player->pack_show_inventory();
     case 'O': return option();
