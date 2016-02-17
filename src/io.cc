@@ -142,8 +142,6 @@ bool IO::print_monster(int x, int y, Monster* monster) {
   if (!player->can_see(*monster)) {
     if (player->can_sense_monsters()) {
       print_sensed_monster = true;
-    } else if (player->can_sense_magic()) {
-      symbol_to_print = IO::Magic;
     } else {
       return false;
     }
@@ -294,23 +292,43 @@ void IO::print_coordinate(Coordinate const& coord) {
 void IO::print_coordinate(int x, int y) {
   Coordinate coord(x, y);
 
-  // What we see right now
+  // 1. What we see right now
   if (player->can_see(coord)) {
     print_coordinate_seen(coord);
+    return;
+  }
+  // 2. What we sense
+  if (player->can_sense_magic()) {
+    Monster* monster = Game::level->get_monster(x, y);
+    if (monster != nullptr) {
+      for (Item* item : monster->t_pack) {
+        if (item->is_magic()) {
+          print(x, y, IO::Magic, IO::None);
+          return;
+        }
+      }
+    }
 
-  // Print from memory, which is only the tile
-  } else if (Game::level->is_discovered(coord)) {
+    Item* item = Game::level->get_item(x, y);
+    if (item != nullptr && item->is_magic()) {
+      print(x, y, IO::Magic, IO::None);
+      return;
+    }
+  }
+
+  // 3. What we remember
+  if (Game::level->is_discovered(coord)) {
     ::Tile::Type tile = Game::level->get_tile(coord);
     if (tile == ::Tile::Floor) {
       print(coord.x, coord.y, IO::Shadow);
     } else {
       print_tile(coord.x, coord.y, tile);
     }
+    return;
+  }
 
   // It's a good idea to draw black otherwise, to reduce artifacts
-  } else {
-    print(x, y, IO::Shadow);
-  }
+  print(x, y, IO::Shadow);
 }
 
 void IO::refresh() {
@@ -319,24 +337,6 @@ void IO::refresh() {
       print_coordinate(x, y);
     }
   }
-
-  // Print stuff we sense
-  if (player->can_sense_magic()) {
-    for (Item* item : Game::level->items) {
-      if (item->is_magic()) {
-        Game::io->print(item->get_x(), item->get_y(), IO::Magic, IO::None);
-      }
-    }
-    for (Monster* mon : Game::level->monsters) {
-      for (Item* item : mon->t_pack) {
-        if (item->is_magic()) {
-          Coordinate pos = mon->get_position();
-          Game::io->print(pos.x, pos.y, IO::Magic, IO::None);
-        }
-      }
-    }
-  }
-
 
   refresh_statusline();
   move(player->get_position().y, player->get_position().x);
