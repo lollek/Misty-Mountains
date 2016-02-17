@@ -41,6 +41,7 @@ public:
     ClosedDoor   = '+',
     Trap   = '_',
     Stairs = '%',
+    Shop = '~',
 
     VerticalBolt = '|',
     DiagonalUpBolt = '/',

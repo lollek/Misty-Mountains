@@ -1,5 +1,6 @@
 Misty Mountain:
 
+  Shop is now its own symbol (~)
   Rebalanced experience gain
   Cursed items are now described with a [C]
   Change trap symbol from ^ to _

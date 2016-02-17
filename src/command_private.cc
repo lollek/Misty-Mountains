@@ -68,6 +68,7 @@ static bool command_attack_melee(bool fight_to_death, Coordinate const& delta) {
     case Tile::ClosedDoor: msg = "you swing at the door"; break;
     case Tile::Stairs:     msg = "you swing at the stairs"; break;
 
+    case Tile::Shop:
     case Tile::OpenDoor:
     case Tile::Floor:
     case Tile::Trap:   msg = "you swing at the air"; break;
@@ -104,10 +105,6 @@ bool command_use_stairs(char up_or_down) {
       if (has_amulet) {
         score_win_and_exit();
       } else {
-        if (Game::level->shop == nullptr) {
-          Game::level->shop = new Shop();
-        }
-        Game::level->shop->enter();
         return false;
       }
     }

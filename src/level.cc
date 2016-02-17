@@ -131,6 +131,12 @@ void Level::create_stairs() {
   set_tile(stairs_coord, Tile::Stairs);
 }
 
+void Level::create_shop() {
+  Coordinate shop_coord;
+  get_random_room_coord(nullptr, &shop_coord, 0, false);
+  set_tile(shop_coord, Tile::Shop);
+}
+
 
 Level::Level() : items(), monsters(), shop(), rooms(), tiles(), stairs_coord({0,0}) {
   tiles.resize(MAXLINES * MAXCOLS);
@@ -149,6 +155,10 @@ Level::Level() : items(), monsters(), shop(), rooms(), tiles(), stairs_coord({0,
   create_loot();
   create_traps();
   create_stairs();
+
+  if (Game::current_level == 1) {
+    create_shop();
+  }
 }
 
 Tile& Level::tile(int x, int y) {
@@ -303,7 +313,7 @@ int Level::get_stairs_y() const {
 
 bool Level::can_step(int x, int y) {
   switch(get_tile(x, y)) {
-    case Tile::Wall: case Tile::ClosedDoor:
+    case Tile::Wall: case Tile::ClosedDoor: case Tile::Shop:
       return false;
 
     case Tile::Floor: case Tile::OpenDoor: case Tile::Stairs:

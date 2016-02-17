@@ -80,6 +80,7 @@ private:
   void create_loot();
   void create_traps();
   void create_stairs();
+  void create_shop();
 
   // Part of create_rooms()
   void create_treasure_room();

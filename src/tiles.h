@@ -13,6 +13,7 @@ struct Tile {
     Floor,
     Trap,
     Stairs,
+    Shop,
   };
 
   Type       type;

@@ -227,6 +227,7 @@ void wizard_show_map(void) {
           case Tile::ClosedDoor:   ch = IO::ClosedDoor; break;
           case Tile::Trap:         ch = IO::Trap; break;
           case Tile::Stairs:       ch = IO::Stairs; break;
+          case Tile::Shop:         ch = IO::Shop; break;
         }
       }
 

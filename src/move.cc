@@ -153,7 +153,15 @@ move_do_loop(int dx, int dy, bool cautious) {
     case Tile::ClosedDoor: {
       player->set_not_running();
       return false;
-    } 
+    }
+
+    case Tile::Shop: { // Enter shop
+      if (Game::level->shop == nullptr) {
+        Game::level->shop = new Shop();
+      }
+      Game::level->shop->enter();
+      player->set_not_running();
+    } return false;
 
     case Tile::Floor:
     case Tile::Stairs:
