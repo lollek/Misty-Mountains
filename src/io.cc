@@ -571,7 +571,7 @@ void IO::missile_motion(Item* item, int ydelta, int xdelta) {
 
 void IO::force_redraw() {
   clearok(curscr, true);
-  wrefresh(curscr);
+  ::wrefresh(curscr);
 }
 
 void IO::move_pointer(int x, int y) {

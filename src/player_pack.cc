@@ -39,8 +39,8 @@ pack_print_evaluate_item(Item* item)
   item->set_identified();
 
   stringstream ss;
-  ss << setw(5) << setfill('0') << worth << setw(0) << "  "
-     << item->get_description();
+  ss << setw(5) << setfill(' ') << worth << setw(0) << "  "
+     << item->get_description() << "\n";
   Game::io->print_string(ss.str());
 
   return static_cast<unsigned>(worth);
@@ -303,8 +303,9 @@ size_t Player::pack_print_value() {
   }
 
   stringstream ss;
-  ss << "\n" << setw(5) << setfill('0') << gold << "  Gold Pieces          ";
+  ss << "\n" << setw(5) << setfill(' ') << gold << "  Gold Pieces          ";
   Game::io->print_string(ss.str());
+  Game::io->move_pointer(0, NUMLINES -1);
   Game::io->force_redraw();
   return value;
 }
