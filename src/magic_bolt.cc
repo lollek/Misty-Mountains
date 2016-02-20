@@ -48,7 +48,7 @@ recursive_loop:; /* ONLY called by end of function */
     } else {
       int y = dir->y < 0 ? pos.y + 1 : pos.y - 1;
       Tile::Type y_ch;
-      if (y >= NUMLINES || y <= 0)
+      if (y >= IO::map_height || y <= 0)
         y_ch = Tile::Wall;
       else
         y_ch = Game::level->get_tile(pos.x, y);

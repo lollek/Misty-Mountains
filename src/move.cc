@@ -126,7 +126,7 @@ move_do_loop(int dx, int dy, bool cautious) {
   nh.x = player->get_position().x + dx;
 
   // If we are too close to the edge of map, treat is as wall automatically
-  if (nh.x < 1 || nh.x >= NUMCOLS -1 || nh.y < 1 || nh.y >= NUMLINES - 1) {
+  if (nh.x < 1 || nh.x >= IO::map_width -1 || nh.y < 1 || nh.y >= IO::map_height - 1) {
     player->set_not_running();
     return true;
   }

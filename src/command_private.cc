@@ -388,8 +388,8 @@ bool command_help() {
   }
 
   numprint /= 2;
-  if (numprint > MAXLINES - 1) {
-    numprint = MAXLINES - 1;
+  if (numprint > IO::screen_height - 1) {
+    numprint = IO::screen_height - 1;
   }
 
   Game::io->clear_screen();
@@ -399,7 +399,7 @@ bool command_help() {
       continue;
     }
 
-    int x = print_i >= numprint ? MAXCOLS / 2 : 0;
+    int x = print_i >= numprint ? IO::screen_width / 2 : 0;
     int y = 1 + print_i % numprint;
     if (helpstr[i].sym) {
       Game::io->print_char(x, y, helpstr[i].sym);
@@ -411,7 +411,7 @@ bool command_help() {
     }
   }
 
-  Game::io->move_pointer(0, MAXLINES - 1);
+  Game::io->move_pointer(0, IO::screen_height - 1);
   Game::io->print_string(0, 0, "--Press space to continue--");
   Game::io->force_redraw();
   Game::io->wait_for_key(KEY_SPACE);

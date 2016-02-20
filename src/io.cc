@@ -54,10 +54,10 @@ IO::IO() : last_messages(), message_buffer() {
     init_pair(COLOR_WHITE, COLOR_BLACK, -1);
   }
 
-  if (LINES < NUMLINES || COLS < NUMCOLS) {
+  if (LINES < screen_height || COLS < screen_width) {
     endwin();
     cerr << "\nSorry, the screen must be at least "
-         << NUMLINES << "x" << NUMCOLS << "\n";
+         << screen_height << "x" << screen_width << "\n";
     Game::exit();
   }
 
@@ -71,7 +71,7 @@ IO::~IO() {
 
 char IO::readchar(bool is_question) {
   if (is_question) {
-    move(0, static_cast<int>(Game::io->message_buffer.size()));
+    move(message_y, message_x + static_cast<int>(Game::io->message_buffer.size()));
   }
 
   char ch = static_cast<char>(getch());
@@ -100,12 +100,14 @@ void IO::wait_for_key(int ch) {
 }
 
 void IO::print(int x, int y, long unsigned int ch, IO::Attribute attr) {
-  if (y < 0 || y >= MAXLINES ||
-      x < 0 || x >= MAXCOLS) {
+  x += map_start_x;
+  y += map_start_y;
+  if (y < 0 || y >= screen_height ||
+      x < 0 || x >= screen_width) {
     error("Attempted to print beyond screen! X: " +
           to_string(x) + ", Y: " + to_string(y) +
-          "MAXLINES: " + to_string(MAXLINES) +
-          "MAXCOLS: " + to_string(MAXCOLS));
+          "MAXLINES: " + to_string(screen_height) +
+          "MAXCOLS: " + to_string(screen_width));
   }
   switch (attr) {
     case IO::Attribute::None: break;
@@ -253,8 +255,8 @@ void IO::print_tile(int x, int y, ::Tile::Type tile) {
 
 void IO::print_level_layout() {
   /* take all the things we want to keep hidden out of the window */
-  for (int y = 1; y < NUMLINES - 1; y++) {
-    for (int x = 0; x < NUMCOLS; x++) {
+  for (int y = 0; y < map_height; y++) {
+    for (int x = 0; x < map_width; x++) {
 
       ::Tile::Type ch = Game::level->get_tile(x, y);
       switch (ch) {
@@ -350,39 +352,49 @@ void IO::print_coordinate(int x, int y) {
 }
 
 void IO::refresh() {
-  for (int x = 0; x < NUMCOLS -1; ++x) {
-    for (int y = 1; y < NUMLINES -1; ++y) {
+  refresh_statusline();
+  for (int x = 0; x < map_width; ++x) {
+    for (int y = 0; y < map_height; ++y) {
       print_coordinate(x, y);
     }
   }
 
-  refresh_statusline();
-  move(player->get_position().y, player->get_position().x);
+  move_pointer(player->get_position().x, player->get_position().y);
   ::refresh();
 }
 
 void IO::refresh_statusline() {
-  Coordinate original_position;
-  getyx(stdscr, original_position.y, original_position.x);
-
   // Calculate width of hitpoint digits
-  int hpwidth = 0;
-  if (player->is_hurt()) {
-    for (int temp = player->get_max_health(); temp > 0; temp /= 10, hpwidth++) {
-      ;
-    }
-  }
-
-  // Move to statusline and print
-  mvprintw(NUMLINES -1, 0,
-      "Depth: %dft.  Gold: %-5d  Hp: %*d(%*d)  Str: %2d(%d)  Arm: %-2d  Exp: %d/%d  %s",
-      Game::current_level * 50, player->get_gold(), hpwidth, player->get_health(),
-      hpwidth, player->get_max_health(), player->get_strength(),
-      player->get_default_strength(), player->get_ac(), player->get_level(),
-      player->get_experience(), player->get_hunger_state().c_str());
-
-  clrtoeol();
-  move(original_position.y, original_position.x);
+  stringstream ss;
+  ss
+    << "Name:  " << *Game::whoami << "\n"
+    << "Race:  Human\n"
+    << "Class: Fighter\n"
+    << "\n"
+    << "Str: " << player->get_strength() << " / "
+               << player->get_default_strength() << "\n"
+    << "Dex: " << player->get_dexterity() << " / "
+               << player->get_default_dexterity() << "\n"
+    << "Con: " << player->get_constitution() << " / "
+               << player->get_default_constitution() << "\n"
+    << "Wis: " << player->get_wisdom() << " / "
+               << player->get_default_wisdom() << "\n"
+    << "Int: " << player->get_intelligence() << " / "
+               << player->get_default_intelligence() << "\n"
+    << "Cha: " << player->get_charisma() << " / "
+               << player->get_default_charisma() << "\n"
+    << "\n"
+    << "Lvl: " << player->get_level() << "\n"
+    << "Exp: " << player->get_experience() << "\n"
+    << "Gold:" << player->get_gold() << "\n"
+    << "Ac:  " << player->get_ac() << "\n"
+    << "Hp:  " << player->get_health() << " / " << player->get_max_health() << "\n"
+    << "Mp:  0 / 0\n"
+    << "\n"
+    << "Hunger: " << player->get_hunger_state() << "\n"
+    << "Depth:  " << Game::current_level * 50 << "ft.\n"
+    ;
+  print_string(0, 0, ss.str());
 }
 
 void IO::repeat_last_messages() {
@@ -475,7 +487,7 @@ string IO::read_string(string const* initial_string, bool question) {
 
 void IO::clear_message()
 {
-  move(0, 0);
+  move(message_y, message_x);
   clrtoeol();
   message_buffer.clear();
 }
@@ -483,7 +495,7 @@ void IO::clear_message()
 void IO::message(string const& message, bool force_flush) {
 
   string const more_string = " --More--";
-  size_t max_message = static_cast<size_t>(NUMCOLS) - more_string.size();
+  size_t max_message = static_cast<size_t>(screen_width) - more_string.size();
 
   // Pause when beginning on new line
   if (!message_buffer.empty() &&
@@ -491,9 +503,9 @@ void IO::message(string const& message, bool force_flush) {
       force_flush)) {
     message_buffer += more_string;
 
-    mvaddstr(0, 0, message_buffer.c_str());
+    mvaddstr(message_y, message_x, message_buffer.c_str());
+    move(message_y, message_x + static_cast<int>(message_buffer.size()));
     clrtoeol();
-    move(0, static_cast<int>(message_buffer.size()));
     ::refresh();
     int ch = getch();
     while (ch != KEY_SPACE && ch != '\n' && ch != '\r' && ch != KEY_ESCAPE) {
@@ -522,7 +534,7 @@ void IO::message(string const& message, bool force_flush) {
   }
 
   message_buffer = os.str();
-  mvaddstr(0, 0, message_buffer.c_str());
+  mvaddstr(message_y, message_x, message_buffer.c_str());
 
   last_messages.push_front(message_buffer);
   if (last_messages.size() > 20) {
@@ -563,8 +575,8 @@ void IO::missile_motion(Item* item, int ydelta, int xdelta) {
     if (player->can_see(new_pos)) {
       os_usleep(10000);
       Game::io->print(new_pos.x, new_pos.y, static_cast<chtype>(item->o_type), IO::None);
-      move(new_pos.y, new_pos.x);
-      refresh();
+      move_pointer(new_pos.x, new_pos.y);
+      ::refresh();
     }
   }
 }
@@ -575,7 +587,7 @@ void IO::force_redraw() {
 }
 
 void IO::move_pointer(int x, int y) {
-  move(y, x);
+  move(map_start_y + y, map_start_x + x);
 }
 
 void IO::clear_screen() {

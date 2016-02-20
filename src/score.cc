@@ -196,7 +196,7 @@ score_show_and_exit(int death_type)
   if (player != nullptr) {
     amount = static_cast<int>(player->pack_print_value());
 
-    Game::io->print_string(0, MAXLINES -1, "[Press return to continue]");
+    Game::io->print_string(0, IO::map_height -1, "[Press return to continue]");
     Game::io->force_redraw();
     Game::io->readchar(true);
     putchar('\n');
@@ -238,7 +238,7 @@ score_win_and_exit(void)
     "a great profit and are admitted to the Fighters' Guild.\n"
     );
 
-  Game::io->print_string(0, MAXLINES - 1, "--Press space to continue--");
+  Game::io->print_string(0, IO::map_height - 1, "--Press space to continue--");
   Game::io->force_redraw();
   Game::io->wait_for_key(KEY_SPACE);
   score_show_and_exit(WON);

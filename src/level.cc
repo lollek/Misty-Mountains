@@ -144,7 +144,7 @@ void Level::create_shop() {
 
 
 Level::Level() : items(), monsters(), shop(), rooms(), tiles() {
-  tiles.resize(MAXLINES * MAXCOLS);
+  tiles.resize(IO::map_width * IO::map_height);
   if (player != nullptr) {
     player->set_previous_room(nullptr);
   }

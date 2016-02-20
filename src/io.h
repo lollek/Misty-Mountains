@@ -94,9 +94,16 @@ public:
   void stop_curses();
   void resume_curses();
 
-  // Temp var
-  std::list<std::string> last_messages;
-  std::string message_buffer;
+  static int constexpr map_start_x{20};
+  static int constexpr map_start_y{1};
+  static int constexpr map_width{80};
+  static int constexpr map_height{32};
+
+  static int constexpr screen_width{100};
+  static int constexpr screen_height{35};
+
+  static int constexpr message_x = map_start_x;
+  static int constexpr message_y = 0;
 
 private:
   void print_coordinate_seen(Coordinate const& coord);
@@ -105,15 +112,13 @@ private:
   void print_tile(int x, int y, ::Tile::Type tile);
 
   void refresh_statusline();
+
+  std::list<std::string> last_messages;
+  std::string message_buffer;
 };
 
 #define MAXSTR 1024 // maximum length of strings
 #define MAXINP   50 // max string to read from terminal or environment
-#define MAXLINES 32 // maximum number of screen lines used
-#define MAXCOLS  80 // maximum number of screen columns used
-#define NUMLINES 24
-#define NUMCOLS  80
-#define STATLINE (NUMLINES - 1)
 
 #undef CTRL
 #define CTRL(c) (c & 037)

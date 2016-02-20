@@ -15,6 +15,16 @@ public:
   // Getters
   int                        get_strength() const;
   int                        get_default_strength() const;
+  int                        get_dexterity() const;
+  int                        get_default_dexterity() const;
+  int                        get_constitution() const;
+  int                        get_default_constitution() const;
+  int                        get_wisdom() const;
+  int                        get_default_wisdom() const;
+  int                        get_intelligence() const;
+  int                        get_default_intelligence() const;
+  int                        get_charisma() const;
+  int                        get_default_charisma() const;
   int                        get_experience() const;
   int                        get_level() const;
   virtual int                get_ac() const;

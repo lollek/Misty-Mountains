@@ -23,7 +23,7 @@ struct spot {
   int        used;
 };
 
-static spot maze[NUMLINES/3+1][NUMCOLS/3+1];
+static spot maze[IO::map_height/3+1][IO::map_width/3+1];
 
 /* Account for maze exits */
 static void
@@ -102,7 +102,7 @@ Level::draw_maze_recursive(int y, int x, int starty, int startx, int maxy, int m
 /* Dig a maze */
 void
 Level::draw_maze(room const& rp) {
-  for (spot* sp = &maze[0][0]; sp <= &maze[NUMLINES / 3][NUMCOLS / 3]; sp++) {
+  for (spot* sp = &maze[0][0]; sp <= &maze[IO::map_height / 3][IO::map_width / 3]; sp++) {
     sp->used = false;
     sp->nexits = 0;
   }
@@ -151,10 +151,10 @@ room_place_gone_room(Coordinate const* max_size, Coordinate const* top, room* ro
   do {
     room->r_pos.x = top->x + os_rand_range(max_size->x - 3) + 1;
     room->r_pos.y = top->y + os_rand_range(max_size->y - 2) + 1;
-    room->r_max.x = -NUMCOLS;
-    room->r_max.y = -NUMLINES;
-  } while (!(room->r_pos.y > 0 && room->r_pos.y < NUMLINES-1 &&
-             room->r_pos.x > 0 && room->r_pos.x < NUMCOLS -1));
+    room->r_max.x = -IO::map_width;
+    room->r_max.y = -IO::map_height;
+  } while (!(room->r_pos.y > 0 && room->r_pos.y < IO::map_height-1 &&
+             room->r_pos.x > 0 && room->r_pos.x < IO::map_width -1));
 }
 
 void
@@ -180,7 +180,7 @@ Level::create_rooms() {
   }
 
   /* maximum room size */
-  Coordinate const bsze(NUMCOLS / 3, NUMLINES / 3);
+  Coordinate const bsze(IO::map_width / 3, IO::map_height / 3);
 
   for (int i = 0; i < static_cast<int>(rooms.size()); i++) {
     room& room = rooms.at(static_cast<size_t>(i));

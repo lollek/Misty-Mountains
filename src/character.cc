@@ -379,3 +379,45 @@ int Character::get_moves_this_round() {
   turns_not_moved++;
   return 0;
 }
+
+int Character::get_dexterity() const {
+  return dexterity;
+}
+
+int Character::get_default_dexterity() const {
+  return default_dexterity;
+}
+
+int Character::get_constitution() const {
+  return constitution;
+}
+
+int Character::get_default_constitution() const {
+  return default_constitution;
+}
+
+int Character::get_wisdom() const {
+  return wisdom;
+}
+
+int Character::get_default_wisdom() const {
+  return default_wisdom;
+}
+
+int Character::get_intelligence() const {
+  return intelligence;
+}
+
+int Character::get_default_intelligence() const {
+  return default_intelligence;
+}
+
+int Character::get_charisma() const {
+  return charisma;
+}
+
+int Character::get_default_charisma() const {
+  return default_charisma;
+}
+
+

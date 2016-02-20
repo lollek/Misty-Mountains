@@ -207,8 +207,8 @@ void wizard_create_item(void) {
 }
 
 void wizard_show_map(void) {
-  for (int y = 1; y < NUMLINES - 1; y++)  {
-    for (int x = 0; x < NUMCOLS; x++) {
+  for (int y = 0; y < IO::map_height; y++)  {
+    for (int x = 0; x < IO::map_width; x++) {
       long unsigned int ch = 0;
 
       Monster* monster = Game::level->get_monster(x, y);

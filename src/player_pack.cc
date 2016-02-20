@@ -305,7 +305,7 @@ size_t Player::pack_print_value() {
   stringstream ss;
   ss << "\n" << setw(5) << setfill(' ') << gold << "  Gold Pieces          ";
   Game::io->print_string(ss.str());
-  Game::io->move_pointer(0, NUMLINES -1);
+  Game::io->move_pointer(0, IO::screen_height -1);
   Game::io->force_redraw();
   return value;
 }

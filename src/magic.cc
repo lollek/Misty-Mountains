@@ -11,9 +11,9 @@ int magic_hold_nearby_monsters() {
   Monster* held_monster = nullptr;
 
   for (int x = player_pos.x - 2; x <= player_pos.x + 2; x++) {
-    if (x >= 0 && x < NUMCOLS) {
+    if (x >= 0 && x < IO::map_width) {
       for (int y = player_pos.y - 2; y <= player_pos.y + 2; y++) {
-        if (y >= 0 && y <= NUMLINES - 1) {
+        if (y >= 0 && y < IO::map_height) {
           Monster *monster = Game::level->get_monster(x, y);
           if (monster != nullptr) {
             monster->set_held();
