@@ -155,7 +155,7 @@ score_insert(struct score* top_ten, int amount, int death_type)
 static void
 score_print(struct score* top_ten)
 {
-  endwin();
+  Game::io->stop_curses();
   printf("Top %d %s:\n   Score Name\n", SCORE_MAX, "Scores");
   for (unsigned i = 0; i < SCORE_MAX; ++i)
   {
@@ -196,10 +196,9 @@ score_show_and_exit(int death_type)
   if (player != nullptr) {
     amount = static_cast<int>(player->pack_print_value());
 
-    char buf[2*MAXSTR];
-    mvaddstr(LINES - 1, 0 , "[Press return to continue]");
-    refresh();
-    wgetnstr(stdscr, buf, 80);
+    Game::io->print_string(0, MAXLINES -1, "[Press return to continue]");
+    Game::io->force_redraw();
+    Game::io->readchar(true);
     putchar('\n');
   }
 
@@ -221,8 +220,8 @@ score_show_and_exit(int death_type)
 void
 score_win_and_exit(void)
 {
-  clear();
-  addstr(
+  Game::io->force_redraw();
+  Game::io->print_string(
     "                                                               \n"
     "  @   @               @   @           @          @@@  @     @  \n"
     "  @   @               @@ @@           @           @   @     @  \n"
@@ -239,8 +238,8 @@ score_win_and_exit(void)
     "a great profit and are admitted to the Fighters' Guild.\n"
     );
 
-  mvaddstr(LINES - 1, 0, "--Press space to continue--");
-  refresh();
+  Game::io->print_string(0, MAXLINES - 1, "--Press space to continue--");
+  Game::io->force_redraw();
   Game::io->wait_for_key(KEY_SPACE);
   score_show_and_exit(WON);
 }

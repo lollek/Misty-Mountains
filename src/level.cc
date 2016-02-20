@@ -149,7 +149,7 @@ Level::Level() : items(), monsters(), shop(), rooms(), tiles() {
     player->set_previous_room(nullptr);
   }
 
-  clear();
+  Game::io->clear_screen();
 
   rooms.resize(9);
   create_rooms();

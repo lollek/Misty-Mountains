@@ -376,7 +376,6 @@ void Player::teleport(Coordinate const* target)
 
   player_turns_without_moving = 0;
   command_stop(true);
-  flushinp();
   Game::io->message("suddenly you're somewhere else");
 }
 

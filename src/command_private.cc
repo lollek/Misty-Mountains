@@ -365,7 +365,7 @@ bool command_help() {
   /* If its not a *, print the right help string
    * or an error if he typed a funny character. */
   if (helpch != '*') {
-    move(0, 0);
+    Game::io->move_pointer(0, 0);
     for (int i = 0; i < helpstrsize; ++i) {
       if (helpstr[i].sym == helpch) {
         Game::io->message(string(1, helpstr[i].sym) + ")" + 
@@ -388,42 +388,42 @@ bool command_help() {
   }
 
   numprint /= 2;
-  if (numprint > LINES - 1) {
-    numprint = LINES - 1;
+  if (numprint > MAXLINES - 1) {
+    numprint = MAXLINES - 1;
   }
 
-  clear();
+  Game::io->clear_screen();
   int print_i = 0;
   for (int i = 0; i < helpstrsize; ++i) {
     if (!helpstr[i].print) {
       continue;
     }
 
-    move(print_i % numprint, print_i >= numprint ? COLS / 2 : 0);
+    int x = print_i >= numprint ? MAXCOLS / 2 : 0;
+    int y = 1 + print_i % numprint;
     if (helpstr[i].sym) {
-      addstr(unctrl(static_cast<chtype>(helpstr[i].sym)));
+      Game::io->print_char(x, y, helpstr[i].sym);
     }
-    addstr(helpstr[i].description.c_str());
+    Game::io->print_string(x + 3, y, helpstr[i].description);
 
     if (++print_i >= numprint * 2) {
       break;
     }
   }
 
-  move(LINES - 1, 0);
-  addstr("--Press space to continue--");
-  refresh();
+  Game::io->move_pointer(0, MAXLINES - 1);
+  Game::io->print_string(0, 0, "--Press space to continue--");
+  Game::io->force_redraw();
   Game::io->wait_for_key(KEY_SPACE);
-  clear();
+  Game::io->clear_screen();
   return false;
 }
 
 /* Let them escape for a while */
 void command_shell() {
   /* Set the terminal back to original mode */
-  move(LINES-1, 0);
-  refresh();
-  endwin();
+  Game::io->force_redraw();
+  Game::io->stop_curses();
   putchar('\n');
   fflush(stdout);
 
@@ -432,9 +432,7 @@ void command_shell() {
 
   /* Set the terminal to gaming mode */
   fflush(stdout);
-  noecho();
-  raw();
-  clearok(stdscr, true);
+  Game::io->resume_curses();
 }
 
 bool command_throw() {

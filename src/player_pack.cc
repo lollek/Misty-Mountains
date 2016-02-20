@@ -1,6 +1,8 @@
 #include <string>
 #include <list>
 #include <algorithm>
+#include <iomanip>
+#include <sstream>
 
 #include "error_handling.h"
 #include "coordinate.h"
@@ -36,7 +38,10 @@ pack_print_evaluate_item(Item* item)
   worth = item->get_value();
   item->set_identified();
 
-  printw("%5d  %s\n", worth, item->get_description().c_str());
+  stringstream ss;
+  ss << setw(5) << setfill('0') << worth << setw(0) << "  "
+     << item->get_description();
+  Game::io->print_string(ss.str());
 
   return static_cast<unsigned>(worth);
 }
@@ -180,7 +185,6 @@ Item* Player::pack_find_item(string const& purpose, int type) {
 
     char ch = Game::io->readchar(true);
     Game::io->clear_message();
-    touchwin(stdscr);
 
     if (ch == KEY_ESCAPE) {
       Game::io->clear_message();
@@ -248,11 +252,6 @@ bool Player::pack_contains(Item const* item) {
 }
 
 bool Player::pack_print_equipment() {
-  WINDOW* equipscr = dupwin(stdscr);
-
-  Coordinate orig_pos;
-  getyx(stdscr, orig_pos.y, orig_pos.x);
-
   char sym = 'a';
   for (size_t i = 0; i < NEQUIPMENT; ++i) {
     Item* item = equipment.at(i);
@@ -264,57 +263,49 @@ bool Player::pack_print_equipment() {
       item_description = item->get_description();
     }
 
-    mvwprintw(equipscr, sym - 'a' + 1, 1, "%c) %s: %s",
-        sym, equipment_pos_to_string(static_cast<Equipment>(i)).c_str(),
-        item_description.c_str());
+    stringstream ss;
+    ss << sym << ") " << equipment_pos_to_string(static_cast<Equipment>(i))
+       << ": " << item_description;
+    Game::io->print_string(1, sym - 'a' + 1, ss.str());
     sym++;
   }
 
-  move(orig_pos.y, orig_pos.x);
-  wrefresh(equipscr);
-  delwin(equipscr);
-  untouchwin(stdscr);
+  Game::io->force_redraw();
   return false;
 }
 
 bool Player::pack_print_inventory(int type) {
-  WINDOW* invscr = dupwin(stdscr);
-
-  Coordinate orig_pos;
-  getyx(stdscr, orig_pos.y, orig_pos.x);
-
   int num_items = 0;
   /* Print out all items */
   for (Item const* list : pack) {
     if (!type || type == list->o_type) {
-      /* Print out the item and move to next row */
-      wmove(invscr, ++num_items, 1);
-      wprintw(invscr, "%c) %s", list->o_packch, list->get_description().c_str());
+      stringstream ss;
+      ss << list->o_packch << ") " << list->get_description();
+      Game::io->print_string(1, ++num_items, ss.str());
     }
   }
 
-  wmove(stdscr, orig_pos.y, orig_pos.x);
-  wrefresh(invscr);
-  delwin(invscr);
-  untouchwin(stdscr);
   return num_items != 0;
 }
 
 size_t Player::pack_print_value() {
   size_t value = 0;
 
-  clear();
-  mvaddstr(0, 0, "Worth  Item  [Equipment]\n");
-  for (size_t i = 0; i < static_cast<size_t>(NEQUIPMENT); ++i)
+  Game::io->clear_screen();
+  Game::io->print_string(0, 0, "Worth  Item  [Equipment]\n");
+  for (size_t i = 0; i < static_cast<size_t>(NEQUIPMENT); ++i) {
     value += pack_print_evaluate_item(equipment.at(i));
+  }
 
-  addstr("\nWorth  Item  [Inventory]\n");
+  Game::io->print_string("\nWorth  Item  [Inventory]\n");
   for (Item* obj : pack) {
     value += pack_print_evaluate_item(obj);
   }
 
-  printw("\n%5d  Gold Pieces          ", gold);
-  refresh();
+  stringstream ss;
+  ss << "\n" << setw(5) << setfill('0') << gold << "  Gold Pieces          ";
+  Game::io->print_string(ss.str());
+  Game::io->force_redraw();
   return value;
 }
 

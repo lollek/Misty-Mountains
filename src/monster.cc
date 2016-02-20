@@ -349,9 +349,6 @@ monster_on_death(Monster** monster_ptr, bool print_message)
 
   /* Do adjustments if he went up a level */
   player->check_for_level_up();
-  if (fight_flush) {
-    flushinp();
-  }
 }
 
 void
@@ -382,8 +379,6 @@ monster_remove_from_screen(Monster** monster_ptr, bool was_killed)
 
   if (monster->is_players_target()) {
     to_death = false;
-    if (fight_flush)
-      flushinp();
   }
 
   delete monster;

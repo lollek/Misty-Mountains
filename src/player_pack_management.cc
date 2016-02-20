@@ -146,7 +146,6 @@ bool Player::pack_show(Window current_window) {
 
     char ch = Game::io->readchar(true);
     Game::io->clear_message();
-    touchwin(stdscr);
 
     if (ch == KEY_ESCAPE) {
       Game::io->clear_message();
@@ -159,14 +158,12 @@ bool Player::pack_show(Window current_window) {
           case 'E': current_window = EQUIPMENT; break;
           case 'e':  {
             if (pack_show_equip()) {
-              touchwin(stdscr);
               return true;
             }
           } break;
 
           case 'd': {
             if (pack_show_drop(current_window)) {
-              touchwin(stdscr);
               return true;
             }
           } break;
@@ -180,14 +177,12 @@ bool Player::pack_show(Window current_window) {
           case 'I': current_window = INVENTORY; break;
           case 'd': {
             if (pack_show_drop(current_window)) {
-              touchwin(stdscr);
               return true;
             }
           } break;
 
           case 'r': {
             if (pack_show_remove()) {
-              touchwin(stdscr);
               return true;
             }
           } break;

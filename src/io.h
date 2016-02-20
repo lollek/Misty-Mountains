@@ -2,7 +2,6 @@
 
 #include <list>
 
-#include <curses.h>
 #include <string.h>
 
 #include "level_rooms.h"
@@ -81,10 +80,19 @@ public:
   void print_coordinate(Coordinate const& coord);
   void print_coordinate(int x, int y);
   void refresh();
+  void force_redraw();
 
-  std::string read_string(std::string const* initial_string=nullptr);
+  std::string read_string(std::string const* initial_string=nullptr, bool question=true);
   void message(std::string const& message, bool force_flush=false);
 
+  void move_pointer(int x, int y);
+  void clear_screen();
+  void print_char(int x, int y, char sym);
+  void print_string(int x, int y, std::string const& str);
+  void print_string(std::string const& str);
+
+  void stop_curses();
+  void resume_curses();
 
   // Temp var
   std::list<std::string> last_messages;

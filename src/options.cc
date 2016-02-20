@@ -67,31 +67,39 @@ bool option() {
 
   string const query = "Which value do you want to change? (ESC to exit) ";
   Coordinate const msg_pos (static_cast<int>(query.size()), 0);
-  Game::io->message(query);
 
   // Display current values of options
-  move(1, 0);
+  Game::io->move_pointer(0, 1);
   for (size_t i = 0; i < optlist.size(); ++i) {
+    int x = 0;
+    int y = 1 + static_cast<int>(i);
 
-    printw("%c) %s", optlist.at(i).index, optlist.at(i).o_prompt.c_str());
+    stringstream os;
+    os << optlist.at(i).index << ") " << optlist.at(i).o_prompt;
+    string option_string = os.str();
+
+    Game::io->print_string(x, y, option_string);
     switch (optlist.at(i).put_type) {
       case option::BOOL: {
-        addstr(*static_cast<bool*>(optlist.at(i).o_opt) ? "True" : "False");
+        Game::io->print_string(static_cast<int>(option_string.size()), y,
+            *static_cast<bool*>(optlist.at(i).o_opt) ? "True" : "False");
       } break;
 
       case option::STR: {
-        addstr(static_cast<string*>(optlist.at(i).o_opt)->c_str());
+        Game::io->print_string(static_cast<int>(option_string.size()), y,
+            *static_cast<string*>(optlist.at(i).o_opt));
       } break;
     }
-    addch('\n');
   }
 
   // Loop and change values until user presses escape
   char c = static_cast<char>(~KEY_ESCAPE);
   while (c != KEY_ESCAPE) {
+    Game::io->clear_message();
+    Game::io->message(query);
 
-    move(msg_pos.y, msg_pos.x);
-    ::refresh();
+    Game::io->move_pointer(msg_pos.x, msg_pos.y);
+    Game::io->force_redraw();
     c = Game::io->readchar(true);
 
     auto change_option = find_if(optlist.begin(), optlist.end(),
@@ -102,27 +110,25 @@ bool option() {
     if (change_option != optlist.end()) {
       int i = static_cast<int>(change_option - optlist.begin());
       option const& opt = *change_option;
-      move(i + 1, 3 + static_cast<int>(opt.o_prompt.size()));
       switch (opt.put_type) {
         case option::BOOL: {
           bool* b = static_cast<bool*>(opt.o_opt);
           *b = !*b;
-          addstr(*b ? "True " : "False");
-          ::refresh();
+          Game::io->print_string(3 + static_cast<int>(opt.o_prompt.size()), i + 1,
+              *b ? "True " : "False");
+          Game::io->force_redraw();
         } break;
 
         case option::STR: {
+          Game::io->move_pointer(3 + static_cast<int>(opt.o_prompt.size()), i + 1);
           string* str = static_cast<string*>(opt.o_opt);
-          *str = Game::io->read_string(str);
+          *str = Game::io->read_string(str, false);
         } break;
       }
     }
   }
 
   /* Switch back to original screen */
-  move(LINES - 1, 0);
-  clearok(curscr, true);
-  touchwin(stdscr);
   Game::io->clear_message();
   return false;
 }

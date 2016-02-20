@@ -29,7 +29,6 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
   int option_index = 0;
   struct option const long_options[] = {
     {"no-colors", no_argument,       0, 'c'},
-    {"escdelay",  optional_argument, 0, 'E'},
     {"flush",     no_argument,       0, 'f'},
     {"hide-floor",no_argument,       0, 'F'},
     {"no-jump",   no_argument,       0, 'j'},
@@ -45,9 +44,6 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
     {0,           0,                 0,  0 }
   };
 
-  // Global default options
-  ESCDELAY = 0;
-
   // Set seed and dungeon number
   os_rand_seed = static_cast<unsigned>(time(nullptr) + os_process_id());
 
@@ -61,7 +57,6 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
     switch (c)
     {
       case 'c': use_colors = false; break;
-      case 'E': ESCDELAY = optarg == nullptr ? 64 : atoi(optarg); break;
       case 'f': fight_flush = true; break;
       case 'j': jump = false; break;
       case 'n': if (optarg != nullptr) {
@@ -86,9 +81,6 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
         cout << "Usage: " << argv[0] << " [OPTIONS] [FILE]\n"
              << "Run Rogue14 with selected options or a savefile\n\n"
              << "  -c, --no-colors      remove colors from the game\n"
-             << "  -E, --escdelay=[NUM] set escdelay in ms. Not setting this\n"
-             << "                       defaults to 0. If you do not give a NUM\n"
-             << "                       argument, it's set to 64 (old standard)\n"
              << "  -f, --flush          flush typeahead during battle\n"
              << "  -j, --no-jump        draw each player step separately\n"
              << "  -n, --name=NAME      set highscore name\n"

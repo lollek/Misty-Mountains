@@ -48,7 +48,7 @@ pr_spec(char type)
   char ch = '0';
   for (size_t i = 0; i < max; ++i) {
     string name;
-    move(static_cast<int>(i) + 1, 1);
+    Game::io->move_pointer(1, static_cast<int>(i) + 1);
 
     switch (type) {
       case IO::Scroll: name = Scroll::name(static_cast<Scroll::Type>(i)); break;
@@ -61,14 +61,16 @@ pr_spec(char type)
       default: error("Unknown type in pr_spec");
     }
 
-    printw("%c: %s", ch, name.c_str());
+    stringstream ss;
+    ss << ch << ": " << name;
+    Game::io->print_string(ss.str());
     ch = ch == '9' ? 'a' : (ch + 1);
   }
 
-  refresh();
+  Game::io->force_redraw();
   Game::io->readchar(false);
   Game::io->clear_message();
-  clear();
+  Game::io->clear_screen();
 }
 
 int
@@ -84,12 +86,13 @@ wizard_list_items(void)
   };
 
   for (size_t i = 0; i < things.size(); ++i) {
-    move(static_cast<int>(i) + 1, 1);
-    printw("%c %s", things.at(i), names.at(i).c_str());
+    stringstream ss;
+    ss << things.at(i) << " " << names.at(i);
+    Game::io->print_string(1, static_cast<int>(i) + 1, ss.str());
   }
 
   char ch = static_cast<char>(Game::io->readchar(true));
-  refresh();
+  Game::io->force_redraw();
 
   pr_spec(ch);
   return 0;
@@ -206,16 +209,16 @@ void wizard_create_item(void) {
 void wizard_show_map(void) {
   for (int y = 1; y < NUMLINES - 1; y++)  {
     for (int x = 0; x < NUMCOLS; x++) {
-      chtype ch = 0;
+      long unsigned int ch = 0;
 
       Monster* monster = Game::level->get_monster(x, y);
       if (ch == 0 && monster != nullptr) {
-        ch = static_cast<chtype>(monster->get_type());
+        ch = static_cast<long unsigned int>(monster->get_type());
       }
 
       Item* item = Game::level->get_item(x, y);
       if (ch == 0 && item != nullptr) {
-        ch = static_cast<chtype>(item->get_item_type());
+        ch = static_cast<long unsigned int>(item->get_item_type());
       }
 
       if (ch == 0) {
@@ -232,17 +235,18 @@ void wizard_show_map(void) {
         }
       }
 
+      IO::Attribute attr = IO::None;
       if (!Game::level->is_real(x, y)) {
-        ch |= A_STANDOUT;
+        attr = IO::Attribute::Standout;
       }
 
-      Game::io->print(x, y, ch);
+      Game::io->print(x, y, ch, attr);
     }
   }
 
-  refresh();
+  Game::io->force_redraw();
   Game::io->readchar(false);
-  clear();
+  Game::io->clear_screen();
 }
 
 void wizard_levels_and_gear(void) {

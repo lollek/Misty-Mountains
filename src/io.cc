@@ -27,6 +27,7 @@
 using namespace std;
 
 IO::IO() : last_messages(), message_buffer() {
+  ESCDELAY = 0;
   initscr();  // Start up cursor package
 
   // Ncurses colors
@@ -396,11 +397,13 @@ void IO::repeat_last_messages() {
   getch();
 }
 
-string IO::read_string(string const* initial_string) {
+string IO::read_string(string const* initial_string, bool question) {
   string return_value;
 
   Coordinate original_pos(static_cast<int>(message_buffer.size()), 0);
-  move(original_pos.y, original_pos.x);
+  if (question) {
+    move(original_pos.y, original_pos.x);
+  }
 
   if (initial_string != nullptr) {
     return_value = *initial_string;
@@ -566,3 +569,37 @@ void IO::missile_motion(Item* item, int ydelta, int xdelta) {
   }
 }
 
+void IO::force_redraw() {
+  clearok(curscr, true);
+  wrefresh(curscr);
+}
+
+void IO::move_pointer(int x, int y) {
+  move(y, x);
+}
+
+void IO::clear_screen() {
+  clear();
+}
+
+void IO::print_char(int x, int y, char sym) {
+  mvaddch(y, x, sym);
+}
+
+void IO::print_string(int x, int y, string const& str) {
+  mvaddstr(y, x, str.c_str());
+}
+
+void IO::print_string(string const& str) {
+  addstr(str.c_str());
+}
+
+void IO::stop_curses() {
+  endwin();
+}
+
+void IO::resume_curses() {
+  noecho();
+  raw();
+  clearok(stdscr, true);
+}
