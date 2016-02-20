@@ -9,7 +9,7 @@
 using namespace std;
 
 Character::Character(int str_, int dex_, int con_, int wis_, int int_, int cha_,
-    int exp_, int lvl_, int ac_, int health_, std::vector<damage> const& attacks_,
+    int exp_, int lvl_, int ac_, int hd_, std::vector<damage> const& attacks_,
     Coordinate const& position_, unsigned long long flags, char type_,
     int speed_) :
 
@@ -20,9 +20,10 @@ Character::Character(int str_, int dex_, int con_, int wis_, int int_, int cha_,
   intelligence{int_}, default_intelligence{int_},
   charisma{cha_}, default_charisma{cha_},
 
-  experience{exp_}, level{lvl_}, base_ac{ac_}, health{health_}, attacks{attacks_},
-  max_health{health}, position{position_}, type{type_}, speed{speed_},
-  turns_not_moved{0},
+  experience{exp_}, level{lvl_}, base_ac{ac_}, hit_dice{hd_},
+  base_health{hit_dice + roll(level-1, hit_dice)},
+  health{get_max_health()},
+  attacks{attacks_}, position{position_}, type{type_}, speed{speed_}, turns_not_moved{0},
 
   confusing_attack{0}, true_sight{0}, blind{0}, cancelled{0}, levitating{0},
   found{0}, greedy{0}, players_target{0}, held{0}, confused{0},
@@ -147,24 +148,24 @@ void Character::restore_health(int amount, bool can_raise_max_health) {
   if (can_raise_max_health)
   {
     int extra_max_hp = 0;
-    if (health > max_health + level + 1)
+    if (health > get_max_health() + level + 1)
       ++extra_max_hp;
-    if (health > max_health)
+    if (health > get_max_health())
       ++extra_max_hp;
 
-    max_health += extra_max_hp;
+    base_health += extra_max_hp;
   }
 
-  if (health > max_health)
-    health = max_health;
+  if (health > get_max_health())
+    health = get_max_health();
 }
 
 bool Character::is_hurt() const {
-  return health != max_health;
+  return health != get_max_health();
 }
 
 void Character::modify_max_health(int amount) {
-  max_health += amount;
+  base_health += amount;
   health += amount;
 }
 
@@ -176,7 +177,7 @@ void Character::raise_level(int amount) {
   level += amount;
 
   // Roll extra HP
-  modify_max_health(roll(amount, 10));
+  modify_max_health(roll(amount, hit_dice));
 }
 
 void Character::lower_level(int amount) {
@@ -209,7 +210,7 @@ int Character::get_health() const {
 }
 
 int Character::get_max_health() const {
-  return max_health;
+  return base_health + (constitution - 10) / 2;
 }
 
 Coordinate const& Character::get_position() const {
@@ -261,9 +262,10 @@ void Character::save(ofstream& data) const {
   Disk::save(TAG_CHARACTER, experience, data);
   Disk::save(TAG_CHARACTER, level, data);
   Disk::save(TAG_CHARACTER, base_ac, data);
+  Disk::save(TAG_CHARACTER, hit_dice, data);
+  Disk::save(TAG_CHARACTER, base_health, data);
   Disk::save(TAG_CHARACTER, health, data);
   Disk::save(TAG_CHARACTER, attacks, data);
-  Disk::save(TAG_CHARACTER, max_health, data);
   Disk::save(TAG_CHARACTER, position, data);
   Disk::save(TAG_CHARACTER, type, data);
   Disk::save(TAG_CHARACTER, speed, data);
@@ -312,9 +314,10 @@ bool Character::load(ifstream& data) {
       !Disk::load(TAG_CHARACTER, experience, data) ||
       !Disk::load(TAG_CHARACTER, level, data) ||
       !Disk::load(TAG_CHARACTER, base_ac, data) ||
+      !Disk::load(TAG_CHARACTER, hit_dice, data) ||
+      !Disk::load(TAG_CHARACTER, base_health, data) ||
       !Disk::load(TAG_CHARACTER, health, data) ||
       !Disk::load(TAG_CHARACTER, attacks, data) ||
-      !Disk::load(TAG_CHARACTER, max_health, data) ||
       !Disk::load(TAG_CHARACTER, position, data) ||
       !Disk::load(TAG_CHARACTER, type, data) ||
       !Disk::load(TAG_CHARACTER, speed, data) ||

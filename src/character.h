@@ -137,9 +137,10 @@ private:
   int                  experience;
   int                  level;
   int                  base_ac;
+  int                  hit_dice;
+  int                  base_health;
   int                  health;
   std::vector<damage>  attacks;
-  int                  max_health;
   Coordinate           position;
   char                 type;
   int                  speed;
