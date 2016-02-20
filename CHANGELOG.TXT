@@ -1,5 +1,6 @@
 Misty Mountain:
 
+  Add dexterity, constitution, wisdom, intelligence and charisma
   Stairs up and stairs down are now separate
   Shop is now its own symbol (~)
   Rebalanced experience gain
