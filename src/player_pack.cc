@@ -266,7 +266,7 @@ bool Player::pack_print_equipment() {
     stringstream ss;
     ss << sym << ") " << equipment_pos_to_string(static_cast<Equipment>(i))
        << ": " << item_description;
-    Game::io->print_string(1, sym - 'a' + 1, ss.str());
+    Game::io->print_string(IO::message_x + 1, sym - 'a' + 1, ss.str());
     sym++;
   }
 
@@ -281,7 +281,7 @@ bool Player::pack_print_inventory(int type) {
     if (!type || type == list->o_type) {
       stringstream ss;
       ss << list->o_packch << ") " << list->get_description();
-      Game::io->print_string(1, ++num_items, ss.str());
+      Game::io->print_string(IO::message_x + 1, ++num_items, ss.str());
     }
   }
 

@@ -70,9 +70,9 @@ void Shop::print() const {
 
   stringstream ss;
   ss << "You have " << player->get_gold() << " gold";
-  Game::io->print_string(1, 1, ss.str());
-  Game::io->print_string(4, 3, "Item");
-  Game::io->print_string(60, 3, "Price");
+  Game::io->print_string(IO::map_start_x + 1, 1, ss.str());
+  Game::io->print_string(IO::map_start_x + 4, 3, "Item");
+  Game::io->print_string(IO::map_start_x + 60, 3, "Price");
 
   // Unlimited inventory
   for (int i = 0; i < static_cast<int>(inventory.size()); ++i) {
@@ -80,8 +80,8 @@ void Shop::print() const {
     ss.clear();
     ss.str(string());
     ss << sym << ") " << item->get_description();
-    Game::io->print_string(1, i + 4, ss.str());
-    Game::io->print_string(60, i + 4, to_string(buy_value(item)));
+    Game::io->print_string(IO::map_start_x + 1, i + 4, ss.str());
+    Game::io->print_string(IO::map_start_x + 60, i + 4, to_string(buy_value(item)));
     ++sym;
 
   }
@@ -91,8 +91,8 @@ void Shop::print() const {
     ss.clear();
     ss.str(string());
     ss << sym << ") " << item->get_description();
-    Game::io->print_string(1, 4 + sym - 'a', ss.str());
-    Game::io->print_string(60, 4 + sym - 'a', to_string(buy_value(item)));
+    Game::io->print_string(IO::map_start_x + 1, 4 + sym - 'a', ss.str());
+    Game::io->print_string(IO::map_start_x + 60, 4 + sym - 'a', to_string(buy_value(item)));
 
     // Make sure we don't have too many items
     if (sym == 'a' + max_items_per_page) {
@@ -104,6 +104,7 @@ void Shop::print() const {
 }
 
 void Shop::sell() {
+  Game::io->clear_screen();
   Item* obj = player->pack_find_item("sell", 0);
 
   if (obj == nullptr) {
@@ -162,13 +163,12 @@ void Shop::sell() {
 }
 
 void Shop::enter() {
-  Game::io->clear_screen();
   for (;;) {
+    Game::io->clear_screen();
     print();
     Game::io->message("Which item do you want to buy? [S to sell, ESC to return]", true);
     char ch = Game::io->readchar(true);
     Game::io->clear_message();
-    Game::io->clear_screen();
 
     if (ch == KEY_ESCAPE) {
       return;
