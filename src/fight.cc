@@ -107,7 +107,7 @@ roll_attacks(Character* attacker, Character* defender, Item* weapon, bool thrown
       continue;
     }
 
-    int defense = defender->get_armor();
+    int defense = defender->get_ac();
     if (fight_swing_hits(attacker->get_level(), defense, mod.to_hit)) {
 
       int damage = roll(dmg.dices, dmg.sides) + mod.to_dmg;

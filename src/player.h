@@ -29,7 +29,7 @@ public:
   static void load_player(std::ifstream&);
 
   // Getters
-  int get_armor() const override;
+  int get_ac() const override;
   bool has_true_sight() const override;
   bool can_sense_monsters() const;
   bool can_sense_magic() const;

@@ -58,7 +58,6 @@ public:
   bool take_turn(); // True if monster is still alive
 
   // Getters
-  int               get_armor() const override;
   std::string       get_attack_string(bool successful_hit) const override;
   std::string       get_name() const override;
   char              get_disguise() const;

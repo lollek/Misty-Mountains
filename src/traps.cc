@@ -127,7 +127,7 @@ static Trap::Type trap_sleep_monster(Monster* victim) {
 }
 
 static Trap::Type trap_arrow_player(void) {
-  if (fight_swing_hits(player->get_level() - 1, player->get_armor(), 1)) {
+  if (fight_swing_hits(player->get_level() - 1, player->get_ac(), 1)) {
     player->take_damage(roll(1, 6));
     if (player->get_health() <= 0) {
       Game::io->message("an arrow killed you");
@@ -151,7 +151,7 @@ static Trap::Type trap_arrow_monster(Monster** victim_ptr) {
   Monster* victim = *victim_ptr;
 
   if (fight_swing_hits(victim->get_level() -1,
-        victim->get_armor(), 1)) {
+        victim->get_ac(), 1)) {
 
     victim->take_damage(roll(1,6));
 
@@ -210,7 +210,7 @@ static Trap::Type trap_telep_monster(Monster* victim) {
 }
 
 static Trap::Type trap_dart_player(void) {
-  if (!fight_swing_hits(player->get_level() + 1, player->get_armor(), 1)) {
+  if (!fight_swing_hits(player->get_level() + 1, player->get_ac(), 1)) {
     Game::io->message("a small dart whizzes by your ear and vanishes");
 
   } else {
@@ -235,7 +235,7 @@ static Trap::Type trap_dart_monster(Monster** victim_ptr) {
 
   /* TODO: In the future this should probably weaken the monster */
   if (fight_swing_hits(victim->get_level() + 1,
-        victim->get_armor(), 1)) {
+        victim->get_ac(), 1)) {
     victim->take_damage(roll(1,4));
 
     if (victim->get_health() <= 0) {

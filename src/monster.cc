@@ -124,11 +124,6 @@ void Monster::free_monsters() {
   monsters = nullptr;
 }
 
-
-int Monster::get_armor() const {
-  return Character::get_armor();
-}
-
 string Monster::get_attack_string(bool successful_hit) const {
 
   size_t i = static_cast<size_t>(os_rand_range(4));
@@ -222,7 +217,8 @@ Monster::Monster(Monster::Type subtype_, Coordinate const& pos) :
 {}
 
 Monster::Monster(Coordinate const& pos, Template const& m_template) :
-  Character(10, m_template.m_basexp, m_template.m_level, m_template.m_armor,
+  Character(10, 10, 10, 10, 10, 10, m_template.m_basexp, m_template.m_level,
+      m_template.m_armor,
             roll(m_template.m_level, 8), m_template.m_dmg, pos,
             m_template.m_flags, m_template.m_char, m_template.m_speed),
   t_pack(), turns_not_moved(0), disguise(m_template.m_char),

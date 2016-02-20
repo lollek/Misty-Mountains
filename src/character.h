@@ -17,7 +17,7 @@ public:
   int                        get_default_strength() const;
   int                        get_experience() const;
   int                        get_level() const;
-  virtual int                get_armor() const;
+  virtual int                get_ac() const;
   int                        get_health() const;
   int                        get_max_health() const;
   Coordinate const&          get_position() const;
@@ -109,9 +109,10 @@ public:
 
 
 protected:
-  Character(int strength, int experience, int level, int armor, int health,
-            std::vector<damage> const& attacks, Coordinate const& position,
-            unsigned long long flags, char type, int speed);
+  Character(int strength, int dexterity, int constitution, int wisdom,
+      int intelligence, int charisma, int experience, int level, int armor,
+      int health, std::vector<damage> const& attacks, Coordinate const& position,
+      unsigned long long flags, char type, int speed);
 
   explicit Character(Character const&) = default;
   explicit Character(Character&&) = default;
@@ -119,11 +120,23 @@ protected:
 
 
 private:
+  // Stats
   int                  strength;
   int                  default_strength;
+  int                  dexterity;
+  int                  default_dexterity;
+  int                  constitution;
+  int                  default_constitution;
+  int                  wisdom;
+  int                  default_wisdom;
+  int                  intelligence;
+  int                  default_intelligence;
+  int                  charisma;
+  int                  default_charisma;
+
   int                  experience;
   int                  level;
-  int                  armor;
+  int                  base_ac;
   int                  health;
   std::vector<damage>  attacks;
   int                  max_health;

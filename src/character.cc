@@ -8,20 +8,28 @@
 
 using namespace std;
 
-Character::Character(int strength_, int experience_, int level_, int armor_,
-    int health_, std::vector<damage> const& attacks_,
+Character::Character(int str_, int dex_, int con_, int wis_, int int_, int cha_,
+    int exp_, int lvl_, int ac_, int health_, std::vector<damage> const& attacks_,
     Coordinate const& position_, unsigned long long flags, char type_,
     int speed_) :
-  strength(strength_), default_strength(strength),experience(experience_),
-  level(level_), armor(armor_), health(health_), attacks(attacks_),
-  max_health(health), position(position_), type(type_), speed(speed_),
-  turns_not_moved(0),
-  confusing_attack(0), true_sight(0), blind(0), cancelled(0), levitating(0),
-  found(0), greedy(0), players_target(0), held(0), confused(0),
-  invisible(0), mean(0), regenerating(0), running(0),
-  flying(0), stuck(0), attack_freeze(0), attack_damage_armor(0),
-  attack_steal_gold(0), attack_steal_item(0), attack_drain_strength(0),
-  attack_drain_health(0), attack_drain_experience(0)
+
+  strength{str_}, default_strength{str_},
+  dexterity{dex_}, default_dexterity{dex_},
+  constitution{con_}, default_constitution{con_},
+  wisdom{con_}, default_wisdom{wis_},
+  intelligence{int_}, default_intelligence{int_},
+  charisma{cha_}, default_charisma{cha_},
+
+  experience{exp_}, level{lvl_}, base_ac{ac_}, health{health_}, attacks{attacks_},
+  max_health{health}, position{position_}, type{type_}, speed{speed_},
+  turns_not_moved{0},
+
+  confusing_attack{0}, true_sight{0}, blind{0}, cancelled{0}, levitating{0},
+  found{0}, greedy{0}, players_target{0}, held{0}, confused{0},
+  invisible{0}, mean{0}, regenerating{0}, running{0},
+  flying{0}, stuck{0}, attack_freeze{0}, attack_damage_armor{0},
+  attack_steal_gold{0}, attack_steal_item{0}, attack_drain_strength{0},
+  attack_drain_health{0}, attack_drain_experience{0}
 {
   if (flags & 010000000000000000000) { greedy = true; }
   if (flags & 020000000000000000000) { mean = true; }
@@ -180,8 +188,8 @@ int Character::get_level() const {
   return level;
 }
 
-int Character::get_armor() const {
-  return armor;
+int Character::get_ac() const {
+  return base_ac + (dexterity - 10) / 2;
 }
 
 int Character::get_type() const {
@@ -239,9 +247,20 @@ void Character::save(ofstream& data) const {
   Disk::save_tag(TAG_CHARACTER, data);
   Disk::save(TAG_CHARACTER, strength, data);
   Disk::save(TAG_CHARACTER, default_strength, data);
+  Disk::save(TAG_CHARACTER, dexterity, data);
+  Disk::save(TAG_CHARACTER, default_dexterity, data);
+  Disk::save(TAG_CHARACTER, constitution, data);
+  Disk::save(TAG_CHARACTER, default_constitution, data);
+  Disk::save(TAG_CHARACTER, wisdom, data);
+  Disk::save(TAG_CHARACTER, default_wisdom, data);
+  Disk::save(TAG_CHARACTER, intelligence, data);
+  Disk::save(TAG_CHARACTER, default_intelligence, data);
+  Disk::save(TAG_CHARACTER, charisma, data);
+  Disk::save(TAG_CHARACTER, default_charisma, data);
+
   Disk::save(TAG_CHARACTER, experience, data);
   Disk::save(TAG_CHARACTER, level, data);
-  Disk::save(TAG_CHARACTER, armor, data);
+  Disk::save(TAG_CHARACTER, base_ac, data);
   Disk::save(TAG_CHARACTER, health, data);
   Disk::save(TAG_CHARACTER, attacks, data);
   Disk::save(TAG_CHARACTER, max_health, data);
@@ -279,9 +298,20 @@ bool Character::load(ifstream& data) {
   if (!Disk::load_tag(TAG_CHARACTER, data) ||
       !Disk::load(TAG_CHARACTER, strength, data) ||
       !Disk::load(TAG_CHARACTER, default_strength, data) ||
+      !Disk::load(TAG_CHARACTER, dexterity, data) ||
+      !Disk::load(TAG_CHARACTER, default_dexterity, data) ||
+      !Disk::load(TAG_CHARACTER, constitution, data) ||
+      !Disk::load(TAG_CHARACTER, default_constitution, data) ||
+      !Disk::load(TAG_CHARACTER, wisdom, data) ||
+      !Disk::load(TAG_CHARACTER, default_wisdom, data) ||
+      !Disk::load(TAG_CHARACTER, intelligence, data) ||
+      !Disk::load(TAG_CHARACTER, default_intelligence, data) ||
+      !Disk::load(TAG_CHARACTER, charisma, data) ||
+      !Disk::load(TAG_CHARACTER, default_charisma, data) ||
+
       !Disk::load(TAG_CHARACTER, experience, data) ||
       !Disk::load(TAG_CHARACTER, level, data) ||
-      !Disk::load(TAG_CHARACTER, armor, data) ||
+      !Disk::load(TAG_CHARACTER, base_ac, data) ||
       !Disk::load(TAG_CHARACTER, health, data) ||
       !Disk::load(TAG_CHARACTER, attacks, data) ||
       !Disk::load(TAG_CHARACTER, max_health, data) ||
