@@ -238,6 +238,7 @@ wand_zap(void)
         Coordinate c;
         Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
         if (tp != nullptr) {
+          Wand::set_known(subtype);
           tp->increase_speed();
           monster_start_running(&c);
           Game::io->message(tp->get_name() + " became faster");
