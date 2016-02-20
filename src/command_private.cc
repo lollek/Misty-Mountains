@@ -392,33 +392,29 @@ bool command_help() {
     numprint = LINES - 1;
   }
 
-  wclear(Game::io->extra_screen);
+  clear();
   int print_i = 0;
   for (int i = 0; i < helpstrsize; ++i) {
     if (!helpstr[i].print) {
       continue;
     }
 
-    wmove(Game::io->extra_screen, print_i % numprint, print_i >= numprint ? COLS / 2 : 0);
+    move(print_i % numprint, print_i >= numprint ? COLS / 2 : 0);
     if (helpstr[i].sym) {
-      waddstr(Game::io->extra_screen, unctrl(static_cast<chtype>(helpstr[i].sym)));
+      addstr(unctrl(static_cast<chtype>(helpstr[i].sym)));
     }
-    waddstr(Game::io->extra_screen, helpstr[i].description.c_str());
+    addstr(helpstr[i].description.c_str());
 
     if (++print_i >= numprint * 2) {
       break;
     }
   }
 
-  wmove(Game::io->extra_screen, LINES - 1, 0);
-  waddstr(Game::io->extra_screen, "--Press space to continue--");
-  wrefresh(Game::io->extra_screen);
+  move(LINES - 1, 0);
+  addstr("--Press space to continue--");
+  refresh();
   Game::io->wait_for_key(KEY_SPACE);
-  clearok(stdscr, true);
-
-  Game::io->clear_message();
-  touchwin(stdscr);
-  wrefresh(stdscr);
+  clear();
   return false;
 }
 

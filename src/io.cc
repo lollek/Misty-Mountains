@@ -26,7 +26,7 @@
 
 using namespace std;
 
-IO::IO() : last_messages(), message_buffer(), extra_screen(nullptr) {
+IO::IO() : last_messages(), message_buffer() {
   initscr();  // Start up cursor package
 
   // Ncurses colors
@@ -62,12 +62,9 @@ IO::IO() : last_messages(), message_buffer(), extra_screen(nullptr) {
 
   raw();     // Raw mode
   noecho();  // Echo off
-
-  extra_screen = newwin(LINES, COLS, 0, 0);
 }
 
 IO::~IO() {
-  delwin(extra_screen);
   endwin();
 }
 
@@ -388,14 +385,15 @@ void IO::refresh_statusline() {
 }
 
 void IO::repeat_last_messages() {
-  wclear(extra_screen);
-  wmove(extra_screen, 1, 0);
+  move(1, 0);
   for (string const& msg : last_messages) {
-    waddch(extra_screen, '>');
-    waddstr(extra_screen, msg.c_str());
-    waddch(extra_screen, '\n');
+    addch('>');
+    addstr(msg.c_str());
+    addch('\n');
   }
-  show_extra_screen("Previous Messages: (press SPACE to return)");
+
+  mvaddstr(0, 0, "Previous Messages: (press any key to return)");
+  getch();
 }
 
 string IO::read_string(string const* initial_string) {
@@ -477,22 +475,6 @@ void IO::clear_message()
   move(0, 0);
   clrtoeol();
   message_buffer.clear();
-}
-
-void IO::show_extra_screen(string const& message)
-{
-  wmove(extra_screen, 0, 0);
-  waddstr(extra_screen, message.c_str());
-  touchwin(extra_screen);
-  wmove(extra_screen, player->get_position().y, player->get_position().x);
-  wrefresh(extra_screen);
-  untouchwin(stdscr);
-
-  wait_for_key(KEY_SPACE);
-
-  clearok(curscr, true);
-  touchwin(stdscr);
-  clear_message();
 }
 
 void IO::message(string const& message, bool force_flush) {

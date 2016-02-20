@@ -76,7 +76,6 @@ public:
 
   void repeat_last_messages();
   void clear_message();
-  void show_extra_screen(std::string const& message);
 
   void print(int x, int y, long unsigned int ch, Attribute attr=None);
   void print_coordinate(Coordinate const& coord);
@@ -90,7 +89,6 @@ public:
   // Temp var
   std::list<std::string> last_messages;
   std::string message_buffer;
-  WINDOW* extra_screen;
 
 private:
   void print_coordinate_seen(Coordinate const& coord);
