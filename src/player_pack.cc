@@ -162,11 +162,6 @@ class Weapon* Player::pack_find_ammo(Weapon::AmmoType ammo_type) {
 }
 
 Item* Player::pack_find_item(string const& purpose, int type) {
-  if (pack_num_items(type, -1) < 1) {
-    Game::io->message("You have no item to " + purpose);
-    return nullptr;
-  }
-
   enum cur_win_t { INVENTORY, EQUIPMENT };
   cur_win_t current_window = INVENTORY;
 
