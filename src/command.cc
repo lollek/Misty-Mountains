@@ -50,7 +50,6 @@ int
 command()
 {
   Daemons::daemon_run_before();
-
   int num_moves = player->get_moves_this_round();
 
   while (num_moves-- > 0) {

@@ -366,8 +366,8 @@ void IO::refresh() {
 void IO::refresh_statusline() {
   // Calculate width of hitpoint digits
   stringstream ss;
+  print_string(0, 0, "Name:  " + *Game::whoami);
   ss
-    << "Name:  " << *Game::whoami << "\n"
     << "Race:  Human\n"
     << "Class: Fighter\n"
     << "\n"
@@ -394,7 +394,7 @@ void IO::refresh_statusline() {
     << "Hunger: " << player->get_hunger_state() << "\n"
     << "Depth:  " << Game::current_level * 50 << "ft.\n"
     ;
-  print_string(0, 0, ss.str());
+  print_string(0, 1, ss.str());
 }
 
 void IO::repeat_last_messages() {
