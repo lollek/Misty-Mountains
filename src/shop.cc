@@ -78,15 +78,18 @@ void Shop::print() const {
   for (int i = 0; i < static_cast<int>(inventory.size()); ++i) {
     Item const* item = inventory.at(static_cast<size_t>(i));
     ss.clear();
+    ss.str(string());
     ss << sym << ") " << item->get_description();
     Game::io->print_string(1, i + 4, ss.str());
     Game::io->print_string(60, i + 4, to_string(buy_value(item)));
     ++sym;
+
   }
 
   // Buyback
   for (Item* item : limited_inventory) {
     ss.clear();
+    ss.str(string());
     ss << sym << ") " << item->get_description();
     Game::io->print_string(1, 4 + sym - 'a', ss.str());
     Game::io->print_string(60, 4 + sym - 'a', to_string(buy_value(item)));
