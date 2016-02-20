@@ -1,5 +1,6 @@
 #include <sstream>
 #include <string>
+#include <iomanip>
 
 #include <ctype.h>
 #include <string.h>
@@ -371,25 +372,25 @@ void IO::refresh_statusline() {
     << "Race:  Human\n"
     << "Class: Fighter\n"
     << "\n"
-    << "Str: " << player->get_strength() << " / "
+    << "Str:  " << player->get_strength() << " / "
                << player->get_default_strength() << "\n"
-    << "Dex: " << player->get_dexterity() << " / "
+    << "Dex:  " << player->get_dexterity() << " / "
                << player->get_default_dexterity() << "\n"
-    << "Con: " << player->get_constitution() << " / "
+    << "Con:  " << player->get_constitution() << " / "
                << player->get_default_constitution() << "\n"
-    << "Wis: " << player->get_wisdom() << " / "
+    << "Wis:  " << player->get_wisdom() << " / "
                << player->get_default_wisdom() << "\n"
-    << "Int: " << player->get_intelligence() << " / "
+    << "Int:  " << player->get_intelligence() << " / "
                << player->get_default_intelligence() << "\n"
-    << "Cha: " << player->get_charisma() << " / "
+    << "Cha:  " << player->get_charisma() << " / "
                << player->get_default_charisma() << "\n"
     << "\n"
-    << "Lvl: " << player->get_level() << "\n"
-    << "Exp: " << player->get_experience() << "\n"
-    << "Gold:" << player->get_gold() << "\n"
-    << "Ac:  " << player->get_ac() << "\n"
-    << "Hp:  " << player->get_health() << " / " << player->get_max_health() << "\n"
-    << "Mp:  0 / 0\n"
+    << "Lvl:  " << setw(7) << player->get_level() << "\n"
+    << "Exp:  " << setw(7) << player->get_experience() << "\n"
+    << "Gold: " << setw(7) << player->get_gold() << "\n"
+    << "Ac:   " << setw(7) << player->get_ac() << "\n"
+    << "Hp:   " << player->get_health() << " / " << player->get_max_health() << "\n"
+    << "Mp:    0 /  0\n"
     << "\n"
     << "Hunger: " << player->get_hunger_state() << "\n"
     << "Depth:  " << Game::current_level * 50 << "ft.\n"
@@ -407,6 +408,7 @@ void IO::repeat_last_messages() {
 
   mvaddstr(0, 0, "Previous Messages: (press any key to return)");
   getch();
+  clear();
 }
 
 string IO::read_string(string const* initial_string, bool question) {
