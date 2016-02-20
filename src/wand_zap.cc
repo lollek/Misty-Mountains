@@ -94,10 +94,6 @@ wand_spell_polymorph(Monster& target)
 static void
 wand_spell_cancel(Monster& target)
 {
-  if (target.get_type() == 'F') {
-    player->set_not_held();
-  }
-
   target.set_cancelled();
   target.set_not_invisible();
   target.remove_confusing_attack();

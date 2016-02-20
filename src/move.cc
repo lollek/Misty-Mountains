@@ -134,7 +134,6 @@ move_do_loop(int dx, int dy, bool cautious) {
   // Run a check if player wants to stop running
   handle_surrounding(nh, dx, dy, cautious);
 
-  // Cannot escape from the flytrap
   if (player->is_held()) {
     Game::io->message("you are being held");
     return true;

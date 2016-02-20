@@ -70,11 +70,6 @@ calculate_attacker(Character const& attacker, Item* weapon, bool thrown)
   if (&attacker == player) {
     mod.to_dmg += player->pack_get_ring_modifier(Ring::Damage);
     mod.to_hit += player->pack_get_ring_modifier(Ring::Accuracy);
-
-  // Venus Flytraps have a different kind of dmg system. It adds damage for
-  // every successful hit
-  } else if (attacker.get_type() == 'F') {
-    mod.damage[0].sides = monster_flytrap_hit;
   }
 
   return mod;
@@ -266,19 +261,8 @@ fight_against_player(Monster* mp) {
     // Do monster ability (mp can be null after this!)
     monster_do_special_ability(&mp);
 
-  } else {
-
-    if (mp->get_type() == 'F') {
-
-      player->take_damage(monster_flytrap_hit);
-      if (player->get_health() <= 0) {
-        death(mp->get_subtype());
-      }
-    }
-
-    if (!to_death) {
-      print_attack(false, mp, player);
-    }
+  } else if (!to_death) {
+    print_attack(false, mp, player);
   }
 
   command_stop(false);

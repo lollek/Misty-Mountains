@@ -26,8 +26,6 @@
 
 using namespace std;
 
-int            monster_flytrap_hit = 0; // Number of time flytrap has hit
-
 vector<Monster::Template> const* Monster::monsters = nullptr;
 
 void Monster::init_monsters() {
@@ -91,9 +89,6 @@ void Monster::init_monsters() {
 
     { "yeti",          Yeti,         'y', 13,   23,
     30,  000000000000000000000ULL,  1,   50,  4,  14, {{1,6},{1,6}}},
-
-    { "venus flytrap", Flytrap,      'F', 15,   25,
-     0,  020000000000000000000ULL,  1,   80,  8,  17, {{0,1}}},
 
     { "troll",         Troll,        'T', 15,   25,
     50,  021000000000000000000ULL,  1,  120,  6,  16, {{1,8},{1,8},{2,6}}},
@@ -349,16 +344,7 @@ monster_on_death(Monster** monster_ptr, bool print_message)
   }
 
   Monster* monster = *monster_ptr;
-
   player->gain_experience(monster->get_experience());
-
-  switch (monster->get_type()) {
-    /* If the monster was a venus flytrap, un-hold him */
-    case 'F': {
-      player->set_not_held();
-      monster_flytrap_hit = 0;
-    } break;
-  }
 
   /* Get rid of the monster. */
   if (print_message) {
@@ -520,17 +506,6 @@ monster_do_special_ability(Monster** monster_ptr)
     }
     Game::io->message("you feel weaker");
   }
-
-
-  // Venus Flytrap stops the poor guy from moving
-  if (monster->get_type() == 'F') {
-    player->set_held();
-    ++monster_flytrap_hit;
-    player->take_damage(1);
-    if (player->get_health() <= 0) {
-      death(Monster::Flytrap);
-    }
-  }
 }
 
 bool
@@ -605,11 +580,6 @@ monster_polymorph(Monster* target)
     error("null");
   }
   stringstream os;
-
-  // Venus Flytrap loses its grip
-  if (target->get_type() == 'F')
-    player->set_not_held();
-
 
   Coordinate pos = target->get_position();
   bool was_seen = player->can_see(*target);

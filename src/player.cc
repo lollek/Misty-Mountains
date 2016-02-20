@@ -378,7 +378,6 @@ void Player::teleport(Coordinate const* target)
 
   if (is_held()) {
     set_not_held();
-    monster_flytrap_hit = 0;
   }
 
   player_turns_without_moving = 0;
