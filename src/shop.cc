@@ -159,12 +159,14 @@ void Shop::sell() {
   if (obj != nullptr) {
     limited_inventory.push_back(obj);
   }
+  sell();
 }
 
 void Shop::enter() {
   for (;;) {
     Game::io->clear_screen();
     print();
+    Game::io->clear_message();
     Game::io->message("Which item do you want to buy? [S to sell, ESC to return]", true);
     char ch = Game::io->readchar(true);
     Game::io->clear_message();
