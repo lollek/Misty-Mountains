@@ -398,21 +398,21 @@ void IO::repeat_last_messages() {
   show_extra_screen("Previous Messages: (press SPACE to return)");
 }
 
-string IO::read_string(WINDOW* win, string const* initial_string) {
+string IO::read_string(string const* initial_string) {
   string return_value;
 
   Coordinate original_pos(static_cast<int>(message_buffer.size()), 0);
-  wmove(win, original_pos.y, original_pos.x);
+  move(original_pos.y, original_pos.x);
 
   if (initial_string != nullptr) {
     return_value = *initial_string;
-    waddstr(win, initial_string->c_str());
+    addstr(initial_string->c_str());
   }
 
   // loop reading in the string, and put it in a temporary buffer
   for (;;) {
 
-    wrefresh(win);
+    ::refresh();
     int c = readchar(false);
 
     // Return on ESCAPE chars or ENTER
@@ -423,16 +423,16 @@ string IO::read_string(WINDOW* win, string const* initial_string) {
     } else if (c == erasechar()) {
       if (!return_value.empty()) {
         return_value.pop_back();
-        wmove(win, original_pos.y,
+        move(original_pos.y,
             original_pos.x + static_cast<int>(return_value.size()));
-        wclrtoeol(win);
+        clrtoeol();
       }
 
     // Remove everything on killchar
     } else if (c == killchar()) {
       return_value.clear();
-      wmove(win, original_pos.y, original_pos.x);
-      wclrtoeol(win);
+      move(original_pos.y, original_pos.x);
+      clrtoeol();
 
     // ~ gives home directory
     } else if (c == '~' && return_value.empty()) {
@@ -440,11 +440,11 @@ string IO::read_string(WINDOW* win, string const* initial_string) {
       if (return_value.size() > MAXINP) {
         return_value.resize(MAXINP);
       }
-      waddstr(win, return_value.c_str());
+      addstr(return_value.c_str());
 
     } else if (return_value.size() < MAXINP && (isprint(c) || c == ' ')) {
       return_value += static_cast<char>(c);
-      waddch(win, static_cast<chtype>(c));
+      addch(static_cast<chtype>(c));
     }
 
 #ifndef NDEBUG
@@ -465,7 +465,7 @@ string IO::read_string(WINDOW* win, string const* initial_string) {
   // If empty, we use the initial string
   if (return_value.empty() && initial_string != nullptr) {
     return_value = *initial_string;
-    waddstr(win, return_value.c_str());
+    addstr(return_value.c_str());
   }
 
   clear_message();

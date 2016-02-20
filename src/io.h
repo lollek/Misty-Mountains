@@ -83,7 +83,7 @@ public:
   void print_coordinate(int x, int y);
   void refresh();
 
-  std::string read_string(WINDOW* win=stdscr, std::string const* initial_string=nullptr);
+  std::string read_string(std::string const* initial_string=nullptr);
   void message(std::string const& message, bool force_flush=false);
 
 

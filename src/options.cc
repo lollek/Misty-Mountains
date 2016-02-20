@@ -69,31 +69,29 @@ bool option() {
   Coordinate const msg_pos (static_cast<int>(query.size()), 0);
   Game::io->message(query);
 
-  WINDOW* optscr = dupwin(stdscr);
-
   // Display current values of options
-  wmove(optscr, 1, 0);
+  move(1, 0);
   for (size_t i = 0; i < optlist.size(); ++i) {
 
-    wprintw(optscr, "%c) %s", optlist.at(i).index, optlist.at(i).o_prompt.c_str());
+    printw("%c) %s", optlist.at(i).index, optlist.at(i).o_prompt.c_str());
     switch (optlist.at(i).put_type) {
       case option::BOOL: {
-        waddstr(optscr, *static_cast<bool*>(optlist.at(i).o_opt) ? "True" : "False");
+        addstr(*static_cast<bool*>(optlist.at(i).o_opt) ? "True" : "False");
       } break;
 
       case option::STR: {
-        waddstr(optscr, static_cast<string*>(optlist.at(i).o_opt)->c_str());
+        addstr(static_cast<string*>(optlist.at(i).o_opt)->c_str());
       } break;
     }
-    waddch(optscr, '\n');
+    addch('\n');
   }
 
   // Loop and change values until user presses escape
   char c = static_cast<char>(~KEY_ESCAPE);
   while (c != KEY_ESCAPE) {
 
-    wmove(optscr, msg_pos.y, msg_pos.x);
-    wrefresh(optscr);
+    move(msg_pos.y, msg_pos.x);
+    ::refresh();
     c = Game::io->readchar(true);
 
     auto change_option = find_if(optlist.begin(), optlist.end(),
@@ -104,26 +102,25 @@ bool option() {
     if (change_option != optlist.end()) {
       int i = static_cast<int>(change_option - optlist.begin());
       option const& opt = *change_option;
-      wmove(optscr, i + 1, 3 + static_cast<int>(opt.o_prompt.size()));
+      move(i + 1, 3 + static_cast<int>(opt.o_prompt.size()));
       switch (opt.put_type) {
         case option::BOOL: {
           bool* b = static_cast<bool*>(opt.o_opt);
           *b = !*b;
-          waddstr(optscr, *b ? "True " : "False");
-          wrefresh(optscr);
+          addstr(*b ? "True " : "False");
+          ::refresh();
         } break;
 
         case option::STR: {
           string* str = static_cast<string*>(opt.o_opt);
-          *str = Game::io->read_string(optscr, str);
+          *str = Game::io->read_string(str);
         } break;
       }
     }
   }
 
   /* Switch back to original screen */
-  wmove(optscr, LINES - 1, 0);
-  delwin(optscr);
+  move(LINES - 1, 0);
   clearok(curscr, true);
   touchwin(stdscr);
   Game::io->clear_message();
