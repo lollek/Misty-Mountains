@@ -47,9 +47,9 @@ bool         player_alerted              = false;
 
 
 Player::Player(bool give_equipment) :
-  //        str, xp, lvl, armor, hp, dmg
-  Character(16,  0,  1,   10,    12, {{1,4}}, Coordinate(), 0, '@'),
-  previous_room(nullptr), senses_monsters(false), senses_magic(false), speed(0),
+  //        str, xp, lvl, armor, hp, dmg,     starting_pos,flag,char,speed
+  Character(16,  0,  1,   10,    12, {{1,4}}, Coordinate(), 0, '@', 1),
+  previous_room(nullptr), senses_monsters(false), senses_magic(false),
   pack(), equipment(equipment_size(), nullptr), gold(0),
   nutrition_left(get_starting_nutrition()) {
 
@@ -269,18 +269,14 @@ void Player::remove_sense_monsters() {
   Game::io->message("you can no longer sense any monsters");
 }
 
-int Player::get_speed() const {
-  return speed;
-}
-
 void Player::increase_speed() {
-  speed++;
+  Character::increase_speed();
   Daemons::daemon_start_fuse(Daemons::decrease_speed, HASTEDURATION, AFTER);
   Game::io->message("you feel yourself moving much faster");
 }
 
 void Player::decrease_speed() {
-  speed--;
+  Character::decrease_speed();
   Game::io->message("you feel yourself slowing down");
 }
 
@@ -583,7 +579,6 @@ void Player::save_player(ofstream& data) {
   Disk::save(TAG_EQUIPMENT,       player->equipment,       data);
   Disk::save(TAG_SENSES_MONSTERS, player->senses_monsters, data);
   Disk::save(TAG_SENSES_MAGIC,    player->senses_magic,    data);
-  Disk::save(TAG_SPEED,           player->speed,           data);
   Disk::save(TAG_GOLD,            player->gold,            data);
   Disk::save(TAG_NUTRITION,       player->nutrition_left,  data);
 }
@@ -597,7 +592,6 @@ void Player::load_player(ifstream& data) {
       !Disk::load(TAG_EQUIPMENT,       player->equipment,       data) ||
       !Disk::load(TAG_SENSES_MONSTERS, player->senses_monsters, data) ||
       !Disk::load(TAG_SENSES_MAGIC,    player->senses_magic,    data) ||
-      !Disk::load(TAG_SPEED,           player->speed,           data) ||
       !Disk::load(TAG_GOLD,            player->gold,            data) ||
       !Disk::load(TAG_NUTRITION,       player->nutrition_left,  data)) {
     error("No player character found");

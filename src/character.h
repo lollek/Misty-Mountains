@@ -28,8 +28,8 @@ public:
   virtual void set_position(Coordinate const& position);
 
   // Modifiers
-  virtual void increase_speed() = 0;
-  virtual void decrease_speed() = 0;
+  virtual void increase_speed();
+  virtual void decrease_speed();
   virtual void take_damage(int damage);
   virtual void gain_experience(int experience);
   virtual void restore_strength();
@@ -44,6 +44,8 @@ public:
   virtual bool is_hurt() const;
 
   // Flag getters
+  virtual int  get_moves_this_round();
+  virtual int  get_speed() const;
   virtual bool is_blind() const;
   virtual bool is_cancelled() const;
   virtual bool is_confused() const;
@@ -109,7 +111,7 @@ public:
 protected:
   Character(int strength, int experience, int level, int armor, int health,
             std::vector<damage> const& attacks, Coordinate const& position,
-            unsigned long long flags, char type);
+            unsigned long long flags, char type, int speed);
 
   explicit Character(Character const&) = default;
   explicit Character(Character&&) = default;
@@ -127,6 +129,8 @@ private:
   int                  max_health;
   Coordinate           position;
   char                 type;
+  int                  speed;
+  int                  turns_not_moved;
 
   // Flags
   bool confusing_attack;

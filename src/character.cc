@@ -10,10 +10,12 @@ using namespace std;
 
 Character::Character(int strength_, int experience_, int level_, int armor_,
     int health_, std::vector<damage> const& attacks_,
-    Coordinate const& position_, unsigned long long flags, char type_) :
+    Coordinate const& position_, unsigned long long flags, char type_,
+    int speed_) :
   strength(strength_), default_strength(strength),experience(experience_),
   level(level_), armor(armor_), health(health_), attacks(attacks_),
-  max_health(health), position(position_), type(type_),
+  max_health(health), position(position_), type(type_), speed(speed_),
+  turns_not_moved(0),
   confusing_attack(0), true_sight(0), blind(0), cancelled(0), levitating(0),
   found(0), greedy(0), players_target(0), held(0), confused(0),
   invisible(0), mean(0), regenerating(0), running(0),
@@ -35,6 +37,7 @@ Character::Character(int strength_, int experience_, int level_, int armor_,
   if (flags & 000040000000000000000) { attack_drain_experience = true; }
 }
 
+int  Character::get_speed() const { return speed; }
 bool Character::is_blind() const { return blind; }
 bool Character::is_cancelled() const { return cancelled; }
 bool Character::is_confused() const { return confused; }
@@ -244,6 +247,8 @@ void Character::save(ofstream& data) const {
   Disk::save(TAG_CHARACTER, max_health, data);
   Disk::save(TAG_CHARACTER, position, data);
   Disk::save(TAG_CHARACTER, type, data);
+  Disk::save(TAG_CHARACTER, speed, data);
+  Disk::save(TAG_CHARACTER, turns_not_moved, data);
 
   Disk::save(TAG_CHARACTER, confusing_attack, data);
   Disk::save(TAG_CHARACTER, true_sight, data);
@@ -282,6 +287,8 @@ bool Character::load(ifstream& data) {
       !Disk::load(TAG_CHARACTER, max_health, data) ||
       !Disk::load(TAG_CHARACTER, position, data) ||
       !Disk::load(TAG_CHARACTER, type, data) ||
+      !Disk::load(TAG_CHARACTER, speed, data) ||
+      !Disk::load(TAG_CHARACTER, turns_not_moved, data) ||
 
       !Disk::load(TAG_CHARACTER, confusing_attack, data) ||
       !Disk::load(TAG_CHARACTER, true_sight, data) ||
@@ -309,4 +316,35 @@ bool Character::load(ifstream& data) {
     return false;
   }
   return true;
+}
+
+void Character::increase_speed() {
+  if (++speed == 0) {
+    speed = 1;
+  }
+  turns_not_moved = 0;
+}
+
+void Character::decrease_speed() {
+  if (--speed) {
+    speed = -1;
+  }
+  turns_not_moved = 0;
+}
+
+
+// If speed > 0, its the number of turns to take.
+// Else it's a turn per 1 / (-speed +2) rounds. E.g. 0 -> 1/2, -1 -> 1/3
+int Character::get_moves_this_round() {
+  if (speed > 0) {
+    return speed;
+  }
+
+  if (turns_not_moved > -speed) {
+    turns_not_moved = 0;
+    return 1;
+  }
+
+  turns_not_moved++;
+  return 0;
 }

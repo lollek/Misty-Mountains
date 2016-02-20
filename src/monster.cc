@@ -224,9 +224,9 @@ Monster::Monster(Monster::Type subtype_, Coordinate const& pos) :
 Monster::Monster(Coordinate const& pos, Template const& m_template) :
   Character(10, m_template.m_basexp, m_template.m_level, m_template.m_armor,
             roll(m_template.m_level, 8), m_template.m_dmg, pos,
-            m_template.m_flags, m_template.m_char),
+            m_template.m_flags, m_template.m_char, m_template.m_speed),
   t_pack(), turns_not_moved(0), disguise(m_template.m_char),
-  subtype(m_template.m_subtype), speed(m_template.m_speed), target(nullptr) {
+  subtype(m_template.m_subtype), target(nullptr) {
 
   // All monsters are equal, but some monsters are more equal than others, so
   // they also give more experience
@@ -526,19 +526,8 @@ void Monster::all_move() {
   while (it != Game::level->monsters.end()) {
     Monster* mon = *it++;
 
-    // Speed < 0 means one move each x turns
-    int speed = mon->get_speed();
-    if (speed < 0) {
-      if (mon->turns_not_moved >= -speed) {
-        mon->turns_not_moved = 0;
-        speed = 1;
-      } else {
-        ++mon->turns_not_moved;
-      }
-    }
-
-    // One move per turn
-    for (int i = 0; i < speed; ++i) {
+    int moves = mon->get_moves_this_round();
+    for (int i = 0; i < moves; ++i) {
       bool wastarget = mon->is_players_target();
       Coordinate orig_pos = mon->get_position();
 
@@ -649,24 +638,6 @@ bool monster_try_breathe_fire_on_player(Monster const& monster) {
   }
 
   return false;
-}
-
-int Monster::get_speed() const {
-  return speed;
-}
-
-void Monster::increase_speed() {
-  if (++speed == 0) {
-    speed = 1;
-  }
-  turns_not_moved = 0;
-}
-
-void Monster::decrease_speed() {
-  if (--speed) {
-    speed = -1;
-  }
-  turns_not_moved = 0;
 }
 
 void Monster::find_new_target()

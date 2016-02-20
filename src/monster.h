@@ -53,8 +53,6 @@ public:
   void give_pack();
   void find_new_target();
   void notice_player();
-  void increase_speed() override;
-  void decrease_speed() override;
 
   // monster_chase.c
   bool take_turn(); // True if monster is still alive
@@ -64,7 +62,6 @@ public:
   std::string       get_attack_string(bool successful_hit) const override;
   std::string       get_name() const override;
   char              get_disguise() const;
-  int               get_speed() const;
   Coordinate const* get_target() const;
   Type              get_subtype() const;
 
@@ -85,7 +82,6 @@ public:
 private:
   char               disguise;
   Type               subtype;
-  int                speed;
   Coordinate const*  target;
 
   static std::vector<Template> const* monsters;

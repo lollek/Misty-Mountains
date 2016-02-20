@@ -51,11 +51,9 @@ command()
 {
   Daemons::daemon_run_before();
 
-  int num_moves = 1;
-  num_moves += player->get_speed();
+  int num_moves = player->get_moves_this_round();
 
-  while (num_moves-- > 0)
-  {
+  while (num_moves-- > 0) {
     Game::io->refresh();
 
     if (player_turns_without_action > 0 &&
@@ -63,23 +61,23 @@ command()
       Game::io->message("you can move again");
     }
 
-    if (!player_turns_without_action) {
+    if (player_turns_without_action != 0) {
+      continue;
+    }
 
-      char ch;
+    char ch;
+    if (player->is_running() || to_death) {
+      ch = runch;
 
-      if (player->is_running() || to_death)
-        ch = runch;
-      else
-      {
-        ch = Game::io->readchar(false);
-        Game::io->clear_message();
-      }
+    } else {
+      ch = Game::io->readchar(false);
+      Game::io->clear_message();
+    }
 
-      /* command_do returns 0 if player did something not in-game
-       * (like changing options), thus recevies another turn */
-      if (!command_do(ch))
-        num_moves++;
-
+    // command_do returns 0 if player did something not in-game
+    // (like changing options), thus recevies another turn
+    if (!command_do(ch)) {
+      num_moves++;
     }
   }
 

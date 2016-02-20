@@ -33,7 +33,6 @@ public:
   bool has_true_sight() const override;
   bool can_sense_monsters() const;
   bool can_sense_magic() const;
-  int get_speed() const;
   bool is_stealthy() const;
   int get_strength_with_bonuses() const;
   struct room* get_previous_room() const;
@@ -118,7 +117,6 @@ private:
   struct room* previous_room;
   bool         senses_monsters;
   bool         senses_magic;
-  int          speed;
 
   static int constexpr darkvision = 2;
   static int constexpr lightvision = 4;
@@ -152,9 +150,8 @@ private:
   static unsigned long long constexpr TAG_EQUIPMENT       = 0x7000000000000002ULL;
   static unsigned long long constexpr TAG_SENSES_MONSTERS = 0x7000000000000003ULL;
   static unsigned long long constexpr TAG_SENSES_MAGIC    = 0x7000000000000004ULL;
-  static unsigned long long constexpr TAG_SPEED           = 0x7000000000000005ULL;
-  static unsigned long long constexpr TAG_GOLD            = 0x7000000000000006ULL;
-  static unsigned long long constexpr TAG_NUTRITION       = 0x7000000000000007ULL;
+  static unsigned long long constexpr TAG_GOLD            = 0x7000000000000005ULL;
+  static unsigned long long constexpr TAG_NUTRITION       = 0x7000000000000006ULL;
 };
 
 extern Player* player;
