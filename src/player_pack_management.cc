@@ -132,6 +132,7 @@ bool Player::pack_show_equipment() {
 bool Player::pack_show(Window current_window) {
 
   for (;;) {
+    Game::io->refresh();
     switch (current_window) {
       case INVENTORY: {
         pack_print_inventory(0);
