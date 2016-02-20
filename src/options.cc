@@ -78,16 +78,14 @@ bool option() {
     os << optlist.at(i).index << ") " << optlist.at(i).o_prompt;
     string option_string = os.str();
 
-    Game::io->print_string(x, y, option_string);
+    Game::io->print_string(IO::message_x + x, y, option_string);
     switch (optlist.at(i).put_type) {
       case option::BOOL: {
-        Game::io->print_string(static_cast<int>(option_string.size()), y,
-            *static_cast<bool*>(optlist.at(i).o_opt) ? "True" : "False");
+        Game::io->print_string(*static_cast<bool*>(optlist.at(i).o_opt) ? "True" : "False");
       } break;
 
       case option::STR: {
-        Game::io->print_string(static_cast<int>(option_string.size()), y,
-            *static_cast<string*>(optlist.at(i).o_opt));
+        Game::io->print_string(*static_cast<string*>(optlist.at(i).o_opt));
       } break;
     }
   }
@@ -114,13 +112,13 @@ bool option() {
         case option::BOOL: {
           bool* b = static_cast<bool*>(opt.o_opt);
           *b = !*b;
-          Game::io->print_string(3 + static_cast<int>(opt.o_prompt.size()), i + 1,
+          Game::io->print_string(IO::message_x + 3 + static_cast<int>(opt.o_prompt.size()), i + 1,
               *b ? "True " : "False");
           Game::io->force_redraw();
         } break;
 
         case option::STR: {
-          Game::io->move_pointer(3 + static_cast<int>(opt.o_prompt.size()), i + 1);
+          Game::io->move_pointer(3 + static_cast<int>(opt.o_prompt.size()), i);
           string* str = static_cast<string*>(opt.o_opt);
           *str = Game::io->read_string(str, false);
         } break;

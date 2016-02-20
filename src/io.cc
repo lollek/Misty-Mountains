@@ -438,8 +438,10 @@ string IO::read_string(string const* initial_string, bool question) {
     } else if (c == erasechar()) {
       if (!return_value.empty()) {
         return_value.pop_back();
-        move(original_pos.y,
-            original_pos.x + static_cast<int>(return_value.size()));
+        int curry;
+        int currx;
+        getyx(stdscr, curry, currx);
+        move(curry, currx - 1);
         clrtoeol();
       }
 
