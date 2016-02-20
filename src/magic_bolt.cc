@@ -128,16 +128,6 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
       fight_against_monster(pos, &bolt, true, &missile_name);
     }
   }
-  else if (mon->get_subtype() == Monster::Medusa)
-  {
-    if (start == &player->get_position())
-      monster_start_running(pos);
-    else
-    {
-      Game::io->message("the " + missile_name +
-                        " whizzes past " + mon->get_name());
-    }
-  }
 }
 
 void

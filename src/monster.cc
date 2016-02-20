@@ -110,9 +110,6 @@ void Monster::init_monsters() {
     { "black unicorn", BlackUnicorn, 'U', 20,   50,
      0,  020000000000000000000ULL,  1,  190,  7,  22, {{1,9},{1,9},{2,9}}},
 
-    { "medusa",        Medusa,       'M', 20,   50,
-    40,  020000000000000000000ULL,  1,  200,  8,  18, {{3,4},{3,4},{2,5}}},
-
     { "vampire",       Vampire,      'V', 20,   50,
     20,  021020000000000000000ULL,  1,  350,  8,  19, {{1,10}}},
 
@@ -270,23 +267,6 @@ void Monster::notice_player() {
     set_target(&player->get_position());
     if (!is_stuck()) {
       set_chasing();
-    }
-  }
-
-  /* Medusa can confuse player */
-  if (get_type() == 'M' && !player->is_blind() && !is_found() && !is_cancelled() &&
-      is_chasing()) {
-
-    Coordinate const& coord = get_position();
-    Coordinate const& player_pos = player->get_position();
-    struct room const* rp = Game::level->get_room(player_pos);
-    if ((rp != nullptr && !(rp->r_flags & ISDARK))
-        || dist(coord.y, coord.x, player_pos.y, player_pos.x) < 3) {
-      set_found();
-      if (!player->saving_throw(VS_MAGIC)) {
-        Game::io->message(get_name() + "'s gaze has confused you");
-        player->set_confused();
-      }
     }
   }
 }

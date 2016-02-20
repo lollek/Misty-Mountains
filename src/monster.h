@@ -13,7 +13,7 @@ class Monster : public Character {
 public:
   enum Type {
     Aquator, Bat, Centaur, Dragon, Goblin, Flytrap, Griffin, Hobgoblin,
-    IceMonster, Jabberwock, Kobold, Leprechaun, Medusa, Nymph, Orc,
+    IceMonster, Jabberwock, Kobold, Leprechaun, Nymph, Orc,
     Phantom, Quagga, Rattlesnake, Snake, Troll, BlackUnicorn, Vampire,
     Wraith, Xeroc, Yeti, Zombie,
 
