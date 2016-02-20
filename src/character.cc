@@ -170,10 +170,7 @@ void Character::modify_max_health(int amount) {
 }
 
 void Character::raise_level(int amount) {
-  // Reset expometer
   experience = 0;
-
-  // Raise levels
   level += amount;
 
   // Roll extra HP
@@ -181,8 +178,9 @@ void Character::raise_level(int amount) {
 }
 
 void Character::lower_level(int amount) {
-  experience = 0;
   level = max(1, level - amount);
+
+  modify_max_health(-roll(amount, hit_dice));
 }
 
 int Character::get_level() const {
