@@ -136,9 +136,7 @@ void IO::print(int x, int y, long unsigned int ch, IO::Attribute attr) {
 
 
 bool IO::print_monster(int x, int y, Monster* monster) {
-  chtype symbol_to_print = static_cast<chtype>(monster->get_disguise());
   bool print_sensed_monster = false;
-  IO::Attribute attr = IO::None;
 
   if (!player->can_see(*monster)) {
     if (player->can_sense_monsters()) {
@@ -148,16 +146,38 @@ bool IO::print_monster(int x, int y, Monster* monster) {
     }
   }
 
-  switch (symbol_to_print) {
-    case 'b': attr = BoldBlack; break;
-    case 'g': attr = Yellow; break;
-    case 'h': attr = Green; break;
-    case 'i': attr = Cyan; break;
-    case 'k': attr = BoldYellow; break;
-    case 'l': attr = BoldGreen; break;
-    case 'n': attr = BoldGreen; break;
-    case 'r': attr = Red; break;
-    case 's': attr = Green; break;
+  chtype symbol_to_print = static_cast<chtype>(monster->get_disguise());
+  IO::Attribute attr = IO::None;
+
+  if (monster->get_look() == monster->get_disguise()) {
+    switch (monster->get_subtype()) {
+      case Monster::Aquator:        break; // TODO: Add color!
+      case Monster::Bat:            attr = BoldBlack; break;
+      case Monster::Centaur:        break; // TODO: Add color!
+      case Monster::Dragon:         break; // TODO: Add color!
+      case Monster::Goblin:         attr = Yellow; break;
+      case Monster::Griffin:        break; // TODO: Add color!
+      case Monster::Hobgoblin:      attr = Green; break;
+      case Monster::IceMonster:     attr = Cyan; break;
+      case Monster::Jabberwock:     break; // TODO: Add color!
+      case Monster::Kobold:         attr = BoldYellow; break;
+      case Monster::Leprechaun:     attr = BoldGreen; break;
+      case Monster::Nymph:          attr = BoldGreen; break;
+      case Monster::Orc:            break; // TODO: Add color!
+      case Monster::Phantom:        break; // TODO: Add color!
+      case Monster::Quagga:         break; // TODO: Add color!
+      case Monster::Rattlesnake:    attr = Red; break;
+      case Monster::Snake:          attr = Green; break;
+      case Monster::Troll:          break; // TODO: Add color!
+      case Monster::BlackUnicorn:   break; // TODO: Add color!
+      case Monster::Vampire:        break; // TODO: Add color!
+      case Monster::Wraith:         break; // TODO: Add color!
+      case Monster::Xeroc:          break; // TODO: Add color!
+      case Monster::Yeti:           break; // TODO: Add color!
+      case Monster::Zombie:         break; // TODO: Add color!
+
+      case Monster::NMONSTERS: error("Bad monster subtype NMONSTERS");
+    }
   }
 
   if (print_sensed_monster) {

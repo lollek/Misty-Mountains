@@ -44,7 +44,7 @@ void Monster::init_monsters() {
 //       000040000000000000000: attack drains experience
   monsters = new vector<Template> const {
     // Name,           Type,    char,  start, stop,
-//drop%, ability_flags,         speed,  exp,lvl, amr, dmg              */
+//drop%, ability_flags,         speed,  exp,lvl, amr, dmg
     { "bat",           Bat,          'b',  1,    5,
      0,  040000000000000000000ULL,  1,    1,  1,  17, {{1,2}}},
 
