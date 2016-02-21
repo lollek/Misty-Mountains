@@ -158,9 +158,9 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
 
   /* Let him know it was really a xeroc (if it was one) */
   if (!player->is_blind() && tp->get_subtype() == Monster::Xeroc &&
-      tp->get_disguise() != tp->get_type()) {
+      tp->get_disguise() != tp->get_look()) {
 
-    tp->set_disguise(static_cast<char>(tp->get_type()));
+    tp->set_disguise(tp->get_look());
     Game::io->message("wait!  That's a xeroc!");
     if (!thrown) {
       return false;
@@ -241,8 +241,8 @@ fight_against_player(Monster* mp) {
 
   // If it's a xeroc, tag it as known
   if (!player->is_blind() && mp->get_subtype() == Monster::Xeroc &&
-      mp->get_disguise() != mp->get_type()) {
-    mp->set_disguise('X');
+      mp->get_disguise() != mp->get_look()) {
+    mp->set_disguise(mp->get_look());
   }
 
   if (roll_attacks(mp, player, nullptr, false)) {

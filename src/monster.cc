@@ -219,8 +219,8 @@ Monster::Monster(Monster::Type subtype_, Coordinate const& pos) :
 Monster::Monster(Coordinate const& pos, Template const& m_template) :
   Character(10, 10, 10, 10, 10, 10, m_template.m_basexp, m_template.m_level,
       m_template.m_armor, 8, m_template.m_dmg, pos,
-      m_template.m_flags, m_template.m_char, m_template.m_speed),
-  t_pack(), turns_not_moved(0), disguise(m_template.m_char),
+      m_template.m_flags, m_template.m_speed),
+  t_pack(), turns_not_moved(0), look(m_template.m_char), disguise(m_template.m_char),
   subtype(m_template.m_subtype), target(nullptr) {
 
   // All monsters are equal, but some monsters are more equal than others, so
@@ -242,6 +242,10 @@ void Monster::set_target(Coordinate const* new_target) {
 
 Coordinate const* Monster::get_target() const {
   return target;
+}
+
+char Monster::get_look() const {
+  return look;
 }
 
 char Monster::get_disguise() const {
@@ -608,7 +612,7 @@ bool monster_try_breathe_fire_on_player(Monster const& monster) {
   Coordinate mon_coord = monster.get_position();
   Coordinate player_coord = player->get_position();
   int const dragonshot_chance = 5;
-  if (monster.get_type() == 'D' &&
+  if (monster.get_subtype() == Monster::Dragon &&
       (mon_coord.y == player_coord.y ||
        mon_coord.x == player_coord.x ||
        abs(mon_coord.y - player_coord.y) == abs(mon_coord.x - player_coord.x)) &&

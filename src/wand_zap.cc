@@ -98,7 +98,7 @@ wand_spell_cancel(Monster& target)
   target.set_not_invisible();
   target.remove_confusing_attack();
 
-  target.set_disguise(static_cast<char>(target.get_type()));
+  target.set_disguise(target.get_look());
 }
 
 static void

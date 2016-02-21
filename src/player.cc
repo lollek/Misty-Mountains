@@ -47,7 +47,7 @@ bool         player_alerted              = false;
 
 
 Player::Player(bool give_equipment) :
-  Character(18, 12, 14, 10, 10, 10, 0, 1, 10, 12, {{1,4}}, Coordinate(), 0, '@', 1),
+  Character(18, 12, 14, 10, 10, 10, 0, 1, 10, 12, {{1,4}}, Coordinate(), 0, 1),
   previous_room(nullptr), senses_monsters(false), senses_magic(false),
   pack(), equipment(equipment_size(), nullptr), gold(0),
   nutrition_left(get_starting_nutrition()) {

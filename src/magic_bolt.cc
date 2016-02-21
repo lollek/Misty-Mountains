@@ -122,7 +122,7 @@ magic_bolt_hit_monster(Monster* mon, Coordinate* start, Coordinate* pos, string 
     bolt.set_throw_damage({6,6});
     bolt.set_position(*pos);
 
-    if (mon->get_type() == 'D' && missile_name == "flame") {
+    if (mon->get_look() == 'D' && missile_name == "flame") {
       Game::io->message("the flame bounces off the dragon");
     } else {
       fight_against_monster(pos, &bolt, true, &missile_name);

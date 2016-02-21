@@ -10,8 +10,7 @@ using namespace std;
 
 Character::Character(int str_, int dex_, int con_, int wis_, int int_, int cha_,
     int exp_, int lvl_, int ac_, int hd_, std::vector<damage> const& attacks_,
-    Coordinate const& position_, unsigned long long flags, char type_,
-    int speed_) :
+    Coordinate const& position_, unsigned long long flags, int speed_) :
 
   strength{str_}, default_strength{str_},
   dexterity{dex_}, default_dexterity{dex_},
@@ -23,7 +22,7 @@ Character::Character(int str_, int dex_, int con_, int wis_, int int_, int cha_,
   experience{exp_}, level{lvl_}, base_ac{ac_}, hit_dice{hd_},
   base_health{hit_dice + roll(level-1, hit_dice)},
   health{get_max_health()},
-  attacks{attacks_}, position{position_}, type{type_}, speed{speed_}, turns_not_moved{0},
+  attacks{attacks_}, position{position_}, speed{speed_}, turns_not_moved{0},
 
   confusing_attack{0}, true_sight{0}, blind{0}, cancelled{0}, levitating{0},
   found{0}, greedy{0}, players_target{0}, held{0}, confused{0},
@@ -191,10 +190,6 @@ int Character::get_ac() const {
   return base_ac + (dexterity - 10) / 2;
 }
 
-int Character::get_type() const {
-  return type;
-}
-
 int Character::get_experience() const {
   return experience;
 }
@@ -265,7 +260,6 @@ void Character::save(ofstream& data) const {
   Disk::save(TAG_CHARACTER, health, data);
   Disk::save(TAG_CHARACTER, attacks, data);
   Disk::save(TAG_CHARACTER, position, data);
-  Disk::save(TAG_CHARACTER, type, data);
   Disk::save(TAG_CHARACTER, speed, data);
   Disk::save(TAG_CHARACTER, turns_not_moved, data);
 
@@ -317,7 +311,6 @@ bool Character::load(ifstream& data) {
       !Disk::load(TAG_CHARACTER, health, data) ||
       !Disk::load(TAG_CHARACTER, attacks, data) ||
       !Disk::load(TAG_CHARACTER, position, data) ||
-      !Disk::load(TAG_CHARACTER, type, data) ||
       !Disk::load(TAG_CHARACTER, speed, data) ||
       !Disk::load(TAG_CHARACTER, turns_not_moved, data) ||
 

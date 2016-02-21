@@ -213,7 +213,7 @@ void wizard_show_map(void) {
 
       Monster* monster = Game::level->get_monster(x, y);
       if (ch == 0 && monster != nullptr) {
-        ch = static_cast<long unsigned int>(monster->get_type());
+        ch = static_cast<long unsigned int>(monster->get_look());
       }
 
       Item* item = Game::level->get_item(x, y);

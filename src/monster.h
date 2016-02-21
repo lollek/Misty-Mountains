@@ -60,6 +60,7 @@ public:
   // Getters
   std::string       get_attack_string(bool successful_hit) const override;
   std::string       get_name() const override;
+  char              get_look() const;
   char              get_disguise() const;
   Coordinate const* get_target() const;
   Type              get_subtype() const;
@@ -79,6 +80,7 @@ public:
   int                turns_not_moved;
 
 private:
+  char               look;
   char               disguise;
   Type               subtype;
   Coordinate const*  target;

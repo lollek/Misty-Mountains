@@ -32,7 +32,6 @@ public:
   virtual int                        get_max_health() const;
   virtual Coordinate const&          get_position() const;
   virtual std::vector<damage> const& get_attacks() const;
-  virtual int                        get_type() const;
 
   // Setters
   virtual void set_position(Coordinate const& position);
@@ -122,7 +121,7 @@ protected:
   Character(int strength, int dexterity, int constitution, int wisdom,
       int intelligence, int charisma, int experience, int level, int armor,
       int health, std::vector<damage> const& attacks, Coordinate const& position,
-      unsigned long long flags, char type, int speed);
+      unsigned long long flags, int speed);
 
   explicit Character(Character const&) = default;
   explicit Character(Character&&) = default;
@@ -152,7 +151,6 @@ private:
   int                  health;
   std::vector<damage>  attacks;
   Coordinate           position;
-  char                 type;
   int                  speed;
   int                  turns_not_moved;
 
