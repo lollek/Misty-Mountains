@@ -13,26 +13,26 @@ public:
   virtual std::string get_name() const = 0;
 
   // Getters
-  int                        get_strength() const;
-  int                        get_default_strength() const;
-  int                        get_dexterity() const;
-  int                        get_default_dexterity() const;
-  int                        get_constitution() const;
-  int                        get_default_constitution() const;
-  int                        get_wisdom() const;
-  int                        get_default_wisdom() const;
-  int                        get_intelligence() const;
-  int                        get_default_intelligence() const;
-  int                        get_charisma() const;
-  int                        get_default_charisma() const;
-  int                        get_experience() const;
-  int                        get_level() const;
-  virtual int                get_ac() const;
-  int                        get_health() const;
-  int                        get_max_health() const;
-  Coordinate const&          get_position() const;
-  std::vector<damage> const& get_attacks() const;
-  int                        get_type() const;
+  virtual int                        get_strength() const;
+  virtual int                        get_default_strength() const;
+  virtual int                        get_dexterity() const;
+  virtual int                        get_default_dexterity() const;
+  virtual int                        get_constitution() const;
+  virtual int                        get_default_constitution() const;
+  virtual int                        get_wisdom() const;
+  virtual int                        get_default_wisdom() const;
+  virtual int                        get_intelligence() const;
+  virtual int                        get_default_intelligence() const;
+  virtual int                        get_charisma() const;
+  virtual int                        get_default_charisma() const;
+  virtual int                        get_experience() const;
+  virtual int                        get_level() const;
+  virtual int                        get_ac() const;
+  virtual int                        get_health() const;
+  virtual int                        get_max_health() const;
+  virtual Coordinate const&          get_position() const;
+  virtual std::vector<damage> const& get_attacks() const;
+  virtual int                        get_type() const;
 
   // Setters
   virtual void set_position(Coordinate const& position);
