@@ -19,7 +19,7 @@ public:
 
 private:
   void print() const;
-  void sell();
+  int sell();
 
   int  buy_value(Item const*) const;
   int  sell_value(Item const*) const;

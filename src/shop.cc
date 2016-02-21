@@ -48,7 +48,7 @@ int Shop::sell_value(Item const* item) const {
   if (item->is_identified()) {
     value = item->get_value();
   } else {
-    value = item->get_base_value();
+    value = item->get_base_value() * item->o_count;
   }
 
   // Cheap items
@@ -103,29 +103,51 @@ void Shop::print() const {
 
 }
 
-void Shop::sell() {
+int Shop::sell() {
   Game::io->clear_screen();
-  Item* obj = player->pack_find_item("sell", 0);
 
+  Item* obj = player->pack_find_item("sell", 0);
   if (obj == nullptr) {
-    return;
+    return 0;
+  }
+
+  bool sell_all = false;
+  if (obj->o_count > 1) {
+    Game::io->message("Sell all? (y/N)");
+
+    char ch = Game::io->readchar(true);
+    if (ch == KEY_ESCAPE) {
+      return sell();
+    } else {
+      sell_all = ch == 'y';
+    }
+    Game::io->clear_message();
   }
 
   int value = sell_value(obj);
   if (value <= 0) {
     Game::io->message("the shopkeeper is not interested in buying that");
-    return;
+    return sell();
+  }
+
+  int real_count = obj->o_count;
+  if (!sell_all) {
+    obj->o_count = 1;
+    value = sell_value(obj);
   }
 
   stringstream os;
   os << "sell " << obj->get_description() << " for " << value << "? (y/N)";
   Game::io->message(os.str());
 
+  obj->o_count = real_count;
+
   if (Game::io->readchar(true) != 'y') {
-    return;
+    return sell();
   }
+
   Game::io->clear_message();
-  obj = player->pack_remove(obj, true, true);
+  obj = player->pack_remove(obj, true, sell_all);
   obj->set_identified();
   player->give_gold(value);
 
@@ -159,7 +181,7 @@ void Shop::sell() {
   if (obj != nullptr) {
     limited_inventory.push_back(obj);
   }
-  sell();
+  return sell();
 }
 
 void Shop::enter() {

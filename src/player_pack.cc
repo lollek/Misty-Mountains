@@ -166,6 +166,7 @@ Item* Player::pack_find_item(string const& purpose, int type) {
   cur_win_t current_window = INVENTORY;
 
   for (;;) {
+    Game::io->clear_message();
     switch (current_window) {
       case INVENTORY: {
         pack_print_inventory(type);
