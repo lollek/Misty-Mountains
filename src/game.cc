@@ -156,21 +156,28 @@ Game::Game(ifstream& savefile) {
   game_ptr = this;
 
   Game::io = new IO();
-  Scroll::load_scrolls(savefile);
-  Color::init_colors();
-  Potion::load_potions(savefile);
-  Ring::load_rings(savefile);
-  Wand::load_wands(savefile);
-  Daemons::load_daemons(savefile);
-  Monster::init_monsters();
-  Trap::init_traps();
-  Player::load_player(savefile);
 
-  Disk::load_tag(TAG_GAME, savefile);
-  Disk::load(TAG_WHOAMI, Game::whoami, savefile);
-  Disk::load(TAG_SAVEPATH, Game::save_game_path, savefile);
-  Disk::load(TAG_LEVEL, Game::current_level, savefile);
-  Disk::load(TAG_FOODLESS, Game::levels_without_food, savefile);
+  try {
+    Scroll::load_scrolls(savefile);
+    Color::init_colors();
+    Potion::load_potions(savefile);
+    Ring::load_rings(savefile);
+    Wand::load_wands(savefile);
+    Daemons::load_daemons(savefile);
+    Monster::init_monsters();
+    Trap::init_traps();
+    Player::load_player(savefile);
+
+    Disk::load_tag(TAG_GAME, savefile);
+    Disk::load(TAG_WHOAMI, Game::whoami, savefile);
+    Disk::load(TAG_SAVEPATH, Game::save_game_path, savefile);
+    Disk::load(TAG_LEVEL, Game::current_level, savefile);
+    Disk::load(TAG_FOODLESS, Game::levels_without_food, savefile);
+  } catch (fatal_error &e) {
+    Game::io->stop_curses();
+    cout << "Failed to load game, corrupt save file (" << e.what() << ")\n";
+    exit();
+  }
 
 
   //Game::new_level(Game::current_level);
