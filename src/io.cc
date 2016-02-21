@@ -151,30 +151,30 @@ bool IO::print_monster(int x, int y, Monster* monster) {
 
   if (monster->get_look() == monster->get_disguise()) {
     switch (monster->get_subtype()) {
-      case Monster::Aquator:        break; // TODO: Add color!
+      case Monster::Aquator:        attr = Blue; break;
       case Monster::Bat:            attr = BoldBlack; break;
-      case Monster::Centaur:        break; // TODO: Add color!
-      case Monster::Dragon:         break; // TODO: Add color!
+      case Monster::Centaur:        attr = BoldYellow; break;
+      case Monster::Dragon:         attr = BoldRed; break;
       case Monster::Goblin:         attr = Yellow; break;
-      case Monster::Griffin:        break; // TODO: Add color!
+      case Monster::Griffin:        attr = BoldYellow; break;
       case Monster::Hobgoblin:      attr = Green; break;
       case Monster::IceMonster:     attr = Cyan; break;
-      case Monster::Jabberwock:     break; // TODO: Add color!
+      case Monster::Jabberwock:     attr = BoldMagenta; break;
       case Monster::Kobold:         attr = BoldYellow; break;
       case Monster::Leprechaun:     attr = BoldGreen; break;
       case Monster::Nymph:          attr = BoldGreen; break;
-      case Monster::Orc:            break; // TODO: Add color!
-      case Monster::Phantom:        break; // TODO: Add color!
-      case Monster::Quagga:         break; // TODO: Add color!
+      case Monster::Orc:            attr = BoldYellow; break;
+      case Monster::Phantom:        attr = BoldBlack; break;
+      case Monster::Quagga:         attr = BoldWhite; break;
       case Monster::Rattlesnake:    attr = Red; break;
       case Monster::Snake:          attr = Green; break;
-      case Monster::Troll:          break; // TODO: Add color!
-      case Monster::BlackUnicorn:   break; // TODO: Add color!
-      case Monster::Vampire:        break; // TODO: Add color!
-      case Monster::Wraith:         break; // TODO: Add color!
-      case Monster::Xeroc:          break; // TODO: Add color!
-      case Monster::Yeti:           break; // TODO: Add color!
-      case Monster::Zombie:         break; // TODO: Add color!
+      case Monster::Troll:          attr = BoldGreen; break;
+      case Monster::BlackUnicorn:   attr = BoldBlack; break;
+      case Monster::Vampire:        attr = BoldRed; break;
+      case Monster::Wraith:         attr = BoldBlack; break;
+      case Monster::Xeroc:          attr = BoldCyan; break;
+      case Monster::Yeti:           attr = BoldWhite; break;
+      case Monster::Zombie:         attr = BoldYellow; break;
 
       case Monster::NMONSTERS: error("Bad monster subtype NMONSTERS");
     }
