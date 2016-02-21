@@ -96,6 +96,13 @@ public:
   bool          pack_swap_weapons();
   int           pack_get_ring_modifier(Ring::Type);
 
+  // player_pack_management.cc
+  enum Window {
+    INVENTORY,
+    EQUIPMENT
+  };
+  bool          pack_show_drop(Window mode);
+
   // Misc
   bool saving_throw(int which) const;
   bool has_ring_with_ability(int ability) const;
@@ -122,14 +129,8 @@ private:
   static int constexpr lightvision = 4;
 
   // player_pack_management.cc
-  enum Window {
-    INVENTORY,
-    EQUIPMENT
-  };
-
   bool pack_show(Window mode);
   bool pack_show_equip();
-  bool pack_show_drop(Window mode);
   bool pack_show_remove();
 
   // player_pack.cc
