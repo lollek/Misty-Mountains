@@ -675,7 +675,9 @@ void Monster::set_disguise(char new_disguise) {
 }
 
 Monster::Monster(ifstream& data) {
-  load(data);
+  if (!load(data)) {
+    error("Malformed monster found");
+  }
 }
 
 void Monster::save(ofstream& data) const {
