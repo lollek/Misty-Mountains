@@ -221,7 +221,7 @@ Monster::Monster(Coordinate const& pos, Template const& m_template) :
   Character(10, 10, 10, 10, 10, 10, m_template.m_basexp, m_template.m_level,
       m_template.m_armor, 8, m_template.m_dmg, pos,
       m_template.m_flags, m_template.m_speed),
-  t_pack(), turns_not_moved(0), look(m_template.m_char), disguise(m_template.m_char),
+  t_pack(), look(m_template.m_char), disguise(m_template.m_char),
   subtype(m_template.m_subtype), target(nullptr) {
 
   // All monsters are equal, but some monsters are more equal than others, so
@@ -683,7 +683,6 @@ void Monster::save(ofstream& data) const {
   Disk::save_tag(TAG_MONSTER, data);
 
   Disk::save(TAG_MISC, t_pack, data);
-  Disk::save(TAG_MISC, turns_not_moved, data);
 
   Disk::save(TAG_MISC, look, data);
   Disk::save(TAG_MISC, disguise, data);
@@ -698,7 +697,6 @@ bool Monster::load(ifstream& data) {
   if (!Disk::load_tag(TAG_MONSTER, data) ||
 
       !Disk::load(TAG_MISC, t_pack, data) ||
-      !Disk::load(TAG_MISC, turns_not_moved, data) ||
 
       !Disk::load(TAG_MISC, look, data) ||
       !Disk::load(TAG_MISC, disguise, data) ||

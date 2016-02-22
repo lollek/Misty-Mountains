@@ -81,8 +81,6 @@ public:
   // Variables (TODO: Make these private)
   std::list<Item*>   t_pack;    // What the thing is carrying
 
-  int                turns_not_moved;
-
 private:
   char               look;
   char               disguise;
