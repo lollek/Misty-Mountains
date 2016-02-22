@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "gold.h"
+#include "disk.h"
 #include "magic.h"
 #include "command.h"
 #include "daemons.h"
@@ -672,3 +673,41 @@ Monster::Type Monster::get_subtype() const {
 void Monster::set_disguise(char new_disguise) {
   disguise = new_disguise;
 }
+
+Monster::Monster(ifstream& data) {
+  load(data);
+}
+
+void Monster::save(ofstream& data) const {
+  Character::save(data);
+  Disk::save_tag(TAG_MONSTER, data);
+
+  Disk::save(TAG_MISC, t_pack, data);
+  Disk::save(TAG_MISC, turns_not_moved, data);
+
+  Disk::save(TAG_MISC, look, data);
+  Disk::save(TAG_MISC, disguise, data);
+  Disk::save(TAG_MISC, static_cast<int>(subtype), data);
+  Disk::save(TAG_MISC, disguise, data);
+
+  Disk::save_tag(TAG_MONSTER, data);
+}
+
+bool Monster::load(ifstream& data) {
+  Character::load(data);
+  if (!Disk::load_tag(TAG_MONSTER, data) ||
+
+      !Disk::load(TAG_MISC, t_pack, data) ||
+      !Disk::load(TAG_MISC, turns_not_moved, data) ||
+
+      !Disk::load(TAG_MISC, look, data) ||
+      !Disk::load(TAG_MISC, disguise, data) ||
+      !Disk::load(TAG_MISC, reinterpret_cast<int&>(subtype), data) ||
+      !Disk::load(TAG_MISC, disguise, data) ||
+
+      !Disk::load_tag(TAG_MONSTER, data)) {
+    return false;
+  }
+  return true;
+}
+

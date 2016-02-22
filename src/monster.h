@@ -3,6 +3,7 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <fstream>
 
 #include "character.h"
 #include "coordinate.h"
@@ -37,11 +38,15 @@ public:
 
   Monster(Type subtype, Coordinate const& pos);
   Monster(Monster const&) = delete; // Deleted since they would share inventory
+  Monster(std::ifstream&);
 
   ~Monster();
 
   Monster& operator=(Monster const&) = delete; // Deleted since they would share inventory
   Monster& operator=(Monster&&) = default;
+
+  void save(std::ofstream&) const override;
+  bool load(std::ifstream&) override;
 
   // Setters
   void set_invisible() override;
@@ -87,6 +92,9 @@ private:
   static std::vector<Template> const* monsters;
 
   Monster(Coordinate const& pos, Template const& m_template);
+
+  static unsigned long long constexpr TAG_MONSTER         = 0xd000000000000001ULL;
+  static unsigned long long constexpr TAG_MISC            = 0xd000000000000002ULL;
 };
 
 

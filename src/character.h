@@ -118,11 +118,12 @@ public:
 
 
 protected:
-  Character(int strength, int dexterity, int constitution, int wisdom,
+  explicit Character(int strength, int dexterity, int constitution, int wisdom,
       int intelligence, int charisma, int experience, int level, int armor,
       int health, std::vector<damage> const& attacks, Coordinate const& position,
       unsigned long long flags, int speed);
 
+  explicit Character() = default;
   explicit Character(Character const&) = default;
   explicit Character(Character&&) = default;
   Character& operator=(Character const&) = default;
