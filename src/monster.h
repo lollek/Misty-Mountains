@@ -66,8 +66,9 @@ public:
   std::string       get_name() const override;
   char              get_look() const;
   char              get_disguise() const;
-  Coordinate const* get_target() const;
   Type              get_subtype() const;
+  Coordinate const* get_target() const;
+  std::list<Item*>& get_pack();
 
   // Statics
   static void                 init_monsters();
@@ -78,14 +79,12 @@ public:
   static Type                 random_monster_type_for_level();
   static Type                 random_monster_type();
 
-  // Variables (TODO: Make these private)
-  std::list<Item*>   t_pack;    // What the thing is carrying
-
 private:
   char               look;
   char               disguise;
   Type               subtype;
   Coordinate const*  target;
+  std::list<Item*>   pack;
 
   static std::vector<Template> const* monsters;
 

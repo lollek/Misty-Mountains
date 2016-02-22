@@ -221,8 +221,8 @@ Monster::Monster(Coordinate const& pos, Template const& m_template) :
   Character(10, 10, 10, 10, 10, 10, m_template.m_basexp, m_template.m_level,
       m_template.m_armor, 8, m_template.m_dmg, pos,
       m_template.m_flags, m_template.m_speed),
-  t_pack(), look(m_template.m_char), disguise(m_template.m_char),
-  subtype(m_template.m_subtype), target(nullptr) {
+  look(m_template.m_char), disguise(m_template.m_char),
+  subtype(m_template.m_subtype), target(nullptr), pack() {
 
   // All monsters are equal, but some monsters are more equal than others, so
   // they also give more experience
@@ -278,10 +278,10 @@ void Monster::give_pack() {
     for (int i = 0; i < gold_exp; ++i) {
       gold_amount += Gold::random_gold_amount();
     }
-    t_pack.push_back(new Gold(gold_amount));
+    pack.push_back(new Gold(gold_amount));
   }
 
-  t_pack.push_back(Item::random());
+  pack.push_back(Item::random());
 }
 
 string const& Monster::name(Type subtype) {
@@ -368,7 +368,7 @@ monster_remove_from_screen(Monster** monster_ptr, bool was_killed)
   Monster* monster = *monster_ptr;
 
   // If it was killed, drop stash. Otherwise just delete it
-  for (Item* obj : monster->t_pack) {
+  for (Item* obj : monster->get_pack()) {
     obj->set_position(monster->get_position());
     if (was_killed) {
       weapon_missile_fall(obj, false);
@@ -376,7 +376,7 @@ monster_remove_from_screen(Monster** monster_ptr, bool was_killed)
       delete obj;
     }
   }
-  monster->t_pack.clear();
+  monster->get_pack().clear();
 
   Coordinate position = monster->get_position();
   Game::level->set_monster(position, nullptr);
@@ -572,7 +572,7 @@ monster_polymorph(Monster* target)
   }
 
   // Save some things from old monster
-  list<Item*> target_pack = target->t_pack;
+  list<Item*> target_pack = target->get_pack();
 
   // Generate the new monster
   Monster::Type monster = Monster::random_monster_type();
@@ -601,7 +601,7 @@ monster_polymorph(Monster* target)
   }
 
   // Put back some saved things from old monster
-  target->t_pack = target_pack;
+  target->get_pack() = target_pack;
 }
 
 bool monster_try_breathe_fire_on_player(Monster const& monster) {
@@ -682,12 +682,11 @@ void Monster::save(ofstream& data) const {
   Character::save(data);
   Disk::save_tag(TAG_MONSTER, data);
 
-  Disk::save(TAG_MISC, t_pack, data);
-
   Disk::save(TAG_MISC, look, data);
   Disk::save(TAG_MISC, disguise, data);
   Disk::save(TAG_MISC, static_cast<int>(subtype), data);
   Disk::save(TAG_MISC, disguise, data);
+  Disk::save(TAG_MISC, pack, data);
 
   Disk::save_tag(TAG_MONSTER, data);
 }
@@ -696,12 +695,11 @@ bool Monster::load(ifstream& data) {
   Character::load(data);
   if (!Disk::load_tag(TAG_MONSTER, data) ||
 
-      !Disk::load(TAG_MISC, t_pack, data) ||
-
       !Disk::load(TAG_MISC, look, data) ||
       !Disk::load(TAG_MISC, disguise, data) ||
       !Disk::load(TAG_MISC, reinterpret_cast<int&>(subtype), data) ||
       !Disk::load(TAG_MISC, disguise, data) ||
+      !Disk::load(TAG_MISC, pack, data) ||
 
       !Disk::load_tag(TAG_MONSTER, data)) {
     return false;
@@ -709,3 +707,6 @@ bool Monster::load(ifstream& data) {
   return true;
 }
 
+list<Item*>& Monster::get_pack() {
+  return pack;
+}

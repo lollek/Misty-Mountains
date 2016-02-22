@@ -335,7 +335,7 @@ void IO::print_coordinate(int x, int y) {
   if (player->can_sense_magic()) {
     Monster* monster = Game::level->get_monster(x, y);
     if (monster != nullptr) {
-      for (Item* item : monster->t_pack) {
+      for (Item* item : monster->get_pack()) {
         if (item->is_magic()) {
           print(x, y, IO::Magic, IO::None);
           return;
