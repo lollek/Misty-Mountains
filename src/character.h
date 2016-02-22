@@ -180,6 +180,9 @@ private:
   bool attack_drain_experience;
 
 
-  static unsigned long long constexpr TAG_CHARACTER       = 0x8000000000000000ULL;
+  static unsigned long long constexpr TAG_CHARACTER       = 0x8000000000000001ULL;
+  static unsigned long long constexpr TAG_STATS           = 0x8000000000000002ULL;
+  static unsigned long long constexpr TAG_MISC            = 0x8000000000000003ULL;
+  static unsigned long long constexpr TAG_FLAG            = 0x8000000000000004ULL;
 };
 
