@@ -32,11 +32,11 @@ static Monster* wand_find_target(int* y, int* x, int dy, int dx) {
 static void wand_spell_light(void)
 {
   room* player_room = Game::level->get_room(player->get_position());
-  if (player_room == nullptr || player_room->r_flags & ISGONE) {
+  if (player_room == nullptr || player_room->is_gone) {
     Game::io->message("the corridor glows and then fades");
 
   } else {
-    player_room->r_flags &= ~ISDARK;
+    player_room->is_dark = false;
     Game::io->message("the rooms is lit by a shimmering blue light");
   }
 }

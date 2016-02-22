@@ -12,14 +12,9 @@ struct room {
 
   Coordinate r_pos;      // Upper left corner
   Coordinate r_max;      // Size of room
-  Coordinate r_gold;     // Where the gold is
-  int r_goldval;         // How much the gold is worth
-  int r_flags;           // info about the room
-  int r_nexits;          // Number of exits
-  Coordinate r_exit[12]; // Where the exits are
+
+  bool is_dark;          // Room is dark
+  bool is_gone;          // No room here, just corridor
+  bool is_maze;          // No room here, just maze
 };
 
-// flags for rooms
-#define ISDARK	0000001		// room is dark
-#define ISGONE	0000002		// room is gone (a corridor)
-#define ISMAZE	0000004		// room is gone (a corridor)

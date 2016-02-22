@@ -94,12 +94,6 @@ chase_do(Monster* monster)
     error("monster = null");
   }
 
-  // If gold has been taken, run after hero
-  room* chaser_room = Game::level->get_room(monster->get_position());
-  if (monster->is_greedy() && chaser_room != nullptr && chaser_room->r_goldval == 0) {
-    monster->set_target(&player->get_position());
-  }
-
   Coordinate target = *monster->get_target();
   if (monster_try_breathe_fire_on_player(*monster)) {
     return 0;

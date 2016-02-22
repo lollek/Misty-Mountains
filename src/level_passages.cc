@@ -20,8 +20,7 @@ using namespace std;
 void
 Level::place_door(room* room, Coordinate* coord) {
 
-  room->r_exit[room->r_nexits++] = *coord;
-  if (room->r_flags & ISMAZE) {
+  if (room->is_maze) {
     return;
   }
 
@@ -80,19 +79,19 @@ Level::connect_passages(int r1, int r2) {
     end_pos.y = room_to->r_pos.y;
 
     /* if not gone pick door pos */
-    if (!(room_from->r_flags & ISGONE)) {
+    if (!(room_from->is_gone)) {
       do {
         start_pos.x = room_from->r_pos.x + os_rand_range(room_from->r_max.x - 2)
           + 1;
         start_pos.y = room_from->r_pos.y + room_from->r_max.y - 1;
-      } while ((room_from->r_flags & ISMAZE)
+      } while ((room_from->is_maze)
              && !is_passage(start_pos));
     }
 
-    if (!(room_to->r_flags & ISGONE)) {
+    if (!(room_to->is_gone)) {
       do {
         end_pos.x = room_to->r_pos.x + os_rand_range(room_to->r_max.x - 2) + 1;
-      } while ((room_to->r_flags & ISMAZE)
+      } while ((room_to->is_maze)
              && !is_passage(end_pos));
     }
 
@@ -112,19 +111,19 @@ Level::connect_passages(int r1, int r2) {
     start_pos.y = room_from->r_pos.y;
     end_pos.x = room_to->r_pos.x;
     end_pos.y = room_to->r_pos.y;
-    if (!(room_from->r_flags & ISGONE)) {
+    if (!(room_from->is_gone)) {
       do {
         start_pos.x = room_from->r_pos.x + room_from->r_max.x - 1;
         start_pos.y = room_from->r_pos.y + os_rand_range(room_from->r_max.y - 2)
           + 1;
-      } while ((room_from->r_flags & ISMAZE)
+      } while ((room_from->is_maze)
                && !is_passage(start_pos));
     }
 
-    if (!(room_to->r_flags & ISGONE)) {
+    if (!(room_to->is_gone)) {
       do {
         end_pos.y = room_to->r_pos.y + os_rand_range(room_to->r_max.y - 2) + 1;
-      } while ((room_to->r_flags & ISMAZE)
+      } while ((room_to->is_maze)
              && !is_passage(end_pos));
     }
 
@@ -143,13 +142,13 @@ Level::connect_passages(int r1, int r2) {
 
   /* Draw in the doors on either side of the passage or just put #'s
    * if the rooms are gone.  */
-  if (!(room_from->r_flags & ISGONE)) {
+  if (!(room_from->is_gone)) {
     place_door(room_from, &start_pos);
   } else {
     place_passage(&start_pos);
   }
 
-  if (!(room_to->r_flags & ISGONE)) {
+  if (!(room_to->is_gone)) {
     place_door(room_to, &end_pos);
   } else {
     place_passage(&end_pos);
@@ -310,7 +309,7 @@ void Level::place_passage(Coordinate* coord) {
   tile(coord->x, coord->y).is_passage = true;
 
   room* passage_room = get_room(*coord);
-  if (passage_room != nullptr && passage_room->r_flags & ISDARK) {
+  if (passage_room != nullptr && passage_room->is_dark) {
     tile(coord->x, coord->y).is_dark = true;
   }
 

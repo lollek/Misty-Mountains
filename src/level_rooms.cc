@@ -139,7 +139,7 @@ Level::draw_room(room const& rp) {
     for (int x = rp.r_pos.x + 1; x < rp.r_pos.x + rp.r_max.x - 1; x++) {
       Tile& t = tile(x, y);
       t.type = Tile::Floor;
-      t.is_dark = rp.r_flags & ISDARK;
+      t.is_dark = rp.is_dark;
     }
   }
 }
@@ -160,17 +160,10 @@ room_place_gone_room(Coordinate const* max_size, Coordinate const* top, room* ro
 void
 Level::create_rooms() {
 
-  /* Clear things for a new level */
-  for (struct room& room : rooms) {
-    room.r_goldval = 0;
-    room.r_nexits = 0;
-    room.r_flags = 0;
-  }
-
   /* Put the gone rooms, if any, on the level */
   int left_out = os_rand_range(4);
   for (int i = 0; i < left_out; i++) {
-    get_random_room()->r_flags |= ISGONE;
+    get_random_room()->is_gone = true;
   }
 
   /* dig and populate all the rooms on the level */
@@ -188,21 +181,21 @@ Level::create_rooms() {
     /* Find upper left corner of box that this room goes in */
     Coordinate const top((i % 3) * bsze.x + 1, (i / 3) * bsze.y);
 
-    if (room.r_flags & ISGONE) {
+    if (room.is_gone) {
       room_place_gone_room(&bsze, &top, &room);
       continue;
     }
 
     /* set room type */
     if (os_rand_range(10) < Game::current_level - 1) {
-      room.r_flags |= ISDARK;  /* dark room */
+      room.is_dark = true;
       if (os_rand_range(15) == 0) {
-        room.r_flags = ISMAZE; /* maze room */
+        room.is_maze = true;
       }
     }
 
     /* Find a place and size for a random room */
-    if (room.r_flags & ISMAZE) {
+    if (room.is_maze) {
       room.r_max.x = bsze.x - 1;
       room.r_max.y = bsze.y - 1;
       room.r_pos.x = top.x;
@@ -224,14 +217,14 @@ Level::create_rooms() {
       } while (room.r_pos.y == 0 || room.r_pos.x == 0);
     }
 
-    if (room.r_flags & ISMAZE) {
+    if (room.is_maze) {
       draw_maze(room);
     } else {
       draw_room(room);
     }
 
     /* Put the monster in */
-    if (os_rand_range(100) < (room.r_goldval > 0 ? 80 : 25)) {
+    if (os_rand_range(100) < 25) {
       Coordinate mp;
       get_random_room_coord(&room, &mp, 0, true);
       Monster::Type mon_type = Monster::random_monster_type_for_level();
@@ -277,7 +270,7 @@ Level::get_random_room_coord(room* room, Coordinate* coord, int tries, bool mons
 room* Level::get_random_room() {
   for (;;) {
     room* room = &rooms.at(static_cast<size_t>(os_rand_range(rooms.size())));
-    if (room->r_flags & ISGONE) {
+    if (room->is_gone) {
       continue;
     }
 
