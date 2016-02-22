@@ -1,8 +1,6 @@
 #include <string>
 #include <exception>
 
-using namespace std;
-
 #include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
@@ -15,8 +13,11 @@ using namespace std;
 #include "player.h"
 #include "weapons.h"
 #include "death.h"
+#include "rogue.h"
 
 #include "magic.h"
+
+using namespace std;
 
 static bool
 magic_bolt_handle_bounces(Coordinate& pos, Coordinate* dir, char* dirtile)

@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "error_handling.h"
 
 fatal_error::fatal_error(const std::string &arg, const char *file, int line) :

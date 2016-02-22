@@ -1,8 +1,8 @@
 #pragma once
 
-#include "monster.h"
-
 #include <string>
+
+#include "monster.h"
 
 // Reasons for player dying
 enum death_reason {

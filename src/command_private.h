@@ -1,9 +1,5 @@
 #pragma once
 
-#include "player.h"
-
-#include "command.h"
-
 // In command.c
 bool command_do(char ch);
 bool command_wizard_do(char ch);

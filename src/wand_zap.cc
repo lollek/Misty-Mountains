@@ -9,6 +9,7 @@
 #include "colors.h"
 #include "fight.h"
 #include "misc.h"
+#include "rogue.h"
 
 #include "wand.h"
 

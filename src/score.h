@@ -1,7 +1,5 @@
 #pragma once
 
-#include "io.h"
-
 #define SCORE_MAX 10 /* Number of highscore entries */
 
 /* Open up the score file for future use */

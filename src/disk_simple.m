@@ -1,4 +1,3 @@
-
 template <class T>
 void save(tag_type tag, T const& element, std::ofstream& data) {
   static_assert(std::is_fundamental<T>::value, "Not fundamental type T");

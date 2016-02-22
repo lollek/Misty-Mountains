@@ -1,4 +1,5 @@
 #include <string>
+#include <sstream>
 
 #include "error_handling.h"
 #include "game.h"
@@ -16,6 +17,7 @@
 #include "os.h"
 #include "player.h"
 #include "death.h"
+#include "rogue.h"
 
 #include "traps.h"
 

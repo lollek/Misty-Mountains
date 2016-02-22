@@ -2,8 +2,6 @@
 
 #include <fstream>
 
-#include "player.h"
-
 namespace Daemons {
 
 void init_daemons();

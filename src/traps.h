@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include "player.h"
 #include "coordinate.h"
 #include "monster.h"
 

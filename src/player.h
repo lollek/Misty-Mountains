@@ -4,7 +4,6 @@
 
 #include "rings.h"
 #include "weapons.h"
-#include "rogue.h"
 #include "food.h"
 #include "monster.h"
 

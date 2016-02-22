@@ -12,6 +12,7 @@
 #include "rogue.h"
 #include "level.h"
 #include "death.h"
+#include "player.h"
 
 #include "score.h"
 

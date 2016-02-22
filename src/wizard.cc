@@ -1,4 +1,5 @@
 #include <vector>
+#include <sstream>
 
 #include "food.h"
 #include "gold.h"

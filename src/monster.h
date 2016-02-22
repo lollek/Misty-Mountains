@@ -7,7 +7,6 @@
 #include "character.h"
 #include "coordinate.h"
 #include "item.h"
-#include "rogue.h"
 
 class Monster : public Character {
 public:

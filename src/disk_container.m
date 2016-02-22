@@ -1,4 +1,3 @@
-
 template <template <class, class> class C, class T>
 void save(tag_type tag, C<T, std::allocator<T>> const& container, std::ofstream& data) {
   save_tag(tag, data);

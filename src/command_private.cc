@@ -1,4 +1,5 @@
 #include <signal.h>
+#include <sstream>
 
 #include <string>
 
@@ -27,6 +28,7 @@
 #include "weapons.h"
 #include "gold.h"
 
+#include "command.h"
 #include "command_private.h"
 
 using namespace std;

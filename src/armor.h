@@ -2,9 +2,7 @@
 
 #include <string>
 
-#include "monster.h"
 #include "item.h"
-
 
 class Armor : public Item {
 public:

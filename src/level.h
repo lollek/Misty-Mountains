@@ -4,10 +4,10 @@
 #include <vector>
 #include <string>
 
+#include "level_rooms.h"
 #include "traps.h"
 #include "monster.h"
 #include "item.h"
-#include "io.h"
 #include "tiles.h"
 #include "shop.h"
 

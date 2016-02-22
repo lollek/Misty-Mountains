@@ -11,6 +11,7 @@
 #include "misc.h"
 #include "monster.h"
 #include "score.h"
+#include "player.h"
 
 #include "death.h"
 

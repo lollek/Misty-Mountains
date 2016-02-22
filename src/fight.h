@@ -3,6 +3,7 @@
 #include <string>
 
 #include "coordinate.h"
+#include "item.h"
 #include "monster.h"
 
 /** fight_against_monster:
