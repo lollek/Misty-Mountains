@@ -309,6 +309,7 @@ void IO::print_level_layout() {
 void IO::print_coordinate(Coordinate const& coord) {
   print_coordinate(coord.x, coord.y);
 }
+
 void IO::print_coordinate(int x, int y) {
   Coordinate coord(x, y);
 
@@ -461,12 +462,12 @@ string IO::read_string(string const* initial_string, bool question) {
     // ~ gives home directory
     } else if (c == '~' && return_value.empty()) {
       return_value = os_homedir();
-      if (return_value.size() > MAXINP) {
-        return_value.resize(MAXINP);
+      if (return_value.size() > max_input) {
+        return_value.resize(max_input);
       }
       addstr(return_value.c_str());
 
-    } else if (return_value.size() < MAXINP && (isprint(c) || c == ' ')) {
+    } else if (return_value.size() < max_input && (isprint(c) || c == ' ')) {
       return_value += static_cast<char>(c);
       addch(static_cast<chtype>(c));
     }

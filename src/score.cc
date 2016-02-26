@@ -18,6 +18,8 @@
 
 #define LOCKFILE ".rogue14_lockfile"
 
+#define MAXSTR 1024 // maximum length of strings
+
 struct score {
   unsigned uid;
   int      score;

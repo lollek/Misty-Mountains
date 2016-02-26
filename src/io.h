@@ -105,6 +105,8 @@ public:
   static int constexpr message_x = map_start_x;
   static int constexpr message_y = 0;
 
+  static int constexpr max_input = 50;
+
 private:
   void print_coordinate_seen(Coordinate const& coord);
   bool print_monster(int x, int y, Monster* monster);
@@ -117,9 +119,6 @@ private:
   std::string message_buffer;
 };
 
-#define MAXSTR 1024 // maximum length of strings
-#define MAXINP   50 // max string to read from terminal or environment
-
 #undef CTRL
 #define CTRL(c) (c & 037)
 #define UNCTRL(c) (c + 'A' - CTRL('A'))
@@ -128,7 +127,8 @@ private:
 #define KEY_SPACE	' '
 #define KEY_ESCAPE	27
 
-/* Encrypted read/write to/from file */
+// Encrypted read/write to/from file
 size_t io_encwrite(char const* start, size_t size, FILE* outf);
 size_t io_encread(char* start, size_t size, FILE* inf);
+
 
