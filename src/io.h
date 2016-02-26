@@ -15,10 +15,6 @@ public:
   IO();
   ~IO();
 
-  enum End {
-    End
-  };
-
   enum Attribute {
     Standout,
     Red,     BoldRed,
