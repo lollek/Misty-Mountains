@@ -15,6 +15,7 @@
 #include "player.h"
 
 #include "score.h"
+#include "score_encio.h"
 
 #define LOCKFILE ".rogue14_lockfile"
 
@@ -90,8 +91,8 @@ score_read(struct score* top_ten)
   for (unsigned i = 0; i < SCORE_MAX; i++)
   {
     char buf[100];
-    io_encread(top_ten[i].name, MAXSTR, scoreboard);
-    io_encread(buf, sizeof(buf), scoreboard);
+    encread(top_ten[i].name, MAXSTR, scoreboard);
+    encread(buf, sizeof(buf), scoreboard);
     sscanf(buf, " %u %d %d %d %d %x \n",
         &top_ten[i].uid, &top_ten[i].score,
         &top_ten[i].flags, &top_ten[i].death_type,
@@ -114,13 +115,13 @@ score_write(struct score* top_ten)
   for(unsigned i = 0; i < SCORE_MAX; i++)
   {
     char buf[100];
-    io_encwrite(top_ten[i].name, MAXSTR, scoreboard);
+    encwrite(top_ten[i].name, MAXSTR, scoreboard);
     memset(buf, '\0', sizeof(buf));
     sprintf(buf, " %u %d %d %d %d %x \n",
         top_ten[i].uid, top_ten[i].score,
         top_ten[i].flags, top_ten[i].death_type,
         top_ten[i].level, top_ten[i].time);
-    io_encwrite(buf, sizeof(buf), scoreboard);
+    encwrite(buf, sizeof(buf), scoreboard);
   }
 
   rewind(scoreboard);

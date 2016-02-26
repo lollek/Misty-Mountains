@@ -275,10 +275,6 @@ void IO::print_tile(int x, int y, ::Tile::Type tile) {
   print(x, y, char_to_print, attr);
 }
 
-void IO::print_coordinate(Coordinate const& coord) {
-  print_coordinate(coord.x, coord.y);
-}
-
 void IO::print_coordinate(int x, int y) {
   Coordinate coord(x, y);
 

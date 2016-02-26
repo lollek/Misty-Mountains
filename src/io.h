@@ -10,6 +10,14 @@
 #include "monster.h"
 #include "tiles.h"
 
+#undef CTRL
+#define CTRL(c) (c & 037)
+#define UNCTRL(c) (c + 'A' - CTRL('A'))
+
+// Extra named keys for curses
+#define KEY_SPACE	' '
+#define KEY_ESCAPE	27
+
 class IO {
 public:
   IO();
@@ -43,30 +51,30 @@ public:
     Player = '@',
   };
 
+  // Messages
+  void message(std::string const& message, bool force_flush=false);
+  void clear_message();
+  void repeat_last_messages();
+
+  // Read data
+  std::string read_string(std::string const* initial_string=nullptr, bool question=true);
   char readchar(bool is_question);
   void wait_for_key(int ch);
 
-  void print_room(room const* room);
-
+  // Misc IO
   void missile_motion(Item* item, int ydelta, int xdelta);
 
-  void repeat_last_messages();
-  void clear_message();
-
-  void print(int x, int y, long unsigned int ch, Attribute attr=None);
-  void print_coordinate(Coordinate const& coord);
-  void print_coordinate(int x, int y);
+  // Refresh what we see
   void refresh();
-  void force_redraw();
+  void print(int x, int y, long unsigned int ch, Attribute attr=None);
 
-  std::string read_string(std::string const* initial_string=nullptr, bool question=true);
-  void message(std::string const& message, bool force_flush=false);
-
+  // Raw functions
   void move_pointer(int x, int y);
   void clear_screen();
   void print_char(int x, int y, char sym);
   void print_string(int x, int y, std::string const& str);
   void print_string(std::string const& str);
+  void force_redraw();
 
   // Start/stop
   void stop_curses();
@@ -90,6 +98,9 @@ public:
   static int constexpr max_input = 50;
 
 private:
+  // Refresh
+  void print_coordinate(Coordinate const& coord);
+  void print_coordinate(int x, int y);
   void print_coordinate_seen(Coordinate const& coord);
   bool print_monster(int x, int y, Monster* monster);
   bool print_item(int x, int y, Item* item);
@@ -101,16 +112,7 @@ private:
   std::string message_buffer;
 };
 
-#undef CTRL
-#define CTRL(c) (c & 037)
-#define UNCTRL(c) (c + 'A' - CTRL('A'))
-
-// Extra named keys for curses
-#define KEY_SPACE	' '
-#define KEY_ESCAPE	27
-
-// Encrypted read/write to/from file
-size_t io_encwrite(char const* start, size_t size, FILE* outf);
-size_t io_encread(char* start, size_t size, FILE* inf);
-
-
+// Inlines
+inline void IO::print_coordinate(Coordinate const& coord) {
+  print_coordinate(coord.x, coord.y);
+}
