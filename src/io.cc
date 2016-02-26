@@ -276,7 +276,6 @@ void IO::print_tile(int x, int y, ::Tile::Type tile) {
 }
 
 void IO::print_level_layout() {
-  /* take all the things we want to keep hidden out of the window */
   for (int y = 0; y < map_height; y++) {
     for (int x = 0; x < map_width; x++) {
       Game::level->set_discovered(x, y);
