@@ -43,13 +43,13 @@ void Game::exit() {
 
 void Game::new_level(int dungeon_level) {
 
-  Game::current_level = dungeon_level;
+  current_level = dungeon_level;
 
-  if (Game::level != nullptr) {
-    delete Game::level;
+  if (level != nullptr) {
+    delete level;
   }
 
-  Game::level = new Level();
+  level = new Level();
 
   // Drop player in the new dungeon level
   if (player == nullptr) {
@@ -57,7 +57,7 @@ void Game::new_level(int dungeon_level) {
   }
 
   Coordinate new_player_pos = player->get_position();
-  Game::level->get_random_room_coord(nullptr, &new_player_pos, 0, true);
+  level->get_random_room_coord(nullptr, &new_player_pos, 0, true);
   player->set_position(new_player_pos);
 
   // Unhold player just in case
@@ -81,10 +81,10 @@ int Game::run() {
   signal(SIGTERM, save_auto);
   signal(SIGINT, command_signal_quit);
 #else
-  Game::io->message("Seed: #" + to_string(starting_seed));
+  io->message("Seed: #" + to_string(starting_seed));
 #endif
 
-  player->set_previous_room(Game::level->get_room(player->get_position()));
+  player->set_previous_room(level->get_room(player->get_position()));
 
 #ifdef NDEBUG
   try {
@@ -103,8 +103,8 @@ int Game::run() {
 
 Game::Game(string const& whoami_, string const& save_path_)
   : starting_seed(os_rand_seed) {
-    Game::whoami = new string(whoami_);
-    Game::save_game_path = new string(save_path_);
+    whoami = new string(whoami_);
+    save_game_path = new string(save_path_);
 
   if (game_ptr != nullptr) {
     error("Game is a singleton class");
@@ -113,7 +113,7 @@ Game::Game(string const& whoami_, string const& save_path_)
   cout << "Hello " << *whoami << ", just a moment while I dig the dungeon..." << flush;
 
   // Init stuff
-  Game::io = new IO();                  // Graphics
+  io = new IO();                        // Graphics
   Scroll::init_scrolls();               // Names of scrolls
   Color::init_colors();                 // Colors for potions and stuff
   Potion::init_potions();               // Colors of potions
@@ -122,7 +122,7 @@ Game::Game(string const& whoami_, string const& save_path_)
   Daemons::init_daemons();              // Over-time-effects
   Monster::init_monsters();             // Monster types
   Trap::init_traps();                   // Trap types
-  Game::new_level(Game::current_level); // Level (and player)
+  new_level(current_level);             // Level (and player)
 
   // Start up daemons and fuses
   Daemons::daemon_start(Daemons::runners_move, AFTER);
@@ -140,11 +140,11 @@ Game::~Game() {
   Color::free_colors();
   Scroll::free_scrolls();
 
-  delete Game::io;
-  Game::io = nullptr;
+  delete io;
+  io = nullptr;
 
-  delete Game::whoami;
-  Game::whoami = nullptr;
+  delete whoami;
+  whoami = nullptr;
 }
 
 
@@ -155,7 +155,7 @@ Game::Game(ifstream& savefile) {
   }
   game_ptr = this;
 
-  Game::io = new IO();
+  io = new IO();
 
   try {
     Scroll::load_scrolls(savefile);
@@ -167,27 +167,31 @@ Game::Game(ifstream& savefile) {
     Monster::init_monsters();
     Trap::init_traps();
     Player::load_player(savefile);
+    //level = new Level(savefile);
 
     Disk::load_tag(TAG_GAME, savefile);
-    Disk::load(TAG_WHOAMI, Game::whoami, savefile);
-    Disk::load(TAG_SAVEPATH, Game::save_game_path, savefile);
-    Disk::load(TAG_LEVEL, Game::current_level, savefile);
-    Disk::load(TAG_FOODLESS, Game::levels_without_food, savefile);
+
+    Disk::load(TAG_WHOAMI, whoami, savefile);
+    Disk::load(TAG_SAVEPATH, save_game_path, savefile);
+    Disk::load(TAG_LEVEL, current_level, savefile);
+    Disk::load(TAG_FOODLESS, levels_without_food, savefile);
+
+    Game::new_level(1);
+
+
+    Disk::load_tag(TAG_GAME, savefile);
   } catch (fatal_error &e) {
-    Game::io->stop_curses();
+    io->stop_curses();
     cout << "Failed to load game, corrupt save file (" << e.what() << ")\n";
     exit();
   }
 
-
-  //Game::new_level(Game::current_level);
-  Game::new_level(1);
 }
 
 bool Game::save() {
   ofstream savefile(*save_game_path, fstream::out | fstream::trunc);
   if (!savefile) {
-    Game::io->message("Failed to save file " + *save_game_path);
+    io->message("Failed to save file " + *save_game_path);
     return false;
   }
 
@@ -197,12 +201,16 @@ bool Game::save() {
   Wand::save_wands(savefile);
   Daemons::save_daemons(savefile);
   Player::save_player(savefile);
+  //level->save(savefile);
 
   Disk::save_tag(TAG_GAME, savefile);
-  Disk::save(TAG_WHOAMI, Game::whoami, savefile);
-  Disk::save(TAG_SAVEPATH, Game::save_game_path, savefile);
-  Disk::save(TAG_LEVEL, Game::current_level, savefile);
-  Disk::save(TAG_FOODLESS, Game::levels_without_food, savefile);
+
+  Disk::save(TAG_WHOAMI, whoami, savefile);
+  Disk::save(TAG_SAVEPATH, save_game_path, savefile);
+  Disk::save(TAG_LEVEL, current_level, savefile);
+  Disk::save(TAG_FOODLESS, levels_without_food, savefile);
+
+  Disk::save_tag(TAG_GAME, savefile);
 
   savefile.close();
   return true;
