@@ -17,47 +17,30 @@ public:
 
   enum Attribute {
     Standout,
-    Red,     BoldRed,
-    Green,   BoldGreen,
-    Yellow,  BoldYellow,
-    Blue,    BoldBlue,
-    Magenta, BoldMagenta,
-    Cyan,    BoldCyan,
-    White,   BoldWhite,
-    Black,   BoldBlack,
+    Red,     BoldRed,     Green,   BoldGreen,
+    Yellow,  BoldYellow,  Blue,    BoldBlue,
+    Magenta, BoldMagenta, Cyan,    BoldCyan,
+    White,   BoldWhite,   Black,   BoldBlack,
     None
   };
 
   enum Tile {
-    Shadow = ' ',
-    Wall   = '#',
-    Floor  = '.',
-    OpenDoor   = '\'',
-    ClosedDoor   = '+',
-    Trap   = '_',
-    StairsDown = '>',
-    StairsUp = '<',
-    Shop = '~',
+    // Tiles
+    Shadow     = ' ',  Wall       = '#', Floor = '.',
+    OpenDoor   = '\'', ClosedDoor = '+', Trap  = '_',
+    StairsDown = '>',  StairsUp   = '<', Shop  = '~',
 
-    VerticalBolt = '|',
-    DiagonalUpBolt = '/',
-    HorizontalBolt = '-',
-    DiagonalDownBolt = '\\',
+    // Bolts
+    VerticalBolt   = '|', DiagonalUpBolt   = '/',
+    HorizontalBolt = '-', DiagonalDownBolt = '\\',
 
-    Gold   = '$',
-    Potion = '!',
-    Scroll = '?',
-    Magic  = '$',
-    Food   = ':',
-    Ammo   = '(',
-    Weapon = ')',
-    Armor  = ']',
-    Amulet = ',',
-    Ring   = '=',
-    Wand   = '/',
+    // Items
+    Gold   = '$', Potion = '!', Scroll = '?', Magic  = '$',
+    Food   = ':', Ammo   = '(', Weapon = ')', Armor  = ']',
+    Amulet = ',', Ring   = '=', Wand   = '/',
 
+    // Monsters :)
     Player = '@',
-
   };
 
   char readchar(bool is_question);
@@ -87,20 +70,25 @@ public:
   void print_string(int x, int y, std::string const& str);
   void print_string(std::string const& str);
 
+  // Start/stop
   void stop_curses();
   void resume_curses();
 
+  // Map
   static int constexpr map_start_x{20};
   static int constexpr map_start_y{1};
   static int constexpr map_width{80};
   static int constexpr map_height{32};
 
+  // Screen
   static int constexpr screen_width{100};
   static int constexpr screen_height{35};
 
+  // Message
   static int constexpr message_x = map_start_x;
   static int constexpr message_y = 0;
 
+  // Input
   static int constexpr max_input = 50;
 
 private:
