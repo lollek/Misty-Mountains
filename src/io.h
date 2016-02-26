@@ -48,7 +48,7 @@ public:
     HorizontalBolt = '-',
     DiagonalDownBolt = '\\',
 
-    Gold   = '*',
+    Gold   = '$',
     Potion = '!',
     Scroll = '?',
     Magic  = '$',

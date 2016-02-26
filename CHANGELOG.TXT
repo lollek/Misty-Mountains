@@ -7,6 +7,7 @@ Misty Mountain:
   Rebalanced experience gain
   Cursed items are now described with a [C]
   Change trap symbol from ^ to _
+  Change gold symbol from * to $
   Can inscribe to know items, with the following effects:
     ! means it will not be automatically picked up
   Increase view distance of your torch
