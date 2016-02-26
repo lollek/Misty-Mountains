@@ -279,42 +279,29 @@ void IO::print_level_layout() {
   /* take all the things we want to keep hidden out of the window */
   for (int y = 0; y < map_height; y++) {
     for (int x = 0; x < map_width; x++) {
+      Game::level->set_discovered(x, y);
 
-      ::Tile::Type ch = Game::level->get_tile(x, y);
-      switch (ch) {
+      // Unhide any features
+      if (!Game::level->is_real(x, y)) {
+        switch (Game::level->get_tile(x, y)) {
 
-        // Doors and stairs are always what they seem
-        case ::Tile::OpenDoor: case ::Tile::ClosedDoor: case ::Tile::StairsDown:
-        case ::Tile::StairsUp: case ::Tile::Shop: break;
+          // Most things are always what they seem
+          case ::Tile::OpenDoor: case ::Tile::ClosedDoor: case ::Tile::StairsDown:
+          case ::Tile::StairsUp: case ::Tile::Shop: case ::Tile::Trap:
+            error("Unexpected tiletype was not real");
 
-        // Check if walls are actually hidden doors
-        case ::Tile::Wall: {
-          if (!Game::level->is_real(x, y)) {
-            ch = ::Tile::ClosedDoor;
+          // Check if walls are actually hidden doors
+          case ::Tile::Wall: {
             Game::level->set_tile(x, y, ::Tile::ClosedDoor);
             Game::level->set_real(x, y);
-          }
-        } break;
+          } break;
 
-        // Floor can be traps. If it's not, we don't print it
-        case ::Tile::Floor: {
-          if (Game::level->is_real(x, y)) {
-            ch = ::Tile::Floor;
-            Game::level->set_discovered(x, y);
-          } else {
-            ch = ::Tile::Trap;
-            Game::level->set_tile(x, y, ch);
-            Game::level->set_discovered(x, y);
+          // Floor can be traps.
+          case ::Tile::Floor: {
+            Game::level->set_tile(x, y, ::Tile::Trap);
             Game::level->set_real(x, y);
-          }
-        } break;
-
-        case ::Tile::Trap: break;
-      }
-
-      Monster* obj = Game::level->get_monster(x, y);
-      if (obj == nullptr) {
-        print_monster(x, y, obj);
+          } break;
+        }
       }
     }
   }
