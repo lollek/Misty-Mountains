@@ -328,3 +328,36 @@ bool Level::is_dark(int x, int y) {
 bool Level::is_dark(Coordinate const& coord) {
   return is_dark(coord.x, coord.y);
 }
+
+void Level::discover_map() {
+  for (int y = 0; y < IO::map_height; y++) {
+    for (int x = 0; x < IO::map_width; x++) {
+      Game::level->set_discovered(x, y);
+
+      // Unhide any features
+      if (!Game::level->is_real(x, y)) {
+        switch (Game::level->get_tile(x, y)) {
+
+          // Most things are always what they seem
+          case ::Tile::OpenDoor: case ::Tile::ClosedDoor: case ::Tile::StairsDown:
+          case ::Tile::StairsUp: case ::Tile::Shop: case ::Tile::Trap:
+            error("Unexpected tiletype was not real");
+
+          // Check if walls are actually hidden doors
+          case ::Tile::Wall: {
+            Game::level->set_tile(x, y, ::Tile::ClosedDoor);
+            Game::level->set_real(x, y);
+          } break;
+
+          // Floor can be traps.
+          case ::Tile::Floor: {
+            Game::level->set_tile(x, y, ::Tile::Trap);
+            Game::level->set_real(x, y);
+          } break;
+        }
+      }
+    }
+  }
+}
+
+

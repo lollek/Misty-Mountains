@@ -56,6 +56,7 @@ public:
   // Misc
   bool can_step(int x, int y);
   bool can_step(Coordinate const& coord);
+  void discover_map();
 
   // Variables
   std::list<Item*>    items;    // List of items on level

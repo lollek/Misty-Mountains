@@ -437,7 +437,7 @@ void Scroll::read() const {
     case Scroll::MAP: {
       set_known(Scroll::MAP);
       Game::io->message("this scroll has a map on it");
-      Game::io->print_level_layout();
+      Game::level->discover_map();
     } break;
 
     case Scroll::TELEP: {

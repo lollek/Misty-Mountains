@@ -46,8 +46,6 @@ public:
   char readchar(bool is_question);
   void wait_for_key(int ch);
 
-  void print_level_layout();
-
   void print_room(room const* room);
 
   void missile_motion(Item* item, int ydelta, int xdelta);

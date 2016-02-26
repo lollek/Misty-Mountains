@@ -275,37 +275,6 @@ void IO::print_tile(int x, int y, ::Tile::Type tile) {
   print(x, y, char_to_print, attr);
 }
 
-void IO::print_level_layout() {
-  for (int y = 0; y < map_height; y++) {
-    for (int x = 0; x < map_width; x++) {
-      Game::level->set_discovered(x, y);
-
-      // Unhide any features
-      if (!Game::level->is_real(x, y)) {
-        switch (Game::level->get_tile(x, y)) {
-
-          // Most things are always what they seem
-          case ::Tile::OpenDoor: case ::Tile::ClosedDoor: case ::Tile::StairsDown:
-          case ::Tile::StairsUp: case ::Tile::Shop: case ::Tile::Trap:
-            error("Unexpected tiletype was not real");
-
-          // Check if walls are actually hidden doors
-          case ::Tile::Wall: {
-            Game::level->set_tile(x, y, ::Tile::ClosedDoor);
-            Game::level->set_real(x, y);
-          } break;
-
-          // Floor can be traps.
-          case ::Tile::Floor: {
-            Game::level->set_tile(x, y, ::Tile::Trap);
-            Game::level->set_real(x, y);
-          } break;
-        }
-      }
-    }
-  }
-}
-
 void IO::print_coordinate(Coordinate const& coord) {
   print_coordinate(coord.x, coord.y);
 }
