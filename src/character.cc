@@ -236,6 +236,16 @@ void Character::set_position(Coordinate const& position_) {
   position = position_;
 }
 
+void Character::set_base_stats(int str_, int dex_, int con_,
+                              int wis_, int int_, int cha_) {
+  strength = default_strength = str_;
+  dexterity = default_dexterity = dex_;
+  constitution = default_constitution = con_;
+  wisdom = default_wisdom = wis_;
+  intelligence = default_intelligence = int_;
+  charisma = default_charisma = cha_;
+}
+
 
 void Character::save(ofstream& data) const {
   Disk::save_tag(TAG_CHARACTER, data);

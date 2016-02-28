@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <numeric>
 
 #include <ctype.h>
 #include <string.h>
@@ -591,4 +592,48 @@ void IO::resume_curses() {
   noecho();
   raw();
   clearok(stdscr, true);
+}
+
+void IO::character_creation() {
+
+  // Roll stats
+  for (;;) {
+    stringstream ss;
+
+    vector<int> stats;
+    while (stats.size() < 6) {
+      vector<int> rolls {roll(1,6), roll(1,6), roll(1,6), roll(1,6)};
+      sort(rolls.begin(), rolls.end());
+      stats.push_back(accumulate(rolls.begin() + 1, rolls.end(), 0));
+    }
+    player->set_base_stats(stats.at(0), stats.at(1), stats.at(2), stats.at(3),
+                           stats.at(4), stats.at(5));
+
+
+    ss << "Character Statistics\n\n"
+      << "Str, Dex, Con, Wis, Int, Cha\n"
+
+      << setw(3) << player->get_strength() << ", "
+      << setw(3) << player->get_dexterity() << ", "
+      << setw(3) << player->get_constitution() << ", "
+      << setw(3) << player->get_wisdom() << ", "
+      << setw(3) << player->get_intelligence() << ", "
+      << setw(3) << player->get_charisma() << "\n\n"
+
+      << "ESC to quit, SPACE to reroll, y to continue\n";
+
+    print_string(0, 0, ss.str());
+
+    char ch = readchar(false);
+    while (ch != 'y' && ch != KEY_SPACE && ch != KEY_ESCAPE) {
+      ch = readchar(false);
+    }
+    if (ch == 'y') {
+      break;
+    } else if (ch == KEY_ESCAPE) {
+      Game::exit();
+    }
+  }
+
+  clear_screen();
 }

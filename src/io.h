@@ -63,6 +63,7 @@ public:
 
   // Misc IO
   void missile_motion(Item* item, int ydelta, int xdelta);
+  void character_creation();
 
   // Refresh what we see
   void refresh();

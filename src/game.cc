@@ -116,13 +116,16 @@ Game::Game(string const& whoami_, string const& save_path_)
   Daemons::init_daemons();              // Over-time-effects
   Monster::init_monsters();             // Monster types
   Trap::init_traps();                   // Trap types
-  player = new Player(true);
-  new_level(current_level);             // Level (and player)
+  player = new Player(true);            // New player
+  new_level(current_level);             // New Level
 
   // Start up daemons and fuses
   Daemons::daemon_start(Daemons::runners_move, AFTER);
   Daemons::daemon_start(Daemons::doctor, AFTER);
   Daemons::daemon_start(Daemons::ring_abilities, AFTER);
+
+  // Run the character creator
+  io->character_creation();
 }
 
 Game::~Game() {

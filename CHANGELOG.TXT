@@ -1,5 +1,6 @@
 Misty Mountain:
 
+  Stats are now rolled at character creation
   Change user interface (now on the left instead of bottom)
   Add dexterity, constitution, wisdom, intelligence and charisma
   Stairs up and stairs down are now separate

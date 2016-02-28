@@ -35,6 +35,8 @@ public:
 
   // Setters
   virtual void set_position(Coordinate const& position);
+  virtual void set_base_stats(int strength, int dexterity, int constitution,
+                              int wisdom, int intelligence, int charisma);
 
   // Modifiers
   virtual void increase_speed();
