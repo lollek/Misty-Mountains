@@ -108,17 +108,16 @@ static void parse_args(int argc, char* const* argv, bool& restore,
   }
 }
 
-/** main:
- * The main program, of course */
+// The main program, of course
 int main(int argc, char** argv) {
-  /* Open scoreboard, so we can modify the score later */
+  // Open scoreboard, so we can modify the score later
   score_open();
 
   bool   restore = false;
   string save_path;
   string whoami;
 
-  /* Parse args and then init new (or old) game */
+  // Parse args and then init new (or old) game
   parse_args(argc, argv, restore, save_path, whoami);
 
   if (whoami.empty()) {
