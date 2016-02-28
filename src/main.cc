@@ -22,9 +22,8 @@ using namespace std;
 
 
 // Parse command-line arguments
-static void
-parse_args(int argc, char* const* argv, bool& restore, string& save_path, string& whoami)
-{
+static void parse_args(int argc, char* const* argv, bool& restore,
+    string& save_path, string& whoami) {
   string const game_version = "Misty Mountains v2.0-alpha2-dev - Based on Rogue5.4.4";
   int option_index = 0;
   struct option const long_options[] = {
@@ -47,15 +46,14 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
   // Set seed and dungeon number
   os_rand_seed = static_cast<unsigned>(time(nullptr) + os_process_id());
 
-  for (;;)
-  {
+  for (;;) {
     int c = getopt_long(argc, argv, "cE::fjn:pr::sS:W",
                         long_options, &option_index);
-    if (c == -1)
+    if (c == -1) {
       break;
+    }
 
-    switch (c)
-    {
+    switch (c) {
       case 'c': use_colors = false; break;
       case 'f': fight_flush = true; break;
       case 'j': jump = false; break;
@@ -104,8 +102,7 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
     }
   }
 
-  if (optind < argc)
-  {
+  if (optind < argc) {
     cerr << "Try '" << argv[0] << " --help' for more information\n";
     exit(1);
   }
@@ -113,9 +110,7 @@ parse_args(int argc, char* const* argv, bool& restore, string& save_path, string
 
 /** main:
  * The main program, of course */
-int
-main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   /* Open scoreboard, so we can modify the score later */
   score_open();
 
