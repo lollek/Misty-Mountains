@@ -51,11 +51,6 @@ void Game::new_level(int dungeon_level) {
 
   level = new Level();
 
-  // Drop player in the new dungeon level
-  if (player == nullptr) {
-    player = new Player(true);
-  }
-
   Coordinate new_player_pos = player->get_position();
   level->get_random_room_coord(nullptr, &new_player_pos, 0, true);
   player->set_position(new_player_pos);
@@ -110,7 +105,6 @@ Game::Game(string const& whoami_, string const& save_path_)
     error("Game is a singleton class");
   }
   game_ptr = this;
-  cout << "Hello " << *whoami << ", just a moment while I dig the dungeon..." << flush;
 
   // Init stuff
   io = new IO();                        // Graphics
@@ -122,6 +116,7 @@ Game::Game(string const& whoami_, string const& save_path_)
   Daemons::init_daemons();              // Over-time-effects
   Monster::init_monsters();             // Monster types
   Trap::init_traps();                   // Trap types
+  player = new Player(true);
   new_level(current_level);             // Level (and player)
 
   // Start up daemons and fuses
