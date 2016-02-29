@@ -237,6 +237,7 @@ void Scroll::test_scrolls() {
   vector<string> guesses_{*guesses};
 
   save_scrolls(test_data);
+  free_scrolls();
   load_scrolls(test_data);
 
   if (fake_name_ != *fake_name) { error("scroll test 1 failed"); }
