@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include <fstream>
+#include <istream>
+#include <ostream>
 
 #include "level.h"
 #include "io.h"
@@ -9,7 +10,7 @@
 class Game {
 public:
   Game(std::string const& whoami, std::string const& save_path);
-  Game(std::ifstream& savefile);
+  Game(std::istream& savefile);
   Game(Game const&) = delete;
 
   ~Game();

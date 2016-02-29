@@ -1,5 +1,7 @@
 #pragma once
 
+#include <istream>
+#include <ostream>
 #include <string>
 
 #include "item.h"
@@ -27,7 +29,7 @@ public:
   ~Armor();
   explicit Armor(Type type, bool random_stats); // Armor of given type
   explicit Armor(bool random_stats);            // Armor of random type
-  explicit Armor(std::ifstream&);
+  explicit Armor(std::istream&);
   explicit Armor(Armor const&) = default;
 
   Armor* clone() const override;
@@ -48,8 +50,8 @@ public:
   int         get_base_value() const override;
   bool        is_rustproof() const;
 
-  void save(std::ofstream&) const override;
-  bool load(std::ifstream&) override;
+  void save(std::ostream&) const override;
+  bool load(std::istream&) override;
 
   // Static
   static std::string name(Type type);

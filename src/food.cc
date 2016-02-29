@@ -41,7 +41,7 @@ bool Food::is_magic() const {
 }
 
 
-Food::Food(std::ifstream& data) {
+Food::Food(std::istream& data) {
   load(data);
 }
 
@@ -93,14 +93,14 @@ int Food::get_nutrition_value() const {
   return food_value;
 }
 
-void Food::save(std::ofstream& data) const {
+void Food::save(std::ostream& data) const {
   Item::save(data);
   static_assert(sizeof(Food::Type) == sizeof(int), "Wrong Food::Type size");
   Disk::save(TAG_FOOD, static_cast<int>(subtype), data);
   Disk::save(TAG_FOOD, food_value, data);
 }
 
-bool Food::load(std::ifstream& data) {
+bool Food::load(std::istream& data) {
   if (!Item::load(data) ||
       !Disk::load(TAG_FOOD, reinterpret_cast<int&>(subtype), data) ||
       !Disk::load(TAG_FOOD, food_value, data)) {

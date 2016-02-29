@@ -9,7 +9,7 @@ public:
   ~Amulet();
 
   explicit Amulet();
-  explicit Amulet(std::ifstream&);
+  explicit Amulet(std::istream&);
   explicit Amulet(Amulet const&) = default;
 
   Amulet* clone() const override;

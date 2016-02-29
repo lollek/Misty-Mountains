@@ -568,7 +568,7 @@ void Player::pack_uncurse() {
   }
 }
 
-void Player::save_player(ofstream& data) {
+void Player::save_player(ostream& data) {
   Disk::save_tag(TAG_PLAYER, data);
   Character* c_player = dynamic_cast<Character*>(player);
   c_player->save(data);
@@ -580,7 +580,7 @@ void Player::save_player(ofstream& data) {
   Disk::save(TAG_NUTRITION,       player->nutrition_left,  data);
 }
 
-void Player::load_player(ifstream& data) {
+void Player::load_player(istream& data) {
   Disk::load_tag(TAG_PLAYER, data);
   player = new Player(false);
   Character* c_player = static_cast<Character*>(player);

@@ -198,7 +198,7 @@ Item* Item::random() {
   }
 }
 
-void Item::save(std::ofstream& data) const {
+void Item::save(std::ostream& data) const {
   Disk::save_tag(TAG_ITEM, data);
 
   Disk::save(TAG_ITEM_PUBLIC, o_type, data);
@@ -218,7 +218,7 @@ void Item::save(std::ofstream& data) const {
   Disk::save(TAG_ITEM_PRIVATE, cursed, data);
 }
 
-bool Item::load(std::ifstream& data) {
+bool Item::load(std::istream& data) {
   if (!Disk::load_tag(TAG_ITEM, data) ||
 
       !Disk::load(TAG_ITEM_PUBLIC, o_type, data) ||

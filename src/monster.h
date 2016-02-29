@@ -3,7 +3,8 @@
 #include <string>
 #include <list>
 #include <vector>
-#include <fstream>
+#include <istream>
+#include <ostream>
 
 #include "character.h"
 #include "coordinate.h"
@@ -38,15 +39,15 @@ public:
 
   Monster(Type subtype, Coordinate const& pos);
   Monster(Monster const&) = delete; // Deleted since they would share inventory
-  Monster(std::ifstream&);
+  Monster(std::istream&);
 
   ~Monster();
 
   Monster& operator=(Monster const&) = delete; // Deleted since they would share inventory
   Monster& operator=(Monster&&) = default;
 
-  void save(std::ofstream&) const override;
-  bool load(std::ifstream&) override;
+  void save(std::ostream&) const override;
+  bool load(std::istream&) override;
 
   // Setters
   void set_invisible() override;

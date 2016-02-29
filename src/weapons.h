@@ -1,5 +1,7 @@
 #pragma once
 
+#include <istream>
+#include <ostream>
 #include <vector>
 #include <string>
 
@@ -51,7 +53,7 @@ public:
   ~Weapon();
   explicit Weapon(Type subtype, bool random_stats);
   explicit Weapon(bool random_stats);
-  explicit Weapon(std::ifstream&);
+  explicit Weapon(std::istream&);
   explicit Weapon(Weapon const&) = default;
 
   Weapon* clone() const override;
@@ -74,8 +76,8 @@ public:
   AmmoType    get_ammo_type() const;
   int         get_ammo_multiplier() const;
 
-  void save(std::ofstream&) const override;
-  bool load(std::ifstream&) override;
+  void save(std::ostream&) const override;
+  bool load(std::istream&) override;
 
   // Static
   static std::string name(Type type);

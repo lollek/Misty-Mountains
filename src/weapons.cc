@@ -94,7 +94,7 @@ Weapon::~Weapon() {}
 
 Weapon::Weapon(bool random_stats) : Weapon(random_weapon_type(), random_stats) {}
 
-Weapon::Weapon(std::ifstream& data) {
+Weapon::Weapon(std::istream& data) {
   load(data);
 }
 
@@ -476,7 +476,7 @@ weapon_missile_fall(Item* obj, bool pr) {
   delete obj;
 }
 
-void Weapon::save(std::ofstream& data) const {
+void Weapon::save(std::ostream& data) const {
   Item::save(data);
   static_assert(sizeof(Weapon::Type) == sizeof(int), "Wrong Weapon::Type size");
   static_assert(sizeof(Weapon::AmmoType) == sizeof(int), "Wrong AmmoType size");
@@ -488,7 +488,7 @@ void Weapon::save(std::ofstream& data) const {
   Disk::save(TAG_WEAPON, good_missile, data);
 }
 
-bool Weapon::load(std::ifstream& data) {
+bool Weapon::load(std::istream& data) {
   if (!Item::load(data) ||
       !Disk::load(TAG_WEAPON, reinterpret_cast<int&>(subtype), data) ||
       !Disk::load(TAG_WEAPON, reinterpret_cast<int&>(is_ammo_type), data) ||

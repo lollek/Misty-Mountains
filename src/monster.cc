@@ -674,13 +674,13 @@ void Monster::set_disguise(char new_disguise) {
   disguise = new_disguise;
 }
 
-Monster::Monster(ifstream& data) {
+Monster::Monster(istream& data) {
   if (!load(data)) {
     error("Malformed monster found");
   }
 }
 
-void Monster::save(ofstream& data) const {
+void Monster::save(ostream& data) const {
   Character::save(data);
   Disk::save_tag(TAG_MONSTER, data);
 
@@ -693,7 +693,7 @@ void Monster::save(ofstream& data) const {
   Disk::save_tag(TAG_MONSTER, data);
 }
 
-bool Monster::load(ifstream& data) {
+bool Monster::load(istream& data) {
   Character::load(data);
   if (!Disk::load_tag(TAG_MONSTER, data) ||
 

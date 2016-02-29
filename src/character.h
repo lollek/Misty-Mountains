@@ -115,8 +115,8 @@ public:
   virtual void set_running();
   virtual void set_not_running();
 
-  virtual void  save(std::ofstream&) const;
-  virtual bool  load(std::ifstream&);
+  virtual void  save(std::ostream&) const;
+  virtual bool  load(std::istream&);
 
 
 protected:

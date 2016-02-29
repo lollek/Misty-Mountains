@@ -16,7 +16,7 @@
 using namespace std;
 
 template<>
-void Disk::save<Item>(tag_type tag, Item* element, std::ofstream& data) {
+void Disk::save<Item>(tag_type tag, Item* element, std::ostream& data) {
   save_tag(tag, data);
   if (element == nullptr) {
     save(tag, 0, data);
@@ -29,7 +29,7 @@ void Disk::save<Item>(tag_type tag, Item* element, std::ofstream& data) {
 }
 
 template<>
-bool Disk::load<Item>(tag_type tag, Item*& element, std::ifstream& data) {
+bool Disk::load<Item>(tag_type tag, Item*& element, std::istream& data) {
   if (!load_tag(tag, data)) { return false; }
 
   int null_checker;

@@ -247,7 +247,7 @@ void Character::set_base_stats(int str_, int dex_, int con_,
 }
 
 
-void Character::save(ofstream& data) const {
+void Character::save(ostream& data) const {
   Disk::save_tag(TAG_CHARACTER, data);
 
   Disk::save(TAG_STATS, strength, data);
@@ -301,7 +301,7 @@ void Character::save(ofstream& data) const {
   Disk::save_tag(TAG_CHARACTER, data);
 }
 
-bool Character::load(ifstream& data) {
+bool Character::load(istream& data) {
   if (!Disk::load_tag(TAG_CHARACTER, data) ||
 
       !Disk::load(TAG_STATS, strength, data) ||

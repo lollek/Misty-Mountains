@@ -5,7 +5,7 @@
 using namespace std;
 
 template <>
-void Disk::save<vector, bool>(tag_type tag, vector<bool> const& container, std::ofstream& data) {
+void Disk::save<vector, bool>(tag_type tag, vector<bool> const& container, std::ostream& data) {
   save_tag(tag, data);
 
   size_t size = container.size();
@@ -18,7 +18,7 @@ void Disk::save<vector, bool>(tag_type tag, vector<bool> const& container, std::
 
 
 template <>
-bool Disk::load<vector, bool>(tag_type tag, vector<bool>& container, std::ifstream& data) {
+bool Disk::load<vector, bool>(tag_type tag, vector<bool>& container, std::istream& data) {
   if (!load_tag(tag, data)) { return false; }
 
   size_t size;

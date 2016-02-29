@@ -1,5 +1,7 @@
 #include <string>
 #include <iostream>
+#include <istream>
+#include <ostream>
 #include <fstream>
 
 #include "disk.h"
@@ -146,7 +148,7 @@ Game::~Game() {
 }
 
 
-Game::Game(ifstream& savefile) {
+Game::Game(istream& savefile) {
 
   if (game_ptr != nullptr) {
     error("Game is a singleton class");
@@ -194,6 +196,7 @@ bool Game::save() {
   }
 
   Scroll::save_scrolls(savefile);
+  Scroll::test_scrolls();
   Potion::save_potions(savefile);
   Ring::save_rings(savefile);
   Wand::save_wands(savefile);

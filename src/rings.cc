@@ -80,7 +80,7 @@ Ring::~Ring() {}
 
 Ring::Ring() : Ring(random_ring_type()) {}
 
-Ring::Ring(std::ifstream& data) {
+Ring::Ring(std::istream& data) {
   load(data);
 }
 
@@ -249,14 +249,14 @@ void Ring::init_rings() {
   }
 }
 
-void Ring::save_rings(std::ofstream& data) {
+void Ring::save_rings(std::ostream& data) {
   Disk::save_tag(TAG_RINGS, data);
   Disk::save(TAG_MATERIALS, materials, data);
   Disk::save(TAG_KNOWN, known, data);
   Disk::save(TAG_GUESSES, guesses, data);
 }
 
-void Ring::load_rings(std::ifstream& data) {
+void Ring::load_rings(std::istream& data) {
   if (!Disk::load_tag(TAG_RINGS, data))             { error("No Rings found"); }
   if (!Disk::load(TAG_MATERIALS, materials, data)) { error("Ring tag error 1"); }
   if (!Disk::load(TAG_KNOWN, known, data))         { error("Ring tag error 2"); }
@@ -331,14 +331,14 @@ void Ring::set_identified() {
 bool Ring::is_identified() const {
   return identified;
 }
-void Ring::save(std::ofstream& data) const {
+void Ring::save(std::ostream& data) const {
   Item::save(data);
   static_assert(sizeof(Ring::Type) == sizeof(int), "Wrong Ring::Type size");
   Disk::save(TAG_RINGS, static_cast<int>(subtype), data);
   Disk::save(TAG_RINGS, identified, data);
 }
 
-bool Ring::load(std::ifstream& data) {
+bool Ring::load(std::istream& data) {
   if (!Item::load(data) ||
       !Disk::load(TAG_RINGS, reinterpret_cast<int&>(subtype), data) ||
       !Disk::load(TAG_RINGS, identified, data)) {

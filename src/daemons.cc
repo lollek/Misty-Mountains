@@ -31,13 +31,13 @@ static unsigned long long constexpr TAG_DAEMONS   = 0x5000000000000000ULL;
 static unsigned long long constexpr TAG_DAEMONLIST= 0x5000000000000001ULL;
 static unsigned long long constexpr TAG_FUSELIST  = 0x5000000000000002ULL;
 
-void Daemons::save_daemons(std::ofstream& data) {
+void Daemons::save_daemons(std::ostream& data) {
   Disk::save_tag(TAG_DAEMONS, data);
   Disk::save(TAG_DAEMONLIST, daemons, data);
   Disk::save(TAG_FUSELIST, fuses, data);
 }
 
-void Daemons::load_daemons(std::ifstream& data) {
+void Daemons::load_daemons(std::istream& data) {
   if (!Disk::load_tag(TAG_DAEMONS, data))             { error("No daemons found"); }
   if (!Disk::load(TAG_DAEMONLIST, daemons, data))     { error("Daemon tag error 1"); }
   if (!Disk::load(TAG_FUSELIST, fuses, data))         { error("Daemon tag error 2"); }

@@ -124,7 +124,7 @@ Potion::~Potion() {}
 
 Potion::Potion() : Potion(random_potion_type()) {}
 
-Potion::Potion(std::ifstream& data) {
+Potion::Potion(std::istream& data) {
   load(data);
 }
 
@@ -332,27 +332,27 @@ void Potion::init_potions() {
   }
 }
 
-void Potion::save_potions(std::ofstream& data) {
+void Potion::save_potions(std::ostream& data) {
   Disk::save_tag(TAG_POTION, data);
   Disk::save(TAG_COLORS, colors, data);
   Disk::save(TAG_KNOWLEDGE, knowledge, data);
   Disk::save(TAG_GUESSES, guesses, data);
 }
 
-void Potion::load_potions(std::ifstream& data) {
+void Potion::load_potions(std::istream& data) {
   if (!Disk::load_tag(TAG_POTION, data))           { error("No potions found"); }
   if (!Disk::load(TAG_COLORS, colors, data))       { error("Potion tag error 1"); }
   if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) { error("Potion tag error 2"); }
   if (!Disk::load(TAG_GUESSES,   guesses, data))   { error("Potion tag error 3"); }
 }
 
-void Potion::save(std::ofstream& data) const {
+void Potion::save(std::ostream& data) const {
   Item::save(data);
   static_assert(sizeof(Potion::Type) == sizeof(int), "Wrong Potion::Type size");
   Disk::save(TAG_POTION, static_cast<int>(subtype), data);
 }
 
-bool Potion::load(std::ifstream& data) {
+bool Potion::load(std::istream& data) {
   if (!Item::load(data) ||
       !Disk::load(TAG_POTION, reinterpret_cast<int&>(subtype), data)) {
     return false;

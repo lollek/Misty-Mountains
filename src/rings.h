@@ -2,7 +2,8 @@
 
 #include <vector>
 #include <string>
-#include <fstream>
+#include <istream>
+#include <ostream>
 
 #include "item.h"
 
@@ -30,7 +31,7 @@ public:
   ~Ring();
   explicit Ring(Type type);
   explicit Ring();
-  explicit Ring(std::ifstream&);
+  explicit Ring(std::istream&);
   explicit Ring(Ring const&) = default;
 
   Ring* clone() const override;
@@ -49,8 +50,8 @@ public:
   int         get_base_value() const override;
   bool        is_stackable() const override;
 
-  void save(std::ofstream&) const override;
-  bool load(std::ifstream&) override;
+  void save(std::ostream&) const override;
+  bool load(std::istream&) override;
 
   // Static
   static std::string  name(Type type);
@@ -60,8 +61,8 @@ public:
   static void         set_known(Type type);
 
   static void         init_rings();
-  static void         save_rings(std::ofstream&);
-  static void         load_rings(std::ifstream&);
+  static void         save_rings(std::ostream&);
+  static void         load_rings(std::istream&);
   static void         free_rings();
 
 private:

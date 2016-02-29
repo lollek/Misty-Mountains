@@ -15,7 +15,7 @@ Amulet::Amulet() : Item() {
   o_type    = IO::Amulet;
 }
 
-Amulet::Amulet(std::ifstream& data) {
+Amulet::Amulet(std::istream& data) {
   load(data);
 }
 

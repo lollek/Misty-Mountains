@@ -2,7 +2,8 @@
 
 #include <vector>
 #include <string>
-#include <fstream>
+#include <istream>
+#include <ostream>
 
 #include "item.h"
 #include "character.h"
@@ -30,7 +31,7 @@ public:
   ~Potion();
   explicit Potion();     // Random potion
   explicit Potion(Type); // Potion of given type
-  explicit Potion(std::ifstream&);
+  explicit Potion(std::istream&);
   explicit Potion(Potion const&) = default;
 
   Potion* clone() const override;
@@ -53,8 +54,8 @@ public:
   // Misc
   void quaffed_by(Character&); // Someone drank the potion
 
-  virtual void save(std::ofstream&) const override;
-  virtual bool load(std::ifstream&) override;
+  virtual void save(std::ostream&) const override;
+  virtual bool load(std::istream&) override;
 
   // Static
   static std::string  name(Type subtype);
@@ -64,8 +65,8 @@ public:
   static void         set_known(Type subtype);
 
   static void         init_potions();
-  static void         save_potions(std::ofstream&);
-  static void         load_potions(std::ifstream&);
+  static void         save_potions(std::ostream&);
+  static void         load_potions(std::istream&);
   static void         free_potions();
 
 private:

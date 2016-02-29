@@ -98,7 +98,7 @@ Armor::Armor(bool random_stats) :
   Armor(random_armor_type(), random_stats)
 {}
 
-Armor::Armor(std::ifstream& data) {
+Armor::Armor(std::istream& data) {
   load(data);
 }
 
@@ -224,7 +224,7 @@ string Armor::get_description() const {
   return buffer.str();
 }
 
-void Armor::save(std::ofstream& data) const {
+void Armor::save(std::ostream& data) const {
   Item::save(data);
   static_assert(sizeof(Armor::Type) == sizeof(int), "Wrong Armor::Type size");
   Disk::save(TAG_ARMOR, static_cast<int>(subtype), data);
@@ -232,7 +232,7 @@ void Armor::save(std::ofstream& data) const {
   Disk::save(TAG_ARMOR, rustproof, data);
 }
 
-bool Armor::load(std::ifstream& data) {
+bool Armor::load(std::istream& data) {
   if (!Item::load(data) ||
       !Disk::load(TAG_ARMOR, reinterpret_cast<int&>(subtype), data) ||
       !Disk::load(TAG_ARMOR, identified, data) ||

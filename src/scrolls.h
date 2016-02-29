@@ -1,7 +1,8 @@
 #pragma once
 
 #include <vector>
-#include <fstream>
+#include <istream>
+#include <ostream>
 
 #include "item.h"
 
@@ -27,7 +28,7 @@ public:
   ~Scroll();
   explicit Scroll();
   explicit Scroll(Type);
-  explicit Scroll(std::ifstream&);
+  explicit Scroll(std::istream&);
   explicit Scroll(Scroll const&) = default;
 
   Scroll* clone() const override;
@@ -50,8 +51,8 @@ public:
   // Misc
   void read() const;
 
-  virtual void save(std::ofstream&) const override;
-  virtual bool load(std::ifstream&) override;
+  virtual void save(std::ostream&) const override;
+  virtual bool load(std::istream&) override;
 
   // Static
   static std::string  name(Type subtype);
@@ -61,8 +62,9 @@ public:
   static void         set_known(Type subtype);
 
   static void         init_scrolls();
-  static void         save_scrolls(std::ofstream&);
-  static void         load_scrolls(std::ifstream&);
+  static void         save_scrolls(std::ostream&);
+  static void         load_scrolls(std::istream&);
+  static void         test_scrolls();
   static void         free_scrolls();
 
 private:

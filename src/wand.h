@@ -2,7 +2,8 @@
 
 #include <vector>
 #include <string>
-#include <fstream>
+#include <istream>
+#include <ostream>
 
 #include "item.h"
 
@@ -29,7 +30,7 @@ public:
   ~Wand();
   Wand();     // Random wand
   explicit Wand(Type); // Wand of given type
-  explicit Wand(std::ifstream&);
+  explicit Wand(std::istream&);
   explicit Wand(Wand const&) = default;
 
   Wand* clone() const override;
@@ -55,13 +56,13 @@ public:
   std::string get_material() const;
   int         get_charges() const;
 
-  void save(std::ofstream&) const override;
-  bool load(std::ifstream&) override;
+  void save(std::ostream&) const override;
+  bool load(std::istream&) override;
 
   // Static
   static void init_wands();
-  static void save_wands(std::ofstream&);
-  static void load_wands(std::ifstream&);
+  static void save_wands(std::ostream&);
+  static void load_wands(std::istream&);
   static void free_wands();
 
   static std::string        name(Type subtype);

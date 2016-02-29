@@ -159,14 +159,14 @@ void Wand::init_wands() {
   }
 }
 
-void Wand::save_wands(std::ofstream& data) {
+void Wand::save_wands(std::ostream& data) {
   Disk::save_tag(TAG_WANDS, data);
   Disk::save(TAG_MATERIALS, materials, data);
   Disk::save(TAG_KNOWN, known, data);
   Disk::save(TAG_GUESSES, guesses, data);
 }
 
-void Wand::load_wands(std::ifstream& data) {
+void Wand::load_wands(std::istream& data) {
   if (!Disk::load_tag(TAG_WANDS, data))            { error("No wands found"); }
   if (!Disk::load(TAG_MATERIALS, materials, data)) { error("Wand tag error 1"); }
   if (!Disk::load(TAG_KNOWN, known, data))         { error("Wand tag error 2"); }
@@ -202,7 +202,7 @@ bool Wand::is_identified() const {
 
 Wand::~Wand() {}
 
-Wand::Wand(std::ifstream& data) {
+Wand::Wand(std::istream& data) {
   load(data);
 }
 
@@ -275,7 +275,7 @@ void Wand::modify_charges(int amount) {
   charges += amount;
 }
 
-void Wand::save(std::ofstream& data) const {
+void Wand::save(std::ostream& data) const {
   Item::save(data);
   static_assert(sizeof(Wand::Type) == sizeof(int), "Wrong Wand::Type size");
   Disk::save(TAG_WANDS, static_cast<int>(subtype), data);
@@ -283,7 +283,7 @@ void Wand::save(std::ofstream& data) const {
   Disk::save(TAG_WANDS, charges, data);
 }
 
-bool Wand::load(std::ifstream& data) {
+bool Wand::load(std::istream& data) {
   if (!Item::load(data) ||
       !Disk::load(TAG_WANDS, reinterpret_cast<int&>(subtype), data) ||
       !Disk::load(TAG_WANDS, identified, data) ||

@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <istream>
+#include <ostream>
 
 #include "error_handling.h"
 #include "game.h"

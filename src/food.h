@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include <fstream>
+#include <istream>
+#include <ostream>
 
 #include "item.h"
 
@@ -17,15 +18,15 @@ public:
 
   explicit Food();
   explicit Food(Type subtype);
-  explicit Food(std::ifstream&);
+  explicit Food(std::istream&);
   explicit Food(Food const&) = default;
 
   Food* clone() const override;
   Food& operator=(Food const&) = default;
   Food& operator=(Food&&) = default;
 
-  virtual void save(std::ofstream&) const override;
-  virtual bool load(std::ifstream&) override;
+  virtual void save(std::ostream&) const override;
+  virtual bool load(std::istream&) override;
 
   // Setters
   void        set_identified() override;

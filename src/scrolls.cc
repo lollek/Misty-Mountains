@@ -78,7 +78,7 @@ bool Scroll::is_magic() const {
   return true;
 }
 
-Scroll::Scroll(std::ifstream& data) {
+Scroll::Scroll(std::istream& data) {
   load(data);
 }
 
@@ -222,27 +222,49 @@ void Scroll::init_scrolls() {
 
 
   // Run some checks
-  if (fake_name->size() != static_cast<size_t>(Scroll::NSCROLLS)) {
-    error("Scroll init: wrong number of fake names");
-  } else if (knowledge->size() != static_cast<size_t>(Scroll::NSCROLLS)) {
-    error("Scroll init: wrong number of knowledge");
-  } else if (guesses->size() != static_cast<size_t>(Scroll::NSCROLLS)) {
-    error("Scroll init: wrong number of guesses");
-  }
+  size_t nscrolls_size = static_cast<size_t>(Scroll::NSCROLLS);
+  if (fake_name->size() != nscrolls_size) { error("Scroll init: error 1"); }
+  if (knowledge->size() != nscrolls_size) { error("Scroll init: error 2"); }
+  if (guesses->size()   != nscrolls_size) { error("Scroll init: error 3"); }
 }
 
-void Scroll::save_scrolls(std::ofstream& data) {
+void Scroll::test_scrolls() {
+  stringbuf buf;
+  iostream test_data(&buf);
+
+  vector<string> fake_name_{*fake_name};
+  vector<bool> knowledge_{*knowledge};
+  vector<string> guesses_{*guesses};
+
+  save_scrolls(test_data);
+  load_scrolls(test_data);
+
+  if (fake_name_ != *fake_name) { error("scroll test 1 failed"); }
+  if (knowledge_ != *knowledge) { error("scroll test 2 failed"); }
+  if (guesses_ != *guesses)     { error("scroll test 3 failed"); }
+}
+
+void Scroll::save_scrolls(ostream& data) {
   Disk::save_tag(TAG_SCROLL, data);
+
   Disk::save(TAG_FAKE_NAME, fake_name, data);
   Disk::save(TAG_KNOWLEDGE, knowledge, data);
   Disk::save(TAG_GUESSES, guesses, data);
+
+  Disk::save_tag(TAG_SCROLL, data);
 }
 
-void Scroll::load_scrolls(std::ifstream& data) {
+void Scroll::load_scrolls(istream& data) {
+  size_t nscrolls_size = static_cast<size_t>(Scroll::NSCROLLS);
+
   if (!Disk::load_tag(TAG_SCROLL, data))           { error("No scrolls found"); }
-  if (!Disk::load(TAG_FAKE_NAME, fake_name, data)) { error("Scroll tag error 1"); }
-  if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) { error("Scroll tag error 2"); }
-  if (!Disk::load(TAG_GUESSES,   guesses, data))   { error("Scroll tag error 3"); }
+  if (!Disk::load(TAG_FAKE_NAME, fake_name, data)) { error("Scroll error 1"); }
+  if (fake_name->size() != nscrolls_size)          { error("Scroll size error 1"); }
+  if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) { error("Scroll error 2"); }
+  if (knowledge->size() != nscrolls_size)          { error("Scroll size error 2"); }
+  if (!Disk::load(TAG_GUESSES,   guesses, data))   { error("Scroll error 3"); }
+  if (guesses->size() != nscrolls_size)            { error("Scroll size error 3"); }
+  if (!Disk::load_tag(TAG_SCROLL, data))           { error("No scrolls end found"); }
 }
 
 void Scroll::free_scrolls() {
@@ -257,13 +279,13 @@ void Scroll::free_scrolls() {
 }
 
 
-void Scroll::save(std::ofstream& data) const {
+void Scroll::save(std::ostream& data) const {
   Item::save(data);
   static_assert(sizeof(Scroll::Type) == sizeof(int), "Wrong Scroll::Type size");
   Disk::save(TAG_SCROLL, static_cast<int>(subtype), data);
 }
 
-bool Scroll::load(std::ifstream& data) {
+bool Scroll::load(std::istream& data) {
   if (!Item::load(data) ||
       !Disk::load(TAG_SCROLL, reinterpret_cast<int&>(subtype), data)) {
     return false;

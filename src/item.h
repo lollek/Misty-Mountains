@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include <fstream>
+#include <istream>
+#include <ostream>
 
 #include "damage.h"
 #include "coordinate.h"
@@ -79,8 +80,8 @@ public:
   int           o_flags;               // information about objects
   char          o_packch;              // What character it is in the pack
 
-  virtual void          save(std::ofstream&) const;
-  virtual bool          load(std::ifstream&);
+  virtual void          save(std::ostream&) const;
+  virtual bool          load(std::istream&);
 
   // Static
   static int         probability(Type type);

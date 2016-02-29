@@ -1,6 +1,7 @@
 #pragma once
 
-#include <fstream>
+#include <istream>
+#include <ostream>
 
 #include "rings.h"
 #include "weapons.h"
@@ -24,8 +25,8 @@ public:
   Player(Player const&) = delete;
   Player& operator=(Player const&) = delete;
 
-  static void save_player(std::ofstream&);
-  static void load_player(std::ifstream&);
+  static void save_player(std::ostream&);
+  static void load_player(std::istream&);
 
   // Getters
   int get_ac() const override;

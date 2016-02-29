@@ -1,12 +1,13 @@
 #pragma once
 
-#include <fstream>
+#include <istream>
+#include <ostream>
 
 namespace Daemons {
 
 void init_daemons();
-void save_daemons(std::ofstream&);
-void load_daemons(std::ifstream&);
+void save_daemons(std::ostream&);
+void load_daemons(std::istream&);
 void free_daemons();
 
 enum daemon_function {
