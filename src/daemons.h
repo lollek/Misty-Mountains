@@ -29,6 +29,13 @@ struct Fuse {
   Daemons::daemon_function func;
   int time;
 
+  Fuse() = default;
+  Fuse(int type, daemon_function func, int time);
+  ~Fuse() = default;
+  Fuse(Fuse const&) = default;
+  Fuse& operator=(Fuse const&) = default;
+  Fuse& operator=(Fuse&&) = default;
+
   bool operator==(Fuse const&) const;
   bool operator!=(Fuse const&) const;
 };
@@ -36,6 +43,13 @@ struct Fuse {
 struct Daemon {
   int type;
   Daemons::daemon_function func;
+
+  Daemon() = default;
+  Daemon(int type, daemon_function func);
+  ~Daemon() = default;
+  Daemon(Daemon const&) = default;
+  Daemon& operator=(Daemon const&) = default;
+  Daemon& operator=(Daemon&&) = default;
 
   bool operator==(Daemon const&) const;
   bool operator!=(Daemon const&) const;

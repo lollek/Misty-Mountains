@@ -34,7 +34,7 @@ static unsigned long long constexpr TAG_FUSELIST  = 0x5000000000000002ULL;
 
 void Daemons::test_daemons() {
   stringbuf buf;
-  iostream test_data(&buf);
+  iostream test_data{&buf};
 
   list<Daemon> daemons_{*daemons};
   list<Fuse> fuses_{*fuses};
@@ -76,7 +76,7 @@ void Daemons::free_daemons() {
 static int quiet_rounds = 0;
 
 static void execute_daemon_function(Daemons::daemon_function func) {
-  switch(func) {
+  switch (func) {
     case Daemons::runners_move:          Daemons::daemon_runners_move(); break;
     case Daemons::doctor:                Daemons::daemon_doctor(); break;
     case Daemons::ring_abilities:        Daemons::daemon_ring_abilities(); break;
@@ -127,7 +127,7 @@ void Daemons::daemon_run_after() {
 
 // Start a daemon, takes a function.
 void Daemons::daemon_start(daemon_function func, int type) {
-  daemons->push_back({type, func});
+  daemons->push_back(Daemon{type, func});
 }
 
 // Remove a daemon from the list
@@ -147,7 +147,7 @@ void Daemons::daemon_kill(daemon_function func) {
 
 // Start a fuse to go off in a certain number of turns
 void Daemons::daemon_start_fuse(daemon_function func, int time, int type) {
-  fuses->push_back({type, func, time});
+  fuses->push_back(Fuse{type, func, time});
 }
 
 // Increase the time until a fuse goes off */
@@ -186,12 +186,12 @@ void Daemons::daemon_reset_doctor() {
 
 // A healing daemon that restors hit points after rest
 void Daemons::daemon_doctor() {
-  int ohp = player->get_health();
+  int ohp{player->get_health()};
   if (ohp == player->get_max_health()) {
     return;
   }
 
-  int rings_of_regen = static_cast<int>(player->pack_num_items(IO::Ring, Ring::Regeneration));
+  int rings_of_regen{static_cast<int>(player->pack_num_items(IO::Ring, Ring::Regeneration))};
   if (rings_of_regen > 0) {
     player->restore_health(rings_of_regen, false);
   }
@@ -206,9 +206,9 @@ void Daemons::daemon_doctor() {
     player->restore_health(os_rand_range(player->get_level() - 7) + 1, false);
   }
 
-
-  if (ohp != player->get_health())
+  if (ohp != player->get_health()) {
     quiet_rounds = 0;
+  }
 }
 
 // Make all running monsters move
@@ -220,6 +220,10 @@ void Daemons::daemon_ring_abilities() {
   player->equipment_run_abilities();
 }
 
+Daemons::Fuse::Fuse(int type_, daemon_function func_, int time_)
+  : type{type_}, func{func_}, time{time_}
+{}
+
 bool Daemons::Fuse::operator==(Fuse const& other) const {
   return
     type == other.type &&
@@ -230,6 +234,10 @@ bool Daemons::Fuse::operator==(Fuse const& other) const {
 bool Daemons::Fuse::operator!=(Fuse const& other) const {
   return !(*this == other);
 }
+
+Daemons::Daemon::Daemon(int type_, daemon_function func_)
+ : type{type_}, func{func_}
+{}
 
 bool Daemons::Daemon::operator==(Daemon const& other) const {
   return
