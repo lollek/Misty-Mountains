@@ -240,3 +240,26 @@ bool Item::load(std::istream& data) {
   }
   return true;
 }
+
+bool Item::operator==(Item const& other) const {
+  return
+    o_type == other.o_type &&
+    o_launch == other.o_launch &&
+    o_count == other.o_count &&
+    o_which == other.o_which &&
+    o_flags == other.o_flags &&
+    o_packch == other.o_packch &&
+
+    position_on_screen == other.position_on_screen &&
+    nickname == other.nickname &&
+    attack_damage == other.attack_damage &&
+    throw_damage == other.throw_damage &&
+    hit_plus == other.hit_plus &&
+    damage_plus == other.damage_plus &&
+    armor == other.armor &&
+    cursed == other.cursed;
+}
+
+bool Item::operator!=(Item const& other) const {
+  return !(*this == other);
+}

@@ -30,6 +30,9 @@ public:
   Item& operator=(Item&&) = default;
   virtual Item* clone() const = 0;
 
+  bool operator==(Item const&) const;
+  bool operator!=(Item const&) const;
+
   // Setters (virtual)
   virtual void    set_identified() = 0;
 

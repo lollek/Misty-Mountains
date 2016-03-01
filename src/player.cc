@@ -1,5 +1,6 @@
 #include <string>
 #include <cmath>
+#include <sstream>
 
 #include "disk.h"
 #include "command_private.h"
@@ -68,6 +69,16 @@ Player::Player(bool give_equipment) :
   class Weapon* dagger = new class Weapon(Weapon::Dagger, false);
   dagger->set_identified();
   equipment.at(Weapon) = dagger;
+}
+
+Player::~Player() {
+  for (Item* item : pack) {
+    delete item;
+  }
+
+  for (Item* item : equipment) {
+    delete item;
+  }
 }
 
 int Player::get_ac() const {
@@ -568,22 +579,94 @@ void Player::pack_uncurse() {
   }
 }
 
+void Player::test_player() {
+  stringbuf buf;
+  iostream test_data(&buf);
+
+  // Copy pack
+  list<Item*> pack;
+  for (Item* item : player->pack) {
+    if (item == nullptr) {
+      error("player pack had nullptr item");
+    }
+
+    pack.push_back(item->clone());
+  }
+
+  // Copy equipment
+  vector<Item*> equipment;
+  for (Item* item : player->equipment) {
+    if (item == nullptr) {
+      equipment.push_back(item);
+    } else {
+      equipment.push_back(item->clone());
+    }
+  }
+
+  auto senses_monsters = player->senses_monsters;
+  auto senses_magic = player->senses_magic;
+  auto gold = player->gold;
+  auto nutrition_left = player->nutrition_left;
+
+  save_player(test_data);
+  free_player();
+  load_player(test_data);
+
+  // Pack
+  if (pack.size() != player->pack.size()) {
+    error("Player pack size error");
+  }
+  for (auto it1 = pack.cbegin(), it2 = player->pack.cbegin();
+       it1 != pack.cend();
+       ++it1, ++it2) {
+    if (**it1 != **it2) {
+      error("Player pack found unexpected item");
+    }
+  }
+
+  // Equipment
+  if (equipment.size() != player->equipment.size()) {
+    error("Player equipment size error");
+  }
+  for (size_t i = 0; i < equipment.size(); ++i) {
+    if (equipment.at(i) == player->equipment.at(i) &&
+        equipment.at(i) == nullptr) {
+      continue;
+    }
+
+    if (*equipment.at(i) != *player->equipment.at(i)) {
+      error("Player equipment found unexpected item");
+    }
+  }
+
+  if (senses_monsters != player->senses_monsters) { error("player test 3 failed"); }
+  if (senses_magic != player->senses_magic)       { error("player test 4 failed"); }
+  if (gold != player->gold)                       { error("player test 5 failed"); }
+  if (nutrition_left != player->nutrition_left)   { error("player test 6 failed"); }
+}
+
 void Player::save_player(ostream& data) {
   Disk::save_tag(TAG_PLAYER, data);
+
   Character* c_player = dynamic_cast<Character*>(player);
   c_player->save(data);
+
   Disk::save(TAG_INVENTORY,       player->pack,            data);
   Disk::save(TAG_EQUIPMENT,       player->equipment,       data);
   Disk::save(TAG_SENSES_MONSTERS, player->senses_monsters, data);
   Disk::save(TAG_SENSES_MAGIC,    player->senses_magic,    data);
   Disk::save(TAG_GOLD,            player->gold,            data);
   Disk::save(TAG_NUTRITION,       player->nutrition_left,  data);
+
+  Disk::save_tag(TAG_PLAYER, data);
 }
 
 void Player::load_player(istream& data) {
-  Disk::load_tag(TAG_PLAYER, data);
+  if (!Disk::load_tag(TAG_PLAYER, data))  { error("No player found"); }
+
   player = new Player(false);
   Character* c_player = static_cast<Character*>(player);
+
   if (!c_player->load(data) ||
       !Disk::load(TAG_INVENTORY,       player->pack,            data) ||
       !Disk::load(TAG_EQUIPMENT,       player->equipment,       data) ||
@@ -591,6 +674,14 @@ void Player::load_player(istream& data) {
       !Disk::load(TAG_SENSES_MAGIC,    player->senses_magic,    data) ||
       !Disk::load(TAG_GOLD,            player->gold,            data) ||
       !Disk::load(TAG_NUTRITION,       player->nutrition_left,  data)) {
-    error("No player character found");
+    error("Player failed to load");
   }
+
+  if (!Disk::load_tag(TAG_PLAYER, data))  { error("No player end found"); }
 }
+
+void Player::free_player() {
+  delete player;
+  player = nullptr;
+}
+

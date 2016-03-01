@@ -21,12 +21,15 @@ enum Equipment {
 class Player : public Character {
 public:
   explicit Player(bool give_equipment);
+  ~Player();
 
   Player(Player const&) = delete;
   Player& operator=(Player const&) = delete;
 
   static void save_player(std::ostream&);
+  static void test_player();
   static void load_player(std::istream&);
+  static void free_player();
 
   // Getters
   int get_ac() const override;

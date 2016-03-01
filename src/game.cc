@@ -140,6 +140,8 @@ Game::~Game() {
   Color::free_colors();
   Scroll::free_scrolls();
 
+  Player::free_player();
+
   delete io;
   io = nullptr;
 
@@ -220,7 +222,7 @@ bool Game::save() {
   Ring::test_rings();
   Wand::test_wands();
   Daemons::test_daemons();
-  //Player::test_player();
+  Player::test_player();
 #endif //NDEBUG
   return true;
 }
