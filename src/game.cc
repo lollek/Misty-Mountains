@@ -196,7 +196,6 @@ bool Game::save() {
   }
 
   Scroll::save_scrolls(savefile);
-  Scroll::test_scrolls();
   Potion::save_potions(savefile);
   Ring::save_rings(savefile);
   Wand::save_wands(savefile);
@@ -214,5 +213,10 @@ bool Game::save() {
   Disk::save_tag(TAG_GAME, savefile);
 
   savefile.close();
+
+#ifndef NDEBUG
+  Scroll::test_scrolls();
+  Potion::test_potions();
+#endif //NDEBUG
   return true;
 }

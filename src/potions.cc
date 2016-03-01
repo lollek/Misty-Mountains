@@ -332,18 +332,50 @@ void Potion::init_potions() {
   }
 }
 
+void Potion::test_potions() {
+  stringbuf buf;
+  iostream test_data(&buf);
+
+  vector<string> colors_{*colors};
+  vector<bool> knowledge_{*knowledge};
+  vector<string> guesses_{*guesses};
+
+  save_potions(test_data);
+  free_potions();
+  load_potions(test_data);
+
+  if (colors_ != *colors)       { error("potion test 1 failed"); }
+  if (knowledge_ != *knowledge) { error("potion test 2 failed"); }
+  if (guesses_ != *guesses)     { error("potion test 3 failed"); }
+}
+
+
+
 void Potion::save_potions(std::ostream& data) {
   Disk::save_tag(TAG_POTION, data);
+
   Disk::save(TAG_COLORS, colors, data);
   Disk::save(TAG_KNOWLEDGE, knowledge, data);
   Disk::save(TAG_GUESSES, guesses, data);
+
+  Disk::save_tag(TAG_POTION, data);
 }
 
 void Potion::load_potions(std::istream& data) {
+  size_t npotions_size = static_cast<size_t>(Potion::NPOTIONS);
+
   if (!Disk::load_tag(TAG_POTION, data))           { error("No potions found"); }
+
   if (!Disk::load(TAG_COLORS, colors, data))       { error("Potion tag error 1"); }
+  if (colors->size() != npotions_size)             { error("Potion size error 1") }
+
   if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) { error("Potion tag error 2"); }
+  if (knowledge->size() != npotions_size)          { error("Potion size error 1") }
+
   if (!Disk::load(TAG_GUESSES,   guesses, data))   { error("Potion tag error 3"); }
+  if (guesses->size() != npotions_size)            { error("Potion size error 1") }
+
+  if (!Disk::load_tag(TAG_POTION, data))           { error("No potions end found"); }
 }
 
 void Potion::save(std::ostream& data) const {

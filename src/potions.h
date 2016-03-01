@@ -66,6 +66,7 @@ public:
 
   static void         init_potions();
   static void         save_potions(std::ostream&);
+  static void         test_potions();
   static void         load_potions(std::istream&);
   static void         free_potions();
 

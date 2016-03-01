@@ -259,12 +259,16 @@ void Scroll::load_scrolls(istream& data) {
   size_t nscrolls_size = static_cast<size_t>(Scroll::NSCROLLS);
 
   if (!Disk::load_tag(TAG_SCROLL, data))           { error("No scrolls found"); }
+
   if (!Disk::load(TAG_FAKE_NAME, fake_name, data)) { error("Scroll error 1"); }
   if (fake_name->size() != nscrolls_size)          { error("Scroll size error 1"); }
+
   if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) { error("Scroll error 2"); }
   if (knowledge->size() != nscrolls_size)          { error("Scroll size error 2"); }
+
   if (!Disk::load(TAG_GUESSES,   guesses, data))   { error("Scroll error 3"); }
   if (guesses->size() != nscrolls_size)            { error("Scroll size error 3"); }
+
   if (!Disk::load_tag(TAG_SCROLL, data))           { error("No scrolls end found"); }
 }
 
