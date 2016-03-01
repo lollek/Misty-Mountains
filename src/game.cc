@@ -217,6 +217,10 @@ bool Game::save() {
 #ifndef NDEBUG
   Scroll::test_scrolls();
   Potion::test_potions();
+  Ring::test_rings();
+  //Wand::test_wands();
+  //Daemons::test_daemons();
+  //Player::test_player();
 #endif //NDEBUG
   return true;
 }

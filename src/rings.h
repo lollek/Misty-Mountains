@@ -62,6 +62,7 @@ public:
 
   static void         init_rings();
   static void         save_rings(std::ostream&);
+  static void         test_rings();
   static void         load_rings(std::istream&);
   static void         free_rings();
 

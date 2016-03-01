@@ -249,18 +249,49 @@ void Ring::init_rings() {
   }
 }
 
+void Ring::test_rings() {
+  stringbuf buf;
+  iostream test_data(&buf);
+
+  vector<string> materials_{*materials};
+  vector<bool> known_{*known};
+  vector<string> guesses_{*guesses};
+
+  save_rings(test_data);
+  free_rings();
+  load_rings(test_data);
+
+  if (materials_ != *materials) { error("ring test 1 failed"); }
+  if (known_ != *known)         { error("ring test 2 failed"); }
+  if (guesses_ != *guesses)     { error("ring test 3 failed"); }
+}
+
+
+
 void Ring::save_rings(std::ostream& data) {
   Disk::save_tag(TAG_RINGS, data);
+
   Disk::save(TAG_MATERIALS, materials, data);
   Disk::save(TAG_KNOWN, known, data);
   Disk::save(TAG_GUESSES, guesses, data);
+
+  Disk::save_tag(TAG_RINGS, data);
 }
 
 void Ring::load_rings(std::istream& data) {
-  if (!Disk::load_tag(TAG_RINGS, data))             { error("No Rings found"); }
+  size_t nrings_size = static_cast<size_t>(Ring::NRINGS);
+  if (!Disk::load_tag(TAG_RINGS, data))            { error("No rings found"); }
+
   if (!Disk::load(TAG_MATERIALS, materials, data)) { error("Ring tag error 1"); }
+  if (materials->size() != nrings_size)            { error("Ring size error 1"); }
+
   if (!Disk::load(TAG_KNOWN, known, data))         { error("Ring tag error 2"); }
+  if (known->size() != nrings_size)                { error("Ring size error 2"); }
+
   if (!Disk::load(TAG_GUESSES, guesses, data))     { error("Ring tag error 3"); }
+  if (guesses->size() != nrings_size)              { error("Ring size error 3"); }
+
+  if (!Disk::load_tag(TAG_RINGS, data))            { error("No rings found"); }
 }
 
 void Ring::free_rings() {
