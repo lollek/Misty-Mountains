@@ -218,7 +218,7 @@ bool Game::save() {
   Scroll::test_scrolls();
   Potion::test_potions();
   Ring::test_rings();
-  //Wand::test_wands();
+  Wand::test_wands();
   //Daemons::test_daemons();
   //Player::test_player();
 #endif //NDEBUG

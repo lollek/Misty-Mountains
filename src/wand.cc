@@ -159,18 +159,47 @@ void Wand::init_wands() {
   }
 }
 
+void Wand::test_wands() {
+  stringbuf buf;
+  iostream test_data(&buf);
+
+  vector<string> materials_{*materials};
+  vector<bool> known_{*known};
+  vector<string> guesses_{*guesses};
+
+  save_wands(test_data);
+  free_wands();
+  load_wands(test_data);
+
+  if (materials_ != *materials) { error("wand test 1 failed"); }
+  if (known_ != *known)         { error("wand test 2 failed"); }
+  if (guesses_ != *guesses)     { error("wand test 3 failed"); }
+}
+
 void Wand::save_wands(std::ostream& data) {
   Disk::save_tag(TAG_WANDS, data);
+
   Disk::save(TAG_MATERIALS, materials, data);
   Disk::save(TAG_KNOWN, known, data);
   Disk::save(TAG_GUESSES, guesses, data);
+
+  Disk::save_tag(TAG_WANDS, data);
 }
 
 void Wand::load_wands(std::istream& data) {
+  size_t nwands_size = static_cast<size_t>(Wand::NWANDS);
   if (!Disk::load_tag(TAG_WANDS, data))            { error("No wands found"); }
+
   if (!Disk::load(TAG_MATERIALS, materials, data)) { error("Wand tag error 1"); }
+  if (materials->size() != nwands_size)            { error("Wand size error 1"); }
+
   if (!Disk::load(TAG_KNOWN, known, data))         { error("Wand tag error 2"); }
+  if (known->size() != nwands_size)                { error("Wand size error 2"); }
+
   if (!Disk::load(TAG_GUESSES, guesses, data))     { error("Wand tag error 3"); }
+  if (guesses->size() != nwands_size)              { error("Wand size error 3"); }
+
+  if (!Disk::load_tag(TAG_WANDS, data))            { error("No wands end found"); }
 }
 
 

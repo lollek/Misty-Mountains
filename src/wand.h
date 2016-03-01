@@ -62,6 +62,7 @@ public:
   // Static
   static void init_wands();
   static void save_wands(std::ostream&);
+  static void test_wands();
   static void load_wands(std::istream&);
   static void free_wands();
 
