@@ -225,6 +225,12 @@ Daemons::Fuse::Fuse(int type_, daemon_function func_, int time_)
 {}
 
 bool Daemons::Fuse::operator==(Fuse const& other) const {
+  static_assert(sizeof(Fuse) ==
+      sizeof(Fuse::type) +
+      sizeof(Fuse::func) +
+      sizeof(Fuse::time),
+      "Fuse size has changed");
+
   return
     type == other.type &&
     func == other.func &&
@@ -240,6 +246,12 @@ Daemons::Daemon::Daemon(int type_, daemon_function func_)
 {}
 
 bool Daemons::Daemon::operator==(Daemon const& other) const {
+  static_assert(sizeof(Daemon) ==
+      sizeof(Daemon::type) +
+      sizeof(Daemon::func),
+      "Daemon size has changed");
+
+
   return
     type == other.type &&
     func == other.func;
