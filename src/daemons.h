@@ -7,6 +7,7 @@ namespace Daemons {
 
 void init_daemons();
 void save_daemons(std::ostream&);
+void test_daemons();
 void load_daemons(std::istream&);
 void free_daemons();
 
@@ -27,11 +28,17 @@ struct Fuse {
   int type;
   Daemons::daemon_function func;
   int time;
+
+  bool operator==(Fuse const&) const;
+  bool operator!=(Fuse const&) const;
 };
 
 struct Daemon {
   int type;
   Daemons::daemon_function func;
+
+  bool operator==(Daemon const&) const;
+  bool operator!=(Daemon const&) const;
 };
 
 // API

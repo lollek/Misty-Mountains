@@ -1,5 +1,6 @@
 #include <list>
 #include <algorithm>
+#include <sstream>
 
 #include "disk.h"
 #include "error_handling.h"
@@ -31,16 +32,37 @@ static unsigned long long constexpr TAG_DAEMONS   = 0x5000000000000000ULL;
 static unsigned long long constexpr TAG_DAEMONLIST= 0x5000000000000001ULL;
 static unsigned long long constexpr TAG_FUSELIST  = 0x5000000000000002ULL;
 
+void Daemons::test_daemons() {
+  stringbuf buf;
+  iostream test_data(&buf);
+
+  list<Daemon> daemons_{*daemons};
+  list<Fuse> fuses_{*fuses};
+
+  save_daemons(test_data);
+  free_daemons();
+  load_daemons(test_data);
+
+  if (daemons_ != *daemons) { error("daemon test 1 failed"); }
+  if (fuses_ != *fuses)     { error("daemon test 2 failed"); }
+}
+
 void Daemons::save_daemons(std::ostream& data) {
   Disk::save_tag(TAG_DAEMONS, data);
+
   Disk::save(TAG_DAEMONLIST, daemons, data);
   Disk::save(TAG_FUSELIST, fuses, data);
+
+  Disk::save_tag(TAG_DAEMONS, data);
 }
 
 void Daemons::load_daemons(std::istream& data) {
   if (!Disk::load_tag(TAG_DAEMONS, data))             { error("No daemons found"); }
+
   if (!Disk::load(TAG_DAEMONLIST, daemons, data))     { error("Daemon tag error 1"); }
   if (!Disk::load(TAG_FUSELIST, fuses, data))         { error("Daemon tag error 2"); }
+
+  if (!Disk::load_tag(TAG_DAEMONS, data))             { error("No daemons end found"); }
 }
 
 void Daemons::free_daemons() {
@@ -198,3 +220,23 @@ void Daemons::daemon_ring_abilities() {
   player->equipment_run_abilities();
 }
 
+bool Daemons::Fuse::operator==(Fuse const& other) const {
+  return
+    type == other.type &&
+    func == other.func &&
+    time == other.time;
+}
+
+bool Daemons::Fuse::operator!=(Fuse const& other) const {
+  return !(*this == other);
+}
+
+bool Daemons::Daemon::operator==(Daemon const& other) const {
+  return
+    type == other.type &&
+    func == other.func;
+}
+
+bool Daemons::Daemon::operator!=(Daemon const& other) const {
+  return !(*this == other);
+}

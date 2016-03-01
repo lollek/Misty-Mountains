@@ -219,7 +219,7 @@ bool Game::save() {
   Potion::test_potions();
   Ring::test_rings();
   Wand::test_wands();
-  //Daemons::test_daemons();
+  Daemons::test_daemons();
   //Player::test_player();
 #endif //NDEBUG
   return true;
