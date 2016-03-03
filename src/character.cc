@@ -438,6 +438,8 @@ Character::Race Character::get_race() const {
 
 string Character::race_to_string(Race race) {
   switch (race) {
+    case Human: return "human";
+
     case Animal: return "animal";
     case Reptilian: return "reptilian";
     case Goblinoid: return "goblinoid";

@@ -339,11 +339,14 @@ void IO::refresh() {
 }
 
 void IO::refresh_statusline() {
+  string race = Character::race_to_string(player->get_race());
+  race.at(0) = static_cast<char>(toupper(race.at(0)));
+
   // Calculate width of hitpoint digits
   stringstream ss;
   print_string(0, 0, "Name:  " + *Game::whoami);
   ss
-    << "Race:  Human\n"
+    << "Race:  " << race << "\n"
     << "Class: Fighter\n"
     << "\n"
     << "Str:  " << player->get_strength() << " / "
