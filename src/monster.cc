@@ -44,78 +44,76 @@ void Monster::init_monsters() {
 //       000020000000000000000: attack drains health
 //       000040000000000000000: attack drains experience
   monsters = new vector<Template> const {
-    // Name,           Type,    char,  start, stop,
+    // Name,           Type,         Race,            char,  start, stop,
 //drop%, ability_flags,         speed,  exp,lvl, amr, dmg
-    { "bat",           Bat,          'b',  1,    5,
+    Template
+    { "bat",           Bat,          Animal,            'b',  1,    5,
      0,  040000000000000000000ULL,  1,    1,  1,  17, {{1,2}}},
-
-    { "snake",         Snake,        's',  1,    5,
+    Template
+    { "snake",         Snake,        Animal,            's',  1,    5,
      0,  000000000000000000000ULL,  1,    2,  1,  15, {{1,3}}},
-
-    { "kobold",        Kobold,       'k',  1,   10,
+    Template
+    { "kobold",        Kobold,       Reptilian,         'k',  1,   10,
      0,  020000000000000000000ULL,  1,    1,  1,  13, {{1,4}}},
-
-    { "goblin",        Goblin,       'g',  1,   10,
+    Template
+    { "goblin",        Goblin,       Goblinoid,         'g',  1,   10,
      0,  020000000000000000000ULL,  1,    2,  1,  13, {{1,6}}},
-
-    { "ice monster",   IceMonster,   'i',  1,   10,
+    Template
+    { "ice monster",   IceMonster,   Elemental,         'i',  1,   10,
      0,  004000000000000000000ULL,  1,    5,  1,  11, {{0,1}}},
-
-    { "hobgoblin",     Hobgoblin,    'h',  3,   13,
+    Template
+    { "hobgoblin",     Hobgoblin,    Goblinoid,         'h',  3,   13,
      0,  020000000000000000000ULL,  1,    3,  1,  15, {{1,8}}},
-
-    { "leprechaun",    Leprechaun,   'l',  5,   10,
+    Template
+    { "leprechaun",    Leprechaun,   Fey,               'l',  5,   10,
      0,  000200000000000000000ULL,  1,   10,  3,  12, {{1,1}}},
-
-    { "orc",           Orc,          'o',  5,   15,
+    Template
+    { "orc",           Monster::Orc, Race::Orc,         'o',  5,   15,
     15,  010000000000000000000ULL,  1,    5,  1,  14, {{1,8}}},
-
-    { "rattlesnake",   Rattlesnake,  'r',  5,   15,
+    Template
+    { "rattlesnake",   Rattlesnake,  Animal,            'r',  5,   15,
      0,  020010000000000000000ULL,  1,    9,  2,  17, {{1,6}}},
-
-    { "zombie",        Zombie,       'z',  5,   15,
+    Template
+    { "zombie",        Zombie,       Undead,            'z',  5,   15,
      0,  020000000000000000000ULL,  1,    6,  2,  12, {{1,8}}},
-
-    { "nymph",         Nymph,        'n', 10,   15,
+    Template
+    { "nymph",         Nymph,        Fey,               'n', 10,   15,
    100,  000400000000000000000ULL,  1,   37,  3,  11, {{0,1}}},
-
-    { "centaur",       Centaur,      'C', 10,   20,
+    Template
+    { "centaur",       Centaur,      MonstrousHumanoid, 'C', 10,   20,
     15,  000000000000000000000ULL,  1,   17,  4,  16, {{1,2},{1,5},{1,5}}},
-
-    { "quagga",        Quagga,       'q', 10,   20,
-     0,  020000000000000000000ULL,  1,   15,  3,  17, {{1,5},{1,5}}},
-
-    { "aquator",       Aquator,      'a', 10,   20,
+    Template
+    { "aquator",       Aquator,      Elemental,         'a', 10,   20,
      0,  020100000000000000000ULL,  1,   20,  5,  18, {{0,1}}},
-
-    { "yeti",          Yeti,         'y', 13,   23,
+    Template
+    { "yeti",          Yeti,         MonstrousHumanoid, 'y', 13,   23,
     30,  000000000000000000000ULL,  1,   50,  4,  14, {{1,6},{1,6}}},
-
-    { "troll",         Troll,        'T', 15,   25,
+    Template
+    { "troll",         Troll,        Humanoid,          'T', 15,   25,
     50,  021000000000000000000ULL,  1,  120,  6,  16, {{1,8},{1,8},{2,6}}},
-
-    { "wraith",        Wraith,       'W', 15,   25,
+    Template
+    { "wraith",        Wraith,       Undead,            'W', 15,   25,
      0,  000040000000000000000ULL,  1,   55,  5,  16, {{1,6}}},
-
-    { "phantom",       Phantom,      'P', 15,   50,
+    Template
+    { "phantom",       Phantom,      Undead,            'P', 15,   50,
      0,  002000000000000000000ULL,  1,  120,  8,  17, {{4,4}}},
-
-    { "xeroc",         Xeroc,        'x', 15,   50,
+    Template
+    { "xeroc",         Xeroc,        Aberration,        'x', 15,   50,
     30,  000000000000000000000ULL,  1,  100,  7,  13, {{4,4}}},
-
-    { "black unicorn", BlackUnicorn, 'U', 20,   50,
+    Template
+    { "black unicorn", BlackUnicorn, MagicBeast,        'U', 20,   50,
      0,  020000000000000000000ULL,  1,  190,  7,  22, {{1,9},{1,9},{2,9}}},
-
-    { "vampire",       Vampire,      'V', 20,   50,
+    Template
+    { "vampire",       Vampire,      Undead,            'V', 20,   50,
     20,  021020000000000000000ULL,  1,  350,  8,  19, {{1,10}}},
-
-    { "griffin",       Griffin,      'G', 25,   50,
+    Template
+    { "griffin",       Griffin,      MagicBeast,        'G', 25,   50,
     20,  061000000000000000000ULL,  2, 2000, 13,  18, {{4,3},{3,5}}},
-
-    { "jabberwock",    Jabberwock,   'J', 27,   50,
+    Template
+    { "jabberwock",    Jabberwock,   Race::Dragon,      'J', 27,   50,
     70,  000000000000000000000ULL,  1, 3000, 15,  14, {{2,12},{2,4}}},
-
-    { "dragon",        Dragon,       'd', 30,   50,
+    Template
+    { "dragon",        Dragon,       Race::Dragon,      'd', 30,   50,
    100,  020000000000000000000ULL,  2, 5000, 10,  21, {{1,8},{1,8},{3,10}}},
   };
 }
@@ -220,7 +218,7 @@ Monster::Monster(Monster::Type subtype_, Coordinate const& pos) :
 Monster::Monster(Coordinate const& pos, Template const& m_template) :
   Character(10, 10, 10, 10, 10, 10, m_template.m_basexp, m_template.m_level,
       m_template.m_armor, 8, m_template.m_dmg, pos,
-      m_template.m_flags, m_template.m_speed),
+      m_template.m_flags, m_template.m_speed, m_template.m_race),
   look(m_template.m_char), disguise(m_template.m_char),
   subtype(m_template.m_subtype), target(nullptr), pack() {
 

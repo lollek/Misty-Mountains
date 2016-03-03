@@ -23,6 +23,7 @@ public:
   struct Template {
     std::string const    m_name;    // What to call the monster
     Type                 m_subtype; // Monster subtype
+    Character::Race      m_race;    // Monster race
     char                 m_char;    // Monster character on screen
     int                  m_startlvl; // Start spawning at level (inclusive)
     int                  m_stoplvl; // Stop spawning at level (inclusive)

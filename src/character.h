@@ -7,6 +7,23 @@
 
 class Character {
 public:
+  enum Race {
+    Human,
+
+    Animal,
+    Reptilian,
+    Goblinoid,
+    Elemental,
+    Fey,
+    Orc,
+    Undead,
+    Humanoid,
+    MonstrousHumanoid,
+    Aberration,
+    MagicBeast,
+    Dragon,
+  };
+
   virtual ~Character() = default;
 
   virtual std::string get_attack_string(bool successful_hit) const = 0;
@@ -32,6 +49,7 @@ public:
   virtual int                        get_max_health() const;
   virtual Coordinate const&          get_position() const;
   virtual std::vector<damage> const& get_attacks() const;
+  virtual Race                       get_race() const;
 
   // Setters
   virtual void set_position(Coordinate const& position);
@@ -118,12 +136,14 @@ public:
   virtual void  save(std::ostream&) const;
   virtual bool  load(std::istream&);
 
+  static std::string race_to_string(Race race);
+
 
 protected:
   explicit Character(int strength, int dexterity, int constitution, int wisdom,
       int intelligence, int charisma, int experience, int level, int armor,
       int health, std::vector<damage> const& attacks, Coordinate const& position,
-      unsigned long long flags, int speed);
+      unsigned long long flags, int speed, Race race);
 
   explicit Character() = default;
   explicit Character(Character const&) = default;
@@ -155,6 +175,7 @@ private:
   std::vector<damage>  attacks;
   Coordinate           position;
   int                  speed;
+  Race                 race;
   int                  turns_not_moved;
 
   // Flags

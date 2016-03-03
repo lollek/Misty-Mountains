@@ -10,7 +10,7 @@ using namespace std;
 
 Character::Character(int str_, int dex_, int con_, int wis_, int int_, int cha_,
     int exp_, int lvl_, int ac_, int hd_, std::vector<damage> const& attacks_,
-    Coordinate const& position_, unsigned long long flags, int speed_) :
+    Coordinate const& position_, unsigned long long flags, int speed_, Race race_) :
 
   strength{str_}, default_strength{str_},
   dexterity{dex_}, default_dexterity{dex_},
@@ -22,7 +22,8 @@ Character::Character(int str_, int dex_, int con_, int wis_, int int_, int cha_,
   experience{exp_}, level{lvl_}, base_ac{ac_}, hit_dice{hd_},
   base_health{hit_dice + roll(level-1, hit_dice)},
   health{get_max_health()},
-  attacks{attacks_}, position{position_}, speed{speed_}, turns_not_moved{0},
+  attacks{attacks_}, position{position_}, speed{speed_}, race{race_},
+  turns_not_moved{0},
 
   confusing_attack{0}, true_sight{0}, blind{0}, cancelled{0}, levitating{0},
   found{0}, greedy{0}, players_target{0}, held{0}, confused{0},
@@ -272,6 +273,7 @@ void Character::save(ostream& data) const {
   Disk::save(TAG_MISC, attacks, data);
   Disk::save(TAG_MISC, position, data);
   Disk::save(TAG_MISC, speed, data);
+  Disk::save(TAG_MISC, static_cast<int const>(race), data);
   Disk::save(TAG_MISC, turns_not_moved, data);
 
   Disk::save(TAG_FLAG, confusing_attack, data);
@@ -326,6 +328,7 @@ bool Character::load(istream& data) {
       !Disk::load(TAG_MISC, attacks, data) ||
       !Disk::load(TAG_MISC, position, data) ||
       !Disk::load(TAG_MISC, speed, data) ||
+      !Disk::load(TAG_MISC, reinterpret_cast<int&>(race), data) ||
       !Disk::load(TAG_MISC, turns_not_moved, data) ||
 
       !Disk::load(TAG_FLAG, confusing_attack, data) ||
@@ -429,4 +432,24 @@ int Character::get_default_charisma() const {
   return default_charisma;
 }
 
+Character::Race Character::get_race() const {
+  return race;
+}
 
+string Character::race_to_string(Race race) {
+  switch (race) {
+    case Animal: return "animal";
+    case Reptilian: return "reptilian";
+    case Goblinoid: return "goblinoid";
+    case Elemental: return "elemental";
+    case Fey: return "fey";
+    case Orc: return "orc";
+    case Undead: return "undead";
+    case Humanoid: return "humanoid";
+    case MonstrousHumanoid: return "monstrous humanoid";
+    case Aberration: return "aberration";
+    case MagicBeast: return "magic beast";
+    case Dragon: return "dragon";
+
+  }
+}
