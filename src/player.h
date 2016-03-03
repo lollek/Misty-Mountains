@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <istream>
 #include <ostream>
 
@@ -20,7 +21,7 @@ enum Equipment {
 
 class Player : public Character {
 public:
-  explicit Player(bool give_equipment);
+  explicit Player(std::vector<int> stats);
   ~Player();
 
   Player(Player const&) = delete;
@@ -148,6 +149,9 @@ private:
 
   // player_food.cc
   int          nutrition_left;
+
+  // For Save / Load
+  explicit Player() = default;
 
   static unsigned long long constexpr TAG_PLAYER          = 0x7000000000000000ULL;
   static unsigned long long constexpr TAG_INVENTORY       = 0x7000000000000001ULL;

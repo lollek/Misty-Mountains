@@ -45,17 +45,12 @@ bool         player_alerted              = false;
 #define SLEEPTIME       spread(7)   /* Sleep */
 #define STUCKTIME       spread(3)   /* Stuck */
 
-
-
-Player::Player(bool give_equipment) :
-  Character(0, 0, 0, 0, 0, 0, 0, 1, 10, 12, {{1,4}}, Coordinate(), 0, 1),
+Player::Player(vector<int> stats) :
+  Character(stats.at(0), stats.at(1), stats.at(2), stats.at(3), stats.at(4),
+            stats.at(5), 0, 1, 10, 12, {{1,4}}, Coordinate(), 0, 1),
   previous_room(nullptr), senses_monsters(false), senses_magic(false),
   pack(), equipment(equipment_size(), nullptr), gold(0),
   nutrition_left(get_starting_nutrition()) {
-
-  if (!give_equipment) {
-    return;
-  }
 
   /* Give him some food */
   pack_add(new Food(), true, false);
@@ -664,7 +659,7 @@ void Player::save_player(ostream& data) {
 void Player::load_player(istream& data) {
   if (!Disk::load_tag(TAG_PLAYER, data))  { error("No player found"); }
 
-  player = new Player(false);
+  player = new Player();
   Character* c_player = static_cast<Character*>(player);
 
   if (!c_player->load(data) ||

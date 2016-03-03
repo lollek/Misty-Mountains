@@ -595,30 +595,28 @@ void IO::resume_curses() {
 }
 
 void IO::character_creation() {
+  vector<int> stats;
 
   // Roll stats
   for (;;) {
     stringstream ss;
+    stats.clear();
 
-    vector<int> stats;
     while (stats.size() < 6) {
       vector<int> rolls {roll(1,6), roll(1,6), roll(1,6), roll(1,6)};
       sort(rolls.begin(), rolls.end());
       stats.push_back(accumulate(rolls.begin() + 1, rolls.end(), 0));
     }
-    player->set_base_stats(stats.at(0), stats.at(1), stats.at(2), stats.at(3),
-                           stats.at(4), stats.at(5));
-
 
     ss << "Character Statistics\n\n"
       << "Str, Dex, Con, Wis, Int, Cha\n"
 
-      << setw(3) << player->get_strength() << ", "
-      << setw(3) << player->get_dexterity() << ", "
-      << setw(3) << player->get_constitution() << ", "
-      << setw(3) << player->get_wisdom() << ", "
-      << setw(3) << player->get_intelligence() << ", "
-      << setw(3) << player->get_charisma() << "\n\n"
+      << setw(3) << stats.at(0) << ", "
+      << setw(3) << stats.at(1) << ", "
+      << setw(3) << stats.at(2) << ", "
+      << setw(3) << stats.at(3) << ", "
+      << setw(3) << stats.at(4) << ", "
+      << setw(3) << stats.at(5) << "\n\n"
 
       << "ESC to quit, SPACE to reroll, y to continue\n";
 
@@ -635,5 +633,6 @@ void IO::character_creation() {
     }
   }
 
+  player = new class Player(stats);
   clear_screen();
 }
