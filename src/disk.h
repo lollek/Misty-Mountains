@@ -10,6 +10,7 @@
 #include "coordinate.h"  // disk_structs.m
 #include "damage.h"      // disk_structs.m
 #include "item.h"        // disk_simple.m
+#include "character.h"   // disk_simple.m
 
 namespace Disk {
   using tag_type = unsigned long long;

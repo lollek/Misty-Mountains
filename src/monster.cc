@@ -365,7 +365,7 @@ char Monster::get_disguise() const {
 void Monster::notice_player() {
 
   /* Monster can begin chasing after the player if: */
-  if (!is_chasing() && is_mean() && !is_held() && !player->is_stealthy() &&
+  if (!is_chasing() && attacks_on_sight() && !is_held() && !player->is_stealthy() &&
       !os_rand_range(3)) {
 
     set_target(&player->get_position());

@@ -19,8 +19,14 @@ void save<std::string>(tag_type tag, std::string const& element, std::ostream& d
 template <>
 bool load<std::string>(tag_type tag, std::string& element, std::istream& data);
 
-// item
+// Item
 template <>
 void save<Item>(tag_type tag, Item const& element, std::ostream& data);
 template <>
 bool load<Item>(tag_type tag, Item& element, std::istream& data);
+
+// Feat
+template <>
+void save<Character::Feat>(tag_type tag, Character::Feat const& element, std::ostream& data);
+template <>
+bool load<Character::Feat>(tag_type tag, Character::Feat& element, std::istream& data);

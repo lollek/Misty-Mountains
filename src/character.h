@@ -108,7 +108,6 @@ public:
   virtual bool is_stuck() const;
   virtual bool is_chasing() const;
   virtual bool is_running() const;
-  virtual bool is_mean() const;
   virtual bool is_greedy() const;
   virtual bool is_players_target() const;
   virtual bool attack_freezes() const;
@@ -118,6 +117,7 @@ public:
   virtual bool attack_drains_strength() const;
   virtual bool attack_drains_health() const;
   virtual bool attack_drains_experience() const;
+  virtual bool attacks_on_sight() const;
 
   // Flag setters
   virtual void set_blind();
@@ -167,6 +167,8 @@ protected:
   explicit Character(Character const&) = default;
   explicit Character(Character&&) = default;
   Character& operator=(Character const&) = default;
+
+  virtual bool has_feat(Feat feat) const;
 
 
 private:

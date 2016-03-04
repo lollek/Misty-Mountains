@@ -180,7 +180,7 @@ bool Monster::take_turn()
 
 
   // If monster sees player and is mean, have a chance to attack
-  } else if (is_mean() && player->can_see(*this) && os_rand_range(2)) {
+  } else if (attacks_on_sight() && player->can_see(*this) && os_rand_range(2)) {
     set_target(&player->get_position());
     set_chasing();
     return chase_do(this) != -1;

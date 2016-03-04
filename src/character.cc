@@ -46,7 +46,6 @@ bool Character::is_held() const { return held; }
 bool Character::is_stuck() const { return stuck; }
 bool Character::is_chasing() const { return running; }
 bool Character::is_running() const { return running; }
-bool Character::is_mean() const { return mean; }
 bool Character::is_greedy() const { return greedy; }
 bool Character::is_players_target() const { return players_target; }
 bool Character::attack_freezes() const { return attack_freeze; }
@@ -74,6 +73,14 @@ void Character::set_not_invisible() { invisible = false; }
 void Character::set_not_levitating() { levitating = false; }
 void Character::remove_true_sight() { true_sight = false; }
 void Character::set_not_held() { held = false; }
+
+bool Character::has_feat(Feat feat) const {
+  return find(feats.begin(), feats.end(), feat) != feats.end();
+}
+
+bool Character::attacks_on_sight() const {
+  return has_feat(AttacksOnSight);
+}
 
 void Character::set_held() {
   held = true;
@@ -197,7 +204,7 @@ Coordinate const& Character::get_position() const {
   return position;
 }
 
-std::vector<damage> const& Character::get_attacks() const {
+vector<damage> const& Character::get_attacks() const {
   return attacks;
 }
 
@@ -258,6 +265,7 @@ void Character::save(ostream& data) const {
   Disk::save(TAG_MISC, position, data);
   Disk::save(TAG_MISC, speed, data);
   Disk::save(TAG_MISC, static_cast<int const>(race), data);
+  Disk::save(TAG_MISC, feats, data);
   Disk::save(TAG_MISC, turns_not_moved, data);
 
   Disk::save(TAG_FLAG, confusing_attack, data);
@@ -312,6 +320,7 @@ bool Character::load(istream& data) {
       !Disk::load(TAG_MISC, position, data) ||
       !Disk::load(TAG_MISC, speed, data) ||
       !Disk::load(TAG_MISC, reinterpret_cast<int&>(race), data) ||
+      !Disk::load(TAG_MISC, feats, data) ||
       !Disk::load(TAG_MISC, turns_not_moved, data) ||
 
       !Disk::load(TAG_FLAG, confusing_attack, data) ||
