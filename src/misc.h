@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "coordinate.h"
+
 int roll(int number, int sides); /* Roll a number of dice */
 
 std::string vowelstr(std::string const& str); /* Return "n" if vowel else "" */

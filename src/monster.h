@@ -13,38 +13,24 @@
 class Monster : public Character {
 public:
   enum Type {
-    Aquator, Bat, Centaur, Dragon, Goblin, Griffin, Hobgoblin,
-    IceMonster, Jabberwock, Kobold, Leprechaun, Nymph, Orc,
-    Phantom, Quagga, Rattlesnake, Snake, Troll, BlackUnicorn, Vampire,
-    Wraith, Xeroc, Yeti, Zombie,
+    Bat, Goblin, Kobold, Orc, SkeletonHuman, Hobgoblin, ZombieHuman,
+
+    Quasit, Worg, Ogre, Yeti, IceMonster, Aquator, Troll,
+
+    ShadowDemon, Erinyes, Nightmare, GenieDjinni, GenieVizier,
+    GenieEfreeti, GenieJanni, GenieMarid, GenieShaitan,
+
+    AdultRedDragon,
+    Jabberwock,
 
     NMONSTERS,
   };
-  struct Template {
-    std::string const    m_name;    // What to call the monster
-    Type                 m_subtype; // Monster subtype
-    Character::Race      m_race;    // Monster race
-    char                 m_char;    // Monster character on screen
-    int                  m_startlvl; // Start spawning at level (inclusive)
-    int                  m_stoplvl; // Stop spawning at level (inclusive)
-    int                  m_carry;   // Probability of carrying something
-    unsigned long long   m_flags;   // things about the monster
-    int                  m_speed;   // Moves per turn
-    int                  m_basexp;  // Base xp
-    int                  m_level;   // Level
-    int                  m_armor;   // Armor
-    std::vector<damage>  m_dmg;     // Monster attacks
-  };
-
-
 
   Monster(Type subtype, Coordinate const& pos);
-  Monster(Monster const&) = delete; // Deleted since they would share inventory
   Monster(std::istream&);
 
   ~Monster();
 
-  Monster& operator=(Monster const&) = delete; // Deleted since they would share inventory
   Monster& operator=(Monster&&) = default;
 
   void save(std::ostream&) const override;
@@ -56,7 +42,6 @@ public:
   void set_disguise(char);
 
   // Modifiers
-  void give_pack();
   void find_new_target();
   void notice_player();
 
@@ -73,13 +58,10 @@ public:
   std::list<Item*>& get_pack();
 
   // Statics
-  static void                 init_monsters();
-  static void                 free_monsters();
-  static std::string const&   name(Type type);
-  static void                 all_move();
-  static Template const&      monster_data(Type type);
-  static Type                 random_monster_type_for_level();
-  static Type                 random_monster_type();
+  static std::string name(Type type);
+  static void        all_move();
+  static Type        random_monster_type_for_level();
+  static Type        random_monster_type();
 
 private:
   char               look;
@@ -88,9 +70,43 @@ private:
   Coordinate const*  target;
   std::list<Item*>   pack;
 
-  static std::vector<Template> const* monsters;
+  // monster_constructors.cc
+  Monster& operator=(Monster const&) = delete; // They will share inventory
+  Monster(Monster const&) = delete;            // They will share inventory
+  Monster(int str, int dex, int con, int int_, int wis, int cha, int exp,
+          int lvl, int ac,  int hp, std::vector<damage> const& dmg,
+          Coordinate const& pos, std::vector<Feat> const& feats, int speed,
+          Race race, char look, char disguise, Type subtype, Coordinate const* target,
+          std::list<Item*> pack);
 
-  Monster(Coordinate const& pos, Template const& m_template);
+  static Monster bat();
+  static Monster kobold();
+  static Monster orc();
+  static Monster goblin();
+  static Monster skeleton_human();
+  static Monster zombie_human();
+  static Monster hobgoblin();
+
+  static Monster quasit();
+  static Monster worg();
+  static Monster ogre();
+  static Monster yeti();
+  static Monster ice_monster();
+  static Monster aquator();
+  static Monster troll();
+
+  static Monster erinyes();
+  static Monster shadow_demon();
+  static Monster nightmare();
+  static Monster genie_djinni();
+  static Monster genie_vizier();
+  static Monster genie_efreeti();
+  static Monster genie_janni();
+  static Monster genie_marid();
+  static Monster genie_shaitan();
+
+  static Monster adult_red_dragon();
+  static Monster jabberwock();
 
   static unsigned long long constexpr TAG_MONSTER         = 0xd000000000000001ULL;
   static unsigned long long constexpr TAG_MISC            = 0xd000000000000002ULL;

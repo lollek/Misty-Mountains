@@ -7,7 +7,7 @@
 
 class Character {
 public:
-  enum Race {
+  enum Race : int {
     Human,
 
     Animal,
@@ -22,6 +22,27 @@ public:
     Aberration,
     MagicBeast,
     Dragon,
+    Outsider,
+    Giant,
+  };
+
+  enum Feat : int {
+    // Permanent features
+    AttacksOnSight,
+    RandomMoveD2,           // "Confused" when moving if 1d2 == 1
+    MoveThroughStone,       // Moves through stone like air
+    PermanentlyInvisible,
+    AttackRuinsMetal,
+    AttackFreezesTarget,
+    Regenerating5,          // 5HP per round
+
+    // Activate-able for free
+    BreatheConeFireSmall,   // 40ft, DC 19, 6d10 fire
+    BreatheConeFireMedium,  // 50ft, DC 24, 12d10 fire
+    BreatheConeFireLarge,   // 60ft, DC 30, 20d10 fire
+    Planeshift,             // Can planeshift to escape
+    TurnInvisible,          // Can turn invisible at will
+    ScorchingRay,           // CL11, 3 rays, 4d6 fire each
   };
 
   virtual ~Character() = default;
@@ -36,10 +57,10 @@ public:
   virtual int                        get_default_dexterity() const;
   virtual int                        get_constitution() const;
   virtual int                        get_default_constitution() const;
-  virtual int                        get_wisdom() const;
-  virtual int                        get_default_wisdom() const;
   virtual int                        get_intelligence() const;
   virtual int                        get_default_intelligence() const;
+  virtual int                        get_wisdom() const;
+  virtual int                        get_default_wisdom() const;
   virtual int                        get_charisma() const;
   virtual int                        get_default_charisma() const;
   virtual int                        get_experience() const;
@@ -54,7 +75,7 @@ public:
   // Setters
   virtual void set_position(Coordinate const& position);
   virtual void set_base_stats(int strength, int dexterity, int constitution,
-                              int wisdom, int intelligence, int charisma);
+                              int intelligence, int wisdom, int charisma);
 
   // Modifiers
   virtual void increase_speed();
@@ -90,7 +111,6 @@ public:
   virtual bool is_mean() const;
   virtual bool is_greedy() const;
   virtual bool is_players_target() const;
-  virtual bool is_flying() const;
   virtual bool attack_freezes() const;
   virtual bool attack_damages_armor() const;
   virtual bool attack_steals_gold() const;
@@ -128,8 +148,6 @@ public:
   virtual void set_not_greedy();
   virtual void set_players_target();
   virtual void set_not_players_target();
-  virtual void set_flying();
-  virtual void set_not_flying();
   virtual void set_running();
   virtual void set_not_running();
 
@@ -140,10 +158,10 @@ public:
 
 
 protected:
-  explicit Character(int strength, int dexterity, int constitution, int wisdom,
-      int intelligence, int charisma, int experience, int level, int armor,
+  explicit Character(int strength, int dexterity, int constitution, int intelligence,
+      int wisdom, int charisma, int experience, int level, int armor,
       int health, std::vector<damage> const& attacks, Coordinate const& position,
-      unsigned long long flags, int speed, Race race);
+      std::vector<Feat> const& feats, int speed, Race race);
 
   explicit Character() = default;
   explicit Character(Character const&) = default;
@@ -159,10 +177,10 @@ private:
   int                  default_dexterity;
   int                  constitution;
   int                  default_constitution;
-  int                  wisdom;
-  int                  default_wisdom;
   int                  intelligence;
   int                  default_intelligence;
+  int                  wisdom;
+  int                  default_wisdom;
   int                  charisma;
   int                  default_charisma;
 
@@ -176,6 +194,7 @@ private:
   Coordinate           position;
   int                  speed;
   Race                 race;
+  std::vector<Feat>    feats;
   int                  turns_not_moved;
 
   // Flags
@@ -193,7 +212,6 @@ private:
   bool mean;
   bool regenerating;
   bool running;
-  bool flying;
   bool stuck;
   bool attack_freeze;
   bool attack_damage_armor;

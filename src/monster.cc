@@ -27,102 +27,6 @@
 
 using namespace std;
 
-vector<Monster::Template> const* Monster::monsters = nullptr;
-
-void Monster::init_monsters() {
-
-//       010000000000000000000: greedy
-//       020000000000000000000: mean
-//       040000000000000000000: flying
-//       001000000000000000000: regenerating health
-//       002000000000000000000: invisible
-//       004000000000000000000: attack freezes
-//       000100000000000000000: attack damages armor
-//       000200000000000000000: attack steals gold
-//       000400000000000000000: attack steals item
-//       000010000000000000000: attack drains strength
-//       000020000000000000000: attack drains health
-//       000040000000000000000: attack drains experience
-  monsters = new vector<Template> const {
-    // Name,           Type,         Race,            char,  start, stop,
-//drop%, ability_flags,         speed,  exp,lvl, amr, dmg
-    Template
-    { "bat",           Bat,          Animal,            'b',  1,    5,
-     0,  040000000000000000000ULL,  1,    1,  1,  17, {{1,2}}},
-    Template
-    { "snake",         Snake,        Animal,            's',  1,    5,
-     0,  000000000000000000000ULL,  1,    2,  1,  15, {{1,3}}},
-    Template
-    { "kobold",        Kobold,       Reptilian,         'k',  1,   10,
-     0,  020000000000000000000ULL,  1,    1,  1,  13, {{1,4}}},
-    Template
-    { "goblin",        Goblin,       Goblinoid,         'g',  1,   10,
-     0,  020000000000000000000ULL,  1,    2,  1,  13, {{1,6}}},
-    Template
-    { "ice monster",   IceMonster,   Elemental,         'i',  1,   10,
-     0,  004000000000000000000ULL,  1,    5,  1,  11, {{0,1}}},
-    Template
-    { "hobgoblin",     Hobgoblin,    Goblinoid,         'h',  3,   13,
-     0,  020000000000000000000ULL,  1,    3,  1,  15, {{1,8}}},
-    Template
-    { "leprechaun",    Leprechaun,   Fey,               'l',  5,   10,
-     0,  000200000000000000000ULL,  1,   10,  3,  12, {{1,1}}},
-    Template
-    { "orc",           Monster::Orc, Race::Orc,         'o',  5,   15,
-    15,  010000000000000000000ULL,  1,    5,  1,  14, {{1,8}}},
-    Template
-    { "rattlesnake",   Rattlesnake,  Animal,            'r',  5,   15,
-     0,  020010000000000000000ULL,  1,    9,  2,  17, {{1,6}}},
-    Template
-    { "zombie",        Zombie,       Undead,            'z',  5,   15,
-     0,  020000000000000000000ULL,  1,    6,  2,  12, {{1,8}}},
-    Template
-    { "nymph",         Nymph,        Fey,               'n', 10,   15,
-   100,  000400000000000000000ULL,  1,   37,  3,  11, {{0,1}}},
-    Template
-    { "centaur",       Centaur,      MonstrousHumanoid, 'C', 10,   20,
-    15,  000000000000000000000ULL,  1,   17,  4,  16, {{1,2},{1,5},{1,5}}},
-    Template
-    { "aquator",       Aquator,      Elemental,         'a', 10,   20,
-     0,  020100000000000000000ULL,  1,   20,  5,  18, {{0,1}}},
-    Template
-    { "yeti",          Yeti,         MonstrousHumanoid, 'y', 13,   23,
-    30,  000000000000000000000ULL,  1,   50,  4,  14, {{1,6},{1,6}}},
-    Template
-    { "troll",         Troll,        Humanoid,          'T', 15,   25,
-    50,  021000000000000000000ULL,  1,  120,  6,  16, {{1,8},{1,8},{2,6}}},
-    Template
-    { "wraith",        Wraith,       Undead,            'W', 15,   25,
-     0,  000040000000000000000ULL,  1,   55,  5,  16, {{1,6}}},
-    Template
-    { "phantom",       Phantom,      Undead,            'P', 15,   50,
-     0,  002000000000000000000ULL,  1,  120,  8,  17, {{4,4}}},
-    Template
-    { "xeroc",         Xeroc,        Aberration,        'x', 15,   50,
-    30,  000000000000000000000ULL,  1,  100,  7,  13, {{4,4}}},
-    Template
-    { "black unicorn", BlackUnicorn, MagicBeast,        'U', 20,   50,
-     0,  020000000000000000000ULL,  1,  190,  7,  22, {{1,9},{1,9},{2,9}}},
-    Template
-    { "vampire",       Vampire,      Undead,            'V', 20,   50,
-    20,  021020000000000000000ULL,  1,  350,  8,  19, {{1,10}}},
-    Template
-    { "griffin",       Griffin,      MagicBeast,        'G', 25,   50,
-    20,  061000000000000000000ULL,  2, 2000, 13,  18, {{4,3},{3,5}}},
-    Template
-    { "jabberwock",    Jabberwock,   Race::Dragon,      'J', 27,   50,
-    70,  000000000000000000000ULL,  1, 3000, 15,  14, {{2,12},{2,4}}},
-    Template
-    { "dragon",        Dragon,       Race::Dragon,      'd', 30,   50,
-   100,  020000000000000000000ULL,  2, 5000, 10,  21, {{1,8},{1,8},{3,10}}},
-  };
-}
-
-void Monster::free_monsters() {
-  delete monsters;
-  monsters = nullptr;
-}
-
 string Monster::get_attack_string(bool successful_hit) const {
 
   size_t i = static_cast<size_t>(os_rand_range(4));
@@ -173,65 +77,272 @@ Monster::Type Monster::random_monster_type() {
 
 
 Monster::Type Monster::random_monster_type_for_level() {
+  vector<Type> mon_types;
 
-  vector<Monster::Template const*> mon_types;
+  switch (Game::current_level) {
+    default:
+      mon_types.push_back(AdultRedDragon);
+      mon_types.push_back(Jabberwock);
 
-  // Make list of relevant monsters
-  for (Template const& mon : *monsters) {
-    if (mon.m_startlvl <= Game::current_level &&
-        mon.m_stoplvl  >= Game::current_level) {
-      mon_types.push_back(&mon);
-    }
+    [[clang::fallthrough]];
+    case 24: case 25: {
+    } break;
+
+
+    case 21: case 22: case 23: {
+    } break;
+
+    // Level 14-20: Gates of Moonlight
+    case 18: case 19: case 20:
+      mon_types.push_back(Erinyes);
+      mon_types.push_back(GenieEfreeti);
+      mon_types.push_back(GenieMarid);
+
+    [[clang::fallthrough]];
+    case 16: case 17:
+      mon_types.push_back(ShadowDemon);
+      mon_types.push_back(GenieVizier);
+      mon_types.push_back(GenieShaitan);
+
+    [[clang::fallthrough]];
+    case 14: case 15:
+      mon_types.push_back(GenieDjinni);
+      mon_types.push_back(GenieJanni);
+      mon_types.push_back(Nightmare);
+      break;
+
+    // Level 8-13: The Pale Expanse
+    case 11: case 12: case 13:
+      mon_types.push_back(Troll);
+      mon_types.push_back(IceMonster);
+      mon_types.push_back(Yeti);
+
+    [[clang::fallthrough]];
+    case 8: case 9: case 10:
+      mon_types.push_back(Aquator);
+      mon_types.push_back(Worg);
+      mon_types.push_back(Ogre);
+      mon_types.push_back(SkeletonHuman);
+      mon_types.push_back(Quasit);
+      break;
+
+    // Level 1-7: The Troubled Caves
+    case 6: case 7:
+      mon_types.push_back(Quasit);
+      mon_types.push_back(Worg);
+
+    [[clang::fallthrough]];
+    case 3: case 4: case 5:
+      mon_types.push_back(Hobgoblin);
+      mon_types.push_back(ZombieHuman);
+
+    [[clang::fallthrough]];
+    case 1: case 2:
+      mon_types.push_back(SkeletonHuman);
+      mon_types.push_back(Kobold);
+      mon_types.push_back(Goblin);
+      mon_types.push_back(Orc);
+      mon_types.push_back(Bat);
+      break;
   }
 
   // If we found something, pick one at random
   if (!mon_types.empty()) {
-    return mon_types.at(os_rand_range(mon_types.size()))->m_subtype;
+    return mon_types.at(os_rand_range(mon_types.size()));
 
   // Hmm, otherwise just lets pick the last one
   } else {
-    return monsters->back().m_subtype;
+    return static_cast<Type>(NMONSTERS - 1);
   }
 }
 
-// Experience to add for this monster's level/hit points
-static int extra_experience(int level, int max_health) {
-
-  int mod = level == 1
-    ? max_health / 8
-    : max_health / 6;
-
-  if (level > 9)
-    mod *= 20;
-  else if (level > 6)
-    mod *= 4;
-
-  return mod;
+Monster::~Monster() {
+  for (Item* item : pack) {
+    delete item;
+  }
 }
 
-Monster::~Monster() {}
-
-Monster::Monster(Monster::Type subtype_, Coordinate const& pos) :
-  Monster(pos, monster_data(subtype_))
+Monster::Monster(int str, int dex, int con, int int_, int wis, int cha, int exp,
+    int lvl, int ac,  int hp, std::vector<damage> const& dmg,
+    Coordinate const& pos, std::vector<Feat> const& feats, int speed,
+    Race race, char look_, char disguise_, Type subtype_, Coordinate const* target_,
+    std::list<Item*> pack_)
+  : Character(str, dex, con, int_, wis, cha, exp, lvl, ac, hp, dmg, pos, feats,
+              speed, race),
+  look{look_}, disguise{disguise_}, subtype{subtype_}, target{target_},
+  pack{pack_}
 {}
 
-Monster::Monster(Coordinate const& pos, Template const& m_template) :
-  Character(10, 10, 10, 10, 10, 10, m_template.m_basexp, m_template.m_level,
-      m_template.m_armor, 8, m_template.m_dmg, pos,
-      m_template.m_flags, m_template.m_speed, m_template.m_race),
-  look(m_template.m_char), disguise(m_template.m_char),
-  subtype(m_template.m_subtype), target(nullptr), pack() {
+Monster::Monster(Monster::Type subtype_, Coordinate const& pos) {
+  switch (subtype_) {
+    case Bat: {
+      *this = Monster(3, 15, 11, 2, 14, 4, 100, 1, 14, 4, vector<damage>{{1,2}},
+          pos, vector<Feat>{}, 2, Race::Animal,
+          'b', 'b', Monster::Bat, nullptr, list<Item*>{});
+    } break;
 
-  // All monsters are equal, but some monsters are more equal than others, so
-  // they also give more experience
-  gain_experience(extra_experience(get_level(), get_max_health()));
+    case Goblin: {
+      *this =  Monster(11, 15, 12, 10, 9, 6, 135, 1, 14, 10, vector<damage>{{1,4}},
+          pos, vector<Feat>{AttacksOnSight}, 1, Race::Goblinoid,
+          'g', 'g', Monster::Goblin, nullptr, Item::random_items_chance(10, 1, 1));
+    } break;
+
+    case Kobold: {
+      *this = Monster(17, 11, 12, 7, 8, 6, 135, 1, 13, 10, vector<damage>{{2,4}},
+      pos, vector<Feat>{AttacksOnSight}, 1, Race::Orc,
+      'o', 'o', Monster::Orc, nullptr, Item::random_items_chance(10, 1, 1));
+    } break;
+
+    case Orc: {
+      *this = Monster(9, 13, 10, 10, 9, 8, 100, 1, 14, 8, vector<damage>{{1,6}},
+      pos, vector<Feat>{AttacksOnSight}, 1, Race::Reptilian,
+      'k', 'k', Monster::Kobold, nullptr, Item::random_items_chance(10, 1, 1));
+    } break;
+
+    case SkeletonHuman: {
+      *this = Monster(15, 14, 10, 10, 10, 10, 135, 1, 14, 8, vector<damage>{{1,6}},
+      pos, vector<Feat>{AttacksOnSight}, 1, Race::Undead,
+      's', 's', Monster::SkeletonHuman, nullptr, Item::random_items_chance(10, 1, 1));
+    } break;
+
+    case ZombieHuman: {
+      *this = Monster(17, 10, 10, 10, 10, 10, 200, 2, 12, 8, vector<damage>{{1,6}},
+      pos, vector<Feat>{AttacksOnSight}, 1, Race::Undead,
+      'z', 'z', Monster::ZombieHuman, nullptr, {});
+    } break;
+
+    case Hobgoblin: {
+      *this = Monster(15, 15, 16, 10, 12, 8, 200, 1, 14, 10, vector<damage>{{1,8}},
+      pos, vector<Feat>{AttacksOnSight}, 1, Race::Goblinoid,
+      'h', 'h', Monster::Hobgoblin, nullptr, Item::random_items_chance(10, 1, 1));
+    } break;
+
+    case Quasit: {
+      *this = Monster(8, 14, 11, 11, 12, 11, 600, 3, 14, 10, vector<damage>{{1,3}},
+      pos, vector<Feat>{}, 1, Race::Outsider,
+      'q', 'q', Monster::Quasit, nullptr, {});
+    } break;
+
+    case Worg: {
+      *this = Monster(17, 15, 13, 6, 14, 10, 600, 4, 12, 10, vector<damage>{{1,6}},
+      pos, vector<Feat>{AttacksOnSight}, 1, Race::MagicBeast,
+      'w', 'w', Monster::Worg, nullptr, {});
+    } break;
+
+    case Ogre: {
+      *this = Monster(21, 8, 15, 6, 10, 7, 800, 4, 18, 8, vector<damage>{{2,8}},
+      pos, vector<Feat>{AttacksOnSight}, 1, Race::Giant,
+      'O', 'O', Monster::Ogre, nullptr, {});
+    } break;
+
+    case IceMonster: {
+      *this = Monster(16, 8, 15, 2, 13, 11, 1600, 7, 18, 10, vector<damage>{{1,8}},
+      pos, vector<Feat>{AttackFreezesTarget}, 1, Race::MagicBeast,
+      'I', 'I', Monster::IceMonster, nullptr, list<Item*>{});
+    } break;
+
+    case Yeti: {
+      *this = Monster(19, 12, 15, 9, 12, 10, 1200, 6, 16, 10, vector<damage>{{2,6}},
+      pos, vector<Feat>{AttacksOnSight}, 1, Race::MonstrousHumanoid,
+      'y', 'y', Monster::Yeti, nullptr, list<Item*>{});
+    } break;
+
+    case Aquator: {
+      *this = Monster(10, 17, 13, 2, 13, 8, 800, 5, 15, 8, vector<damage>{{1,3}},
+      pos, vector<Feat>{AttacksOnSight, AttackRuinsMetal}, 1, Race::Aberration,
+      'a', 'a', Monster::Aquator, nullptr, list<Item*>{});
+    } break;
+
+    case Troll: {
+      *this = Monster(21, 14, 23, 6, 9, 6, 1600, 6, 14, 8, vector<damage>{{1,8},{1,6}},
+      pos, vector<Feat>{Regenerating5}, 1, Race::Giant,
+      'T', 'T', Monster::Troll, nullptr, list<Item*>{});
+    } break;
+
+    case Erinyes: {
+      *this = Monster(20, 23, 21, 14, 18, 21, 4800, 10, 17, 10,
+      vector<damage>{{1,8}},
+      pos, vector<Feat>{AttacksOnSight}, 1, Race::Outsider,
+      'e', 'e', Monster::Erinyes, nullptr, Item::random_items_chance(20, 1, 1));
+    } break;
+
+    case ShadowDemon: {
+      *this = Monster(10, 18, 17, 14, 14, 19, 3200, 7, 14, 10,
+      vector<damage>{{1,6},{1,6}},
+      pos, vector<Feat>{AttacksOnSight, PermanentlyInvisible}, 1, Race::Outsider,
+      'S', 'S', Monster::ShadowDemon, nullptr, {});
+    } break;
+
+    case Nightmare: {
+      *this = Monster(18, 15, 16, 13, 13, 12, 1600, 6, 17, 10,
+      vector<damage>{{1,6},{1,6}},
+      pos, vector<Feat>{AttacksOnSight}, 1, Race::Outsider,
+      'n', 'n', Monster::Nightmare, nullptr, list<Item*>{});
+    } break;
+
+    case GenieDjinni: {
+      *this = Monster(18, 19, 14, 14, 15, 15, 1600, 7, 15, 10,
+      vector<damage>{{1,8}},
+      pos, vector<Feat>{Planeshift, TurnInvisible}, 1, Race::Outsider,
+      'g', 'g', Monster::GenieDjinni, nullptr, Item::random_items_chance(20, 1, 1));
+    } break;
+
+    case GenieVizier: {
+      *this = Monster(23, 19, 14, 14, 15, 17, 1600, 7, 15, 12,
+      vector<damage>{{1,8}},
+      pos, vector<Feat>{Planeshift, TurnInvisible}, 1, Race::Outsider,
+      'g', 'g', Monster::GenieVizier, nullptr, Item::random_items_chance(20, 1, 1));
+    } break;
+
+    case GenieEfreeti: {
+      *this = Monster(23, 17, 18, 12, 14, 15, 4800, 10, 18, 10,
+      vector<damage>{{2,6}},
+      pos, vector<Feat>{Planeshift, ScorchingRay, AttacksOnSight}, 1, Race::Outsider,
+      'g', 'g', Monster::GenieEfreeti, nullptr, Item::random_items_chance(20, 1, 1));
+    } break;
+
+    case GenieJanni: {
+      *this = Monster(16, 15, 12, 14, 15, 14, 1200, 6, 18, 10,
+      vector<damage>{{1,6}},
+      pos, vector<Feat>{}, 1, Race::Outsider,
+      'g', 'g', Monster::GenieJanni, nullptr, Item::random_items_chance(20, 1, 1));
+    } break;
+
+    case GenieMarid: {
+      *this = Monster(23, 19, 18, 14, 15, 16, 6400, 12, 19, 10,
+      vector<damage>{{2,6},{2,6}},
+      pos, vector<Feat>{Planeshift, TurnInvisible}, 1, Race::Outsider,
+      'g', 'g', Monster::GenieMarid, nullptr, Item::random_items_chance(20, 1, 1));
+    } break;
+
+    case GenieShaitan: {
+      *this = Monster(20, 13, 19, 14, 14, 15, 3200, 10, 19, 10,
+      vector<damage>{{1,8}},
+      pos, vector<Feat>{Planeshift, MoveThroughStone}, 1, Race::Outsider,
+      'g', 'g', Monster::GenieShaitan, nullptr, Item::random_items_chance(20, 1, 1));
+    } break;
+
+    case AdultRedDragon: {
+      *this = Monster(31, 10, 23, 16, 17, 16, 38400, 17, 30, 12,
+      vector<damage>{{2,6},{2,6}},
+      pos, vector<Feat>{AttacksOnSight, BreatheConeFireMedium},
+      1, Race::Dragon, 'D', 'D', Monster::AdultRedDragon, nullptr,
+      Item::random_items(1,4));
+    } break;
+
+    case Jabberwock: {
+      *this = Monster(37, 20, 33, 12, 29, 26, 819200, 26, 36, 12,
+      vector<damage>{{3,6},{3,6}},
+      pos, vector<Feat>{AttacksOnSight},
+      1, Race::Dragon, 'J', 'J', Monster::Jabberwock, nullptr,
+      Item::random_items(1,4));
+    } break;
+
+    case NMONSTERS: error("Unknown monster NMONSTERS");
+  }
 
   if (player != nullptr && player->has_ring_with_ability(Ring::AggravateMonsters)) {
     monster_start_running(&pos);
-  }
-
-  if (subtype == Monster::Xeroc) {
-    disguise = rnd_thing();
   }
 }
 
@@ -264,50 +375,37 @@ void Monster::notice_player() {
   }
 }
 
-void Monster::give_pack() {
-  if (os_rand_range(100) >= monster_data(subtype).m_carry) {
-    return;
-  }
+string Monster::name(Type subtype) {
+  switch (subtype) {
+    case Bat:              return "bat";
+    case Goblin:           return "goblin";
+    case Kobold:           return "kobold";
+    case Orc:              return "orc";
+    case SkeletonHuman:    return "human skeleton";
+    case Hobgoblin:        return "hobgoblin";
+    case ZombieHuman:      return "human zombie";
+    case Quasit:           return "quasit";
+    case Worg:             return "worg";
+    case Ogre:             return "ogre";
+    case Yeti:             return "yeti";
+    case IceMonster:       return "ice monster";
+    case Aquator:          return "aquator";
+    case Troll:            return "troll";
+    case ShadowDemon:      return "shadow demon";
+    case Erinyes:          return "erinyes";
+    case Nightmare:        return "nightmare";
+    case GenieDjinni:      return "djinni";
+    case GenieVizier:      return "vizier";
+    case GenieEfreeti:     return "efreeti";
+    case GenieJanni:       return "janni";
+    case GenieMarid:       return "marid";
+    case GenieShaitan:     return "shaitan";
+    case AdultRedDragon:   return "adult red dragon";
+    case Jabberwock:       return "jabberwock";
 
-  // Leprechauns are rich
-  if (subtype == Monster::Leprechaun) {
-    int gold_amount = 1;
-    int gold_exp = os_rand_range(5);
-    for (int i = 0; i < gold_exp; ++i) {
-      gold_amount += Gold::random_gold_amount();
-    }
-    pack.push_back(new Gold(gold_amount));
+    case NMONSTERS: error("Unknown monster NMONSTERS");
   }
-
-  pack.push_back(Item::random());
 }
-
-string const& Monster::name(Type subtype) {
-  return monster_data(subtype).m_name;
-}
-
-Monster::Template const& Monster::monster_data(Monster::Type subtype) {
-  // Special case when printing highscore
-  bool did_temp_allocation = false;
-  if (monsters == nullptr) {
-    init_monsters();
-    did_temp_allocation = true;
-  }
-
-  for (Template const& mon : *monsters) {
-    if (subtype == mon.m_subtype) {
-
-      if (did_temp_allocation) {
-        free_monsters();
-      }
-
-      return mon;
-    }
-  }
-  error("Non-templated subtype: " + to_string(subtype));
-}
-
-
 
 int
 monster_save_throw(int which, Monster const* mon)
@@ -611,7 +709,7 @@ bool monster_try_breathe_fire_on_player(Monster const& monster) {
   Coordinate mon_coord = monster.get_position();
   Coordinate player_coord = player->get_position();
   int const dragonshot_chance = 5;
-  if (monster.get_subtype() == Monster::Dragon &&
+  if (monster.get_subtype() == Monster::AdultRedDragon &&
       (mon_coord.y == player_coord.y ||
        mon_coord.x == player_coord.x ||
        abs(mon_coord.y - player_coord.y) == abs(mon_coord.x - player_coord.x)) &&
@@ -633,35 +731,14 @@ bool monster_try_breathe_fire_on_player(Monster const& monster) {
   return false;
 }
 
-void Monster::find_new_target()
-{
-  int prob = monster_data(subtype).m_carry;
-  if (prob <= 0 || player->can_see(*this)) {
+void Monster::find_new_target() {
+  // Currently, this function only makes it target the player
+
+  if (player->can_see(*this)) {
     set_target(&player->get_position());
-    return;
   }
 
-  for (Item* obj : Game::level->items) {
-    if (obj->o_type == IO::Scroll && obj->o_which == Scroll::SCARE)
-      continue;
-
-    if (Game::level->get_room(obj->get_position()) == 
-        Game::level->get_room(get_position()) &&
-        os_rand_range(100) < prob)
-    {
-      auto result = find_if(Game::level->monsters.cbegin(), Game::level->monsters.cend(),
-          [&] (Monster const* m) {
-          return m->get_target() == &obj->get_position();
-      });
-
-      if (result == Game::level->monsters.cend()) {
-        set_target(&obj->get_position());
-        return;
-      }
-    }
-  }
-
-  set_target(&player->get_position());
+  set_target(nullptr);
 }
 
 Monster::Type Monster::get_subtype() const {

@@ -156,17 +156,6 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
   command_stop(false);
   Daemons::daemon_reset_doctor();
 
-  /* Let him know it was really a xeroc (if it was one) */
-  if (!player->is_blind() && tp->get_subtype() == Monster::Xeroc &&
-      tp->get_disguise() != tp->get_look()) {
-
-    tp->set_disguise(tp->get_look());
-    Game::io->message("wait!  That's a xeroc!");
-    if (!thrown) {
-      return false;
-    }
-  }
-
   if (roll_attacks(player, tp, weapon, thrown)) {
 
     if (tp->get_health() <= 0) {
@@ -237,12 +226,6 @@ fight_against_player(Monster* mp) {
   // Stop fighting to death if we are backstabbed
   if (to_death && !mp->is_players_target()) {
     to_death = false;
-  }
-
-  // If it's a xeroc, tag it as known
-  if (!player->is_blind() && mp->get_subtype() == Monster::Xeroc &&
-      mp->get_disguise() != mp->get_look()) {
-    mp->set_disguise(mp->get_look());
   }
 
   if (roll_attacks(mp, player, nullptr, false)) {

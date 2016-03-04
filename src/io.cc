@@ -153,30 +153,34 @@ bool IO::print_monster(int x, int y, Monster* monster) {
 
   if (monster->get_look() == monster->get_disguise()) {
     switch (monster->get_subtype()) {
-      case Monster::Aquator:        attr = Blue; break;
       case Monster::Bat:            attr = BoldBlack; break;
-      case Monster::Centaur:        attr = BoldYellow; break;
-      case Monster::Dragon:         attr = BoldRed; break;
       case Monster::Goblin:         attr = Yellow; break;
-      case Monster::Griffin:        attr = BoldYellow; break;
-      case Monster::Hobgoblin:      attr = Green; break;
-      case Monster::IceMonster:     attr = Cyan; break;
-      case Monster::Jabberwock:     attr = BoldMagenta; break;
       case Monster::Kobold:         attr = BoldYellow; break;
-      case Monster::Leprechaun:     attr = BoldGreen; break;
-      case Monster::Nymph:          attr = BoldGreen; break;
       case Monster::Orc:            attr = BoldYellow; break;
-      case Monster::Phantom:        attr = BoldBlack; break;
-      case Monster::Quagga:         attr = BoldWhite; break;
-      case Monster::Rattlesnake:    attr = Red; break;
-      case Monster::Snake:          attr = Green; break;
-      case Monster::Troll:          attr = BoldGreen; break;
-      case Monster::BlackUnicorn:   attr = BoldBlack; break;
-      case Monster::Vampire:        attr = BoldRed; break;
-      case Monster::Wraith:         attr = BoldBlack; break;
-      case Monster::Xeroc:          attr = BoldCyan; break;
+      case Monster::Hobgoblin:      attr = Green; break;
+      case Monster::ZombieHuman:    attr = BoldYellow; break;
+      case Monster::SkeletonHuman:  attr = BoldYellow; break;
+
+      case Monster::Quasit:         attr = Red; break;
+      case Monster::Worg:           attr = BoldBlack; break;
+      case Monster::Ogre:           attr = BoldYellow; break;
       case Monster::Yeti:           attr = BoldWhite; break;
-      case Monster::Zombie:         attr = BoldYellow; break;
+      case Monster::IceMonster:     attr = BoldCyan; break;
+      case Monster::Aquator:        attr = Blue; break;
+      case Monster::Troll:          attr = BoldGreen; break;
+
+      case Monster::ShadowDemon:    attr = BoldBlack; break;
+      case Monster::Erinyes:        attr = BoldMagenta; break;
+      case Monster::Nightmare:      attr = BoldRed; break;
+      case Monster::GenieDjinni:    attr = BoldBlue; break;
+      case Monster::GenieVizier:    attr = Blue; break;
+      case Monster::GenieEfreeti:   attr = BoldRed; break;
+      case Monster::GenieJanni:     attr = BoldGreen; break;
+      case Monster::GenieMarid:     attr = BoldBlue; break;
+      case Monster::GenieShaitan:   attr = BoldYellow; break;
+
+      case Monster::AdultRedDragon: attr = BoldRed; break;
+      case Monster::Jabberwock:     attr = BoldMagenta; break;
 
       case Monster::NMONSTERS: error("Bad monster subtype NMONSTERS");
     }

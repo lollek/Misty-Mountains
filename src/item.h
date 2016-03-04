@@ -3,6 +3,7 @@
 #include <string>
 #include <istream>
 #include <ostream>
+#include <list>
 
 #include "damage.h"
 #include "coordinate.h"
@@ -87,9 +88,11 @@ public:
   virtual bool          load(std::istream&);
 
   // Static
-  static int         probability(Type type);
-  static std::string name(Type type);
-  static Item*       random();
+  static int                probability(Type type);
+  static std::string        name(Type type);
+  static Item*              random();
+  static std::list<Item*>   random_items(int dices, int sides);
+  static std::list<Item*>   random_items_chance(int percentage, int dices, int sides);
 
 protected:
   Item();

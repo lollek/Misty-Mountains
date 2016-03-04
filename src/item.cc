@@ -1,5 +1,6 @@
 #include <string>
 
+#include "misc.h"
 #include "gold.h"
 #include "disk.h"
 #include "amulet.h"
@@ -196,6 +197,22 @@ Item* Item::random() {
     case Gold:   return new class Gold();
     case NITEMS: error("Unknown type NITEMS");
   }
+}
+
+list<Item*> Item::random_items_chance(int percentage, int dices, int sides) {
+  return os_rand_range(100) > percentage
+    ? random_items(dices, sides)
+    : list<Item*>{};
+}
+
+list<Item*> Item::random_items(int dices, int sides) {
+  list<Item*> return_list;
+
+  for (int i = roll(dices, sides); i > 0; --i) {
+    return_list.push_back(random());
+  }
+
+  return return_list;
 }
 
 void Item::save(std::ostream& data) const {

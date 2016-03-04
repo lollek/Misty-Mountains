@@ -8,43 +8,30 @@
 
 using namespace std;
 
-Character::Character(int str_, int dex_, int con_, int wis_, int int_, int cha_,
+Character::Character(int str_, int dex_, int con_, int int_, int wis_, int cha_,
     int exp_, int lvl_, int ac_, int hd_, std::vector<damage> const& attacks_,
-    Coordinate const& position_, unsigned long long flags, int speed_, Race race_) :
+    Coordinate const& position_, vector<Feat> const& feats_, int speed_, Race race_) :
 
   strength{str_}, default_strength{str_},
   dexterity{dex_}, default_dexterity{dex_},
   constitution{con_}, default_constitution{con_},
-  wisdom{con_}, default_wisdom{wis_},
   intelligence{int_}, default_intelligence{int_},
+  wisdom{con_}, default_wisdom{wis_},
   charisma{cha_}, default_charisma{cha_},
 
   experience{exp_}, level{lvl_}, base_ac{ac_}, hit_dice{hd_},
   base_health{hit_dice + roll(level-1, hit_dice)},
   health{get_max_health()},
   attacks{attacks_}, position{position_}, speed{speed_}, race{race_},
-  turns_not_moved{0},
+  feats{feats_}, turns_not_moved{0},
 
   confusing_attack{0}, true_sight{0}, blind{0}, cancelled{0}, levitating{0},
   found{0}, greedy{0}, players_target{0}, held{0}, confused{0},
   invisible{0}, mean{0}, regenerating{0}, running{0},
-  flying{0}, stuck{0}, attack_freeze{0}, attack_damage_armor{0},
+  stuck{0}, attack_freeze{0}, attack_damage_armor{0},
   attack_steal_gold{0}, attack_steal_item{0}, attack_drain_strength{0},
   attack_drain_health{0}, attack_drain_experience{0}
-{
-  if (flags & 010000000000000000000) { greedy = true; }
-  if (flags & 020000000000000000000) { mean = true; }
-  if (flags & 040000000000000000000) { flying = true; }
-  if (flags & 001000000000000000000) { regenerating = true; }
-  if (flags & 002000000000000000000) { invisible = true; }
-  if (flags & 004000000000000000000) { attack_freeze = true; }
-  if (flags & 000100000000000000000) { attack_damage_armor = true; }
-  if (flags & 000200000000000000000) { attack_steal_gold = true; }
-  if (flags & 000400000000000000000) { attack_steal_item = true; }
-  if (flags & 000010000000000000000) { attack_drain_strength = true; }
-  if (flags & 000020000000000000000) { attack_drain_health = true; }
-  if (flags & 000040000000000000000) { attack_drain_experience = true; }
-}
+{}
 
 int  Character::get_speed() const { return speed; }
 bool Character::is_blind() const { return blind; }
@@ -62,7 +49,6 @@ bool Character::is_running() const { return running; }
 bool Character::is_mean() const { return mean; }
 bool Character::is_greedy() const { return greedy; }
 bool Character::is_players_target() const { return players_target; }
-bool Character::is_flying() const { return flying; }
 bool Character::attack_freezes() const { return attack_freeze; }
 bool Character::attack_damages_armor() const { return attack_damage_armor; }
 bool Character::attack_steals_gold() const { return attack_steal_gold; }
@@ -225,8 +211,6 @@ void Character::gain_experience(int experience_) {
 void Character::set_not_mean() { mean = false; }
 void Character::set_greedy() { greedy = true; }
 void Character::set_not_greedy() { greedy = false; }
-void Character::set_flying() { flying = true; }
-void Character::set_not_flying() { flying = false; }
 void Character::set_running() { running = true; }
 void Character::set_not_running() { running = false; }
 void Character::set_chasing() { running = true; }
@@ -290,7 +274,6 @@ void Character::save(ostream& data) const {
   Disk::save(TAG_FLAG, mean, data);
   Disk::save(TAG_FLAG, regenerating, data);
   Disk::save(TAG_FLAG, running, data);
-  Disk::save(TAG_FLAG, flying, data);
   Disk::save(TAG_FLAG, stuck, data);
   Disk::save(TAG_FLAG, attack_freeze, data);
   Disk::save(TAG_FLAG, attack_damage_armor, data);
@@ -345,7 +328,6 @@ bool Character::load(istream& data) {
       !Disk::load(TAG_FLAG, mean, data) ||
       !Disk::load(TAG_FLAG, regenerating, data) ||
       !Disk::load(TAG_FLAG, running, data) ||
-      !Disk::load(TAG_FLAG, flying, data) ||
       !Disk::load(TAG_FLAG, stuck, data) ||
       !Disk::load(TAG_FLAG, attack_freeze, data) ||
       !Disk::load(TAG_FLAG, attack_damage_armor, data) ||
@@ -438,20 +420,20 @@ Character::Race Character::get_race() const {
 
 string Character::race_to_string(Race race) {
   switch (race) {
-    case Human: return "human";
-
-    case Animal: return "animal";
-    case Reptilian: return "reptilian";
-    case Goblinoid: return "goblinoid";
-    case Elemental: return "elemental";
-    case Fey: return "fey";
-    case Orc: return "orc";
-    case Undead: return "undead";
-    case Humanoid: return "humanoid";
+    case Human:             return "human";
+    case Animal:            return "animal";
+    case Reptilian:         return "reptilian";
+    case Goblinoid:         return "goblinoid";
+    case Elemental:         return "elemental";
+    case Fey:               return "fey";
+    case Orc:               return "orc";
+    case Undead:            return "undead";
+    case Humanoid:          return "humanoid";
     case MonstrousHumanoid: return "monstrous humanoid";
-    case Aberration: return "aberration";
-    case MagicBeast: return "magic beast";
-    case Dragon: return "dragon";
-
+    case Aberration:        return "aberration";
+    case MagicBeast:        return "magic beast";
+    case Dragon:            return "dragon";
+    case Outsider:          return "outsider";
+    case Giant:             return "giant";
   }
 }

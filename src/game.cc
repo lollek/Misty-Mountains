@@ -116,7 +116,6 @@ Game::Game(string const& whoami_, string const& save_path_)
   Ring::init_rings();                   // Stone settings of rings
   Wand::init_wands();                   // Materials of wands
   Daemons::init_daemons();              // Over-time-effects
-  Monster::init_monsters();             // Monster types
   Trap::init_traps();                   // Trap types
   io->character_creation();             // New player
   new_level(current_level);             // New Level
@@ -131,7 +130,6 @@ Game::Game(string const& whoami_, string const& save_path_)
 
 Game::~Game() {
   Trap::free_traps();
-  Monster::free_monsters();
   Daemons::free_daemons();
   Wand::free_wands();
   Ring::free_rings();
@@ -165,7 +163,6 @@ Game::Game(istream& savefile) {
     Ring::load_rings(savefile);
     Wand::load_wands(savefile);
     Daemons::load_daemons(savefile);
-    Monster::init_monsters();
     Trap::init_traps();
     Player::load_player(savefile);
     //level = new Level(savefile);

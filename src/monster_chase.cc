@@ -27,9 +27,7 @@ static Coordinate chase(Monster& monster, Coordinate const& target) {
   // If the thing is confused, let it move randomly.
   // * Invisible Stalkers are slightly confused all of the time
   // * Bats are quite confused all the time
-  if ((monster.is_confused() && os_rand_range(5) != 0)
-      || (monster.get_subtype() == Monster::Phantom && os_rand_range(5) == 0)
-      || (monster.get_subtype() == Monster::Bat && os_rand_range(2) == 0)) {
+  if ((monster.is_confused() && os_rand_range(5) != 0)) {
 
     // Small chance that it will become un-confused
     if (os_rand_range(20) == 0) {
@@ -57,12 +55,6 @@ static Coordinate chase(Monster& monster, Coordinate const& target) {
         Item* xy_item = Game::level->get_item(xy.x, xy.y);
         if (xy_item != nullptr && xy_item->o_type == IO::Scroll &&
             xy_item->o_which == Scroll::SCARE) {
-          continue;
-        }
-
-        // It can also be a Xeroc, which we shouldn't step on
-        Monster* obj = Game::level->get_monster(xy.x, xy.y);
-        if (obj != nullptr && obj->get_subtype() == Monster::Xeroc) {
           continue;
         }
 
