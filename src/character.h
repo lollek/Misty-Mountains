@@ -9,6 +9,8 @@ class Character {
 public:
   enum Race : int {
     Human,
+    Dwarf,
+    Elf,
 
     Animal,
     Reptilian,

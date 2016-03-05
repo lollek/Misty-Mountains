@@ -615,10 +615,26 @@ void IO::resume_curses() {
 
 void IO::character_creation() {
   vector<int> stats;
+  Character::Race race;
+
+  stringstream ss;
+
+  ss << "Name :\n"
+     << "Race :\n"
+     << "Class:\n"
+     << "\n"
+     << "STR  :\n"
+     << "DEX  :\n"
+     << "CON  :\n"
+     << "INT  :\n"
+     << "WIS  :\n"
+     << "CHA  :\n";
+
+  print_string(0, 2, ss.str());
+  ss.str("");
 
   // Roll stats
   for (;;) {
-    stringstream ss;
     stats.clear();
 
     while (stats.size() < 6) {
@@ -627,31 +643,53 @@ void IO::character_creation() {
       stats.push_back(accumulate(rolls.begin() + 1, rolls.end(), 0));
     }
 
-    ss << "Character Statistics\n\n"
-      << "Str, Dex, Con, Wis, Int, Cha\n"
-
-      << setw(3) << stats.at(0) << ", "
-      << setw(3) << stats.at(1) << ", "
-      << setw(3) << stats.at(2) << ", "
-      << setw(3) << stats.at(3) << ", "
-      << setw(3) << stats.at(4) << ", "
-      << setw(3) << stats.at(5) << "\n\n"
-
-      << "ESC to quit, SPACE to reroll, y to continue\n";
-
-    print_string(0, 0, ss.str());
+    ss << "STR  :" << setw(3) << stats.at(0) << "\n"
+       << "DEX  :" << setw(3) << stats.at(1) << "\n"
+       << "CON  :" << setw(3) << stats.at(2) << "\n"
+       << "INT  :" << setw(3) << stats.at(3) << "\n"
+       << "WIS  :" << setw(3) << stats.at(4) << "\n"
+       << "CHA  :" << setw(3) << stats.at(5) << "\n";
+    print_string(0, 6, ss.str());
+    print_string(0, 0, "SPACE to reroll stats. 'y' to accept stats");
+    ss.str("");
 
     char ch = readchar(false);
-    while (ch != 'y' && ch != KEY_SPACE && ch != KEY_ESCAPE) {
+    while (ch != 'y' && ch != KEY_SPACE) {
       ch = readchar(false);
     }
     if (ch == 'y') {
       break;
-    } else if (ch == KEY_ESCAPE) {
-      Game::exit();
     }
   }
 
-  player = new class Player(stats);
+  // Select Race
+  for (;;) {
+    ss << "Available races:\n"
+       << "(H)uman";
+    print_string(0, 15, ss.str());
+    ss.str("");
+    print_string(0, 0, "Select race");
+    clrtoeol();
+
+    switch (readchar(false)) {
+      case 'h': case 'H': race = Character::Human; break;
+      default: continue;
+    }
+
+    string race_str = Character::race_to_string(race);
+    race_str.at(0) = static_cast<char>(toupper(race_str.at(0)));
+    print_string(0, 3, "Race : " + race_str + "\n");
+
+    print_string(0, 0, "SPACE to repick race, 'y' to accept race");
+    char ch = readchar(false);
+    while (ch != 'y' && ch != KEY_SPACE) {
+      ch = readchar(false);
+    }
+    if (ch == 'y') {
+      break;
+    }
+  }
+
+  player = new class Player(stats, race);
   clear_screen();
 }

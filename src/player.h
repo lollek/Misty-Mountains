@@ -21,7 +21,7 @@ enum Equipment {
 
 class Player : public Character {
 public:
-  explicit Player(std::vector<int> stats);
+  explicit Player(std::vector<int> stats, Race race);
   ~Player();
 
   Player(Player const&) = delete;

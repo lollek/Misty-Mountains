@@ -45,10 +45,10 @@ bool         player_alerted              = false;
 #define SLEEPTIME       spread(7)   /* Sleep */
 #define STUCKTIME       spread(3)   /* Stuck */
 
-Player::Player(vector<int> stats) :
+Player::Player(vector<int> stats, Race race) :
   Character(stats.at(0), stats.at(1), stats.at(2), stats.at(3), stats.at(4),
             stats.at(5), 0, 1, 10, 12, {{1,4}}, Coordinate(),
-            vector<Feat>{}, 1, Race::Human),
+            vector<Feat>{}, 1, race),
   previous_room(nullptr), senses_monsters(false), senses_magic(false),
   pack(), equipment(equipment_size(), nullptr), gold(0),
   nutrition_left(get_starting_nutrition()) {
