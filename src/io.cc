@@ -232,6 +232,18 @@ void IO::print_coordinate_seen(Coordinate const& coord) {
   print_tile(coord.x, coord.y, Game::level->get_tile(coord));
 }
 
+static IO::Attribute base_color(int x, int y) {
+  if (Game::level->is_dark(x, y)) {
+    return IO::BoldBlack;
+  } else if (Game::current_level > 7 && Game::current_level < 14) {
+    return IO::Cyan;
+  } else if (Game::current_level > 13 && Game::current_level < 21) {
+    return IO::Magenta;
+  } else {
+    return IO::Yellow;
+  }
+}
+
 void IO::print_tile(int x, int y, ::Tile::Type tile) {
   chtype char_to_print = '?';
   IO::Attribute attr = IO::None;
@@ -253,22 +265,22 @@ void IO::print_tile(int x, int y, ::Tile::Type tile) {
 
     case ::Tile::Type::OpenDoor: {
       char_to_print = IO::OpenDoor;
-      attr = Game::level->is_dark(x, y) ? IO::BoldBlack : IO::Yellow;
+      attr = base_color(x, y);
     } break;
 
     case ::Tile::Type::Floor: {
       char_to_print = IO::Floor;
-      attr = Game::level->is_dark(x, y) ? IO::BoldBlack : IO::Yellow;
+      attr = base_color(x, y);
     } break;
 
     case ::Tile::Type::StairsDown: {
       char_to_print = IO::StairsDown;
-      attr = Game::level->is_dark(x, y) ? IO::BoldBlack : IO::Yellow;
+      attr = base_color(x, y);
     } break;
 
     case ::Tile::Type::StairsUp: {
       char_to_print = IO::StairsUp;
-      attr = Game::level->is_dark(x, y) ? IO::BoldBlack : IO::Yellow;
+      attr = base_color(x, y);
     } break;
 
     case ::Tile::Type::Shop: {
