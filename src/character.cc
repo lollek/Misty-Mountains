@@ -138,8 +138,7 @@ int Character::get_default_strength() const {
 void Character::restore_health(int amount, bool can_raise_max_health) {
   health += amount;
 
-  if (can_raise_max_health)
-  {
+  if (can_raise_max_health) {
     int extra_max_hp = 0;
     if (health > get_max_health() + level + 1)
       ++extra_max_hp;
