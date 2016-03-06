@@ -82,6 +82,16 @@ bool Character::attacks_on_sight() const {
   return has_feat(AttacksOnSight);
 }
 
+void Character::add_feat(Feat feat) {
+  if (!has_feat(feat)) {
+    feats.push_back(feat);
+  }
+}
+
+void Character::set_attacks_on_sight() {
+  add_feat(AttacksOnSight);
+}
+
 void Character::set_held() {
   held = true;
   running = false;

@@ -152,6 +152,7 @@ public:
   virtual void set_not_players_target();
   virtual void set_running();
   virtual void set_not_running();
+  virtual void set_attacks_on_sight();
 
   virtual void  save(std::ostream&) const;
   virtual bool  load(std::istream&);
@@ -170,6 +171,7 @@ protected:
   explicit Character(Character&&) = default;
   Character& operator=(Character const&) = default;
 
+  virtual void add_feat(Feat feat);
   virtual bool has_feat(Feat feat) const;
 
 

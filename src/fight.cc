@@ -139,9 +139,8 @@ print_attack(bool hit, Character* attacker, Character* defender) {
   Game::io->message(ss.str());
 }
 
-int
-fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
-                      string const* name_override) {
+int fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
+                          string const* name_override) {
 
   if (monster_pos == nullptr) {
     error("monster_pos was null");
@@ -214,8 +213,7 @@ fight_against_monster(Coordinate const* monster_pos, Item* weapon, bool thrown,
   return false;
 }
 
-int
-fight_against_player(Monster* mp) {
+int fight_against_player(Monster* mp) {
 
   // Since this is an attack, stop running and any healing that was
   // going on at the time
