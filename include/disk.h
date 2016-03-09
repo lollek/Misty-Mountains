@@ -6,11 +6,11 @@
 #include <list>
 #include <string>
 
-#include "daemons.h"     // disk_structs.m
-#include "coordinate.h"  // disk_structs.m
-#include "damage.h"      // disk_structs.m
-#include "item.h"        // disk_simple.m
-#include "character.h"   // disk_simple.m
+#include "daemons.h"     // disk/structs.m
+#include "coordinate.h"  // disk/structs.m
+#include "damage.h"      // disk/structs.m
+#include "item.h"        // disk/simple_types.m
+#include "character.h"   // disk/simple_types.m
 
 namespace Disk {
   using tag_type = unsigned long long;
@@ -36,9 +36,9 @@ namespace Disk {
   template <template <class, class> class C, class T>
   bool load(tag_type, C<T, std::allocator<T>>&, std::istream&);
 
-#include "disk_simple.m"
-#include "disk_pointers.m"
-#include "disk_structs.m"
-#include "disk_container.m"
+#include "disk/simple_types.m"
+#include "disk/pointers.m"
+#include "disk/structs.m"
+#include "disk/containers.m"
 
 }
