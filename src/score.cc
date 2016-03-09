@@ -5,7 +5,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-#include "include/misty_mountains.h"
+#include "misty_mountains.h"
 #include "game.h"
 #include "io.h"
 #include "os.h"
