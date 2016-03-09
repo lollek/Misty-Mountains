@@ -1,0 +1,4 @@
+#pragma once
+
+#define SCOREPATH @SCOREPATH@
+#define VERSION @VERSION@
