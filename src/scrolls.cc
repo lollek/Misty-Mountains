@@ -2,7 +2,7 @@
 #include <string>
 #include <sstream>
 
-#include "armor.h"
+#include "item/armor.h"
 #include "disk.h"
 #include "magic.h"
 #include "error_handling.h"
@@ -17,13 +17,13 @@
 #include "options.h"
 #include "os.h"
 #include "player.h"
-#include "potions.h"
-#include "rings.h"
+#include "item/potions.h"
+#include "item/rings.h"
 #include "rogue.h"
-#include "wand.h"
-#include "weapons.h"
+#include "item/wand.h"
+#include "item/weapons.h"
 
-#include "scrolls.h"
+#include "item/scrolls.h"
 
 using namespace std;
 

@@ -2,12 +2,12 @@
 #include <sstream>
 
 #include "io.h"
-#include "food.h"
+#include "item/food.h"
 #include "player.h"
 #include "game.h"
-#include "weapons.h"
-#include "armor.h"
-#include "scrolls.h"
+#include "item/weapons.h"
+#include "item/armor.h"
+#include "item/scrolls.h"
 
 #include "shop.h"
 

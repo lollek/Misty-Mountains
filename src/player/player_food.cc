@@ -1,6 +1,6 @@
 #include <vector>
 
-#include "food.h"
+#include "item/food.h"
 #include "death.h"
 #include "command.h"
 #include "game.h"

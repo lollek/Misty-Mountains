@@ -17,7 +17,7 @@
 #include "player.h"
 #include "rogue.h"
 
-#include "weapons.h"
+#include "item/weapons.h"
 
 using namespace std;
 

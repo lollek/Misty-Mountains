@@ -7,14 +7,14 @@
 #include "error_handling.h"
 #include "io.h"
 #include "item.h"
+#include "item/rings.h"
 #include "misc.h"
 #include "options.h"
 #include "os.h"
 #include "player.h"
-#include "rings.h"
 #include "rogue.h"
 
-#include "armor.h"
+#include "item/armor.h"
 
 using namespace std;
 

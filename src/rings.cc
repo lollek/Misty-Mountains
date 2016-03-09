@@ -15,10 +15,10 @@
 #include "os.h"
 #include "player.h"
 #include "rogue.h"
-#include "weapons.h"
+#include "item/weapons.h"
 #include "monster.h"
 
-#include "rings.h"
+#include "item/rings.h"
 
 using namespace std;
 

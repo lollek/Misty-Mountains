@@ -12,7 +12,7 @@
 #include "death.h"
 #include "score.h"
 #include "misc.h"
-#include "level_rooms.h"
+#include "level/rooms.h"
 #include "player.h"
 #include "options.h"
 #include "os.h"

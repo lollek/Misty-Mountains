@@ -4,7 +4,7 @@
 #include "os.h"
 #include "game.h"
 
-#include "gold.h"
+#include "item/gold.h"
 
 using namespace std;
 

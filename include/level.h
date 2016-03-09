@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "level_rooms.h"
+#include "level/rooms.h"
 #include "traps.h"
 #include "monster.h"
 #include "item.h"

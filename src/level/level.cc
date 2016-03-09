@@ -1,7 +1,7 @@
 #include <list>
 #include <algorithm>
 
-#include "amulet.h"
+#include "item/amulet.h"
 #include "error_handling.h"
 #include "game.h"
 #include "traps.h"
@@ -10,7 +10,7 @@
 #include "monster.h"
 #include "misc.h"
 #include "player.h"
-#include "level_rooms.h"
+#include "level/rooms.h"
 #include "os.h"
 #include "rogue.h"
 

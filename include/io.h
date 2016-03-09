@@ -4,7 +4,7 @@
 
 #include <string.h>
 
-#include "level_rooms.h"
+#include "level/rooms.h"
 #include "coordinate.h"
 #include "item.h"
 #include "monster.h"

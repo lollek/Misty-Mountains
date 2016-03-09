@@ -1,6 +1,8 @@
 #include <string>
 #include <sstream>
 
+#include "item/rings.h"
+
 #include "options.h"
 #include "disk.h"
 #include "error_handling.h"
@@ -8,11 +10,10 @@
 #include "command.h"
 #include "io.h"
 #include "player.h"
-#include "rings.h"
 #include "os.h"
 #include "death.h"
 
-#include "food.h"
+#include "item/food.h"
 
 using namespace std;
 

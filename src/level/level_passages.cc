@@ -7,7 +7,7 @@
 #include "coordinate.h"
 #include "io.h"
 #include "os.h"
-#include "level_rooms.h"
+#include "level/rooms.h"
 #include "rogue.h"
 
 #include "level.h"

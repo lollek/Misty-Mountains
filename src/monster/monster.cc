@@ -3,7 +3,7 @@
 #include <sstream>
 #include <algorithm>
 
-#include "gold.h"
+#include "item/gold.h"
 #include "disk.h"
 #include "magic.h"
 #include "command.h"
@@ -11,14 +11,14 @@
 #include "error_handling.h"
 #include "game.h"
 #include "io.h"
-#include "scrolls.h"
-#include "rings.h"
+#include "item/scrolls.h"
+#include "item/rings.h"
 #include "misc.h"
 #include "level.h"
 #include "player.h"
-#include "weapons.h"
+#include "item/weapons.h"
 #include "os.h"
-#include "armor.h"
+#include "item/armor.h"
 #include "options.h"
 #include "rogue.h"
 #include "death.h"

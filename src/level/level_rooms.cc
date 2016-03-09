@@ -2,7 +2,7 @@
 
 using namespace std;
 
-#include "gold.h"
+#include "item/gold.h"
 #include "error_handling.h"
 #include "game.h"
 #include "coordinate.h"
@@ -14,7 +14,7 @@ using namespace std;
 #include "os.h"
 #include "rogue.h"
 
-#include "level_rooms.h"
+#include "level/rooms.h"
 
 /* position matrix for maze positions */
 struct spot {

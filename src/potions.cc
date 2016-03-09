@@ -17,7 +17,7 @@
 #include "item.h"
 #include "game.h"
 
-#include "potions.h"
+#include "item/potions.h"
 
 using namespace std;
 

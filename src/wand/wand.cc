@@ -20,9 +20,9 @@
 #include "os.h"
 #include "player.h"
 #include "rogue.h"
-#include "weapons.h"
+#include "item/weapons.h"
 
-#include "wand.h"
+#include "item/wand.h"
 
 using namespace std;
 

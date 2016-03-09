@@ -2,7 +2,7 @@
 #include "os.h"
 #include "misc.h"
 #include "game.h"
-#include "scrolls.h"
+#include "item/scrolls.h"
 
 #include "character.h"
 

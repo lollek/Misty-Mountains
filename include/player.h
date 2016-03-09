@@ -4,9 +4,9 @@
 #include <istream>
 #include <ostream>
 
-#include "rings.h"
-#include "weapons.h"
-#include "food.h"
+#include "item/rings.h"
+#include "item/weapons.h"
+#include "item/food.h"
 #include "monster.h"
 
 enum Equipment {

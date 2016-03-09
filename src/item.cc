@@ -1,21 +1,22 @@
 #include <string>
 
+#include "item/gold.h"
+#include "item/amulet.h"
+#include "item/potions.h"
+#include "item/scrolls.h"
+#include "item/food.h"
+#include "item/weapons.h"
+#include "item/armor.h"
+#include "item/rings.h"
+#include "item/wand.h"
+#include "item/armor.h"
+
 #include "misc.h"
-#include "gold.h"
 #include "disk.h"
-#include "amulet.h"
-#include "potions.h"
-#include "scrolls.h"
-#include "food.h"
-#include "weapons.h"
-#include "armor.h"
-#include "rings.h"
-#include "wand.h"
 #include "game.h"
 #include "os.h"
 #include "error_handling.h"
 #include "io.h"
-#include "armor.h"
 
 #include "item.h"
 

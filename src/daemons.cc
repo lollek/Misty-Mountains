@@ -2,13 +2,13 @@
 #include <algorithm>
 #include <sstream>
 
+#include "item/rings.h"
 #include "disk.h"
 #include "error_handling.h"
 #include "game.h"
 #include "io.h"
 #include "command.h"
 #include "monster.h"
-#include "rings.h"
 #include "misc.h"
 #include "player.h"
 #include "level.h"

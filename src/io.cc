@@ -13,11 +13,11 @@
 #include <assert.h>
 #include <curses.h>
 
+#include "item/armor.h"
+#include "item/food.h"
 #include "error_handling.h"
 #include "game.h"
-#include "armor.h"
 #include "command.h"
-#include "food.h"
 #include "level.h"
 #include "misc.h"
 #include "options.h"

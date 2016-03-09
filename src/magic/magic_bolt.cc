@@ -11,7 +11,7 @@
 #include "monster.h"
 #include "os.h"
 #include "player.h"
-#include "weapons.h"
+#include "item/weapons.h"
 #include "death.h"
 #include "rogue.h"
 

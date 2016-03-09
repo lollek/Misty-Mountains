@@ -7,7 +7,7 @@
 
 #include "error_handling.h"
 #include "game.h"
-#include "armor.h"
+#include "item/armor.h"
 #include "colors.h"
 #include "daemons.h"
 #include "io.h"
@@ -17,9 +17,9 @@
 #include "options.h"
 #include "os.h"
 #include "player.h"
-#include "rings.h"
+#include "item/rings.h"
 #include "rogue.h"
-#include "level_rooms.h"
+#include "level/rooms.h"
 
 #include "misc.h"
 

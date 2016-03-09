@@ -16,7 +16,7 @@
 #include "player.h"
 
 #include "score.h"
-#include "score_encio.h"
+#include "score/encio.h"
 
 #define LOCKFILE ".rogue14_lockfile"
 

@@ -1,6 +1,6 @@
 #include <vector>
 
-#include "weapons.h"
+#include "item/weapons.h"
 #include "error_handling.h"
 #include "magic.h"
 #include "monster.h"
@@ -11,7 +11,7 @@
 #include "misc.h"
 #include "rogue.h"
 
-#include "wand.h"
+#include "item/wand.h"
 
 using namespace std;
 

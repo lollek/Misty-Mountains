@@ -2,20 +2,20 @@
 #include <vector>
 #include <sstream>
 
+#include "item/armor.h"
+#include "item/rings.h"
+#include "item/weapons.h"
 #include "wizard.h"
 #include "error_handling.h"
 #include "game.h"
 #include "colors.h"
 #include "command.h"
 #include "io.h"
-#include "armor.h"
 #include "daemons.h"
 #include "monster.h"
-#include "rings.h"
 #include "misc.h"
 #include "level.h"
 #include "player.h"
-#include "weapons.h"
 #include "death.h"
 #include "options.h"
 #include "rogue.h"

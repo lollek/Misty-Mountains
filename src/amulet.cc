@@ -3,7 +3,7 @@
 #include "error_handling.h"
 #include "io.h"
 
-#include "amulet.h"
+#include "item/amulet.h"
 
 using namespace std;
 

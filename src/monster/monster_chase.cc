@@ -2,7 +2,7 @@
 
 #include "error_handling.h"
 #include "game.h"
-#include "scrolls.h"
+#include "item/scrolls.h"
 #include "command.h"
 #include "io.h"
 #include "traps.h"
@@ -12,7 +12,7 @@
 #include "misc.h"
 #include "level.h"
 #include "player.h"
-#include "wand.h"
+#include "item/wand.h"
 #include "rogue.h"
 #include "os.h"
 #include "magic.h"
