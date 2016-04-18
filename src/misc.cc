@@ -1,82 +1,105 @@
+#include <assert.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <assert.h>
 
 #include <string>
 
-#include "error_handling.h"
-#include "game.h"
-#include "item/armor.h"
 #include "colors.h"
 #include "daemons.h"
+#include "error_handling.h"
+#include "game.h"
 #include "io.h"
+#include "item/armor.h"
+#include "item/rings.h"
 #include "level.h"
+#include "level/rooms.h"
 #include "monster.h"
 #include "move.h"
 #include "options.h"
 #include "os.h"
 #include "player.h"
-#include "item/rings.h"
 #include "rogue.h"
-#include "level/rooms.h"
 
 #include "misc.h"
 
 using namespace std;
 
-int
-roll(int number, int sides)
-{
-  int dtotal = 0;
+int roll(int number, int sides) {
+  int dtotal{0};
 
-  while (number--)
-    dtotal += os_rand_range(sides) + 1;
+  while (number--) dtotal += os_rand_range(sides) + 1;
   return dtotal;
 }
 
-string
-vowelstr(string const& str)
-{
-  switch (str[0])
-  {
-    case 'a': case 'A':
-    case 'e': case 'E':
-    case 'i': case 'I':
-    case 'o': case 'O':
-    case 'u': case 'U':
-      return "n";
-    default:
-      return "";
+string vowelstr(string const& str) {
+  switch (str[0]) {
+    case 'a':
+    case 'A':
+    case 'e':
+    case 'E':
+    case 'i':
+    case 'I':
+    case 'o':
+    case 'O':
+    case 'u':
+    case 'U': return "n";
+    default: return "";
   }
 }
 
-Coordinate const*
-get_dir(void)
-{
+Coordinate const* get_dir(void) {
   static Coordinate delta;
 
-  string prompt = "which direction?";
+  string prompt{"which direction?"};
   Game::io->message(prompt);
 
   bool gotit;
-  do
-  {
+  do {
     gotit = true;
-    switch (dir_ch = Game::io->readchar(false))
-    {
-      case 'h': case 'H': delta.y =  0; delta.x = -1; break;
-      case 'j': case 'J': delta.y =  1; delta.x =  0; break;
-      case 'k': case 'K': delta.y = -1; delta.x =  0; break;
-      case 'l': case 'L': delta.y =  0; delta.x =  1; break;
-      case 'y': case 'Y': delta.y = -1; delta.x = -1; break;
-      case 'u': case 'U': delta.y = -1; delta.x =  1; break;
-      case 'b': case 'B': delta.y =  1; delta.x = -1; break;
-      case 'n': case 'N': delta.y =  1; delta.x =  1; break;
+    switch (dir_ch = Game::io->readchar(false)) {
+      case 'h':
+      case 'H':
+        delta.y = 0;
+        delta.x = -1;
+        break;
+      case 'j':
+      case 'J':
+        delta.y = 1;
+        delta.x = 0;
+        break;
+      case 'k':
+      case 'K':
+        delta.y = -1;
+        delta.x = 0;
+        break;
+      case 'l':
+      case 'L':
+        delta.y = 0;
+        delta.x = 1;
+        break;
+      case 'y':
+      case 'Y':
+        delta.y = -1;
+        delta.x = -1;
+        break;
+      case 'u':
+      case 'U':
+        delta.y = -1;
+        delta.x = 1;
+        break;
+      case 'b':
+      case 'B':
+        delta.y = 1;
+        delta.x = -1;
+        break;
+      case 'n':
+      case 'N':
+        delta.y = 1;
+        delta.x = 1;
+        break;
 
-      case KEY_ESCAPE:
-        Game::io->clear_message();
-        return nullptr;
+      case KEY_ESCAPE: Game::io->clear_message(); return nullptr;
 
       default:
         Game::io->clear_message();
@@ -86,12 +109,9 @@ get_dir(void)
     }
   } while (!gotit);
 
-  if (isupper(dir_ch))
-    dir_ch = static_cast<char>(tolower(dir_ch));
+  if (isupper(dir_ch)) dir_ch = static_cast<char>(tolower(dir_ch));
 
-  if (player->is_confused() && os_rand_range(5) == 0)
-    do
-    {
+  if (player->is_confused() && os_rand_range(5) == 0) do {
       delta.y = os_rand_range(3) - 1;
       delta.x = os_rand_range(3) - 1;
     } while (delta.y == 0 && delta.x == 0);
@@ -100,60 +120,47 @@ get_dir(void)
   return &delta;
 }
 
-int
-sign(int nm)
-{
+int sign(int nm) {
   if (nm < 0)
     return -1;
   else
     return (nm > 0);
 }
 
-int
-spread(int nm)
-{
-  return nm - nm / 20 + os_rand_range(nm / 10);
-}
+int spread(int nm) { return nm - nm / 20 + os_rand_range(nm / 10); }
 
-char
-rnd_thing(void)
-{
-  int i = os_rand_range(Game::current_level >= Game::amulet_min_level ? 11 : 10);
-  switch (i)
-  {
-    case  0: return IO::Potion;
-    case  1: return IO::Scroll;
-    case  2: return IO::Ring;
-    case  3: return IO::Wand;
-    case  4: return IO::Food;
-    case  5: return IO::Weapon;
-    case  6: return IO::Armor;
-    case  7: return IO::StairsDown;
-    case  8: return IO::StairsUp;
-    case  9: return IO::Gold;
+char rnd_thing(void) {
+  int i{
+      os_rand_range(Game::current_level >= Game::amulet_min_level ? 11 : 10)};
+  switch (i) {
+    case 0: return IO::Potion;
+    case 1: return IO::Scroll;
+    case 2: return IO::Ring;
+    case 3: return IO::Wand;
+    case 4: return IO::Food;
+    case 5: return IO::Weapon;
+    case 6: return IO::Armor;
+    case 7: return IO::StairsDown;
+    case 8: return IO::StairsUp;
+    case 9: return IO::Gold;
     case 10: return IO::Amulet;
 
     default: error("rnd_thing out of bounds");
   }
 }
 
-int
-dist(int y1, int x1, int y2, int x2)
-{
-    return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+int dist(int y1, int x1, int y2, int x2) {
+  return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
 
-bool
-fallpos(Coordinate const* pos, Coordinate* newpos)
-{
-  int cnt = 0;
-  for (int y = pos->y - 1; y <= pos->y + 1; y++)
-    for (int x = pos->x - 1; x <= pos->x + 1; x++)
-    {
+bool fallpos(Coordinate const* pos, Coordinate* newpos) {
+  int cnt{0};
+  for (int y{pos->y - 1}; y <= pos->y + 1; y++)
+    for (int x{pos->x - 1}; x <= pos->x + 1; x++) {
       if (y == player->get_position().y && x == player->get_position().x)
         continue;
 
-      Tile::Type ch = Game::level->get_tile(x, y);
+      Tile::Type const ch{Game::level->get_tile(x, y)};
       if (ch == Tile::Floor && os_rand_range(++cnt) == 0) {
         newpos->y = y;
         newpos->x = x;
@@ -161,5 +168,3 @@ fallpos(Coordinate const* pos, Coordinate* newpos)
     }
   return cnt != 0;
 }
-
-

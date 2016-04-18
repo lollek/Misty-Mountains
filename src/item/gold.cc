@@ -1,8 +1,8 @@
 #include <string>
 
 #include "error_handling.h"
-#include "os.h"
 #include "game.h"
+#include "os.h"
 
 #include "item/gold.h"
 
@@ -12,13 +12,9 @@ Gold::~Gold() {}
 
 Gold::Gold() : Gold(random_gold_amount()) {}
 
-Gold::Gold(int amount_) : Item(), amount(amount_) {
-  o_type = IO::Gold;
-}
+Gold::Gold(int amount_) : Item(), amount{amount_} { o_type = IO::Gold; }
 
-int Gold::get_amount() const {
-  return amount;
-}
+int Gold::get_amount() const { return amount; }
 
 int Gold::random_gold_amount() {
   return os_rand_range(50 + 10 * Game::current_level) + 2;
@@ -28,33 +24,18 @@ string Gold::get_description() const {
   return to_string(amount) + " gold pieces";
 }
 
-Gold* Gold::clone() const {
-  return new Gold(*this);
-}
+Gold* Gold::clone() const { return new Gold(*this); }
 
-bool Gold::is_magic() const {
-  return false;
-}
+bool Gold::is_magic() const { return false; }
 
-void Gold::set_identified() {
-}
+void Gold::set_identified() {}
 
-bool Gold::is_identified() const {
-  return true;
-}
+bool Gold::is_identified() const { return true; }
 
-int Gold::get_base_value() const {
-  return amount;
-}
+int Gold::get_base_value() const { return amount; }
 
-int Gold::get_value() const {
-  return get_base_value();
-}
+int Gold::get_value() const { return get_base_value(); }
 
-bool Gold::is_stackable() const {
-  return true;
-}
+bool Gold::is_stackable() const { return true; }
 
-bool Gold::autopickup() const {
-  return true;
-}
+bool Gold::autopickup() const { return true; }

@@ -1,26 +1,26 @@
-#include <string>
+#include <fstream>
 #include <iostream>
 #include <istream>
 #include <ostream>
-#include <fstream>
+#include <string>
 
-#include "item/potions.h"
-#include "item/weapons.h"
-#include "item/wand.h"
-#include "item/scrolls.h"
-#include "item/armor.h"
-#include "item/rings.h"
-#include "disk.h"
-#include "command.h"
-#include "error_handling.h"
-#include "os.h"
-#include "io.h"
-#include "daemons.h"
 #include "colors.h"
+#include "command.h"
+#include "daemons.h"
+#include "disk.h"
+#include "error_handling.h"
+#include "io.h"
+#include "item/armor.h"
+#include "item/potions.h"
+#include "item/rings.h"
+#include "item/scrolls.h"
+#include "item/wand.h"
+#include "item/weapons.h"
 #include "level.h"
 #include "misc.h"
-#include "player.h"
 #include "options.h"
+#include "os.h"
+#include "player.h"
 #include "rogue.h"
 #include "traps.h"
 
@@ -28,28 +28,23 @@
 
 using namespace std;
 
-Game*   Game::game_ptr = nullptr;
-IO*     Game::io = nullptr;
-Level*  Game::level = nullptr;
-string* Game::whoami = nullptr;
-string* Game::save_game_path = nullptr;
-int     Game::current_level = 1;
-int     Game::levels_without_food = 0;
+Game* Game::game_ptr{nullptr};
+IO* Game::io{nullptr};
+Level* Game::level{nullptr};
+string* Game::whoami{nullptr};
+string* Game::save_game_path{nullptr};
+int Game::current_level{1};
+int Game::levels_without_food{0};
 
 void Game::exit() {
-  if (game_ptr != nullptr) {
-    delete game_ptr;
-  }
+  if (game_ptr != nullptr) { delete game_ptr; }
   ::exit(0);
 }
 
 void Game::new_level(int dungeon_level) {
-
   current_level = dungeon_level;
 
-  if (level != nullptr) {
-    delete level;
-  }
+  if (level != nullptr) { delete level; }
 
   level = new Level();
 
@@ -62,9 +57,8 @@ void Game::new_level(int dungeon_level) {
 }
 
 int Game::run() {
-
-  // Try to crash cleanly, and autosave if possible
-  // Unless we are debugging, since that messes with gdb/lldb
+// Try to crash cleanly, and autosave if possible
+// Unless we are debugging, since that messes with gdb/lldb
 #ifdef NDEBUG
   signal(SIGHUP, save_auto);
   signal(SIGQUIT, command_signal_endit);
@@ -86,7 +80,7 @@ int Game::run() {
 #ifdef NDEBUG
   try {
     for (;;) command();
-  } catch (const std::runtime_error &ex) {
+  } catch (const std::runtime_error& ex) {
     endwin();
     cout << ex.what() << endl;
     return 1;
@@ -99,26 +93,24 @@ int Game::run() {
 }
 
 Game::Game(string const& whoami_, string const& save_path_)
-  : starting_seed(os_rand_seed) {
-    whoami = new string(whoami_);
-    save_game_path = new string(save_path_);
+    : starting_seed(os_rand_seed) {
+  whoami = new string(whoami_);
+  save_game_path = new string(save_path_);
 
-  if (game_ptr != nullptr) {
-    error("Game is a singleton class");
-  }
+  if (game_ptr != nullptr) { error("Game is a singleton class"); }
   game_ptr = this;
 
   // Init stuff
-  io = new IO();                        // Graphics
-  Scroll::init_scrolls();               // Names of scrolls
-  Color::init_colors();                 // Colors for potions and stuff
-  Potion::init_potions();               // Colors of potions
-  Ring::init_rings();                   // Stone settings of rings
-  Wand::init_wands();                   // Materials of wands
-  Daemons::init_daemons();              // Over-time-effects
-  Trap::init_traps();                   // Trap types
-  io->character_creation();             // New player
-  new_level(current_level);             // New Level
+  io = new IO();             // Graphics
+  Scroll::init_scrolls();    // Names of scrolls
+  Color::init_colors();      // Colors for potions and stuff
+  Potion::init_potions();    // Colors of potions
+  Ring::init_rings();        // Stone settings of rings
+  Wand::init_wands();        // Materials of wands
+  Daemons::init_daemons();   // Over-time-effects
+  Trap::init_traps();        // Trap types
+  io->character_creation();  // New player
+  new_level(current_level);  // New Level
 
   // Start up daemons and fuses
   Daemons::daemon_start(Daemons::runners_move, AFTER);
@@ -146,12 +138,8 @@ Game::~Game() {
   whoami = nullptr;
 }
 
-
 Game::Game(istream& savefile) {
-
-  if (game_ptr != nullptr) {
-    error("Game is a singleton class");
-  }
+  if (game_ptr != nullptr) { error("Game is a singleton class"); }
   game_ptr = this;
 
   io = new IO();
@@ -165,7 +153,7 @@ Game::Game(istream& savefile) {
     Daemons::load_daemons(savefile);
     Trap::init_traps();
     Player::load_player(savefile);
-    //level = new Level(savefile);
+    // level = new Level(savefile);
 
     Disk::load_tag(TAG_GAME, savefile);
 
@@ -176,18 +164,16 @@ Game::Game(istream& savefile) {
 
     Game::new_level(1);
 
-
     Disk::load_tag(TAG_GAME, savefile);
-  } catch (fatal_error &e) {
+  } catch (fatal_error& e) {
     io->stop_curses();
     cout << "Failed to load game, corrupt save file (" << e.what() << ")\n";
     exit();
   }
-
 }
 
 bool Game::save() {
-  ofstream savefile(*save_game_path, fstream::out | fstream::trunc);
+  ofstream savefile{*save_game_path, fstream::out | fstream::trunc};
   if (!savefile) {
     io->message("Failed to save file " + *save_game_path);
     return false;
@@ -199,7 +185,7 @@ bool Game::save() {
   Wand::save_wands(savefile);
   Daemons::save_daemons(savefile);
   Player::save_player(savefile);
-  //level->save(savefile);
+  // level->save(savefile);
 
   Disk::save_tag(TAG_GAME, savefile);
 
@@ -219,6 +205,6 @@ bool Game::save() {
   Wand::test_wands();
   Daemons::test_daemons();
   Player::test_player();
-#endif //NDEBUG
+#endif  // NDEBUG
   return true;
 }

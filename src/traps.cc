@@ -1,41 +1,35 @@
-#include <string>
 #include <sstream>
+#include <string>
 
-#include "error_handling.h"
-#include "game.h"
-#include "coordinate.h"
+#include "colors.h"
 #include "command.h"
+#include "coordinate.h"
+#include "death.h"
+#include "error_handling.h"
+#include "fight.h"
+#include "game.h"
 #include "io.h"
 #include "item/armor.h"
-#include "fight.h"
-#include "colors.h"
-#include "level.h"
 #include "item/rings.h"
-#include "misc.h"
 #include "item/weapons.h"
+#include "level.h"
+#include "misc.h"
 #include "monster.h"
 #include "os.h"
 #include "player.h"
-#include "death.h"
 #include "rogue.h"
 
 #include "traps.h"
 
 using namespace std;
 
-static vector<string> const* trap_names = nullptr;
+static vector<string> const* trap_names{nullptr};
 
 void Trap::init_traps() {
   trap_names = new vector<string> const {
-    "a trapdoor",
-    "an arrow trap",
-    "a sleeping gas trap",
-    "a beartrap",
-    "a teleport trap",
-    "a poison dart trap",
-    "a rust trap",
-    "a mysterious trap"
-  };
+      "a trapdoor",  "an arrow trap",    "a sleeping gas trap",
+      "a beartrap",  "a teleport trap",  "a poison dart trap",
+      "a rust trap", "a mysterious trap"};
 }
 
 void Trap::free_traps() {
@@ -54,12 +48,11 @@ static Trap::Type trap_door_player(void) {
 }
 
 static Trap::Type trap_door_monster(Monster** victim_ptr) {
-  Monster* victim = *victim_ptr;
+  Monster* victim{*victim_ptr};
 
   if (player->can_see(*victim)) {
     stringstream os;
-    os << victim->get_name()
-       << " fell through the floor";
+    os << victim->get_name() << " fell through the floor";
     Game::io->message(os.str());
   }
 
@@ -76,8 +69,7 @@ static Trap::Type trap_bear_player(void) {
 static Trap::Type trap_bear_monster(Monster* victim) {
   if (player->can_see(*victim)) {
     stringstream os;
-    os << victim->get_name()
-       << " was caught in a bear trap";
+    os << victim->get_name() << " was caught in a bear trap";
     Game::io->message(os.str());
   }
   victim->set_stuck();
@@ -86,12 +78,14 @@ static Trap::Type trap_bear_monster(Monster* victim) {
 
 static Trap::Type trap_myst_player(void) {
   stringstream os;
-  switch(os_rand_range(11)) {
+  switch (os_rand_range(11)) {
     case 0: os << "you are suddenly in a parallel dimension"; break;
     case 1: os << "the light in here suddenly seems " << Color::random(); break;
     case 2: os << "you feel a sting in the side of your neck"; break;
     case 3: os << "multi-colored lines swirl around you, then fade"; break;
-    case 4: os << "a " << Color::random() << " light flashes in your eyes"; break;
+    case 4:
+      os << "a " << Color::random() << " light flashes in your eyes";
+      break;
     case 5: os << "a spike shoots past your ear!"; break;
     case 6: os << Color::random() << " sparks dance across your armor"; break;
     case 7: os << "you suddenly feel very thirsty"; break;
@@ -140,7 +134,7 @@ static Trap::Type trap_arrow_player(void) {
     }
 
   } else {
-    Item* arrow = new class Weapon(Weapon::Arrow, false);
+    Item* arrow{new class Weapon(Weapon::Arrow, false)};
     arrow->o_count = 1;
     arrow->set_position(player->get_position());
     weapon_missile_fall(arrow, false);
@@ -150,26 +144,24 @@ static Trap::Type trap_arrow_player(void) {
 }
 
 static Trap::Type trap_arrow_monster(Monster** victim_ptr) {
-  Monster* victim = *victim_ptr;
+  Monster* victim{*victim_ptr};
 
-  if (fight_swing_hits(victim->get_level() -1,
-        victim->get_ac(), 1)) {
-
-    victim->take_damage(roll(1,6));
+  if (fight_swing_hits(victim->get_level() - 1, victim->get_ac(), 1)) {
+    victim->take_damage(roll(1, 6));
 
     if (victim->get_health() <= 0) {
       if (player->can_see(*victim)) {
-        Game::io->message("An arrow killed " +  victim->get_name());
+        Game::io->message("An arrow killed " + victim->get_name());
       }
       monster_on_death(victim_ptr, false);
       victim = nullptr;
 
     } else if (player->can_see(*victim)) {
-      Game::io->message("An arrow shot " +  victim->get_name());
+      Game::io->message("An arrow shot " + victim->get_name());
     }
 
   } else {
-    Item* arrow = new class Weapon(Weapon::Arrow, false);
+    Item* arrow{new class Weapon(Weapon::Arrow, false)};
     arrow->o_count = 1;
     arrow->set_position(victim->get_position());
     weapon_missile_fall(arrow, false);
@@ -188,10 +180,8 @@ static Trap::Type trap_telep_player() {
 static Trap::Type trap_telep_monster(Monster* victim) {
   stringstream os;
 
-  bool was_seen = player->can_see(*victim);
-  if (was_seen) {
-    os << victim->get_name();
-  }
+  bool const was_seen{player->can_see(*victim)};
+  if (was_seen) { os << victim->get_name(); }
 
   monster_teleport(victim, nullptr);
   if (was_seen) {
@@ -203,8 +193,7 @@ static Trap::Type trap_telep_monster(Monster* victim) {
   }
 
   if (!was_seen && player->can_see(*victim)) {
-    os << victim->get_name()
-       << " appeared out of thin air";
+    os << victim->get_name() << " appeared out of thin air";
   }
 
   Game::io->message(os.str());
@@ -233,12 +222,11 @@ static Trap::Type trap_dart_player(void) {
 }
 
 static Trap::Type trap_dart_monster(Monster** victim_ptr) {
-  Monster* victim = *victim_ptr;
+  Monster* victim{*victim_ptr};
 
   /* TODO: In the future this should probably weaken the monster */
-  if (fight_swing_hits(victim->get_level() + 1,
-        victim->get_ac(), 1)) {
-    victim->take_damage(roll(1,4));
+  if (fight_swing_hits(victim->get_level() + 1, victim->get_ac(), 1)) {
+    victim->take_damage(roll(1, 4));
 
     if (victim->get_health() <= 0) {
       if (player->can_see(*victim)) {
@@ -282,33 +270,31 @@ Trap::Type Trap::player(Coordinate const& trap_coord) {
   }
 
   switch (Game::level->get_trap_type(trap_coord)) {
-    case Door:      return trap_door_player();
-    case Beartrap:  return trap_bear_player();
-    case Mystery:   return trap_myst_player();
-    case Sleep:     return trap_sleep_player();
-    case Arrow:     return trap_arrow_player();
-    case Teleport:  return trap_telep_player();
-    case Dart:      return trap_dart_player();
-    case Rust:      return trap_rust_player();
+    case Door: return trap_door_player();
+    case Beartrap: return trap_bear_player();
+    case Mystery: return trap_myst_player();
+    case Sleep: return trap_sleep_player();
+    case Arrow: return trap_arrow_player();
+    case Teleport: return trap_telep_player();
+    case Dart: return trap_dart_player();
+    case Rust: return trap_rust_player();
 
     case NTRAPS: error("Unknown trap type triggered");
   }
 }
 
 Trap::Type Trap::spring(Monster** victim, Trap::Type trap_type) {
-  if (victim == nullptr || *victim == nullptr) {
-    error("null");
-  }
+  if (victim == nullptr || *victim == nullptr) { error("null"); }
 
   switch (trap_type) {
-    case Door:     return trap_door_monster(victim);
+    case Door: return trap_door_monster(victim);
     case Beartrap: return trap_bear_monster(*victim);
-    case Mystery:  return trap_myst_monster(*victim);
-    case Sleep:    return trap_sleep_monster(*victim);
-    case Arrow:    return trap_arrow_monster(victim);
+    case Mystery: return trap_myst_monster(*victim);
+    case Sleep: return trap_sleep_monster(*victim);
+    case Arrow: return trap_arrow_monster(victim);
     case Teleport: return trap_telep_monster(*victim);
-    case Dart:     return trap_dart_monster(victim);
-    case Rust:     return trap_rust_monster(*victim);
+    case Dart: return trap_dart_monster(victim);
+    case Rust: return trap_rust_monster(*victim);
 
     case NTRAPS: error("Unknown trap type triggered");
   }

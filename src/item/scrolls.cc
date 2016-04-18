@@ -1,66 +1,68 @@
-#include <vector>
-#include <string>
 #include <sstream>
+#include <string>
+#include <vector>
 
-#include "item/armor.h"
-#include "disk.h"
-#include "magic.h"
-#include "error_handling.h"
-#include "game.h"
 #include "colors.h"
 #include "coordinate.h"
+#include "disk.h"
+#include "error_handling.h"
+#include "game.h"
 #include "io.h"
 #include "item.h"
+#include "item/armor.h"
+#include "item/potions.h"
+#include "item/rings.h"
+#include "item/wand.h"
+#include "item/weapons.h"
 #include "level.h"
+#include "magic.h"
 #include "misc.h"
 #include "monster.h"
 #include "options.h"
 #include "os.h"
 #include "player.h"
-#include "item/potions.h"
-#include "item/rings.h"
 #include "rogue.h"
-#include "item/wand.h"
-#include "item/weapons.h"
 
 #include "item/scrolls.h"
 
 using namespace std;
 
 vector<string>* Scroll::guesses;
-vector<bool>*   Scroll::knowledge;
+vector<bool>* Scroll::knowledge;
 vector<string>* Scroll::fake_name;
 
 static Scroll::Type random_scroll_type() {
   vector<Scroll::Type> potential_scrolls;
 
   switch (Game::current_level) {
-    default:
-
-      [[clang::fallthrough]];
+    default: [[clang::fallthrough]];
     case 12:
       potential_scrolls.push_back(Scroll::ENCHARMOR);
       potential_scrolls.push_back(Scroll::ENCH);
 
       [[clang::fallthrough]];
-    case 10: case 11:
+    case 10:
+    case 11:
       potential_scrolls.push_back(Scroll::HOLD);
       potential_scrolls.push_back(Scroll::TELEP);
       potential_scrolls.push_back(Scroll::PROTECT);
 
       [[clang::fallthrough]];
-    case 7: case 8: case 9:
-      potential_scrolls.push_back(Scroll::REMOVE);
-
-      [[clang::fallthrough]];
-    case 5: case 6:
+    case 7:
+    case 8:
+    case 9: potential_scrolls.push_back(Scroll::REMOVE); [[clang::fallthrough]];
+    case 5:
+    case 6:
       potential_scrolls.push_back(Scroll::AGGR);
       potential_scrolls.push_back(Scroll::MAP);
       potential_scrolls.push_back(Scroll::CONFUSE);
       potential_scrolls.push_back(Scroll::SCARE);
 
       [[clang::fallthrough]];
-    case 1: case 2: case 3: case 4:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
       potential_scrolls.push_back(Scroll::SLEEP);
       potential_scrolls.push_back(Scroll::ID);
       potential_scrolls.push_back(Scroll::CREATE);
@@ -70,21 +72,15 @@ static Scroll::Type random_scroll_type() {
 
 Scroll::~Scroll() {}
 
-Scroll* Scroll::clone() const {
-  return new Scroll(*this);
-}
+Scroll* Scroll::clone() const { return new Scroll(*this); }
 
-bool Scroll::is_magic() const {
-  return true;
-}
+bool Scroll::is_magic() const { return true; }
 
-Scroll::Scroll(std::istream& data) {
-  load(data);
-}
+Scroll::Scroll(std::istream& data) { load(data); }
 
 Scroll::Scroll() : Scroll(random_scroll_type()) {}
 
-Scroll::Scroll(Scroll::Type subtype_) : Item(), subtype(subtype_) {
+Scroll::Scroll(Scroll::Type subtype_) : Item(), subtype{subtype_} {
   o_type = IO::Scroll;
   o_count = 1;
   o_which = subtype;
@@ -92,45 +88,43 @@ Scroll::Scroll(Scroll::Type subtype_) : Item(), subtype(subtype_) {
 
 string Scroll::name(Scroll::Type subtype) {
   switch (subtype) {
-    case CONFUSE:   return "monster confusion";
-    case MAP:       return "magic mapping";
-    case HOLD:      return "hold monster";
-    case SLEEP:     return "sleep";
+    case CONFUSE: return "monster confusion";
+    case MAP: return "magic mapping";
+    case HOLD: return "hold monster";
+    case SLEEP: return "sleep";
     case ENCHARMOR: return "enchant armor";
-    case ID:        return "identify";
-    case SCARE:     return "scare monster";
-    case TELEP:     return "teleportation";
-    case ENCH:      return "enchant weapon";
-    case CREATE:    return "create monster";
-    case REMOVE:    return "remove curse";
-    case AGGR:      return "aggravate monsters";
-    case PROTECT:   return "protect armor";
-    case NSCROLLS:  error("Unknown subtype NSCROLLS");
+    case ID: return "identify";
+    case SCARE: return "scare monster";
+    case TELEP: return "teleportation";
+    case ENCH: return "enchant weapon";
+    case CREATE: return "create monster";
+    case REMOVE: return "remove curse";
+    case AGGR: return "aggravate monsters";
+    case PROTECT: return "protect armor";
+    case NSCROLLS: error("Unknown subtype NSCROLLS");
   }
 }
 
 int Scroll::worth(Scroll::Type subtype) {
   switch (subtype) {
-    case CONFUSE:   return 140;
-    case MAP:       return 150;
-    case HOLD:      return 180;
-    case SLEEP:     return   5;
+    case CONFUSE: return 140;
+    case MAP: return 150;
+    case HOLD: return 180;
+    case SLEEP: return 5;
     case ENCHARMOR: return 160;
-    case ID:        return 115;
-    case SCARE:     return 200;
-    case TELEP:     return 165;
-    case ENCH:      return 150;
-    case CREATE:    return  75;
-    case REMOVE:    return 105;
-    case AGGR:      return  20;
-    case PROTECT:   return 250;
-    case NSCROLLS:  error("Unknown subtype NSCROLLS");
+    case ID: return 115;
+    case SCARE: return 200;
+    case TELEP: return 165;
+    case ENCH: return 150;
+    case CREATE: return 75;
+    case REMOVE: return 105;
+    case AGGR: return 20;
+    case PROTECT: return 250;
+    case NSCROLLS: error("Unknown subtype NSCROLLS");
   }
 }
 
-Scroll::Type Scroll::get_type() const {
-  return subtype;
-}
+Scroll::Type Scroll::get_type() const { return subtype; }
 
 string& Scroll::guess(Scroll::Type subtype) {
   return guesses->at(static_cast<size_t>(subtype));
@@ -164,9 +158,7 @@ string Scroll::get_description() const {
     prefix_added = true;
   }
 
-  if (!prefix_added) {
-    os << " titled " << Scroll::fake_name->at(subtype);
-  }
+  if (!prefix_added) { os << " titled " << Scroll::fake_name->at(subtype); }
 
   return os.str();
 }
@@ -176,56 +168,52 @@ void Scroll::init_scrolls() {
   knowledge = new vector<bool>(Scroll::NSCROLLS, false);
   guesses = new vector<string>(Scroll::NSCROLLS, "");
 
-  vector<string> sylls {
-    "a", "ab", "ag", "aks", "ala", "an", "app", "arg", "arze", "ash",
-    "bek", "bie", "bit", "bjor", "blu", "bot", "bu", "byt", "comp",
-    "con", "cos", "cre", "dalf", "dan", "den", "do", "e", "eep", "el",
-    "eng", "er", "ere", "erk", "esh", "evs", "fa", "fid", "fri", "fu",
-    "gan", "gar", "glen", "gop", "gre", "ha", "hyd", "i", "ing", "ip",
-    "ish", "it", "ite", "iv", "jo", "kho", "kli", "klis", "la", "lech",
-    "mar", "me", "mi", "mic", "mik", "mon", "mung", "mur", "nej",
-    "nelg", "nep", "ner", "nes", "nes", "nih", "nin", "o", "od", "ood",
-    "org", "orn", "ox", "oxy", "pay", "ple", "plu", "po", "pot",
-    "prok", "re", "rea", "rhov", "ri", "ro", "rog", "rok", "rol", "sa",
-    "san", "sat", "sef", "seh", "shu", "ski", "sna", "sne", "snik",
-    "sno", "so", "sol", "sri", "sta", "sun", "ta", "tab", "tem",
-    "ther", "ti", "tox", "trol", "tue", "turs", "u", "ulk", "um", "un",
-    "uni", "ur", "val", "viv", "vly", "vom", "wah", "wed", "werg",
-    "wex", "whon", "wun", "xo", "y", "yot", "yu", "zant", "zeb", "zim",
-    "zok", "zon", "zum",
+  vector<string> sylls{
+      "a",    "ab",   "ag",   "aks",  "ala",  "an",   "app",  "arg",  "arze",
+      "ash",  "bek",  "bie",  "bit",  "bjor", "blu",  "bot",  "bu",   "byt",
+      "comp", "con",  "cos",  "cre",  "dalf", "dan",  "den",  "do",   "e",
+      "eep",  "el",   "eng",  "er",   "ere",  "erk",  "esh",  "evs",  "fa",
+      "fid",  "fri",  "fu",   "gan",  "gar",  "glen", "gop",  "gre",  "ha",
+      "hyd",  "i",    "ing",  "ip",   "ish",  "it",   "ite",  "iv",   "jo",
+      "kho",  "kli",  "klis", "la",   "lech", "mar",  "me",   "mi",   "mic",
+      "mik",  "mon",  "mung", "mur",  "nej",  "nelg", "nep",  "ner",  "nes",
+      "nes",  "nih",  "nin",  "o",    "od",   "ood",  "org",  "orn",  "ox",
+      "oxy",  "pay",  "ple",  "plu",  "po",   "pot",  "prok", "re",   "rea",
+      "rhov", "ri",   "ro",   "rog",  "rok",  "rol",  "sa",   "san",  "sat",
+      "sef",  "seh",  "shu",  "ski",  "sna",  "sne",  "snik", "sno",  "so",
+      "sol",  "sri",  "sta",  "sun",  "ta",   "tab",  "tem",  "ther", "ti",
+      "tox",  "trol", "tue",  "turs", "u",    "ulk",  "um",   "un",   "uni",
+      "ur",   "val",  "viv",  "vly",  "vom",  "wah",  "wed",  "werg", "wex",
+      "whon", "wun",  "xo",   "y",    "yot",  "yu",   "zant", "zeb",  "zim",
+      "zok",  "zon",  "zum",
   };
 
-  int const MAXNAME = 40;
+  int const MAXNAME{40};
 
-  for (int i = 0; i < Scroll::NSCROLLS; i++) {
+  for (int i{0}; i < Scroll::NSCROLLS; i++) {
     string name;
-    int num_words = os_rand_range(3) + 2;
+    int const num_words{os_rand_range(3) + 2};
 
-    for (int j = 0; j < num_words; ++j) {
-      int syllables = os_rand_range(3) + 1;
+    for (int j{0}; j < num_words; ++j) {
+      int const syllables{os_rand_range(3) + 1};
 
-      for (int k = 0; k < syllables; ++k) {
-        string const& syllable = sylls.at(os_rand_range(sylls.size()));
-        if (name.size() + syllable.size() <= MAXNAME) {
-          name += syllable;
-        }
+      for (int k{0}; k < syllables; ++k) {
+        string const& syllable{sylls.at(os_rand_range(sylls.size()))};
+        if (name.size() + syllable.size() <= MAXNAME) { name += syllable; }
       }
       name += " ";
     }
 
-    while (name.back() == ' ') {
-      name.pop_back();
-    }
+    while (name.back() == ' ') { name.pop_back(); }
 
     Scroll::fake_name->push_back(name);
   }
 
-
   // Run some checks
-  size_t nscrolls_size = static_cast<size_t>(Scroll::NSCROLLS);
+  size_t const nscrolls_size{static_cast<size_t>(Scroll::NSCROLLS)};
   if (fake_name->size() != nscrolls_size) { error("Scroll init: error 1"); }
   if (knowledge->size() != nscrolls_size) { error("Scroll init: error 2"); }
-  if (guesses->size()   != nscrolls_size) { error("Scroll init: error 3"); }
+  if (guesses->size() != nscrolls_size) { error("Scroll init: error 3"); }
 }
 
 void Scroll::test_scrolls() {
@@ -242,7 +230,7 @@ void Scroll::test_scrolls() {
 
   if (fake_name_ != *fake_name) { error("scroll test 1 failed"); }
   if (knowledge_ != *knowledge) { error("scroll test 2 failed"); }
-  if (guesses_ != *guesses)     { error("scroll test 3 failed"); }
+  if (guesses_ != *guesses) { error("scroll test 3 failed"); }
 }
 
 void Scroll::save_scrolls(ostream& data) {
@@ -256,20 +244,20 @@ void Scroll::save_scrolls(ostream& data) {
 }
 
 void Scroll::load_scrolls(istream& data) {
-  size_t nscrolls_size = static_cast<size_t>(Scroll::NSCROLLS);
+  size_t const nscrolls_size{static_cast<size_t>(Scroll::NSCROLLS)};
 
-  if (!Disk::load_tag(TAG_SCROLL, data))           { error("No scrolls found"); }
+  if (!Disk::load_tag(TAG_SCROLL, data)) { error("No scrolls found"); }
 
   if (!Disk::load(TAG_FAKE_NAME, fake_name, data)) { error("Scroll error 1"); }
-  if (fake_name->size() != nscrolls_size)          { error("Scroll size error 1"); }
+  if (fake_name->size() != nscrolls_size) { error("Scroll size error 1"); }
 
   if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) { error("Scroll error 2"); }
-  if (knowledge->size() != nscrolls_size)          { error("Scroll size error 2"); }
+  if (knowledge->size() != nscrolls_size) { error("Scroll size error 2"); }
 
-  if (!Disk::load(TAG_GUESSES,   guesses, data))   { error("Scroll error 3"); }
-  if (guesses->size() != nscrolls_size)            { error("Scroll size error 3"); }
+  if (!Disk::load(TAG_GUESSES, guesses, data)) { error("Scroll error 3"); }
+  if (guesses->size() != nscrolls_size) { error("Scroll size error 3"); }
 
-  if (!Disk::load_tag(TAG_SCROLL, data))           { error("No scrolls end found"); }
+  if (!Disk::load_tag(TAG_SCROLL, data)) { error("No scrolls end found"); }
 }
 
 void Scroll::free_scrolls() {
@@ -282,7 +270,6 @@ void Scroll::free_scrolls() {
   delete guesses;
   guesses = nullptr;
 }
-
 
 void Scroll::save(std::ostream& data) const {
   Item::save(data);
@@ -299,13 +286,15 @@ bool Scroll::load(std::istream& data) {
 }
 
 static bool enchant_players_armor() {
-  class Armor* arm = player->equipped_armor();
+  class Armor* arm{player->equipped_armor()};
 
   if (arm == nullptr) {
     switch (os_rand_range(3)) {
       case 0: Game::io->message("you are unsure if anything happened"); break;
       case 1: Game::io->message("you feel naked"); break;
-      case 2: Game::io->message("you feel like something just touched you"); break;
+      case 2:
+        Game::io->message("you feel like something just touched you");
+        break;
     }
     return false;
   }
@@ -317,33 +306,27 @@ static bool enchant_players_armor() {
 }
 
 static bool create_monster() {
-  Coordinate const& player_pos = player->get_position();
+  Coordinate const& player_pos{player->get_position()};
   Coordinate mp;
-  int i = 0;
+  int i{0};
 
-  for (int y = player_pos.y - 1; y <= player_pos.y + 1; y++) {
-    for (int x = player_pos.x - 1; x <= player_pos.x + 1; x++) {
-
+  for (int y{player_pos.y - 1}; y <= player_pos.y + 1; y++) {
+    for (int x{player_pos.x - 1}; x <= player_pos.x + 1; x++) {
       /* No duplicates */
-      if ((y == player_pos.y && x == player_pos.x)) {
-        continue;
-      }
+      if ((y == player_pos.y && x == player_pos.x)) { continue; }
 
       /* Cannot stand there */
-      if (!Game::level->can_step(x, y)) {
-        continue;
-      }
+      if (!Game::level->can_step(x, y)) { continue; }
 
       /* Monsters cannot stand of scroll of stand monster */
-      Item* item = Game::level->get_item(x, y);
-      if (item != nullptr && item->o_type == IO::Scroll && item->o_which == Scroll::SCARE) {
+      Item* item{Game::level->get_item(x, y)};
+      if (item != nullptr && item->o_type == IO::Scroll &&
+          item->o_which == Scroll::SCARE) {
         continue;
       }
 
       /* RNGsus doesn't want a monster here */
-      if (os_rand_range(++i) != 0) {
-        continue;
-      }
+      if (os_rand_range(++i) != 0) { continue; }
 
       mp.y = y;
       mp.x = x;
@@ -353,25 +336,25 @@ static bool create_monster() {
   if (i == 0) {
     switch (os_rand_range(3)) {
       case 0: Game::io->message("you are unsure if anything happened"); break;
-      case 1: Game::io->message("you hear a faint cry of anguish in the distance"); break;
+      case 1:
+        Game::io->message("you hear a faint cry of anguish in the distance");
+        break;
       case 2: Game::io->message("you think you felt someone's presence"); break;
     }
 
   } else {
     Monster::Type mon_type = Monster::random_monster_type_for_level();
-    Monster *monster = new Monster(mon_type, mp);
+    Monster* monster{new Monster(mon_type, mp)};
     Game::level->monsters.push_back(monster);
     Game::level->set_monster(mp, monster);
-    Game::io->message("A " + monster->get_name() +
-                      " appears out of thin air");
+    Game::io->message("A " + monster->get_name() + " appears out of thin air");
   }
 
   return i;
 }
 
 static bool player_enchant_weapon() {
-
-  Item* weapon = player->equipped_weapon();
+  Item* weapon{player->equipped_weapon()};
   if (weapon == nullptr) {
     switch (os_rand_range(2)) {
       case 0: Game::io->message("you feel a strange sense of loss"); break;
@@ -388,8 +371,7 @@ static bool player_enchant_weapon() {
   }
 
   stringstream os;
-  os << "your "
-     << Weapon::name(static_cast<Weapon::Type>(weapon->o_which))
+  os << "your " << Weapon::name(static_cast<Weapon::Type>(weapon->o_which))
      << " glows blue for a moment";
   Game::io->message(os.str());
 
@@ -402,8 +384,7 @@ static void remove_curse() {
 }
 
 static bool protect_armor() {
-
-  class Armor* arm = player->equipped_armor();
+  class Armor* arm{player->equipped_armor()};
   if (arm == nullptr) {
     switch (os_rand_range(2)) {
       case 0: Game::io->message("you feel a strange sense of loss"); break;
@@ -421,21 +402,16 @@ static bool protect_armor() {
 
 void Scroll::read() const {
   switch (subtype) {
-
     case Scroll::CONFUSE: {
       player->set_confusing_attack();
     } break;
 
     case Scroll::ENCHARMOR: {
-      if (enchant_players_armor()) {
-        set_known(Scroll::ENCHARMOR);
-      }
+      if (enchant_players_armor()) { set_known(Scroll::ENCHARMOR); }
     } break;
 
     case Scroll::HOLD: {
-      if (magic_hold_nearby_monsters()) {
-        set_known(Scroll::HOLD);
-      }
+      if (magic_hold_nearby_monsters()) { set_known(Scroll::HOLD); }
     } break;
 
     case Scroll::SLEEP: {
@@ -444,17 +420,13 @@ void Scroll::read() const {
     } break;
 
     case Scroll::CREATE: {
-      if (create_monster()) {
-        set_known(Scroll::CREATE);
-      }
+      if (create_monster()) { set_known(Scroll::CREATE); }
     } break;
 
     case Scroll::ID: {
       if (!is_known(Scroll::ID)) {
         stringstream os;
-        os << "this scroll is an "
-           << Scroll::name(Scroll::ID)
-           << " scroll";
+        os << "this scroll is an " << Scroll::name(Scroll::ID) << " scroll";
         Game::io->message(os.str());
       }
       set_known(Scroll::ID);
@@ -500,34 +472,22 @@ void Scroll::read() const {
   }
 }
 
-void Scroll::set_identified() {
-  set_known(subtype);
-}
+void Scroll::set_identified() { set_known(subtype); }
 
-bool Scroll::is_identified() const {
-  return is_known(subtype);
-}
+bool Scroll::is_identified() const { return is_known(subtype); }
 
-int Scroll::get_base_value() const {
-  return worth(subtype);
-}
+int Scroll::get_base_value() const { return worth(subtype); }
 
 int Scroll::get_value() const {
-  int value = get_base_value();
+  int value{get_base_value()};
   value *= o_count;
-  if (!is_identified()) {
-    value /= 2;
-  }
+  if (!is_identified()) { value /= 2; }
   return value;
 }
 
-bool Scroll::is_stackable() const {
-  return true;
-}
+bool Scroll::is_stackable() const { return true; }
 bool Scroll::autopickup() const {
-  string const& guess_ = guess(subtype);
-  if (!guess_.empty() && guess_.find('!') != string::npos) {
-    return false;
-  }
+  string const& guess_{guess(subtype)};
+  if (!guess_.empty() && guess_.find('!') != string::npos) { return false; }
   return option_autopickup(o_type);
 }

@@ -1,26 +1,26 @@
+#include <algorithm>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
-#include <algorithm>
 
-#include "options.h"
-#include "disk.h"
-#include "error_handling.h"
-#include "game.h"
 #include "colors.h"
 #include "coordinate.h"
+#include "disk.h"
+#include "error_handling.h"
 #include "fight.h"
+#include "game.h"
 #include "io.h"
 #include "item.h"
+#include "item/weapons.h"
 #include "level.h"
 #include "magic.h"
 #include "misc.h"
 #include "monster.h"
 #include "options.h"
+#include "options.h"
 #include "os.h"
 #include "player.h"
 #include "rogue.h"
-#include "item/weapons.h"
 
 #include "item/wand.h"
 
@@ -28,15 +28,13 @@ using namespace std;
 
 vector<string>* Wand::materials;
 vector<string>* Wand::guesses;
-vector<bool>*   Wand::known;
+vector<bool>* Wand::known;
 
 static Wand::Type random_wand_type() {
   vector<Wand::Type> potential_wands;
 
   switch (Game::current_level) {
-    default:
-
-      [[clang::fallthrough]];
+    default: [[clang::fallthrough]];
     case 20:
       potential_wands.push_back(Wand::Polymorph);
       potential_wands.push_back(Wand::TeleportAway);
@@ -45,15 +43,29 @@ static Wand::Type random_wand_type() {
       potential_wands.push_back(Wand::DrainLife);
 
       [[clang::fallthrough]];
-    case 15: case 16: case 17: case 18: case 19:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+    case 19:
       potential_wands.push_back(Wand::ElectricBolt);
       potential_wands.push_back(Wand::FireBolt);
       potential_wands.push_back(Wand::ColdBolt);
 
       [[clang::fallthrough]];
-    case 11: case 12: case 13: case 14:
-    case  5: case  6: case  7: case  8: case  9:
-    case  1: case  2: case  3: case  4:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
       potential_wands.push_back(Wand::HasteMonster);
       potential_wands.push_back(Wand::SlowMonster);
       potential_wands.push_back(Wand::Light);
@@ -64,48 +76,45 @@ static Wand::Type random_wand_type() {
   return potential_wands.at(os_rand_range(potential_wands.size()));
 }
 
-bool Wand::is_magic() const {
-  return true;
-}
-
+bool Wand::is_magic() const { return true; }
 
 string Wand::name(Wand::Type subtype) {
   switch (subtype) {
-    case HasteMonster:   return "haste monster";
-    case SlowMonster:    return "slow monster";
+    case HasteMonster: return "haste monster";
+    case SlowMonster: return "slow monster";
     case InvisibleOther: return "invisible other";
-    case Light:          return "light";
-    case MagicMissile:   return "magic missile";
-    case ElectricBolt:   return "electric bolt";
-    case FireBolt:       return "fire bolt";
-    case ColdBolt:       return "cold bolt";
-    case Cancellation:   return "cancellation";
-    case Polymorph:      return "polymorph";
-    case TeleportTo:     return "teleport to";
-    case TeleportAway:   return "teleport away";
-    case DrainLife:      return "drain life";
+    case Light: return "light";
+    case MagicMissile: return "magic missile";
+    case ElectricBolt: return "electric bolt";
+    case FireBolt: return "fire bolt";
+    case ColdBolt: return "cold bolt";
+    case Cancellation: return "cancellation";
+    case Polymorph: return "polymorph";
+    case TeleportTo: return "teleport to";
+    case TeleportAway: return "teleport away";
+    case DrainLife: return "drain life";
 
-    case NWANDS:    error("Unknown type NWANDS");
+    case NWANDS: error("Unknown type NWANDS");
   };
 }
 
 int Wand::worth(Wand::Type subtype) {
   switch (subtype) {
-    case HasteMonster:   return 0;
-    case SlowMonster:    return 500;
+    case HasteMonster: return 0;
+    case SlowMonster: return 500;
     case InvisibleOther: return 0;
-    case Light:          return 200;
-    case MagicMissile:   return 200;
-    case ElectricBolt:   return 600;
-    case FireBolt:       return 600;
-    case ColdBolt:       return 600;
-    case Cancellation:   return 500;
-    case Polymorph:      return 400;
-    case TeleportTo:     return 350;
-    case TeleportAway:   return 350;
-    case DrainLife:      return 600;
+    case Light: return 200;
+    case MagicMissile: return 200;
+    case ElectricBolt: return 600;
+    case FireBolt: return 600;
+    case ColdBolt: return 600;
+    case Cancellation: return 500;
+    case Polymorph: return 400;
+    case TeleportTo: return 350;
+    case TeleportAway: return 350;
+    case DrainLife: return 600;
 
-    case NWANDS:    error("Unknown type NWANDS");
+    case NWANDS: error("Unknown type NWANDS");
   };
 }
 
@@ -127,22 +136,24 @@ void Wand::init_wands() {
   guesses = new vector<string>(Wand::NWANDS, "");
 
   vector<string> possible_material = {
-    /* Wood */
-    "avocado wood", "balsa", "bamboo", "banyan", "birch", "cedar", "cherry",
-    "cinnibar", "cypress", "dogwood", "driftwood", "ebony", "elm", "eucalyptus",
-    "fall", "hemlock", "holly", "ironwood", "kukui wood", "mahogany",
-    "manzanita", "maple", "oaken", "persimmon wood", "pecan", "pine", "poplar",
-    "redwood", "rosewood", "spruce", "teak", "walnut", "zebrawood",
+      /* Wood */
+      "avocado wood", "balsa", "bamboo", "banyan", "birch", "cedar", "cherry",
+      "cinnibar", "cypress", "dogwood", "driftwood", "ebony", "elm",
+      "eucalyptus", "fall", "hemlock", "holly", "ironwood", "kukui wood",
+      "mahogany", "manzanita", "maple", "oaken", "persimmon wood", "pecan",
+      "pine", "poplar", "redwood", "rosewood", "spruce", "teak", "walnut",
+      "zebrawood",
 
-    /* Metal */
-    "aluminum", "beryllium", "bone", "brass", "bronze", "copper", "electrum",
-    "gold", "iron", "lead", "magnesium", "mercury", "nickel", "pewter",
-    "platinum", "steel", "silver", "silicon", "tin", "titanium", "tungsten",
-    "zinc",
+      /* Metal */
+      "aluminum", "beryllium", "bone", "brass", "bronze", "copper", "electrum",
+      "gold", "iron", "lead", "magnesium", "mercury", "nickel", "pewter",
+      "platinum", "steel", "silver", "silicon", "tin", "titanium", "tungsten",
+      "zinc",
   };
 
   while (materials->size() < static_cast<size_t>(Wand::NWANDS)) {
-    string new_material = possible_material.at(os_rand_range(possible_material.size()));
+    string new_material{
+        possible_material.at(os_rand_range(possible_material.size()))};
     if (find(materials->cbegin(), materials->cend(), new_material) ==
         materials->cend()) {
       materials->push_back(new_material);
@@ -172,8 +183,8 @@ void Wand::test_wands() {
   load_wands(test_data);
 
   if (materials_ != *materials) { error("wand test 1 failed"); }
-  if (known_ != *known)         { error("wand test 2 failed"); }
-  if (guesses_ != *guesses)     { error("wand test 3 failed"); }
+  if (known_ != *known) { error("wand test 2 failed"); }
+  if (guesses_ != *guesses) { error("wand test 3 failed"); }
 }
 
 void Wand::save_wands(std::ostream& data) {
@@ -187,22 +198,22 @@ void Wand::save_wands(std::ostream& data) {
 }
 
 void Wand::load_wands(std::istream& data) {
-  size_t nwands_size = static_cast<size_t>(Wand::NWANDS);
-  if (!Disk::load_tag(TAG_WANDS, data))            { error("No wands found"); }
+  size_t const nwands_size{static_cast<size_t>(Wand::NWANDS)};
+  if (!Disk::load_tag(TAG_WANDS, data)) { error("No wands found"); }
 
-  if (!Disk::load(TAG_MATERIALS, materials, data)) { error("Wand tag error 1"); }
-  if (materials->size() != nwands_size)            { error("Wand size error 1"); }
+  if (!Disk::load(TAG_MATERIALS, materials, data)) {
+    error("Wand tag error 1");
+  }
+  if (materials->size() != nwands_size) { error("Wand size error 1"); }
 
-  if (!Disk::load(TAG_KNOWN, known, data))         { error("Wand tag error 2"); }
-  if (known->size() != nwands_size)                { error("Wand size error 2"); }
+  if (!Disk::load(TAG_KNOWN, known, data)) { error("Wand tag error 2"); }
+  if (known->size() != nwands_size) { error("Wand size error 2"); }
 
-  if (!Disk::load(TAG_GUESSES, guesses, data))     { error("Wand tag error 3"); }
-  if (guesses->size() != nwands_size)              { error("Wand size error 3"); }
+  if (!Disk::load(TAG_GUESSES, guesses, data)) { error("Wand tag error 3"); }
+  if (guesses->size() != nwands_size) { error("Wand size error 3"); }
 
-  if (!Disk::load_tag(TAG_WANDS, data))            { error("No wands end found"); }
+  if (!Disk::load_tag(TAG_WANDS, data)) { error("No wands end found"); }
 }
-
-
 
 void Wand::free_wands() {
   delete materials;
@@ -224,20 +235,15 @@ void Wand::set_identified() {
   identified = true;
 }
 
-bool Wand::is_identified() const {
-  return identified;
-}
-
+bool Wand::is_identified() const { return identified; }
 
 Wand::~Wand() {}
 
-Wand::Wand(std::istream& data) {
-  load(data);
-}
+Wand::Wand(std::istream& data) { load(data); }
 
 Wand::Wand() : Wand(random_wand_type()) {}
 
-Wand::Wand(Wand::Type subtype_) : Item(), identified(false) {
+Wand::Wand(Wand::Type subtype_) : Item(), identified{false} {
   o_type = IO::Wand;
   set_attack_damage({1, 1});
   set_throw_damage({1, 1});
@@ -253,25 +259,17 @@ Wand::Wand(Wand::Type subtype_) : Item(), identified(false) {
   }
 }
 
-Wand* Wand::clone() const {
-  return new Wand(*this);
-}
+Wand* Wand::clone() const { return new Wand(*this); }
 
-string Wand::get_material() const {
-  return Wand::material(subtype);
-}
+string Wand::get_material() const { return Wand::material(subtype); }
 
 string Wand::get_description() const {
   stringstream os;
 
-  bool is_known = Wand::is_known(subtype);
+  bool const is_known{Wand::is_known(subtype)};
 
-  os
-    << "a"
-    << vowelstr(Wand::material(subtype))
-    << " "
-    << Wand::material(subtype)
-    << " wand";
+  os << "a" << vowelstr(Wand::material(subtype)) << " "
+     << Wand::material(subtype) << " wand";
 
   if (is_known) {
     os << " of " << Wand::name(subtype);
@@ -283,26 +281,17 @@ string Wand::get_description() const {
     }
   }
 
-
-  string const& inscription = Wand::guess(subtype);
-  if (!inscription.empty()) {
-    os << " {" << inscription << "}";
-  }
+  string const& inscription{Wand::guess(subtype)};
+  if (!inscription.empty()) { os << " {" << inscription << "}"; }
 
   return os.str();
 }
 
-int Wand::get_charges() const {
-  return charges;
-}
+int Wand::get_charges() const { return charges; }
 
-void Wand::set_charges(int amount) {
-  charges = amount;
-}
+void Wand::set_charges(int amount) { charges = amount; }
 
-void Wand::modify_charges(int amount) {
-  charges += amount;
-}
+void Wand::modify_charges(int amount) { charges += amount; }
 
 void Wand::save(std::ostream& data) const {
   Item::save(data);
@@ -322,13 +311,10 @@ bool Wand::load(std::istream& data) {
   return true;
 }
 
-
-int Wand::get_base_value() const {
-  return worth(subtype);
-}
+int Wand::get_base_value() const { return worth(subtype); }
 
 int Wand::get_value() const {
-  int value = get_base_value();
+  int value{get_base_value()};
   if (is_identified()) {
     value *= get_charges() * 1.05;
   } else {
@@ -338,10 +324,6 @@ int Wand::get_value() const {
   return value;
 }
 
-bool Wand::is_stackable() const {
-  return false;
-}
+bool Wand::is_stackable() const { return false; }
 
-bool Wand::autopickup() const {
-  return option_autopickup(o_type);
-}
+bool Wand::autopickup() const { return option_autopickup(o_type); }

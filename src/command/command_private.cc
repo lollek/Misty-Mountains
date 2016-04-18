@@ -3,20 +3,19 @@
 
 #include <string>
 
+#include "coordinate.h"
+#include "daemons.h"
+#include "error_handling.h"
+#include "fight.h"
+#include "game.h"
+#include "io.h"
 #include "item/food.h"
+#include "item/gold.h"
 #include "item/potions.h"
 #include "item/rings.h"
 #include "item/scrolls.h"
 #include "item/wand.h"
 #include "item/weapons.h"
-#include "item/gold.h"
-#include "shop.h"
-#include "error_handling.h"
-#include "game.h"
-#include "coordinate.h"
-#include "daemons.h"
-#include "fight.h"
-#include "io.h"
 #include "level.h"
 #include "misc.h"
 #include "monster.h"
@@ -26,6 +25,7 @@
 #include "player.h"
 #include "rogue.h"
 #include "score.h"
+#include "shop.h"
 #include "traps.h"
 
 #include "command.h"
@@ -34,7 +34,8 @@
 using namespace std;
 
 static bool command_attack_bow(Coordinate const* delta) {
-  class Weapon* ptr = player->pack_find_ammo(player->equipped_weapon()->get_ammo_used());
+  class Weapon* ptr{
+      player->pack_find_ammo(player->equipped_weapon()->get_ammo_used())};
 
   if (ptr == nullptr) {
     Game::io->message("you've run out of ammunition!");
@@ -54,7 +55,7 @@ static bool command_attack_bow(Coordinate const* delta) {
 }
 
 static bool command_attack_melee(bool fight_to_death, Coordinate const& delta) {
-  Monster* mp = Game::level->get_monster(delta);
+  Monster* mp{Game::level->get_monster(delta)};
   if (mp != nullptr) {
     if (fight_to_death) {
       to_death = true;
@@ -66,15 +67,15 @@ static bool command_attack_melee(bool fight_to_death, Coordinate const& delta) {
 
   string msg;
   switch (Game::level->get_tile(delta)) {
-    case Tile::Wall:       msg = "you swing at the wall"; break;
+    case Tile::Wall: msg = "you swing at the wall"; break;
     case Tile::ClosedDoor: msg = "you swing at the door"; break;
     case Tile::StairsDown:
-    case Tile::StairsUp:  msg = "you swing at the stairs"; break;
+    case Tile::StairsUp: msg = "you swing at the stairs"; break;
 
     case Tile::Shop:
     case Tile::OpenDoor:
     case Tile::Floor:
-    case Tile::Trap:   msg = "you swing at the air"; break;
+    case Tile::Trap: msg = "you swing at the air"; break;
   }
 
   Game::io->message(msg);
@@ -91,7 +92,7 @@ bool command_use_stairs(char up_or_down) {
     return false;
   }
 
-  Tile::Type tile = Game::level->get_tile(player->get_position());
+  Tile::Type tile{Game::level->get_tile(player->get_position())};
   if (tile != Tile::StairsDown && tile != Tile::StairsUp) {
     Game::io->message("You're not standing on any stairs");
     return false;
@@ -99,17 +100,15 @@ bool command_use_stairs(char up_or_down) {
 
   // DOWN
   if (up_or_down == '>' && tile == Tile::StairsDown) {
-    Game::new_level(Game::current_level +1);
+    Game::new_level(Game::current_level + 1);
     return false;
   }
 
   // UP
   if (up_or_down == '<' && tile == Tile::StairsUp) {
-    bool has_amulet = player->pack_contains_amulet();
+    bool const has_amulet{player->pack_contains_amulet()};
 
-    if (Game::current_level < 0) {
-      error("Level should not go lower than 0");
-    }
+    if (Game::current_level < 0) { error("Level should not go lower than 0"); }
 
     if (Game::current_level == 1) {
       if (has_amulet) {
@@ -120,7 +119,7 @@ bool command_use_stairs(char up_or_down) {
       }
     }
 
-    Game::new_level(Game::current_level -1);
+    Game::new_level(Game::current_level - 1);
 
     if (has_amulet) {
       Game::io->message("you feel a wrenching sensation in your gut");
@@ -131,10 +130,8 @@ bool command_use_stairs(char up_or_down) {
 }
 
 bool command_attack(bool fight_to_death) {
-  Coordinate const* dir = get_dir();
-  if (dir == nullptr) {
-    return false;
-  }
+  Coordinate const* dir{get_dir()};
+  if (dir == nullptr) { return false; }
 
   Coordinate delta = player->get_position();
   delta.x += dir->x;
@@ -143,20 +140,22 @@ bool command_attack(bool fight_to_death) {
   class Weapon* weapon = player->equipped_weapon();
 
   return weapon != nullptr && weapon->is_missile_launcher()
-    ? command_attack_bow(dir)
-    : command_attack_melee(fight_to_death, delta);
+             ? command_attack_bow(dir)
+             : command_attack_melee(fight_to_death, delta);
 }
 
 bool command_inscribe_item() {
-  Item* obj = player->pack_find_item("inscribe", 0);
-  if (obj == nullptr) {
-    return false;
-  }
+  Item* obj{player->pack_find_item("inscribe", 0)};
+  if (obj == nullptr) { return false; }
 
   string* guess = nullptr;
   switch (obj->o_type) {
-    case IO::Amulet: Game::io->message("Cannot inscribe the amulet"); return false;
-    case IO::Food: Game::io->message("Don't play with your food!"); return false;
+    case IO::Amulet:
+      Game::io->message("Cannot inscribe the amulet");
+      return false;
+    case IO::Food:
+      Game::io->message("Don't play with your food!");
+      return false;
 
     case IO::Ring:
       guess = &Ring::guess(static_cast<Ring::Type>(obj->o_which));
@@ -191,10 +190,8 @@ bool command_inscribe_item() {
 }
 
 bool command_identify_trap() {
-  const Coordinate* dir = get_dir();
-  if (dir == nullptr) {
-    return false;
-  }
+  const Coordinate* dir{get_dir()};
+  if (dir == nullptr) { return false; }
 
   Coordinate delta = player->get_position();
   delta.x += dir->x;
@@ -203,10 +200,12 @@ bool command_identify_trap() {
   if (Game::level->get_tile(delta) != Tile::Trap) {
     Game::io->message("no trap there");
   } else if (player->has_confusing_attack()) {
-    Trap::Type rand_trap = static_cast<Trap::Type>(os_rand_range(static_cast<size_t>(Trap::NTRAPS)));
+    Trap::Type rand_trap = static_cast<Trap::Type>(
+        os_rand_range(static_cast<size_t>(Trap::NTRAPS)));
     Game::io->message(Trap::name(rand_trap));
   } else {
-    Game::io->message(Trap::name(static_cast<Trap::Type>(Game::level->get_trap_type(delta))));
+    Game::io->message(
+        Trap::name(static_cast<Trap::Type>(Game::level->get_trap_type(delta))));
     Game::level->set_discovered(delta);
   }
   return false;
@@ -225,9 +224,8 @@ bool command_pick_up(bool force) {
     return false;
   }
 
-
   // Collect all items which are at this location
-  Coordinate const& coord = player->get_position();
+  Coordinate const& coord{player->get_position()};
   list<Item*> items_here;
   for (Item* item : Game::level->items) {
     if (item->get_position() == coord) {
@@ -244,18 +242,17 @@ bool command_pick_up(bool force) {
   }
 
   // No iterator in this loop, so we can delete while looping
-  auto it = items_here.begin();
+  auto it{items_here.begin()};
   while (it != items_here.end()) {
-    Item* obj = *it;
+    Item* obj{*it};
     switch (obj->o_type) {
-
       case IO::Gold: {
-        Gold* gold = dynamic_cast<Gold*>(obj);
+        Gold* gold{dynamic_cast<Gold*>(obj)};
         if (gold == nullptr) {
           error("casted gold to Gold* which became null");
         }
 
-        int value = gold->get_amount();
+        int const value{gold->get_amount()};
         if (value > 0) {
           Game::io->message("you found " + to_string(value) + " gold pieces");
         }
@@ -267,8 +264,15 @@ bool command_pick_up(bool force) {
         it = items_here.erase(it);
       } break;
 
-      case IO::Potion: case IO::Weapon: case IO::Ammo: case IO::Food: case IO::Armor:
-      case IO::Scroll: case IO::Amulet: case IO::Ring: case IO::Wand: {
+      case IO::Potion:
+      case IO::Weapon:
+      case IO::Ammo:
+      case IO::Food:
+      case IO::Armor:
+      case IO::Scroll:
+      case IO::Amulet:
+      case IO::Ring:
+      case IO::Wand: {
         if (force || obj->autopickup()) {
           player->pack_add(obj, false, true);
           it = items_here.erase(it);
@@ -277,9 +281,7 @@ bool command_pick_up(bool force) {
         }
       } break;
 
-      default: {
-        error("Unknown type to pick up");
-      }
+      default: { error("Unknown type to pick up"); }
     }
   }
 
@@ -288,9 +290,7 @@ bool command_pick_up(bool force) {
     os << "items here: ";
     for (Item* item : items_here) {
       os << item->get_description();
-      if (item != items_here.back()) {
-        os << ", ";
-      }
+      if (item != items_here.back()) { os << ", "; }
     }
     Game::io->message(os.str());
   }
@@ -304,59 +304,59 @@ bool command_help() {
     string description;
     bool print;
   } const helpstr[] = {
-    {',',	"	pick something up",			true},
-    {'.',	"	rest for a turn",			true},
-    {'<',	"	go up a staircase",			true},
-    {'>',	"	go down a staircase",			true},
-    {'?',	"	prints help",				true},
-    {'{',	"	inscribe something",			true},
-    {'A',	"	attack till either of you dies",	true},
-    {'B',	"	run down & left",			false},
-    {'D',	"	drop item",				true},
-    {'E',	"	equipment",				true},
-    {'H',	"	run left",				false},
-    {'I',	"	inventory",				true},
-    {'J',	"	run down",				false},
-    {'K',	"	run up",				false},
-    {'L',	"	run right",				false},
-    {'N',	"	run down & right",			false},
-    {'Q',	"	quit",					true},
-    {'S',	"	save game",				true},
-    {'U',	"	run up & right",			false},
-    {'Y',	"	run up & left",				false},
-    {'Z',	"	rest until healed",			true},
-    {'\0',	"	<CTRL><dir>: run till adjacent",	true},
-    {'\0',	"	<SHIFT><dir>: run that way",		true},
-    {'^',	"	identify trap type",			true},
-    {'a',	"	attack in a direction",			true},
-    {'b',	"	down & left",				true},
-    {'e',	"	eat food",				true},
-    {'h',	"	left",					true},
-    {'j',	"	down",					true},
-    {'k',	"	up",					true},
-    {'l',	"	right",					true},
-    {'n',	"	down & right",				true},
-    {'O',	"	examine/set options",			true},
-    {'q',	"	quaff potion",				true},
-    {'r',	"	read scroll",				true},
-    {'s',	"	search for trap/secret door",		true},
-    {'t',	"	throw something",			true},
-    {'u',	"	up & right",				true},
-    {'x',	"	swap weapons",				true},
-    {'y',	"	up & left",				true},
-    {'z',	"	zap a wand in a direction",		true},
-    {CTRL('B'),	"	run down & left until adjacent",	false},
-    {CTRL('H'),	"	run left until adjacent",		false},
-    {CTRL('J'),	"	run down until adjacent",		false},
-    {CTRL('K'),	"	run up until adjacent",			false},
-    {CTRL('L'),	"	run right until adjacent",		false},
-    {CTRL('N'),	"	run down & right until adjacent",	false},
-    {CTRL('P'),	"	show previous messages",		true},
-    {CTRL('R'),	"	redraw screen",				true},
-    {CTRL('U'),	"	run up & right until adjacent",		false},
-    {CTRL('Y'),	"	run up & left until adjacent",		false},
-    {CTRL('Z'),	"	shell escape",				true},
-    {KEY_ESCAPE,"	cancel command",			true},
+      {',', "	pick something up", true},
+      {'.', "	rest for a turn", true},
+      {'<', "	go up a staircase", true},
+      {'>', "	go down a staircase", true},
+      {'?', "	prints help", true},
+      {'{', "	inscribe something", true},
+      {'A', "	attack till either of you dies", true},
+      {'B', "	run down & left", false},
+      {'D', "	drop item", true},
+      {'E', "	equipment", true},
+      {'H', "	run left", false},
+      {'I', "	inventory", true},
+      {'J', "	run down", false},
+      {'K', "	run up", false},
+      {'L', "	run right", false},
+      {'N', "	run down & right", false},
+      {'Q', "	quit", true},
+      {'S', "	save game", true},
+      {'U', "	run up & right", false},
+      {'Y', "	run up & left", false},
+      {'Z', "	rest until healed", true},
+      {'\0', "	<CTRL><dir>: run till adjacent", true},
+      {'\0', "	<SHIFT><dir>: run that way", true},
+      {'^', "	identify trap type", true},
+      {'a', "	attack in a direction", true},
+      {'b', "	down & left", true},
+      {'e', "	eat food", true},
+      {'h', "	left", true},
+      {'j', "	down", true},
+      {'k', "	up", true},
+      {'l', "	right", true},
+      {'n', "	down & right", true},
+      {'O', "	examine/set options", true},
+      {'q', "	quaff potion", true},
+      {'r', "	read scroll", true},
+      {'s', "	search for trap/secret door", true},
+      {'t', "	throw something", true},
+      {'u', "	up & right", true},
+      {'x', "	swap weapons", true},
+      {'y', "	up & left", true},
+      {'z', "	zap a wand in a direction", true},
+      {CTRL('B'), "	run down & left until adjacent", false},
+      {CTRL('H'), "	run left until adjacent", false},
+      {CTRL('J'), "	run down until adjacent", false},
+      {CTRL('K'), "	run up until adjacent", false},
+      {CTRL('L'), "	run right until adjacent", false},
+      {CTRL('N'), "	run down & right until adjacent", false},
+      {CTRL('P'), "	show previous messages", true},
+      {CTRL('R'), "	redraw screen", true},
+      {CTRL('U'), "	run up & right until adjacent", false},
+      {CTRL('Y'), "	run up & left until adjacent", false},
+      {CTRL('Z'), "	shell escape", true},
+      {KEY_ESCAPE, "	cancel command", true},
   };
   int const helpstrsize = sizeof(helpstr) / sizeof(*helpstr);
 
@@ -368,9 +368,9 @@ bool command_help() {
    * or an error if he typed a funny character. */
   if (helpch != '*') {
     Game::io->move_pointer(0, 0);
-    for (int i = 0; i < helpstrsize; ++i) {
+    for (int i{0}; i < helpstrsize; ++i) {
       if (helpstr[i].sym == helpch) {
-        Game::io->message(string(1, helpstr[i].sym) + ")" + 
+        Game::io->message(string(1, helpstr[i].sym) + ")" +
                           helpstr[i].description);
         return false;
       }
@@ -382,35 +382,25 @@ bool command_help() {
   /* Here we print help for everything.
    * Then wait before we return to command mode */
 
-  int numprint = 0;
-  for (int i = 0; i < helpstrsize; ++i) {
-    if (helpstr[i].print) {
-      ++numprint;
-    }
+  int numprint{0};
+  for (int i{0}; i < helpstrsize; ++i) {
+    if (helpstr[i].print) { ++numprint; }
   }
 
   numprint /= 2;
-  if (numprint > IO::screen_height - 1) {
-    numprint = IO::screen_height - 1;
-  }
+  if (numprint > IO::screen_height - 1) { numprint = IO::screen_height - 1; }
 
   Game::io->clear_screen();
-  int print_i = 0;
-  for (int i = 0; i < helpstrsize; ++i) {
-    if (!helpstr[i].print) {
-      continue;
-    }
+  int print_i{0};
+  for (int i{0}; i < helpstrsize; ++i) {
+    if (!helpstr[i].print) { continue; }
 
-    int x = print_i >= numprint ? IO::screen_width / 2 : 0;
-    int y = 1 + print_i % numprint;
-    if (helpstr[i].sym) {
-      Game::io->print_char(x, y, helpstr[i].sym);
-    }
+    int const x{print_i >= numprint ? IO::screen_width / 2 : 0};
+    int const y{1 + print_i % numprint};
+    if (helpstr[i].sym) { Game::io->print_char(x, y, helpstr[i].sym); }
     Game::io->print_string(x + 3, y, helpstr[i].description);
 
-    if (++print_i >= numprint * 2) {
-      break;
-    }
+    if (++print_i >= numprint * 2) { break; }
   }
 
   Game::io->move_pointer(0, IO::screen_height - 1);
@@ -438,19 +428,15 @@ void command_shell() {
 }
 
 bool command_throw() {
-  const Coordinate* dir = get_dir();
-  if (dir == nullptr) {
-    return false;
-  }
+  Coordinate const* dir{get_dir()};
+  if (dir == nullptr) { return false; }
 
-  int ydelta = dir->y;
-  int xdelta = dir->x;
+  int const ydelta{dir->y};
+  int const xdelta{dir->x};
   dir = nullptr;
 
   Item* obj = player->pack_find_item("throw", 0);
-  if (obj == nullptr) {
-    return false;
-  }
+  if (obj == nullptr) { return false; }
 
   if (obj->o_type == IO::Armor) {
     Game::io->message("you can't throw armor");
@@ -459,7 +445,7 @@ bool command_throw() {
 
   obj = player->pack_remove(obj, true, false);
   Game::io->missile_motion(obj, ydelta, xdelta);
-  Monster* monster_at_pos = Game::level->get_monster(obj->get_position());
+  Monster const* monster_at_pos{Game::level->get_monster(obj->get_position())};
 
   /* Throwing an arrow always misses */
   if (obj->o_which == Weapon::Arrow) {
@@ -472,8 +458,8 @@ bool command_throw() {
 
   /* AHA! Here it has hit something.  If it is a wall or a door,
    * or if it misses (combat) the monster, put it on the floor */
-  bool missed = monster_at_pos == nullptr ||
-    !fight_against_monster(&obj->get_position(), obj, true);
+  bool const missed{monster_at_pos == nullptr ||
+                !fight_against_monster(&obj->get_position(), obj, true)};
 
   if (missed) {
     if (obj->o_type == IO::Potion) {
@@ -484,8 +470,6 @@ bool command_throw() {
   }
 
   return true;
-
-
 }
 
 bool command_rest() {
@@ -509,10 +493,8 @@ bool command_rest() {
 }
 
 bool command_eat() {
-  Item* obj = player->pack_find_item("eat", IO::Food);
-  if (obj == nullptr) {
-    return false;
-  }
+  Item* obj{player->pack_find_item("eat", IO::Food)};
+  if (obj == nullptr) { return false; }
 
   if (obj->o_type != IO::Food) {
     Game::io->message("that's inedible!");
@@ -521,9 +503,7 @@ bool command_eat() {
 
   player->pack_remove(obj, false, false);
   Food* food = dynamic_cast<Food*>(obj);
-  if (food == nullptr) {
-    error("Error casting food");
-  }
+  if (food == nullptr) { error("Error casting food"); }
   player->eat(food);
   return true;
 }
@@ -537,37 +517,32 @@ bool command_run(char ch, bool cautiously) {
     player->set_running();
   }
 
-  if (cautiously) {
-    ch = UNCTRL(ch);
-  }
+  if (cautiously) { ch = UNCTRL(ch); }
 
   return move_do(ch, cautiously);
 }
 
 bool command_read_scroll() {
+  Item* obj{player->pack_find_item("read", IO::Scroll)};
+  if (obj == nullptr) { return false; }
 
-  Item* obj = player->pack_find_item("read", IO::Scroll);
-  if (obj == nullptr) {
-    return false;
-  }
-
-  Scroll* scroll = dynamic_cast<Scroll*>(obj);
+  Scroll* scroll{dynamic_cast<Scroll*>(obj)};
   if (obj->o_type != IO::Scroll || scroll == nullptr) {
     Game::io->message("there is nothing on it to read");
     return false;
   }
 
   /* Get rid of the thing */
-  bool discardit = scroll->o_count == 1;
+  bool const discardit{scroll->o_count == 1};
   player->pack_remove(scroll, false, false);
 
-  Scroll::Type subtype = scroll->get_type();
-  bool was_known = Scroll::is_known(subtype);
+  Scroll::Type const subtype{scroll->get_type()};
+  bool const was_known{Scroll::is_known(subtype)};
 
   scroll->read();
 
   if (!was_known) {
-    string& nickname = Scroll::guess(scroll->get_type());
+    string& nickname{Scroll::guess(scroll->get_type())};
     if (Scroll::is_known(subtype)) {
       nickname.clear();
 
@@ -577,23 +552,21 @@ bool command_read_scroll() {
     }
   }
 
-  if (discardit) {
-    delete obj;
-  }
+  if (discardit) { delete obj; }
 
   return true;
 }
 
 bool command_open() {
-  const Coordinate* dir = get_dir();
-  if (dir == nullptr) {
-    return false;
-  }
+  const Coordinate* dir{get_dir()};
+  if (dir == nullptr) { return false; }
 
-  Coordinate const& player_pos = player->get_position();
-  Tile::Type door = Game::level->get_tile(player_pos.x + dir->x, player_pos.y + dir->y);
+  Coordinate const& player_pos{player->get_position()};
+  Tile::Type door{
+      Game::level->get_tile(player_pos.x + dir->x, player_pos.y + dir->y)};
   if (door == Tile::ClosedDoor) {
-    Game::level->set_tile(player_pos.x + dir->x, player_pos.y + dir->y, Tile::OpenDoor);
+    Game::level->set_tile(player_pos.x + dir->x, player_pos.y + dir->y,
+                          Tile::OpenDoor);
     return true;
   } else {
     Game::io->message("Nothing to open there");
@@ -602,20 +575,18 @@ bool command_open() {
 }
 
 bool command_close() {
-  const Coordinate* dir{get_dir()};
-  if (dir == nullptr) {
-    return false;
-  }
+  Coordinate const* dir{get_dir()};
+  if (dir == nullptr) { return false; }
 
   Coordinate const& player_pos{player->get_position()};
-  Coordinate door_coord{player_pos.x + dir->x, player_pos.y + dir->y};
-  Tile::Type door{Game::level->get_tile(door_coord)};
+  Coordinate const door_coord{player_pos.x + dir->x, player_pos.y + dir->y};
+  Tile::Type const door{Game::level->get_tile(door_coord)};
   if (door != Tile::OpenDoor) {
     Game::io->message("Nothing to close there");
     return false;
   }
 
-  Monster* monster = Game::level->get_monster(door_coord);
+  Monster const* monster{Game::level->get_monster(door_coord)};
   if (monster != nullptr) {
     Game::io->message(monster->get_name() + " is blocking the doorway");
     return false;
@@ -629,9 +600,7 @@ bool command_save() {
   Game::io->message("really save and exit?");
 
   if (Game::io->readchar(true) == 'y') {
-    if (Game::save()) {
-      Game::exit();
-    }
+    if (Game::save()) { Game::exit(); }
   }
 
   return false;

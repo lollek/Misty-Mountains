@@ -11,4 +11,3 @@ bool Disk::load_tag(tag_type tag, istream& data) {
   data.read(reinterpret_cast<char*>(&loaded_tag), sizeof(loaded_tag));
   return loaded_tag == tag;
 }
-

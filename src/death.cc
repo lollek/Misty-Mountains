@@ -1,17 +1,17 @@
-#include <string.h>
-#include <ctype.h>
 #include <assert.h>
+#include <ctype.h>
+#include <string.h>
 #include <time.h>
 
-#include <string>
 #include <sstream>
+#include <string>
 
 #include "game.h"
 #include "io.h"
 #include "misc.h"
 #include "monster.h"
-#include "score.h"
 #include "player.h"
+#include "score.h"
 
 #include "death.h"
 
@@ -23,27 +23,23 @@ string death_reason(int reason) {
   if (reason < 256) {
     string monster = Monster::name(static_cast<Monster::Type>(reason));
     stringstream os;
-    os
-      << "Killed by a"
-      << vowelstr(monster)
-      << " "
-      << monster;
+    os << "Killed by a" << vowelstr(monster) << " " << monster;
     return os.str();
 
   } else {
     switch (static_cast<enum death_reason>(reason)) {
-      case QUIT:   return "Quit";
-      case WON:    return "A total winner";
+      case QUIT: return "Quit";
+      case WON: return "A total winner";
 
-      case DEATH_UNKNOWN:    return "Died by an unknown cause";
-      case DEATH_ARROW:      return "Pierced by an arrow";
-      case DEATH_BOLT:       return "Pierced by a bolt";
-      case DEATH_DART:       return "Poisoned by a dart";
-      case DEATH_FLAME:      return "Burned to crisp";
-      case DEATH_ICE:        return "Incased in ice";
-      case DEATH_HUNGER:     return "Starved to death";
-      case DEATH_NO_HEALTH:  return "Reduced to a lifeless shell";
-      case DEATH_NO_EXP:     return "Got their soul drained";
+      case DEATH_UNKNOWN: return "Died by an unknown cause";
+      case DEATH_ARROW: return "Pierced by an arrow";
+      case DEATH_BOLT: return "Pierced by a bolt";
+      case DEATH_DART: return "Poisoned by a dart";
+      case DEATH_FLAME: return "Burned to crisp";
+      case DEATH_ICE: return "Incased in ice";
+      case DEATH_HUNGER: return "Starved to death";
+      case DEATH_NO_HEALTH: return "Reduced to a lifeless shell";
+      case DEATH_NO_EXP: return "Got their soul drained";
     }
   }
 }
@@ -58,10 +54,6 @@ static void death(int type) {
   score_show_and_exit(type);
 }
 
-void death(enum death_reason reason) {
-  death(static_cast<int>(reason));
-}
+void death(enum death_reason reason) { death(static_cast<int>(reason)); }
 
-void death(Monster::Type reason) {
-  death(static_cast<int>(reason));
-}
+void death(Monster::Type reason) { death(static_cast<int>(reason)); }

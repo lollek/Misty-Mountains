@@ -1,23 +1,23 @@
+#include <iomanip>
+#include <iostream>
+#include <numeric>
 #include <sstream>
 #include <string>
-#include <iostream>
-#include <iomanip>
-#include <numeric>
 
+#include <assert.h>
 #include <ctype.h>
-#include <string.h>
-#include <unistd.h>
+#include <curses.h>
 #include <pwd.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
-#include <assert.h>
-#include <curses.h>
+#include <unistd.h>
 
-#include "item/armor.h"
-#include "item/food.h"
+#include "command.h"
 #include "error_handling.h"
 #include "game.h"
-#include "command.h"
+#include "item/armor.h"
+#include "item/food.h"
 #include "level.h"
 #include "misc.h"
 #include "options.h"
@@ -37,9 +37,8 @@ IO::IO() : last_messages(), message_buffer() {
   if (use_colors) {
     if (start_color() == ERR) {
       endwin();
-      cerr
-        << "Error: Failed to start colors. "
-        << "Try restarting without colors enabled\n";
+      cerr << "Error: Failed to start colors. "
+           << "Try restarting without colors enabled\n";
       Game::exit();
     }
 
@@ -47,7 +46,7 @@ IO::IO() : last_messages(), message_buffer() {
     // and then decided that init_pair cannot change number 0 (COLOR_BLACK)
     // I use COLOR_WHITE for black text and COLOR_BLACK for white text
 
-    assume_default_colors(0, -1); // Default is white text and any background
+    assume_default_colors(0, -1);  // Default is white text and any background
     init_pair(COLOR_RED, COLOR_RED, -1);
     init_pair(COLOR_GREEN, COLOR_GREEN, -1);
     init_pair(COLOR_YELLOW, COLOR_YELLOW, -1);
@@ -59,8 +58,8 @@ IO::IO() : last_messages(), message_buffer() {
 
   if (LINES < screen_height || COLS < screen_width) {
     endwin();
-    cerr << "\nSorry, the screen must be at least "
-         << screen_height << "x" << screen_width << "\n";
+    cerr << "\nSorry, the screen must be at least " << screen_height << "x"
+         << screen_width << "\n";
     Game::exit();
   }
 
@@ -68,49 +67,42 @@ IO::IO() : last_messages(), message_buffer() {
   noecho();  // Echo off
 }
 
-IO::~IO() {
-  endwin();
-}
+IO::~IO() { endwin(); }
 
 char IO::readchar(bool is_question) {
   if (is_question) {
-    move(message_y, message_x + static_cast<int>(Game::io->message_buffer.size()));
+    move(message_y,
+         message_x + static_cast<int>(Game::io->message_buffer.size()));
   }
 
-  char ch = static_cast<char>(getch());
+  char ch{static_cast<char>(getch())};
   switch (ch) {
-    case 3:
-      command_signal_quit(0);
-      return KEY_ESCAPE;
+    case 3: command_signal_quit(0); return KEY_ESCAPE;
 
-    default:
-      return ch;
+    default: return ch;
   }
 }
 
 void IO::wait_for_key(int ch) {
   switch (ch) {
-    case KEY_ENTER: case '\n':
+    case KEY_ENTER:
+    case '\n':
       for (;;)
-        if ((ch = readchar(true)) == '\n' || ch == '\r')
-          return;
+        if ((ch = readchar(true)) == '\n' || ch == '\r') return;
 
     default:
       for (;;)
-        if (readchar(true) == ch)
-          return;
+        if (readchar(true) == ch) return;
   }
 }
 
 void IO::print(int x, int y, long unsigned int ch, IO::Attribute attr) {
   x += map_start_x;
   y += map_start_y;
-  if (y < 0 || y >= screen_height ||
-      x < 0 || x >= screen_width) {
-    error("Attempted to print beyond screen! X: " +
-          to_string(x) + ", Y: " + to_string(y) +
-          "MAXLINES: " + to_string(screen_height) +
-          "MAXCOLS: " + to_string(screen_width));
+  if (y < 0 || y >= screen_height || x < 0 || x >= screen_width) {
+    error("Attempted to print beyond screen! X: " + to_string(x) + ", Y: " +
+          to_string(y) + "MAXLINES: " + to_string(screen_height) + "MAXCOLS: " +
+          to_string(screen_width));
   }
   switch (attr) {
     case IO::Attribute::None: break;
@@ -118,27 +110,35 @@ void IO::print(int x, int y, long unsigned int ch, IO::Attribute attr) {
     case IO::Attribute::Red: ch |= COLOR_PAIR(COLOR_RED); break;
     case IO::Attribute::BoldRed: ch |= COLOR_PAIR(COLOR_RED) | A_BOLD; break;
     case IO::Attribute::Green: ch |= COLOR_PAIR(COLOR_GREEN); break;
-    case IO::Attribute::BoldGreen: ch |= COLOR_PAIR(COLOR_GREEN) | A_BOLD; break;
+    case IO::Attribute::BoldGreen:
+      ch |= COLOR_PAIR(COLOR_GREEN) | A_BOLD;
+      break;
     case IO::Attribute::Yellow: ch |= COLOR_PAIR(COLOR_YELLOW); break;
-    case IO::Attribute::BoldYellow: ch |= COLOR_PAIR(COLOR_YELLOW) | A_BOLD; break;
+    case IO::Attribute::BoldYellow:
+      ch |= COLOR_PAIR(COLOR_YELLOW) | A_BOLD;
+      break;
     case IO::Attribute::Blue: ch |= COLOR_PAIR(COLOR_BLUE); break;
     case IO::Attribute::BoldBlue: ch |= COLOR_PAIR(COLOR_BLUE) | A_BOLD; break;
     case IO::Attribute::Magenta: ch |= COLOR_PAIR(COLOR_MAGENTA); break;
-    case IO::Attribute::BoldMagenta: ch |= COLOR_PAIR(COLOR_MAGENTA) | A_BOLD; break;
+    case IO::Attribute::BoldMagenta:
+      ch |= COLOR_PAIR(COLOR_MAGENTA) | A_BOLD;
+      break;
     case IO::Attribute::Cyan: ch |= COLOR_PAIR(COLOR_CYAN); break;
     case IO::Attribute::BoldCyan: ch |= COLOR_PAIR(COLOR_CYAN) | A_BOLD; break;
     case IO::Attribute::Black: ch |= COLOR_PAIR(COLOR_WHITE); break;
-    case IO::Attribute::BoldBlack: ch |= COLOR_PAIR(COLOR_WHITE) | A_BOLD; break;
+    case IO::Attribute::BoldBlack:
+      ch |= COLOR_PAIR(COLOR_WHITE) | A_BOLD;
+      break;
     case IO::Attribute::White: ch |= COLOR_PAIR(COLOR_BLACK); break;
-    case IO::Attribute::BoldWhite: ch |= COLOR_PAIR(COLOR_BLACK) | A_BOLD; break;
+    case IO::Attribute::BoldWhite:
+      ch |= COLOR_PAIR(COLOR_BLACK) | A_BOLD;
+      break;
   }
   mvaddch(y, x, ch);
 }
 
-
-
 bool IO::print_monster(int x, int y, Monster* monster) {
-  bool print_sensed_monster = false;
+  bool print_sensed_monster{false};
 
   if (!player->can_see(*monster)) {
     if (player->can_sense_monsters()) {
@@ -153,34 +153,34 @@ bool IO::print_monster(int x, int y, Monster* monster) {
 
   if (monster->get_look() == monster->get_disguise()) {
     switch (monster->get_subtype()) {
-      case Monster::Bat:            attr = BoldBlack; break;
-      case Monster::Goblin:         attr = Yellow; break;
-      case Monster::Kobold:         attr = BoldYellow; break;
-      case Monster::Orc:            attr = BoldYellow; break;
-      case Monster::Hobgoblin:      attr = Green; break;
-      case Monster::ZombieHuman:    attr = BoldYellow; break;
-      case Monster::SkeletonHuman:  attr = BoldYellow; break;
+      case Monster::Bat: attr = BoldBlack; break;
+      case Monster::Goblin: attr = Yellow; break;
+      case Monster::Kobold: attr = BoldYellow; break;
+      case Monster::Orc: attr = BoldYellow; break;
+      case Monster::Hobgoblin: attr = Green; break;
+      case Monster::ZombieHuman: attr = BoldYellow; break;
+      case Monster::SkeletonHuman: attr = BoldYellow; break;
 
-      case Monster::Quasit:         attr = Red; break;
-      case Monster::Worg:           attr = BoldBlack; break;
-      case Monster::Ogre:           attr = BoldYellow; break;
-      case Monster::Yeti:           attr = BoldWhite; break;
-      case Monster::IceMonster:     attr = BoldCyan; break;
-      case Monster::Aquator:        attr = Blue; break;
-      case Monster::Troll:          attr = BoldGreen; break;
+      case Monster::Quasit: attr = Red; break;
+      case Monster::Worg: attr = BoldBlack; break;
+      case Monster::Ogre: attr = BoldYellow; break;
+      case Monster::Yeti: attr = BoldWhite; break;
+      case Monster::IceMonster: attr = BoldCyan; break;
+      case Monster::Aquator: attr = Blue; break;
+      case Monster::Troll: attr = BoldGreen; break;
 
-      case Monster::ShadowDemon:    attr = BoldBlack; break;
-      case Monster::Erinyes:        attr = BoldMagenta; break;
-      case Monster::Nightmare:      attr = BoldRed; break;
-      case Monster::GenieDjinni:    attr = BoldBlue; break;
-      case Monster::GenieVizier:    attr = Blue; break;
-      case Monster::GenieEfreeti:   attr = BoldRed; break;
-      case Monster::GenieJanni:     attr = BoldGreen; break;
-      case Monster::GenieMarid:     attr = BoldBlue; break;
-      case Monster::GenieShaitan:   attr = BoldYellow; break;
+      case Monster::ShadowDemon: attr = BoldBlack; break;
+      case Monster::Erinyes: attr = BoldMagenta; break;
+      case Monster::Nightmare: attr = BoldRed; break;
+      case Monster::GenieDjinni: attr = BoldBlue; break;
+      case Monster::GenieVizier: attr = Blue; break;
+      case Monster::GenieEfreeti: attr = BoldRed; break;
+      case Monster::GenieJanni: attr = BoldGreen; break;
+      case Monster::GenieMarid: attr = BoldBlue; break;
+      case Monster::GenieShaitan: attr = BoldYellow; break;
 
       case Monster::AdultRedDragon: attr = BoldRed; break;
-      case Monster::Jabberwock:     attr = BoldMagenta; break;
+      case Monster::Jabberwock: attr = BoldMagenta; break;
 
       case Monster::NMONSTERS: error("Bad monster subtype NMONSTERS");
     }
@@ -200,9 +200,7 @@ bool IO::print_monster(int x, int y, Monster* monster) {
 bool IO::print_item(int x, int y, Item* item) {
   chtype symbol_to_print = static_cast<chtype>(item->get_item_type());
   IO::Attribute attr = IO::None;
-  if (symbol_to_print == IO::Gold) {
-    attr = IO::BoldYellow;
-  }
+  if (symbol_to_print == IO::Gold) { attr = IO::BoldYellow; }
   print(x, y, symbol_to_print, attr);
   return true;
 }
@@ -217,16 +215,12 @@ void IO::print_coordinate_seen(Coordinate const& coord) {
   }
 
   // Next prio: Monsters
-  Monster* mon = Game::level->get_monster(coord);
-  if (mon != nullptr && print_monster(coord.x, coord.y, mon)) {
-    return;
-  }
+  Monster* mon{Game::level->get_monster(coord)};
+  if (mon != nullptr && print_monster(coord.x, coord.y, mon)) { return; }
 
   // Next prio: Items
-  Item* item = Game::level->get_item(coord);
-  if (item != nullptr && print_item(coord.x, coord.y, item)) {
-    return;
-  }
+  Item* item{Game::level->get_item(coord)};
+  if (item != nullptr && print_item(coord.x, coord.y, item)) { return; }
 
   // Next prio: Floor
   print_tile(coord.x, coord.y, Game::level->get_tile(coord));
@@ -245,7 +239,7 @@ static IO::Attribute base_color(int x, int y) {
 }
 
 void IO::print_tile(int x, int y, ::Tile::Type tile) {
-  chtype char_to_print = '?';
+  chtype char_to_print{'?'};
   IO::Attribute attr = IO::None;
   switch (tile) {
     case ::Tile::Type::ClosedDoor: {
@@ -287,13 +281,12 @@ void IO::print_tile(int x, int y, ::Tile::Type tile) {
       char_to_print = IO::Shop;
       attr = IO::BoldBlue;
     } break;
-
   }
   print(x, y, char_to_print, attr);
 }
 
 void IO::print_coordinate(int x, int y) {
-  Coordinate coord(x, y);
+  Coordinate coord{x, y};
 
   // 1. What we see right now
   if (player->can_see(coord)) {
@@ -302,7 +295,7 @@ void IO::print_coordinate(int x, int y) {
   }
   // 2. What we sense
   if (player->can_sense_magic()) {
-    Monster* monster = Game::level->get_monster(x, y);
+    Monster* monster{Game::level->get_monster(x, y)};
     if (monster != nullptr) {
       for (Item* item : monster->get_pack()) {
         if (item->is_magic()) {
@@ -312,7 +305,7 @@ void IO::print_coordinate(int x, int y) {
       }
     }
 
-    Item* item = Game::level->get_item(x, y);
+    Item* item{Game::level->get_item(x, y)};
     if (item != nullptr && item->is_magic()) {
       print(x, y, IO::Magic, IO::None);
       return;
@@ -320,7 +313,7 @@ void IO::print_coordinate(int x, int y) {
   }
 
   if (player->can_sense_monsters()) {
-    Monster* monster = Game::level->get_monster(x, y);
+    Monster* monster{Game::level->get_monster(x, y)};
     if (monster != nullptr) {
       print(x, y, static_cast<chtype>(monster->get_look()), IO::Standout);
       return;
@@ -329,7 +322,7 @@ void IO::print_coordinate(int x, int y) {
 
   // 3. What we remember
   if (Game::level->is_discovered(coord)) {
-    ::Tile::Type tile = Game::level->get_tile(coord);
+    ::Tile::Type tile{Game::level->get_tile(coord)};
     if (tile == ::Tile::Floor) {
       print(coord.x, coord.y, IO::Shadow);
     } else {
@@ -344,10 +337,8 @@ void IO::print_coordinate(int x, int y) {
 
 void IO::refresh() {
   refresh_statusline();
-  for (int x = 0; x < map_width; ++x) {
-    for (int y = 0; y < map_height; ++y) {
-      print_coordinate(x, y);
-    }
+  for (int x{0}; x < map_width; ++x) {
+    for (int y{0}; y < map_height; ++y) { print_coordinate(x, y); }
   }
 
   move_pointer(player->get_position().x, player->get_position().y);
@@ -355,39 +346,38 @@ void IO::refresh() {
 }
 
 void IO::refresh_statusline() {
-  string race = Character::race_to_string(player->get_race());
+  string race{Character::race_to_string(player->get_race())};
   race.at(0) = static_cast<char>(toupper(race.at(0)));
 
   // Calculate width of hitpoint digits
   stringstream ss;
   print_string(0, 0, "Name:  " + *Game::whoami);
-  ss
-    << "Race:  " << race << "\n"
-    << "Class: Fighter\n"
-    << "\n"
-    << "Str:  " << player->get_strength() << " / "
-               << player->get_default_strength() << "\n"
-    << "Dex:  " << player->get_dexterity() << " / "
-               << player->get_default_dexterity() << "\n"
-    << "Con:  " << player->get_constitution() << " / "
-               << player->get_default_constitution() << "\n"
-    << "Wis:  " << player->get_wisdom() << " / "
-               << player->get_default_wisdom() << "\n"
-    << "Int:  " << player->get_intelligence() << " / "
-               << player->get_default_intelligence() << "\n"
-    << "Cha:  " << player->get_charisma() << " / "
-               << player->get_default_charisma() << "\n"
-    << "\n"
-    << "Lvl:  " << setw(7) << player->get_level() << "\n"
-    << "Exp:  " << setw(7) << player->get_experience() << "\n"
-    << "Gold: " << setw(7) << player->get_gold() << "\n"
-    << "Ac:   " << setw(7) << player->get_ac() << "\n"
-    << "Hp:   " << player->get_health() << " / " << player->get_max_health() << "\n"
-    << "Mp:    0 /  0\n"
-    << "\n"
-    << "Hunger: " << player->get_hunger_state() << "\n"
-    << "Depth:  " << Game::current_level * 50 << "ft.\n"
-    ;
+  ss << "Race:  " << race << "\n"
+     << "Class: Fighter\n"
+     << "\n"
+     << "Str:  " << player->get_strength() << " / "
+     << player->get_default_strength() << "\n"
+     << "Dex:  " << player->get_dexterity() << " / "
+     << player->get_default_dexterity() << "\n"
+     << "Con:  " << player->get_constitution() << " / "
+     << player->get_default_constitution() << "\n"
+     << "Wis:  " << player->get_wisdom() << " / "
+     << player->get_default_wisdom() << "\n"
+     << "Int:  " << player->get_intelligence() << " / "
+     << player->get_default_intelligence() << "\n"
+     << "Cha:  " << player->get_charisma() << " / "
+     << player->get_default_charisma() << "\n"
+     << "\n"
+     << "Lvl:  " << setw(7) << player->get_level() << "\n"
+     << "Exp:  " << setw(7) << player->get_experience() << "\n"
+     << "Gold: " << setw(7) << player->get_gold() << "\n"
+     << "Ac:   " << setw(7) << player->get_ac() << "\n"
+     << "Hp:   " << player->get_health() << " / " << player->get_max_health()
+     << "\n"
+     << "Mp:    0 /  0\n"
+     << "\n"
+     << "Hunger: " << player->get_hunger_state() << "\n"
+     << "Depth:  " << Game::current_level * 50 << "ft.\n";
   print_string(0, 1, ss.str());
 }
 
@@ -407,10 +397,8 @@ void IO::repeat_last_messages() {
 string IO::read_string(string const* initial_string, bool question) {
   string return_value;
 
-  Coordinate original_pos(static_cast<int>(message_buffer.size()), 0);
-  if (question) {
-    move(original_pos.y, original_pos.x);
-  }
+  Coordinate original_pos{static_cast<int>(message_buffer.size()), 0};
+  if (question) { move(original_pos.y, original_pos.x); }
 
   if (initial_string != nullptr) {
     return_value = *initial_string;
@@ -419,15 +407,14 @@ string IO::read_string(string const* initial_string, bool question) {
 
   // loop reading in the string, and put it in a temporary buffer
   for (;;) {
-
     ::refresh();
-    int c = readchar(false);
+    int const c{readchar(false)};
 
     // Return on ESCAPE chars or ENTER
     if (c == '\n' || c == '\r' || c == -1 || c == KEY_ESCAPE) {
       break;
 
-    // Remove char on BACKSPACE
+      // Remove char on BACKSPACE
     } else if (c == erasechar()) {
       if (!return_value.empty()) {
         return_value.pop_back();
@@ -438,18 +425,16 @@ string IO::read_string(string const* initial_string, bool question) {
         clrtoeol();
       }
 
-    // Remove everything on killchar
+      // Remove everything on killchar
     } else if (c == killchar()) {
       return_value.clear();
       move(original_pos.y, original_pos.x);
       clrtoeol();
 
-    // ~ gives home directory
+      // ~ gives home directory
     } else if (c == '~' && return_value.empty()) {
       return_value = os_homedir();
-      if (return_value.size() > max_input) {
-        return_value.resize(max_input);
-      }
+      if (return_value.size() > max_input) { return_value.resize(max_input); }
       addstr(return_value.c_str());
 
     } else if (return_value.size() < max_input && (isprint(c) || c == ' ')) {
@@ -482,29 +467,26 @@ string IO::read_string(string const* initial_string, bool question) {
   return return_value;
 }
 
-void IO::clear_message()
-{
+void IO::clear_message() {
   move(message_y, message_x);
   clrtoeol();
   message_buffer.clear();
 }
 
 void IO::message(string const& message, bool force_flush) {
-
-  string const more_string = " --More--";
-  size_t max_message = static_cast<size_t>(screen_width) - more_string.size();
+  string const more_string{" --More--"};
+  size_t const max_message{static_cast<size_t>(screen_width) - more_string.size()};
 
   // Pause when beginning on new line
   if (!message_buffer.empty() &&
-      (message_buffer.size() + message.size() > max_message ||
-      force_flush)) {
+      (message_buffer.size() + message.size() > max_message || force_flush)) {
     message_buffer += more_string;
 
     mvaddstr(message_y, message_x, message_buffer.c_str());
     move(message_y, message_x + static_cast<int>(message_buffer.size()));
     clrtoeol();
     ::refresh();
-    int ch = getch();
+    int ch{getch()};
     while (ch != KEY_SPACE && ch != '\n' && ch != '\r' && ch != KEY_ESCAPE) {
       ch = getch();
     }
@@ -514,64 +496,51 @@ void IO::message(string const& message, bool force_flush) {
 
   stringstream os;
   os << message_buffer;
-  if (!message_buffer.empty()) {
-    os << ". ";
-  }
+  if (!message_buffer.empty()) { os << ". "; }
 
   if (message.size() > 1) {
-    os
-      << static_cast<char>(toupper(message.at(0)))
-      << message.substr(1);
+    os << static_cast<char>(toupper(message.at(0))) << message.substr(1);
   } else if (message.size() > 0) {
     os << string(1, static_cast<char>(toupper(message.at(0))));
   }
 
-  if (message.back() == '?') {
-    os << " ";
-  }
+  if (message.back() == '?') { os << " "; }
 
   message_buffer = os.str();
   mvaddstr(message_y, message_x, message_buffer.c_str());
 
   last_messages.push_front(message_buffer);
-  if (last_messages.size() > 20) {
-    last_messages.pop_back();
-  }
+  if (last_messages.size() > 20) { last_messages.pop_back(); }
 
   clrtoeol();
 }
 
 void IO::missile_motion(Item* item, int ydelta, int xdelta) {
-
   // Come fly with us ...
   item->set_position(player->get_position());
 
   for (;;) {
-
     Coordinate prev_pos = item->get_position();
 
     // Get the new position
     item->set_y(item->get_y() + ydelta);
     item->set_x(item->get_x() + xdelta);
 
-    Coordinate new_pos = item->get_position();
+    Coordinate new_pos{item->get_position()};
 
     // Print old position
-    if (player->can_see(prev_pos)) {
-      Game::io->print_coordinate(prev_pos);
-    }
+    if (player->can_see(prev_pos)) { Game::io->print_coordinate(prev_pos); }
 
     // See if we hit something
-    Monster* monster = Game::level->get_monster(new_pos);
-    ::Tile::Type tile = Game::level->get_tile(new_pos);
-    if (monster != nullptr || tile == ::Tile::Wall) {
-      break;
-    }
+    Monster const* monster{Game::level->get_monster(new_pos)};
+    ::Tile::Type const tile{Game::level->get_tile(new_pos)};
+    if (monster != nullptr || tile == ::Tile::Wall) { break; }
 
     // Print new position
     if (player->can_see(new_pos)) {
       os_usleep(10000);
-      Game::io->print(new_pos.x, new_pos.y, static_cast<chtype>(item->o_type), IO::None);
+      Game::io->print(new_pos.x, new_pos.y, static_cast<chtype>(item->o_type),
+                      IO::None);
       move_pointer(new_pos.x, new_pos.y);
       ::refresh();
     }
@@ -583,29 +552,19 @@ void IO::force_redraw() {
   ::wrefresh(curscr);
 }
 
-void IO::move_pointer(int x, int y) {
-  move(map_start_y + y, map_start_x + x);
-}
+void IO::move_pointer(int x, int y) { move(map_start_y + y, map_start_x + x); }
 
-void IO::clear_screen() {
-  clear();
-}
+void IO::clear_screen() { clear(); }
 
-void IO::print_char(int x, int y, char sym) {
-  mvaddch(y, x, sym);
-}
+void IO::print_char(int x, int y, char sym) { mvaddch(y, x, sym); }
 
 void IO::print_string(int x, int y, string const& str) {
   mvaddstr(y, x, str.c_str());
 }
 
-void IO::print_string(string const& str) {
-  addstr(str.c_str());
-}
+void IO::print_string(string const& str) { addstr(str.c_str()); }
 
-void IO::stop_curses() {
-  endwin();
-}
+void IO::stop_curses() { endwin(); }
 
 void IO::resume_curses() {
   noecho();
@@ -638,7 +597,7 @@ void IO::character_creation() {
     stats.clear();
 
     while (stats.size() < 6) {
-      vector<int> rolls {roll(1,6), roll(1,6), roll(1,6), roll(1,6)};
+      vector<int> rolls{roll(1, 6), roll(1, 6), roll(1, 6), roll(1, 6)};
       sort(rolls.begin(), rolls.end());
       stats.push_back(accumulate(rolls.begin() + 1, rolls.end(), 0));
     }
@@ -653,13 +612,9 @@ void IO::character_creation() {
     print_string(0, 0, "SPACE to reroll stats. 'y' to accept stats");
     ss.str("");
 
-    char ch = readchar(false);
-    while (ch != 'y' && ch != KEY_SPACE) {
-      ch = readchar(false);
-    }
-    if (ch == 'y') {
-      break;
-    }
+    char ch{readchar(false)};
+    while (ch != 'y' && ch != KEY_SPACE) { ch = readchar(false); }
+    if (ch == 'y') { break; }
   }
 
   // Select Race
@@ -672,7 +627,8 @@ void IO::character_creation() {
     clrtoeol();
 
     switch (readchar(false)) {
-      case 'h': case 'H': race = Character::Human; break;
+      case 'h':
+      case 'H': race = Character::Human; break;
       default: continue;
     }
 
@@ -681,13 +637,9 @@ void IO::character_creation() {
     print_string(0, 3, "Race : " + race_str + "\n");
 
     print_string(0, 0, "SPACE to repick race, 'y' to accept race");
-    char ch = readchar(false);
-    while (ch != 'y' && ch != KEY_SPACE) {
-      ch = readchar(false);
-    }
-    if (ch == 'y') {
-      break;
-    }
+    char ch{readchar(false)};
+    while (ch != 'y' && ch != KEY_SPACE) { ch = readchar(false); }
+    if (ch == 'y') { break; }
   }
 
   player = new class Player(stats, race);

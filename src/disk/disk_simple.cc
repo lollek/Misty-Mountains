@@ -8,8 +8,9 @@ using namespace std;
 template <>
 void Disk::save<string>(tag_type tag, string const& element, ostream& data) {
   save_tag(tag, data);
-  size_t element_size = element.size();
-  data.write(reinterpret_cast<char const*>(&element_size), sizeof(element_size));
+  size_t const element_size{element.size()};
+  data.write(reinterpret_cast<char const*>(&element_size),
+             sizeof(element_size));
   data.write(element.c_str(), static_cast<long>(element_size));
 }
 template <>
@@ -18,7 +19,8 @@ bool Disk::load<string>(tag_type tag, string& element, istream& data) {
   size_t element_size;
   data.read(reinterpret_cast<char*>(&element_size), sizeof(element_size));
   element.resize(element_size);
-  data.read(const_cast<char*>(element.c_str()), static_cast<long>(element_size));
+  data.read(const_cast<char*>(element.c_str()),
+            static_cast<long>(element_size));
 
   return true;
 }
@@ -38,12 +40,14 @@ bool Disk::load<Item>(tag_type tag, Item& element, istream& data) {
 
 // Feat
 template <>
-void Disk::save<Character::Feat>(tag_type tag, Character::Feat const& element, ostream& data) {
+void Disk::save<Character::Feat>(tag_type tag, Character::Feat const& element,
+                                 ostream& data) {
   save_tag(tag, data);
   data.write(reinterpret_cast<char const*>(&element), sizeof(element));
 }
 template <>
-bool Disk::load<Character::Feat>(tag_type tag, Character::Feat& element, istream& data) {
+bool Disk::load<Character::Feat>(tag_type tag, Character::Feat& element,
+                                 istream& data) {
   if (!load_tag(tag, data)) { return false; }
   data.read(reinterpret_cast<char*>(&element), sizeof(element));
   return true;

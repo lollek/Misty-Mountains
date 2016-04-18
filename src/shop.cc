@@ -1,26 +1,22 @@
 #include <cmath>
 #include <sstream>
 
-#include "io.h"
-#include "item/food.h"
-#include "player.h"
 #include "game.h"
-#include "item/weapons.h"
+#include "io.h"
 #include "item/armor.h"
+#include "item/food.h"
 #include "item/scrolls.h"
+#include "item/weapons.h"
+#include "player.h"
 
 #include "shop.h"
 
 using namespace std;
 
 Shop::~Shop() {
-  for (Item* item : inventory) {
-    delete item;
-  }
+  for (Item* item : inventory) { delete item; }
 
-  for (Item* item : limited_inventory) {
-    delete item;
-  }
+  for (Item* item : limited_inventory) { delete item; }
 }
 
 Shop::Shop() {
@@ -34,9 +30,7 @@ Shop::Shop() {
   inventory.push_back(new class Armor(Armor::Softleatherarmor, false));
   inventory.push_back(new class Scroll(Scroll::ID));
 
-  for (Item* item : inventory) {
-    item->set_identified();
-  }
+  for (Item* item : inventory) { item->set_identified(); }
 }
 
 int Shop::buy_value(Item const* item) const {
@@ -54,11 +48,9 @@ int Shop::sell_value(Item const* item) const {
   // Cheap items
   if (10 > value && value > 0) {
     value /= 2;
-    if (value <= 0) {
-      value = 1;
-    }
+    if (value <= 0) { value = 1; }
 
-  // Normal and expensive items
+    // Normal and expensive items
   } else {
     value /= 10;
   }
@@ -66,7 +58,7 @@ int Shop::sell_value(Item const* item) const {
 }
 
 void Shop::print() const {
-  char sym = 'a';
+  char sym{'a'};
 
   stringstream ss;
   ss << "You have " << player->get_gold() << " gold";
@@ -75,15 +67,15 @@ void Shop::print() const {
   Game::io->print_string(IO::map_start_x + 60, 3, "Price");
 
   // Unlimited inventory
-  for (int i = 0; i < static_cast<int>(inventory.size()); ++i) {
-    Item const* item = inventory.at(static_cast<size_t>(i));
+  for (int i{0}; i < static_cast<int>(inventory.size()); ++i) {
+    Item const* item{inventory.at(static_cast<size_t>(i))};
     ss.clear();
     ss.str(string());
     ss << sym << ") " << item->get_description();
     Game::io->print_string(IO::map_start_x + 1, i + 4, ss.str());
-    Game::io->print_string(IO::map_start_x + 60, i + 4, to_string(buy_value(item)));
+    Game::io->print_string(IO::map_start_x + 60, i + 4,
+                           to_string(buy_value(item)));
     ++sym;
-
   }
 
   // Buyback
@@ -92,30 +84,26 @@ void Shop::print() const {
     ss.str(string());
     ss << sym << ") " << item->get_description();
     Game::io->print_string(IO::map_start_x + 1, 4 + sym - 'a', ss.str());
-    Game::io->print_string(IO::map_start_x + 60, 4 + sym - 'a', to_string(buy_value(item)));
+    Game::io->print_string(IO::map_start_x + 60, 4 + sym - 'a',
+                           to_string(buy_value(item)));
 
     // Make sure we don't have too many items
-    if (sym == 'a' + max_items_per_page) {
-      break;
-    }
+    if (sym == 'a' + max_items_per_page) { break; }
     ++sym;
   }
-
 }
 
 int Shop::sell() {
   Game::io->clear_screen();
 
-  Item* obj = player->pack_find_item("sell", 0);
-  if (obj == nullptr) {
-    return 0;
-  }
+  Item* obj{player->pack_find_item("sell", 0)};
+  if (obj == nullptr) { return 0; }
 
-  bool sell_all = false;
+  bool sell_all{false};
   if (obj->o_count > 1) {
     Game::io->message("Sell all? (y/N)");
 
-    char ch = Game::io->readchar(true);
+    char ch{Game::io->readchar(true)};
     if (ch == KEY_ESCAPE) {
       return sell();
     } else {
@@ -124,13 +112,13 @@ int Shop::sell() {
     Game::io->clear_message();
   }
 
-  int value = sell_value(obj);
+  int value{sell_value(obj)};
   if (value <= 0) {
     Game::io->message("the shopkeeper is not interested in buying that");
     return sell();
   }
 
-  int real_count = obj->o_count;
+  int real_count{obj->o_count};
   if (!sell_all) {
     obj->o_count = 1;
     value = sell_value(obj);
@@ -142,20 +130,16 @@ int Shop::sell() {
 
   obj->o_count = real_count;
 
-  if (Game::io->readchar(true) != 'y') {
-    return sell();
-  }
+  if (Game::io->readchar(true) != 'y') { return sell(); }
 
   Game::io->clear_message();
   obj = player->pack_remove(obj, true, sell_all);
   obj->set_identified();
   player->give_gold(value);
 
-
   // Try to stack it
-  for (Item *ptr : inventory) {
-    if (ptr->o_type == obj->o_type &&
-        ptr->o_which == obj->o_which &&
+  for (Item* ptr : inventory) {
+    if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which &&
         ptr->get_hit_plus() == obj->get_hit_plus() &&
         ptr->get_damage_plus() == obj->get_damage_plus()) {
       delete obj;
@@ -165,9 +149,8 @@ int Shop::sell() {
   }
 
   if (obj != nullptr && obj->is_stackable()) {
-    for (Item *ptr : limited_inventory) {
-      if (ptr->o_type == obj->o_type &&
-          ptr->o_which == obj->o_which &&
+    for (Item* ptr : limited_inventory) {
+      if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which &&
           ptr->get_hit_plus() == obj->get_hit_plus() &&
           ptr->get_damage_plus() == obj->get_damage_plus()) {
         ptr->o_count += obj->o_count;
@@ -178,9 +161,7 @@ int Shop::sell() {
     }
   }
 
-  if (obj != nullptr) {
-    limited_inventory.push_back(obj);
-  }
+  if (obj != nullptr) { limited_inventory.push_back(obj); }
   return sell();
 }
 
@@ -189,8 +170,9 @@ void Shop::enter() {
     Game::io->clear_screen();
     print();
     Game::io->clear_message();
-    Game::io->message("Which item do you want to buy? [S to sell, ESC to return]", true);
-    char ch = Game::io->readchar(true);
+    Game::io->message(
+        "Which item do you want to buy? [S to sell, ESC to return]", true);
+    char ch{Game::io->readchar(true)};
     Game::io->clear_message();
 
     if (ch == KEY_ESCAPE) {
@@ -200,19 +182,16 @@ void Shop::enter() {
       continue;
     }
 
+    size_t item_pos{static_cast<size_t>(ch - 'a')};
+    if (item_pos > max_items_per_page) { continue; }
 
-    size_t item_pos = static_cast<size_t>(ch - 'a');
-    if (item_pos > max_items_per_page) {
-      continue;
-    }
-
-    Item* item_to_buy = nullptr;
-    bool limited_item = false;
+    Item* item_to_buy{nullptr};
+    bool limited_item{false};
     if (item_pos < inventory.size()) {
       item_to_buy = inventory.at(item_pos);
 
     } else if (item_pos - inventory.size() < limited_inventory.size()) {
-      auto it = limited_inventory.begin();
+      auto it{limited_inventory.begin()};
       advance(it, static_cast<long>(item_pos - inventory.size()));
       item_to_buy = *it;
       limited_item = true;
@@ -221,7 +200,7 @@ void Shop::enter() {
       continue;
     }
 
-    int value = buy_value(item_to_buy);
+    int value{buy_value(item_to_buy)};
     if (player->get_gold() < value) {
       Game::io->message("you cannot afford it");
       continue;

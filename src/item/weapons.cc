@@ -1,12 +1,12 @@
-#include <vector>
-#include <string>
 #include <sstream>
+#include <string>
+#include <vector>
 
+#include "coordinate.h"
 #include "disk.h"
 #include "error_handling.h"
-#include "game.h"
-#include "coordinate.h"
 #include "fight.h"
+#include "game.h"
 #include "io.h"
 #include "item.h"
 #include "level.h"
@@ -25,9 +25,7 @@ static Weapon::Type random_weapon_type() {
   vector<Weapon::Type> potential_weapons;
 
   switch (Game::current_level) {
-    default:
-
-      [[clang::fallthrough]];
+    default: [[clang::fallthrough]];
     case 30:
       potential_weapons.push_back(Weapon::Claymore);
       potential_weapons.push_back(Weapon::Nodachi);
@@ -35,20 +33,36 @@ static Weapon::Type random_weapon_type() {
       potential_weapons.push_back(Weapon::Compositebow);
 
       [[clang::fallthrough]];
-    case 25: case 26: case 27: case 28: case 29:
-    case 20: case 21: case 22: case 23: case 24:
+    case 25:
+    case 26:
+    case 27:
+    case 28:
+    case 29:
+    case 20:
+    case 21:
+    case 22:
+    case 23:
+    case 24:
       potential_weapons.push_back(Weapon::Bastardsword);
       potential_weapons.push_back(Weapon::Halberd);
       potential_weapons.push_back(Weapon::Katana);
 
       [[clang::fallthrough]];
-    case 15: case 16: case 17: case 18: case 19:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+    case 19:
       potential_weapons.push_back(Weapon::Battleaxe);
       potential_weapons.push_back(Weapon::Warhammer);
       potential_weapons.push_back(Weapon::Yari);
 
       [[clang::fallthrough]];
-    case 10: case 11: case 12: case 13: case 14:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
       potential_weapons.push_back(Weapon::Morningstar);
       potential_weapons.push_back(Weapon::Longsword);
       potential_weapons.push_back(Weapon::Wakizashi);
@@ -56,7 +70,11 @@ static Weapon::Type random_weapon_type() {
       potential_weapons.push_back(Weapon::Throwingaxe);
 
       [[clang::fallthrough]];
-    case 5: case 6: case 7: case 8: case 9:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
       potential_weapons.push_back(Weapon::Mace);
       potential_weapons.push_back(Weapon::Spear);
       potential_weapons.push_back(Weapon::Handaxe);
@@ -65,12 +83,14 @@ static Weapon::Type random_weapon_type() {
       potential_weapons.push_back(Weapon::Throwingknife);
 
       [[clang::fallthrough]];
-    case 3: case 4:
+    case 3:
+    case 4:
       potential_weapons.push_back(Weapon::Shortsword);
       potential_weapons.push_back(Weapon::Rapier);
 
       [[clang::fallthrough]];
-    case 1: case 2:
+    case 1:
+    case 2:
       potential_weapons.push_back(Weapon::Sling);
       potential_weapons.push_back(Weapon::Arrow);
       potential_weapons.push_back(Weapon::Rock);
@@ -92,32 +112,34 @@ bool Weapon::is_magic() const {
 
 Weapon::~Weapon() {}
 
-Weapon::Weapon(bool random_stats) : Weapon(random_weapon_type(), random_stats) {}
+Weapon::Weapon(bool random_stats)
+    : Weapon(random_weapon_type(), random_stats) {}
 
-Weapon::Weapon(std::istream& data) {
-  load(data);
-}
+Weapon::Weapon(std::istream& data) { load(data); }
 
 Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
-  : Item(), subtype(subtype_), is_ammo_type(AmmoType::None),
-    uses_ammo_type(AmmoType::None), ammo_multiplier(0),
-    identified(false), good_missile(false)  {
-
+    : Item(),
+      subtype{subtype_},
+      is_ammo_type{AmmoType::None},
+      uses_ammo_type{AmmoType::None},
+      ammo_multiplier{0},
+      identified{false},
+      good_missile{false} {
   o_type = IO::Weapon;
   o_which = subtype;
   o_count = 1;
 
   switch (subtype) {
     case Weapon::Sling: {
-      set_attack_damage({0,0});
-      set_throw_damage({1,1});
+      set_attack_damage({0, 0});
+      set_throw_damage({1, 1});
       ammo_multiplier = 2;
       uses_ammo_type = AmmoType::SlingShot;
     } break;
 
     case Weapon::Arrow: {
-      set_attack_damage({1,1});
-      set_throw_damage({1,4});
+      set_attack_damage({1, 1});
+      set_throw_damage({1, 4});
       is_ammo_type = AmmoType::BowArrow;
       o_count = os_rand_range(8) + 8;
       good_missile = true;
@@ -125,8 +147,8 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
     } break;
 
     case Weapon::Rock: {
-      set_attack_damage({1,1});
-      set_throw_damage({1,2});
+      set_attack_damage({1, 1});
+      set_throw_damage({1, 2});
       is_ammo_type = AmmoType::SlingShot;
       o_count = os_rand_range(8);
       good_missile = true;
@@ -134,151 +156,151 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
     } break;
 
     case Dagger: {
-      set_attack_damage({1,4});
-      set_throw_damage({1,4});
+      set_attack_damage({1, 4});
+      set_throw_damage({1, 4});
       good_missile = true;
     } break;
 
     case Club: {
-      set_attack_damage({1,3});
-      set_throw_damage({1,1});
+      set_attack_damage({1, 3});
+      set_throw_damage({1, 1});
     } break;
 
     case Quarterstaff: {
-      set_attack_damage({1,4});
-      set_throw_damage({1,1});
+      set_attack_damage({1, 4});
+      set_throw_damage({1, 1});
       set_armor(1);
     } break;
 
     case Shortsword: {
-      set_attack_damage({1,6});
-      set_throw_damage({1,2});
+      set_attack_damage({1, 6});
+      set_throw_damage({1, 2});
     } break;
 
     case Rapier: {
-      set_attack_damage({1,6});
-      set_throw_damage({1,2});
+      set_attack_damage({1, 6});
+      set_throw_damage({1, 2});
     } break;
 
     case Mace: {
-      set_attack_damage({2,4});
-      set_throw_damage({1,3});
+      set_attack_damage({2, 4});
+      set_throw_damage({1, 3});
     } break;
 
     case Spear: {
-      set_attack_damage({1,6});
-      set_throw_damage({1,12});
+      set_attack_damage({1, 6});
+      set_throw_damage({1, 12});
       set_armor(2);
       good_missile = true;
     } break;
 
-   case Handaxe: {
-      set_attack_damage({1,6});
-      set_throw_damage({1,6});
+    case Handaxe: {
+      set_attack_damage({1, 6});
+      set_throw_damage({1, 6});
     } break;
 
     case Kukri: {
-      set_attack_damage({1,6});
-      set_throw_damage({1,4});
+      set_attack_damage({1, 6});
+      set_throw_damage({1, 4});
     } break;
 
     case Shortbow: {
-      set_attack_damage({1,2});
-      set_throw_damage({0,0});
+      set_attack_damage({1, 2});
+      set_throw_damage({0, 0});
       ammo_multiplier = 2;
       uses_ammo_type = BowArrow;
     } break;
 
     case Throwingknife: {
-      set_attack_damage({1,4});
-      set_throw_damage({2,3});
+      set_attack_damage({1, 4});
+      set_throw_damage({2, 3});
       good_missile = true;
       o_count = os_rand_range(4) + 2;
     } break;
 
     case Morningstar: {
-      set_attack_damage({2,6});
-      set_throw_damage({1,2});
+      set_attack_damage({2, 6});
+      set_throw_damage({1, 2});
     } break;
 
     case Longsword: {
-      set_attack_damage({1,10});
-      set_throw_damage({1,2});
+      set_attack_damage({1, 10});
+      set_throw_damage({1, 2});
     } break;
 
     case Wakizashi: {
-      set_attack_damage({2,4});
-      set_throw_damage({1,4});
+      set_attack_damage({2, 4});
+      set_throw_damage({1, 4});
     } break;
 
     case Longbow: {
-      set_attack_damage({1,2});
-      set_throw_damage({0,0});
+      set_attack_damage({1, 2});
+      set_throw_damage({0, 0});
       ammo_multiplier = 3;
       uses_ammo_type = BowArrow;
     } break;
 
     case Throwingaxe: {
-      set_attack_damage({1,6});
-      set_throw_damage({2,4});
+      set_attack_damage({1, 6});
+      set_throw_damage({2, 4});
       good_missile = true;
       o_count = os_rand_range(4) + 2;
     } break;
 
     case Battleaxe: {
-      set_attack_damage({3,4});
-      set_throw_damage({1,4});
+      set_attack_damage({3, 4});
+      set_throw_damage({1, 4});
     } break;
 
     case Warhammer: {
-      set_attack_damage({3,3});
-      set_throw_damage({1,2});
+      set_attack_damage({3, 3});
+      set_throw_damage({1, 2});
     } break;
 
     case Yari: {
-      set_attack_damage({1,10});
-      set_throw_damage({1,12});
+      set_attack_damage({1, 10});
+      set_throw_damage({1, 12});
       set_armor(3);
       good_missile = true;
     } break;
 
     case Katana: {
-      set_attack_damage({1,12});
-      set_throw_damage({1,2});
+      set_attack_damage({1, 12});
+      set_throw_damage({1, 2});
     } break;
 
     case Halberd: {
-      set_attack_damage({2,4});
-      set_throw_damage({1,3});
+      set_attack_damage({2, 4});
+      set_throw_damage({1, 3});
       set_armor(4);
     } break;
 
     case Bastardsword: {
-      set_attack_damage({3,4});
-      set_throw_damage({1,3});
+      set_attack_damage({3, 4});
+      set_throw_damage({1, 3});
     } break;
 
     case Compositebow: {
-      set_attack_damage({1,2});
-      set_throw_damage({0,0});
+      set_attack_damage({1, 2});
+      set_throw_damage({0, 0});
       ammo_multiplier = 4;
       uses_ammo_type = BowArrow;
     } break;
 
     case Warpike: {
-      set_attack_damage({1,12});
-      set_throw_damage({1,12});
+      set_attack_damage({1, 12});
+      set_throw_damage({1, 12});
       set_armor(3);
     } break;
 
     case Nodachi: {
-      set_attack_damage({3,6});
-      set_throw_damage({1,2});
+      set_attack_damage({3, 6});
+      set_throw_damage({1, 2});
     } break;
 
     case Claymore: {
-      set_attack_damage({4,4});
-      set_throw_damage({1,2});
+      set_attack_damage({4, 4});
+      set_throw_damage({1, 2});
     } break;
 
     case NWEAPONS: error("Unknown type NWEAPONS");
@@ -286,24 +308,19 @@ Weapon::Weapon(Weapon::Type subtype_, bool random_stats)
   }
 
   if (random_stats) {
-    int rand = os_rand_range(100);
+    int const rand{os_rand_range(100)};
     if (rand < 10) {
       set_cursed();
       modify_hit_plus(-os_rand_range(3) + 1);
-    }
-    else if (rand < 15) {
+    } else if (rand < 15) {
       modify_hit_plus(os_rand_range(3) + 1);
     }
   }
 }
 
-void Weapon::set_identified() {
-  identified = true;
-}
+void Weapon::set_identified() { identified = true; }
 
-bool Weapon::is_identified() const {
-  return identified;
-}
+bool Weapon::is_identified() const { return identified; }
 
 string Weapon::name(Weapon::Type type) {
   switch (type) {
@@ -344,35 +361,35 @@ string Weapon::name(Weapon::Type type) {
 
 int Weapon::worth(Weapon::Type type) {
   switch (type) {
-    case Sling:         return 5;
-    case Arrow:         return 5;
-    case Rock:          return 2;
-    case Dagger:        return 10;
-    case Club:          return 2;
-    case Quarterstaff:  return 3;
-    case Shortbow:      return 50;
+    case Sling: return 5;
+    case Arrow: return 5;
+    case Rock: return 2;
+    case Dagger: return 10;
+    case Club: return 2;
+    case Quarterstaff: return 3;
+    case Shortbow: return 50;
     case Throwingknife: return 20;
-    case Mace:          return 240;
-    case Spear:         return 70;
-    case Rapier:        return 40;
-    case Kukri:         return 70;
-    case Handaxe:       return 30;
-    case Shortsword:    return 40;
-    case Longsword:     return 200;
-    case Wakizashi:     return 230;
-    case Longbow:       return 120;
-    case Throwingaxe:   return 40;
-    case Morningstar:   return 360;
-    case Battleaxe:     return 340;
-    case Warhammer:     return 320;
-    case Yari:          return 540;
-    case Bastardsword:  return 350;
-    case Halberd:       return 600;
-    case Katana:        return 360;
-    case Claymore:      return 800;
-    case Nodachi:       return 800;
-    case Warpike:       return 650;
-    case Compositebow:  return 350;
+    case Mace: return 240;
+    case Spear: return 70;
+    case Rapier: return 40;
+    case Kukri: return 70;
+    case Handaxe: return 30;
+    case Shortsword: return 40;
+    case Longsword: return 200;
+    case Wakizashi: return 230;
+    case Longbow: return 120;
+    case Throwingaxe: return 40;
+    case Morningstar: return 360;
+    case Battleaxe: return 340;
+    case Warhammer: return 320;
+    case Yari: return 540;
+    case Bastardsword: return 350;
+    case Halberd: return 600;
+    case Katana: return 360;
+    case Claymore: return 800;
+    case Nodachi: return 800;
+    case Warpike: return 650;
+    case Compositebow: return 350;
 
     case NWEAPONS: error("Unknown type NWEAPONS");
     case NO_WEAPON: error("Unknown type NO_WEAPON");
@@ -382,7 +399,7 @@ int Weapon::worth(Weapon::Type type) {
 string Weapon::get_description() const {
   stringstream buffer;
 
-  string const& obj_name = Weapon::name(static_cast<Weapon::Type>(o_which));
+  string const& obj_name{Weapon::name(static_cast<Weapon::Type>(o_which))};
 
   if (o_count == 1) {
     buffer << "a" << vowelstr(obj_name) << " " << obj_name;
@@ -393,53 +410,40 @@ string Weapon::get_description() const {
   if (uses_ammo_type != AmmoType::None) {
     buffer << " (x" << ammo_multiplier << ")";
   } else if (o_type == IO::Ammo) {
-    buffer
-      << " (" << get_throw_damage().dices
-      << "d"  << get_throw_damage().sides << ")";
+    buffer << " (" << get_throw_damage().dices << "d"
+           << get_throw_damage().sides << ")";
   } else {
-    buffer
-      << " (" << get_attack_damage().dices
-      << "d"  << get_attack_damage().sides << ")";
+    buffer << " (" << get_attack_damage().dices << "d"
+           << get_attack_damage().sides << ")";
   }
 
   if (identified) {
     buffer << " (";
-    int p_hit = get_hit_plus();
-    if (p_hit >= 0) {
-      buffer << "+";
-    }
+    int const p_hit{get_hit_plus()};
+    if (p_hit >= 0) { buffer << "+"; }
     buffer << p_hit << ",";
 
-    int p_dmg = get_damage_plus();
-    if (p_dmg >= 0) {
-      buffer << "+";
-    }
+    int const p_dmg{get_damage_plus()};
+    if (p_dmg >= 0) { buffer << "+"; }
     buffer << p_dmg << ")";
   }
 
   if (get_armor() != 0) {
     buffer << " [";
-    int p_armor = get_armor();
-    if (p_armor >= 0) {
-      buffer << "+";
-    }
+    int const p_armor{get_armor()};
+    if (p_armor >= 0) { buffer << "+"; }
     buffer << p_armor << "]";
   }
 
-  if (identified && is_cursed()) {
-    buffer << " [C]";
-  }
+  if (identified && is_cursed()) { buffer << " [C]"; }
 
-  string const& nickname = get_nickname();
-  if (!nickname.empty()) {
-    buffer << " {" << nickname << "}";
-  }
+  string const& nickname{get_nickname()};
+  if (!nickname.empty()) { buffer << " {" << nickname << "}"; }
 
   return buffer.str();
 }
 
-void
-weapon_missile_fall(Item* obj, bool pr) {
+void weapon_missile_fall(Item* obj, bool pr) {
   Coordinate fpos;
 
   if (fallpos(&obj->get_position(), &fpos)) {
@@ -452,7 +456,6 @@ weapon_missile_fall(Item* obj, bool pr) {
           ground_item->o_which == obj->o_which &&
           ground_item->get_hit_plus() == obj->get_hit_plus() &&
           ground_item->get_damage_plus() == obj->get_damage_plus()) {
-
         ground_item->o_count++;
         delete obj;
         obj = nullptr;
@@ -460,16 +463,13 @@ weapon_missile_fall(Item* obj, bool pr) {
       }
     }
 
-    if (obj != nullptr) {
-      Game::level->items.push_back(obj);
-    }
+    if (obj != nullptr) { Game::level->items.push_back(obj); }
     return;
   }
 
   if (pr) {
     stringstream os;
-    os << "the "
-       << Weapon::name(static_cast<Weapon::Type>(obj->o_which))
+    os << "the " << Weapon::name(static_cast<Weapon::Type>(obj->o_which))
        << " vanishes as it hits the ground";
     Game::io->message(os.str());
   }
@@ -501,29 +501,20 @@ bool Weapon::load(std::istream& data) {
   return true;
 }
 
-
 bool Weapon::is_missile_launcher() const {
   return uses_ammo_type != AmmoType::None;
 }
 
-Weapon::AmmoType Weapon::get_ammo_used() const {
-  return uses_ammo_type;
-}
+Weapon::AmmoType Weapon::get_ammo_used() const { return uses_ammo_type; }
 
-int Weapon::get_ammo_multiplier() const {
-  return ammo_multiplier;
-}
+int Weapon::get_ammo_multiplier() const { return ammo_multiplier; }
 
-Weapon::AmmoType Weapon::get_ammo_type() const {
-  return is_ammo_type;
-}
+Weapon::AmmoType Weapon::get_ammo_type() const { return is_ammo_type; }
 
-int Weapon::get_base_value() const {
-  return worth(subtype);
-}
+int Weapon::get_base_value() const { return worth(subtype); }
 
 int Weapon::get_value() const {
-  int value = get_base_value();
+  int value{get_base_value()};
   value += 100 * (get_hit_plus() + get_damage_plus());
   value *= o_count;
   return value;
@@ -537,6 +528,4 @@ bool Weapon::is_stackable() const {
   }
   error("unknown type");
 }
-bool Weapon::autopickup() const {
-  return option_autopickup(o_type);
-}
+bool Weapon::autopickup() const { return option_autopickup(o_type); }

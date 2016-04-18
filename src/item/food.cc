@@ -1,17 +1,17 @@
-#include <string>
 #include <sstream>
+#include <string>
 
 #include "item/rings.h"
 
-#include "options.h"
+#include "command.h"
+#include "death.h"
 #include "disk.h"
 #include "error_handling.h"
 #include "game.h"
-#include "command.h"
 #include "io.h"
-#include "player.h"
+#include "options.h"
 #include "os.h"
-#include "death.h"
+#include "player.h"
 
 #include "item/food.h"
 
@@ -33,23 +33,15 @@ static Food::Type random_food_type() {
 
 Food::~Food() {}
 
-Food* Food::clone() const {
-  return new Food(*this);
-}
+Food* Food::clone() const { return new Food(*this); }
 
-bool Food::is_magic() const {
-  return false;
-}
+bool Food::is_magic() const { return false; }
 
-
-Food::Food(std::istream& data) {
-  load(data);
-}
+Food::Food(std::istream& data) { load(data); }
 
 Food::Food() : Food(random_food_type()) {}
 
 Food::Food(Food::Type subtype_) : Item(), subtype(subtype_) {
-
   food_value = food_for_type(subtype);
 
   // Reset global food counter
@@ -60,16 +52,14 @@ Food::Food(Food::Type subtype_) : Item(), subtype(subtype_) {
   o_which = subtype;
 }
 
-Food::Type Food::get_type() const {
-  return subtype;
-}
+Food::Type Food::get_type() const { return subtype; }
 
 string Food::get_description() const {
   stringstream os;
 
   string type;
   switch (subtype) {
-    case Fruit:      type = "fruit"; break;
+    case Fruit: type = "fruit"; break;
     case IronRation: type = "food ration"; break;
     case NFOODS: error("Unknown food type NFOODS");
   }
@@ -83,16 +73,11 @@ string Food::get_description() const {
   return os.str();
 }
 
-void Food::set_identified() {
-}
+void Food::set_identified() {}
 
-bool Food::is_identified() const {
-  return true;
-}
+bool Food::is_identified() const { return true; }
 
-int Food::get_nutrition_value() const {
-  return food_value;
-}
+int Food::get_nutrition_value() const { return food_value; }
 
 void Food::save(std::ostream& data) const {
   Item::save(data);
@@ -110,28 +95,19 @@ bool Food::load(std::istream& data) {
   return true;
 }
 
-
 int Food::food_for_type(Type subtype) {
   switch (subtype) {
-    case Food::Fruit:        return 1000;
-    case Food::IronRation:   return 3500;
+    case Food::Fruit: return 1000;
+    case Food::IronRation: return 3500;
 
     case NFOODS: error("Bad value NFOODS");
   }
 }
 
-int Food::get_base_value() const {
-  return food_value / 1000;
-}
+int Food::get_base_value() const { return food_value / 1000; }
 
-int Food::get_value() const {
-  return get_base_value() * o_count;
-}
+int Food::get_value() const { return get_base_value() * o_count; }
 
-bool Food::is_stackable() const {
-  return true;
-}
+bool Food::is_stackable() const { return true; }
 
-bool Food::autopickup() const {
-  return option_autopickup(o_type);
-}
+bool Food::autopickup() const { return option_autopickup(o_type); }

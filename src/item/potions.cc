@@ -1,58 +1,67 @@
-#include <vector>
-#include <string>
-#include <sstream>
 #include <algorithm>
+#include <sstream>
+#include <string>
+#include <vector>
 
-#include "options.h"
+#include "colors.h"
 #include "disk.h"
 #include "error_handling.h"
+#include "game.h"
 #include "io.h"
+#include "item.h"
 #include "level.h"
 #include "misc.h"
-#include "player.h"
 #include "monster.h"
-#include "colors.h"
+#include "options.h"
 #include "os.h"
+#include "player.h"
 #include "rogue.h"
-#include "item.h"
-#include "game.h"
 
 #include "item/potions.h"
 
 using namespace std;
 
 vector<string>* Potion::guesses;
-vector<bool>*   Potion::knowledge;
+vector<bool>* Potion::knowledge;
 vector<string>* Potion::colors;
 
 static Potion::Type random_potion_type() {
   vector<Potion::Type> potential_potions;
 
   switch (Game::current_level) {
-    default:
-      [[clang::fallthrough]];
+    default: [[clang::fallthrough]];
     case 15:
       potential_potions.push_back(Potion::XHEAL);
       potential_potions.push_back(Potion::RAISE);
 
       [[clang::fallthrough]];
-    case 10: case 11: case 12: case 13: case 14:
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
       potential_potions.push_back(Potion::STRENGTH);
       potential_potions.push_back(Potion::MFIND);
       potential_potions.push_back(Potion::TFIND);
 
       [[clang::fallthrough]];
-    case 5: case 6: case 7 : case 8: case 9:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
       potential_potions.push_back(Potion::HEALING);
       potential_potions.push_back(Potion::RESTORE);
 
       [[clang::fallthrough]];
-    case 3: case 4:
+    case 3:
+    case 4:
       potential_potions.push_back(Potion::POISON);
       potential_potions.push_back(Potion::SEEINVIS);
 
       [[clang::fallthrough]];
-    case 1: case 2:
+    case 1:
+    case 2:
       potential_potions.push_back(Potion::CONFUSION);
       potential_potions.push_back(Potion::BLIND);
       potential_potions.push_back(Potion::LEVIT);
@@ -62,49 +71,45 @@ static Potion::Type random_potion_type() {
   return potential_potions.at(os_rand_range(potential_potions.size()));
 }
 
-Potion* Potion::clone() const {
-  return new Potion(*this);
-}
+Potion* Potion::clone() const { return new Potion(*this); }
 
-bool Potion::is_magic() const {
-  return true;
-}
+bool Potion::is_magic() const { return true; }
 
 string Potion::name(Potion::Type subtype) {
-  switch(subtype) {
+  switch (subtype) {
     case CONFUSION: return "confusion";
-    case POISON:    return "poison";
-    case STRENGTH:  return "gain strength";
-    case SEEINVIS:  return "see invisible";
-    case HEALING:   return "healing";
-    case MFIND:     return "monster detection";
-    case TFIND:     return "magic detection";
-    case RAISE:     return "raise level";
-    case XHEAL:     return "extra healing";
-    case HASTE:     return "haste self";
-    case RESTORE:   return "restore strength";
-    case BLIND:     return "blindness";
-    case LEVIT:     return "levitation";
-    case NPOTIONS:  error("Unknown subtype NPOTIONS");
+    case POISON: return "poison";
+    case STRENGTH: return "gain strength";
+    case SEEINVIS: return "see invisible";
+    case HEALING: return "healing";
+    case MFIND: return "monster detection";
+    case TFIND: return "magic detection";
+    case RAISE: return "raise level";
+    case XHEAL: return "extra healing";
+    case HASTE: return "haste self";
+    case RESTORE: return "restore strength";
+    case BLIND: return "blindness";
+    case LEVIT: return "levitation";
+    case NPOTIONS: error("Unknown subtype NPOTIONS");
   }
 }
 
 int Potion::worth(Potion::Type subtype) {
-  switch(subtype) {
+  switch (subtype) {
     case CONFUSION: return 5;
-    case POISON:    return 5;
-    case STRENGTH:  return 150;
-    case SEEINVIS:  return 100;
-    case HEALING:   return 130;
-    case MFIND:     return 130;
-    case TFIND:     return 105;
-    case RAISE:     return 250;
-    case XHEAL:     return 200;
-    case HASTE:     return 190;
-    case RESTORE:   return 130;
-    case BLIND:     return 5;
-    case LEVIT:     return 75;
-    case NPOTIONS:  error("Unknown subtype NPOTIONS");
+    case POISON: return 5;
+    case STRENGTH: return 150;
+    case SEEINVIS: return 100;
+    case HEALING: return 130;
+    case MFIND: return 130;
+    case TFIND: return 105;
+    case RAISE: return 250;
+    case XHEAL: return 200;
+    case HASTE: return 190;
+    case RESTORE: return 130;
+    case BLIND: return 5;
+    case LEVIT: return 75;
+    case NPOTIONS: error("Unknown subtype NPOTIONS");
   }
 }
 
@@ -124,23 +129,19 @@ Potion::~Potion() {}
 
 Potion::Potion() : Potion(random_potion_type()) {}
 
-Potion::Potion(std::istream& data) {
-  load(data);
-}
+Potion::Potion(std::istream& data) { load(data); }
 
 Potion::Potion(Potion::Type subtype_) : Item() {
-  o_type       = IO::Potion;
-  o_which      = subtype_;
-  o_count      = 1;
+  o_type = IO::Potion;
+  o_which = subtype_;
+  o_count = 1;
   set_attack_damage({1, 2});
   set_throw_damage({1, 2});
 
   subtype = subtype_;
 }
 
-Potion::Type Potion::get_type() const {
-  return subtype;
-}
+Potion::Type Potion::get_type() const { return subtype; }
 
 string Potion::get_description() const {
   stringstream os;
@@ -161,20 +162,16 @@ string Potion::get_description() const {
     }
   }
 
-  string const& nickname = Potion::guess(subtype);
-  if (!nickname.empty()) {
-    os << " {" << nickname << "}";
-  }
+  string const& nickname{Potion::guess(subtype)};
+  if (!nickname.empty()) { os << " {" << nickname << "}"; }
 
   return os.str();
 }
 
 void Potion::quaffed_by(Character& victim) {
-  switch(static_cast<Potion::Type>(subtype)) {
+  switch (static_cast<Potion::Type>(subtype)) {
     case CONFUSION: {
-      if (&victim == player) {
-        Potion::set_known(subtype);
-      }
+      if (&victim == player) { Potion::set_known(subtype); }
       victim.set_confused();
     } break;
 
@@ -194,7 +191,7 @@ void Potion::quaffed_by(Character& victim) {
       victim.modify_strength(1);
     } break;
 
-    case SEEINVIS:  {
+    case SEEINVIS: {
       victim.set_true_sight();
     } break;
 
@@ -222,9 +219,7 @@ void Potion::quaffed_by(Character& victim) {
     } break;
 
     case RAISE: {
-      if (&victim == player) {
-        Potion::set_known(subtype);
-      }
+      if (&victim == player) { Potion::set_known(subtype); }
       victim.raise_level(1);
     } break;
 
@@ -249,45 +244,40 @@ void Potion::quaffed_by(Character& victim) {
     } break;
 
     case BLIND: {
-      if (&victim == player) {
-        Potion::set_known(subtype);
-      }
+      if (&victim == player) { Potion::set_known(subtype); }
       victim.set_blind();
     } break;
 
     case LEVIT: {
-      if (&victim == player) {
-        Potion::set_known(subtype);
-      }
+      if (&victim == player) { Potion::set_known(subtype); }
       victim.set_levitating();
     } break;
 
-    case NPOTIONS:  error("Unknown subtype NPOTIONS");
+    case NPOTIONS: error("Unknown subtype NPOTIONS");
   }
 }
 
-bool
-potion_quaff_something(void)
-{
-  Potion* obj = dynamic_cast<Potion*>(player->pack_find_item("quaff", IO::Potion));
+bool potion_quaff_something(void) {
+  Potion* obj{
+      dynamic_cast<Potion*>(player->pack_find_item("quaff", IO::Potion))};
   if (obj == nullptr) {
     return false;
 
-  // Make certain that it is somethings that we want to drink
+    // Make certain that it is somethings that we want to drink
   } else if (obj == nullptr || obj->o_type != IO::Potion) {
     Game::io->message("that's undrinkable");
     return false;
   }
 
   // Calculate the effect it has on the poor guy.
-  bool discardit = obj->o_count == 1;
+  bool const discardit{obj->o_count == 1};
   player->pack_remove(obj, false, false);
 
   obj->quaffed_by(*player);
 
   Game::io->refresh();
 
-  string& nickname = Potion::guess(obj->get_type());
+  string& nickname{Potion::guess(obj->get_type())};
   if (Potion::is_known(obj->get_type())) {
     nickname.clear();
 
@@ -297,9 +287,7 @@ potion_quaff_something(void)
   }
 
   /* Throw the item away */
-  if (discardit) {
-    delete obj;
-  }
+  if (discardit) { delete obj; }
   return true;
 }
 
@@ -309,12 +297,13 @@ void Potion::init_potions() {
   guesses = new vector<string>(Potion::NPOTIONS, "");
 
   /* Pick a unique color for each potion */
-  for (int i = 0; i < Potion::NPOTIONS; i++)
+  for (int i{0}; i < Potion::NPOTIONS; i++)
     for (;;) {
-      size_t color = os_rand_range(Color::max());
-      string color_name = Color::get(color);
+      size_t const color{os_rand_range(Color::max())};
+      string const color_name{Color::get(color)};
 
-      if (find(colors->cbegin(), colors->cend(), color_name) != colors->cend()) {
+      if (find(colors->cbegin(), colors->cend(), color_name) !=
+          colors->cend()) {
         continue;
       }
 
@@ -344,12 +333,10 @@ void Potion::test_potions() {
   free_potions();
   load_potions(test_data);
 
-  if (colors_ != *colors)       { error("potion test 1 failed"); }
+  if (colors_ != *colors) { error("potion test 1 failed"); }
   if (knowledge_ != *knowledge) { error("potion test 2 failed"); }
-  if (guesses_ != *guesses)     { error("potion test 3 failed"); }
+  if (guesses_ != *guesses) { error("potion test 3 failed"); }
 }
-
-
 
 void Potion::save_potions(std::ostream& data) {
   Disk::save_tag(TAG_POTION, data);
@@ -362,20 +349,22 @@ void Potion::save_potions(std::ostream& data) {
 }
 
 void Potion::load_potions(std::istream& data) {
-  size_t npotions_size = static_cast<size_t>(Potion::NPOTIONS);
+  size_t const npotions_size{static_cast<size_t>(Potion::NPOTIONS)};
 
-  if (!Disk::load_tag(TAG_POTION, data))           { error("No potions found"); }
+  if (!Disk::load_tag(TAG_POTION, data)) { error("No potions found"); }
 
-  if (!Disk::load(TAG_COLORS, colors, data))       { error("Potion tag error 1"); }
-  if (colors->size() != npotions_size)             { error("Potion size error 1") }
+  if (!Disk::load(TAG_COLORS, colors, data)) { error("Potion tag error 1"); }
+  if (colors->size() != npotions_size) { error("Potion size error 1") }
 
-  if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) { error("Potion tag error 2"); }
-  if (knowledge->size() != npotions_size)          { error("Potion size error 1") }
+  if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) {
+    error("Potion tag error 2");
+  }
+  if (knowledge->size() != npotions_size) { error("Potion size error 1") }
 
-  if (!Disk::load(TAG_GUESSES,   guesses, data))   { error("Potion tag error 3"); }
-  if (guesses->size() != npotions_size)            { error("Potion size error 1") }
+  if (!Disk::load(TAG_GUESSES, guesses, data)) { error("Potion tag error 3"); }
+  if (guesses->size() != npotions_size) { error("Potion size error 1") }
 
-  if (!Disk::load_tag(TAG_POTION, data))           { error("No potions end found"); }
+  if (!Disk::load_tag(TAG_POTION, data)) { error("No potions end found"); }
 }
 
 void Potion::save(std::ostream& data) const {
@@ -392,7 +381,6 @@ bool Potion::load(std::istream& data) {
   return true;
 }
 
-
 void Potion::free_potions() {
   delete colors;
   colors = nullptr;
@@ -404,36 +392,23 @@ void Potion::free_potions() {
   guesses = nullptr;
 }
 
+void Potion::set_identified() { set_known(subtype); }
 
-void Potion::set_identified() {
-  set_known(subtype);
-}
+bool Potion::is_identified() const { return is_known(subtype); }
 
-bool Potion::is_identified() const {
-  return is_known(subtype);
-}
-
-int Potion::get_base_value() const {
-  return worth(subtype);
-}
+int Potion::get_base_value() const { return worth(subtype); }
 
 int Potion::get_value() const {
-  int value = get_base_value();
+  int value{get_base_value()};
   value *= o_count;
-  if (!is_identified()) {
-    value /= 2;
-  }
+  if (!is_identified()) { value /= 2; }
   return value;
 }
 
-bool Potion::is_stackable() const {
-  return true;
-}
+bool Potion::is_stackable() const { return true; }
 
 bool Potion::autopickup() const {
-  string const& guess_ = guess(subtype);
-  if (!guess_.empty() && guess_.find('!') != string::npos) {
-    return false;
-  }
+  string const& guess_{guess(subtype)};
+  if (!guess_.empty() && guess_.find('!') != string::npos) { return false; }
   return option_autopickup(o_type);
 }

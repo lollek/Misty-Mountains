@@ -1,40 +1,37 @@
-#include <string>
-#include <list>
 #include <algorithm>
 #include <iomanip>
+#include <list>
 #include <sstream>
+#include <string>
 
-#include "error_handling.h"
 #include "coordinate.h"
+#include "error_handling.h"
 #include "game.h"
-#include "item/scrolls.h"
 #include "io.h"
+#include "item.h"
 #include "item/armor.h"
+#include "item/gold.h"
 #include "item/potions.h"
 #include "item/rings.h"
-#include "misc.h"
-#include "level.h"
-#include "player.h"
-#include "item/weapons.h"
+#include "item/scrolls.h"
 #include "item/wand.h"
-#include "monster.h"
-#include "os.h"
+#include "item/weapons.h"
+#include "level.h"
 #include "level/rooms.h"
+#include "misc.h"
+#include "monster.h"
 #include "options.h"
+#include "os.h"
+#include "player.h"
 #include "rogue.h"
-#include "item.h"
-#include "item/gold.h"
 
 #include "player.h"
 
 using namespace std;
 
-static size_t
-pack_print_evaluate_item(Item* item)
-{
-  int worth = 0;
-  if (item == nullptr)
-    return 0;
+static size_t pack_print_evaluate_item(Item* item) {
+  int worth{0};
+  if (item == nullptr) return 0;
   worth = item->get_value();
   item->set_identified();
 
@@ -46,29 +43,22 @@ pack_print_evaluate_item(Item* item)
   return static_cast<unsigned>(worth);
 }
 
-
-
-
 bool Player::pack_add(Item* obj, bool silent, bool from_floor) {
   /* Either obj is an item or we try to take something from the floor */
   if (obj == nullptr) {
     obj = Game::level->get_item(player->get_position());
-    if (obj == nullptr) {
-      error("Item not found on floor");
-    }
+    if (obj == nullptr) { error("Item not found on floor"); }
     from_floor = true;
   }
 
   /* See if we can stack it with something else in the pack */
-  bool is_picked_up = false;
+  bool is_picked_up{false};
   if (obj->is_stackable())
     for (Item* ptr : pack) {
       if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which &&
           ptr->get_hit_plus() == obj->get_hit_plus() &&
-          ptr->get_damage_plus() == obj->get_damage_plus())
-      {
-        if (from_floor)
-          Game::level->items.remove(obj);
+          ptr->get_damage_plus() == obj->get_damage_plus()) {
+        if (from_floor) Game::level->items.remove(obj);
         ptr->o_count += obj->o_count;
         ptr->set_position(obj->get_position());
         delete obj;
@@ -79,8 +69,7 @@ bool Player::pack_add(Item* obj, bool silent, bool from_floor) {
     }
 
   /* If we cannot stack it, we need to have available space in the pack */
-  if (!is_picked_up && pack.size() == pack_size())
-  {
+  if (!is_picked_up && pack.size() == pack_size()) {
     Game::io->message("there's no room in your pack");
     if (from_floor) {
       Game::io->message("moved onto " + obj->get_description());
@@ -89,17 +78,14 @@ bool Player::pack_add(Item* obj, bool silent, bool from_floor) {
   }
 
   /* Otherwise, just insert it */
-  if (!is_picked_up)
-  {
-    if (from_floor)
-      Game::level->items.remove(obj);
+  if (!is_picked_up) {
+    if (from_floor) Game::level->items.remove(obj);
     pack.push_back(obj);
-    for (size_t i = 0; i < pack_size(); ++i) {
-      char packch = static_cast<char>(i) + 'a';
-      auto results = find_if(pack.begin(), pack.end(),
-        [packch] (Item* it) {
+    for (size_t i{0}; i < pack_size(); ++i) {
+      char const packch{static_cast<char>(i) + 'a'};
+      auto const results{find_if(pack.begin(), pack.end(), [packch](Item* it) {
         return it->o_packch == packch;
-      });
+      })};
 
       if (results == pack.end()) {
         obj->o_packch = packch;
@@ -110,20 +96,18 @@ bool Player::pack_add(Item* obj, bool silent, bool from_floor) {
 
   /* Notify the user */
   if (!silent) {
-    Game::io->message("you now have " + obj->get_description() +
-                      " (" + string(1, obj->o_packch) + ")");
+    Game::io->message("you now have " + obj->get_description() + " (" +
+                      string(1, obj->o_packch) + ")");
   }
   return true;
 }
 
 Item* Player::pack_remove(Item* obj, bool newobj, bool all) {
-  Item* return_value = obj;
+  Item* return_value{obj};
 
   // If equipped, remove it
-  for (size_t i = 0; i < equipment.size(); ++i) {
-    if (equipment.at(i) == obj) {
-      equipment.at(i) = nullptr;
-    }
+  for (size_t i{0}; i < equipment.size(); ++i) {
+    if (equipment.at(i) == obj) { equipment.at(i) = nullptr; }
   }
 
   /* If there are several, we need to alloate a new item to hold it */
@@ -134,7 +118,7 @@ Item* Player::pack_remove(Item* obj, bool newobj, bool all) {
       return_value->o_count = 1;
     }
 
-  /* Only one item? Just pop and return it */
+    /* Only one item? Just pop and return it */
   } else {
     pack.remove(obj);
   }
@@ -142,28 +126,26 @@ Item* Player::pack_remove(Item* obj, bool newobj, bool all) {
 }
 
 Item* Player::pack_find_random_item() {
-  if (pack.empty()) {
-    return nullptr;
-  }
+  if (pack.empty()) { return nullptr; }
 
-  auto it = pack.begin();
+  auto it{pack.begin()};
   advance(it, static_cast<long>(os_rand_range(pack.size())));
   return *it;
 }
 
 class Weapon* Player::pack_find_ammo(Weapon::AmmoType ammo_type) {
-  auto results = find_if(pack.begin(), pack.end(),
-      [ammo_type] (Item* i) {
+  auto const results{find_if(pack.begin(), pack.end(), [ammo_type](Item* i) {
     class Weapon* w = dynamic_cast<class Weapon*>(i);
     return w != nullptr && w->get_ammo_type() == ammo_type;
-  });
+  })};
 
-  return results == pack.end() ? nullptr : dynamic_cast<class Weapon*>(*results);
+  return results == pack.end() ? nullptr
+                               : dynamic_cast<class Weapon*>(*results);
 }
 
 Item* Player::pack_find_item(string const& purpose, int type) {
   enum cur_win_t { INVENTORY, EQUIPMENT };
-  cur_win_t current_window = INVENTORY;
+  cur_win_t current_window{INVENTORY};
 
   for (;;) {
     Game::io->clear_message();
@@ -179,7 +161,7 @@ Item* Player::pack_find_item(string const& purpose, int type) {
       } break;
     }
 
-    char ch = Game::io->readchar(true);
+    char ch{Game::io->readchar(true)};
     Game::io->clear_message();
 
     if (ch == KEY_ESCAPE) {
@@ -195,9 +177,7 @@ Item* Player::pack_find_item(string const& purpose, int type) {
         }
 
         for (Item* obj : pack) {
-          if (obj->o_packch == ch) {
-            return obj;
-          }
+          if (obj->o_packch == ch) { return obj; }
         }
       } break;
 
@@ -206,7 +186,7 @@ Item* Player::pack_find_item(string const& purpose, int type) {
           current_window = INVENTORY;
           continue;
         }
-        size_t position = static_cast<size_t>(ch - 'a');
+        size_t const position{static_cast<size_t>(ch - 'a')};
         if (position < equipment.size() && equipment.at(position) != nullptr) {
           return equipment.at(position);
         }
@@ -216,10 +196,11 @@ Item* Player::pack_find_item(string const& purpose, int type) {
 }
 
 size_t Player::pack_num_items(int type, int subtype) {
-  size_t num = 0;
+  size_t num{0};
 
   for (Item const* list : pack) {
-    if (!type || (type == list->o_type && (list->o_which == subtype || subtype == -1))) {
+    if (!type ||
+        (type == list->o_type && (list->o_which == subtype || subtype == -1))) {
       ++num;
     }
   }
@@ -228,19 +209,19 @@ size_t Player::pack_num_items(int type, int subtype) {
 
 string Player::equipment_pos_to_string(Equipment pos) {
   switch (pos) {
-    case Armor:         return "Armor";
-    case Weapon:        return "Weapon";
-    case BackupWeapon:  return "Backup Weapon";
+    case Armor: return "Armor";
+    case Weapon: return "Weapon";
+    case BackupWeapon: return "Backup Weapon";
     case Ring1:
-    case Ring2:         return "Ring";
+    case Ring2: return "Ring";
     case NEQUIPMENT: error("equipment out of range");
   }
 }
 
 bool Player::pack_contains_amulet() {
-  return find_if(pack.cbegin(), pack.cend(), [] (Item const* ptr) {
-    return ptr->o_type == IO::Amulet;
-  }) != pack.cend();
+  return find_if(pack.cbegin(), pack.cend(), [](Item const* ptr) {
+           return ptr->o_type == IO::Amulet;
+         }) != pack.cend();
 }
 
 bool Player::pack_contains(Item const* item) {
@@ -248,9 +229,9 @@ bool Player::pack_contains(Item const* item) {
 }
 
 bool Player::pack_print_equipment() {
-  char sym = 'a';
-  for (size_t i = 0; i < NEQUIPMENT; ++i) {
-    Item* item = equipment.at(i);
+  char sym{'a'};
+  for (size_t i{0}; i < NEQUIPMENT; ++i) {
+    Item* item{equipment.at(i)};
     string item_description;
 
     if (item == nullptr) {
@@ -271,7 +252,7 @@ bool Player::pack_print_equipment() {
 }
 
 bool Player::pack_print_inventory(int type) {
-  int num_items = 0;
+  int num_items{0};
   /* Print out all items */
   for (Item const* list : pack) {
     if (!type || type == list->o_type) {
@@ -285,23 +266,21 @@ bool Player::pack_print_inventory(int type) {
 }
 
 size_t Player::pack_print_value() {
-  size_t value = 0;
+  size_t value{0};
 
   Game::io->clear_screen();
   Game::io->print_string(0, 0, "Worth  Item  [Equipment]\n");
-  for (size_t i = 0; i < static_cast<size_t>(NEQUIPMENT); ++i) {
+  for (size_t i{0}; i < static_cast<size_t>(NEQUIPMENT); ++i) {
     value += pack_print_evaluate_item(equipment.at(i));
   }
 
   Game::io->print_string("\nWorth  Item  [Inventory]\n");
-  for (Item* obj : pack) {
-    value += pack_print_evaluate_item(obj);
-  }
+  for (Item* obj : pack) { value += pack_print_evaluate_item(obj); }
 
   stringstream ss;
   ss << "\n" << setw(5) << setfill(' ') << gold << "  Gold Pieces          ";
   Game::io->print_string(ss.str());
-  Game::io->move_pointer(0, IO::screen_height -1);
+  Game::io->move_pointer(0, IO::screen_height - 1);
   Game::io->force_redraw();
   return value;
 }
@@ -309,13 +288,14 @@ size_t Player::pack_print_value() {
 bool Player::pack_equip(Item* item, bool silent) {
   Equipment position;
 
-  switch(item->o_type) {
-
+  switch (item->o_type) {
     case IO::Armor: {
       position = Armor;
     } break;
 
-    default: case IO::Weapon: case IO::Ammo: {
+    default:
+    case IO::Weapon:
+    case IO::Ammo: {
       position = Weapon;
     } break;
 
@@ -324,10 +304,8 @@ bool Player::pack_equip(Item* item, bool silent) {
     } break;
   }
 
-
   for (;;) {
     if (equipment.at(static_cast<size_t>(position)) == nullptr) {
-
       pack_remove(item, false, true);
       equipment.at(static_cast<size_t>(position)) = item;
 
@@ -346,8 +324,8 @@ bool Player::pack_equip(Item* item, bool silent) {
           }
         } break;
 
-        case Weapon:        doing = "wielding"; break;
-        case BackupWeapon:  doing = "wielding"; break;
+        case Weapon: doing = "wielding"; break;
+        case BackupWeapon: doing = "wielding"; break;
 
         case NEQUIPMENT: error("NEQUIPMENT received");
       }
@@ -378,7 +356,10 @@ bool Player::pack_equip(Item* item, bool silent) {
 bool Player::pack_unequip(Equipment pos, bool silent_on_success) {
   string doing;
   switch (pos) {
-    case BackupWeapon: case Armor: case Ring1: case Ring2: {
+    case BackupWeapon:
+    case Armor:
+    case Ring1:
+    case Ring2: {
       doing = "wearing";
     } break;
 
@@ -389,7 +370,7 @@ bool Player::pack_unequip(Equipment pos, bool silent_on_success) {
     case NEQUIPMENT: error("NEQUIPMENT");
   }
 
-  Item* obj = equipment.at(pos);
+  Item* obj{equipment.at(pos)};
   if (obj == nullptr) {
     Game::io->message("not " + doing + " anything!");
     return false;
@@ -404,9 +385,7 @@ bool Player::pack_unequip(Equipment pos, bool silent_on_success) {
   equipment.at(pos) = nullptr;
 
   /* Waste time if armor - since they take a while */
-  if (pos == Armor) {
-    player->waste_time(1);
-  }
+  if (pos == Armor) { player->waste_time(1); }
 
   if (!pack_add(obj, true, false)) {
     Game::level->items.push_back(obj);
@@ -420,12 +399,10 @@ bool Player::pack_unequip(Equipment pos, bool silent_on_success) {
   return true;
 }
 
-Item* Player::pack_find_item(int type, int subtype)
-{
-  auto results = find_if(pack.begin(), pack.end(),
-      [type, subtype] (Item *i) {
+Item* Player::pack_find_item(int type, int subtype) {
+  auto const results{find_if(pack.begin(), pack.end(), [type, subtype](Item* i) {
     return i->o_type == type && i->o_which == subtype;
-  });
+  })};
 
   return results == pack.end() ? nullptr : *results;
 }
@@ -438,28 +415,21 @@ class Armor* Player::equipped_armor() const {
   return dynamic_cast<class Armor*>(equipment.at(Armor));
 }
 
-void Player::give_gold(int amount) {
-  gold += amount;
-}
+void Player::give_gold(int amount) { gold += amount; }
 
-int Player::get_gold() {
-  return gold;
-}
+int Player::get_gold() { return gold; }
 
 void Player::pack_identify_item() {
-  Item* obj = pack_find_item("identify", 0);
-  if (obj == nullptr) {
-    return;
-  }
+  Item* obj{pack_find_item("identify", 0)};
+  if (obj == nullptr) { return; }
 
   obj->set_identified();
   Game::io->message(obj->get_description());
 }
 
-
 void Player::equipment_run_abilities() {
   for (Equipment position : all_rings()) {
-    Item* obj = equipment.at(position);
+    Item* obj{equipment.at(position)};
     if (obj == nullptr) {
       continue;
 
@@ -471,22 +441,18 @@ void Player::equipment_run_abilities() {
   }
 }
 
-size_t Player::equipment_size() {
-  return NEQUIPMENT;
-}
+size_t Player::equipment_size() { return NEQUIPMENT; }
 
-size_t Player::pack_size() {
-  return 22;
-}
+size_t Player::pack_size() { return 22; }
 
 bool Player::pack_swap_weapons() {
-  Item* main_weapon = equipment.at(Weapon);
+  Item* main_weapon{equipment.at(Weapon)};
   if (main_weapon != nullptr && main_weapon->is_cursed()) {
     Game::io->message("you can't. It appears to be cursed");
     return true;
   }
 
-  Item *backup_weapon = equipment.at(BackupWeapon);
+  Item* backup_weapon{equipment.at(BackupWeapon)};
 
   equipment.at(Weapon) = backup_weapon;
   equipment.at(BackupWeapon) = main_weapon;
@@ -500,9 +466,9 @@ bool Player::pack_swap_weapons() {
 }
 
 int Player::pack_get_ring_modifier(Ring::Type ring_type) {
-  int return_value = 0;
+  int return_value{0};
   for (Equipment position : all_rings()) {
-    Ring* obj = dynamic_cast<Ring*>(equipment.at(position));
+    Ring* obj{dynamic_cast<Ring*>(equipment.at(position))};
     if (obj == nullptr) {
       continue;
 

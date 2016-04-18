@@ -1,39 +1,70 @@
 #include "disk.h"
-#include "os.h"
-#include "misc.h"
 #include "game.h"
 #include "item/scrolls.h"
+#include "misc.h"
+#include "os.h"
 
 #include "character.h"
 
 using namespace std;
 
 Character::Character(int str_, int dex_, int con_, int int_, int wis_, int cha_,
-    int exp_, int lvl_, int ac_, int hd_, std::vector<damage> const& attacks_,
-    Coordinate const& position_, vector<Feat> const& feats_, int speed_, Race race_) :
+                     int exp_, int lvl_, int ac_, int hd_,
+                     std::vector<damage> const& attacks_,
+                     Coordinate const& position_, vector<Feat> const& feats_,
+                     int speed_, Race race_)
+    :
 
-  strength{str_}, default_strength{str_},
-  dexterity{dex_}, default_dexterity{dex_},
-  constitution{con_}, default_constitution{con_},
-  intelligence{int_}, default_intelligence{int_},
-  wisdom{con_}, default_wisdom{wis_},
-  charisma{cha_}, default_charisma{cha_},
+      strength{str_},
+      default_strength{str_},
+      dexterity{dex_},
+      default_dexterity{dex_},
+      constitution{con_},
+      default_constitution{con_},
+      intelligence{int_},
+      default_intelligence{int_},
+      wisdom{con_},
+      default_wisdom{wis_},
+      charisma{cha_},
+      default_charisma{cha_},
 
-  experience{exp_}, level{lvl_}, base_ac{ac_}, hit_dice{hd_},
-  base_health{hit_dice + roll(level-1, hit_dice)},
-  health{get_max_health()},
-  attacks{attacks_}, position{position_}, speed{speed_}, race{race_},
-  feats{feats_}, turns_not_moved{0},
+      experience{exp_},
+      level{lvl_},
+      base_ac{ac_},
+      hit_dice{hd_},
+      base_health{hit_dice + roll(level - 1, hit_dice)},
+      health{get_max_health()},
+      attacks{attacks_},
+      position{position_},
+      speed{speed_},
+      race{race_},
+      feats{feats_},
+      turns_not_moved{0},
 
-  confusing_attack{0}, true_sight{0}, blind{0}, cancelled{0}, levitating{0},
-  found{0}, greedy{0}, players_target{0}, held{0}, confused{0},
-  invisible{0}, mean{0}, regenerating{0}, running{0},
-  stuck{0}, attack_freeze{0}, attack_damage_armor{0},
-  attack_steal_gold{0}, attack_steal_item{0}, attack_drain_strength{0},
-  attack_drain_health{0}, attack_drain_experience{0}
-{}
+      confusing_attack{0},
+      true_sight{0},
+      blind{0},
+      cancelled{0},
+      levitating{0},
+      found{0},
+      greedy{0},
+      players_target{0},
+      held{0},
+      confused{0},
+      invisible{0},
+      mean{0},
+      regenerating{0},
+      running{0},
+      stuck{0},
+      attack_freeze{0},
+      attack_damage_armor{0},
+      attack_steal_gold{0},
+      attack_steal_item{0},
+      attack_drain_strength{0},
+      attack_drain_health{0},
+      attack_drain_experience{0} {}
 
-int  Character::get_speed() const { return speed; }
+int Character::get_speed() const { return speed; }
 bool Character::is_blind() const { return blind; }
 bool Character::is_cancelled() const { return cancelled; }
 bool Character::is_confused() const { return confused; }
@@ -54,7 +85,9 @@ bool Character::attack_steals_gold() const { return attack_steal_gold; }
 bool Character::attack_steals_item() const { return attack_steal_item; }
 bool Character::attack_drains_strength() const { return attack_drain_strength; }
 bool Character::attack_drains_health() const { return attack_drain_health; }
-bool Character::attack_drains_experience() const { return attack_drain_experience; }
+bool Character::attack_drains_experience() const {
+  return attack_drain_experience;
+}
 
 void Character::set_blind() { blind = true; }
 void Character::set_cancelled() { cancelled = true; }
@@ -78,39 +111,29 @@ bool Character::has_feat(Feat feat) const {
   return find(feats.begin(), feats.end(), feat) != feats.end();
 }
 
-bool Character::attacks_on_sight() const {
-  return has_feat(AttacksOnSight);
-}
+bool Character::attacks_on_sight() const { return has_feat(AttacksOnSight); }
 
 void Character::add_feat(Feat feat) {
-  if (!has_feat(feat)) {
-    feats.push_back(feat);
-  }
+  if (!has_feat(feat)) { feats.push_back(feat); }
 }
 
-void Character::set_attacks_on_sight() {
-  add_feat(AttacksOnSight);
-}
+void Character::set_attacks_on_sight() { add_feat(AttacksOnSight); }
 
 void Character::set_held() {
   held = true;
   running = false;
 }
 
-void Character::take_damage(int damage) {
-  health -= damage;
-}
+void Character::take_damage(int damage) { health -= damage; }
 
 Coordinate Character::possible_random_move() {
   Coordinate ret;
 
   // Generate a random
-  int x = ret.x = position.x + os_rand_range(3) - 1;
-  int y = ret.y = position.y + os_rand_range(3) - 1;
+  int const x{ret.x = position.x + os_rand_range(3) - 1};
+  int const y{ret.y = position.y + os_rand_range(3) - 1};
 
-  if (y == position.y && x == position.x) {
-    return ret;
-  }
+  if (y == position.y && x == position.x) { return ret; }
 
   if (!Game::level->can_step(x, y)) {
     ret.x = position.x;
@@ -118,8 +141,9 @@ Coordinate Character::possible_random_move() {
     return ret;
   }
 
-  Item* item = Game::level->get_item(x, y);
-  if (item != nullptr && item->o_type == IO::Scroll && item->o_which == Scroll::SCARE) {
+  Item const* item{Game::level->get_item(x, y)};
+  if (item != nullptr && item->o_type == IO::Scroll &&
+      item->o_which == Scroll::SCARE) {
     ret.x = position.x;
     ret.y = position.y;
     return ret;
@@ -128,43 +152,32 @@ Coordinate Character::possible_random_move() {
   return ret;
 }
 
-void Character::restore_strength() {
-  strength = default_strength;
-}
+void Character::restore_strength() { strength = default_strength; }
 
 void Character::modify_strength(int amount) {
   // Negative is temporary and Positive is permanent (if not below default).
   strength += amount;
 
-  if (strength > default_strength) {
-    default_strength = strength;
-  }
+  if (strength > default_strength) { default_strength = strength; }
 }
 
-int Character::get_default_strength() const {
-  return default_strength;
-}
+int Character::get_default_strength() const { return default_strength; }
 
 void Character::restore_health(int amount, bool can_raise_max_health) {
   health += amount;
 
   if (can_raise_max_health) {
     int extra_max_hp = 0;
-    if (health > get_max_health() + level + 1)
-      ++extra_max_hp;
-    if (health > get_max_health())
-      ++extra_max_hp;
+    if (health > get_max_health() + level + 1) { ++extra_max_hp; }
+    if (health > get_max_health()) { ++extra_max_hp; }
 
     base_health += extra_max_hp;
   }
 
-  if (health > get_max_health())
-    health = get_max_health();
+  if (health > get_max_health()) { health = get_max_health(); }
 }
 
-bool Character::is_hurt() const {
-  return health != get_max_health();
-}
+bool Character::is_hurt() const { return health != get_max_health(); }
 
 void Character::modify_max_health(int amount) {
   base_health += amount;
@@ -185,44 +198,28 @@ void Character::lower_level(int amount) {
   modify_max_health(-roll(amount, hit_dice));
 }
 
-int Character::get_level() const {
-  return level;
-}
+int Character::get_level() const { return level; }
 
-int Character::get_ac() const {
-  return base_ac + (dexterity - 10) / 2;
-}
+int Character::get_ac() const { return base_ac + (dexterity - 10) / 2; }
 
-int Character::get_experience() const {
-  return experience;
-}
+int Character::get_experience() const { return experience; }
 
-int Character::get_strength() const {
-  return strength;
-}
+int Character::get_strength() const { return strength; }
 
-int Character::get_health() const {
-  return health;
-}
+int Character::get_health() const { return health; }
 
 int Character::get_max_health() const {
   return base_health + (constitution - 10) / 2;
 }
 
-Coordinate const& Character::get_position() const {
-  return position;
-}
+Coordinate const& Character::get_position() const { return position; }
 
-vector<damage> const& Character::get_attacks() const {
-  return attacks;
-}
+vector<damage> const& Character::get_attacks() const { return attacks; }
 
 void Character::set_mean() { mean = true; }
 void Character::set_players_target() { players_target = true; }
 void Character::set_not_players_target() { players_target = false; }
-void Character::gain_experience(int experience_) {
-  experience += experience_;
-}
+void Character::gain_experience(int experience_) { experience += experience_; }
 
 void Character::set_not_mean() { mean = false; }
 void Character::set_greedy() { greedy = true; }
@@ -237,8 +234,8 @@ void Character::set_position(Coordinate const& position_) {
   position = position_;
 }
 
-void Character::set_base_stats(int str_, int dex_, int con_,
-                              int wis_, int int_, int cha_) {
+void Character::set_base_stats(int str_, int dex_, int con_, int wis_, int int_,
+                               int cha_) {
   strength = default_strength = str_;
   dexterity = default_dexterity = dex_;
   constitution = default_constitution = con_;
@@ -246,7 +243,6 @@ void Character::set_base_stats(int str_, int dex_, int con_,
   intelligence = default_intelligence = int_;
   charisma = default_charisma = cha_;
 }
-
 
 void Character::save(ostream& data) const {
   Disk::save_tag(TAG_CHARACTER, data);
@@ -362,26 +358,19 @@ bool Character::load(istream& data) {
 }
 
 void Character::increase_speed() {
-  if (++speed == 0) {
-    speed = 1;
-  }
+  if (++speed == 0) { speed = 1; }
   turns_not_moved = 0;
 }
 
 void Character::decrease_speed() {
-  if (--speed) {
-    speed = -1;
-  }
+  if (--speed) { speed = -1; }
   turns_not_moved = 0;
 }
-
 
 // If speed > 0, its the number of turns to take.
 // Else it's a turn per 1 / (-speed +2) rounds. E.g. 0 -> 1/2, -1 -> 1/3
 int Character::get_moves_this_round() {
-  if (speed > 0) {
-    return speed;
-  }
+  if (speed > 0) { return speed; }
 
   if (turns_not_moved > -speed) {
     turns_not_moved = 0;
@@ -392,68 +381,46 @@ int Character::get_moves_this_round() {
   return 0;
 }
 
-int Character::get_dexterity() const {
-  return dexterity;
-}
+int Character::get_dexterity() const { return dexterity; }
 
-int Character::get_default_dexterity() const {
-  return default_dexterity;
-}
+int Character::get_default_dexterity() const { return default_dexterity; }
 
-int Character::get_constitution() const {
-  return constitution;
-}
+int Character::get_constitution() const { return constitution; }
 
-int Character::get_default_constitution() const {
-  return default_constitution;
-}
+int Character::get_default_constitution() const { return default_constitution; }
 
-int Character::get_wisdom() const {
-  return wisdom;
-}
+int Character::get_wisdom() const { return wisdom; }
 
-int Character::get_default_wisdom() const {
-  return default_wisdom;
-}
+int Character::get_default_wisdom() const { return default_wisdom; }
 
-int Character::get_intelligence() const {
-  return intelligence;
-}
+int Character::get_intelligence() const { return intelligence; }
 
-int Character::get_default_intelligence() const {
-  return default_intelligence;
-}
+int Character::get_default_intelligence() const { return default_intelligence; }
 
-int Character::get_charisma() const {
-  return charisma;
-}
+int Character::get_charisma() const { return charisma; }
 
-int Character::get_default_charisma() const {
-  return default_charisma;
-}
+int Character::get_default_charisma() const { return default_charisma; }
 
-Character::Race Character::get_race() const {
-  return race;
-}
+Character::Race Character::get_race() const { return race; }
 
 string Character::race_to_string(Race race) {
   switch (race) {
-    case Human:             return "human";
-    case Dwarf:             return "dwarf";
-    case Elf:               return "elf";
-    case Animal:            return "animal";
-    case Reptilian:         return "reptilian";
-    case Goblinoid:         return "goblinoid";
-    case Elemental:         return "elemental";
-    case Fey:               return "fey";
-    case Orc:               return "orc";
-    case Undead:            return "undead";
-    case Humanoid:          return "humanoid";
+    case Human: return "human";
+    case Dwarf: return "dwarf";
+    case Elf: return "elf";
+    case Animal: return "animal";
+    case Reptilian: return "reptilian";
+    case Goblinoid: return "goblinoid";
+    case Elemental: return "elemental";
+    case Fey: return "fey";
+    case Orc: return "orc";
+    case Undead: return "undead";
+    case Humanoid: return "humanoid";
     case MonstrousHumanoid: return "monstrous humanoid";
-    case Aberration:        return "aberration";
-    case MagicBeast:        return "magic beast";
-    case Dragon:            return "dragon";
-    case Outsider:          return "outsider";
-    case Giant:             return "giant";
+    case Aberration: return "aberration";
+    case MagicBeast: return "magic beast";
+    case Dragon: return "dragon";
+    case Outsider: return "outsider";
+    case Giant: return "giant";
   }
 }

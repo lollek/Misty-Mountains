@@ -1,14 +1,14 @@
 #include <vector>
 
-#include "item/weapons.h"
+#include "colors.h"
 #include "error_handling.h"
+#include "fight.h"
+#include "game.h"
+#include "item/weapons.h"
 #include "magic.h"
+#include "misc.h"
 #include "monster.h"
 #include "player.h"
-#include "game.h"
-#include "colors.h"
-#include "fight.h"
-#include "misc.h"
 #include "rogue.h"
 
 #include "item/wand.h"
@@ -17,7 +17,6 @@ using namespace std;
 
 // "walk" in the zap direction until we find a target
 static Monster* wand_find_target(int* y, int* x, int dy, int dx) {
-
   *y = player->get_position().y;
   *x = player->get_position().x;
 
@@ -29,9 +28,8 @@ static Monster* wand_find_target(int* y, int* x, int dy, int dx) {
   return Game::level->get_monster(*x, *y);
 }
 
-static void wand_spell_light(void)
-{
-  room* player_room = Game::level->get_room(player->get_position());
+static void wand_spell_light(void) {
+  room* player_room{Game::level->get_room(player->get_position())};
   if (player_room == nullptr || player_room->is_gone) {
     Game::io->message("the corridor glows and then fades");
 
@@ -44,16 +42,12 @@ static void wand_spell_light(void)
 // take away 1/2 of hero's hit points, then take it away
 // evenly from the monsters in the room (or next to hero
 // if he is in a passage)
-static void
-wand_spell_drain_health(void) {
-
+static void wand_spell_drain_health(void) {
   // Add nearby monsters to a list
   vector<Monster*> drainee;
 
   for (Monster* monster : Game::level->monsters) {
-    if (player->can_see(*monster)) {
-      drainee.push_back(monster);
-    }
+    if (player->can_see(*monster)) { drainee.push_back(monster); }
   }
 
   // No monster found -> return
@@ -62,13 +56,13 @@ wand_spell_drain_health(void) {
     return;
   }
 
-  int damage = player->get_health() / 2;
+  int const damage{player->get_health() / 2};
   player->take_damage(damage);
   Game::io->message("You feel an intense pain");
 
   // Now zot all of the monsters
   // Must use manual loop here, since monsters can be deleted
-  auto it = drainee.begin();
+  auto it{drainee.begin()};
   while (it != drainee.end()) {
     Monster* monster = *it++;
     monster->take_damage(damage);
@@ -83,18 +77,12 @@ wand_spell_drain_health(void) {
   }
 }
 
-static void
-wand_spell_polymorph(Monster& target)
-{
+static void wand_spell_polymorph(Monster& target) {
   monster_polymorph(&target);
-  if (player->can_see(*&target)) {
-    Wand::set_known(Wand::Polymorph);
-  }
+  if (player->can_see(*&target)) { Wand::set_known(Wand::Polymorph); }
 }
 
-static void
-wand_spell_cancel(Monster& target)
-{
+static void wand_spell_cancel(Monster& target) {
   target.set_cancelled();
   target.set_not_invisible();
   target.remove_confusing_attack();
@@ -102,24 +90,20 @@ wand_spell_cancel(Monster& target)
   target.set_disguise(target.get_look());
 }
 
-static void
-wand_spell_magic_missile(int dy, int dx)
-{
-  class Weapon bolt(Weapon::Dagger);
-  bolt.o_type    = '*';
+static void wand_spell_magic_missile(int dy, int dx) {
+  class Weapon bolt{Weapon::Dagger};
+  bolt.o_type = '*';
   bolt.set_hit_plus(100);
   bolt.set_damage_plus(1);
   bolt.set_attack_damage({0, 0});
   bolt.set_throw_damage({1, 4});
 
-  Item* weapon = player->equipped_weapon();
-  if (weapon != nullptr) {
-    bolt.o_launch = weapon->o_which;
-  }
+  Item* weapon{player->equipped_weapon()};
+  if (weapon != nullptr) { bolt.o_launch = weapon->o_which; }
 
   Game::io->missile_motion(&bolt, dy, dx);
 
-  Monster* target = Game::level->get_monster(bolt.get_position());
+  Monster* target{Game::level->get_monster(bolt.get_position())};
   if (target == nullptr) {
     Game::io->message("the missle vanishes with a puff of smoke");
 
@@ -131,18 +115,12 @@ wand_spell_magic_missile(int dy, int dx)
   }
 }
 
+bool wand_zap(void) {
+  Coordinate const* dir{get_dir()};
+  if (dir == nullptr) { return false; }
 
-
-bool
-wand_zap(void)
-{
-  Coordinate const* dir = get_dir();
-  if (dir == nullptr) {
-    return false;
-  }
-
-  Item* obj = player->pack_find_item("zap with", IO::Wand);
-  Wand* wand = dynamic_cast<Wand*>(obj);
+  Item* obj{player->pack_find_item("zap with", IO::Wand)};
+  Wand* wand{dynamic_cast<Wand*>(obj)};
   if (obj == nullptr)
     return false;
 
@@ -155,10 +133,8 @@ wand_zap(void)
     return true;
   }
 
-  Wand::Type subtype = static_cast<Wand::Type>(obj->o_which);
-  switch (subtype)
-  {
-
+  Wand::Type const subtype{static_cast<Wand::Type>(obj->o_which)};
+  switch (subtype) {
     case Wand::Light: {
       Wand::set_known(subtype);
       wand_spell_light();
@@ -175,34 +151,33 @@ wand_zap(void)
     } break;
 
     case Wand::InvisibleOther: {
-        Coordinate c;
-        Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
-        if (tp != nullptr) {
-          tp->set_invisible();
-        } else {
-          Game::io->message("You did not hit anything");
-        }
-      } break;
+      Coordinate c;
+      Monster* tp{wand_find_target(&c.y, &c.x, dir->y, dir->x)};
+      if (tp != nullptr) {
+        tp->set_invisible();
+      } else {
+        Game::io->message("You did not hit anything");
+      }
+    } break;
 
-    case Wand::Polymorph:
-      {
-        Coordinate c;
-        Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
-        if (tp != nullptr)
-          wand_spell_polymorph(*tp);
-        else
-          Game::io->message("You did not hit anything");
-      } break;
+    case Wand::Polymorph: {
+      Coordinate c;
+      Monster* tp{wand_find_target(&c.y, &c.x, dir->y, dir->x)};
+      if (tp != nullptr)
+        wand_spell_polymorph(*tp);
+      else
+        Game::io->message("You did not hit anything");
+    } break;
 
     case Wand::Cancellation: {
-        Coordinate c;
-        Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
-        if (tp != nullptr) {
-          wand_spell_cancel(*tp);
-        } else {
-          Game::io->message("You did not hit anything");
-        }
-      } break;
+      Coordinate c;
+      Monster* tp{wand_find_target(&c.y, &c.x, dir->y, dir->x)};
+      if (tp != nullptr) {
+        wand_spell_cancel(*tp);
+      } else {
+        Game::io->message("You did not hit anything");
+      }
+    } break;
 
     case Wand::TeleportAway: {
       Wand::set_known(subtype);
@@ -210,25 +185,20 @@ wand_zap(void)
     } break;
 
     case Wand::TeleportTo: {
-        Wand::set_known(subtype);
-        int x;
-        int y;
-        Coordinate delta = *dir;
-        Monster* tp = wand_find_target(&y, &x, delta.y, delta.x);
-        if (tp != nullptr)
-        {
-          Coordinate new_pos;
-          new_pos.y = y - delta.y;
-          new_pos.x = x - delta.x;
+      Wand::set_known(subtype);
+      int x;
+      int y;
+      Coordinate const delta{*dir};
+      Monster* tp{wand_find_target(&y, &x, delta.y, delta.x)};
+      if (tp != nullptr) {
+        Coordinate const new_pos {x - delta.x, y - delta.y};
+        tp->set_target(&player->get_position());
+        tp->set_chasing();
 
-          tp->set_target(&player->get_position());
-          tp->set_chasing();
-
-          player->teleport(&new_pos);
-        }
-        else
-          Game::io->message("You did not hit anything");
-      } break;
+        player->teleport(&new_pos);
+      } else
+        Game::io->message("You did not hit anything");
+    } break;
 
     case Wand::MagicMissile: {
       Wand::set_known(subtype);
@@ -236,58 +206,57 @@ wand_zap(void)
     } break;
 
     case Wand::HasteMonster: {
-        Coordinate c;
-        Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
-        if (tp != nullptr) {
-          Wand::set_known(subtype);
-          tp->increase_speed();
-          monster_start_running(&c);
-          Game::io->message(tp->get_name() + " became faster");
+      Coordinate c;
+      Monster* tp{wand_find_target(&c.y, &c.x, dir->y, dir->x)};
+      if (tp != nullptr) {
+        Wand::set_known(subtype);
+        tp->increase_speed();
+        monster_start_running(&c);
+        Game::io->message(tp->get_name() + " became faster");
 
-        } else {
-          Game::io->message("You did not hit anything");
-        }
-      } break;
+      } else {
+        Game::io->message("You did not hit anything");
+      }
+    } break;
 
     case Wand::SlowMonster: {
-        Coordinate c;
-        Monster* tp = wand_find_target(&c.y, &c.x, dir->y, dir->x);
-        if (tp != nullptr) {
-          Wand::set_known(subtype);
-          tp->decrease_speed();
-          monster_start_running(&c);
-          Game::io->message(tp->get_name() + " became slower");
+      Coordinate c;
+      Monster* tp{wand_find_target(&c.y, &c.x, dir->y, dir->x)};
+      if (tp != nullptr) {
+        Wand::set_known(subtype);
+        tp->decrease_speed();
+        monster_start_running(&c);
+        Game::io->message(tp->get_name() + " became slower");
 
-        } else {
-          Game::io->message("You did not hit anything");
-        }
-      } break;
+      } else {
+        Game::io->message("You did not hit anything");
+      }
+    } break;
 
     case Wand::ElectricBolt: {
       Wand::set_known(subtype);
-      Coordinate delta = *dir;
-      Coordinate coord = player->get_position();
+      Coordinate delta{*dir};
+      Coordinate coord{player->get_position()};
       magic_bolt(&coord, &delta, "bolt");
     } break;
 
     case Wand::FireBolt: {
       Wand::set_known(subtype);
-      Coordinate coord = player->get_position();
-      Coordinate delta = *dir;
+      Coordinate coord{player->get_position()};
+      Coordinate delta{*dir};
       magic_bolt(&coord, &delta, "flame");
     } break;
 
     case Wand::ColdBolt: {
       Wand::set_known(subtype);
-      Coordinate coord = player->get_position();
-      Coordinate delta = *dir;
+      Coordinate coord{player->get_position()};
+      Coordinate delta{*dir};
       magic_bolt(&coord, &delta, "ice");
     } break;
 
     case Wand::NWANDS: error("Unknown type NWANDS");
   }
 
-    wand->modify_charges(-1);
-    return true;
+  wand->modify_charges(-1);
+  return true;
 }
-
