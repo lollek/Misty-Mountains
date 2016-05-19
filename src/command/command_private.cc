@@ -603,5 +603,6 @@ bool command_save() {
     if (Game::save()) { Game::exit(); }
   }
 
+  Game::io->clear_message();
   return false;
 }
