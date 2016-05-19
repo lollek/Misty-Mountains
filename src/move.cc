@@ -61,18 +61,19 @@ static void handle_surrounding(Coordinate const& nh, int dx, int dy,
       }
 
       // Items are interesting
-      Item* item{Game::level->get_item(x, y)};
+      Item const* item{Game::level->get_item(x, y)};
       if (cautious && item != nullptr) {
         player->set_not_running();
         continue;
       }
 
-      // Always stop near traps and stairs, and doors IFF we can actually move
-      // to it (not diagonal)
-      Tile::Type tile{Game::level->get_tile(x, y)};
+      // Always stop near some object types
+      Tile::Type const tile{Game::level->get_tile(x, y)};
       Coordinate tile_coord(x, y);
-      if (cautious && (tile == Tile::StairsDown || tile == Tile::StairsUp ||
-                       tile == Tile::Trap || tile == Tile::OpenDoor)) {
+      if (cautious &&
+          (tile == Tile::StairsDown || tile == Tile::StairsUp ||
+           tile == Tile::Trap || tile == Tile::OpenDoor ||
+           tile == Tile::Shop)) {
         player->set_not_running();
         continue;
       }
