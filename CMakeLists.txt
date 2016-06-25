@@ -30,4 +30,12 @@ add_custom_command(
   OUTPUT tags
   COMMAND ctags -R ${PROJECT_SOURCE_DIR}/src/* || true)
 add_custom_target(run_ctags DEPENDS tags)
+
+# Run clang-format automatially
+add_custom_command(TARGET ${PROJECT_NAME}
+  PRE_BUILD
+  COMMAND find src -name "*.cc" -type f -exec clang-format -i {} +
+  COMMAND find include -name "*.h" -type f -exec clang-format -i {} +
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  )
 add_dependencies(${PROJECT_NAME} run_ctags)
