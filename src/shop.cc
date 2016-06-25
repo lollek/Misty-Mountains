@@ -151,6 +151,11 @@ int Shop::sell() {
   obj->set_identified();
   player->give_gold(value);
 
+  os.str("");
+  os << "Sold " << obj->get_description() << " for " << value;
+  Game::io->message(os.str());
+  Game::io->readchar(true);
+
   // Try to stack it
   for (Item* ptr : inventory) {
     if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which &&
@@ -178,6 +183,7 @@ int Shop::sell() {
   if (obj != nullptr) {
     limited_inventory.push_back(obj);
   }
+
   return sell();
 }
 
