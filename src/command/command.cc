@@ -36,8 +36,9 @@ bool command_stop(bool stop_fighting) {
   player->set_not_running();
   player_alerted = true;
 
-  if (stop_fighting) to_death = false;
-
+  if (stop_fighting) {
+    to_death = false;
+  }
   return false;
 }
 
@@ -193,7 +194,8 @@ void command_signal_quit(__attribute__((unused)) int sig) {
     /* Reset the signal in case we got here via an interrupt */
     signal(SIGINT, command_signal_leave);
     score_show_and_exit(QUIT);
-  } else {
+
+  } else if (player != nullptr) {
     Game::io->clear_message();
     Game::io->refresh();
     command_stop(true);

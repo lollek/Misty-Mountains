@@ -616,13 +616,18 @@ void IO::character_creation() {
   ss.str("");
 
   // Roll stats
+  bool reroll_stats = true;
   for (;;) {
-    stats.clear();
+    if (reroll_stats) {
+      stats.clear();
 
-    while (stats.size() < 6) {
-      vector<int> rolls{roll(1, 6), roll(1, 6), roll(1, 6), roll(1, 6)};
-      sort(rolls.begin(), rolls.end());
-      stats.push_back(accumulate(rolls.begin() + 1, rolls.end(), 0));
+      while (stats.size() < 6) {
+        vector<int> rolls{roll(1, 6), roll(1, 6), roll(1, 6), roll(1, 6)};
+        sort(rolls.begin(), rolls.end());
+        stats.push_back(accumulate(rolls.begin() + 1, rolls.end(), 0));
+      }
+
+      reroll_stats = false;
     }
 
     ss << "STR  :" << setw(3) << stats.at(0) << "\n"
@@ -639,9 +644,7 @@ void IO::character_creation() {
     if (ch == 'y') {
       break;
     } else if (ch == KEY_SPACE) {
-      continue;
-    } else if (ch == KEY_ESCAPE) {
-      return;
+      reroll_stats = true;
     }
   }
 

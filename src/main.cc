@@ -127,7 +127,6 @@ int main(int argc, char** argv) {
     save_path = os_homedir() + ".misty_mountain.save";
   }
 
-  Game* game{nullptr};
   if (restore) {
     ifstream savefile{save_path};
     if (!savefile) {
@@ -135,15 +134,13 @@ int main(int argc, char** argv) {
       return 1;
     }
 
-    game = new Game(savefile);
+    Game game(savefile);
     savefile.close();
     remove(save_path.c_str());
+    game.run();
   } else {
-    game = new Game(whoami, save_path);
-  }
-
-  if (game != nullptr) {
-    return game->run();
+    Game game(whoami, save_path);
+    game.run();
   }
 
   return 0;
