@@ -109,9 +109,11 @@ Coordinate const* get_dir(void) {
     }
   } while (!gotit);
 
-  if (isupper(dir_ch)) dir_ch = static_cast<char>(tolower(dir_ch));
+  if (isupper(dir_ch))
+    dir_ch = static_cast<char>(tolower(dir_ch));
 
-  if (player->is_confused() && os_rand_range(5) == 0) do {
+  if (player->is_confused() && os_rand_range(5) == 0)
+    do {
       delta.y = os_rand_range(3) - 1;
       delta.x = os_rand_range(3) - 1;
     } while (delta.y == 0 && delta.x == 0);

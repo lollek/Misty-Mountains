@@ -496,7 +496,8 @@ void monster_teleport(Monster* monster, Coordinate const* destination) {
 
   /* Select destination */
   Coordinate new_pos;
-  if (destination == nullptr) do
+  if (destination == nullptr)
+    do
       Game::level->get_random_room_coord(nullptr, &new_pos, 0, true);
     while (new_pos == monster->get_position());
   else

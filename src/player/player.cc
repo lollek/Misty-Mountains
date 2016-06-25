@@ -290,7 +290,8 @@ void Player::set_blind() {
 }
 
 void Player::set_not_blind() {
-  if (!is_blind()) return;
+  if (!is_blind())
+    return;
 
   Daemons::daemon_extinguish_fuse(Daemons::set_not_blind);
   Character::set_not_blind();
@@ -494,7 +495,8 @@ void Player::check_for_level_up() {
 bool Player::has_ring_with_ability(int ability) const {
   for (Equipment position : all_rings()) {
     Item const* ring{equipment.at(static_cast<size_t>(position))};
-    if (ring != nullptr && ring->o_which == ability) return true;
+    if (ring != nullptr && ring->o_which == ability)
+      return true;
   }
   return false;
 }

@@ -88,11 +88,13 @@ void IO::wait_for_key(int ch) {
     case KEY_ENTER:
     case '\n':
       for (;;)
-        if ((ch = readchar(true)) == '\n' || ch == '\r') return;
+        if ((ch = readchar(true)) == '\n' || ch == '\r')
+          return;
 
     default:
       for (;;)
-        if (readchar(true) == ch) return;
+        if (readchar(true) == ch)
+          return;
   }
 }
 

@@ -85,7 +85,8 @@ static void magic_bolt_hit_player(Coordinate* start,
   if (!player->saving_throw(VS_MAGIC)) {
     player->take_damage(roll(6, 6));
     if (player->get_health() <= 0) {
-      if (start == &player->get_position()) switch (missile_name[0]) {
+      if (start == &player->get_position())
+        switch (missile_name[0]) {
           case 'f': death(DEATH_FLAME);
           case 'i': death(DEATH_ICE);
           default: death(DEATH_UNKNOWN);
@@ -156,7 +157,8 @@ void magic_bolt(Coordinate* start, Coordinate* dir, string const& name) {
       Game::io->message("the " + name + " bounces");
 
     /* Handle potential hits */
-    if (pos == player->get_position()) magic_bolt_hit_player(start, name);
+    if (pos == player->get_position())
+      magic_bolt_hit_player(start, name);
 
     Monster* tp{Game::level->get_monster(pos)};
     if (tp != nullptr) {

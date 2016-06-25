@@ -31,7 +31,8 @@ using namespace std;
 
 static size_t pack_print_evaluate_item(Item* item) {
   int worth{0};
-  if (item == nullptr) return 0;
+  if (item == nullptr)
+    return 0;
   worth = item->get_value();
   item->set_identified();
 
@@ -60,7 +61,8 @@ bool Player::pack_add(Item* obj, bool silent, bool from_floor) {
       if (ptr->o_type == obj->o_type && ptr->o_which == obj->o_which &&
           ptr->get_hit_plus() == obj->get_hit_plus() &&
           ptr->get_damage_plus() == obj->get_damage_plus()) {
-        if (from_floor) Game::level->items.remove(obj);
+        if (from_floor)
+          Game::level->items.remove(obj);
         ptr->o_count += obj->o_count;
         ptr->set_position(obj->get_position());
         delete obj;
@@ -81,7 +83,8 @@ bool Player::pack_add(Item* obj, bool silent, bool from_floor) {
 
   /* Otherwise, just insert it */
   if (!is_picked_up) {
-    if (from_floor) Game::level->items.remove(obj);
+    if (from_floor)
+      Game::level->items.remove(obj);
     pack.push_back(obj);
     for (size_t i{0}; i < pack_size(); ++i) {
       char const packch{static_cast<char>(i) + 'a'};

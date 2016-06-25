@@ -37,12 +37,14 @@ static FILE* lock = {nullptr};
 
 static bool lock_sc(void) {
   lock = fopen(LOCKFILE, "w+");
-  if (lock != nullptr) return true;
+  if (lock != nullptr)
+    return true;
 
   for (int cnt{0}; cnt < 5; cnt++) {
     sleep(1);
     lock = fopen(LOCKFILE, "w+");
-    if (lock != nullptr) return true;
+    if (lock != nullptr)
+      return true;
   }
 
   struct stat sbuf;
@@ -63,13 +65,15 @@ static bool lock_sc(void) {
 }
 
 static void unlock_sc(void) {
-  if (lock != nullptr) fclose(lock);
+  if (lock != nullptr)
+    fclose(lock);
   lock = nullptr;
   unlink(LOCKFILE);
 }
 
 static void score_read(struct score* top_ten) {
-  if (scoreboard == nullptr || !lock_sc()) return;
+  if (scoreboard == nullptr || !lock_sc())
+    return;
 
   rewind(scoreboard);
 
@@ -88,7 +92,8 @@ static void score_read(struct score* top_ten) {
 }
 
 static void score_write(struct score* top_ten) {
-  if (scoreboard == nullptr || !lock_sc()) return;
+  if (scoreboard == nullptr || !lock_sc())
+    return;
 
   rewind(scoreboard);
 
@@ -133,7 +138,8 @@ static void score_print(struct score* top_ten) {
   Game::io->stop_curses();
   printf("Top %d %s:\n   Score Name\n", SCORE_MAX, "Scores");
   for (unsigned i{0}; i < SCORE_MAX; ++i) {
-    if (!top_ten[i].score) break;
+    if (!top_ten[i].score)
+      break;
 
     printf("%2d %5d %s: ", i + 1 /* Position */
            ,
