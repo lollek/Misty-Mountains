@@ -62,7 +62,9 @@ void Level::create_treasure_room() {
 
 void Level::create_loot() {
   // check for treasure rooms, and if so, put it in.
-  if (os_rand_range(100) < treasure_room_chance) { create_treasure_room(); }
+  if (os_rand_range(100) < treasure_room_chance) {
+    create_treasure_room();
+  }
 
   // Do some attempts to put things on a level
   for (int i{0}; i < max_items; i++) {
@@ -93,16 +95,23 @@ void Level::create_loot() {
 }
 
 Level::~Level() {
-  for (Monster* mon : monsters) { delete mon; }
+  for (Monster* mon : monsters) {
+    delete mon;
+  }
 
-  for (Item* item : items) { delete item; }
+  for (Item* item : items) {
+    delete item;
+  }
 
-  if (shop != nullptr) { delete shop; }
+  if (shop != nullptr) {
+    delete shop;
+  }
 }
 
 void Level::create_traps() {
   if (os_rand_range(10) < Game::current_level) {
-    int const ntraps{min(os_rand_range(Game::current_level / 4) + 1, max_traps)};
+    int const ntraps{
+        min(os_rand_range(Game::current_level / 4) + 1, max_traps)};
     Coordinate coord;
     for (int i{0}; i < ntraps; ++i) {
       do {
@@ -134,7 +143,9 @@ void Level::create_shop() {
 
 Level::Level() : items(), monsters{}, shop{}, rooms{}, tiles{} {
   tiles.resize(IO::map_width * IO::map_height);
-  if (player != nullptr) { player->set_previous_room(nullptr); }
+  if (player != nullptr) {
+    player->set_previous_room(nullptr);
+  }
 
   Game::io->clear_screen();
 
@@ -148,7 +159,9 @@ Level::Level() : items(), monsters{}, shop{}, rooms{}, tiles{} {
   create_traps();
   create_stairs();
 
-  if (Game::current_level == 1) { create_shop(); }
+  if (Game::current_level == 1) {
+    create_shop();
+  }
 }
 
 Tile& Level::tile(int x, int y) {

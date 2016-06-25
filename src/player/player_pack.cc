@@ -47,7 +47,9 @@ bool Player::pack_add(Item* obj, bool silent, bool from_floor) {
   /* Either obj is an item or we try to take something from the floor */
   if (obj == nullptr) {
     obj = Game::level->get_item(player->get_position());
-    if (obj == nullptr) { error("Item not found on floor"); }
+    if (obj == nullptr) {
+      error("Item not found on floor");
+    }
     from_floor = true;
   }
 
@@ -107,7 +109,9 @@ Item* Player::pack_remove(Item* obj, bool newobj, bool all) {
 
   // If equipped, remove it
   for (size_t i{0}; i < equipment.size(); ++i) {
-    if (equipment.at(i) == obj) { equipment.at(i) = nullptr; }
+    if (equipment.at(i) == obj) {
+      equipment.at(i) = nullptr;
+    }
   }
 
   /* If there are several, we need to alloate a new item to hold it */
@@ -126,7 +130,9 @@ Item* Player::pack_remove(Item* obj, bool newobj, bool all) {
 }
 
 Item* Player::pack_find_random_item() {
-  if (pack.empty()) { return nullptr; }
+  if (pack.empty()) {
+    return nullptr;
+  }
 
   auto it{pack.begin()};
   advance(it, static_cast<long>(os_rand_range(pack.size())));
@@ -177,7 +183,9 @@ Item* Player::pack_find_item(string const& purpose, int type) {
         }
 
         for (Item* obj : pack) {
-          if (obj->o_packch == ch) { return obj; }
+          if (obj->o_packch == ch) {
+            return obj;
+          }
         }
       } break;
 
@@ -275,7 +283,9 @@ size_t Player::pack_print_value() {
   }
 
   Game::io->print_string("\nWorth  Item  [Inventory]\n");
-  for (Item* obj : pack) { value += pack_print_evaluate_item(obj); }
+  for (Item* obj : pack) {
+    value += pack_print_evaluate_item(obj);
+  }
 
   stringstream ss;
   ss << "\n" << setw(5) << setfill(' ') << gold << "  Gold Pieces          ";
@@ -385,7 +395,9 @@ bool Player::pack_unequip(Equipment pos, bool silent_on_success) {
   equipment.at(pos) = nullptr;
 
   /* Waste time if armor - since they take a while */
-  if (pos == Armor) { player->waste_time(1); }
+  if (pos == Armor) {
+    player->waste_time(1);
+  }
 
   if (!pack_add(obj, true, false)) {
     Game::level->items.push_back(obj);
@@ -400,9 +412,10 @@ bool Player::pack_unequip(Equipment pos, bool silent_on_success) {
 }
 
 Item* Player::pack_find_item(int type, int subtype) {
-  auto const results{find_if(pack.begin(), pack.end(), [type, subtype](Item* i) {
-    return i->o_type == type && i->o_which == subtype;
-  })};
+  auto const results{
+      find_if(pack.begin(), pack.end(), [type, subtype](Item* i) {
+        return i->o_type == type && i->o_which == subtype;
+      })};
 
   return results == pack.end() ? nullptr : *results;
 }
@@ -421,7 +434,9 @@ int Player::get_gold() { return gold; }
 
 void Player::pack_identify_item() {
   Item* obj{pack_find_item("identify", 0)};
-  if (obj == nullptr) { return; }
+  if (obj == nullptr) {
+    return;
+  }
 
   obj->set_identified();
   Game::io->message(obj->get_description());

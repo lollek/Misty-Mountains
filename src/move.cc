@@ -70,10 +70,9 @@ static void handle_surrounding(Coordinate const& nh, int dx, int dy,
       // Always stop near some object types
       Tile::Type const tile{Game::level->get_tile(x, y)};
       Coordinate tile_coord(x, y);
-      if (cautious &&
-          (tile == Tile::StairsDown || tile == Tile::StairsUp ||
-           tile == Tile::Trap || tile == Tile::OpenDoor ||
-           tile == Tile::Shop)) {
+      if (cautious && (tile == Tile::StairsDown || tile == Tile::StairsUp ||
+                       tile == Tile::Trap || tile == Tile::OpenDoor ||
+                       tile == Tile::Shop)) {
         player->set_not_running();
         continue;
       }
@@ -91,7 +90,9 @@ static bool move_do_loop_default(Coordinate& coord) {
   // If there was a trap, get trapped!
   if (Game::level->get_tile(coord) == Tile::Trap) {
     char const ch{Trap::player(coord)};
-    if (ch == Trap::Door || ch == Trap::Teleport) { return true; }
+    if (ch == Trap::Door || ch == Trap::Teleport) {
+      return true;
+    }
   }
 
   // Else, Move player
@@ -113,8 +114,7 @@ static bool move_do_loop(int dx, int dy, bool cautious) {
     return true;
   }
 
-  Coordinate nh { player->get_position().x + dx,
-    player->get_position().y + dy };
+  Coordinate nh{player->get_position().x + dx, player->get_position().y + dy};
 
   // If we are too close to the edge of map, treat is as wall automatically
   if (nh.x < 1 || nh.x >= IO::map_width - 1 || nh.y < 1 ||
@@ -149,7 +149,9 @@ static bool move_do_loop(int dx, int dy, bool cautious) {
     }
 
     case Tile::Shop: {  // Enter shop
-      if (Game::level->shop == nullptr) { Game::level->shop = new Shop(); }
+      if (Game::level->shop == nullptr) {
+        Game::level->shop = new Shop();
+      }
       Game::level->shop->enter();
       player->set_not_running();
     }

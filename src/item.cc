@@ -145,7 +145,9 @@ static Item::Type random_item_type() {
 
 Item* Item::random() {
   // We are kind to the hungry player in this game
-  if (Game::levels_without_food > 3) { return new class Food(); }
+  if (Game::levels_without_food > 3) {
+    return new class Food();
+  }
 
   switch (random_item_type()) {
     case Potion: return new class Potion();

@@ -15,11 +15,15 @@ bool Player::pack_show_equip() {
     char ch{Game::io->readchar(true)};
     Game::io->clear_message();
 
-    if (ch == KEY_ESCAPE) { return false; }
+    if (ch == KEY_ESCAPE) {
+      return false;
+    }
 
     for (Item* obj : pack) {
       if (obj->o_packch == ch) {
-        if (player->pack_equip(obj, false)) { return true; }
+        if (player->pack_equip(obj, false)) {
+          return true;
+        }
         break;
       }
     }
@@ -37,7 +41,9 @@ bool Player::pack_show_drop(Window window) {
     char ch{Game::io->readchar(true)};
     Game::io->clear_message();
 
-    if (ch == KEY_ESCAPE) { return false; }
+    if (ch == KEY_ESCAPE) {
+      return false;
+    }
 
     Item* obj{nullptr};
     switch (window) {
@@ -52,7 +58,9 @@ bool Player::pack_show_drop(Window window) {
 
       case EQUIPMENT: {
         size_t const position{static_cast<size_t>(ch - 'a')};
-        if (position < equipment.size()) { obj = equipment.at(position); }
+        if (position < equipment.size()) {
+          obj = equipment.at(position);
+        }
       } break;
     }
 
@@ -95,7 +103,9 @@ bool Player::pack_show_remove() {
     char ch{Game::io->readchar(true)};
     Game::io->clear_message();
 
-    if (ch == KEY_ESCAPE) { return false; }
+    if (ch == KEY_ESCAPE) {
+      return false;
+    }
 
     size_t const position{static_cast<size_t>(ch - 'a')};
     if (position < equipment.size()) {
@@ -142,11 +152,15 @@ bool Player::pack_show(Window current_window) {
         switch (ch) {
           case 'E': current_window = EQUIPMENT; break;
           case 'e': {
-            if (pack_show_equip()) { return true; }
+            if (pack_show_equip()) {
+              return true;
+            }
           } break;
 
           case 'd': {
-            if (pack_show_drop(current_window)) { return true; }
+            if (pack_show_drop(current_window)) {
+              return true;
+            }
           } break;
         }
 
@@ -156,11 +170,15 @@ bool Player::pack_show(Window current_window) {
         switch (ch) {
           case 'I': current_window = INVENTORY; break;
           case 'd': {
-            if (pack_show_drop(current_window)) { return true; }
+            if (pack_show_drop(current_window)) {
+              return true;
+            }
           } break;
 
           case 'r': {
-            if (pack_show_remove()) { return true; }
+            if (pack_show_remove()) {
+              return true;
+            }
           } break;
         }
       } break;

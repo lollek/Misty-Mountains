@@ -43,8 +43,12 @@ void Daemons::test_daemons() {
   free_daemons();
   load_daemons(test_data);
 
-  if (daemons_ != *daemons) { error("daemon test 1 failed"); }
-  if (fuses_ != *fuses) { error("daemon test 2 failed"); }
+  if (daemons_ != *daemons) {
+    error("daemon test 1 failed");
+  }
+  if (fuses_ != *fuses) {
+    error("daemon test 2 failed");
+  }
 }
 
 void Daemons::save_daemons(std::ostream& data) {
@@ -57,14 +61,20 @@ void Daemons::save_daemons(std::ostream& data) {
 }
 
 void Daemons::load_daemons(std::istream& data) {
-  if (!Disk::load_tag(TAG_DAEMONS, data)) { error("No daemons found"); }
+  if (!Disk::load_tag(TAG_DAEMONS, data)) {
+    error("No daemons found");
+  }
 
   if (!Disk::load(TAG_DAEMONLIST, daemons, data)) {
     error("Daemon tag error 1");
   }
-  if (!Disk::load(TAG_FUSELIST, fuses, data)) { error("Daemon tag error 2"); }
+  if (!Disk::load(TAG_FUSELIST, fuses, data)) {
+    error("Daemon tag error 2");
+  }
 
-  if (!Disk::load_tag(TAG_DAEMONS, data)) { error("No daemons end found"); }
+  if (!Disk::load_tag(TAG_DAEMONS, data)) {
+    error("No daemons end found");
+  }
 }
 
 void Daemons::free_daemons() {
@@ -95,7 +105,9 @@ static void execute_daemon_function(Daemons::daemon_function func) {
 // Run all the daemons that are active with the current flag
 static void daemon_run_all(int flag) {
   for (Daemons::Daemon& daemon : *daemons) {
-    if (daemon.type == flag) { execute_daemon_function(daemon.func); }
+    if (daemon.type == flag) {
+      execute_daemon_function(daemon.func);
+    }
   }
 }
 
@@ -134,7 +146,9 @@ void Daemons::daemon_kill(daemon_function func) {
       find_if(daemons->begin(), daemons->end(),
               [&func](Daemon const& daemon) { return daemon.func == func; });
 
-  if (results == daemons->end()) { error("Unable to find daemon to kill"); }
+  if (results == daemons->end()) {
+    error("Unable to find daemon to kill");
+  }
 
   daemons->erase(results);
 }
@@ -150,7 +164,9 @@ void Daemons::daemon_lengthen_fuse(daemon_function func, int xtime) {
       find_if(fuses->begin(), fuses->end(),
               [&func](Fuse const& fuse) { return fuse.func == func; });
 
-  if (results == fuses->end()) { error("Unable to find fuse to lengthen"); }
+  if (results == fuses->end()) {
+    error("Unable to find fuse to lengthen");
+  }
 
   results->time += xtime;
 }
@@ -161,7 +177,9 @@ void Daemons::daemon_extinguish_fuse(daemon_function func) {
       find_if(fuses->begin(), fuses->end(),
               [&func](Fuse const& fuse) { return fuse.func == func; })};
 
-  if (results == fuses->end()) { error("Unable to find fuse to lengthen"); }
+  if (results == fuses->end()) {
+    error("Unable to find fuse to lengthen");
+  }
 
   fuses->erase(results);
 }
@@ -172,11 +190,15 @@ void Daemons::daemon_reset_doctor() { quiet_rounds = 0; }
 // A healing daemon that restors hit points after rest
 void Daemons::daemon_doctor() {
   int const ohp{player->get_health()};
-  if (ohp == player->get_max_health()) { return; }
+  if (ohp == player->get_max_health()) {
+    return;
+  }
 
   int const rings_of_regen{
       static_cast<int>(player->pack_num_items(IO::Ring, Ring::Regeneration))};
-  if (rings_of_regen > 0) { player->restore_health(rings_of_regen, false); }
+  if (rings_of_regen > 0) {
+    player->restore_health(rings_of_regen, false);
+  }
 
   quiet_rounds++;
   if (player->get_level() < 8) {
@@ -187,7 +209,9 @@ void Daemons::daemon_doctor() {
     player->restore_health(os_rand_range(player->get_level() - 7) + 1, false);
   }
 
-  if (ohp != player->get_health()) { quiet_rounds = 0; }
+  if (ohp != player->get_health()) {
+    quiet_rounds = 0;
+  }
 }
 
 // Make all running monsters move

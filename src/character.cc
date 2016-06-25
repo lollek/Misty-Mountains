@@ -114,7 +114,9 @@ bool Character::has_feat(Feat feat) const {
 bool Character::attacks_on_sight() const { return has_feat(AttacksOnSight); }
 
 void Character::add_feat(Feat feat) {
-  if (!has_feat(feat)) { feats.push_back(feat); }
+  if (!has_feat(feat)) {
+    feats.push_back(feat);
+  }
 }
 
 void Character::set_attacks_on_sight() { add_feat(AttacksOnSight); }
@@ -133,7 +135,9 @@ Coordinate Character::possible_random_move() {
   int const x{ret.x = position.x + os_rand_range(3) - 1};
   int const y{ret.y = position.y + os_rand_range(3) - 1};
 
-  if (y == position.y && x == position.x) { return ret; }
+  if (y == position.y && x == position.x) {
+    return ret;
+  }
 
   if (!Game::level->can_step(x, y)) {
     ret.x = position.x;
@@ -158,7 +162,9 @@ void Character::modify_strength(int amount) {
   // Negative is temporary and Positive is permanent (if not below default).
   strength += amount;
 
-  if (strength > default_strength) { default_strength = strength; }
+  if (strength > default_strength) {
+    default_strength = strength;
+  }
 }
 
 int Character::get_default_strength() const { return default_strength; }
@@ -168,13 +174,19 @@ void Character::restore_health(int amount, bool can_raise_max_health) {
 
   if (can_raise_max_health) {
     int extra_max_hp = 0;
-    if (health > get_max_health() + level + 1) { ++extra_max_hp; }
-    if (health > get_max_health()) { ++extra_max_hp; }
+    if (health > get_max_health() + level + 1) {
+      ++extra_max_hp;
+    }
+    if (health > get_max_health()) {
+      ++extra_max_hp;
+    }
 
     base_health += extra_max_hp;
   }
 
-  if (health > get_max_health()) { health = get_max_health(); }
+  if (health > get_max_health()) {
+    health = get_max_health();
+  }
 }
 
 bool Character::is_hurt() const { return health != get_max_health(); }
@@ -358,19 +370,25 @@ bool Character::load(istream& data) {
 }
 
 void Character::increase_speed() {
-  if (++speed == 0) { speed = 1; }
+  if (++speed == 0) {
+    speed = 1;
+  }
   turns_not_moved = 0;
 }
 
 void Character::decrease_speed() {
-  if (--speed) { speed = -1; }
+  if (--speed) {
+    speed = -1;
+  }
   turns_not_moved = 0;
 }
 
 // If speed > 0, its the number of turns to take.
 // Else it's a turn per 1 / (-speed +2) rounds. E.g. 0 -> 1/2, -1 -> 1/3
 int Character::get_moves_this_round() {
-  if (speed > 0) { return speed; }
+  if (speed > 0) {
+    return speed;
+  }
 
   if (turns_not_moved > -speed) {
     turns_not_moved = 0;

@@ -7,7 +7,7 @@
 #include "item.h"
 
 class Armor : public Item {
-public:
+ public:
   enum Type {
     Robe,
     Softleatherarmor,
@@ -27,8 +27,8 @@ public:
   };
 
   ~Armor();
-  explicit Armor(Type type, bool random_stats); // Armor of given type
-  explicit Armor(bool random_stats);            // Armor of random type
+  explicit Armor(Type type, bool random_stats);  // Armor of given type
+  explicit Armor(bool random_stats);             // Armor of random type
   explicit Armor(std::istream&);
   explicit Armor(Armor const&) = default;
 
@@ -42,13 +42,13 @@ public:
 
   // Getters
   std::string get_description() const override;
-  bool        is_magic() const override;
-  bool        is_identified() const override;
-  bool        is_stackable() const override;
-  bool        autopickup() const override;
-  int         get_value() const override;
-  int         get_base_value() const override;
-  bool        is_rustproof() const;
+  bool is_magic() const override;
+  bool is_identified() const override;
+  bool is_stackable() const override;
+  bool autopickup() const override;
+  int get_value() const override;
+  int get_base_value() const override;
+  bool is_rustproof() const;
 
   void save(std::ostream&) const override;
   bool load(std::istream&) override;
@@ -58,11 +58,10 @@ public:
   static int value(Type type);
   static int ac(Type type);
 
-private:
+ private:
   Type subtype;
   bool identified;
   bool rustproof;
 
-  static unsigned long long constexpr TAG_ARMOR     = 0xc000000000000000ULL;
+  static unsigned long long constexpr TAG_ARMOR = 0xc000000000000000ULL;
 };
-

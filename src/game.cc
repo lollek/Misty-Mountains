@@ -37,14 +37,18 @@ int Game::current_level{1};
 int Game::levels_without_food{0};
 
 void Game::exit() {
-  if (game_ptr != nullptr) { delete game_ptr; }
+  if (game_ptr != nullptr) {
+    delete game_ptr;
+  }
   ::exit(0);
 }
 
 void Game::new_level(int dungeon_level) {
   current_level = dungeon_level;
 
-  if (level != nullptr) { delete level; }
+  if (level != nullptr) {
+    delete level;
+  }
 
   level = new Level();
 
@@ -97,7 +101,9 @@ Game::Game(string const& whoami_, string const& save_path_)
   whoami = new string(whoami_);
   save_game_path = new string(save_path_);
 
-  if (game_ptr != nullptr) { error("Game is a singleton class"); }
+  if (game_ptr != nullptr) {
+    error("Game is a singleton class");
+  }
   game_ptr = this;
 
   // Init stuff
@@ -139,7 +145,9 @@ Game::~Game() {
 }
 
 Game::Game(istream& savefile) {
-  if (game_ptr != nullptr) { error("Game is a singleton class"); }
+  if (game_ptr != nullptr) {
+    error("Game is a singleton class");
+  }
   game_ptr = this;
 
   io = new IO();

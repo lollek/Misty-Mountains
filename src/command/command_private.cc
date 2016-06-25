@@ -108,7 +108,9 @@ bool command_use_stairs(char up_or_down) {
   if (up_or_down == '<' && tile == Tile::StairsUp) {
     bool const has_amulet{player->pack_contains_amulet()};
 
-    if (Game::current_level < 0) { error("Level should not go lower than 0"); }
+    if (Game::current_level < 0) {
+      error("Level should not go lower than 0");
+    }
 
     if (Game::current_level == 1) {
       if (has_amulet) {
@@ -131,7 +133,9 @@ bool command_use_stairs(char up_or_down) {
 
 bool command_attack(bool fight_to_death) {
   Coordinate const* dir{get_dir()};
-  if (dir == nullptr) { return false; }
+  if (dir == nullptr) {
+    return false;
+  }
 
   Coordinate delta = player->get_position();
   delta.x += dir->x;
@@ -146,7 +150,9 @@ bool command_attack(bool fight_to_death) {
 
 bool command_inscribe_item() {
   Item* obj{player->pack_find_item("inscribe", 0)};
-  if (obj == nullptr) { return false; }
+  if (obj == nullptr) {
+    return false;
+  }
 
   string* guess = nullptr;
   switch (obj->o_type) {
@@ -191,7 +197,9 @@ bool command_inscribe_item() {
 
 bool command_identify_trap() {
   const Coordinate* dir{get_dir()};
-  if (dir == nullptr) { return false; }
+  if (dir == nullptr) {
+    return false;
+  }
 
   Coordinate delta = player->get_position();
   delta.x += dir->x;
@@ -290,7 +298,9 @@ bool command_pick_up(bool force) {
     os << "items here: ";
     for (Item* item : items_here) {
       os << item->get_description();
-      if (item != items_here.back()) { os << ", "; }
+      if (item != items_here.back()) {
+        os << ", ";
+      }
     }
     Game::io->message(os.str());
   }
@@ -384,23 +394,33 @@ bool command_help() {
 
   int numprint{0};
   for (int i{0}; i < helpstrsize; ++i) {
-    if (helpstr[i].print) { ++numprint; }
+    if (helpstr[i].print) {
+      ++numprint;
+    }
   }
 
   numprint /= 2;
-  if (numprint > IO::screen_height - 1) { numprint = IO::screen_height - 1; }
+  if (numprint > IO::screen_height - 1) {
+    numprint = IO::screen_height - 1;
+  }
 
   Game::io->clear_screen();
   int print_i{0};
   for (int i{0}; i < helpstrsize; ++i) {
-    if (!helpstr[i].print) { continue; }
+    if (!helpstr[i].print) {
+      continue;
+    }
 
     int const x{print_i >= numprint ? IO::screen_width / 2 : 0};
     int const y{1 + print_i % numprint};
-    if (helpstr[i].sym) { Game::io->print_char(x, y, helpstr[i].sym); }
+    if (helpstr[i].sym) {
+      Game::io->print_char(x, y, helpstr[i].sym);
+    }
     Game::io->print_string(x + 3, y, helpstr[i].description);
 
-    if (++print_i >= numprint * 2) { break; }
+    if (++print_i >= numprint * 2) {
+      break;
+    }
   }
 
   Game::io->move_pointer(0, IO::screen_height - 1);
@@ -429,14 +449,18 @@ void command_shell() {
 
 bool command_throw() {
   Coordinate const* dir{get_dir()};
-  if (dir == nullptr) { return false; }
+  if (dir == nullptr) {
+    return false;
+  }
 
   int const ydelta{dir->y};
   int const xdelta{dir->x};
   dir = nullptr;
 
   Item* obj = player->pack_find_item("throw", 0);
-  if (obj == nullptr) { return false; }
+  if (obj == nullptr) {
+    return false;
+  }
 
   if (obj->o_type == IO::Armor) {
     Game::io->message("you can't throw armor");
@@ -459,7 +483,7 @@ bool command_throw() {
   /* AHA! Here it has hit something.  If it is a wall or a door,
    * or if it misses (combat) the monster, put it on the floor */
   bool const missed{monster_at_pos == nullptr ||
-                !fight_against_monster(&obj->get_position(), obj, true)};
+                    !fight_against_monster(&obj->get_position(), obj, true)};
 
   if (missed) {
     if (obj->o_type == IO::Potion) {
@@ -494,7 +518,9 @@ bool command_rest() {
 
 bool command_eat() {
   Item* obj{player->pack_find_item("eat", IO::Food)};
-  if (obj == nullptr) { return false; }
+  if (obj == nullptr) {
+    return false;
+  }
 
   if (obj->o_type != IO::Food) {
     Game::io->message("that's inedible!");
@@ -503,7 +529,9 @@ bool command_eat() {
 
   player->pack_remove(obj, false, false);
   Food* food = dynamic_cast<Food*>(obj);
-  if (food == nullptr) { error("Error casting food"); }
+  if (food == nullptr) {
+    error("Error casting food");
+  }
   player->eat(food);
   return true;
 }
@@ -517,14 +545,18 @@ bool command_run(char ch, bool cautiously) {
     player->set_running();
   }
 
-  if (cautiously) { ch = UNCTRL(ch); }
+  if (cautiously) {
+    ch = UNCTRL(ch);
+  }
 
   return move_do(ch, cautiously);
 }
 
 bool command_read_scroll() {
   Item* obj{player->pack_find_item("read", IO::Scroll)};
-  if (obj == nullptr) { return false; }
+  if (obj == nullptr) {
+    return false;
+  }
 
   Scroll* scroll{dynamic_cast<Scroll*>(obj)};
   if (obj->o_type != IO::Scroll || scroll == nullptr) {
@@ -552,14 +584,18 @@ bool command_read_scroll() {
     }
   }
 
-  if (discardit) { delete obj; }
+  if (discardit) {
+    delete obj;
+  }
 
   return true;
 }
 
 bool command_open() {
   const Coordinate* dir{get_dir()};
-  if (dir == nullptr) { return false; }
+  if (dir == nullptr) {
+    return false;
+  }
 
   Coordinate const& player_pos{player->get_position()};
   Tile::Type door{
@@ -576,7 +612,9 @@ bool command_open() {
 
 bool command_close() {
   Coordinate const* dir{get_dir()};
-  if (dir == nullptr) { return false; }
+  if (dir == nullptr) {
+    return false;
+  }
 
   Coordinate const& player_pos{player->get_position()};
   Coordinate const door_coord{player_pos.x + dir->x, player_pos.y + dir->y};
@@ -600,7 +638,9 @@ bool command_save() {
   Game::io->message("really save and exit?");
 
   if (Game::io->readchar(true) == 'y') {
-    if (Game::save()) { Game::exit(); }
+    if (Game::save()) {
+      Game::exit();
+    }
   }
 
   Game::io->clear_message();

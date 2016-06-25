@@ -1,18 +1,18 @@
 #pragma once
 
 #include <list>
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "level/rooms.h"
-#include "traps.h"
-#include "monster.h"
 #include "item.h"
-#include "tiles.h"
+#include "level/rooms.h"
+#include "monster.h"
 #include "shop.h"
+#include "tiles.h"
+#include "traps.h"
 
 class Level {
-public:
+ public:
   Level();
   ~Level();
 
@@ -33,7 +33,8 @@ public:
   Tile::Type get_tile(Coordinate const& coord);
   Trap::Type get_trap_type(int x, int y);
   Trap::Type get_trap_type(Coordinate const& coord);
-  bool get_random_room_coord(room* room, Coordinate* coord, int tries, bool monster);
+  bool get_random_room_coord(room* room, Coordinate* coord, int tries,
+                             bool monster);
   room* get_room(Coordinate const& coord);
   room* get_random_room();
 
@@ -59,12 +60,11 @@ public:
   void discover_map();
 
   // Variables
-  std::list<Item*>    items;    // List of items on level
-  std::list<Monster*> monsters; // List of monsters on level
-  Shop*               shop;     // Ye local shop
+  std::list<Item*> items;        // List of items on level
+  std::list<Monster*> monsters;  // List of monsters on level
+  Shop* shop;                    // Ye local shop
 
-private:
-
+ private:
   // Parts of constructor
   static int constexpr max_items = 9;
   static int constexpr max_monsters = 10;
@@ -84,7 +84,8 @@ private:
   void create_treasure_room();
   void draw_room(room const& room);
   void draw_maze(room const& room);
-  void draw_maze_recursive(int y, int x, int starty, int startx, int maxy, int maxx);
+  void draw_maze_recursive(int y, int x, int starty, int startx, int maxy,
+                           int maxx);
 
   // Part of create_passages()
   void place_door(room* room, Coordinate* coord);
@@ -96,6 +97,6 @@ private:
   Tile& tile(int x, int y);
 
   // Variables
-  std::vector<room>  rooms;         // all rooms on level
-  std::vector<Tile>  tiles;        // level map
+  std::vector<room> rooms;  // all rooms on level
+  std::vector<Tile> tiles;  // level map
 };

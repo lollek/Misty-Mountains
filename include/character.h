@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include "damage.h"
 #include "coordinate.h"
+#include "damage.h"
 
 class Character {
-public:
+ public:
   enum Race : int {
     Human,
     Dwarf,
@@ -31,12 +31,12 @@ public:
   enum Feat : int {
     // Permanent features
     AttacksOnSight,
-    RandomMoveD2,           // "Confused" when moving if 1d2 == 1
-    MoveThroughStone,       // Moves through stone like air
+    RandomMoveD2,      // "Confused" when moving if 1d2 == 1
+    MoveThroughStone,  // Moves through stone like air
     PermanentlyInvisible,
     AttackRuinsMetal,
     AttackFreezesTarget,
-    Regenerating5,          // 5HP per round
+    Regenerating5,  // 5HP per round
 
     // Activate-able for free
     BreatheConeFireSmall,   // 40ft, DC 19, 6d10 fire
@@ -53,26 +53,26 @@ public:
   virtual std::string get_name() const = 0;
 
   // Getters
-  virtual int                        get_strength() const;
-  virtual int                        get_default_strength() const;
-  virtual int                        get_dexterity() const;
-  virtual int                        get_default_dexterity() const;
-  virtual int                        get_constitution() const;
-  virtual int                        get_default_constitution() const;
-  virtual int                        get_intelligence() const;
-  virtual int                        get_default_intelligence() const;
-  virtual int                        get_wisdom() const;
-  virtual int                        get_default_wisdom() const;
-  virtual int                        get_charisma() const;
-  virtual int                        get_default_charisma() const;
-  virtual int                        get_experience() const;
-  virtual int                        get_level() const;
-  virtual int                        get_ac() const;
-  virtual int                        get_health() const;
-  virtual int                        get_max_health() const;
-  virtual Coordinate const&          get_position() const;
+  virtual int get_strength() const;
+  virtual int get_default_strength() const;
+  virtual int get_dexterity() const;
+  virtual int get_default_dexterity() const;
+  virtual int get_constitution() const;
+  virtual int get_default_constitution() const;
+  virtual int get_intelligence() const;
+  virtual int get_default_intelligence() const;
+  virtual int get_wisdom() const;
+  virtual int get_default_wisdom() const;
+  virtual int get_charisma() const;
+  virtual int get_default_charisma() const;
+  virtual int get_experience() const;
+  virtual int get_level() const;
+  virtual int get_ac() const;
+  virtual int get_health() const;
+  virtual int get_max_health() const;
+  virtual Coordinate const& get_position() const;
   virtual std::vector<damage> const& get_attacks() const;
-  virtual Race                       get_race() const;
+  virtual Race get_race() const;
 
   // Setters
   virtual void set_position(Coordinate const& position);
@@ -96,8 +96,8 @@ public:
   virtual bool is_hurt() const;
 
   // Flag getters
-  virtual int  get_moves_this_round();
-  virtual int  get_speed() const;
+  virtual int get_moves_this_round();
+  virtual int get_speed() const;
   virtual bool is_blind() const;
   virtual bool is_cancelled() const;
   virtual bool is_confused() const;
@@ -154,17 +154,18 @@ public:
   virtual void set_not_running();
   virtual void set_attacks_on_sight();
 
-  virtual void  save(std::ostream&) const;
-  virtual bool  load(std::istream&);
+  virtual void save(std::ostream&) const;
+  virtual bool load(std::istream&);
 
   static std::string race_to_string(Race race);
 
-
-protected:
-  explicit Character(int strength, int dexterity, int constitution, int intelligence,
-      int wisdom, int charisma, int experience, int level, int armor,
-      int health, std::vector<damage> const& attacks, Coordinate const& position,
-      std::vector<Feat> const& feats, int speed, Race race);
+ protected:
+  explicit Character(int strength, int dexterity, int constitution,
+                     int intelligence, int wisdom, int charisma, int experience,
+                     int level, int armor, int health,
+                     std::vector<damage> const& attacks,
+                     Coordinate const& position, std::vector<Feat> const& feats,
+                     int speed, Race race);
 
   explicit Character() = default;
   explicit Character(Character const&) = default;
@@ -174,34 +175,33 @@ protected:
   virtual void add_feat(Feat feat);
   virtual bool has_feat(Feat feat) const;
 
-
-private:
+ private:
   // Stats
-  int                  strength;
-  int                  default_strength;
-  int                  dexterity;
-  int                  default_dexterity;
-  int                  constitution;
-  int                  default_constitution;
-  int                  intelligence;
-  int                  default_intelligence;
-  int                  wisdom;
-  int                  default_wisdom;
-  int                  charisma;
-  int                  default_charisma;
+  int strength;
+  int default_strength;
+  int dexterity;
+  int default_dexterity;
+  int constitution;
+  int default_constitution;
+  int intelligence;
+  int default_intelligence;
+  int wisdom;
+  int default_wisdom;
+  int charisma;
+  int default_charisma;
 
-  int                  experience;
-  int                  level;
-  int                  base_ac;
-  int                  hit_dice;
-  int                  base_health;
-  int                  health;
-  std::vector<damage>  attacks;
-  Coordinate           position;
-  int                  speed;
-  Race                 race;
-  std::vector<Feat>    feats;
-  int                  turns_not_moved;
+  int experience;
+  int level;
+  int base_ac;
+  int hit_dice;
+  int base_health;
+  int health;
+  std::vector<damage> attacks;
+  Coordinate position;
+  int speed;
+  Race race;
+  std::vector<Feat> feats;
+  int turns_not_moved;
 
   // Flags
   bool confusing_attack;
@@ -227,10 +227,8 @@ private:
   bool attack_drain_health;
   bool attack_drain_experience;
 
-
-  static unsigned long long constexpr TAG_CHARACTER       = 0x8000000000000001ULL;
-  static unsigned long long constexpr TAG_STATS           = 0x8000000000000002ULL;
-  static unsigned long long constexpr TAG_MISC            = 0x8000000000000003ULL;
-  static unsigned long long constexpr TAG_FLAG            = 0x8000000000000004ULL;
+  static unsigned long long constexpr TAG_CHARACTER = 0x8000000000000001ULL;
+  static unsigned long long constexpr TAG_STATS = 0x8000000000000002ULL;
+  static unsigned long long constexpr TAG_MISC = 0x8000000000000003ULL;
+  static unsigned long long constexpr TAG_FLAG = 0x8000000000000004ULL;
 };
-

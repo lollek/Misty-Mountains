@@ -130,8 +130,7 @@ int sign(int nm) {
 int spread(int nm) { return nm - nm / 20 + os_rand_range(nm / 10); }
 
 char rnd_thing(void) {
-  int i{
-      os_rand_range(Game::current_level >= Game::amulet_min_level ? 11 : 10)};
+  int i{os_rand_range(Game::current_level >= Game::amulet_min_level ? 11 : 10)};
   switch (i) {
     case 0: return IO::Potion;
     case 1: return IO::Scroll;

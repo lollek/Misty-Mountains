@@ -47,7 +47,9 @@ static attack_modifier calculate_attacker(Character const& attacker,
           w_weapon->get_ammo_type() != Weapon::AmmoType::None &&
           bow->get_ammo_used() == w_weapon->get_ammo_type()) {
         int const multiplier{bow->get_ammo_multiplier()};
-        for (damage& dmg : mod.damage) { dmg.dices *= multiplier; }
+        for (damage& dmg : mod.damage) {
+          dmg.dices *= multiplier;
+        }
         mod.to_hit += bow->get_hit_plus();
         mod.to_dmg += bow->get_damage_plus();
       }
@@ -99,7 +101,9 @@ static bool roll_attacks(Character* attacker, Character* defender, Item* weapon,
 
   bool did_hit{false};
   for (damage const& dmg : mod.damage) {
-    if (dmg.sides == 0 && dmg.dices == 0) { continue; }
+    if (dmg.sides == 0 && dmg.dices == 0) {
+      continue;
+    }
 
     int const defense{defender->get_ac()};
     if (fight_swing_hits(attacker->get_level(), defense, mod.to_hit)) {
@@ -111,7 +115,9 @@ static bool roll_attacks(Character* attacker, Character* defender, Item* weapon,
         Game::io->message(os.str());
       }
 
-      if (damage > 0) { defender->take_damage(damage); }
+      if (damage > 0) {
+        defender->take_damage(damage);
+      }
       did_hit = true;
     }
   }
@@ -129,10 +135,14 @@ static void print_attack(bool hit, Character* attacker, Character* defender) {
 
 int fight_against_monster(Coordinate const* monster_pos, Item* weapon,
                           bool thrown, string const* name_override) {
-  if (monster_pos == nullptr) { error("monster_pos was null"); }
+  if (monster_pos == nullptr) {
+    error("monster_pos was null");
+  }
 
   Monster* tp{Game::level->get_monster(*monster_pos)};
-  if (tp == nullptr) { error("No monster on pos"); }
+  if (tp == nullptr) {
+    error("No monster on pos");
+  }
 
   /* Since we are fighting, things are not quiet so no healing takes place */
   command_stop(false);
@@ -196,16 +206,22 @@ int fight_against_player(Monster* mp) {
   Daemons::daemon_reset_doctor();
 
   // Stop fighting to death if we are backstabbed
-  if (to_death && !mp->is_players_target()) { to_death = false; }
+  if (to_death && !mp->is_players_target()) {
+    to_death = false;
+  }
 
   if (roll_attacks(mp, player, nullptr, false)) {
     // Monster hit player, and probably delt damage
 
     // berzerking causes to much text
-    if (!to_death) { print_attack(true, mp, player); }
+    if (!to_death) {
+      print_attack(true, mp, player);
+    }
 
     // Check player death (doesn't return)
-    if (player->get_health() <= 0) { death(mp->get_subtype()); }
+    if (player->get_health() <= 0) {
+      death(mp->get_subtype());
+    }
 
     // Do monster ability (mp can be null after this!)
     monster_do_special_ability(&mp);

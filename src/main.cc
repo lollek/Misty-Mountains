@@ -28,7 +28,7 @@ static void parse_args(int argc, char* const* argv, bool& restore,
   string const game_version{
       "Misty Mountains v2.0-alpha2-dev - Based on Rogue5.4.4"};
   int option_index{0};
-  struct option const long_options[] {
+  struct option const long_options[]{
       {"no-colors", no_argument, 0, 'c'},     {"flush", no_argument, 0, 'f'},
       {"hide-floor", no_argument, 0, 'F'},    {"no-jump", no_argument, 0, 'j'},
       {"name", required_argument, 0, 'n'},    {"passgo", no_argument, 0, 'p'},
@@ -42,20 +42,26 @@ static void parse_args(int argc, char* const* argv, bool& restore,
 
   for (;;) {
     int c{getopt_long(argc, argv, "cE::fjn:pr::sS:W", long_options,
-                        &option_index)};
-    if (c == -1) { break; }
+                      &option_index)};
+    if (c == -1) {
+      break;
+    }
 
     switch (c) {
       case 'c': use_colors = false; break;
       case 'f': fight_flush = true; break;
       case 'j': jump = false; break;
       case 'n':
-        if (optarg != nullptr) { whoami = optarg; }
+        if (optarg != nullptr) {
+          whoami = optarg;
+        }
         break;
       case 'p': passgo = true; break;
       case 'r': {
         restore = true;
-        if (optarg != nullptr) { save_path = optarg; }
+        if (optarg != nullptr) {
+          save_path = optarg;
+        }
       } break;
       case 's':
         score_show_and_exit(QUIT);  // does not return
@@ -66,7 +72,9 @@ static void parse_args(int argc, char* const* argv, bool& restore,
         }
         break;
       case 1:
-        if (wizard) { wizard_dicerolls = true; }
+        if (wizard) {
+          wizard_dicerolls = true;
+        }
         break;
       case '0':
         cout
@@ -111,9 +119,13 @@ int main(int argc, char** argv) {
   // Parse args and then init new (or old) game
   parse_args(argc, argv, restore, save_path, whoami);
 
-  if (whoami.empty()) { whoami = os_whoami(); }
+  if (whoami.empty()) {
+    whoami = os_whoami();
+  }
 
-  if (save_path.empty()) { save_path = os_homedir() + ".misty_mountain.save"; }
+  if (save_path.empty()) {
+    save_path = os_homedir() + ".misty_mountain.save";
+  }
 
   Game* game{nullptr};
   if (restore) {
@@ -130,7 +142,9 @@ int main(int argc, char** argv) {
     game = new Game(whoami, save_path);
   }
 
-  if (game != nullptr) { return game->run(); }
+  if (game != nullptr) {
+    return game->run();
+  }
 
   return 0;
 }

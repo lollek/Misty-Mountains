@@ -8,14 +8,17 @@ void save(tag_type tag, T const& element, std::ostream& data) {
 template <class T>
 bool load(tag_type tag, T& element, std::istream& data) {
   static_assert(std::is_fundamental<T>::value, "Not fundamental type T");
-  if (!load_tag(tag, data)) { return false; }
+  if (!load_tag(tag, data)) {
+    return false;
+  }
   data.read(reinterpret_cast<char*>(&element), sizeof(element));
   return true;
 }
 
 // std::string
 template <>
-void save<std::string>(tag_type tag, std::string const& element, std::ostream& data);
+void save<std::string>(tag_type tag, std::string const& element,
+                       std::ostream& data);
 template <>
 bool load<std::string>(tag_type tag, std::string& element, std::istream& data);
 
@@ -27,6 +30,8 @@ bool load<Item>(tag_type tag, Item& element, std::istream& data);
 
 // Feat
 template <>
-void save<Character::Feat>(tag_type tag, Character::Feat const& element, std::ostream& data);
+void save<Character::Feat>(tag_type tag, Character::Feat const& element,
+                           std::ostream& data);
 template <>
-bool load<Character::Feat>(tag_type tag, Character::Feat& element, std::istream& data);
+bool load<Character::Feat>(tag_type tag, Character::Feat& element,
+                           std::istream& data);

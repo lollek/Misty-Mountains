@@ -15,7 +15,9 @@ void Disk::save<string>(tag_type tag, string const& element, ostream& data) {
 }
 template <>
 bool Disk::load<string>(tag_type tag, string& element, istream& data) {
-  if (!load_tag(tag, data)) { return false; }
+  if (!load_tag(tag, data)) {
+    return false;
+  }
   size_t element_size;
   data.read(reinterpret_cast<char*>(&element_size), sizeof(element_size));
   element.resize(element_size);
@@ -33,7 +35,9 @@ void Disk::save<Item>(tag_type tag, Item const& element, ostream& data) {
 }
 template <>
 bool Disk::load<Item>(tag_type tag, Item& element, istream& data) {
-  if (!load_tag(tag, data)) { return false; }
+  if (!load_tag(tag, data)) {
+    return false;
+  }
   element.load(data);
   return true;
 }
@@ -48,7 +52,9 @@ void Disk::save<Character::Feat>(tag_type tag, Character::Feat const& element,
 template <>
 bool Disk::load<Character::Feat>(tag_type tag, Character::Feat& element,
                                  istream& data) {
-  if (!load_tag(tag, data)) { return false; }
+  if (!load_tag(tag, data)) {
+    return false;
+  }
   data.read(reinterpret_cast<char*>(&element), sizeof(element));
   return true;
 }

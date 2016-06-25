@@ -38,11 +38,15 @@ void Player::eat(Food* food) {
     Game::io->message("that tasted good");
   }
 
-  if (nutrition_left < 0) { nutrition_left = 0; }
+  if (nutrition_left < 0) {
+    nutrition_left = 0;
+  }
 
   nutrition_left += food->get_nutrition_value();
 
-  if (nutrition_left > full) { nutrition_left = full; }
+  if (nutrition_left > full) {
+    nutrition_left = full;
+  }
 
   hunger_state = HungerState::Normal;
 }
@@ -66,7 +70,9 @@ void Player::digest_food() {
   }
 
   if (nutrition_left < starvation_start) {
-    if (player_turns_without_action || os_rand_range(5) != 0) { return; }
+    if (player_turns_without_action || os_rand_range(5) != 0) {
+      return;
+    }
 
     player_turns_without_action += os_rand_range(8) + 4;
     hunger_state = HungerState::Starving;
@@ -74,7 +80,9 @@ void Player::digest_food() {
     command_stop(true);
   }
 
-  if (nutrition_left < starvation_death) { death(DEATH_HUNGER); }
+  if (nutrition_left < starvation_death) {
+    death(DEATH_HUNGER);
+  }
 }
 
 string Player::get_hunger_state() const {

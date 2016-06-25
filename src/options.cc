@@ -50,7 +50,7 @@ bool option() {
     enum put_t { BOOL, STR } put_type;
   };
 
-  vector<option> optlist {
+  vector<option> optlist{
       {'1', "Flush typeahead during battle?....", &fight_flush, option::BOOL},
       {'2', "Show position only at end of run?.", &jump, option::BOOL},
       {'3', "Follow turnings in passageways?...", &passgo, option::BOOL},
@@ -109,8 +109,9 @@ bool option() {
     Game::io->force_redraw();
     c = Game::io->readchar(true);
 
-    auto const change_option{find_if(optlist.begin(), optlist.end(),
-                                 [c](option const& o) { return o.index == c; })};
+    auto const change_option{
+        find_if(optlist.begin(), optlist.end(),
+                [c](option const& o) { return o.index == c; })};
 
     if (change_option != optlist.end()) {
       int i{static_cast<int>(change_option - optlist.begin())};

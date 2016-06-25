@@ -160,7 +160,9 @@ Monster::Type Monster::random_monster_type_for_level() {
 }
 
 Monster::~Monster() {
-  for (Item* item : pack) { delete item; }
+  for (Item* item : pack) {
+    delete item;
+  }
 }
 
 Monster::Monster(int str, int dex, int con, int int_, int wis, int cha, int exp,
@@ -379,7 +381,9 @@ void Monster::notice_player() {
   if (!is_chasing() && attacks_on_sight() && !is_held() &&
       !player->is_stealthy() && !os_rand_range(3)) {
     set_target(&player->get_position());
-    if (!is_stuck()) { set_chasing(); }
+    if (!is_stuck()) {
+      set_chasing();
+    }
   }
 }
 
@@ -421,7 +425,9 @@ int monster_save_throw(int which, Monster const* mon) {
 }
 
 void monster_start_running(Coordinate const* runner) {
-  if (runner == nullptr) { error("runner was null"); }
+  if (runner == nullptr) {
+    error("runner was null");
+  }
 
   Monster* tp{Game::level->get_monster(*runner)};
   tp->find_new_target();
@@ -475,14 +481,18 @@ void monster_remove_from_screen(Monster** monster_ptr, bool was_killed) {
   Game::level->set_monster(position, nullptr);
   Game::level->monsters.remove(monster);
 
-  if (monster->is_players_target()) { to_death = false; }
+  if (monster->is_players_target()) {
+    to_death = false;
+  }
 
   delete monster;
   *monster_ptr = nullptr;
 }
 
 void monster_teleport(Monster* monster, Coordinate const* destination) {
-  if (monster == nullptr) { error("monster = null"); }
+  if (monster == nullptr) {
+    error("monster = null");
+  }
 
   /* Select destination */
   Coordinate new_pos;
@@ -500,12 +510,18 @@ void monster_teleport(Monster* monster, Coordinate const* destination) {
 }
 
 void monster_do_special_ability(Monster** monster_ptr) {
-  if (monster_ptr == nullptr || *monster_ptr == nullptr) { error("null"); }
+  if (monster_ptr == nullptr || *monster_ptr == nullptr) {
+    error("null");
+  }
 
   Monster* monster{*monster_ptr};
-  if (monster->is_cancelled()) { return; }
+  if (monster->is_cancelled()) {
+    return;
+  }
 
-  if (monster->attack_damages_armor()) { player->rust_armor(); }
+  if (monster->attack_damages_armor()) {
+    player->rust_armor();
+  }
 
   if (monster->attack_freezes()) {
     player->set_not_running();
@@ -513,7 +529,9 @@ void monster_do_special_ability(Monster** monster_ptr) {
       Game::io->message("you are frozen by the " + monster->get_name());
     }
     player_turns_without_action += os_rand_range(2) + 2;
-    if (player_turns_without_action > 50) { death(DEATH_ICE); }
+    if (player_turns_without_action > 50) {
+      death(DEATH_ICE);
+    }
   }
 
   if (monster->attack_steals_gold() && player->get_gold() > 0) {
@@ -529,7 +547,9 @@ void monster_do_special_ability(Monster** monster_ptr) {
           Gold::random_gold_amount() + Gold::random_gold_amount());
     }
 
-    if (player->get_gold() < 0) { player->give_gold(-player->get_gold()); }
+    if (player->get_gold() < 0) {
+      player->give_gold(-player->get_gold());
+    }
     return;
   }
 
@@ -557,26 +577,34 @@ void monster_do_special_ability(Monster** monster_ptr) {
     int const fewer{roll(1, 3)};
     player->take_damage(fewer);
     player->modify_max_health(-fewer);
-    if (player->get_health() <= 0) { death(DEATH_NO_HEALTH); }
+    if (player->get_health() <= 0) {
+      death(DEATH_NO_HEALTH);
+    }
     Game::io->message("you feel weaker");
   }
 
   if (monster->attack_drains_experience() && os_rand_range(100) < 15) {
     // Death by no level
-    if (player->get_level() == 1) { death(DEATH_NO_EXP); }
+    if (player->get_level() == 1) {
+      death(DEATH_NO_EXP);
+    }
     player->lower_level(1);
 
     int fewer = roll(1, 10);
     player->take_damage(fewer);
     player->modify_max_health(-fewer);
-    if (player->get_health() <= 0) { death(DEATH_NO_HEALTH); }
+    if (player->get_health() <= 0) {
+      death(DEATH_NO_HEALTH);
+    }
     Game::io->message("you feel weaker");
   }
 }
 
 bool monster_is_anyone_seen_by_player(void) {
   for (Monster* mon : Game::level->monsters) {
-    if (player->can_see(*mon)) { return true; }
+    if (player->can_see(*mon)) {
+      return true;
+    }
   }
   return false;
 }
@@ -620,12 +648,16 @@ void monster_aggro_all_which_desire_item(Item* item) {
 }
 
 void monster_polymorph(Monster* target) {
-  if (target == nullptr) { error("null"); }
+  if (target == nullptr) {
+    error("null");
+  }
   stringstream os;
 
   Coordinate const pos{target->get_position()};
   bool const was_seen{player->can_see(*target)};
-  if (was_seen) { os << target->get_name(); }
+  if (was_seen) {
+    os << target->get_name();
+  }
 
   // Save some things from old monster
   list<Item*> target_pack{target->get_pack()};
@@ -674,7 +706,9 @@ bool monster_try_breathe_fire_on_player(Monster const& monster) {
     magic_bolt(&position, &delta, "flame");
     command_stop(true);
     Daemons::daemon_reset_doctor();
-    if (to_death && !monster.is_players_target()) { to_death = false; }
+    if (to_death && !monster.is_players_target()) {
+      to_death = false;
+    }
     return true;
   }
 
@@ -684,7 +718,9 @@ bool monster_try_breathe_fire_on_player(Monster const& monster) {
 void Monster::find_new_target() {
   // Currently, this function only makes it target the player
 
-  if (player->can_see(*this)) { set_target(&player->get_position()); }
+  if (player->can_see(*this)) {
+    set_target(&player->get_position());
+  }
 
   set_target(nullptr);
 }
@@ -694,7 +730,9 @@ Monster::Type Monster::get_subtype() const { return subtype; }
 void Monster::set_disguise(char new_disguise) { disguise = new_disguise; }
 
 Monster::Monster(istream& data) {
-  if (!load(data)) { error("Malformed monster found"); }
+  if (!load(data)) {
+    error("Malformed monster found");
+  }
 }
 
 void Monster::save(ostream& data) const {

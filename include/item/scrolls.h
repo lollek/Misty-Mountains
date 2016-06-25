@@ -1,13 +1,13 @@
 #pragma once
 
-#include <vector>
 #include <istream>
 #include <ostream>
+#include <vector>
 
 #include "item.h"
 
 class Scroll : public Item {
-public:
+ public:
   enum Type {
     CONFUSE,
     MAP,
@@ -36,17 +36,17 @@ public:
   Scroll& operator=(Scroll&&) = default;
 
   // Setters
-  void       set_identified() override;
+  void set_identified() override;
 
   // Getters
-  Type        get_type() const;
+  Type get_type() const;
   std::string get_description() const override;
-  bool        is_magic() const override;
-  bool        is_identified() const override;
-  bool        is_stackable() const override;
-  bool        autopickup() const override;
-  int         get_value() const override;
-  int         get_base_value() const override;
+  bool is_magic() const override;
+  bool is_identified() const override;
+  bool is_stackable() const override;
+  bool autopickup() const override;
+  int get_value() const override;
+  int get_base_value() const override;
 
   // Misc
   void read() const;
@@ -55,28 +55,27 @@ public:
   virtual bool load(std::istream&) override;
 
   // Static
-  static std::string  name(Type subtype);
-  static int          worth(Type subtype);
+  static std::string name(Type subtype);
+  static int worth(Type subtype);
   static std::string& guess(Type subtype);
-  static bool         is_known(Type subtype);
-  static void         set_known(Type subtype);
+  static bool is_known(Type subtype);
+  static void set_known(Type subtype);
 
-  static void         init_scrolls();
-  static void         save_scrolls(std::ostream&);
-  static void         load_scrolls(std::istream&);
-  static void         test_scrolls();
-  static void         free_scrolls();
+  static void init_scrolls();
+  static void save_scrolls(std::ostream&);
+  static void load_scrolls(std::istream&);
+  static void test_scrolls();
+  static void free_scrolls();
 
-private:
+ private:
   Type subtype;
 
   static std::vector<std::string>* fake_name;
-  static std::vector<bool>*        knowledge;
+  static std::vector<bool>* knowledge;
   static std::vector<std::string>* guesses;
 
-  static unsigned long long constexpr TAG_SCROLL    = 0x1000000000000000ULL;
+  static unsigned long long constexpr TAG_SCROLL = 0x1000000000000000ULL;
   static unsigned long long constexpr TAG_FAKE_NAME = 0x1000000000000001ULL;
   static unsigned long long constexpr TAG_KNOWLEDGE = 0x1000000000000002ULL;
-  static unsigned long long constexpr TAG_GUESSES   = 0x1000000000000003ULL;
+  static unsigned long long constexpr TAG_GUESSES = 0x1000000000000003ULL;
 };
-

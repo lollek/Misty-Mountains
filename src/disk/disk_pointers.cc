@@ -30,12 +30,18 @@ void Disk::save<Item>(tag_type tag, Item* element, std::ostream& data) {
 
 template <>
 bool Disk::load<Item>(tag_type tag, Item*& element, std::istream& data) {
-  if (!load_tag(tag, data)) { return false; }
+  if (!load_tag(tag, data)) {
+    return false;
+  }
 
   int null_checker;
-  if (!load(tag, null_checker, data)) { return false; }
+  if (!load(tag, null_checker, data)) {
+    return false;
+  }
 
-  if (null_checker == 0) { return true; }
+  if (null_checker == 0) {
+    return true;
+  }
 
   int type;
   load(tag, type, data);

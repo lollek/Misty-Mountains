@@ -7,14 +7,14 @@
 
 namespace Trap {
 enum Type {
-  Door  = 0,
+  Door = 0,
   Arrow = 1,
   Sleep = 2,
-  Beartrap  = 3,
+  Beartrap = 3,
   Teleport = 4,
-  Dart  = 5,
-  Rust  = 6,
-  Mystery  = 7,
+  Dart = 5,
+  Rust = 6,
+  Mystery = 7,
   NTRAPS
 };
 
@@ -32,6 +32,4 @@ Type player(Coordinate const& trap_coord);
 
 // Random trap type
 Type random();
-
 }
-

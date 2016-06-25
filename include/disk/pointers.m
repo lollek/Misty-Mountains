@@ -10,7 +10,7 @@ bool load(tag_type tag, T*& element, std::istream& data) {
 }
 
 // Special case for Item, since it's pure virtual
-template<>
+template <>
 void save<Item>(tag_type tag, Item* element, std::ostream& data);
-template<>
+template <>
 bool load<Item>(tag_type tag, Item*& element, std::istream& data);

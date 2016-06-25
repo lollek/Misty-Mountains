@@ -25,11 +25,15 @@ static bool magic_bolt_handle_bounces(Coordinate& pos, Coordinate* dir,
 recursive_loop:; /* ONLY called by end of function */
   Monster* monster{Game::level->get_monster(pos)};
   Tile::Type const ch{Game::level->get_tile(pos)};
-  if (monster != nullptr || ch != Tile::Wall) { return num_bounces != 0; }
+  if (monster != nullptr || ch != Tile::Wall) {
+    return num_bounces != 0;
+  }
 
   // There are no known bugs with this functions at the moment,
   // but just in case, we'll abort after too many bounces
-  if (num_bounces > 10) { return true; }
+  if (num_bounces > 10) {
+    return true;
+  }
 
   // Handle potential bouncing
   if (ch == Tile::Wall) {
@@ -74,7 +78,9 @@ recursive_loop:; /* ONLY called by end of function */
 
 static void magic_bolt_hit_player(Coordinate* start,
                                   string const& missile_name) {
-  if (start == nullptr) { error("start coord was null"); }
+  if (start == nullptr) {
+    error("start coord was null");
+  }
 
   if (!player->saving_throw(VS_MAGIC)) {
     player->take_damage(roll(6, 6));
@@ -137,7 +143,9 @@ void magic_bolt(Coordinate* start, Coordinate* dir, string const& name) {
   }
 
   IO::Attribute color = IO::Attribute::Red;
-  if (name == "ice") { color = IO::Attribute::Blue; }
+  if (name == "ice") {
+    color = IO::Attribute::Blue;
+  }
 
   Coordinate pos = *start;
   for (int i{0}; i < BOLT_LENGTH; ++i) {
@@ -151,7 +159,9 @@ void magic_bolt(Coordinate* start, Coordinate* dir, string const& name) {
     if (pos == player->get_position()) magic_bolt_hit_player(start, name);
 
     Monster* tp{Game::level->get_monster(pos)};
-    if (tp != nullptr) { magic_bolt_hit_monster(tp, start, &pos, name); }
+    if (tp != nullptr) {
+      magic_bolt_hit_monster(tp, start, &pos, name);
+    }
 
     Game::io->print(pos.x, pos.y, static_cast<long unsigned int>(dirtile),
                     color);

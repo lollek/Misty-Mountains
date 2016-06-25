@@ -1,7 +1,7 @@
 #pragma once
 
-extern bool wizard; /* True if allows wizard commands (debug mode) */
-extern bool wizard_dicerolls; // True if we want to see dicerolls
+extern bool wizard;            /* True if allows wizard commands (debug mode) */
+extern bool wizard_dicerolls;  // True if we want to see dicerolls
 
 /* List possible potions, scrolls, etc. for wizard. */
 int wizard_list_items();

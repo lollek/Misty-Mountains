@@ -1,7 +1,6 @@
 #pragma once
 
-struct damage
-{
+struct damage {
   int dices;
   int sides;
 

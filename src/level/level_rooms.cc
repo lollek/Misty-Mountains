@@ -31,7 +31,9 @@ static void room_accnt_maze(int y, int x, int ny, int nx) {
   Coordinate* cp;
 
   for (cp = sp->exits; cp < &sp->exits[sp->nexits]; cp++) {
-    if (cp->y == ny && cp->x == nx) { return; }
+    if (cp->y == ny && cp->x == nx) {
+      return;
+    }
   }
 
   cp->y = ny;
@@ -62,7 +64,9 @@ void Level::draw_maze_recursive(int y, int x, int starty, int startx, int maxy,
       }
     }
 
-    if (cnt == 0) { return; }
+    if (cnt == 0) {
+      return;
+    }
 
     room_accnt_maze(y, x, nexty, nextx);
     room_accnt_maze(nexty, nextx, y, x);
@@ -152,7 +156,9 @@ static void room_place_gone_room(Coordinate const* max_size,
 void Level::create_rooms() {
   /* Put the gone rooms, if any, on the level */
   int left_out{os_rand_range(4)};
-  for (int i{0}; i < left_out; i++) { get_random_room()->is_gone = true; }
+  for (int i{0}; i < left_out; i++) {
+    get_random_room()->is_gone = true;
+  }
 
   /* dig and populate all the rooms on the level */
   if (rooms.size() != 9) {
@@ -179,7 +185,9 @@ void Level::create_rooms() {
     /* set room type */
     if (os_rand_range(10) < Game::current_level - 1) {
       room.is_dark = true;
-      if (os_rand_range(15) == 0) { room.is_maze = true; }
+      if (os_rand_range(15) == 0) {
+        room.is_maze = true;
+      }
     }
 
     /* Find a place and size for a random room */
@@ -230,9 +238,13 @@ bool Level::get_random_room_coord(room* room, Coordinate* coord, int tries,
   bool const pickroom{room == nullptr};
 
   for (;;) {
-    if (limited_tries && tries-- == 0) { return false; }
+    if (limited_tries && tries-- == 0) {
+      return false;
+    }
 
-    if (pickroom) { room = get_random_room(); }
+    if (pickroom) {
+      room = get_random_room();
+    }
 
     /* Pick a random position */
     coord->x = room->r_pos.x + os_rand_range(room->r_max.x - 2) + 1;
@@ -240,7 +252,9 @@ bool Level::get_random_room_coord(room* room, Coordinate* coord, int tries,
 
     Tile::Type ch{get_tile(*coord)};
     if (monst) {
-      if (get_monster(*coord) == nullptr && can_step(*coord)) { return true; }
+      if (get_monster(*coord) == nullptr && can_step(*coord)) {
+        return true;
+      }
     } else if (ch == compchar) {
       return true;
     }
@@ -250,7 +264,9 @@ bool Level::get_random_room_coord(room* room, Coordinate* coord, int tries,
 room* Level::get_random_room() {
   for (;;) {
     room* room{&rooms.at(static_cast<size_t>(os_rand_range(rooms.size())))};
-    if (room->is_gone) { continue; }
+    if (room->is_gone) {
+      continue;
+    }
 
     return room;
   }

@@ -52,7 +52,9 @@ int command() {
       Game::io->message("you can move again");
     }
 
-    if (player_turns_without_action != 0) { continue; }
+    if (player_turns_without_action != 0) {
+      continue;
+    }
 
     char ch;
     if (player->is_running() || to_death) {
@@ -65,7 +67,9 @@ int command() {
 
     // command_do returns 0 if player did something not in-game
     // (like changing options), thus recevies another turn
-    if (!command_do(ch)) { num_moves++; }
+    if (!command_do(ch)) {
+      num_moves++;
+    }
   }
 
   player->digest_food();
@@ -105,7 +109,8 @@ bool command_do(char ch) {
     case 's': player->search(); return true;
     case 't': return command_throw();
     case 'x': return player->pack_swap_weapons();
-    case 'z': return wand_zap();
+    case 'z':
+      return wand_zap();
 
     /* Upper case */
     case 'H':
@@ -123,7 +128,8 @@ bool command_do(char ch) {
     case 'O': return option();
     case 'S': return command_save();
     case 'Q': return command_quit();
-    case 'Z': return command_rest();
+    case 'Z':
+      return command_rest();
 
     /* Ctrl case */
     case CTRL('H'):
@@ -164,7 +170,9 @@ bool command_wizard_do(char ch) {
     case CTRL('~'): {
       Wand* wand{
           static_cast<Wand*>(player->pack_find_item("charge", IO::Wand))};
-      if (wand != nullptr) { wand->set_charges(10000); }
+      if (wand != nullptr) {
+        wand->set_charges(10000);
+      }
     } break;
 
     default: return unknown_command(ch);

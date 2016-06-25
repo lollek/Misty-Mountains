@@ -181,7 +181,9 @@ static Trap::Type trap_telep_monster(Monster* victim) {
   stringstream os;
 
   bool const was_seen{player->can_see(*victim)};
-  if (was_seen) { os << victim->get_name(); }
+  if (was_seen) {
+    os << victim->get_name();
+  }
 
   monster_teleport(victim, nullptr);
   if (was_seen) {
@@ -284,7 +286,9 @@ Trap::Type Trap::player(Coordinate const& trap_coord) {
 }
 
 Trap::Type Trap::spring(Monster** victim, Trap::Type trap_type) {
-  if (victim == nullptr || *victim == nullptr) { error("null"); }
+  if (victim == nullptr || *victim == nullptr) {
+    error("null");
+  }
 
   switch (trap_type) {
     case Door: return trap_door_monster(victim);

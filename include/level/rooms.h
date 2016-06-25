@@ -10,11 +10,10 @@ struct room {
   room& operator=(room const&) = default;
   room& operator=(room&&) = default;
 
-  Coordinate r_pos;      // Upper left corner
-  Coordinate r_max;      // Size of room
+  Coordinate r_pos;  // Upper left corner
+  Coordinate r_max;  // Size of room
 
-  bool is_dark;          // Room is dark
-  bool is_gone;          // No room here, just corridor
-  bool is_maze;          // No room here, just maze
+  bool is_dark;  // Room is dark
+  bool is_gone;  // No room here, just corridor
+  bool is_maze;  // No room here, just maze
 };
-

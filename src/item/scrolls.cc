@@ -158,7 +158,9 @@ string Scroll::get_description() const {
     prefix_added = true;
   }
 
-  if (!prefix_added) { os << " titled " << Scroll::fake_name->at(subtype); }
+  if (!prefix_added) {
+    os << " titled " << Scroll::fake_name->at(subtype);
+  }
 
   return os.str();
 }
@@ -199,21 +201,31 @@ void Scroll::init_scrolls() {
 
       for (int k{0}; k < syllables; ++k) {
         string const& syllable{sylls.at(os_rand_range(sylls.size()))};
-        if (name.size() + syllable.size() <= MAXNAME) { name += syllable; }
+        if (name.size() + syllable.size() <= MAXNAME) {
+          name += syllable;
+        }
       }
       name += " ";
     }
 
-    while (name.back() == ' ') { name.pop_back(); }
+    while (name.back() == ' ') {
+      name.pop_back();
+    }
 
     Scroll::fake_name->push_back(name);
   }
 
   // Run some checks
   size_t const nscrolls_size{static_cast<size_t>(Scroll::NSCROLLS)};
-  if (fake_name->size() != nscrolls_size) { error("Scroll init: error 1"); }
-  if (knowledge->size() != nscrolls_size) { error("Scroll init: error 2"); }
-  if (guesses->size() != nscrolls_size) { error("Scroll init: error 3"); }
+  if (fake_name->size() != nscrolls_size) {
+    error("Scroll init: error 1");
+  }
+  if (knowledge->size() != nscrolls_size) {
+    error("Scroll init: error 2");
+  }
+  if (guesses->size() != nscrolls_size) {
+    error("Scroll init: error 3");
+  }
 }
 
 void Scroll::test_scrolls() {
@@ -228,9 +240,15 @@ void Scroll::test_scrolls() {
   free_scrolls();
   load_scrolls(test_data);
 
-  if (fake_name_ != *fake_name) { error("scroll test 1 failed"); }
-  if (knowledge_ != *knowledge) { error("scroll test 2 failed"); }
-  if (guesses_ != *guesses) { error("scroll test 3 failed"); }
+  if (fake_name_ != *fake_name) {
+    error("scroll test 1 failed");
+  }
+  if (knowledge_ != *knowledge) {
+    error("scroll test 2 failed");
+  }
+  if (guesses_ != *guesses) {
+    error("scroll test 3 failed");
+  }
 }
 
 void Scroll::save_scrolls(ostream& data) {
@@ -246,18 +264,34 @@ void Scroll::save_scrolls(ostream& data) {
 void Scroll::load_scrolls(istream& data) {
   size_t const nscrolls_size{static_cast<size_t>(Scroll::NSCROLLS)};
 
-  if (!Disk::load_tag(TAG_SCROLL, data)) { error("No scrolls found"); }
+  if (!Disk::load_tag(TAG_SCROLL, data)) {
+    error("No scrolls found");
+  }
 
-  if (!Disk::load(TAG_FAKE_NAME, fake_name, data)) { error("Scroll error 1"); }
-  if (fake_name->size() != nscrolls_size) { error("Scroll size error 1"); }
+  if (!Disk::load(TAG_FAKE_NAME, fake_name, data)) {
+    error("Scroll error 1");
+  }
+  if (fake_name->size() != nscrolls_size) {
+    error("Scroll size error 1");
+  }
 
-  if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) { error("Scroll error 2"); }
-  if (knowledge->size() != nscrolls_size) { error("Scroll size error 2"); }
+  if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) {
+    error("Scroll error 2");
+  }
+  if (knowledge->size() != nscrolls_size) {
+    error("Scroll size error 2");
+  }
 
-  if (!Disk::load(TAG_GUESSES, guesses, data)) { error("Scroll error 3"); }
-  if (guesses->size() != nscrolls_size) { error("Scroll size error 3"); }
+  if (!Disk::load(TAG_GUESSES, guesses, data)) {
+    error("Scroll error 3");
+  }
+  if (guesses->size() != nscrolls_size) {
+    error("Scroll size error 3");
+  }
 
-  if (!Disk::load_tag(TAG_SCROLL, data)) { error("No scrolls end found"); }
+  if (!Disk::load_tag(TAG_SCROLL, data)) {
+    error("No scrolls end found");
+  }
 }
 
 void Scroll::free_scrolls() {
@@ -313,10 +347,14 @@ static bool create_monster() {
   for (int y{player_pos.y - 1}; y <= player_pos.y + 1; y++) {
     for (int x{player_pos.x - 1}; x <= player_pos.x + 1; x++) {
       /* No duplicates */
-      if ((y == player_pos.y && x == player_pos.x)) { continue; }
+      if ((y == player_pos.y && x == player_pos.x)) {
+        continue;
+      }
 
       /* Cannot stand there */
-      if (!Game::level->can_step(x, y)) { continue; }
+      if (!Game::level->can_step(x, y)) {
+        continue;
+      }
 
       /* Monsters cannot stand of scroll of stand monster */
       Item* item{Game::level->get_item(x, y)};
@@ -326,7 +364,9 @@ static bool create_monster() {
       }
 
       /* RNGsus doesn't want a monster here */
-      if (os_rand_range(++i) != 0) { continue; }
+      if (os_rand_range(++i) != 0) {
+        continue;
+      }
 
       mp.y = y;
       mp.x = x;
@@ -407,11 +447,15 @@ void Scroll::read() const {
     } break;
 
     case Scroll::ENCHARMOR: {
-      if (enchant_players_armor()) { set_known(Scroll::ENCHARMOR); }
+      if (enchant_players_armor()) {
+        set_known(Scroll::ENCHARMOR);
+      }
     } break;
 
     case Scroll::HOLD: {
-      if (magic_hold_nearby_monsters()) { set_known(Scroll::HOLD); }
+      if (magic_hold_nearby_monsters()) {
+        set_known(Scroll::HOLD);
+      }
     } break;
 
     case Scroll::SLEEP: {
@@ -420,7 +464,9 @@ void Scroll::read() const {
     } break;
 
     case Scroll::CREATE: {
-      if (create_monster()) { set_known(Scroll::CREATE); }
+      if (create_monster()) {
+        set_known(Scroll::CREATE);
+      }
     } break;
 
     case Scroll::ID: {
@@ -481,13 +527,17 @@ int Scroll::get_base_value() const { return worth(subtype); }
 int Scroll::get_value() const {
   int value{get_base_value()};
   value *= o_count;
-  if (!is_identified()) { value /= 2; }
+  if (!is_identified()) {
+    value /= 2;
+  }
   return value;
 }
 
 bool Scroll::is_stackable() const { return true; }
 bool Scroll::autopickup() const {
   string const& guess_{guess(subtype)};
-  if (!guess_.empty() && guess_.find('!') != string::npos) { return false; }
+  if (!guess_.empty() && guess_.find('!') != string::npos) {
+    return false;
+  }
   return option_autopickup(o_type);
 }

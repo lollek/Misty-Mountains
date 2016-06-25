@@ -15,9 +15,7 @@ struct attack_modifier {
 
   void add_strength_modifiers(int strength);
 
-  int                 to_hit;
-  int                 to_dmg;
+  int to_hit;
+  int to_dmg;
   std::vector<damage> damage;
 };
-
-

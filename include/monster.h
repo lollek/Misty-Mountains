@@ -1,24 +1,43 @@
 #pragma once
 
-#include <string>
-#include <list>
-#include <vector>
 #include <istream>
+#include <list>
 #include <ostream>
+#include <string>
+#include <vector>
 
 #include "character.h"
 #include "coordinate.h"
 #include "item.h"
 
 class Monster : public Character {
-public:
+ public:
   enum Type {
-    Bat, Goblin, Kobold, Orc, SkeletonHuman, Hobgoblin, ZombieHuman,
+    Bat,
+    Goblin,
+    Kobold,
+    Orc,
+    SkeletonHuman,
+    Hobgoblin,
+    ZombieHuman,
 
-    Quasit, Worg, Ogre, Yeti, IceMonster, Aquator, Troll,
+    Quasit,
+    Worg,
+    Ogre,
+    Yeti,
+    IceMonster,
+    Aquator,
+    Troll,
 
-    ShadowDemon, Erinyes, Nightmare, GenieDjinni, GenieVizier,
-    GenieEfreeti, GenieJanni, GenieMarid, GenieShaitan,
+    ShadowDemon,
+    Erinyes,
+    Nightmare,
+    GenieDjinni,
+    GenieVizier,
+    GenieEfreeti,
+    GenieJanni,
+    GenieMarid,
+    GenieShaitan,
 
     AdultRedDragon,
     Jabberwock,
@@ -46,38 +65,38 @@ public:
   void notice_player();
 
   // monster_chase.c
-  bool take_turn(); // True if monster is still alive
+  bool take_turn();  // True if monster is still alive
 
   // Getters
-  std::string       get_attack_string(bool successful_hit) const override;
-  std::string       get_name() const override;
-  char              get_look() const;
-  char              get_disguise() const;
-  Type              get_subtype() const;
+  std::string get_attack_string(bool successful_hit) const override;
+  std::string get_name() const override;
+  char get_look() const;
+  char get_disguise() const;
+  Type get_subtype() const;
   Coordinate const* get_target() const;
   std::list<Item*>& get_pack();
 
   // Statics
   static std::string name(Type type);
-  static void        all_move();
-  static Type        random_monster_type_for_level();
-  static Type        random_monster_type();
+  static void all_move();
+  static Type random_monster_type_for_level();
+  static Type random_monster_type();
 
-private:
-  char               look;
-  char               disguise;
-  Type               subtype;
-  Coordinate const*  target;
-  std::list<Item*>   pack;
+ private:
+  char look;
+  char disguise;
+  Type subtype;
+  Coordinate const* target;
+  std::list<Item*> pack;
 
   // monster_constructors.cc
-  Monster& operator=(Monster const&) = delete; // They will share inventory
-  Monster(Monster const&) = delete;            // They will share inventory
+  Monster& operator=(Monster const&) = delete;  // They will share inventory
+  Monster(Monster const&) = delete;             // They will share inventory
   Monster(int str, int dex, int con, int int_, int wis, int cha, int exp,
-          int lvl, int ac,  int hp, std::vector<damage> const& dmg,
+          int lvl, int ac, int hp, std::vector<damage> const& dmg,
           Coordinate const& pos, std::vector<Feat> const& feats, int speed,
-          Race race, char look, char disguise, Type subtype, Coordinate const* target,
-          std::list<Item*> pack);
+          Race race, char look, char disguise, Type subtype,
+          Coordinate const* target, std::list<Item*> pack);
 
   static Monster bat();
   static Monster kobold();
@@ -108,10 +127,9 @@ private:
   static Monster adult_red_dragon();
   static Monster jabberwock();
 
-  static unsigned long long constexpr TAG_MONSTER         = 0xd000000000000001ULL;
-  static unsigned long long constexpr TAG_MISC            = 0xd000000000000002ULL;
+  static unsigned long long constexpr TAG_MONSTER = 0xd000000000000001ULL;
+  static unsigned long long constexpr TAG_MISC = 0xd000000000000002ULL;
 };
-
 
 /* See if a creature save against something */
 int monster_save_throw(int which, Monster const* mon);
@@ -142,4 +160,3 @@ void monster_polymorph(Monster* monster);
 
 // Attempt to breathe fire on player. True if it tried, false when it didnt
 bool monster_try_breathe_fire_on_player(Monster const& monster);
-

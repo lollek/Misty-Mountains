@@ -18,7 +18,9 @@ using namespace std;
  * Add a door or possibly a secret door.  Also enters the door in
  * the exits array of the room.  */
 void Level::place_door(room* room, Coordinate* coord) {
-  if (room->is_maze) { return; }
+  if (room->is_maze) {
+    return;
+  }
 
   if (os_rand_range(10) + 1 < Game::current_level && os_rand_range(5) == 0) {
     set_tile(*coord, Tile::Wall);
@@ -53,13 +55,13 @@ void Level::connect_passages(int r1, int r2) {
   }
 
   room* room_from{&rooms.at(static_cast<size_t>(rm))};
-  room* room_to{nullptr};  /* room pointer of dest */
-  Coordinate start_pos;    /* start of move */
-  Coordinate end_pos;      /* end of move */
-  Coordinate turn_delta;   /* direction to turn */
-  Coordinate del;          /* direction of move */
-  int distance{0};         /* distance to move */
-  int turn_distance{0};    /* how far to turn */
+  room* room_to{nullptr}; /* room pointer of dest */
+  Coordinate start_pos;   /* start of move */
+  Coordinate end_pos;     /* end of move */
+  Coordinate turn_delta;  /* direction to turn */
+  Coordinate del;         /* direction of move */
+  int distance{0};        /* distance to move */
+  int turn_distance{0};   /* how far to turn */
 
   /* Set up the movement variables, in two cases:
    * first drawing one down.  */
@@ -167,7 +169,9 @@ void Level::connect_passages(int r1, int r2) {
   curr.x += del.x;
   curr.y += del.y;
 
-  if (curr != end_pos) { error("Connectivity problem"); }
+  if (curr != end_pos) {
+    error("Connectivity problem");
+  }
 }
 
 // TODO: Clean up this function. Pretty hacky
@@ -191,13 +195,19 @@ void Level::create_passages() {
       {{0, 0, 0, 0, 0, 1, 0, 1, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0}, 0},
   };
 
-  if (destinations.size() != 9) { error("Expected 9 rooms in destinations"); }
+  if (destinations.size() != 9) {
+    error("Expected 9 rooms in destinations");
+  }
 
   // reinitialize room graph description
   for (Destination& ptr : destinations) {
-    if (ptr.isconn.size() != 9) { error("Expected 3 isconns in ptr"); }
+    if (ptr.isconn.size() != 9) {
+      error("Expected 3 isconns in ptr");
+    }
 
-    for (size_t i{0}; i < ptr.isconn.size(); i++) { ptr.isconn.at(i) = false; }
+    for (size_t i{0}; i < ptr.isconn.size(); i++) {
+      ptr.isconn.at(i) = false;
+    }
     ptr.ingraph = false;
   }
 
@@ -228,7 +238,9 @@ void Level::create_passages() {
       /* otherwise, connect new room to the graph, and draw a tunnel
        * to it */
     } else {
-      if (r2 == nullptr) { error("r2 was null"); }
+      if (r2 == nullptr) {
+        error("r2 was null");
+      }
 
       r2->ingraph = true;
       size_t const r1i{static_cast<size_t>(
@@ -281,7 +293,9 @@ void Level::create_passages() {
 }
 
 void Level::place_passage(Coordinate* coord) {
-  if (coord == nullptr) { error("coord was null"); }
+  if (coord == nullptr) {
+    error("coord was null");
+  }
 
   tile(coord->x, coord->y).is_passage = true;
 

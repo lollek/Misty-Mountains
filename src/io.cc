@@ -200,7 +200,9 @@ bool IO::print_monster(int x, int y, Monster* monster) {
 bool IO::print_item(int x, int y, Item* item) {
   chtype symbol_to_print = static_cast<chtype>(item->get_item_type());
   IO::Attribute attr = IO::None;
-  if (symbol_to_print == IO::Gold) { attr = IO::BoldYellow; }
+  if (symbol_to_print == IO::Gold) {
+    attr = IO::BoldYellow;
+  }
   print(x, y, symbol_to_print, attr);
   return true;
 }
@@ -216,11 +218,15 @@ void IO::print_coordinate_seen(Coordinate const& coord) {
 
   // Next prio: Monsters
   Monster* mon{Game::level->get_monster(coord)};
-  if (mon != nullptr && print_monster(coord.x, coord.y, mon)) { return; }
+  if (mon != nullptr && print_monster(coord.x, coord.y, mon)) {
+    return;
+  }
 
   // Next prio: Items
   Item* item{Game::level->get_item(coord)};
-  if (item != nullptr && print_item(coord.x, coord.y, item)) { return; }
+  if (item != nullptr && print_item(coord.x, coord.y, item)) {
+    return;
+  }
 
   // Next prio: Floor
   print_tile(coord.x, coord.y, Game::level->get_tile(coord));
@@ -338,7 +344,9 @@ void IO::print_coordinate(int x, int y) {
 void IO::refresh() {
   refresh_statusline();
   for (int x{0}; x < map_width; ++x) {
-    for (int y{0}; y < map_height; ++y) { print_coordinate(x, y); }
+    for (int y{0}; y < map_height; ++y) {
+      print_coordinate(x, y);
+    }
   }
 
   move_pointer(player->get_position().x, player->get_position().y);
@@ -398,7 +406,9 @@ string IO::read_string(string const* initial_string, bool question) {
   string return_value;
 
   Coordinate original_pos{static_cast<int>(message_buffer.size()), 0};
-  if (question) { move(original_pos.y, original_pos.x); }
+  if (question) {
+    move(original_pos.y, original_pos.x);
+  }
 
   if (initial_string != nullptr) {
     return_value = *initial_string;
@@ -434,7 +444,9 @@ string IO::read_string(string const* initial_string, bool question) {
       // ~ gives home directory
     } else if (c == '~' && return_value.empty()) {
       return_value = os_homedir();
-      if (return_value.size() > max_input) { return_value.resize(max_input); }
+      if (return_value.size() > max_input) {
+        return_value.resize(max_input);
+      }
       addstr(return_value.c_str());
 
     } else if (return_value.size() < max_input && (isprint(c) || c == ' ')) {
@@ -475,7 +487,8 @@ void IO::clear_message() {
 
 void IO::message(string const& message, bool force_flush) {
   string const more_string{" --More--"};
-  size_t const max_message{static_cast<size_t>(screen_width) - more_string.size()};
+  size_t const max_message{static_cast<size_t>(screen_width) -
+                           more_string.size()};
 
   // Pause when beginning on new line
   if (!message_buffer.empty() &&
@@ -496,7 +509,9 @@ void IO::message(string const& message, bool force_flush) {
 
   stringstream os;
   os << message_buffer;
-  if (!message_buffer.empty()) { os << ". "; }
+  if (!message_buffer.empty()) {
+    os << ". ";
+  }
 
   if (message.size() > 1) {
     os << static_cast<char>(toupper(message.at(0))) << message.substr(1);
@@ -504,13 +519,17 @@ void IO::message(string const& message, bool force_flush) {
     os << string(1, static_cast<char>(toupper(message.at(0))));
   }
 
-  if (message.back() == '?') { os << " "; }
+  if (message.back() == '?') {
+    os << " ";
+  }
 
   message_buffer = os.str();
   mvaddstr(message_y, message_x, message_buffer.c_str());
 
   last_messages.push_front(message_buffer);
-  if (last_messages.size() > 20) { last_messages.pop_back(); }
+  if (last_messages.size() > 20) {
+    last_messages.pop_back();
+  }
 
   clrtoeol();
 }
@@ -529,12 +548,16 @@ void IO::missile_motion(Item* item, int ydelta, int xdelta) {
     Coordinate new_pos{item->get_position()};
 
     // Print old position
-    if (player->can_see(prev_pos)) { Game::io->print_coordinate(prev_pos); }
+    if (player->can_see(prev_pos)) {
+      Game::io->print_coordinate(prev_pos);
+    }
 
     // See if we hit something
     Monster const* monster{Game::level->get_monster(new_pos)};
     ::Tile::Type const tile{Game::level->get_tile(new_pos)};
-    if (monster != nullptr || tile == ::Tile::Wall) { break; }
+    if (monster != nullptr || tile == ::Tile::Wall) {
+      break;
+    }
 
     // Print new position
     if (player->can_see(new_pos)) {
@@ -613,8 +636,13 @@ void IO::character_creation() {
     ss.str("");
 
     char ch{readchar(false)};
-    while (ch != 'y' && ch != KEY_SPACE) { ch = readchar(false); }
-    if (ch == 'y') { break; }
+    if (ch == 'y') {
+      break;
+    } else if (ch == KEY_SPACE) {
+      continue;
+    } else if (ch == KEY_ESCAPE) {
+      return;
+    }
   }
 
   // Select Race
@@ -638,8 +666,12 @@ void IO::character_creation() {
 
     print_string(0, 0, "SPACE to repick race, 'y' to accept race");
     char ch{readchar(false)};
-    while (ch != 'y' && ch != KEY_SPACE) { ch = readchar(false); }
-    if (ch == 'y') { break; }
+    while (ch != 'y' && ch != KEY_SPACE) {
+      ch = readchar(false);
+    }
+    if (ch == 'y') {
+      break;
+    }
   }
 
   player = new class Player(stats, race);

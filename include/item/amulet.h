@@ -5,7 +5,7 @@
 #include "item.h"
 
 class Amulet : public Item {
-public:
+ public:
   ~Amulet();
 
   explicit Amulet();
@@ -17,17 +17,16 @@ public:
   Amulet& operator=(Amulet&&) = default;
 
   // setters
-  void        set_identified() override;
+  void set_identified() override;
 
   // getters
   std::string get_description() const override;
-  bool        is_magic() const override;
-  bool        is_identified() const override;
-  bool        is_stackable() const override;
-  bool        autopickup() const override;
-  int         get_value() const override;
-  int         get_base_value() const override;
+  bool is_magic() const override;
+  bool is_identified() const override;
+  bool is_stackable() const override;
+  bool autopickup() const override;
+  int get_value() const override;
+  int get_base_value() const override;
 
-private:
+ private:
 };
-

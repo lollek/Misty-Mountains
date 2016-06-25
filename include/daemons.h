@@ -76,5 +76,4 @@ void daemon_ring_abilities();
 
 // Daemon action affectors
 void daemon_reset_doctor();
-
 }

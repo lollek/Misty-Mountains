@@ -182,9 +182,15 @@ void Wand::test_wands() {
   free_wands();
   load_wands(test_data);
 
-  if (materials_ != *materials) { error("wand test 1 failed"); }
-  if (known_ != *known) { error("wand test 2 failed"); }
-  if (guesses_ != *guesses) { error("wand test 3 failed"); }
+  if (materials_ != *materials) {
+    error("wand test 1 failed");
+  }
+  if (known_ != *known) {
+    error("wand test 2 failed");
+  }
+  if (guesses_ != *guesses) {
+    error("wand test 3 failed");
+  }
 }
 
 void Wand::save_wands(std::ostream& data) {
@@ -199,20 +205,34 @@ void Wand::save_wands(std::ostream& data) {
 
 void Wand::load_wands(std::istream& data) {
   size_t const nwands_size{static_cast<size_t>(Wand::NWANDS)};
-  if (!Disk::load_tag(TAG_WANDS, data)) { error("No wands found"); }
+  if (!Disk::load_tag(TAG_WANDS, data)) {
+    error("No wands found");
+  }
 
   if (!Disk::load(TAG_MATERIALS, materials, data)) {
     error("Wand tag error 1");
   }
-  if (materials->size() != nwands_size) { error("Wand size error 1"); }
+  if (materials->size() != nwands_size) {
+    error("Wand size error 1");
+  }
 
-  if (!Disk::load(TAG_KNOWN, known, data)) { error("Wand tag error 2"); }
-  if (known->size() != nwands_size) { error("Wand size error 2"); }
+  if (!Disk::load(TAG_KNOWN, known, data)) {
+    error("Wand tag error 2");
+  }
+  if (known->size() != nwands_size) {
+    error("Wand size error 2");
+  }
 
-  if (!Disk::load(TAG_GUESSES, guesses, data)) { error("Wand tag error 3"); }
-  if (guesses->size() != nwands_size) { error("Wand size error 3"); }
+  if (!Disk::load(TAG_GUESSES, guesses, data)) {
+    error("Wand tag error 3");
+  }
+  if (guesses->size() != nwands_size) {
+    error("Wand size error 3");
+  }
 
-  if (!Disk::load_tag(TAG_WANDS, data)) { error("No wands end found"); }
+  if (!Disk::load_tag(TAG_WANDS, data)) {
+    error("No wands end found");
+  }
 }
 
 void Wand::free_wands() {
@@ -282,7 +302,9 @@ string Wand::get_description() const {
   }
 
   string const& inscription{Wand::guess(subtype)};
-  if (!inscription.empty()) { os << " {" << inscription << "}"; }
+  if (!inscription.empty()) {
+    os << " {" << inscription << "}";
+  }
 
   return os.str();
 }

@@ -71,20 +71,28 @@ Player::Player(vector<int> stats, Race race)
 }
 
 Player::~Player() {
-  for (Item* item : pack) { delete item; }
+  for (Item* item : pack) {
+    delete item;
+  }
 
-  for (Item* item : equipment) { delete item; }
+  for (Item* item : equipment) {
+    delete item;
+  }
 }
 
 int Player::get_ac() const {
   int ac{Character::get_ac()};
 
   class Armor* arm{equipped_armor()};
-  if (arm != nullptr) { ac += arm->get_armor(); }
+  if (arm != nullptr) {
+    ac += arm->get_armor();
+  }
 
   // If weapon help protection, add it
   class Weapon* weapon{equipped_weapon()};
-  if (weapon != nullptr) { ac += weapon->get_armor(); }
+  if (weapon != nullptr) {
+    ac += weapon->get_armor();
+  }
 
   // If rings help, add their stats as well
   for (Equipment position : all_rings()) {
@@ -98,20 +106,27 @@ int Player::get_ac() const {
 }
 
 bool Player::can_see(Monster const& monster) const {
-  if (monster.is_invisible() && !has_true_sight()) { return false; }
+  if (monster.is_invisible() && !has_true_sight()) {
+    return false;
+  }
   return can_see(monster.get_position());
 }
 
 bool Player::can_see(Coordinate const& coord) const {
-  if (is_blind()) { return false; }
+  if (is_blind()) {
+    return false;
+  }
 
   Coordinate const& player_pos{get_position()};
-  int const real_distance{Game::level->is_dark(coord) ? darkvision : lightvision};
+  int const real_distance{Game::level->is_dark(coord) ? darkvision
+                                                      : lightvision};
 
   // dist is a**2 + b**2, and we dont wanna sqrt if we dont have to
   int const see_distance{real_distance * real_distance};
   int const dist_result{dist(coord.y, coord.x, player_pos.y, player_pos.x)};
-  if (dist_result >= see_distance) { return false; }
+  if (dist_result >= see_distance) {
+    return false;
+  }
 
   // Trace the rays, and return false if something blocks
   Coordinate walker{player->get_position()};
@@ -123,7 +138,9 @@ bool Player::can_see(Coordinate const& coord) const {
     Coordinate temp(static_cast<int>(round(walker.x + dx * i)),
                     static_cast<int>(round(walker.y + dy * i)));
 
-    if (temp == coord) { return true; }
+    if (temp == coord) {
+      return true;
+    }
 
     Tile::Type const tile{Game::level->get_tile(temp)};
     switch (tile) {
@@ -292,7 +309,9 @@ void Player::set_levitating() {
 }
 
 void Player::set_not_levitating() {
-  if (!is_levitating()) { return; }
+  if (!is_levitating()) {
+    return;
+  }
 
   Character::set_not_levitating();
   Game::io->message("you float gently to the ground");
@@ -345,7 +364,9 @@ void Player::teleport(Coordinate const* target) {
 
   set_position(new_pos);
 
-  if (is_held()) { set_not_held(); }
+  if (is_held()) {
+    set_not_held();
+  }
 
   player_turns_without_moving = 0;
   command_stop(true);
@@ -360,7 +381,9 @@ void Player::search() {
   for (int y{player_pos.y - 1}; y <= player_pos.y + 1; y++) {
     for (int x{player_pos.x - 1}; x <= player_pos.x + 1; x++) {
       // If it's real, dont bother
-      if (Game::level->is_real(x, y)) { continue; }
+      if (Game::level->is_real(x, y)) {
+        continue;
+      }
 
       // If fake, give player a chance to discover it
       switch (Game::level->get_tile(x, y)) {
@@ -395,7 +418,9 @@ void Player::search() {
     }
   }
 
-  if (found) { player->set_not_running(); }
+  if (found) {
+    player->set_not_running();
+  }
 }
 
 void Player::restore_strength() {
@@ -432,31 +457,38 @@ void Player::modify_strength(int amount) {
 }
 
 void Player::raise_level(int amount) {
-  if (amount <= 0) { error("Cannot raise 0 or less levels"); }
+  if (amount <= 0) {
+    error("Cannot raise 0 or less levels");
+  }
 
   Character::raise_level(amount);
   Game::io->message("welcome to level " + to_string(get_level()));
 }
 
 void Player::check_for_level_up() {
-  vector<int> levels {  //   1     2     3     4     5     6     7      8      9
-                        1300, 2000, 2700, 4000, 5000, 8000, 11000, 16000, 21000,
-                        //   10     11     12     13     14      15      16
-                        24000, 30000, 65000, 85000, 130000, 175000, 250000,
-                        //   17      18       19
-                        350000, 500000, 700000,
+  vector<int> levels{//   1     2     3     4     5     6     7      8      9
+                     1300, 2000, 2700, 4000, 5000, 8000, 11000, 16000, 21000,
+                     //   10     11     12     13     14      15      16
+                     24000, 30000, 65000, 85000, 130000, 175000, 250000,
+                     //   17      18       19
+                     350000, 500000, 700000,
 
-                        //   20        21        22        23         24 25
-                        1400000, 2800000, 5600000, 11200000, 22400000, 44800000,
-                        //   26         27         28         29
-                        89600000, 179200000, 358400000, 716800000};
+                     //   20        21        22        23         24 25
+                     1400000, 2800000, 5600000, 11200000, 22400000, 44800000,
+                     //   26         27         28         29
+                     89600000, 179200000, 358400000, 716800000};
 
-  if (get_level() >= 30) { return; }
+  if (get_level() >= 30) {
+    return;
+  }
 
-  int const experience_to_next_level{levels.at(static_cast<size_t>(get_level()))};
+  int const experience_to_next_level{
+      levels.at(static_cast<size_t>(get_level()))};
   int const current_experience{get_experience()};
 
-  if (experience_to_next_level < current_experience) { raise_level(1); }
+  if (experience_to_next_level < current_experience) {
+    raise_level(1);
+  }
 }
 
 bool Player::has_ring_with_ability(int ability) const {
@@ -470,10 +502,14 @@ bool Player::has_ring_with_ability(int ability) const {
 void Player::rust_armor() {
   class Armor* arm =
       dynamic_cast<class Armor*>(equipment.at(static_cast<size_t>(Armor)));
-  if (arm == nullptr) { return; }
+  if (arm == nullptr) {
+    return;
+  }
 
   if (arm->is_rustproof()) {
-    if (!to_death) { Game::io->message("the rust vanishes instantly"); }
+    if (!to_death) {
+      Game::io->message("the rust vanishes instantly");
+    }
   } else {
     arm->modify_armor(-1);
     Game::io->message("your armor weakens");
@@ -507,10 +543,14 @@ int Player::equipment_food_drain_amount() {
 }
 
 void Player::pack_uncurse() {
-  for (Item* item : pack) { item->set_not_cursed(); }
+  for (Item* item : pack) {
+    item->set_not_cursed();
+  }
 
   for (Item* equip : equipment) {
-    if (equip != nullptr) { equip->set_not_cursed(); }
+    if (equip != nullptr) {
+      equip->set_not_cursed();
+    }
   }
 }
 
@@ -521,7 +561,9 @@ void Player::test_player() {
   // Copy pack
   list<Item*> pack;
   for (Item* item : player->pack) {
-    if (item == nullptr) { error("player pack had nullptr item"); }
+    if (item == nullptr) {
+      error("player pack had nullptr item");
+    }
 
     pack.push_back(item->clone());
   }
@@ -546,10 +588,14 @@ void Player::test_player() {
   load_player(test_data);
 
   // Pack
-  if (pack.size() != player->pack.size()) { error("Player pack size error"); }
+  if (pack.size() != player->pack.size()) {
+    error("Player pack size error");
+  }
   for (auto it1 = pack.cbegin(), it2 = player->pack.cbegin();
        it1 != pack.cend(); ++it1, ++it2) {
-    if (**it1 != **it2) { error("Player pack found unexpected item"); }
+    if (**it1 != **it2) {
+      error("Player pack found unexpected item");
+    }
   }
 
   // Equipment
@@ -570,8 +616,12 @@ void Player::test_player() {
   if (senses_monsters != player->senses_monsters) {
     error("player test 3 failed");
   }
-  if (senses_magic != player->senses_magic) { error("player test 4 failed"); }
-  if (gold != player->gold) { error("player test 5 failed"); }
+  if (senses_magic != player->senses_magic) {
+    error("player test 4 failed");
+  }
+  if (gold != player->gold) {
+    error("player test 5 failed");
+  }
   if (nutrition_left != player->nutrition_left) {
     error("player test 6 failed");
   }
@@ -594,7 +644,9 @@ void Player::save_player(ostream& data) {
 }
 
 void Player::load_player(istream& data) {
-  if (!Disk::load_tag(TAG_PLAYER, data)) { error("No player found"); }
+  if (!Disk::load_tag(TAG_PLAYER, data)) {
+    error("No player found");
+  }
 
   player = new Player();
   Character* c_player = static_cast<Character*>(player);
@@ -608,7 +660,9 @@ void Player::load_player(istream& data) {
     error("Player failed to load");
   }
 
-  if (!Disk::load_tag(TAG_PLAYER, data)) { error("No player end found"); }
+  if (!Disk::load_tag(TAG_PLAYER, data)) {
+    error("No player end found");
+  }
 }
 
 void Player::free_player() {

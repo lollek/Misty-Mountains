@@ -1,26 +1,18 @@
 #pragma once
 
-#include <vector>
 #include <istream>
 #include <ostream>
+#include <vector>
 
+#include "item/food.h"
 #include "item/rings.h"
 #include "item/weapons.h"
-#include "item/food.h"
 #include "monster.h"
 
-enum Equipment {
-  Armor,
-  Weapon,
-  BackupWeapon,
-  Ring1,
-  Ring2,
-  NEQUIPMENT
-};
-
+enum Equipment { Armor, Weapon, BackupWeapon, Ring1, Ring2, NEQUIPMENT };
 
 class Player : public Character {
-public:
+ public:
   explicit Player(std::vector<int> stats, Race race);
   ~Player();
 
@@ -64,11 +56,11 @@ public:
   void set_previous_room(struct room* room);
 
   // player_food.cc
-  void         eat(Food*);
-  void         digest_food();
-  std::string  get_hunger_state() const;
-  int          get_nutrition_left() const;
-  static int   get_starting_nutrition();
+  void eat(Food*);
+  void digest_food();
+  std::string get_hunger_state() const;
+  int get_nutrition_left() const;
+  static int get_starting_nutrition();
 
   // player_pack_management.cc
   bool pack_show_inventory();
@@ -77,35 +69,32 @@ public:
   // player_pack.cc
   static size_t equipment_size();
   static size_t pack_size();
-  bool          pack_add(Item* item, bool silent, bool from_floor);
-  Item*         pack_remove(Item* item, bool create_new, bool all);
-  Item*         pack_find_random_item();
-  Item*         pack_find_item(int type, int subtype);
+  bool pack_add(Item* item, bool silent, bool from_floor);
+  Item* pack_remove(Item* item, bool create_new, bool all);
+  Item* pack_find_random_item();
+  Item* pack_find_item(int type, int subtype);
   class Weapon* pack_find_ammo(::Weapon::AmmoType);
-  Item*         pack_find_item(std::string const& purpose, int subtype);
+  Item* pack_find_item(std::string const& purpose, int subtype);
   class Weapon* equipped_weapon() const;
-  class Armor*  equipped_armor() const;
-  size_t        pack_num_items(int type, int subtype);
-  bool          pack_contains_amulet();
-  bool          pack_contains(Item const* item);
-  size_t        pack_print_value();
-  bool          pack_equip(Item *item, bool silent);
-  bool          pack_unequip(Equipment pos, bool silent_on_success);
-  void          give_gold(int amount);
-  int           get_gold();
-  void          pack_identify_item();
-  void          equipment_run_abilities();
-  int           equipment_food_drain_amount();
-  void          pack_uncurse();
-  bool          pack_swap_weapons();
-  int           pack_get_ring_modifier(Ring::Type);
+  class Armor* equipped_armor() const;
+  size_t pack_num_items(int type, int subtype);
+  bool pack_contains_amulet();
+  bool pack_contains(Item const* item);
+  size_t pack_print_value();
+  bool pack_equip(Item* item, bool silent);
+  bool pack_unequip(Equipment pos, bool silent_on_success);
+  void give_gold(int amount);
+  int get_gold();
+  void pack_identify_item();
+  void equipment_run_abilities();
+  int equipment_food_drain_amount();
+  void pack_uncurse();
+  bool pack_swap_weapons();
+  int pack_get_ring_modifier(Ring::Type);
 
   // player_pack_management.cc
-  enum Window {
-    INVENTORY,
-    EQUIPMENT
-  };
-  bool          pack_show_drop(Window mode);
+  enum Window { INVENTORY, EQUIPMENT };
+  bool pack_show_drop(Window mode);
 
   // Misc
   bool saving_throw(int which) const;
@@ -115,7 +104,7 @@ public:
   void fall_asleep();
   void become_stuck();
   void become_poisoned();
-  void teleport(Coordinate const* target); // random spot if target is nullptr
+  void teleport(Coordinate const* target);  // random spot if target is nullptr
   bool can_see(Coordinate const& coord) const;
   bool can_see(Monster const& monster) const;
   void search();
@@ -123,11 +112,10 @@ public:
   std::string get_attack_string(bool successful_hit) const override;
   std::string get_name() const override;
 
-
-private:
+ private:
   struct room* previous_room;
-  bool         senses_monsters;
-  bool         senses_magic;
+  bool senses_monsters;
+  bool senses_magic;
 
   static int constexpr darkvision = 2;
   static int constexpr lightvision = 4;
@@ -138,33 +126,34 @@ private:
   bool pack_show_remove();
 
   // player_pack.cc
-  static std::string  equipment_pos_to_string(Equipment pos);
+  static std::string equipment_pos_to_string(Equipment pos);
   static std::vector<Equipment> all_rings();
-  std::list<Item*>    pack;
-  std::vector<Item*>  equipment;
-  int                 gold;
+  std::list<Item*> pack;
+  std::vector<Item*> equipment;
+  int gold;
 
-  bool   pack_print_equipment();
-  bool   pack_print_inventory(int subtype);
+  bool pack_print_equipment();
+  bool pack_print_inventory(int subtype);
 
   // player_food.cc
-  int          nutrition_left;
+  int nutrition_left;
 
   // For Save / Load
   explicit Player() = default;
 
-  static unsigned long long constexpr TAG_PLAYER          = 0x7000000000000000ULL;
-  static unsigned long long constexpr TAG_INVENTORY       = 0x7000000000000001ULL;
-  static unsigned long long constexpr TAG_EQUIPMENT       = 0x7000000000000002ULL;
-  static unsigned long long constexpr TAG_SENSES_MONSTERS = 0x7000000000000003ULL;
-  static unsigned long long constexpr TAG_SENSES_MAGIC    = 0x7000000000000004ULL;
-  static unsigned long long constexpr TAG_GOLD            = 0x7000000000000005ULL;
-  static unsigned long long constexpr TAG_NUTRITION       = 0x7000000000000006ULL;
+  static unsigned long long constexpr TAG_PLAYER = 0x7000000000000000ULL;
+  static unsigned long long constexpr TAG_INVENTORY = 0x7000000000000001ULL;
+  static unsigned long long constexpr TAG_EQUIPMENT = 0x7000000000000002ULL;
+  static unsigned long long constexpr TAG_SENSES_MONSTERS =
+      0x7000000000000003ULL;
+  static unsigned long long constexpr TAG_SENSES_MAGIC = 0x7000000000000004ULL;
+  static unsigned long long constexpr TAG_GOLD = 0x7000000000000005ULL;
+  static unsigned long long constexpr TAG_NUTRITION = 0x7000000000000006ULL;
 };
 
 extern Player* player;
 
 /* Variable (TODO: remove these) */
-extern int          player_turns_without_action; /* Turns asleep */
-extern int          player_turns_without_moving; /* Turns held in place */
-extern bool         player_alerted;              /* Alert the player? */
+extern int player_turns_without_action; /* Turns asleep */
+extern int player_turns_without_moving; /* Turns held in place */
+extern bool player_alerted;             /* Alert the player? */

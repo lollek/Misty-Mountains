@@ -4,9 +4,9 @@
 
 #include <string.h>
 
-#include "level/rooms.h"
 #include "coordinate.h"
 #include "item.h"
+#include "level/rooms.h"
 #include "monster.h"
 #include "tiles.h"
 
@@ -15,49 +15,78 @@
 #define UNCTRL(c) (c + 'A' - CTRL('A'))
 
 // Extra named keys for curses
-#define KEY_SPACE	' '
-#define KEY_ESCAPE	27
+#define KEY_SPACE ' '
+#define KEY_ESCAPE 27
 
 class IO {
-public:
+ public:
   IO();
   ~IO();
 
   enum Attribute {
     Standout,
-    Red,     BoldRed,     Green,   BoldGreen,
-    Yellow,  BoldYellow,  Blue,    BoldBlue,
-    Magenta, BoldMagenta, Cyan,    BoldCyan,
-    White,   BoldWhite,   Black,   BoldBlack,
+    Red,
+    BoldRed,
+    Green,
+    BoldGreen,
+    Yellow,
+    BoldYellow,
+    Blue,
+    BoldBlue,
+    Magenta,
+    BoldMagenta,
+    Cyan,
+    BoldCyan,
+    White,
+    BoldWhite,
+    Black,
+    BoldBlack,
     None
   };
 
   enum Tile {
     // Tiles
-    Shadow     = ' ',  Wall       = '#', Floor = '.',
-    OpenDoor   = '\'', ClosedDoor = '+', Trap  = '_',
-    StairsDown = '>',  StairsUp   = '<', Shop  = '~',
+    Shadow = ' ',
+    Wall = '#',
+    Floor = '.',
+    OpenDoor = '\'',
+    ClosedDoor = '+',
+    Trap = '_',
+    StairsDown = '>',
+    StairsUp = '<',
+    Shop = '~',
 
     // Bolts
-    VerticalBolt   = '|', DiagonalUpBolt   = '/',
-    HorizontalBolt = '-', DiagonalDownBolt = '\\',
+    VerticalBolt = '|',
+    DiagonalUpBolt = '/',
+    HorizontalBolt = '-',
+    DiagonalDownBolt = '\\',
 
     // Items
-    Gold   = '$', Potion = '!', Scroll = '?', Magic  = '$',
-    Food   = ':', Ammo   = '(', Weapon = ')', Armor  = ']',
-    Amulet = ',', Ring   = '=', Wand   = '/',
+    Gold = '$',
+    Potion = '!',
+    Scroll = '?',
+    Magic = '$',
+    Food = ':',
+    Ammo = '(',
+    Weapon = ')',
+    Armor = ']',
+    Amulet = ',',
+    Ring = '=',
+    Wand = '/',
 
     // Monsters :)
     Player = '@',
   };
 
   // Messages
-  void message(std::string const& message, bool force_flush=false);
+  void message(std::string const& message, bool force_flush = false);
   void clear_message();
   void repeat_last_messages();
 
   // Read data
-  std::string read_string(std::string const* initial_string=nullptr, bool question=true);
+  std::string read_string(std::string const* initial_string = nullptr,
+                          bool question = true);
   char readchar(bool is_question);
   void wait_for_key(int ch);
 
@@ -67,7 +96,7 @@ public:
 
   // Refresh what we see
   void refresh();
-  void print(int x, int y, long unsigned int ch, Attribute attr=None);
+  void print(int x, int y, long unsigned int ch, Attribute attr = None);
 
   // Raw functions
   void move_pointer(int x, int y);
@@ -98,7 +127,7 @@ public:
   // Input
   static int constexpr max_input = 50;
 
-private:
+ private:
   // Refresh
   void print_coordinate(Coordinate const& coord);
   void print_coordinate(int x, int y);

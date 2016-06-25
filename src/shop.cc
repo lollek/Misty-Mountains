@@ -14,9 +14,13 @@
 using namespace std;
 
 Shop::~Shop() {
-  for (Item* item : inventory) { delete item; }
+  for (Item* item : inventory) {
+    delete item;
+  }
 
-  for (Item* item : limited_inventory) { delete item; }
+  for (Item* item : limited_inventory) {
+    delete item;
+  }
 }
 
 Shop::Shop() {
@@ -30,7 +34,9 @@ Shop::Shop() {
   inventory.push_back(new class Armor(Armor::Softleatherarmor, false));
   inventory.push_back(new class Scroll(Scroll::ID));
 
-  for (Item* item : inventory) { item->set_identified(); }
+  for (Item* item : inventory) {
+    item->set_identified();
+  }
 }
 
 int Shop::buy_value(Item const* item) const {
@@ -48,7 +54,9 @@ int Shop::sell_value(Item const* item) const {
   // Cheap items
   if (10 > value && value > 0) {
     value /= 2;
-    if (value <= 0) { value = 1; }
+    if (value <= 0) {
+      value = 1;
+    }
 
     // Normal and expensive items
   } else {
@@ -88,7 +96,9 @@ void Shop::print() const {
                            to_string(buy_value(item)));
 
     // Make sure we don't have too many items
-    if (sym == 'a' + max_items_per_page) { break; }
+    if (sym == 'a' + max_items_per_page) {
+      break;
+    }
     ++sym;
   }
 }
@@ -97,7 +107,9 @@ int Shop::sell() {
   Game::io->clear_screen();
 
   Item* obj{player->pack_find_item("sell", 0)};
-  if (obj == nullptr) { return 0; }
+  if (obj == nullptr) {
+    return 0;
+  }
 
   bool sell_all{false};
   if (obj->o_count > 1) {
@@ -130,7 +142,9 @@ int Shop::sell() {
 
   obj->o_count = real_count;
 
-  if (Game::io->readchar(true) != 'y') { return sell(); }
+  if (Game::io->readchar(true) != 'y') {
+    return sell();
+  }
 
   Game::io->clear_message();
   obj = player->pack_remove(obj, true, sell_all);
@@ -161,7 +175,9 @@ int Shop::sell() {
     }
   }
 
-  if (obj != nullptr) { limited_inventory.push_back(obj); }
+  if (obj != nullptr) {
+    limited_inventory.push_back(obj);
+  }
   return sell();
 }
 
@@ -183,7 +199,9 @@ void Shop::enter() {
     }
 
     size_t item_pos{static_cast<size_t>(ch - 'a')};
-    if (item_pos > max_items_per_page) { continue; }
+    if (item_pos > max_items_per_page) {
+      continue;
+    }
 
     Item* item_to_buy{nullptr};
     bool limited_item{false};

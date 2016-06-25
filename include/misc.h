@@ -11,10 +11,10 @@ std::string vowelstr(std::string const& str); /* Return "n" if vowel else "" */
 /* Set up the direction co_ordinate for use in varios "prefix" commands */
 Coordinate const* get_dir(void);
 
-int sign(int nm);              /* Return the sign of the number */
-int spread(int nm);            /* Give a spread around a given number (+/- 20%) */
+int sign(int nm);   /* Return the sign of the number */
+int spread(int nm); /* Give a spread around a given number (+/- 20%) */
 
-char rnd_thing(void);         /* Pick a random thing appropriate for this level */
+char rnd_thing(void); /* Pick a random thing appropriate for this level */
 
 /** Dist
  * Calculate the "distance" between to points.  Actually,

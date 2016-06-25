@@ -163,7 +163,9 @@ string Potion::get_description() const {
   }
 
   string const& nickname{Potion::guess(subtype)};
-  if (!nickname.empty()) { os << " {" << nickname << "}"; }
+  if (!nickname.empty()) {
+    os << " {" << nickname << "}";
+  }
 
   return os.str();
 }
@@ -171,7 +173,9 @@ string Potion::get_description() const {
 void Potion::quaffed_by(Character& victim) {
   switch (static_cast<Potion::Type>(subtype)) {
     case CONFUSION: {
-      if (&victim == player) { Potion::set_known(subtype); }
+      if (&victim == player) {
+        Potion::set_known(subtype);
+      }
       victim.set_confused();
     } break;
 
@@ -219,7 +223,9 @@ void Potion::quaffed_by(Character& victim) {
     } break;
 
     case RAISE: {
-      if (&victim == player) { Potion::set_known(subtype); }
+      if (&victim == player) {
+        Potion::set_known(subtype);
+      }
       victim.raise_level(1);
     } break;
 
@@ -244,12 +250,16 @@ void Potion::quaffed_by(Character& victim) {
     } break;
 
     case BLIND: {
-      if (&victim == player) { Potion::set_known(subtype); }
+      if (&victim == player) {
+        Potion::set_known(subtype);
+      }
       victim.set_blind();
     } break;
 
     case LEVIT: {
-      if (&victim == player) { Potion::set_known(subtype); }
+      if (&victim == player) {
+        Potion::set_known(subtype);
+      }
       victim.set_levitating();
     } break;
 
@@ -287,7 +297,9 @@ bool potion_quaff_something(void) {
   }
 
   /* Throw the item away */
-  if (discardit) { delete obj; }
+  if (discardit) {
+    delete obj;
+  }
   return true;
 }
 
@@ -333,9 +345,15 @@ void Potion::test_potions() {
   free_potions();
   load_potions(test_data);
 
-  if (colors_ != *colors) { error("potion test 1 failed"); }
-  if (knowledge_ != *knowledge) { error("potion test 2 failed"); }
-  if (guesses_ != *guesses) { error("potion test 3 failed"); }
+  if (colors_ != *colors) {
+    error("potion test 1 failed");
+  }
+  if (knowledge_ != *knowledge) {
+    error("potion test 2 failed");
+  }
+  if (guesses_ != *guesses) {
+    error("potion test 3 failed");
+  }
 }
 
 void Potion::save_potions(std::ostream& data) {
@@ -351,20 +369,34 @@ void Potion::save_potions(std::ostream& data) {
 void Potion::load_potions(std::istream& data) {
   size_t const npotions_size{static_cast<size_t>(Potion::NPOTIONS)};
 
-  if (!Disk::load_tag(TAG_POTION, data)) { error("No potions found"); }
+  if (!Disk::load_tag(TAG_POTION, data)) {
+    error("No potions found");
+  }
 
-  if (!Disk::load(TAG_COLORS, colors, data)) { error("Potion tag error 1"); }
-  if (colors->size() != npotions_size) { error("Potion size error 1") }
+  if (!Disk::load(TAG_COLORS, colors, data)) {
+    error("Potion tag error 1");
+  }
+  if (colors->size() != npotions_size) {
+    error("Potion size error 1")
+  }
 
   if (!Disk::load(TAG_KNOWLEDGE, knowledge, data)) {
     error("Potion tag error 2");
   }
-  if (knowledge->size() != npotions_size) { error("Potion size error 1") }
+  if (knowledge->size() != npotions_size) {
+    error("Potion size error 1")
+  }
 
-  if (!Disk::load(TAG_GUESSES, guesses, data)) { error("Potion tag error 3"); }
-  if (guesses->size() != npotions_size) { error("Potion size error 1") }
+  if (!Disk::load(TAG_GUESSES, guesses, data)) {
+    error("Potion tag error 3");
+  }
+  if (guesses->size() != npotions_size) {
+    error("Potion size error 1")
+  }
 
-  if (!Disk::load_tag(TAG_POTION, data)) { error("No potions end found"); }
+  if (!Disk::load_tag(TAG_POTION, data)) {
+    error("No potions end found");
+  }
 }
 
 void Potion::save(std::ostream& data) const {
@@ -401,7 +433,9 @@ int Potion::get_base_value() const { return worth(subtype); }
 int Potion::get_value() const {
   int value{get_base_value()};
   value *= o_count;
-  if (!is_identified()) { value /= 2; }
+  if (!is_identified()) {
+    value /= 2;
+  }
   return value;
 }
 
@@ -409,6 +443,8 @@ bool Potion::is_stackable() const { return true; }
 
 bool Potion::autopickup() const {
   string const& guess_{guess(subtype)};
-  if (!guess_.empty() && guess_.find('!') != string::npos) { return false; }
+  if (!guess_.empty() && guess_.find('!') != string::npos) {
+    return false;
+  }
   return option_autopickup(o_type);
 }

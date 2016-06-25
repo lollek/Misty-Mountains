@@ -28,7 +28,9 @@ static Coordinate chase(Monster& monster, Coordinate const& target) {
   // * Bats are quite confused all the time
   if ((monster.is_confused() && os_rand_range(5) != 0)) {
     // Small chance that it will become un-confused
-    if (os_rand_range(20) == 0) { monster.set_not_confused(); }
+    if (os_rand_range(20) == 0) {
+      monster.set_not_confused();
+    }
     return monster.possible_random_move();
   }
 
@@ -75,10 +77,14 @@ static Coordinate chase(Monster& monster, Coordinate const& target) {
 
 // TODO: Clean up this monster
 static int chase_do(Monster* monster) {
-  if (monster == nullptr) { error("monster = null"); }
+  if (monster == nullptr) {
+    error("monster = null");
+  }
 
   Coordinate target{*monster->get_target()};
-  if (monster_try_breathe_fire_on_player(*monster)) { return 0; }
+  if (monster_try_breathe_fire_on_player(*monster)) {
+    return 0;
+  }
 
   Coordinate chase_coord{chase(*monster, target)};
 
@@ -102,7 +108,9 @@ static int chase_do(Monster* monster) {
     }
   }
 
-  if (monster->is_stuck()) { return 1; }
+  if (monster->is_stuck()) {
+    return 1;
+  }
 
   // If we moved
   if (chase_coord != monster->get_position()) {
@@ -135,10 +143,14 @@ static int chase_do(Monster* monster) {
       Trap::spring(&monster, trap);
 
       // Monster is dead?
-      if (monster == nullptr) { return -1; }
+      if (monster == nullptr) {
+        return -1;
+      }
 
       // If we've been mysteriously misplaced, let's not touch anything
-      if (orig_pos != monster->get_position()) { return 0; }
+      if (orig_pos != monster->get_position()) {
+        return 0;
+      }
     }
 
     // Put monster in new position

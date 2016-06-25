@@ -199,7 +199,9 @@ void wizard_create_item(void) {
     default: { error("Unimplemented item: " + to_string(which)); }
   }
 
-  if (obj == nullptr) { error("object was null"); }
+  if (obj == nullptr) {
+    error("object was null");
+  }
   player->pack_add(obj, false, false);
 }
 
@@ -233,7 +235,9 @@ void wizard_show_map(void) {
       }
 
       IO::Attribute attr = IO::None;
-      if (!Game::level->is_real(x, y)) { attr = IO::Attribute::Standout; }
+      if (!Game::level->is_real(x, y)) {
+        attr = IO::Attribute::Standout;
+      }
 
       Game::io->print(x, y, ch, attr);
     }
@@ -252,11 +256,15 @@ void wizard_levels_and_gear(void) {
   weapon->set_hit_plus(1);
   weapon->set_damage_plus(1);
   weapon->set_identified();
-  if (!player->pack_equip(weapon, false)) { delete weapon; }
+  if (!player->pack_equip(weapon, false)) {
+    delete weapon;
+  }
 
   /* And his suit of armor */
   class Armor* armor{new class Armor(Armor::Type::Mithrilchainmail, false)};
   armor->modify_armor(5);
   armor->set_identified();
-  if (!player->pack_equip(armor, false)) { delete armor; }
+  if (!player->pack_equip(armor, false)) {
+    delete armor;
+  }
 }

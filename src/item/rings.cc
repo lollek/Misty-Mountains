@@ -222,7 +222,9 @@ Ring::Ring(Ring::Type type) : Item(), subtype{type}, identified{false} {
         case 99: set_armor(20); break;
       }
 
-      if (get_armor() < 0) { set_cursed(); }
+      if (get_armor() < 0) {
+        set_cursed();
+      }
     } break;
 
     // Cursed things
@@ -349,9 +351,15 @@ void Ring::test_rings() {
   free_rings();
   load_rings(test_data);
 
-  if (materials_ != *materials) { error("ring test 1 failed"); }
-  if (known_ != *known) { error("ring test 2 failed"); }
-  if (guesses_ != *guesses) { error("ring test 3 failed"); }
+  if (materials_ != *materials) {
+    error("ring test 1 failed");
+  }
+  if (known_ != *known) {
+    error("ring test 2 failed");
+  }
+  if (guesses_ != *guesses) {
+    error("ring test 3 failed");
+  }
 }
 
 void Ring::save_rings(std::ostream& data) {
@@ -366,20 +374,34 @@ void Ring::save_rings(std::ostream& data) {
 
 void Ring::load_rings(std::istream& data) {
   size_t const nrings_size{static_cast<size_t>(Ring::NRINGS)};
-  if (!Disk::load_tag(TAG_RINGS, data)) { error("No rings found"); }
+  if (!Disk::load_tag(TAG_RINGS, data)) {
+    error("No rings found");
+  }
 
   if (!Disk::load(TAG_MATERIALS, materials, data)) {
     error("Ring tag error 1");
   }
-  if (materials->size() != nrings_size) { error("Ring size error 1"); }
+  if (materials->size() != nrings_size) {
+    error("Ring size error 1");
+  }
 
-  if (!Disk::load(TAG_KNOWN, known, data)) { error("Ring tag error 2"); }
-  if (known->size() != nrings_size) { error("Ring size error 2"); }
+  if (!Disk::load(TAG_KNOWN, known, data)) {
+    error("Ring tag error 2");
+  }
+  if (known->size() != nrings_size) {
+    error("Ring size error 2");
+  }
 
-  if (!Disk::load(TAG_GUESSES, guesses, data)) { error("Ring tag error 3"); }
-  if (guesses->size() != nrings_size) { error("Ring size error 3"); }
+  if (!Disk::load(TAG_GUESSES, guesses, data)) {
+    error("Ring tag error 3");
+  }
+  if (guesses->size() != nrings_size) {
+    error("Ring size error 3");
+  }
 
-  if (!Disk::load_tag(TAG_RINGS, data)) { error("No rings found"); }
+  if (!Disk::load_tag(TAG_RINGS, data)) {
+    error("No rings found");
+  }
 }
 
 void Ring::free_rings() {
@@ -433,10 +455,14 @@ std::string Ring::get_description() const {
     }
   }
 
-  if (identified && is_cursed()) { os << " [C]"; }
+  if (identified && is_cursed()) {
+    os << " [C]";
+  }
 
   string const& inscription = guess(subtype);
-  if (!inscription.empty()) { os << " {" << inscription << "}"; }
+  if (!inscription.empty()) {
+    os << " {" << inscription << "}";
+  }
 
   return os.str();
 }
@@ -469,10 +495,14 @@ int Ring::get_value() const {
   int value{get_base_value()};
   value += 100 * get_armor();
 
-  if (!is_identified()) { value /= 2; }
+  if (!is_identified()) {
+    value /= 2;
+  }
   value *= o_count;
 
-  if (value < 0) { value = 0; }
+  if (value < 0) {
+    value = 0;
+  }
 
   return value;
 }

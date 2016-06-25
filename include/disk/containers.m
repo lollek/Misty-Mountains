@@ -1,5 +1,6 @@
 template <template <class, class> class C, class T>
-void save(tag_type tag, C<T, std::allocator<T>> const& container, std::ostream& data) {
+void save(tag_type tag, C<T, std::allocator<T>> const& container,
+          std::ostream& data) {
   save_tag(tag, data);
 
   size_t size = container.size();
@@ -10,19 +11,25 @@ void save(tag_type tag, C<T, std::allocator<T>> const& container, std::ostream& 
   }
 }
 template <template <class, class> class C, class T>
-bool load(tag_type tag, C<T, std::allocator<T>>& container, std::istream& data) {
-  if (!load_tag(tag, data)) { return false; }
+bool load(tag_type tag, C<T, std::allocator<T>>& container,
+          std::istream& data) {
+  if (!load_tag(tag, data)) {
+    return false;
+  }
 
   size_t size;
-  if (!load(tag, size, data)) { return false; }
+  if (!load(tag, size, data)) {
+    return false;
+  }
   container.resize(size);
 
   for (T& element : container) {
-    if (!load(tag, element, data)) { return false; }
+    if (!load(tag, element, data)) {
+      return false;
+    }
   }
   return true;
 }
-
 
 // Special case for vector<bool> since it wanna feel special
 template <>

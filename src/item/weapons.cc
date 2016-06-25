@@ -420,25 +420,35 @@ string Weapon::get_description() const {
   if (identified) {
     buffer << " (";
     int const p_hit{get_hit_plus()};
-    if (p_hit >= 0) { buffer << "+"; }
+    if (p_hit >= 0) {
+      buffer << "+";
+    }
     buffer << p_hit << ",";
 
     int const p_dmg{get_damage_plus()};
-    if (p_dmg >= 0) { buffer << "+"; }
+    if (p_dmg >= 0) {
+      buffer << "+";
+    }
     buffer << p_dmg << ")";
   }
 
   if (get_armor() != 0) {
     buffer << " [";
     int const p_armor{get_armor()};
-    if (p_armor >= 0) { buffer << "+"; }
+    if (p_armor >= 0) {
+      buffer << "+";
+    }
     buffer << p_armor << "]";
   }
 
-  if (identified && is_cursed()) { buffer << " [C]"; }
+  if (identified && is_cursed()) {
+    buffer << " [C]";
+  }
 
   string const& nickname{get_nickname()};
-  if (!nickname.empty()) { buffer << " {" << nickname << "}"; }
+  if (!nickname.empty()) {
+    buffer << " {" << nickname << "}";
+  }
 
   return buffer.str();
 }
@@ -463,7 +473,9 @@ void weapon_missile_fall(Item* obj, bool pr) {
       }
     }
 
-    if (obj != nullptr) { Game::level->items.push_back(obj); }
+    if (obj != nullptr) {
+      Game::level->items.push_back(obj);
+    }
     return;
   }
 

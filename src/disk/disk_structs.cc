@@ -17,7 +17,9 @@ void Disk::save<Daemons::Daemon>(tag_type tag, Daemons::Daemon const& element,
 template <>
 bool Disk::load<Daemons::Daemon>(tag_type tag, Daemons::Daemon& element,
                                  std::istream& data) {
-  if (!load_tag(tag, data)) { return false; }
+  if (!load_tag(tag, data)) {
+    return false;
+  }
 
   data.read(reinterpret_cast<char*>(&element.type), sizeof(element.type));
   data.read(reinterpret_cast<char*>(&element.func), sizeof(element.func));
@@ -44,7 +46,9 @@ void Disk::save<Daemons::Fuse>(tag_type tag, Daemons::Fuse const& element,
 template <>
 bool Disk::load<Daemons::Fuse>(tag_type tag, Daemons::Fuse& element,
                                std::istream& data) {
-  if (!load_tag(tag, data)) { return false; }
+  if (!load_tag(tag, data)) {
+    return false;
+  }
 
   data.read(reinterpret_cast<char*>(&element.type), sizeof(element.type));
   data.read(reinterpret_cast<char*>(&element.func), sizeof(element.func));
@@ -66,7 +70,9 @@ void Disk::save<Coordinate>(tag_type tag, Coordinate const& element,
 template <>
 bool Disk::load<Coordinate>(tag_type tag, Coordinate& element,
                             std::istream& data) {
-  if (!load_tag(tag, data)) { return false; }
+  if (!load_tag(tag, data)) {
+    return false;
+  }
   data.read(reinterpret_cast<char*>(&element.x), sizeof(element.x));
   data.read(reinterpret_cast<char*>(&element.y), sizeof(element.y));
   return true;
@@ -86,7 +92,9 @@ void Disk::save<damage>(tag_type tag, damage const& element,
 }
 template <>
 bool Disk::load<damage>(tag_type tag, damage& element, std::istream& data) {
-  if (!load_tag(tag, data)) { return false; }
+  if (!load_tag(tag, data)) {
+    return false;
+  }
   data.read(reinterpret_cast<char*>(&element.sides), sizeof(element.sides));
   data.read(reinterpret_cast<char*>(&element.dices), sizeof(element.dices));
   return true;

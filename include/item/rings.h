@@ -1,14 +1,14 @@
 #pragma once
 
-#include <vector>
-#include <string>
 #include <istream>
 #include <ostream>
+#include <string>
+#include <vector>
 
 #include "item.h"
 
 class Ring : public Item {
-public:
+ public:
   enum Type {
     Adornment,
     AggravateMonsters,
@@ -39,44 +39,43 @@ public:
   Ring& operator=(Ring&&) = default;
 
   // Setters
-  void        set_identified() override;
+  void set_identified() override;
 
   // Getters
   std::string get_description() const override;
-  bool        is_magic() const override;
-  bool        is_identified() const override;
-  bool        autopickup() const override;
-  int         get_value() const override;
-  int         get_base_value() const override;
-  bool        is_stackable() const override;
+  bool is_magic() const override;
+  bool is_identified() const override;
+  bool autopickup() const override;
+  int get_value() const override;
+  int get_base_value() const override;
+  bool is_stackable() const override;
 
   void save(std::ostream&) const override;
   bool load(std::istream&) override;
 
   // Static
-  static std::string  name(Type type);
-  static int          worth(Type type);
+  static std::string name(Type type);
+  static int worth(Type type);
   static std::string& guess(Type type);
-  static bool         is_known(Type type);
-  static void         set_known(Type type);
+  static bool is_known(Type type);
+  static void set_known(Type type);
 
-  static void         init_rings();
-  static void         save_rings(std::ostream&);
-  static void         test_rings();
-  static void         load_rings(std::istream&);
-  static void         free_rings();
+  static void init_rings();
+  static void save_rings(std::ostream&);
+  static void test_rings();
+  static void load_rings(std::istream&);
+  static void free_rings();
 
-private:
+ private:
   Type subtype;
   bool identified;
 
   static std::vector<std::string>* materials;
   static std::vector<std::string>* guesses;
-  static std::vector<bool>*        known;
+  static std::vector<bool>* known;
 
-  static unsigned long long constexpr TAG_RINGS     = 0x3000000000000000ULL;
+  static unsigned long long constexpr TAG_RINGS = 0x3000000000000000ULL;
   static unsigned long long constexpr TAG_MATERIALS = 0x3000000000000001ULL;
-  static unsigned long long constexpr TAG_KNOWN     = 0x3000000000000002ULL;
-  static unsigned long long constexpr TAG_GUESSES   = 0x3000000000000003ULL;
+  static unsigned long long constexpr TAG_KNOWN = 0x3000000000000002ULL;
+  static unsigned long long constexpr TAG_GUESSES = 0x3000000000000003ULL;
 };
-

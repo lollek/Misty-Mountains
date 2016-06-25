@@ -47,7 +47,9 @@ static void wand_spell_drain_health(void) {
   vector<Monster*> drainee;
 
   for (Monster* monster : Game::level->monsters) {
-    if (player->can_see(*monster)) { drainee.push_back(monster); }
+    if (player->can_see(*monster)) {
+      drainee.push_back(monster);
+    }
   }
 
   // No monster found -> return
@@ -79,7 +81,9 @@ static void wand_spell_drain_health(void) {
 
 static void wand_spell_polymorph(Monster& target) {
   monster_polymorph(&target);
-  if (player->can_see(*&target)) { Wand::set_known(Wand::Polymorph); }
+  if (player->can_see(*&target)) {
+    Wand::set_known(Wand::Polymorph);
+  }
 }
 
 static void wand_spell_cancel(Monster& target) {
@@ -91,7 +95,9 @@ static void wand_spell_cancel(Monster& target) {
 }
 
 static void wand_spell_magic_missile(int dy, int dx) {
-  class Weapon bolt{Weapon::Dagger};
+  class Weapon bolt {
+    Weapon::Dagger
+  };
   bolt.o_type = '*';
   bolt.set_hit_plus(100);
   bolt.set_damage_plus(1);
@@ -99,7 +105,9 @@ static void wand_spell_magic_missile(int dy, int dx) {
   bolt.set_throw_damage({1, 4});
 
   Item* weapon{player->equipped_weapon()};
-  if (weapon != nullptr) { bolt.o_launch = weapon->o_which; }
+  if (weapon != nullptr) {
+    bolt.o_launch = weapon->o_which;
+  }
 
   Game::io->missile_motion(&bolt, dy, dx);
 
@@ -117,7 +125,9 @@ static void wand_spell_magic_missile(int dy, int dx) {
 
 bool wand_zap(void) {
   Coordinate const* dir{get_dir()};
-  if (dir == nullptr) { return false; }
+  if (dir == nullptr) {
+    return false;
+  }
 
   Item* obj{player->pack_find_item("zap with", IO::Wand)};
   Wand* wand{dynamic_cast<Wand*>(obj)};
@@ -191,7 +201,7 @@ bool wand_zap(void) {
       Coordinate const delta{*dir};
       Monster* tp{wand_find_target(&y, &x, delta.y, delta.x)};
       if (tp != nullptr) {
-        Coordinate const new_pos {x - delta.x, y - delta.y};
+        Coordinate const new_pos{x - delta.x, y - delta.y};
         tp->set_target(&player->get_position());
         tp->set_chasing();
 

@@ -5,7 +5,7 @@
 #include "item.h"
 
 class Gold : public Item {
-public:
+ public:
   ~Gold();
 
   explicit Gold();
@@ -17,22 +17,21 @@ public:
   Gold& operator=(Gold&&) = default;
 
   // setters
-  void        set_identified() override;
+  void set_identified() override;
 
   // getters
-  int         get_amount() const;
+  int get_amount() const;
   std::string get_description() const override;
-  bool        is_magic() const override;
-  bool        is_identified() const override;
-  bool        is_stackable() const override;
-  bool        autopickup() const override;
-  int         get_value() const override;
-  int         get_base_value() const override;
+  bool is_magic() const override;
+  bool is_identified() const override;
+  bool is_stackable() const override;
+  bool autopickup() const override;
+  int get_value() const override;
+  int get_base_value() const override;
 
   // static
   static int random_gold_amount();
 
-private:
+ private:
   int amount;
 };
-

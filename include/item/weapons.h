@@ -2,18 +2,14 @@
 
 #include <istream>
 #include <ostream>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "item.h"
 
 class Weapon : public Item {
-public:
-  enum AmmoType {
-    SlingShot,
-    BowArrow,
-    None
-  };
+ public:
+  enum AmmoType { SlingShot, BowArrow, None };
 
   enum Type {
     Sling,
@@ -65,16 +61,16 @@ public:
 
   // Getters
   std::string get_description() const override;
-  int         get_value() const override;
-  int         get_base_value() const override;
-  bool        is_magic() const override;
-  bool        is_identified() const override;
-  bool        is_stackable() const override;
-  bool        autopickup() const override;
-  bool        is_missile_launcher() const;
-  AmmoType    get_ammo_used() const;
-  AmmoType    get_ammo_type() const;
-  int         get_ammo_multiplier() const;
+  int get_value() const override;
+  int get_base_value() const override;
+  bool is_magic() const override;
+  bool is_identified() const override;
+  bool is_stackable() const override;
+  bool autopickup() const override;
+  bool is_missile_launcher() const;
+  AmmoType get_ammo_used() const;
+  AmmoType get_ammo_type() const;
+  int get_ammo_multiplier() const;
 
   void save(std::ostream&) const override;
   bool load(std::istream&) override;
@@ -83,16 +79,15 @@ public:
   static std::string name(Type type);
   static int worth(Type type);
 
+ private:
+  Type subtype;
+  AmmoType is_ammo_type;
+  AmmoType uses_ammo_type;
+  int ammo_multiplier;
+  bool identified;
+  bool good_missile;
 
-private:
-  Type       subtype;
-  AmmoType   is_ammo_type;
-  AmmoType   uses_ammo_type;
-  int        ammo_multiplier;
-  bool       identified;
-  bool       good_missile;
-
-  static unsigned long long constexpr TAG_WEAPON    = 0xb000000000000000ULL;
+  static unsigned long long constexpr TAG_WEAPON = 0xb000000000000000ULL;
 };
 
 /* Drop an item someplace around here. */

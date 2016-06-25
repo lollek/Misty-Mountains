@@ -48,9 +48,13 @@ string os_homedir() {
   }
 
   // Otherwise, we just return current directory
-  if (return_value.empty()) { return_value = "/"; }
+  if (return_value.empty()) {
+    return_value = "/";
+  }
 
-  if (return_value.back() != '/') { return_value += '/'; }
+  if (return_value.back() != '/') {
+    return_value += '/';
+  }
 
   return return_value;
 }

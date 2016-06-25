@@ -9,4 +9,4 @@ fatal_error::fatal_error(std::string const& arg, char const* file, int line)
   msg = o.str();
 }
 
-char const*fatal_error::what() const noexcept { return msg.c_str(); }
+char const* fatal_error::what() const noexcept { return msg.c_str(); }
