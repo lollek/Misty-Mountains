@@ -13,14 +13,14 @@ set (SCOREPATH "\"${PREFIX}/share/${PROJECT_NAME}/highscore\"")
 set (VERSION "\"${PROJECT_VERSION}\"")
 
 configure_file (
-  "${PROJECT_SOURCE_DIR}/src/include/misty_mountains.h.in"
-  "${PROJECT_BINARY_DIR}/include/misty_mountains.h"
+  "${PROJECT_SOURCE_DIR}/src/misty_mountains.h.in"
+  "${PROJECT_BINARY_DIR}/src/misty_mountains.h"
   )
 
 find_package(Curses REQUIRED)
 
-include_directories(${PROJECT_BINARY_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_BINARY_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/src)
 
 add_executable (${PROJECT_NAME} ${PROJECT_SOURCES})
 target_link_libraries(${PROJECT_NAME} Curses)
@@ -35,7 +35,7 @@ add_custom_target(run_ctags DEPENDS tags)
 add_custom_command(TARGET ${PROJECT_NAME}
   PRE_BUILD
   COMMAND find src -name "*.cc" -type f -exec clang-format -i {} +
-  COMMAND find include -name "*.h" -type f -exec clang-format -i {} +
+  COMMAND find src -name "*.h"  -type f -exec clang-format -i {} +
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   )
 add_dependencies(${PROJECT_NAME} run_ctags)
