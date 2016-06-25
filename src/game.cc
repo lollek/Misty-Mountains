@@ -36,7 +36,13 @@ string* Game::save_game_path{nullptr};
 int Game::current_level{1};
 int Game::levels_without_food{0};
 
-void Game::exit() { ::exit(0); }
+void Game::exit() {
+  if (game_ptr != nullptr) {
+    delete game_ptr;
+    game_ptr = nullptr;
+  }
+  ::exit(0);
+}
 
 void Game::new_level(int dungeon_level) {
   current_level = dungeon_level;

@@ -134,14 +134,17 @@ int main(int argc, char** argv) {
       return 1;
     }
 
-    Game game(savefile);
+    Game* game = new Game(savefile);
     savefile.close();
     remove(save_path.c_str());
-    game.run();
+    game->run();
   } else {
-    Game game(whoami, save_path);
-    game.run();
+    Game* game = new Game(whoami, save_path);
+    game->run();
   }
+
+  // END NOT REACHED
+  // Game will be deleted in Game::exit
 
   return 0;
 }
