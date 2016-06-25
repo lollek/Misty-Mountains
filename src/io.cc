@@ -669,9 +669,6 @@ void IO::character_creation() {
 
     print_string(0, 0, "SPACE to repick race, 'y' to accept race");
     char ch{readchar(false)};
-    while (ch != 'y' && ch != KEY_SPACE) {
-      ch = readchar(false);
-    }
     if (ch == 'y') {
       break;
     }
