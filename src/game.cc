@@ -61,7 +61,6 @@ void initialize(string const& whoami_, string const& save_path_) {
   starting_seed = os_rand_seed;
   whoami = new string(whoami_);
   save_game_path = new string(save_path_);
-  current_level = 1;
 
   io = new IO();
   Scroll::init_scrolls();    // Names of scrolls
@@ -72,7 +71,7 @@ void initialize(string const& whoami_, string const& save_path_) {
   Daemons::init_daemons();   // Over-time-effects
   Trap::init_traps();        // Trap types
   io->character_creation();  // New player
-  new_level(current_level);  // New Level
+  new_level(1);              // New Level
 
   // Start up daemons and fuses
   Daemons::daemon_start(Daemons::runners_move, AFTER);
