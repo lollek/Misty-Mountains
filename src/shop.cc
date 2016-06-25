@@ -152,7 +152,7 @@ int Shop::sell() {
   player->give_gold(value);
 
   os.str("");
-  os << "Sold " << obj->get_description() << " for " << value;
+  os << "Sold " << obj->get_description() << " for " << value << " gold";
   Game::io->message(os.str());
   Game::io->readchar(true);
 
