@@ -127,6 +127,7 @@ int Shop::sell() {
   int value{sell_value(obj)};
   if (value <= 0) {
     Game::io->message("the shopkeeper is not interested in buying that");
+    Game::io->readchar(true);
     return sell();
   }
 
@@ -148,13 +149,16 @@ int Shop::sell() {
 
   Game::io->clear_message();
   obj = player->pack_remove(obj, true, sell_all);
+  bool was_identified = obj->is_identified();
   obj->set_identified();
   player->give_gold(value);
 
-  os.str("");
-  os << "Sold " << obj->get_description() << " for " << value << " gold";
-  Game::io->message(os.str());
-  Game::io->readchar(true);
+  if (!was_identified) {
+    os.str("");
+    os << "Sold " << obj->get_description() << " for " << value << " gold";
+    Game::io->message(os.str());
+    Game::io->readchar(true);
+  }
 
   // Try to stack it
   for (Item* ptr : inventory) {
@@ -227,6 +231,7 @@ void Shop::enter() {
     int value{buy_value(item_to_buy)};
     if (player->get_gold() < value) {
       Game::io->message("you cannot afford it");
+      Game::io->readchar(true);
       continue;
     }
 
@@ -237,5 +242,7 @@ void Shop::enter() {
     } else {
       player->pack_add(item_to_buy->clone(), false, false);
     }
+
+    Game::io->readchar(true);
   }
 }
