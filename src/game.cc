@@ -28,23 +28,124 @@
 
 using namespace std;
 
-Game* Game::game_ptr{nullptr};
-IO* Game::io{nullptr};
-Level* Game::level{nullptr};
-string* Game::whoami{nullptr};
-string* Game::save_game_path{nullptr};
-int Game::current_level{1};
-int Game::levels_without_food{0};
+namespace Game {
 
-void Game::exit() {
-  if (game_ptr != nullptr) {
-    delete game_ptr;
-    game_ptr = nullptr;
+namespace {
+
+bool has_been_initialized{false};
+unsigned starting_seed{0};
+
+unsigned long long constexpr TAG_GAME{0x6000000000000000ULL};
+unsigned long long constexpr TAG_WHOAMI{0x6000000000000001ULL};
+unsigned long long constexpr TAG_SAVEPATH{0x6000000000000002ULL};
+unsigned long long constexpr TAG_LEVEL{0x6000000000000003ULL};
+unsigned long long constexpr TAG_FOODLESS{0x6000000000000004ULL};
+
+}  // anonymous namespace
+
+int const amulet_min_level{26};
+
+IO* io{nullptr};
+Level* level{nullptr};
+string* whoami{nullptr};
+string* save_game_path{nullptr};
+int current_level{0};
+int levels_without_food{0};
+
+void initialize(string const& whoami_, string const& save_path_) {
+  if (has_been_initialized) {
+    error("Game initializer already started");
   }
+  has_been_initialized = true;
+
+  starting_seed = os_rand_seed;
+  whoami = new string(whoami_);
+  save_game_path = new string(save_path_);
+  current_level = 1;
+
+  io = new IO();
+  Scroll::init_scrolls();    // Names of scrolls
+  Color::init_colors();      // Colors for potions and stuff
+  Potion::init_potions();    // Colors of potions
+  Ring::init_rings();        // Stone settings of rings
+  Wand::init_wands();        // Materials of wands
+  Daemons::init_daemons();   // Over-time-effects
+  Trap::init_traps();        // Trap types
+  io->character_creation();  // New player
+  new_level(current_level);  // New Level
+
+  // Start up daemons and fuses
+  Daemons::daemon_start(Daemons::runners_move, AFTER);
+  Daemons::daemon_start(Daemons::doctor, AFTER);
+  Daemons::daemon_start(Daemons::ring_abilities, AFTER);
+}
+
+void initialize(istream& savefile) {
+  if (has_been_initialized) {
+    error("Game initializer already started");
+  }
+  has_been_initialized = true;
+
+  io = new IO();
+
+  try {
+    Scroll::load_scrolls(savefile);
+    Color::init_colors();
+    Potion::load_potions(savefile);
+    Ring::load_rings(savefile);
+    Wand::load_wands(savefile);
+    Daemons::load_daemons(savefile);
+    Trap::init_traps();
+    Player::load_player(savefile);
+    // level = new Level(savefile);
+
+    Disk::load_tag(TAG_GAME, savefile);
+
+    Disk::load(TAG_WHOAMI, whoami, savefile);
+    Disk::load(TAG_SAVEPATH, save_game_path, savefile);
+    Disk::load(TAG_LEVEL, current_level, savefile);
+    Disk::load(TAG_FOODLESS, levels_without_food, savefile);
+
+    Game::new_level(1);
+
+    Disk::load_tag(TAG_GAME, savefile);
+  } catch (fatal_error& e) {
+    io->stop_curses();
+    cout << "Failed to load game, corrupt save file (" << e.what() << ")\n";
+    exit();
+  }
+}
+
+void exit() {
+  Trap::free_traps();
+  Daemons::free_daemons();
+  Wand::free_wands();
+  Ring::free_rings();
+  Potion::free_potions();
+  Color::free_colors();
+  Scroll::free_scrolls();
+
+  Player::free_player();
+
+  if (io != nullptr) {
+    delete io;
+    io = nullptr;
+  }
+
+  if (whoami != nullptr) {
+    delete whoami;
+    whoami = nullptr;
+  }
+
+  if (save_game_path != nullptr) {
+    delete save_game_path;
+    save_game_path = nullptr;
+  }
+
   ::exit(0);
 }
 
-void Game::new_level(int dungeon_level) {
+void new_level(int dungeon_level) {
   current_level = dungeon_level;
 
   if (level != nullptr) {
@@ -61,7 +162,7 @@ void Game::new_level(int dungeon_level) {
   player->set_not_held();
 }
 
-int Game::run() {
+int run() {
 // Try to crash cleanly, and autosave if possible
 // Unless we are debugging, since that messes with gdb/lldb
 #ifdef NDEBUG
@@ -97,91 +198,7 @@ int Game::run() {
   // CODE NOT REACHED
 }
 
-Game::Game(string const& whoami_, string const& save_path_)
-    : starting_seed(os_rand_seed) {
-  whoami = new string(whoami_);
-  save_game_path = new string(save_path_);
-
-  if (game_ptr != nullptr) {
-    error("Game is a singleton class");
-  }
-  game_ptr = this;
-
-  // Init stuff
-  io = new IO();             // Graphics
-  Scroll::init_scrolls();    // Names of scrolls
-  Color::init_colors();      // Colors for potions and stuff
-  Potion::init_potions();    // Colors of potions
-  Ring::init_rings();        // Stone settings of rings
-  Wand::init_wands();        // Materials of wands
-  Daemons::init_daemons();   // Over-time-effects
-  Trap::init_traps();        // Trap types
-  io->character_creation();  // New player
-  new_level(current_level);  // New Level
-
-  // Start up daemons and fuses
-  Daemons::daemon_start(Daemons::runners_move, AFTER);
-  Daemons::daemon_start(Daemons::doctor, AFTER);
-  Daemons::daemon_start(Daemons::ring_abilities, AFTER);
-
-  // Run the character creator
-}
-
-Game::~Game() {
-  Trap::free_traps();
-  Daemons::free_daemons();
-  Wand::free_wands();
-  Ring::free_rings();
-  Potion::free_potions();
-  Color::free_colors();
-  Scroll::free_scrolls();
-
-  Player::free_player();
-
-  delete io;
-  io = nullptr;
-
-  delete whoami;
-  whoami = nullptr;
-}
-
-Game::Game(istream& savefile) {
-  if (game_ptr != nullptr) {
-    error("Game is a singleton class");
-  }
-  game_ptr = this;
-
-  io = new IO();
-
-  try {
-    Scroll::load_scrolls(savefile);
-    Color::init_colors();
-    Potion::load_potions(savefile);
-    Ring::load_rings(savefile);
-    Wand::load_wands(savefile);
-    Daemons::load_daemons(savefile);
-    Trap::init_traps();
-    Player::load_player(savefile);
-    // level = new Level(savefile);
-
-    Disk::load_tag(TAG_GAME, savefile);
-
-    Disk::load(TAG_WHOAMI, whoami, savefile);
-    Disk::load(TAG_SAVEPATH, save_game_path, savefile);
-    Disk::load(TAG_LEVEL, current_level, savefile);
-    Disk::load(TAG_FOODLESS, levels_without_food, savefile);
-
-    Game::new_level(1);
-
-    Disk::load_tag(TAG_GAME, savefile);
-  } catch (fatal_error& e) {
-    io->stop_curses();
-    cout << "Failed to load game, corrupt save file (" << e.what() << ")\n";
-    exit();
-  }
-}
-
-bool Game::save() {
+bool save() {
   ofstream savefile{*save_game_path, fstream::out | fstream::trunc};
   if (!savefile) {
     io->message("Failed to save file " + *save_game_path);
@@ -217,3 +234,5 @@ bool Game::save() {
 #endif  // NDEBUG
   return true;
 }
+
+}  // namespace Game
