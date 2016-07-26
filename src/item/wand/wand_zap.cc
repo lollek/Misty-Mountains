@@ -64,7 +64,7 @@ static void wand_spell_drain_health(void) {
 
   // Now zot all of the monsters
   // Must use manual loop here, since monsters can be deleted
-  auto it{drainee.begin()};
+  auto it = drainee.begin();
   while (it != drainee.end()) {
     Monster* monster = *it++;
     monster->take_damage(damage);
@@ -95,9 +95,7 @@ static void wand_spell_cancel(Monster& target) {
 }
 
 static void wand_spell_magic_missile(int dy, int dx) {
-  class Weapon bolt {
-    Weapon::Dagger
-  };
+  class Weapon bolt(Weapon::Dagger);
   bolt.o_type = '*';
   bolt.set_hit_plus(100);
   bolt.set_damage_plus(1);

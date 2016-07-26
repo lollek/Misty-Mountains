@@ -612,7 +612,7 @@ bool monster_is_anyone_seen_by_player(void) {
 
 void Monster::all_move() {
   // This function needs a manual loop, since monsters can die
-  auto it{Game::level->monsters.begin()};
+  auto it = Game::level->monsters.begin();
   while (it != Game::level->monsters.end()) {
     Monster* mon{*it++};
 

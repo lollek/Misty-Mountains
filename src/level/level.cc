@@ -176,9 +176,9 @@ Monster* Level::get_monster(Coordinate const& coord) {
 }
 
 Item* Level::get_item(int x, int y) {
-  auto const results{find_if(items.begin(), items.end(), [&](Item* i) {
+  auto const results = find_if(items.begin(), items.end(), [&](Item* i) {
     return i->get_x() == x && i->get_y() == y;
-  })};
+  });
 
   return results == items.end() ? nullptr : *results;
 }

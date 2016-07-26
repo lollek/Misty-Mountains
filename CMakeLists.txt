@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.0)
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 project(misty_mountains)
 
@@ -23,7 +23,7 @@ include_directories(${PROJECT_BINARY_DIR}/src)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 add_executable (${PROJECT_NAME} ${PROJECT_SOURCES})
-target_link_libraries(${PROJECT_NAME} Curses)
+target_link_libraries(${PROJECT_NAME} curses)
 
 # Create ctags automatically
 add_custom_command(
@@ -31,11 +31,4 @@ add_custom_command(
   COMMAND ctags -R ${PROJECT_SOURCE_DIR}/src/* || true)
 add_custom_target(run_ctags DEPENDS tags)
 
-# Run clang-format automatially
-add_custom_command(TARGET ${PROJECT_NAME}
-  PRE_BUILD
-  COMMAND find src -name "*.cc" -type f -exec clang-format -i {} +
-  COMMAND find src -name "*.h"  -type f -exec clang-format -i {} +
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  )
 add_dependencies(${PROJECT_NAME} run_ctags)

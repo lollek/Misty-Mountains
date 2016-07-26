@@ -114,7 +114,7 @@ static void daemon_run_all(int flag) {
 // Decrement counters and start needed fuses
 static void daemon_run_fuses(int flag) {
   // List is not autoincrementing, so we can erase elements during the loop
-  for (auto fuse{fuses->begin()}; fuse != fuses->end();) {
+  for (auto fuse = fuses->begin(); fuse != fuses->end();) {
     if (fuse->type == flag && --fuse->time <= 0) {
       execute_daemon_function(fuse->func);
       fuses->erase(fuse++);
@@ -173,9 +173,11 @@ void Daemons::daemon_lengthen_fuse(daemon_function func, int xtime) {
 
 // Put out a fuse
 void Daemons::daemon_extinguish_fuse(daemon_function func) {
-  auto const results{
+  auto const results =
       find_if(fuses->begin(), fuses->end(),
-              [&func](Fuse const& fuse) { return fuse.func == func; })};
+              [&func](Fuse const& fuse) {
+        return fuse.func == func;
+      });
 
   if (results == fuses->end()) {
     error("Unable to find fuse to lengthen");

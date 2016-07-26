@@ -219,7 +219,7 @@ void Shop::enter() {
       item_to_buy = inventory.at(item_pos);
 
     } else if (item_pos - inventory.size() < limited_inventory.size()) {
-      auto it{limited_inventory.begin()};
+      auto it = limited_inventory.begin();
       advance(it, static_cast<long>(item_pos - inventory.size()));
       item_to_buy = *it;
       limited_item = true;

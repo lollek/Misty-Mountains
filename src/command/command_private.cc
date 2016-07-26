@@ -250,7 +250,7 @@ bool command_pick_up(bool force) {
   }
 
   // No iterator in this loop, so we can delete while looping
-  auto it{items_here.begin()};
+  auto it = items_here.begin();
   while (it != items_here.end()) {
     Item* obj{*it};
     switch (obj->o_type) {

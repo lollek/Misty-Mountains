@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "disk.h"
 #include "game.h"
 #include "item/scrolls.h"

@@ -109,9 +109,11 @@ bool option() {
     Game::io->force_redraw();
     c = Game::io->readchar(true);
 
-    auto const change_option{
+    auto const change_option = 
         find_if(optlist.begin(), optlist.end(),
-                [c](option const& o) { return o.index == c; })};
+                [c](option const& o) {
+      return o.index == c;
+    });
 
     if (change_option != optlist.end()) {
       int i{static_cast<int>(change_option - optlist.begin())};

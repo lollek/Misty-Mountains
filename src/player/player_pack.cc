@@ -87,10 +87,10 @@ bool Player::pack_add(Item* obj, bool silent, bool from_floor) {
       Game::level->items.remove(obj);
     pack.push_back(obj);
     for (size_t i{0}; i < pack_size(); ++i) {
-      char const packch{static_cast<char>(i) + 'a'};
-      auto const results{find_if(pack.begin(), pack.end(), [packch](Item* it) {
+      char const packch{static_cast<char>(i + 'a')};
+      auto const results = find_if(pack.begin(), pack.end(), [packch](Item* it) {
         return it->o_packch == packch;
-      })};
+      });
 
       if (results == pack.end()) {
         obj->o_packch = packch;
@@ -137,16 +137,16 @@ Item* Player::pack_find_random_item() {
     return nullptr;
   }
 
-  auto it{pack.begin()};
+  auto it = pack.begin();
   advance(it, static_cast<long>(os_rand_range(pack.size())));
   return *it;
 }
 
 class Weapon* Player::pack_find_ammo(Weapon::AmmoType ammo_type) {
-  auto const results{find_if(pack.begin(), pack.end(), [ammo_type](Item* i) {
+  auto const results = find_if(pack.begin(), pack.end(), [ammo_type](Item* i) {
     class Weapon* w = dynamic_cast<class Weapon*>(i);
     return w != nullptr && w->get_ammo_type() == ammo_type;
-  })};
+  });
 
   return results == pack.end() ? nullptr
                                : dynamic_cast<class Weapon*>(*results);
@@ -415,10 +415,10 @@ bool Player::pack_unequip(Equipment pos, bool silent_on_success) {
 }
 
 Item* Player::pack_find_item(int type, int subtype) {
-  auto const results{
+  auto const results =
       find_if(pack.begin(), pack.end(), [type, subtype](Item* i) {
         return i->o_type == type && i->o_which == subtype;
-      })};
+      });
 
   return results == pack.end() ? nullptr : *results;
 }

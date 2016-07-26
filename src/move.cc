@@ -89,7 +89,7 @@ static bool move_do_loop_default(Coordinate& coord) {
 
   // If there was a trap, get trapped!
   if (Game::level->get_tile(coord) == Tile::Trap) {
-    char const ch{Trap::player(coord)};
+    Trap::Type const ch{Trap::player(coord)};
     if (ch == Trap::Door || ch == Trap::Teleport) {
       return true;
     }
